@@ -4,63 +4,63 @@
 IR GRAPH DUMP 
 
 
-SCInterpreted (1:1): poisoned: parse_errors/brackets_unclosed_at_end.scd
+SCInterpreted (1:1): poisoned: version 3.16: parse_errors/brackets_unclosed_at_end.scd
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Unclosed Bracket.
-|  parse_errors/brackets_unclosed_at_end.scd:3:5
-|      1 │ // A bracket still open at the end of the file is closed there, so the code before it is parsed.
-|      2 │ 1 + 2;
-|      3 │ f = { |x| if (x) { 1 }; [2, (3 + 4
+|  parse_errors/brackets_unclosed_at_end.scd:4:5
+|      2 │ // A bracket still open at the end of the file is closed there, so the code before it is parsed.
+|      3 │ 1 + 2;
+|      4 │ f = { |x| if (x) { 1 }; [2, (3 + 4
 |        ┆     ^ This `{` is never closed.
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Unclosed Bracket.
-|  parse_errors/brackets_unclosed_at_end.scd:3:25
-|      1 │ // A bracket still open at the end of the file is closed there, so the code before it is parsed.
-|      2 │ 1 + 2;
-|      3 │ f = { |x| if (x) { 1 }; [2, (3 + 4
+|  parse_errors/brackets_unclosed_at_end.scd:4:25
+|      2 │ // A bracket still open at the end of the file is closed there, so the code before it is parsed.
+|      3 │ 1 + 2;
+|      4 │ f = { |x| if (x) { 1 }; [2, (3 + 4
 |        ┆                         ^ This `[` is never closed.
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Unclosed Bracket.
-|  parse_errors/brackets_unclosed_at_end.scd:3:29
-|      1 │ // A bracket still open at the end of the file is closed there, so the code before it is parsed.
-|      2 │ 1 + 2;
-|      3 │ f = { |x| if (x) { 1 }; [2, (3 + 4
+|  parse_errors/brackets_unclosed_at_end.scd:4:29
+|      2 │ // A bracket still open at the end of the file is closed there, so the code before it is parsed.
+|      3 │ 1 + 2;
+|      4 │ f = { |x| if (x) { 1 }; [2, (3 + 4
 |        ┆                             ^ This `(` is never closed.
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCRegionList (1:1)
-|  |  SCRegion (2:1)
-|  |  |  SCFunction (2:1) -> 3
-|  |  |  |  SCBody (2:1)
-|  |  |  |  |  SCMessage (2:1): + = 3
-|  |  |  |  |  |  SCLiteral (2:1) = 1
-|  |  |  |  |  |  SCPositionalArgs (2:1)
-|  |  |  |  |  |  |  SCLiteral (2:5) = 2
 |  |  SCRegion (3:1)
-|  |  |  SCFunction (3:1)
+|  |  |  SCFunction (3:1) -> 3
 |  |  |  |  SCBody (3:1)
-|  |  |  |  |  SCAssign (3:1): instance f, declared (36:36): f
-|  |  |  |  |  |  SCFunction (3:5)
-|  |  |  |  |  |  |  SCArgumentDeclareList (3:8)
-|  |  |  |  |  |  |  |  SCArgumentDeclare (3:8): x
-|  |  |  |  |  |  |  SCBody (3:5)
-|  |  |  |  |  |  |  |  SCMessage (3:11): if
-|  |  |  |  |  |  |  |  |  SCRead (3:15): local x, declared (3:8): x
-|  |  |  |  |  |  |  |  |  SCPositionalArgs (3:11)
-|  |  |  |  |  |  |  |  |  |  SCFunction (3:18) -> 1
-|  |  |  |  |  |  |  |  |  |  |  SCBody (3:18)
-|  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (3:20) = 1
-|  |  |  |  |  |  |  |  SCCollection (3:25): Array = [2, 7]
-|  |  |  |  |  |  |  |  |  SCLiteral (3:26) = 2
-|  |  |  |  |  |  |  |  |  SCMessage (3:30): + = 7
-|  |  |  |  |  |  |  |  |  |  SCLiteral (3:30) = 3
-|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (3:30)
-|  |  |  |  |  |  |  |  |  |  |  SCLiteral (3:34) = 4
+|  |  |  |  |  SCMessage (3:1): + = 3
+|  |  |  |  |  |  SCLiteral (3:1) = 1
+|  |  |  |  |  |  SCPositionalArgs (3:1)
+|  |  |  |  |  |  |  SCLiteral (3:5) = 2
+|  |  SCRegion (4:1)
+|  |  |  SCFunction (4:1)
+|  |  |  |  SCBody (4:1)
+|  |  |  |  |  SCAssign (4:1): instance f, declared (37:36): f
+|  |  |  |  |  |  SCFunction (4:5)
+|  |  |  |  |  |  |  SCArgumentDeclareList (4:8)
+|  |  |  |  |  |  |  |  SCArgumentDeclare (4:8): x
+|  |  |  |  |  |  |  SCBody (4:5)
+|  |  |  |  |  |  |  |  SCMessage (4:11): if
+|  |  |  |  |  |  |  |  |  SCRead (4:15): local x, declared (4:8): x
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (4:11)
+|  |  |  |  |  |  |  |  |  |  SCFunction (4:18) -> 1
+|  |  |  |  |  |  |  |  |  |  |  SCBody (4:18)
+|  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (4:20) = 1
+|  |  |  |  |  |  |  |  SCCollection (4:25): Array = [2, 7]
+|  |  |  |  |  |  |  |  |  SCLiteral (4:26) = 2
+|  |  |  |  |  |  |  |  |  SCMessage (4:30): + = 7
+|  |  |  |  |  |  |  |  |  |  SCLiteral (4:30) = 3
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (4:30)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (4:34) = 4
 Successfully compiled 15 classes.

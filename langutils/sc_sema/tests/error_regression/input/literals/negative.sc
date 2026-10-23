@@ -1,3 +1,4 @@
+//# VERSION 3.16
 NegativeLiterals {
     const negative_const = -3;
 

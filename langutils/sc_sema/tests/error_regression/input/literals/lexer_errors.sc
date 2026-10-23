@@ -1,3 +1,4 @@
+//# VERSION 3.16
 // The lexer reports what is wrong with the token, rather than the parser reporting it as unexpected.
 // TODO: recovery loses the methods, so they have no assertions.
 LexerErrors {

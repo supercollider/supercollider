@@ -4,130 +4,130 @@
 IR GRAPH DUMP 
 
 
-SCClass (1:1): NotConstant
+SCClass (2:1): NotConstant, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Not a constant
-|  classes/member_initialisers_not_constant.sc:6:30
-|      4 │     var refers_to_const = fine;
-|      5 │     classvar class_refers_to_const = fine;
-|      6 │     var refers_to_classvar = changes;
+|  classes/member_initialisers_not_constant.sc:7:30
+|      5 │     var refers_to_const = fine;
+|      6 │     classvar class_refers_to_const = fine;
+|      7 │     var refers_to_classvar = changes;
 |        ┆                              ^^^^^^^ this can't be evaluated when compiling.
-|      7 │     var message = 1.foo;
-|      8 │     var environment = ~env;
-|      9 │     var reference = `1;
+|      8 │     var message = 1.foo;
+|      9 │     var environment = ~env;
+|     10 │     var reference = `1;
 |
 |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Not a constant
-|  classes/member_initialisers_not_constant.sc:7:19
-|      5 │     classvar class_refers_to_const = fine;
-|      6 │     var refers_to_classvar = changes;
-|      7 │     var message = 1.foo;
+|  classes/member_initialisers_not_constant.sc:8:19
+|      6 │     classvar class_refers_to_const = fine;
+|      7 │     var refers_to_classvar = changes;
+|      8 │     var message = 1.foo;
 |        ┆                   ^^^^^ this can't be evaluated when compiling.
-|      8 │     var environment = ~env;
-|      9 │     var reference = `1;
-|     10 │     var unknown_name = other;
+|      9 │     var environment = ~env;
+|     10 │     var reference = `1;
+|     11 │     var unknown_name = other;
 |
 |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Not a constant
-|  classes/member_initialisers_not_constant.sc:8:23
-|      6 │     var refers_to_classvar = changes;
-|      7 │     var message = 1.foo;
-|      8 │     var environment = ~env;
+|  classes/member_initialisers_not_constant.sc:9:23
+|      7 │     var refers_to_classvar = changes;
+|      8 │     var message = 1.foo;
+|      9 │     var environment = ~env;
 |        ┆                       ^^^^ this can't be evaluated when compiling.
-|      9 │     var reference = `1;
-|     10 │     var unknown_name = other;
-|     11 │     var curry = _;
+|     10 │     var reference = `1;
+|     11 │     var unknown_name = other;
+|     12 │     var curry = _;
 |
 |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Not a constant
-|  classes/member_initialisers_not_constant.sc:9:21
-|      7 │     var message = 1.foo;
-|      8 │     var environment = ~env;
-|      9 │     var reference = `1;
+|  classes/member_initialisers_not_constant.sc:10:21
+|      8 │     var message = 1.foo;
+|      9 │     var environment = ~env;
+|     10 │     var reference = `1;
 |        ┆                     ^^ this can't be evaluated when compiling.
-|     10 │     var unknown_name = other;
-|     11 │     var curry = _;
-|     12 │ 
+|     11 │     var unknown_name = other;
+|     12 │     var curry = _;
+|     13 │ 
 |
 |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Not a constant
-|  classes/member_initialisers_not_constant.sc:10:24
-|      8 │     var environment = ~env;
-|      9 │     var reference = `1;
-|     10 │     var unknown_name = other;
+|  classes/member_initialisers_not_constant.sc:11:24
+|      9 │     var environment = ~env;
+|     10 │     var reference = `1;
+|     11 │     var unknown_name = other;
 |        ┆                        ^^^^^ this can't be evaluated when compiling.
-|     11 │     var curry = _;
-|     12 │ 
-|     13 │     immutable_array { ^#[1, 2.foo, ~env] }
+|     12 │     var curry = _;
+|     13 │ 
+|     14 │     immutable_array { ^#[1, 2.foo, ~env] }
 |
 |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Not a constant
-|  classes/member_initialisers_not_constant.sc:11:17
-|      9 │     var reference = `1;
-|     10 │     var unknown_name = other;
-|     11 │     var curry = _;
+|  classes/member_initialisers_not_constant.sc:12:17
+|     10 │     var reference = `1;
+|     11 │     var unknown_name = other;
+|     12 │     var curry = _;
 |        ┆                 ^ this can't be evaluated when compiling.
-|     12 │ 
-|     13 │     immutable_array { ^#[1, 2.foo, ~env] }
-|     14 │ }
+|     13 │ 
+|     14 │     immutable_array { ^#[1, 2.foo, ~env] }
+|     15 │ }
 |
 |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  SCMemberList (1:1)
-|  |  SCMember (4:9): refers_to_const = 1
-|  SCMethodList (1:1)
-|  |  SCMethod (13:5): poisoned: immutable_array { ^#[1, 2.foo, ~env] }
+|  SCMemberList (2:1)
+|  |  SCMember (5:9): refers_to_const = 1
+|  SCMethodList (2:1)
+|  |  SCMethod (14:5): poisoned: version 3.16: immutable_array { ^#[1, 2.foo, ~env] }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Not a constant
-|  |  |  classes/member_initialisers_not_constant.sc:13:29
-|  |  |     11 │     var curry = _;
-|  |  |     12 │ 
-|  |  |     13 │     immutable_array { ^#[1, 2.foo, ~env] }
+|  |  |  classes/member_initialisers_not_constant.sc:14:29
+|  |  |     12 │     var curry = _;
+|  |  |     13 │ 
+|  |  |     14 │     immutable_array { ^#[1, 2.foo, ~env] }
 |  |  |        ┆                             ^^^^^ this can't be evaluated when compiling.
-|  |  |     14 │ }
+|  |  |     15 │ }
 |  |  |
 |  |  |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Not a constant
-|  |  |  classes/member_initialisers_not_constant.sc:13:36
-|  |  |     11 │     var curry = _;
-|  |  |     12 │ 
-|  |  |     13 │     immutable_array { ^#[1, 2.foo, ~env] }
+|  |  |  classes/member_initialisers_not_constant.sc:14:36
+|  |  |     12 │     var curry = _;
+|  |  |     13 │ 
+|  |  |     14 │     immutable_array { ^#[1, 2.foo, ~env] }
 |  |  |        ┆                                    ^^^^ this can't be evaluated when compiling.
-|  |  |     14 │ }
+|  |  |     15 │ }
 |  |  |
 |  |  |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (13:23)
-|  |  |  |  SCExplicitReturn (13:23)
-|  |  |  |  |  SCCollection (13:24): Array
-|  |  |  |  |  |  SCLiteral (13:26) = 1
-|  |  |  |  |  |  SCMessage (13:29): foo
-|  |  |  |  |  |  |  SCLiteral (13:29) = 2
-|  |  |  |  |  |  SCRead (13:36): environment env
-SCClass (1:1): Meta_NotConstant
-|  SCMemberList (1:1)
-|  |  SCMember (2:11): fine = 1
-|  |  SCMember (3:14): changes = 2
-|  |  SCMember (5:14): class_refers_to_const = 1
-|  SCMethodList (1:1)
+|  |  |  SCBody (14:23)
+|  |  |  |  SCExplicitReturn (14:23)
+|  |  |  |  |  SCCollection (14:24): Array
+|  |  |  |  |  |  SCLiteral (14:26) = 1
+|  |  |  |  |  |  SCMessage (14:29): foo
+|  |  |  |  |  |  |  SCLiteral (14:29) = 2
+|  |  |  |  |  |  SCRead (14:36): environment env
+SCClass (2:1): Meta_NotConstant, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (3:11): fine = 1
+|  |  SCMember (4:14): changes = 2
+|  |  SCMember (6:14): class_refers_to_const = 1
+|  SCMethodList (2:1)
 Successfully compiled 16 classes.

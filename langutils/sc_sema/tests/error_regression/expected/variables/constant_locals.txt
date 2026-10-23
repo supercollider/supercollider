@@ -4,147 +4,147 @@
 IR GRAPH DUMP 
 
 
-SCClass (1:1): ConstantLocals
-|  SCMemberList (1:1)
-|  |  SCMember (2:9): instance_var = 1
-|  SCMethodList (1:1)
-|  |  SCMethod (5:5): constant { var a = 1; ^a } -> 1
-|  |  |  SCBody (5:16)
-|  |  |  |  SCVariableDeclare (5:20): a
-|  |  |  |  |  SCLiteral (5:24) = 1
-|  |  |  |  SCExplicitReturn (5:27)
-|  |  |  |  |  SCRead (5:28): local a = 1, declared (5:20): a = 1
-|  |  SCMethod (7:5): nil_by_default { var a; ^a } -> nil
-|  |  |  SCBody (7:22)
-|  |  |  |  SCVariableDeclare (7:26): a
-|  |  |  |  SCExplicitReturn (7:29)
-|  |  |  |  |  SCRead (7:30): local a = nil, declared (7:26): a
-|  |  SCMethod (9:5): propagates { var a = 1; ^[a] } -> [1]
-|  |  |  SCBody (9:18)
-|  |  |  |  SCVariableDeclare (9:22): a
-|  |  |  |  |  SCLiteral (9:26) = 1
-|  |  |  |  SCExplicitReturn (9:29)
-|  |  |  |  |  SCCollection (9:30): Array = [1]
-|  |  |  |  |  |  SCRead (9:31): local a = 1, declared (9:22): a = 1
-|  |  SCMethod (11:5): through_another { var a = 1, b = a; ^b } -> 1
-|  |  |  SCBody (11:23)
-|  |  |  |  SCVariableDeclare (11:27): a
-|  |  |  |  |  SCLiteral (11:31) = 1
-|  |  |  |  SCVariableDeclare (11:34): b
-|  |  |  |  |  SCRead (11:38): local a = 1, declared (11:27): a = 1
-|  |  |  |  SCExplicitReturn (11:41)
-|  |  |  |  |  SCRead (11:42): local b = 1, declared (11:34): b = a
-|  |  SCMethod (13:5): not_constant_value { var a = instance_var; ^a }
-|  |  |  SCBody (13:26)
-|  |  |  |  SCVariableDeclare (13:30): a
-|  |  |  |  |  SCRead (13:34): instance instance_var, declared (2:9): instance_var
-|  |  |  |  SCExplicitReturn (13:48)
-|  |  |  |  |  SCRead (13:49): local a, declared (13:30): a = instance_var
-|  |  SCMethod (15:5): assigned { var a = 1; a = 2; ^a }
-|  |  |  SCBody (15:16)
-|  |  |  |  SCVariableDeclare (15:20): a
-|  |  |  |  |  SCLiteral (15:24) = 1
-|  |  |  |  SCAssign (15:27): local a, declared (15:20): a = 1
-|  |  |  |  |  SCLiteral (15:31) = 2
-|  |  |  |  SCExplicitReturn (15:34)
-|  |  |  |  |  SCRead (15:35): local a, declared (15:20): a = 1
-|  |  SCMethod (17:5): assigned_later { var a = 1; ^a; a = 2 }
-|  |  |  SCBody (17:22)
-|  |  |  |  SCVariableDeclare (17:26): a
-|  |  |  |  |  SCLiteral (17:30) = 1
-|  |  |  |  SCExplicitReturn (17:33)
-|  |  |  |  |  SCRead (17:34): local a, declared (17:26): a = 1
-|  |  |  |  SCAssign (17:37): local a, declared (17:26): a = 1
-|  |  |  |  |  SCLiteral (17:41) = 2
-|  |  SCMethod (19:5): assigned_in_block { var a = 1; { a = 2 }; ^a }
-|  |  |  SCBody (19:25)
-|  |  |  |  SCVariableDeclare (19:29): a
-|  |  |  |  |  SCLiteral (19:33) = 1
-|  |  |  |  SCFunction (19:36)
-|  |  |  |  |  SCBody (19:36)
-|  |  |  |  |  |  SCAssign (19:38): local a, declared (19:29): a = 1
-|  |  |  |  |  |  |  SCLiteral (19:42) = 2
-|  |  |  |  SCExplicitReturn (19:47)
-|  |  |  |  |  SCRead (19:48): local a, declared (19:29): a = 1
-|  |  SCMethod (21:5): read_by_block { var a = 1; ^{ a } }
-|  |  |  SCBody (21:21)
-|  |  |  |  SCVariableDeclare (21:25): a
-|  |  |  |  |  SCLiteral (21:29) = 1
-|  |  |  |  SCExplicitReturn (21:32)
-|  |  |  |  |  SCFunction (21:33)
-|  |  |  |  |  |  SCBody (21:33)
-|  |  |  |  |  |  |  SCRead (21:35): local a, declared (21:25): a = 1
-|  |  SCMethod (23:5): read_by_nested_block { var a = 1; ^{ { a } } }
-|  |  |  SCBody (23:28)
-|  |  |  |  SCVariableDeclare (23:32): a
-|  |  |  |  |  SCLiteral (23:36) = 1
-|  |  |  |  SCExplicitReturn (23:39)
-|  |  |  |  |  SCFunction (23:40)
-|  |  |  |  |  |  SCBody (23:40)
-|  |  |  |  |  |  |  SCFunction (23:42)
-|  |  |  |  |  |  |  |  SCBody (23:42)
-|  |  |  |  |  |  |  |  |  SCRead (23:44): local a, declared (23:32): a = 1
-|  |  SCMethod (25:5): shadowed_by_argument { var a = 1; { |a| a }; ^a }
-|  |  |  SCBody (25:28)
-|  |  |  |  SCVariableDeclare (25:32): a
-|  |  |  |  |  SCLiteral (25:36) = 1
-|  |  |  |  SCFunction (25:39)
-|  |  |  |  |  SCArgumentDeclareList (25:42)
-|  |  |  |  |  |  SCArgumentDeclare (25:42): a
-|  |  |  |  |  SCBody (25:39)
-|  |  |  |  |  |  SCRead (25:45): local a, declared (25:42): a
-|  |  |  |  SCExplicitReturn (25:50)
-|  |  |  |  |  SCRead (25:51): local a = 1, declared (25:32): a = 1
-|  |  SCMethod (27:5): shadowed_by_variable { var a = 1; { var a = 2; a }; ^a }
-|  |  |  SCBody (27:28)
-|  |  |  |  SCVariableDeclare (27:32): a
-|  |  |  |  |  SCLiteral (27:36) = 1
-|  |  |  |  SCFunction (27:39) -> 2
-|  |  |  |  |  SCBody (27:39)
-|  |  |  |  |  |  SCVariableDeclare (27:45): a
-|  |  |  |  |  |  |  SCLiteral (27:49) = 2
-|  |  |  |  |  |  SCRead (27:52): local a = 2, declared (27:45): a = 2
-|  |  |  |  SCExplicitReturn (27:57)
-|  |  |  |  |  SCRead (27:58): local a = 1, declared (27:32): a = 1
-|  |  SCMethod (29:5): used_before_inner_declaration { var a = 1; { a; var a = 2 }; ^a }
-|  |  |  SCBody (29:37)
-|  |  |  |  SCVariableDeclare (29:41): a
-|  |  |  |  |  SCLiteral (29:45) = 1
-|  |  |  |  SCFunction (29:48)
-|  |  |  |  |  SCBody (29:48)
-|  |  |  |  |  |  SCRead (29:50): local a, declared (29:41): a = 1
-|  |  |  |  |  |  SCVariableDeclare (29:57): a
-|  |  |  |  |  |  |  SCLiteral (29:61) = 2
-|  |  |  |  SCExplicitReturn (29:66)
-|  |  |  |  |  SCRead (29:67): local a, declared (29:41): a = 1
-|  |  SCMethod (31:5): inner_default_reads_outer { var a = 1; { var b = a; b }; ^a }
-|  |  |  SCBody (31:33)
-|  |  |  |  SCVariableDeclare (31:37): a
-|  |  |  |  |  SCLiteral (31:41) = 1
-|  |  |  |  SCFunction (31:44)
-|  |  |  |  |  SCBody (31:44)
-|  |  |  |  |  |  SCVariableDeclare (31:50): b
-|  |  |  |  |  |  |  SCRead (31:54): local a, declared (31:37): a = 1
-|  |  |  |  |  |  SCRead (31:57): local b, declared (31:50): b = a
-|  |  |  |  SCExplicitReturn (31:62)
-|  |  |  |  |  SCRead (31:63): local a, declared (31:37): a = 1
-|  |  SCMethod (32:5): constant_in_block { ^{ var a = 1; a } }
-|  |  |  SCBody (32:25)
-|  |  |  |  SCExplicitReturn (32:25)
-|  |  |  |  |  SCFunction (32:26) -> 1
-|  |  |  |  |  |  SCBody (32:26)
-|  |  |  |  |  |  |  SCVariableDeclare (32:32): a
-|  |  |  |  |  |  |  |  SCLiteral (32:36) = 1
-|  |  |  |  |  |  |  SCRead (32:39): local a = 1, declared (32:32): a = 1
-|  |  SCMethod (34:5): member_not_constant { ^instance_var }
-|  |  |  SCBody (34:27)
-|  |  |  |  SCExplicitReturn (34:27)
-|  |  |  |  |  SCRead (34:28): instance instance_var, declared (2:9): instance_var
-|  |  SCMethod (36:5): argument_not_constant { |x = 1| ^x }
-|  |  |  SCArgumentDeclareList (36:30)
-|  |  |  |  SCArgumentDeclare (36:30): x
-|  |  |  |  |  SCLiteral (36:34) = 1
-|  |  |  SCBody (36:37)
-|  |  |  |  SCExplicitReturn (36:37)
-|  |  |  |  |  SCRead (36:38): local x, declared (36:30): x = 1
+SCClass (2:1): ConstantLocals, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (3:9): instance_var = 1
+|  SCMethodList (2:1)
+|  |  SCMethod (6:5): version 3.16: constant { var a = 1; ^a } -> 1
+|  |  |  SCBody (6:16)
+|  |  |  |  SCVariableDeclare (6:20): a
+|  |  |  |  |  SCLiteral (6:24) = 1
+|  |  |  |  SCExplicitReturn (6:27)
+|  |  |  |  |  SCRead (6:28): local a = 1, declared (6:20): a = 1
+|  |  SCMethod (8:5): version 3.16: nil_by_default { var a; ^a } -> nil
+|  |  |  SCBody (8:22)
+|  |  |  |  SCVariableDeclare (8:26): a
+|  |  |  |  SCExplicitReturn (8:29)
+|  |  |  |  |  SCRead (8:30): local a = nil, declared (8:26): a
+|  |  SCMethod (10:5): version 3.16: propagates { var a = 1; ^[a] } -> [1]
+|  |  |  SCBody (10:18)
+|  |  |  |  SCVariableDeclare (10:22): a
+|  |  |  |  |  SCLiteral (10:26) = 1
+|  |  |  |  SCExplicitReturn (10:29)
+|  |  |  |  |  SCCollection (10:30): Array = [1]
+|  |  |  |  |  |  SCRead (10:31): local a = 1, declared (10:22): a = 1
+|  |  SCMethod (12:5): version 3.16: through_another { var a = 1, b = a; ^b } -> 1
+|  |  |  SCBody (12:23)
+|  |  |  |  SCVariableDeclare (12:27): a
+|  |  |  |  |  SCLiteral (12:31) = 1
+|  |  |  |  SCVariableDeclare (12:34): b
+|  |  |  |  |  SCRead (12:38): local a = 1, declared (12:27): a = 1
+|  |  |  |  SCExplicitReturn (12:41)
+|  |  |  |  |  SCRead (12:42): local b = 1, declared (12:34): b = a
+|  |  SCMethod (14:5): version 3.16: not_constant_value { var a = instance_var; ^a }
+|  |  |  SCBody (14:26)
+|  |  |  |  SCVariableDeclare (14:30): a
+|  |  |  |  |  SCRead (14:34): instance instance_var, declared (3:9): instance_var
+|  |  |  |  SCExplicitReturn (14:48)
+|  |  |  |  |  SCRead (14:49): local a, declared (14:30): a = instance_var
+|  |  SCMethod (16:5): version 3.16: assigned { var a = 1; a = 2; ^a }
+|  |  |  SCBody (16:16)
+|  |  |  |  SCVariableDeclare (16:20): a
+|  |  |  |  |  SCLiteral (16:24) = 1
+|  |  |  |  SCAssign (16:27): local a, declared (16:20): a = 1
+|  |  |  |  |  SCLiteral (16:31) = 2
+|  |  |  |  SCExplicitReturn (16:34)
+|  |  |  |  |  SCRead (16:35): local a, declared (16:20): a = 1
+|  |  SCMethod (18:5): version 3.16: assigned_later { var a = 1; ^a; a = 2 }
+|  |  |  SCBody (18:22)
+|  |  |  |  SCVariableDeclare (18:26): a
+|  |  |  |  |  SCLiteral (18:30) = 1
+|  |  |  |  SCExplicitReturn (18:33)
+|  |  |  |  |  SCRead (18:34): local a, declared (18:26): a = 1
+|  |  |  |  SCAssign (18:37): local a, declared (18:26): a = 1
+|  |  |  |  |  SCLiteral (18:41) = 2
+|  |  SCMethod (20:5): version 3.16: assigned_in_block { var a = 1; { a = 2 }; ^a }
+|  |  |  SCBody (20:25)
+|  |  |  |  SCVariableDeclare (20:29): a
+|  |  |  |  |  SCLiteral (20:33) = 1
+|  |  |  |  SCFunction (20:36)
+|  |  |  |  |  SCBody (20:36)
+|  |  |  |  |  |  SCAssign (20:38): local a, declared (20:29): a = 1
+|  |  |  |  |  |  |  SCLiteral (20:42) = 2
+|  |  |  |  SCExplicitReturn (20:47)
+|  |  |  |  |  SCRead (20:48): local a, declared (20:29): a = 1
+|  |  SCMethod (22:5): version 3.16: read_by_block { var a = 1; ^{ a } }
+|  |  |  SCBody (22:21)
+|  |  |  |  SCVariableDeclare (22:25): a
+|  |  |  |  |  SCLiteral (22:29) = 1
+|  |  |  |  SCExplicitReturn (22:32)
+|  |  |  |  |  SCFunction (22:33)
+|  |  |  |  |  |  SCBody (22:33)
+|  |  |  |  |  |  |  SCRead (22:35): local a, declared (22:25): a = 1
+|  |  SCMethod (24:5): version 3.16: read_by_nested_block { var a = 1; ^{ { a } } }
+|  |  |  SCBody (24:28)
+|  |  |  |  SCVariableDeclare (24:32): a
+|  |  |  |  |  SCLiteral (24:36) = 1
+|  |  |  |  SCExplicitReturn (24:39)
+|  |  |  |  |  SCFunction (24:40)
+|  |  |  |  |  |  SCBody (24:40)
+|  |  |  |  |  |  |  SCFunction (24:42)
+|  |  |  |  |  |  |  |  SCBody (24:42)
+|  |  |  |  |  |  |  |  |  SCRead (24:44): local a, declared (24:32): a = 1
+|  |  SCMethod (26:5): version 3.16: shadowed_by_argument { var a = 1; { |a| a }; ^a }
+|  |  |  SCBody (26:28)
+|  |  |  |  SCVariableDeclare (26:32): a
+|  |  |  |  |  SCLiteral (26:36) = 1
+|  |  |  |  SCFunction (26:39)
+|  |  |  |  |  SCArgumentDeclareList (26:42)
+|  |  |  |  |  |  SCArgumentDeclare (26:42): a
+|  |  |  |  |  SCBody (26:39)
+|  |  |  |  |  |  SCRead (26:45): local a, declared (26:42): a
+|  |  |  |  SCExplicitReturn (26:50)
+|  |  |  |  |  SCRead (26:51): local a = 1, declared (26:32): a = 1
+|  |  SCMethod (28:5): version 3.16: shadowed_by_variable { var a = 1; { var a = 2; a }; ^a }
+|  |  |  SCBody (28:28)
+|  |  |  |  SCVariableDeclare (28:32): a
+|  |  |  |  |  SCLiteral (28:36) = 1
+|  |  |  |  SCFunction (28:39) -> 2
+|  |  |  |  |  SCBody (28:39)
+|  |  |  |  |  |  SCVariableDeclare (28:45): a
+|  |  |  |  |  |  |  SCLiteral (28:49) = 2
+|  |  |  |  |  |  SCRead (28:52): local a = 2, declared (28:45): a = 2
+|  |  |  |  SCExplicitReturn (28:57)
+|  |  |  |  |  SCRead (28:58): local a = 1, declared (28:32): a = 1
+|  |  SCMethod (30:5): version 3.16: used_before_inner_declaration { var a = 1; { a; var a = 2 }; ^a }
+|  |  |  SCBody (30:37)
+|  |  |  |  SCVariableDeclare (30:41): a
+|  |  |  |  |  SCLiteral (30:45) = 1
+|  |  |  |  SCFunction (30:48)
+|  |  |  |  |  SCBody (30:48)
+|  |  |  |  |  |  SCRead (30:50): local a, declared (30:41): a = 1
+|  |  |  |  |  |  SCVariableDeclare (30:57): a
+|  |  |  |  |  |  |  SCLiteral (30:61) = 2
+|  |  |  |  SCExplicitReturn (30:66)
+|  |  |  |  |  SCRead (30:67): local a, declared (30:41): a = 1
+|  |  SCMethod (32:5): version 3.16: inner_default_reads_outer { var a = 1; { var b = a; b }; ^a }
+|  |  |  SCBody (32:33)
+|  |  |  |  SCVariableDeclare (32:37): a
+|  |  |  |  |  SCLiteral (32:41) = 1
+|  |  |  |  SCFunction (32:44)
+|  |  |  |  |  SCBody (32:44)
+|  |  |  |  |  |  SCVariableDeclare (32:50): b
+|  |  |  |  |  |  |  SCRead (32:54): local a, declared (32:37): a = 1
+|  |  |  |  |  |  SCRead (32:57): local b, declared (32:50): b = a
+|  |  |  |  SCExplicitReturn (32:62)
+|  |  |  |  |  SCRead (32:63): local a, declared (32:37): a = 1
+|  |  SCMethod (33:5): version 3.16: constant_in_block { ^{ var a = 1; a } }
+|  |  |  SCBody (33:25)
+|  |  |  |  SCExplicitReturn (33:25)
+|  |  |  |  |  SCFunction (33:26) -> 1
+|  |  |  |  |  |  SCBody (33:26)
+|  |  |  |  |  |  |  SCVariableDeclare (33:32): a
+|  |  |  |  |  |  |  |  SCLiteral (33:36) = 1
+|  |  |  |  |  |  |  SCRead (33:39): local a = 1, declared (33:32): a = 1
+|  |  SCMethod (35:5): version 3.16: member_not_constant { ^instance_var }
+|  |  |  SCBody (35:27)
+|  |  |  |  SCExplicitReturn (35:27)
+|  |  |  |  |  SCRead (35:28): instance instance_var, declared (3:9): instance_var
+|  |  SCMethod (37:5): version 3.16: argument_not_constant { |x = 1| ^x }
+|  |  |  SCArgumentDeclareList (37:30)
+|  |  |  |  SCArgumentDeclare (37:30): x
+|  |  |  |  |  SCLiteral (37:34) = 1
+|  |  |  SCBody (37:37)
+|  |  |  |  SCExplicitReturn (37:37)
+|  |  |  |  |  SCRead (37:38): local x, declared (37:30): x = 1
 Successfully compiled 16 classes.

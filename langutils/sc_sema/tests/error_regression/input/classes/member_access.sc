@@ -1,3 +1,4 @@
+//# VERSION 3.16
 Foo {
     var bar = 10;
     var <getter, >setter;

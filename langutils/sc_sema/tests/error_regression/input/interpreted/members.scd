@@ -1,3 +1,4 @@
+// interpreted-version: 3.16
 // The Interpreter's members, a to z and the rest, are variables of interpreted code.
 // expect: no diagnostics
 // expect-reads: a -> a

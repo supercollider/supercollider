@@ -1,3 +1,4 @@
+//# VERSION 3.16
 // `+`, `-`, `*` and `/` on constant Integers and Floats are folded. Integers wrap like 32 bit integers, anything with a
 // Float is a Float, and `/` always returns a Float.
 Arithmetic {

@@ -4,12 +4,12 @@
 IR GRAPH DUMP 
 
 
-SCClass (1:1): Foo
-|  SCMemberList (1:1)
-|  SCMethodList (1:1)
-|  |  SCMethod (2:5): bar { |a| 10 }
-|  |  |  SCArgumentDeclareList (2:12)
-|  |  |  |  SCArgumentDeclare (2:12): a
-|  |  |  SCBody (2:15)
-|  |  |  |  SCLiteral (2:15) = 10
+SCClass (2:1): Foo, version 3.16
+|  SCMemberList (2:1)
+|  SCMethodList (2:1)
+|  |  SCMethod (3:5): version 3.16: bar { |a| 10 }
+|  |  |  SCArgumentDeclareList (3:12)
+|  |  |  |  SCArgumentDeclare (3:12): a
+|  |  |  SCBody (3:15)
+|  |  |  |  SCLiteral (3:15) = 10
 Successfully compiled 16 classes.

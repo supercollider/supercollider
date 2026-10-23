@@ -4,132 +4,132 @@
 IR GRAPH DUMP 
 
 
-SCInterpreted (1:1): parse_errors/missing_semicolon.scd
+SCInterpreted (1:1): version 3.16: parse_errors/missing_semicolon.scd
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Warning: Region missing semi-colon.
-|  parse_errors/missing_semicolon.scd:3:5
-|      1 │ // A line whose first token can't continue the previous line gets a semicolon inserted before it, and it is reported.
-|      2 │ // The lexer asks the parser whether it can take the token, so the expression on the previous line is kept.
-|      3 │ 1 + 2
+|  parse_errors/missing_semicolon.scd:4:5
+|      2 │ // A line whose first token can't continue the previous line gets a semicolon inserted before it, and it is reported.
+|      3 │ // The lexer asks the parser whether it can take the token, so the expression on the previous line is kept.
+|      4 │ 1 + 2
 |        ┆     ^ Add a semi-colon after this.
-|      4 │ r { 3 }
-|      5 │ (
-|      6 │ 	4
+|      5 │ r { 3 }
+|      6 │ (
+|      7 │ 	4
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Warning: Region missing semi-colon.
-|  parse_errors/missing_semicolon.scd:4:7
-|      2 │ // The lexer asks the parser whether it can take the token, so the expression on the previous line is kept.
-|      3 │ 1 + 2
-|      4 │ r { 3 }
+|  parse_errors/missing_semicolon.scd:5:7
+|      3 │ // The lexer asks the parser whether it can take the token, so the expression on the previous line is kept.
+|      4 │ 1 + 2
+|      5 │ r { 3 }
 |        ┆       ^ Add a semi-colon after this.
-|      5 │ (
-|      6 │ 	4
-|      7 │ )
+|      6 │ (
+|      7 │ 	4
+|      8 │ )
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Warning: Region missing semi-colon.
-|  parse_errors/missing_semicolon.scd:7:1
-|      5 │ (
-|      6 │ 	4
-|      7 │ )
+|  parse_errors/missing_semicolon.scd:8:1
+|      6 │ (
+|      7 │ 	4
+|      8 │ )
 |        ┆ ^ Add a semi-colon after this.
-|      8 │ (
-|      9 │ 	5
-|     10 │ )
+|      9 │ (
+|     10 │ 	5
+|     11 │ )
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Warning: Region missing semi-colon.
-|  parse_errors/missing_semicolon.scd:10:1
-|      8 │ (
-|      9 │ 	5
-|     10 │ )
+|  parse_errors/missing_semicolon.scd:11:1
+|      9 │ (
+|     10 │ 	5
+|     11 │ )
 |        ┆ ^ Add a semi-colon after this.
-|     11 │ // These continue the previous line, so nothing is inserted.
-|     12 │ a = 6
-|     13 │ - 1;
+|     12 │ // These continue the previous line, so nothing is inserted.
+|     13 │ a = 6
+|     14 │ - 1;
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Unexpected Token.
-|  parse_errors/missing_semicolon.scd:20:1
-|     18 │ // A separator can only go between region items, inside brackets and functions these are errors.
-|     19 │ (9
-|     20 │ 10);
+|  parse_errors/missing_semicolon.scd:21:1
+|     19 │ // A separator can only go between region items, inside brackets and functions these are errors.
+|     20 │ (9
+|     21 │ 10);
 |        ┆ ^^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `10`.
-|     21 │ { 11
-|     22 │ 12 };
-|     23 │ a + b
+|     22 │ { 11
+|     23 │ 12 };
+|     24 │ a + b
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Unexpected Token.
-|  parse_errors/missing_semicolon.scd:22:1
-|     20 │ 10);
-|     21 │ { 11
-|     22 │ 12 };
+|  parse_errors/missing_semicolon.scd:23:1
+|     21 │ 10);
+|     22 │ { 11
+|     23 │ 12 };
 |        ┆ ^^ Expected a binary operator, `}`, `[`, `;`, `^`, or `.`, but found `12`.
-|     23 │ a + b
+|     24 │ a + b
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCRegionList (1:1)
-|  |  SCRegion (3:1)
-|  |  |  SCFunction (3:1) -> 3
-|  |  |  |  SCBody (3:1)
-|  |  |  |  |  SCMessage (3:1): + = 3
-|  |  |  |  |  |  SCLiteral (3:1) = 1
-|  |  |  |  |  |  SCPositionalArgs (3:1)
-|  |  |  |  |  |  |  SCLiteral (3:5) = 2
 |  |  SCRegion (4:1)
-|  |  |  SCFunction (4:1)
+|  |  |  SCFunction (4:1) -> 3
 |  |  |  |  SCBody (4:1)
-|  |  |  |  |  SCMessage (4:1): r
-|  |  |  |  |  |  SCFunction (4:3) -> 3
-|  |  |  |  |  |  |  SCBody (4:3)
-|  |  |  |  |  |  |  |  SCLiteral (4:5) = 3
-|  |  SCRegion (6:2)
-|  |  |  SCFunction (6:2) -> 4
-|  |  |  |  SCBody (6:2)
-|  |  |  |  |  SCLiteral (6:2) = 4
-|  |  SCRegion (9:2)
-|  |  |  SCFunction (9:2) -> 5
-|  |  |  |  SCBody (9:2)
-|  |  |  |  |  SCLiteral (9:2) = 5
-|  |  SCRegion (12:1)
-|  |  |  SCFunction (12:1)
-|  |  |  |  SCBody (12:1)
-|  |  |  |  |  SCAssign (12:1): instance a, declared (36:11): a
-|  |  |  |  |  |  SCMessage (12:5): - = 5
-|  |  |  |  |  |  |  SCLiteral (12:5) = 6
-|  |  |  |  |  |  |  SCPositionalArgs (12:5)
-|  |  |  |  |  |  |  |  SCLiteral (13:3) = 1
-|  |  SCRegion (14:1)
-|  |  |  SCFunction (14:1)
-|  |  |  |  SCBody (14:1)
-|  |  |  |  |  SCAssign (14:1): instance b, declared (36:16): b
-|  |  |  |  |  |  SCMessage (14:5): neg
-|  |  |  |  |  |  |  SCRead (14:5): instance a, declared (36:11): a
-|  |  SCRegion (16:1)
-|  |  |  SCFunction (16:1)
-|  |  |  |  SCBody (16:1)
-|  |  |  |  |  SCAssign (16:1): instance c, declared (36:21): c
-|  |  |  |  |  |  SCCollection (16:5): Array = [7, 8]
-|  |  |  |  |  |  |  SCLiteral (16:6) = 7
-|  |  |  |  |  |  |  SCLiteral (17:2) = 8
-|  |  SCRegion (23:1)
-|  |  |  SCFunction (23:1)
-|  |  |  |  SCBody (23:1)
-|  |  |  |  |  SCMessage (23:1): +
-|  |  |  |  |  |  SCRead (23:1): instance a, declared (36:11): a
-|  |  |  |  |  |  SCPositionalArgs (23:1)
-|  |  |  |  |  |  |  SCRead (23:5): instance b, declared (36:16): b
+|  |  |  |  |  SCMessage (4:1): + = 3
+|  |  |  |  |  |  SCLiteral (4:1) = 1
+|  |  |  |  |  |  SCPositionalArgs (4:1)
+|  |  |  |  |  |  |  SCLiteral (4:5) = 2
+|  |  SCRegion (5:1)
+|  |  |  SCFunction (5:1)
+|  |  |  |  SCBody (5:1)
+|  |  |  |  |  SCMessage (5:1): r
+|  |  |  |  |  |  SCFunction (5:3) -> 3
+|  |  |  |  |  |  |  SCBody (5:3)
+|  |  |  |  |  |  |  |  SCLiteral (5:5) = 3
+|  |  SCRegion (7:2)
+|  |  |  SCFunction (7:2) -> 4
+|  |  |  |  SCBody (7:2)
+|  |  |  |  |  SCLiteral (7:2) = 4
+|  |  SCRegion (10:2)
+|  |  |  SCFunction (10:2) -> 5
+|  |  |  |  SCBody (10:2)
+|  |  |  |  |  SCLiteral (10:2) = 5
+|  |  SCRegion (13:1)
+|  |  |  SCFunction (13:1)
+|  |  |  |  SCBody (13:1)
+|  |  |  |  |  SCAssign (13:1): instance a, declared (37:11): a
+|  |  |  |  |  |  SCMessage (13:5): - = 5
+|  |  |  |  |  |  |  SCLiteral (13:5) = 6
+|  |  |  |  |  |  |  SCPositionalArgs (13:5)
+|  |  |  |  |  |  |  |  SCLiteral (14:3) = 1
+|  |  SCRegion (15:1)
+|  |  |  SCFunction (15:1)
+|  |  |  |  SCBody (15:1)
+|  |  |  |  |  SCAssign (15:1): instance b, declared (37:16): b
+|  |  |  |  |  |  SCMessage (15:5): neg
+|  |  |  |  |  |  |  SCRead (15:5): instance a, declared (37:11): a
+|  |  SCRegion (17:1)
+|  |  |  SCFunction (17:1)
+|  |  |  |  SCBody (17:1)
+|  |  |  |  |  SCAssign (17:1): instance c, declared (37:21): c
+|  |  |  |  |  |  SCCollection (17:5): Array = [7, 8]
+|  |  |  |  |  |  |  SCLiteral (17:6) = 7
+|  |  |  |  |  |  |  SCLiteral (18:2) = 8
+|  |  SCRegion (24:1)
+|  |  |  SCFunction (24:1)
+|  |  |  |  SCBody (24:1)
+|  |  |  |  |  SCMessage (24:1): +
+|  |  |  |  |  |  SCRead (24:1): instance a, declared (37:11): a
+|  |  |  |  |  |  SCPositionalArgs (24:1)
+|  |  |  |  |  |  |  SCRead (24:5): instance b, declared (37:16): b
 Successfully compiled 15 classes.

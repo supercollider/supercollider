@@ -4,15 +4,15 @@
 IR GRAPH DUMP 
 
 
-SCInterpreted (1:1): interpreted/block_constant.scd
+SCInterpreted (1:1): version 3.16: interpreted/block_constant.scd
 |  SCRegionList (1:1) -> 6
-|  |  SCRegion (3:1)
-|  |  |  SCFunction (3:1) -> 6
-|  |  |  |  SCBody (3:1)
-|  |  |  |  |  SCVariableDeclare (3:6): q
-|  |  |  |  |  |  SCLiteral (3:10) = 2
-|  |  |  |  |  SCMessage (3:13): * = 6
-|  |  |  |  |  |  SCRead (3:13): local q = 2, declared (3:6): q = 2
-|  |  |  |  |  |  SCPositionalArgs (3:13)
-|  |  |  |  |  |  |  SCLiteral (3:17) = 3
+|  |  SCRegion (4:1)
+|  |  |  SCFunction (4:1) -> 6
+|  |  |  |  SCBody (4:1)
+|  |  |  |  |  SCVariableDeclare (4:6): q
+|  |  |  |  |  |  SCLiteral (4:10) = 2
+|  |  |  |  |  SCMessage (4:13): * = 6
+|  |  |  |  |  |  SCRead (4:13): local q = 2, declared (4:6): q = 2
+|  |  |  |  |  |  SCPositionalArgs (4:13)
+|  |  |  |  |  |  |  SCLiteral (4:17) = 3
 Successfully compiled 15 classes.

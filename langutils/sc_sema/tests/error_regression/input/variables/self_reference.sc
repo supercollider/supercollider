@@ -1,3 +1,4 @@
+//# VERSION 3.16
 // A variable can refer to itself from a function in its initial value, as the function is called after the variable
 // is assigned, e.g., for recursion. Anywhere else in its initial value it hasn't been assigned yet, so it is an error.
 // Variables can be declared anywhere in a body, and can't be used before their declaration.

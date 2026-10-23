@@ -1,3 +1,4 @@
+//# VERSION 3.16
 Foo {
     var instance_var;
     classvar class_var;

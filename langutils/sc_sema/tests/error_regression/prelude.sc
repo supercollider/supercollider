@@ -1,3 +1,4 @@
+//# VERSION 3.16
 // The classes the compiler requires, shared by every test that doesn't start with '// no-prelude'.
 // They are compiled, but not included in the output.
 AbstractObjectExperimental {}

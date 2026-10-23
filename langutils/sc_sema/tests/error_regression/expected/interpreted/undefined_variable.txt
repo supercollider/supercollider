@@ -4,24 +4,24 @@
 IR GRAPH DUMP 
 
 
-SCInterpreted (1:1): poisoned: interpreted/undefined_variable.scd
+SCInterpreted (1:1): poisoned: version 3.16: interpreted/undefined_variable.scd
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Variable not defined
-|  interpreted/undefined_variable.scd:3:1
-|      1 │ // expect-error: Variable not defined
-|      2 │ // expect: poisoned
-|      3 │ undefinedThing + 1
+|  interpreted/undefined_variable.scd:4:1
+|      2 │ // expect-error: Variable not defined
+|      3 │ // expect: poisoned
+|      4 │ undefinedThing + 1
 |        ┆ ^^^^^^^^^^^^^^ this is not defined.
 |
 |  Declare it with 'var', or use '~undefinedThing' to refer to an environment variable.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCRegionList (1:1)
-|  |  SCRegion (3:1)
-|  |  |  SCFunction (3:1)
-|  |  |  |  SCBody (3:1)
-|  |  |  |  |  SCMessage (3:1): +
-|  |  |  |  |  |  SCExprList (3:1)
-|  |  |  |  |  |  SCPositionalArgs (3:1)
-|  |  |  |  |  |  |  SCLiteral (3:18) = 1
+|  |  SCRegion (4:1)
+|  |  |  SCFunction (4:1)
+|  |  |  |  SCBody (4:1)
+|  |  |  |  |  SCMessage (4:1): +
+|  |  |  |  |  |  SCExprList (4:1)
+|  |  |  |  |  |  SCPositionalArgs (4:1)
+|  |  |  |  |  |  |  SCLiteral (4:18) = 1
 Successfully compiled 15 classes.

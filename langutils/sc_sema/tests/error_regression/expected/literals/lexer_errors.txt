@@ -4,56 +4,56 @@
 IR GRAPH DUMP 
 
 
-SCClass (3:1): LexerErrors
+SCClass (4:1): LexerErrors, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Missing Exponent.
-|  literals/lexer_errors.sc:4:25
-|      2 │ // TODO: recovery loses the methods, so they have no assertions.
-|      3 │ LexerErrors {
-|      4 │     missing_exponent { ^1.5e+ }
+|  literals/lexer_errors.sc:5:25
+|      3 │ // TODO: recovery loses the methods, so they have no assertions.
+|      4 │ LexerErrors {
+|      5 │     missing_exponent { ^1.5e+ }
 |        ┆                         ^^^^^ The exponent has no digits.
-|      5 │     not_ascii { ^é }
-|      6 │     char_not_ascii { ^$é }
-|      7 │     in_nested_function { |x| if (x) { ^$	 }; ^2 }
+|      6 │     not_ascii { ^é }
+|      7 │     char_not_ascii { ^$é }
+|      8 │     in_nested_function { |x| if (x) { ^$	 }; ^2 }
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Unexpected Character.
-|  literals/lexer_errors.sc:5:18
-|      3 │ LexerErrors {
-|      4 │     missing_exponent { ^1.5e+ }
-|      5 │     not_ascii { ^é }
+|  literals/lexer_errors.sc:6:18
+|      4 │ LexerErrors {
+|      5 │     missing_exponent { ^1.5e+ }
+|      6 │     not_ascii { ^é }
 |        ┆                  ^ Only ASCII characters may be used outside of strings, symbols, and comments.
-|      6 │     char_not_ascii { ^$é }
-|      7 │     in_nested_function { |x| if (x) { ^$	 }; ^2 }
-|      8 │ }
+|      7 │     char_not_ascii { ^$é }
+|      8 │     in_nested_function { |x| if (x) { ^$	 }; ^2 }
+|      9 │ }
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Invalid Character.
-|  literals/lexer_errors.sc:6:23
-|      4 │     missing_exponent { ^1.5e+ }
-|      5 │     not_ascii { ^é }
-|      6 │     char_not_ascii { ^$é }
+|  literals/lexer_errors.sc:7:23
+|      5 │     missing_exponent { ^1.5e+ }
+|      6 │     not_ascii { ^é }
+|      7 │     char_not_ascii { ^$é }
 |        ┆                       ^^ `$` must be followed by an ASCII character.
-|      7 │     in_nested_function { |x| if (x) { ^$	 }; ^2 }
-|      8 │ }
+|      8 │     in_nested_function { |x| if (x) { ^$	 }; ^2 }
+|      9 │ }
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Invalid Character.
-|  literals/lexer_errors.sc:7:40
-|      5 │     not_ascii { ^é }
-|      6 │     char_not_ascii { ^$é }
-|      7 │     in_nested_function { |x| if (x) { ^$	 }; ^2 }
+|  literals/lexer_errors.sc:8:40
+|      6 │     not_ascii { ^é }
+|      7 │     char_not_ascii { ^$é }
+|      8 │     in_nested_function { |x| if (x) { ^$	 }; ^2 }
 |        ┆                                        ^ The only whitespace `$` may be followed by is a space, write a tab or new line as `$\t` or `$\n`.
-|      8 │ }
+|      9 │ }
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  SCMemberList (3:1)
-|  SCMethodList (3:1)
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
 Successfully compiled 16 classes.

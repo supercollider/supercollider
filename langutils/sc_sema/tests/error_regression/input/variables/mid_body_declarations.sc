@@ -1,3 +1,4 @@
+//# VERSION 3.16
 // Variables can be declared anywhere in a body, not just at its top. A variable is in scope from its declaration to
 // the end of its body, so a name read before it is declared refers to whatever it hid, or isn't defined.
 MidBodyDeclarations {

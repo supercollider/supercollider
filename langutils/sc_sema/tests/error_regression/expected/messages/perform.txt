@@ -4,98 +4,98 @@
 IR GRAPH DUMP 
 
 
-SCClass (1:1): Perform
-|  SCMemberList (1:1)
-|  SCMethodList (1:1)
-|  |  SCMethod (2:5): postfix { ^1.perform(\foo, 2) }
-|  |  |  SCBody (2:15)
-|  |  |  |  SCExplicitReturn (2:15)
-|  |  |  |  |  SCMessage (2:16): foo
-|  |  |  |  |  |  SCLiteral (2:16) = 1
-|  |  |  |  |  |  SCPositionalArgs (2:16)
-|  |  |  |  |  |  |  SCLiteral (2:32) = 2
-|  |  SCMethod (3:5): postfix_selector_only { ^1.perform(\foo) }
-|  |  |  SCBody (3:29)
-|  |  |  |  SCExplicitReturn (3:29)
-|  |  |  |  |  SCMessage (3:30): foo
-|  |  |  |  |  |  SCLiteral (3:30) = 1
-|  |  SCMethod (4:5): postfix_quoted_symbol { ^1.perform('foo', 2) }
+SCClass (2:1): Perform, version 3.16
+|  SCMemberList (2:1)
+|  SCMethodList (2:1)
+|  |  SCMethod (3:5): version 3.16: postfix { ^1.perform(\foo, 2) }
+|  |  |  SCBody (3:15)
+|  |  |  |  SCExplicitReturn (3:15)
+|  |  |  |  |  SCMessage (3:16): foo
+|  |  |  |  |  |  SCLiteral (3:16) = 1
+|  |  |  |  |  |  SCPositionalArgs (3:16)
+|  |  |  |  |  |  |  SCLiteral (3:32) = 2
+|  |  SCMethod (4:5): version 3.16: postfix_selector_only { ^1.perform(\foo) }
 |  |  |  SCBody (4:29)
 |  |  |  |  SCExplicitReturn (4:29)
 |  |  |  |  |  SCMessage (4:30): foo
 |  |  |  |  |  |  SCLiteral (4:30) = 1
-|  |  |  |  |  |  SCPositionalArgs (4:30)
-|  |  |  |  |  |  |  SCLiteral (4:47) = 2
-|  |  SCMethod (5:5): prefix { ^perform(1, \foo, 2) }
-|  |  |  SCBody (5:14)
-|  |  |  |  SCExplicitReturn (5:14)
-|  |  |  |  |  SCMessage (5:15): foo
-|  |  |  |  |  |  SCLiteral (5:23) = 1
-|  |  |  |  |  |  SCPositionalArgs (5:15)
-|  |  |  |  |  |  |  SCLiteral (5:32) = 2
-|  |  SCMethod (6:5): binary { ^1 perform: \foo }
+|  |  SCMethod (5:5): version 3.16: postfix_quoted_symbol { ^1.perform('foo', 2) }
+|  |  |  SCBody (5:29)
+|  |  |  |  SCExplicitReturn (5:29)
+|  |  |  |  |  SCMessage (5:30): foo
+|  |  |  |  |  |  SCLiteral (5:30) = 1
+|  |  |  |  |  |  SCPositionalArgs (5:30)
+|  |  |  |  |  |  |  SCLiteral (5:47) = 2
+|  |  SCMethod (6:5): version 3.16: prefix { ^perform(1, \foo, 2) }
 |  |  |  SCBody (6:14)
 |  |  |  |  SCExplicitReturn (6:14)
 |  |  |  |  |  SCMessage (6:15): foo
-|  |  |  |  |  |  SCLiteral (6:15) = 1
-|  |  SCMethod (7:5): poisoned: not_a_symbol { ^1.perform(2, 3) }
+|  |  |  |  |  |  SCLiteral (6:23) = 1
+|  |  |  |  |  |  SCPositionalArgs (6:15)
+|  |  |  |  |  |  |  SCLiteral (6:32) = 2
+|  |  SCMethod (7:5): version 3.16: binary { ^1 perform: \foo }
+|  |  |  SCBody (7:14)
+|  |  |  |  SCExplicitReturn (7:14)
+|  |  |  |  |  SCMessage (7:15): foo
+|  |  |  |  |  |  SCLiteral (7:15) = 1
+|  |  SCMethod (8:5): poisoned: version 3.16: not_a_symbol { ^1.perform(2, 3) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Perform selector is not a symbol
-|  |  |  messages/perform.sc:7:31
-|  |  |      5 │     prefix { ^perform(1, \foo, 2) }
-|  |  |      6 │     binary { ^1 perform: \foo }
-|  |  |      7 │     not_a_symbol { ^1.perform(2, 3) }
+|  |  |  messages/perform.sc:8:31
+|  |  |      6 │     prefix { ^perform(1, \foo, 2) }
+|  |  |      7 │     binary { ^1 perform: \foo }
+|  |  |      8 │     not_a_symbol { ^1.perform(2, 3) }
 |  |  |        ┆                               ^ this is a constant, but not a symbol.
-|  |  |      8 │     not_constant { ^1.perform(\foo.bar, 2) }
-|  |  |      9 │     not_first_argument { ^1.perform(2, \foo) }
-|  |  |     10 │     keyword_argument { ^1.perform(selector: \foo) }
+|  |  |      9 │     not_constant { ^1.perform(\foo.bar, 2) }
+|  |  |     10 │     not_first_argument { ^1.perform(2, \foo) }
+|  |  |     11 │     keyword_argument { ^1.perform(selector: \foo) }
 |  |  |
 |  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (7:20)
-|  |  |  |  SCExplicitReturn (7:20)
-|  |  |  |  |  SCMessage (7:21): perform
-|  |  |  |  |  |  SCLiteral (7:21) = 1
-|  |  |  |  |  |  SCPositionalArgs (7:21)
-|  |  |  |  |  |  |  SCLiteral (7:31) = 2
-|  |  |  |  |  |  |  SCLiteral (7:34) = 3
-|  |  SCMethod (8:5): not_constant { ^1.perform(\foo.bar, 2) }
 |  |  |  SCBody (8:20)
 |  |  |  |  SCExplicitReturn (8:20)
 |  |  |  |  |  SCMessage (8:21): perform
 |  |  |  |  |  |  SCLiteral (8:21) = 1
 |  |  |  |  |  |  SCPositionalArgs (8:21)
-|  |  |  |  |  |  |  SCMessage (8:31): bar
-|  |  |  |  |  |  |  |  SCLiteral (8:31) = \foo
-|  |  |  |  |  |  |  SCLiteral (8:41) = 2
-|  |  SCMethod (9:5): poisoned: not_first_argument { ^1.perform(2, \foo) }
+|  |  |  |  |  |  |  SCLiteral (8:31) = 2
+|  |  |  |  |  |  |  SCLiteral (8:34) = 3
+|  |  SCMethod (9:5): version 3.16: not_constant { ^1.perform(\foo.bar, 2) }
+|  |  |  SCBody (9:20)
+|  |  |  |  SCExplicitReturn (9:20)
+|  |  |  |  |  SCMessage (9:21): perform
+|  |  |  |  |  |  SCLiteral (9:21) = 1
+|  |  |  |  |  |  SCPositionalArgs (9:21)
+|  |  |  |  |  |  |  SCMessage (9:31): bar
+|  |  |  |  |  |  |  |  SCLiteral (9:31) = \foo
+|  |  |  |  |  |  |  SCLiteral (9:41) = 2
+|  |  SCMethod (10:5): poisoned: version 3.16: not_first_argument { ^1.perform(2, \foo) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Perform selector is not a symbol
-|  |  |  messages/perform.sc:9:37
-|  |  |      7 │     not_a_symbol { ^1.perform(2, 3) }
-|  |  |      8 │     not_constant { ^1.perform(\foo.bar, 2) }
-|  |  |      9 │     not_first_argument { ^1.perform(2, \foo) }
+|  |  |  messages/perform.sc:10:37
+|  |  |      8 │     not_a_symbol { ^1.perform(2, 3) }
+|  |  |      9 │     not_constant { ^1.perform(\foo.bar, 2) }
+|  |  |     10 │     not_first_argument { ^1.perform(2, \foo) }
 |  |  |        ┆                                     ^ this is a constant, but not a symbol.
-|  |  |     10 │     keyword_argument { ^1.perform(selector: \foo) }
-|  |  |     11 │ }
+|  |  |     11 │     keyword_argument { ^1.perform(selector: \foo) }
+|  |  |     12 │ }
 |  |  |
 |  |  |  `perform` sends the message named by its first argument, e.g., `a.perform(\foo)` is `a.foo`. Use a symbol, e.g., `\foo` or `'foo'`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (9:26)
-|  |  |  |  SCExplicitReturn (9:26)
-|  |  |  |  |  SCMessage (9:27): perform
-|  |  |  |  |  |  SCLiteral (9:27) = 1
-|  |  |  |  |  |  SCPositionalArgs (9:27)
-|  |  |  |  |  |  |  SCLiteral (9:37) = 2
-|  |  |  |  |  |  |  SCLiteral (9:40) = \foo
-|  |  SCMethod (10:5): keyword_argument { ^1.perform(selector: \foo) }
-|  |  |  SCBody (10:24)
-|  |  |  |  SCExplicitReturn (10:24)
-|  |  |  |  |  SCMessage (10:25): perform
-|  |  |  |  |  |  SCLiteral (10:25) = 1
-|  |  |  |  |  |  SCKwArgs (10:25)
-|  |  |  |  |  |  |  SCKwArg (10:35): selector
-|  |  |  |  |  |  |  |  SCLiteral (10:45) = \foo
+|  |  |  SCBody (10:26)
+|  |  |  |  SCExplicitReturn (10:26)
+|  |  |  |  |  SCMessage (10:27): perform
+|  |  |  |  |  |  SCLiteral (10:27) = 1
+|  |  |  |  |  |  SCPositionalArgs (10:27)
+|  |  |  |  |  |  |  SCLiteral (10:37) = 2
+|  |  |  |  |  |  |  SCLiteral (10:40) = \foo
+|  |  SCMethod (11:5): version 3.16: keyword_argument { ^1.perform(selector: \foo) }
+|  |  |  SCBody (11:24)
+|  |  |  |  SCExplicitReturn (11:24)
+|  |  |  |  |  SCMessage (11:25): perform
+|  |  |  |  |  |  SCLiteral (11:25) = 1
+|  |  |  |  |  |  SCKwArgs (11:25)
+|  |  |  |  |  |  |  SCKwArg (11:35): selector
+|  |  |  |  |  |  |  |  SCLiteral (11:45) = \foo
 Successfully compiled 16 classes.

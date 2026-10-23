@@ -1,23 +1,23 @@
 
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Super class not defined.
-classes/undefined_super_class.sc:3:10
-    1 │ // A class whose superclass isn't defined is poisoned while declaring the classes. Only that is reported: its methods,
-    2 │ // and those of its subclasses, aren't compiled, so its undefined members aren't reported too.
-    3 │ Orphan : Undefined {
+classes/undefined_super_class.sc:4:10
+    2 │ // A class whose superclass isn't defined is poisoned while declaring the classes. Only that is reported: its methods,
+    3 │ // and those of its subclasses, aren't compiled, so its undefined members aren't reported too.
+    4 │ Orphan : Undefined {
       ┆          ^^^^^^^^^ super class not defined.
-    4 │     var member = 1;
-    5 │     classvar class_var;
-    6 │ 
+    5 │     var member = 1;
+    6 │     classvar class_var;
+    7 │ 
 
-classes/undefined_super_class.sc:16:16
-   14 │ }
-   15 │ 
-   16 │ SecondOrphan : Undefined {
+classes/undefined_super_class.sc:17:16
+   15 │ }
+   16 │ 
+   17 │ SecondOrphan : Undefined {
       ┆                ^^^^^^^^^ super class not defined.
-   17 │     method { ^1 }
-   18 │ }
-   19 │ 
+   18 │     method { ^1 }
+   19 │ }
+   20 │ 
 
 The class Undefined was not defined.
 ──────────────────────────────────────────────────────────────────────────────────
@@ -27,11 +27,11 @@ The class Undefined was not defined.
 IR GRAPH DUMP 
 
 
-SCClass (20:1): Fine
-|  SCMemberList (20:1)
-|  SCMethodList (20:1)
-|  |  SCMethod (21:5): method { ^1 } -> 1
-|  |  |  SCBody (21:14)
-|  |  |  |  SCExplicitReturn (21:14)
-|  |  |  |  |  SCLiteral (21:15) = 1
+SCClass (21:1): Fine, version 3.16
+|  SCMemberList (21:1)
+|  SCMethodList (21:1)
+|  |  SCMethod (22:5): version 3.16: method { ^1 } -> 1
+|  |  |  SCBody (22:14)
+|  |  |  |  SCExplicitReturn (22:14)
+|  |  |  |  |  SCLiteral (22:15) = 1
 Successfully compiled 16 classes.

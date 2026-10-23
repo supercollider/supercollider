@@ -4,57 +4,57 @@
 IR GRAPH DUMP 
 
 
-SCInterpreted (1:1): interpreted/region_list.scd
+SCInterpreted (1:1): version 3.16: interpreted/region_list.scd
 |  SCRegionList (1:1) -> 7
-|  |  SCRegion (5:1)
-|  |  |  SCFunction (5:1) -> 3
-|  |  |  |  SCBody (5:1)
-|  |  |  |  |  SCMessage (5:1): + = 3
-|  |  |  |  |  |  SCLiteral (5:1) = 1
-|  |  |  |  |  |  SCPositionalArgs (5:1)
-|  |  |  |  |  |  |  SCLiteral (5:5) = 2
 |  |  SCRegion (6:1)
-|  |  |  SCFunction (6:1) -> 4
+|  |  |  SCFunction (6:1) -> 3
 |  |  |  |  SCBody (6:1)
-|  |  |  |  |  SCVariableDeclare (7:6): b
-|  |  |  |  |  |  SCLiteral (7:10) = 3
-|  |  |  |  |  SCMessage (8:2): + = 4
-|  |  |  |  |  |  SCRead (8:2): local b = 3, declared (7:6): b = 3
-|  |  |  |  |  |  SCPositionalArgs (8:2)
-|  |  |  |  |  |  |  SCLiteral (8:6) = 1
-|  |  SCRegion (10:1)
-|  |  |  SCFunction (10:1)
-|  |  |  |  SCBody (10:1)
-|  |  |  |  |  SCAssign (10:1): instance a, declared (36:11): a
-|  |  |  |  |  |  SCLiteral (10:5) = 5
+|  |  |  |  |  SCMessage (6:1): + = 3
+|  |  |  |  |  |  SCLiteral (6:1) = 1
+|  |  |  |  |  |  SCPositionalArgs (6:1)
+|  |  |  |  |  |  |  SCLiteral (6:5) = 2
+|  |  SCRegion (7:1)
+|  |  |  SCFunction (7:1) -> 4
+|  |  |  |  SCBody (7:1)
+|  |  |  |  |  SCVariableDeclare (8:6): b
+|  |  |  |  |  |  SCLiteral (8:10) = 3
+|  |  |  |  |  SCMessage (9:2): + = 4
+|  |  |  |  |  |  SCRead (9:2): local b = 3, declared (8:6): b = 3
+|  |  |  |  |  |  SCPositionalArgs (9:2)
+|  |  |  |  |  |  |  SCLiteral (9:6) = 1
 |  |  SCRegion (11:1)
 |  |  |  SCFunction (11:1)
-|  |  |  |  SCArgumentDeclareList (11:3)
-|  |  |  |  |  SCArgumentDeclare (11:3): x
-|  |  |  |  |  |  SCLiteral (11:7) = 6
 |  |  |  |  SCBody (11:1)
-|  |  |  |  |  SCRead (11:10): local x, declared (11:3): x = 6
+|  |  |  |  |  SCAssign (11:1): instance a, declared (37:11): a
+|  |  |  |  |  |  SCLiteral (11:5) = 5
 |  |  SCRegion (12:1)
 |  |  |  SCFunction (12:1)
+|  |  |  |  SCArgumentDeclareList (12:3)
+|  |  |  |  |  SCArgumentDeclare (12:3): x
+|  |  |  |  |  |  SCLiteral (12:7) = 6
 |  |  |  |  SCBody (12:1)
-|  |  |  |  |  SCMessage (12:1): value
-|  |  |  |  |  |  SCFunction (12:1)
-|  |  |  |  |  |  |  SCArgumentDeclareList (12:4)
-|  |  |  |  |  |  |  |  SCArgumentDeclare (12:4): y
-|  |  |  |  |  |  |  SCBody (12:1)
-|  |  |  |  |  |  |  |  SCMessage (12:7): if
-|  |  |  |  |  |  |  |  |  SCRead (12:11): local y, declared (12:4): y
-|  |  |  |  |  |  |  |  |  SCPositionalArgs (12:7)
-|  |  |  |  |  |  |  |  |  |  SCFunction (12:14) -> 1
-|  |  |  |  |  |  |  |  |  |  |  SCBody (12:14)
-|  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (12:16) = 1
-|  |  |  |  |  |  |  |  |  |  SCFunction (12:20) -> 2
-|  |  |  |  |  |  |  |  |  |  |  SCBody (12:20)
-|  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (12:22) = 2
-|  |  |  |  |  |  SCPositionalArgs (12:1)
-|  |  |  |  |  |  |  SCLiteral (12:34) = true
+|  |  |  |  |  SCRead (12:10): local x, declared (12:3): x = 6
 |  |  SCRegion (13:1)
-|  |  |  SCFunction (13:1) -> 7
+|  |  |  SCFunction (13:1)
 |  |  |  |  SCBody (13:1)
-|  |  |  |  |  SCLiteral (13:1) = 7
+|  |  |  |  |  SCMessage (13:1): value
+|  |  |  |  |  |  SCFunction (13:1)
+|  |  |  |  |  |  |  SCArgumentDeclareList (13:4)
+|  |  |  |  |  |  |  |  SCArgumentDeclare (13:4): y
+|  |  |  |  |  |  |  SCBody (13:1)
+|  |  |  |  |  |  |  |  SCMessage (13:7): if
+|  |  |  |  |  |  |  |  |  SCRead (13:11): local y, declared (13:4): y
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (13:7)
+|  |  |  |  |  |  |  |  |  |  SCFunction (13:14) -> 1
+|  |  |  |  |  |  |  |  |  |  |  SCBody (13:14)
+|  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (13:16) = 1
+|  |  |  |  |  |  |  |  |  |  SCFunction (13:20) -> 2
+|  |  |  |  |  |  |  |  |  |  |  SCBody (13:20)
+|  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (13:22) = 2
+|  |  |  |  |  |  SCPositionalArgs (13:1)
+|  |  |  |  |  |  |  SCLiteral (13:34) = true
+|  |  SCRegion (14:1)
+|  |  |  SCFunction (14:1) -> 7
+|  |  |  |  SCBody (14:1)
+|  |  |  |  |  SCLiteral (14:1) = 7
 Successfully compiled 15 classes.

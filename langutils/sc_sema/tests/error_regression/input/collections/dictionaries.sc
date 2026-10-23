@@ -1,3 +1,4 @@
+//# VERSION 3.16
 Dictionaries {
     constant { ^(a: 1, b: 2.5) }
     empty { ^() }

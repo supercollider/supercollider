@@ -1,3 +1,4 @@
+//# VERSION 3.16
 EscapedLiterals {
     char_newline { ^$\n }
     char_tab { ^$\t }

@@ -1,3 +1,4 @@
+// interpreted-version: 3.16
 // A line whose first token can't continue the previous line gets a semicolon inserted before it, and it is reported.
 // The lexer asks the parser whether it can take the token, so the expression on the previous line is kept.
 1 + 2

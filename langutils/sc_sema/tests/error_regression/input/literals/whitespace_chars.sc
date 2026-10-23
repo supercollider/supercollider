@@ -1,3 +1,4 @@
+//# VERSION 3.16
 WhitespaceChars {
     char_space { ^$  }
     char_tab { ^$	 }

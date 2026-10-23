@@ -105,8 +105,9 @@ AbstractObjectExperimental
 Error: Interpreter context missing
 interpreted/missing_interpreter.scd:1:1
     1*│ // no-prelude
-    2*│ // Without the Interpreter, interpreted code can't be compiled.
-    3*│ a
+    2*│ // interpreted-version: 3.16
+    3*│ // Without the Interpreter, interpreted code can't be compiled.
+    4*│ a
      >│ ^ this code can't be compiled without it.
 
 Interpreted code is compiled as if it were written inside the method `Interpreter:functionCompileContext`, so it can use the Interpreter's members, e.g., `a` to `z`. The class library must define it, and it must compile without errors.

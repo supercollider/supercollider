@@ -1,3 +1,4 @@
+//# VERSION 3.16
 // Typed arrays store their elements unboxed. When all the elements are constant, `FloatArray[1, 2]` is a constant,
 // with the elements converted as sclang's add does, and when add would fail it isn't folded.
 DoubleArray {}

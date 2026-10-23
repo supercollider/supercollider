@@ -1,3 +1,4 @@
+//# VERSION 3.16
 NotConstant {
     const fine = 1;
     classvar changes = 2;

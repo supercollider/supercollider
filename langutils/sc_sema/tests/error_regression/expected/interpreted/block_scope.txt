@@ -4,16 +4,16 @@
 IR GRAPH DUMP 
 
 
-SCInterpreted (1:1): interpreted/block_scope.scd
+SCInterpreted (1:1): version 3.16: interpreted/block_scope.scd
 |  SCRegionList (1:1)
-|  |  SCRegion (4:1)
-|  |  |  SCFunction (4:1) -> 1
-|  |  |  |  SCBody (4:1)
-|  |  |  |  |  SCVariableDeclare (4:6): q
-|  |  |  |  |  |  SCLiteral (4:10) = 1
-|  |  |  |  |  SCRead (4:13): local q = 1, declared (4:6): q = 1
-|  |  SCRegion (4:17)
-|  |  |  SCFunction (4:17)
-|  |  |  |  SCBody (4:17)
-|  |  |  |  |  SCRead (4:17): instance q, declared (37:41): q
+|  |  SCRegion (5:1)
+|  |  |  SCFunction (5:1) -> 1
+|  |  |  |  SCBody (5:1)
+|  |  |  |  |  SCVariableDeclare (5:6): q
+|  |  |  |  |  |  SCLiteral (5:10) = 1
+|  |  |  |  |  SCRead (5:13): local q = 1, declared (5:6): q = 1
+|  |  SCRegion (5:17)
+|  |  |  SCFunction (5:17)
+|  |  |  |  SCBody (5:17)
+|  |  |  |  |  SCRead (5:17): instance q, declared (38:41): q
 Successfully compiled 15 classes.

@@ -4,27 +4,27 @@
 IR GRAPH DUMP 
 
 
-SCInterpreted (1:1): interpreted/members.scd
+SCInterpreted (1:1): version 3.16: interpreted/members.scd
 |  SCRegionList (1:1)
-|  |  SCRegion (6:1)
-|  |  |  SCFunction (6:1)
-|  |  |  |  SCBody (6:1)
-|  |  |  |  |  SCAssign (6:1): instance a, declared (36:11): a
-|  |  |  |  |  |  SCLiteral (6:5) = 1
-|  |  SCRegion (6:8)
-|  |  |  SCFunction (6:8)
-|  |  |  |  SCBody (6:8)
-|  |  |  |  |  SCMessage (6:8): postln
-|  |  |  |  |  |  SCRead (6:8): instance x, declared (38:26): x
-|  |  SCRegion (6:18)
-|  |  |  SCFunction (6:18)
-|  |  |  |  SCBody (6:18)
-|  |  |  |  |  SCMessage (6:18): +
-|  |  |  |  |  |  SCRead (6:18): instance a, declared (36:11): a
-|  |  |  |  |  |  SCPositionalArgs (6:18)
-|  |  |  |  |  |  |  SCRead (6:22): instance x, declared (38:26): x
-|  |  SCRegion (6:25)
-|  |  |  SCFunction (6:25)
-|  |  |  |  SCBody (6:25)
-|  |  |  |  |  SCRead (6:25): instance cmdLine, declared (35:10): cmdLine
+|  |  SCRegion (7:1)
+|  |  |  SCFunction (7:1)
+|  |  |  |  SCBody (7:1)
+|  |  |  |  |  SCAssign (7:1): instance a, declared (37:11): a
+|  |  |  |  |  |  SCLiteral (7:5) = 1
+|  |  SCRegion (7:8)
+|  |  |  SCFunction (7:8)
+|  |  |  |  SCBody (7:8)
+|  |  |  |  |  SCMessage (7:8): postln
+|  |  |  |  |  |  SCRead (7:8): instance x, declared (39:26): x
+|  |  SCRegion (7:18)
+|  |  |  SCFunction (7:18)
+|  |  |  |  SCBody (7:18)
+|  |  |  |  |  SCMessage (7:18): +
+|  |  |  |  |  |  SCRead (7:18): instance a, declared (37:11): a
+|  |  |  |  |  |  SCPositionalArgs (7:18)
+|  |  |  |  |  |  |  SCRead (7:22): instance x, declared (39:26): x
+|  |  SCRegion (7:25)
+|  |  |  SCFunction (7:25)
+|  |  |  |  SCBody (7:25)
+|  |  |  |  |  SCRead (7:25): instance cmdLine, declared (36:10): cmdLine
 Successfully compiled 15 classes.

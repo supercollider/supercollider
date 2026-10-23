@@ -1,3 +1,4 @@
+//# VERSION 3.16
 Perform {
     postfix { ^1.perform(\foo, 2) }
     postfix_selector_only { ^1.perform(\foo) }

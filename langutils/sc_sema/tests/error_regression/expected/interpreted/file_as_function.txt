@@ -4,15 +4,15 @@
 IR GRAPH DUMP 
 
 
-SCInterpreted (1:1): interpreted/file_as_function.scd
+SCInterpreted (1:1): version 3.16: interpreted/file_as_function.scd
 |  SCFunction (1:1)
-|  |  SCArgumentDeclareList (5:2)
-|  |  |  SCArgumentDeclare (5:2): x
-|  |  |  |  SCLiteral (5:6) = 1
+|  |  SCArgumentDeclareList (6:2)
+|  |  |  SCArgumentDeclare (6:2): x
+|  |  |  |  SCLiteral (6:6) = 1
 |  |  SCBody (1:1)
-|  |  |  SCVariableDeclare (5:13): y
-|  |  |  |  SCRead (5:17): local x, declared (5:2): x = 1
-|  |  |  SCAssign (5:20): instance a, declared (36:11): a
-|  |  |  |  SCRead (5:24): local y, declared (5:13): y = x
-|  |  |  SCRead (5:27): instance a, declared (36:11): a
+|  |  |  SCVariableDeclare (6:13): y
+|  |  |  |  SCRead (6:17): local x, declared (6:2): x = 1
+|  |  |  SCAssign (6:20): instance a, declared (37:11): a
+|  |  |  |  SCRead (6:24): local y, declared (6:13): y = x
+|  |  |  SCRead (6:27): instance a, declared (37:11): a
 Successfully compiled 15 classes.

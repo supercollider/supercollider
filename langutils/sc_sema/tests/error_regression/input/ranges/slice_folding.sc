@@ -1,3 +1,4 @@
+//# VERSION 3.16
 SliceFolding {
     var x;
     var initial_array = #[1, 2, 3][1..];

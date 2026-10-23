@@ -4,396 +4,396 @@
 IR GRAPH DUMP 
 
 
-SCClass (1:1): Generators
-|  SCMemberList (1:1)
-|  |  SCMember (2:9): instance_var
-|  SCMethodList (1:1)
-|  |  SCMethod (6:5): routine { ^{: x, x <- [1, 2, 3] } }
-|  |  |  SCBody (6:15)
-|  |  |  |  SCExplicitReturn (6:15)
-|  |  |  |  |  SCGenerator (6:16): routine
-|  |  |  |  |  |  SCGenQualList (6:22)
-|  |  |  |  |  |  |  SCGenQualIterate (6:22): x
-|  |  |  |  |  |  |  |  SCCollection (6:27): Array = [1, 2, 3]
-|  |  |  |  |  |  |  |  |  SCLiteral (6:28) = 1
-|  |  |  |  |  |  |  |  |  SCLiteral (6:31) = 2
-|  |  |  |  |  |  |  |  |  SCLiteral (6:34) = 3
-|  |  |  |  |  |  SCRead (6:19): local x, declared (6:22): x <- [1, 2, 3]
-|  |  SCMethod (8:5): immediate { ^{; x.postln, x <- [1, 2, 3] } }
-|  |  |  SCBody (8:17)
-|  |  |  |  SCExplicitReturn (8:17)
-|  |  |  |  |  SCGenerator (8:18): immediate
-|  |  |  |  |  |  SCGenQualList (8:31)
-|  |  |  |  |  |  |  SCGenQualIterate (8:31): x
-|  |  |  |  |  |  |  |  SCCollection (8:36): Array = [1, 2, 3]
-|  |  |  |  |  |  |  |  |  SCLiteral (8:37) = 1
-|  |  |  |  |  |  |  |  |  SCLiteral (8:40) = 2
-|  |  |  |  |  |  |  |  |  SCLiteral (8:43) = 3
-|  |  |  |  |  |  SCMessage (8:21): postln
-|  |  |  |  |  |  |  SCRead (8:21): local x, declared (8:31): x <- [1, 2, 3]
-|  |  SCMethod (11:5): with_index { ^{: [x, i], x i <- [1, 2, 3] } }
-|  |  |  SCBody (11:18)
-|  |  |  |  SCExplicitReturn (11:18)
-|  |  |  |  |  SCGenerator (11:19): routine
-|  |  |  |  |  |  SCGenQualList (11:30)
-|  |  |  |  |  |  |  SCGenQualIterate (11:30): x, i
-|  |  |  |  |  |  |  |  SCCollection (11:37): Array = [1, 2, 3]
-|  |  |  |  |  |  |  |  |  SCLiteral (11:38) = 1
-|  |  |  |  |  |  |  |  |  SCLiteral (11:41) = 2
-|  |  |  |  |  |  |  |  |  SCLiteral (11:44) = 3
-|  |  |  |  |  |  SCCollection (11:22): Array
-|  |  |  |  |  |  |  SCRead (11:23): local x, declared (11:30): x i <- [1, 2, 3]
-|  |  |  |  |  |  |  SCRead (11:26): local i, declared (11:30): x i <- [1, 2, 3]
-|  |  SCMethod (14:5): poisoned: duplicate_index { ^{: x, x x <- [1, 2, 3] } }
+SCClass (2:1): Generators, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (3:9): instance_var
+|  SCMethodList (2:1)
+|  |  SCMethod (7:5): version 3.16: routine { ^{: x, x <- [1, 2, 3] } }
+|  |  |  SCBody (7:15)
+|  |  |  |  SCExplicitReturn (7:15)
+|  |  |  |  |  SCGenerator (7:16): routine
+|  |  |  |  |  |  SCGenQualList (7:22)
+|  |  |  |  |  |  |  SCGenQualIterate (7:22): x
+|  |  |  |  |  |  |  |  SCCollection (7:27): Array = [1, 2, 3]
+|  |  |  |  |  |  |  |  |  SCLiteral (7:28) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (7:31) = 2
+|  |  |  |  |  |  |  |  |  SCLiteral (7:34) = 3
+|  |  |  |  |  |  SCRead (7:19): local x, declared (7:22): x <- [1, 2, 3]
+|  |  SCMethod (9:5): version 3.16: immediate { ^{; x.postln, x <- [1, 2, 3] } }
+|  |  |  SCBody (9:17)
+|  |  |  |  SCExplicitReturn (9:17)
+|  |  |  |  |  SCGenerator (9:18): immediate
+|  |  |  |  |  |  SCGenQualList (9:31)
+|  |  |  |  |  |  |  SCGenQualIterate (9:31): x
+|  |  |  |  |  |  |  |  SCCollection (9:36): Array = [1, 2, 3]
+|  |  |  |  |  |  |  |  |  SCLiteral (9:37) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (9:40) = 2
+|  |  |  |  |  |  |  |  |  SCLiteral (9:43) = 3
+|  |  |  |  |  |  SCMessage (9:21): postln
+|  |  |  |  |  |  |  SCRead (9:21): local x, declared (9:31): x <- [1, 2, 3]
+|  |  SCMethod (12:5): version 3.16: with_index { ^{: [x, i], x i <- [1, 2, 3] } }
+|  |  |  SCBody (12:18)
+|  |  |  |  SCExplicitReturn (12:18)
+|  |  |  |  |  SCGenerator (12:19): routine
+|  |  |  |  |  |  SCGenQualList (12:30)
+|  |  |  |  |  |  |  SCGenQualIterate (12:30): x, i
+|  |  |  |  |  |  |  |  SCCollection (12:37): Array = [1, 2, 3]
+|  |  |  |  |  |  |  |  |  SCLiteral (12:38) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (12:41) = 2
+|  |  |  |  |  |  |  |  |  SCLiteral (12:44) = 3
+|  |  |  |  |  |  SCCollection (12:22): Array
+|  |  |  |  |  |  |  SCRead (12:23): local x, declared (12:30): x i <- [1, 2, 3]
+|  |  |  |  |  |  |  SCRead (12:26): local i, declared (12:30): x i <- [1, 2, 3]
+|  |  SCMethod (15:5): poisoned: version 3.16: duplicate_index { ^{: x, x x <- [1, 2, 3] } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable already declared
-|  |  |  generators/generators.sc:14:30
-|  |  |     12 │     // expect-error: Variable already declared
-|  |  |     13 │     // expect-reads: x -> x x <- [1, 2, 3]
-|  |  |     14 │     duplicate_index { ^{: x, x x <- [1, 2, 3] } }
+|  |  |  generators/generators.sc:15:30
+|  |  |     13 │     // expect-error: Variable already declared
+|  |  |     14 │     // expect-reads: x -> x x <- [1, 2, 3]
+|  |  |     15 │     duplicate_index { ^{: x, x x <- [1, 2, 3] } }
 |  |  |        ┆                              ^ First declared here...
-|  |  |     15 │     // expect-reads: x -> x <- [1, 2]
-|  |  |     16 │     // expect-reads: y -> y <- [x, 3]
-|  |  |     17 │     nested_iterate { ^{: [x, y], x <- [1, 2], y <- [x, 3] } }
+|  |  |     16 │     // expect-reads: x -> x <- [1, 2]
+|  |  |     17 │     // expect-reads: y -> y <- [x, 3]
+|  |  |     18 │     nested_iterate { ^{: [x, y], x <- [1, 2], y <- [x, 3] } }
 |  |  |
-|  |  |  generators/generators.sc:14:32
-|  |  |     12 │     // expect-error: Variable already declared
-|  |  |     13 │     // expect-reads: x -> x x <- [1, 2, 3]
-|  |  |     14 │     duplicate_index { ^{: x, x x <- [1, 2, 3] } }
+|  |  |  generators/generators.sc:15:32
+|  |  |     13 │     // expect-error: Variable already declared
+|  |  |     14 │     // expect-reads: x -> x x <- [1, 2, 3]
+|  |  |     15 │     duplicate_index { ^{: x, x x <- [1, 2, 3] } }
 |  |  |        ┆                                ^ ...declared again here.
-|  |  |     15 │     // expect-reads: x -> x <- [1, 2]
-|  |  |     16 │     // expect-reads: y -> y <- [x, 3]
-|  |  |     17 │     nested_iterate { ^{: [x, y], x <- [1, 2], y <- [x, 3] } }
+|  |  |     16 │     // expect-reads: x -> x <- [1, 2]
+|  |  |     17 │     // expect-reads: y -> y <- [x, 3]
+|  |  |     18 │     nested_iterate { ^{: [x, y], x <- [1, 2], y <- [x, 3] } }
 |  |  |
 |  |  |  Arguments and variables in the same function or method must have different names. Rename one.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (14:23)
-|  |  |  |  SCExplicitReturn (14:23)
-|  |  |  |  |  SCGenerator (14:24): routine
-|  |  |  |  |  |  SCGenQualList (14:30)
-|  |  |  |  |  |  |  SCGenQualIterate (14:30): x, x
-|  |  |  |  |  |  |  |  SCCollection (14:37): Array = [1, 2, 3]
-|  |  |  |  |  |  |  |  |  SCLiteral (14:38) = 1
-|  |  |  |  |  |  |  |  |  SCLiteral (14:41) = 2
-|  |  |  |  |  |  |  |  |  SCLiteral (14:44) = 3
-|  |  |  |  |  |  SCRead (14:27): local x, declared (14:30): x x <- [1, 2, 3]
-|  |  SCMethod (17:5): nested_iterate { ^{: [x, y], x <- [1, 2], y <- [x, 3] } }
-|  |  |  SCBody (17:22)
-|  |  |  |  SCExplicitReturn (17:22)
-|  |  |  |  |  SCGenerator (17:23): routine
-|  |  |  |  |  |  SCGenQualList (17:34)
-|  |  |  |  |  |  |  SCGenQualIterate (17:34): x
-|  |  |  |  |  |  |  |  SCCollection (17:39): Array = [1, 2]
-|  |  |  |  |  |  |  |  |  SCLiteral (17:40) = 1
-|  |  |  |  |  |  |  |  |  SCLiteral (17:43) = 2
-|  |  |  |  |  |  |  SCGenQualIterate (17:47): y
-|  |  |  |  |  |  |  |  SCCollection (17:52): Array
-|  |  |  |  |  |  |  |  |  SCRead (17:53): local x, declared (17:34): x <- [1, 2]
-|  |  |  |  |  |  |  |  |  SCLiteral (17:56) = 3
-|  |  |  |  |  |  SCCollection (17:26): Array
-|  |  |  |  |  |  |  SCRead (17:27): local x, declared (17:34): x <- [1, 2]
-|  |  |  |  |  |  |  SCRead (17:30): local y, declared (17:47): y <- [x, 3]
-|  |  SCMethod (20:5): declare { ^{: y, x <- [1, 2], var y = x * 2 } }
-|  |  |  SCBody (20:15)
-|  |  |  |  SCExplicitReturn (20:15)
-|  |  |  |  |  SCGenerator (20:16): routine
-|  |  |  |  |  |  SCGenQualList (20:22)
-|  |  |  |  |  |  |  SCGenQualIterate (20:22): x
-|  |  |  |  |  |  |  |  SCCollection (20:27): Array = [1, 2]
-|  |  |  |  |  |  |  |  |  SCLiteral (20:28) = 1
-|  |  |  |  |  |  |  |  |  SCLiteral (20:31) = 2
-|  |  |  |  |  |  |  SCGenQualDeclare (20:35): y
-|  |  |  |  |  |  |  |  SCMessage (20:43): *
-|  |  |  |  |  |  |  |  |  SCRead (20:43): local x, declared (20:22): x <- [1, 2]
-|  |  |  |  |  |  |  |  |  SCPositionalArgs (20:43)
-|  |  |  |  |  |  |  |  |  |  SCLiteral (20:47) = 2
-|  |  |  |  |  |  SCRead (20:19): local y, declared (20:35): var y = x * 2
-|  |  SCMethod (22:5): declare_bracketed { ^{: y, var y (2) } }
-|  |  |  SCBody (22:25)
-|  |  |  |  SCExplicitReturn (22:25)
-|  |  |  |  |  SCGenerator (22:26): routine
-|  |  |  |  |  |  SCGenQualList (22:32)
-|  |  |  |  |  |  |  SCGenQualDeclare (22:32): y
-|  |  |  |  |  |  |  |  SCLiteral (22:39) = 2
-|  |  |  |  |  |  SCRead (22:29): local y, declared (22:32): var y (2)
-|  |  SCMethod (24:5): condition { ^{: x, x <- (1..10), x.odd } }
-|  |  |  SCBody (24:17)
-|  |  |  |  SCExplicitReturn (24:17)
-|  |  |  |  |  SCGenerator (24:18): routine
-|  |  |  |  |  |  SCGenQualList (24:24)
-|  |  |  |  |  |  |  SCGenQualIterate (24:24): x
-|  |  |  |  |  |  |  |  SCRange (24:29) = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-|  |  |  |  |  |  |  |  |  SCLiteral (24:30) = 1
-|  |  |  |  |  |  |  |  |  SCMissing (24:29)
-|  |  |  |  |  |  |  |  |  SCLiteral (24:33) = 10
-|  |  |  |  |  |  |  SCGenQualIf (24:38)
-|  |  |  |  |  |  |  |  SCMessage (24:38): odd
-|  |  |  |  |  |  |  |  |  SCRead (24:38): local x, declared (24:24): x <- (1..10)
-|  |  |  |  |  |  SCRead (24:21): local x, declared (24:24): x <- (1..10)
-|  |  SCMethod (26:5): side_effect { ^{: x, x <- [1, 2], :: x.postln } }
-|  |  |  SCBody (26:19)
-|  |  |  |  SCExplicitReturn (26:19)
-|  |  |  |  |  SCGenerator (26:20): routine
-|  |  |  |  |  |  SCGenQualList (26:26)
-|  |  |  |  |  |  |  SCGenQualIterate (26:26): x
-|  |  |  |  |  |  |  |  SCCollection (26:31): Array = [1, 2]
-|  |  |  |  |  |  |  |  |  SCLiteral (26:32) = 1
-|  |  |  |  |  |  |  |  |  SCLiteral (26:35) = 2
-|  |  |  |  |  |  |  SCGenQualSideEffect (26:39)
-|  |  |  |  |  |  |  |  SCMessage (26:42): postln
-|  |  |  |  |  |  |  |  |  SCRead (26:42): local x, declared (26:26): x <- [1, 2]
-|  |  |  |  |  |  SCRead (26:23): local x, declared (26:26): x <- [1, 2]
-|  |  SCMethod (29:5): while_guard { ^{: x, x <- (1..), :while x < 5 } }
-|  |  |  SCBody (29:19)
-|  |  |  |  SCExplicitReturn (29:19)
-|  |  |  |  |  SCGenerator (29:20): routine
-|  |  |  |  |  |  SCGenQualList (29:26)
-|  |  |  |  |  |  |  SCGenQualIterate (29:26): x
-|  |  |  |  |  |  |  |  SCRange (29:31)
-|  |  |  |  |  |  |  |  |  SCLiteral (29:32) = 1
-|  |  |  |  |  |  |  |  |  SCMissing (29:31)
-|  |  |  |  |  |  |  |  |  SCMissing (29:31)
-|  |  |  |  |  |  |  SCGenQualWhile (29:38)
-|  |  |  |  |  |  |  |  SCMessage (29:45): <
-|  |  |  |  |  |  |  |  |  SCRead (29:45): local x, declared (29:26): x <- (1..)
-|  |  |  |  |  |  |  |  |  SCPositionalArgs (29:45)
-|  |  |  |  |  |  |  |  |  |  SCLiteral (29:49) = 5
-|  |  |  |  |  |  SCRead (29:23): local x, declared (29:26): x <- (1..)
-|  |  SCMethod (32:5): all_qualifiers { ^{: [x, y], x <- (1..), x.even, var y = x + 1, :: y.postln, :while y < 20 } }
-|  |  |  SCBody (32:22)
-|  |  |  |  SCExplicitReturn (32:22)
-|  |  |  |  |  SCGenerator (32:23): routine
-|  |  |  |  |  |  SCGenQualList (32:34)
-|  |  |  |  |  |  |  SCGenQualIterate (32:34): x
-|  |  |  |  |  |  |  |  SCRange (32:39)
-|  |  |  |  |  |  |  |  |  SCLiteral (32:40) = 1
-|  |  |  |  |  |  |  |  |  SCMissing (32:39)
-|  |  |  |  |  |  |  |  |  SCMissing (32:39)
-|  |  |  |  |  |  |  SCGenQualIf (32:46)
-|  |  |  |  |  |  |  |  SCMessage (32:46): even
-|  |  |  |  |  |  |  |  |  SCRead (32:46): local x, declared (32:34): x <- (1..)
-|  |  |  |  |  |  |  SCGenQualDeclare (32:54): y
-|  |  |  |  |  |  |  |  SCMessage (32:62): +
-|  |  |  |  |  |  |  |  |  SCRead (32:62): local x, declared (32:34): x <- (1..)
-|  |  |  |  |  |  |  |  |  SCPositionalArgs (32:62)
-|  |  |  |  |  |  |  |  |  |  SCLiteral (32:66) = 1
-|  |  |  |  |  |  |  SCGenQualSideEffect (32:69)
-|  |  |  |  |  |  |  |  SCMessage (32:72): postln
-|  |  |  |  |  |  |  |  |  SCRead (32:72): local y, declared (32:54): var y = x + 1
-|  |  |  |  |  |  |  SCGenQualWhile (32:82)
-|  |  |  |  |  |  |  |  SCMessage (32:89): <
-|  |  |  |  |  |  |  |  |  SCRead (32:89): local y, declared (32:54): var y = x + 1
-|  |  |  |  |  |  |  |  |  SCPositionalArgs (32:89)
-|  |  |  |  |  |  |  |  |  |  SCLiteral (32:93) = 20
-|  |  |  |  |  |  SCCollection (32:26): Array
-|  |  |  |  |  |  |  SCRead (32:27): local x, declared (32:34): x <- (1..)
-|  |  |  |  |  |  |  SCRead (32:30): local y, declared (32:54): var y = x + 1
-|  |  SCMethod (34:5): shadows_earlier { ^{: x, x <- [1, 2], x <- [x, 3] } }
-|  |  |  SCBody (34:23)
-|  |  |  |  SCExplicitReturn (34:23)
-|  |  |  |  |  SCGenerator (34:24): routine
-|  |  |  |  |  |  SCGenQualList (34:30)
-|  |  |  |  |  |  |  SCGenQualIterate (34:30): x
-|  |  |  |  |  |  |  |  SCCollection (34:35): Array = [1, 2]
-|  |  |  |  |  |  |  |  |  SCLiteral (34:36) = 1
-|  |  |  |  |  |  |  |  |  SCLiteral (34:39) = 2
-|  |  |  |  |  |  |  SCGenQualIterate (34:43): x
-|  |  |  |  |  |  |  |  SCCollection (34:48): Array
-|  |  |  |  |  |  |  |  |  SCRead (34:49): local x, declared (34:30): x <- [1, 2]
-|  |  |  |  |  |  |  |  |  SCLiteral (34:52) = 3
-|  |  |  |  |  |  SCRead (34:27): local x, declared (34:43): x <- [x, 3]
-|  |  SCMethod (37:5): poisoned: source_cannot_see_element { ^{: x, x <- x } }
+|  |  |  SCBody (15:23)
+|  |  |  |  SCExplicitReturn (15:23)
+|  |  |  |  |  SCGenerator (15:24): routine
+|  |  |  |  |  |  SCGenQualList (15:30)
+|  |  |  |  |  |  |  SCGenQualIterate (15:30): x, x
+|  |  |  |  |  |  |  |  SCCollection (15:37): Array = [1, 2, 3]
+|  |  |  |  |  |  |  |  |  SCLiteral (15:38) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (15:41) = 2
+|  |  |  |  |  |  |  |  |  SCLiteral (15:44) = 3
+|  |  |  |  |  |  SCRead (15:27): local x, declared (15:30): x x <- [1, 2, 3]
+|  |  SCMethod (18:5): version 3.16: nested_iterate { ^{: [x, y], x <- [1, 2], y <- [x, 3] } }
+|  |  |  SCBody (18:22)
+|  |  |  |  SCExplicitReturn (18:22)
+|  |  |  |  |  SCGenerator (18:23): routine
+|  |  |  |  |  |  SCGenQualList (18:34)
+|  |  |  |  |  |  |  SCGenQualIterate (18:34): x
+|  |  |  |  |  |  |  |  SCCollection (18:39): Array = [1, 2]
+|  |  |  |  |  |  |  |  |  SCLiteral (18:40) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (18:43) = 2
+|  |  |  |  |  |  |  SCGenQualIterate (18:47): y
+|  |  |  |  |  |  |  |  SCCollection (18:52): Array
+|  |  |  |  |  |  |  |  |  SCRead (18:53): local x, declared (18:34): x <- [1, 2]
+|  |  |  |  |  |  |  |  |  SCLiteral (18:56) = 3
+|  |  |  |  |  |  SCCollection (18:26): Array
+|  |  |  |  |  |  |  SCRead (18:27): local x, declared (18:34): x <- [1, 2]
+|  |  |  |  |  |  |  SCRead (18:30): local y, declared (18:47): y <- [x, 3]
+|  |  SCMethod (21:5): version 3.16: declare { ^{: y, x <- [1, 2], var y = x * 2 } }
+|  |  |  SCBody (21:15)
+|  |  |  |  SCExplicitReturn (21:15)
+|  |  |  |  |  SCGenerator (21:16): routine
+|  |  |  |  |  |  SCGenQualList (21:22)
+|  |  |  |  |  |  |  SCGenQualIterate (21:22): x
+|  |  |  |  |  |  |  |  SCCollection (21:27): Array = [1, 2]
+|  |  |  |  |  |  |  |  |  SCLiteral (21:28) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (21:31) = 2
+|  |  |  |  |  |  |  SCGenQualDeclare (21:35): y
+|  |  |  |  |  |  |  |  SCMessage (21:43): *
+|  |  |  |  |  |  |  |  |  SCRead (21:43): local x, declared (21:22): x <- [1, 2]
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (21:43)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (21:47) = 2
+|  |  |  |  |  |  SCRead (21:19): local y, declared (21:35): var y = x * 2
+|  |  SCMethod (23:5): version 3.16: declare_bracketed { ^{: y, var y (2) } }
+|  |  |  SCBody (23:25)
+|  |  |  |  SCExplicitReturn (23:25)
+|  |  |  |  |  SCGenerator (23:26): routine
+|  |  |  |  |  |  SCGenQualList (23:32)
+|  |  |  |  |  |  |  SCGenQualDeclare (23:32): y
+|  |  |  |  |  |  |  |  SCLiteral (23:39) = 2
+|  |  |  |  |  |  SCRead (23:29): local y, declared (23:32): var y (2)
+|  |  SCMethod (25:5): version 3.16: condition { ^{: x, x <- (1..10), x.odd } }
+|  |  |  SCBody (25:17)
+|  |  |  |  SCExplicitReturn (25:17)
+|  |  |  |  |  SCGenerator (25:18): routine
+|  |  |  |  |  |  SCGenQualList (25:24)
+|  |  |  |  |  |  |  SCGenQualIterate (25:24): x
+|  |  |  |  |  |  |  |  SCRange (25:29) = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+|  |  |  |  |  |  |  |  |  SCLiteral (25:30) = 1
+|  |  |  |  |  |  |  |  |  SCMissing (25:29)
+|  |  |  |  |  |  |  |  |  SCLiteral (25:33) = 10
+|  |  |  |  |  |  |  SCGenQualIf (25:38)
+|  |  |  |  |  |  |  |  SCMessage (25:38): odd
+|  |  |  |  |  |  |  |  |  SCRead (25:38): local x, declared (25:24): x <- (1..10)
+|  |  |  |  |  |  SCRead (25:21): local x, declared (25:24): x <- (1..10)
+|  |  SCMethod (27:5): version 3.16: side_effect { ^{: x, x <- [1, 2], :: x.postln } }
+|  |  |  SCBody (27:19)
+|  |  |  |  SCExplicitReturn (27:19)
+|  |  |  |  |  SCGenerator (27:20): routine
+|  |  |  |  |  |  SCGenQualList (27:26)
+|  |  |  |  |  |  |  SCGenQualIterate (27:26): x
+|  |  |  |  |  |  |  |  SCCollection (27:31): Array = [1, 2]
+|  |  |  |  |  |  |  |  |  SCLiteral (27:32) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (27:35) = 2
+|  |  |  |  |  |  |  SCGenQualSideEffect (27:39)
+|  |  |  |  |  |  |  |  SCMessage (27:42): postln
+|  |  |  |  |  |  |  |  |  SCRead (27:42): local x, declared (27:26): x <- [1, 2]
+|  |  |  |  |  |  SCRead (27:23): local x, declared (27:26): x <- [1, 2]
+|  |  SCMethod (30:5): version 3.16: while_guard { ^{: x, x <- (1..), :while x < 5 } }
+|  |  |  SCBody (30:19)
+|  |  |  |  SCExplicitReturn (30:19)
+|  |  |  |  |  SCGenerator (30:20): routine
+|  |  |  |  |  |  SCGenQualList (30:26)
+|  |  |  |  |  |  |  SCGenQualIterate (30:26): x
+|  |  |  |  |  |  |  |  SCRange (30:31)
+|  |  |  |  |  |  |  |  |  SCLiteral (30:32) = 1
+|  |  |  |  |  |  |  |  |  SCMissing (30:31)
+|  |  |  |  |  |  |  |  |  SCMissing (30:31)
+|  |  |  |  |  |  |  SCGenQualWhile (30:38)
+|  |  |  |  |  |  |  |  SCMessage (30:45): <
+|  |  |  |  |  |  |  |  |  SCRead (30:45): local x, declared (30:26): x <- (1..)
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (30:45)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (30:49) = 5
+|  |  |  |  |  |  SCRead (30:23): local x, declared (30:26): x <- (1..)
+|  |  SCMethod (33:5): version 3.16: all_qualifiers { ^{: [x, y], x <- (1..), x.even, var y = x + 1, :: y.postln, :while y < 20 } }
+|  |  |  SCBody (33:22)
+|  |  |  |  SCExplicitReturn (33:22)
+|  |  |  |  |  SCGenerator (33:23): routine
+|  |  |  |  |  |  SCGenQualList (33:34)
+|  |  |  |  |  |  |  SCGenQualIterate (33:34): x
+|  |  |  |  |  |  |  |  SCRange (33:39)
+|  |  |  |  |  |  |  |  |  SCLiteral (33:40) = 1
+|  |  |  |  |  |  |  |  |  SCMissing (33:39)
+|  |  |  |  |  |  |  |  |  SCMissing (33:39)
+|  |  |  |  |  |  |  SCGenQualIf (33:46)
+|  |  |  |  |  |  |  |  SCMessage (33:46): even
+|  |  |  |  |  |  |  |  |  SCRead (33:46): local x, declared (33:34): x <- (1..)
+|  |  |  |  |  |  |  SCGenQualDeclare (33:54): y
+|  |  |  |  |  |  |  |  SCMessage (33:62): +
+|  |  |  |  |  |  |  |  |  SCRead (33:62): local x, declared (33:34): x <- (1..)
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (33:62)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (33:66) = 1
+|  |  |  |  |  |  |  SCGenQualSideEffect (33:69)
+|  |  |  |  |  |  |  |  SCMessage (33:72): postln
+|  |  |  |  |  |  |  |  |  SCRead (33:72): local y, declared (33:54): var y = x + 1
+|  |  |  |  |  |  |  SCGenQualWhile (33:82)
+|  |  |  |  |  |  |  |  SCMessage (33:89): <
+|  |  |  |  |  |  |  |  |  SCRead (33:89): local y, declared (33:54): var y = x + 1
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (33:89)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (33:93) = 20
+|  |  |  |  |  |  SCCollection (33:26): Array
+|  |  |  |  |  |  |  SCRead (33:27): local x, declared (33:34): x <- (1..)
+|  |  |  |  |  |  |  SCRead (33:30): local y, declared (33:54): var y = x + 1
+|  |  SCMethod (35:5): version 3.16: shadows_earlier { ^{: x, x <- [1, 2], x <- [x, 3] } }
+|  |  |  SCBody (35:23)
+|  |  |  |  SCExplicitReturn (35:23)
+|  |  |  |  |  SCGenerator (35:24): routine
+|  |  |  |  |  |  SCGenQualList (35:30)
+|  |  |  |  |  |  |  SCGenQualIterate (35:30): x
+|  |  |  |  |  |  |  |  SCCollection (35:35): Array = [1, 2]
+|  |  |  |  |  |  |  |  |  SCLiteral (35:36) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (35:39) = 2
+|  |  |  |  |  |  |  SCGenQualIterate (35:43): x
+|  |  |  |  |  |  |  |  SCCollection (35:48): Array
+|  |  |  |  |  |  |  |  |  SCRead (35:49): local x, declared (35:30): x <- [1, 2]
+|  |  |  |  |  |  |  |  |  SCLiteral (35:52) = 3
+|  |  |  |  |  |  SCRead (35:27): local x, declared (35:43): x <- [x, 3]
+|  |  SCMethod (38:5): poisoned: version 3.16: source_cannot_see_element { ^{: x, x <- x } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
-|  |  |  generators/generators.sc:37:45
-|  |  |     35 │     // expect-error: Variable not defined
-|  |  |     36 │     // expect: poisoned
-|  |  |     37 │     source_cannot_see_element { ^{: x, x <- x } }
+|  |  |  generators/generators.sc:38:45
+|  |  |     36 │     // expect-error: Variable not defined
+|  |  |     37 │     // expect: poisoned
+|  |  |     38 │     source_cannot_see_element { ^{: x, x <- x } }
 |  |  |        ┆                                             ^ this is not defined.
-|  |  |     38 │     // expect: no diagnostics
-|  |  |     39 │     unbounded_source { ^{: x, x <- (1..) } }
-|  |  |     40 │     // expect: no diagnostics
+|  |  |     39 │     // expect: no diagnostics
+|  |  |     40 │     unbounded_source { ^{: x, x <- (1..) } }
+|  |  |     41 │     // expect: no diagnostics
 |  |  |
 |  |  |  Declare it with 'var', or use '~x' to refer to an environment variable.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (37:33)
-|  |  |  |  SCExplicitReturn (37:33)
-|  |  |  |  |  SCGenerator (37:34): routine
-|  |  |  |  |  |  SCGenQualList (37:40)
-|  |  |  |  |  |  |  SCGenQualIterate (37:40): x
-|  |  |  |  |  |  |  |  SCExprList (37:45)
-|  |  |  |  |  |  SCRead (37:37): local x, declared (37:40): x <- x
-|  |  SCMethod (39:5): unbounded_source { ^{: x, x <- (1..) } }
-|  |  |  SCBody (39:24)
-|  |  |  |  SCExplicitReturn (39:24)
-|  |  |  |  |  SCGenerator (39:25): routine
-|  |  |  |  |  |  SCGenQualList (39:31)
-|  |  |  |  |  |  |  SCGenQualIterate (39:31): x
-|  |  |  |  |  |  |  |  SCRange (39:36)
-|  |  |  |  |  |  |  |  |  SCLiteral (39:37) = 1
-|  |  |  |  |  |  |  |  |  SCMissing (39:36)
-|  |  |  |  |  |  |  |  |  SCMissing (39:36)
-|  |  |  |  |  |  SCRead (39:28): local x, declared (39:31): x <- (1..)
-|  |  SCMethod (41:5): unbounded_source_step { ^{: x, x <- (1, 3..) } }
-|  |  |  SCBody (41:29)
-|  |  |  |  SCExplicitReturn (41:29)
-|  |  |  |  |  SCGenerator (41:30): routine
-|  |  |  |  |  |  SCGenQualList (41:36)
-|  |  |  |  |  |  |  SCGenQualIterate (41:36): x
-|  |  |  |  |  |  |  |  SCRange (41:41)
-|  |  |  |  |  |  |  |  |  SCLiteral (41:42) = 1
-|  |  |  |  |  |  |  |  |  SCLiteral (41:45) = 3
-|  |  |  |  |  |  |  |  |  SCMissing (41:41)
-|  |  |  |  |  |  SCRead (41:33): local x, declared (41:36): x <- (1, 3..)
-|  |  SCMethod (43:5): poisoned: unbounded_range_outside { var x = (1..); ^x }
+|  |  |  SCBody (38:33)
+|  |  |  |  SCExplicitReturn (38:33)
+|  |  |  |  |  SCGenerator (38:34): routine
+|  |  |  |  |  |  SCGenQualList (38:40)
+|  |  |  |  |  |  |  SCGenQualIterate (38:40): x
+|  |  |  |  |  |  |  |  SCExprList (38:45)
+|  |  |  |  |  |  SCRead (38:37): local x, declared (38:40): x <- x
+|  |  SCMethod (40:5): version 3.16: unbounded_source { ^{: x, x <- (1..) } }
+|  |  |  SCBody (40:24)
+|  |  |  |  SCExplicitReturn (40:24)
+|  |  |  |  |  SCGenerator (40:25): routine
+|  |  |  |  |  |  SCGenQualList (40:31)
+|  |  |  |  |  |  |  SCGenQualIterate (40:31): x
+|  |  |  |  |  |  |  |  SCRange (40:36)
+|  |  |  |  |  |  |  |  |  SCLiteral (40:37) = 1
+|  |  |  |  |  |  |  |  |  SCMissing (40:36)
+|  |  |  |  |  |  |  |  |  SCMissing (40:36)
+|  |  |  |  |  |  SCRead (40:28): local x, declared (40:31): x <- (1..)
+|  |  SCMethod (42:5): version 3.16: unbounded_source_step { ^{: x, x <- (1, 3..) } }
+|  |  |  SCBody (42:29)
+|  |  |  |  SCExplicitReturn (42:29)
+|  |  |  |  |  SCGenerator (42:30): routine
+|  |  |  |  |  |  SCGenQualList (42:36)
+|  |  |  |  |  |  |  SCGenQualIterate (42:36): x
+|  |  |  |  |  |  |  |  SCRange (42:41)
+|  |  |  |  |  |  |  |  |  SCLiteral (42:42) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (42:45) = 3
+|  |  |  |  |  |  |  |  |  SCMissing (42:41)
+|  |  |  |  |  |  SCRead (42:33): local x, declared (42:36): x <- (1, 3..)
+|  |  SCMethod (44:5): poisoned: version 3.16: unbounded_range_outside { var x = (1..); ^x }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Range has no end
-|  |  |  generators/generators.sc:43:39
-|  |  |     41 │     unbounded_source_step { ^{: x, x <- (1, 3..) } }
-|  |  |     42 │     // expect-error: Range has no end
-|  |  |     43 │     unbounded_range_outside { var x = (1..); ^x }
+|  |  |  generators/generators.sc:44:39
+|  |  |     42 │     unbounded_source_step { ^{: x, x <- (1, 3..) } }
+|  |  |     43 │     // expect-error: Range has no end
+|  |  |     44 │     unbounded_range_outside { var x = (1..); ^x }
 |  |  |        ┆                                       ^^^^^ this would create an infinite array.
-|  |  |     44 │     // expect-reads: x -> x <- [1, 2]
-|  |  |     45 │     // expect-reads: instance_var -> instance_var
-|  |  |     46 │     reads_member { ^{: x + instance_var, x <- [1, 2] } }
+|  |  |     45 │     // expect-reads: x -> x <- [1, 2]
+|  |  |     46 │     // expect-reads: instance_var -> instance_var
+|  |  |     47 │     reads_member { ^{: x + instance_var, x <- [1, 2] } }
 |  |  |
 |  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (43:31)
-|  |  |  |  SCVariableDeclare (43:35): x
-|  |  |  |  |  SCRange (43:39)
-|  |  |  |  |  |  SCLiteral (43:40) = 1
-|  |  |  |  |  |  SCMissing (43:39)
-|  |  |  |  |  |  SCMissing (43:39)
-|  |  |  |  SCExplicitReturn (43:46)
-|  |  |  |  |  SCRead (43:47): local x, declared (43:35): x = (1..)
-|  |  SCMethod (46:5): reads_member { ^{: x + instance_var, x <- [1, 2] } }
-|  |  |  SCBody (46:20)
-|  |  |  |  SCExplicitReturn (46:20)
-|  |  |  |  |  SCGenerator (46:21): routine
-|  |  |  |  |  |  SCGenQualList (46:42)
-|  |  |  |  |  |  |  SCGenQualIterate (46:42): x
-|  |  |  |  |  |  |  |  SCCollection (46:47): Array = [1, 2]
-|  |  |  |  |  |  |  |  |  SCLiteral (46:48) = 1
-|  |  |  |  |  |  |  |  |  SCLiteral (46:51) = 2
-|  |  |  |  |  |  SCMessage (46:24): +
-|  |  |  |  |  |  |  SCRead (46:24): local x, declared (46:42): x <- [1, 2]
-|  |  |  |  |  |  |  SCPositionalArgs (46:24)
-|  |  |  |  |  |  |  |  SCRead (46:28): instance instance_var, declared (2:9): instance_var
-|  |  SCMethod (49:5): captures_outer { var a = 1; ^{: a, x <- [1, 2] } }
-|  |  |  SCBody (49:22)
-|  |  |  |  SCVariableDeclare (49:26): a
-|  |  |  |  |  SCLiteral (49:30) = 1
-|  |  |  |  SCExplicitReturn (49:33)
-|  |  |  |  |  SCGenerator (49:34): routine
-|  |  |  |  |  |  SCGenQualList (49:40)
-|  |  |  |  |  |  |  SCGenQualIterate (49:40): x
-|  |  |  |  |  |  |  |  SCCollection (49:45): Array = [1, 2]
-|  |  |  |  |  |  |  |  |  SCLiteral (49:46) = 1
-|  |  |  |  |  |  |  |  |  SCLiteral (49:49) = 2
-|  |  |  |  |  |  SCRead (49:37): local a, declared (49:26): a = 1
-|  |  SCMethod (51:5): shadows_outer { var x = 1; { {: x, x <- [2] } }; ^x }
-|  |  |  SCBody (51:21)
-|  |  |  |  SCVariableDeclare (51:25): x
-|  |  |  |  |  SCLiteral (51:29) = 1
-|  |  |  |  SCFunction (51:32)
-|  |  |  |  |  SCBody (51:32)
-|  |  |  |  |  |  SCGenerator (51:34): routine
-|  |  |  |  |  |  |  SCGenQualList (51:40)
-|  |  |  |  |  |  |  |  SCGenQualIterate (51:40): x
-|  |  |  |  |  |  |  |  |  SCCollection (51:45): Array = [2]
-|  |  |  |  |  |  |  |  |  |  SCLiteral (51:46) = 2
-|  |  |  |  |  |  |  SCRead (51:37): local x, declared (51:40): x <- [2]
-|  |  |  |  SCExplicitReturn (51:54)
-|  |  |  |  |  SCRead (51:55): local x = 1, declared (51:25): x = 1
-|  |  SCMethod (54:5): source_reads_outer { var x = 1; { {: x, x <- [x] } }; ^x }
-|  |  |  SCBody (54:26)
-|  |  |  |  SCVariableDeclare (54:30): x
-|  |  |  |  |  SCLiteral (54:34) = 1
-|  |  |  |  SCFunction (54:37)
-|  |  |  |  |  SCBody (54:37)
-|  |  |  |  |  |  SCGenerator (54:39): routine
-|  |  |  |  |  |  |  SCGenQualList (54:45)
-|  |  |  |  |  |  |  |  SCGenQualIterate (54:45): x
-|  |  |  |  |  |  |  |  |  SCCollection (54:50): Array
-|  |  |  |  |  |  |  |  |  |  SCRead (54:51): local x, declared (54:30): x = 1
-|  |  |  |  |  |  |  SCRead (54:42): local x, declared (54:45): x <- [x]
-|  |  |  |  SCExplicitReturn (54:59)
-|  |  |  |  |  SCRead (54:60): local x, declared (54:30): x = 1
-|  |  SCMethod (56:5): non_local_return_value { ^{: { ^x }.value, x <- [1, 2] } }
-|  |  |  SCBody (56:30)
-|  |  |  |  SCExplicitReturn (56:30)
-|  |  |  |  |  SCGenerator (56:31): routine
-|  |  |  |  |  |  SCGenQualList (56:48)
-|  |  |  |  |  |  |  SCGenQualIterate (56:48): x
-|  |  |  |  |  |  |  |  SCCollection (56:53): Array = [1, 2]
-|  |  |  |  |  |  |  |  |  SCLiteral (56:54) = 1
-|  |  |  |  |  |  |  |  |  SCLiteral (56:57) = 2
-|  |  |  |  |  |  SCMessage (56:34): value
-|  |  |  |  |  |  |  SCFunction (56:34)
-|  |  |  |  |  |  |  |  SCBody (56:34)
-|  |  |  |  |  |  |  |  |  SCExplicitReturn (56:36)
-|  |  |  |  |  |  |  |  |  |  SCRead (56:37): local x, declared (56:48): x <- [1, 2]
-|  |  SCMethod (59:5): non_local_return_qualifier { {; x, x <- [1, 2], :: { ^x }.value }; ^1 }
-|  |  |  SCBody (59:34)
-|  |  |  |  SCGenerator (59:34): immediate
-|  |  |  |  |  SCGenQualList (59:40)
-|  |  |  |  |  |  SCGenQualIterate (59:40): x
-|  |  |  |  |  |  |  SCCollection (59:45): Array = [1, 2]
-|  |  |  |  |  |  |  |  SCLiteral (59:46) = 1
-|  |  |  |  |  |  |  |  SCLiteral (59:49) = 2
-|  |  |  |  |  |  SCGenQualSideEffect (59:53)
-|  |  |  |  |  |  |  SCMessage (59:56): value
-|  |  |  |  |  |  |  |  SCFunction (59:56)
-|  |  |  |  |  |  |  |  |  SCBody (59:56)
-|  |  |  |  |  |  |  |  |  |  SCExplicitReturn (59:58)
-|  |  |  |  |  |  |  |  |  |  |  SCRead (59:59): local x, declared (59:40): x <- [1, 2]
-|  |  |  |  |  SCRead (59:37): local x, declared (59:40): x <- [1, 2]
-|  |  |  |  SCExplicitReturn (59:72)
-|  |  |  |  |  SCLiteral (59:73) = 1
-|  |  SCMethod (62:5): range_generator { ^(: 1..5) }
-|  |  |  SCBody (62:23)
-|  |  |  |  SCExplicitReturn (62:23)
-|  |  |  |  |  SCRangeGenerator (62:24)
-|  |  |  |  |  |  SCLiteral (62:27) = 1
-|  |  |  |  |  |  SCMissing (62:24)
-|  |  |  |  |  |  SCLiteral (62:30) = 5
-|  |  SCMethod (63:5): range_generator_step { ^(: 1, 3..9) }
-|  |  |  SCBody (63:28)
-|  |  |  |  SCExplicitReturn (63:28)
-|  |  |  |  |  SCRangeGenerator (63:29)
-|  |  |  |  |  |  SCLiteral (63:32) = 1
-|  |  |  |  |  |  SCLiteral (63:35) = 3
-|  |  |  |  |  |  SCLiteral (63:38) = 9
-|  |  SCMethod (64:5): range_generator_from_zero { ^(: ..3) }
-|  |  |  SCBody (64:33)
-|  |  |  |  SCExplicitReturn (64:33)
-|  |  |  |  |  SCRangeGenerator (64:34)
-|  |  |  |  |  |  SCLiteral (64:34) = 0
-|  |  |  |  |  |  SCMissing (64:34)
-|  |  |  |  |  |  SCLiteral (64:39) = 3
-|  |  SCMethod (67:5): range_generator_unbounded { ^(: 1..) }
-|  |  |  SCBody (67:33)
-|  |  |  |  SCExplicitReturn (67:33)
-|  |  |  |  |  SCRangeGenerator (67:34)
-|  |  |  |  |  |  SCLiteral (67:37) = 1
-|  |  |  |  |  |  SCMissing (67:34)
-|  |  |  |  |  |  SCMissing (67:34)
-|  |  SCMethod (68:5): range_generator_unbounded_step { ^(: 1, 3..) }
-|  |  |  SCBody (68:38)
-|  |  |  |  SCExplicitReturn (68:38)
-|  |  |  |  |  SCRangeGenerator (68:39)
-|  |  |  |  |  |  SCLiteral (68:42) = 1
-|  |  |  |  |  |  SCLiteral (68:45) = 3
-|  |  |  |  |  |  SCMissing (68:39)
-|  |  SCMethod (70:5): range_generator_not_constant { ^(: 1..instance_var) }
-|  |  |  SCBody (70:36)
-|  |  |  |  SCExplicitReturn (70:36)
-|  |  |  |  |  SCRangeGenerator (70:37)
-|  |  |  |  |  |  SCLiteral (70:40) = 1
-|  |  |  |  |  |  SCMissing (70:37)
-|  |  |  |  |  |  SCRead (70:43): instance instance_var, declared (2:9): instance_var
+|  |  |  SCBody (44:31)
+|  |  |  |  SCVariableDeclare (44:35): x
+|  |  |  |  |  SCRange (44:39)
+|  |  |  |  |  |  SCLiteral (44:40) = 1
+|  |  |  |  |  |  SCMissing (44:39)
+|  |  |  |  |  |  SCMissing (44:39)
+|  |  |  |  SCExplicitReturn (44:46)
+|  |  |  |  |  SCRead (44:47): local x, declared (44:35): x = (1..)
+|  |  SCMethod (47:5): version 3.16: reads_member { ^{: x + instance_var, x <- [1, 2] } }
+|  |  |  SCBody (47:20)
+|  |  |  |  SCExplicitReturn (47:20)
+|  |  |  |  |  SCGenerator (47:21): routine
+|  |  |  |  |  |  SCGenQualList (47:42)
+|  |  |  |  |  |  |  SCGenQualIterate (47:42): x
+|  |  |  |  |  |  |  |  SCCollection (47:47): Array = [1, 2]
+|  |  |  |  |  |  |  |  |  SCLiteral (47:48) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (47:51) = 2
+|  |  |  |  |  |  SCMessage (47:24): +
+|  |  |  |  |  |  |  SCRead (47:24): local x, declared (47:42): x <- [1, 2]
+|  |  |  |  |  |  |  SCPositionalArgs (47:24)
+|  |  |  |  |  |  |  |  SCRead (47:28): instance instance_var, declared (3:9): instance_var
+|  |  SCMethod (50:5): version 3.16: captures_outer { var a = 1; ^{: a, x <- [1, 2] } }
+|  |  |  SCBody (50:22)
+|  |  |  |  SCVariableDeclare (50:26): a
+|  |  |  |  |  SCLiteral (50:30) = 1
+|  |  |  |  SCExplicitReturn (50:33)
+|  |  |  |  |  SCGenerator (50:34): routine
+|  |  |  |  |  |  SCGenQualList (50:40)
+|  |  |  |  |  |  |  SCGenQualIterate (50:40): x
+|  |  |  |  |  |  |  |  SCCollection (50:45): Array = [1, 2]
+|  |  |  |  |  |  |  |  |  SCLiteral (50:46) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (50:49) = 2
+|  |  |  |  |  |  SCRead (50:37): local a, declared (50:26): a = 1
+|  |  SCMethod (52:5): version 3.16: shadows_outer { var x = 1; { {: x, x <- [2] } }; ^x }
+|  |  |  SCBody (52:21)
+|  |  |  |  SCVariableDeclare (52:25): x
+|  |  |  |  |  SCLiteral (52:29) = 1
+|  |  |  |  SCFunction (52:32)
+|  |  |  |  |  SCBody (52:32)
+|  |  |  |  |  |  SCGenerator (52:34): routine
+|  |  |  |  |  |  |  SCGenQualList (52:40)
+|  |  |  |  |  |  |  |  SCGenQualIterate (52:40): x
+|  |  |  |  |  |  |  |  |  SCCollection (52:45): Array = [2]
+|  |  |  |  |  |  |  |  |  |  SCLiteral (52:46) = 2
+|  |  |  |  |  |  |  SCRead (52:37): local x, declared (52:40): x <- [2]
+|  |  |  |  SCExplicitReturn (52:54)
+|  |  |  |  |  SCRead (52:55): local x = 1, declared (52:25): x = 1
+|  |  SCMethod (55:5): version 3.16: source_reads_outer { var x = 1; { {: x, x <- [x] } }; ^x }
+|  |  |  SCBody (55:26)
+|  |  |  |  SCVariableDeclare (55:30): x
+|  |  |  |  |  SCLiteral (55:34) = 1
+|  |  |  |  SCFunction (55:37)
+|  |  |  |  |  SCBody (55:37)
+|  |  |  |  |  |  SCGenerator (55:39): routine
+|  |  |  |  |  |  |  SCGenQualList (55:45)
+|  |  |  |  |  |  |  |  SCGenQualIterate (55:45): x
+|  |  |  |  |  |  |  |  |  SCCollection (55:50): Array
+|  |  |  |  |  |  |  |  |  |  SCRead (55:51): local x, declared (55:30): x = 1
+|  |  |  |  |  |  |  SCRead (55:42): local x, declared (55:45): x <- [x]
+|  |  |  |  SCExplicitReturn (55:59)
+|  |  |  |  |  SCRead (55:60): local x, declared (55:30): x = 1
+|  |  SCMethod (57:5): version 3.16: non_local_return_value { ^{: { ^x }.value, x <- [1, 2] } }
+|  |  |  SCBody (57:30)
+|  |  |  |  SCExplicitReturn (57:30)
+|  |  |  |  |  SCGenerator (57:31): routine
+|  |  |  |  |  |  SCGenQualList (57:48)
+|  |  |  |  |  |  |  SCGenQualIterate (57:48): x
+|  |  |  |  |  |  |  |  SCCollection (57:53): Array = [1, 2]
+|  |  |  |  |  |  |  |  |  SCLiteral (57:54) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (57:57) = 2
+|  |  |  |  |  |  SCMessage (57:34): value
+|  |  |  |  |  |  |  SCFunction (57:34)
+|  |  |  |  |  |  |  |  SCBody (57:34)
+|  |  |  |  |  |  |  |  |  SCExplicitReturn (57:36)
+|  |  |  |  |  |  |  |  |  |  SCRead (57:37): local x, declared (57:48): x <- [1, 2]
+|  |  SCMethod (60:5): version 3.16: non_local_return_qualifier { {; x, x <- [1, 2], :: { ^x }.value }; ^1 }
+|  |  |  SCBody (60:34)
+|  |  |  |  SCGenerator (60:34): immediate
+|  |  |  |  |  SCGenQualList (60:40)
+|  |  |  |  |  |  SCGenQualIterate (60:40): x
+|  |  |  |  |  |  |  SCCollection (60:45): Array = [1, 2]
+|  |  |  |  |  |  |  |  SCLiteral (60:46) = 1
+|  |  |  |  |  |  |  |  SCLiteral (60:49) = 2
+|  |  |  |  |  |  SCGenQualSideEffect (60:53)
+|  |  |  |  |  |  |  SCMessage (60:56): value
+|  |  |  |  |  |  |  |  SCFunction (60:56)
+|  |  |  |  |  |  |  |  |  SCBody (60:56)
+|  |  |  |  |  |  |  |  |  |  SCExplicitReturn (60:58)
+|  |  |  |  |  |  |  |  |  |  |  SCRead (60:59): local x, declared (60:40): x <- [1, 2]
+|  |  |  |  |  SCRead (60:37): local x, declared (60:40): x <- [1, 2]
+|  |  |  |  SCExplicitReturn (60:72)
+|  |  |  |  |  SCLiteral (60:73) = 1
+|  |  SCMethod (63:5): version 3.16: range_generator { ^(: 1..5) }
+|  |  |  SCBody (63:23)
+|  |  |  |  SCExplicitReturn (63:23)
+|  |  |  |  |  SCRangeGenerator (63:24)
+|  |  |  |  |  |  SCLiteral (63:27) = 1
+|  |  |  |  |  |  SCMissing (63:24)
+|  |  |  |  |  |  SCLiteral (63:30) = 5
+|  |  SCMethod (64:5): version 3.16: range_generator_step { ^(: 1, 3..9) }
+|  |  |  SCBody (64:28)
+|  |  |  |  SCExplicitReturn (64:28)
+|  |  |  |  |  SCRangeGenerator (64:29)
+|  |  |  |  |  |  SCLiteral (64:32) = 1
+|  |  |  |  |  |  SCLiteral (64:35) = 3
+|  |  |  |  |  |  SCLiteral (64:38) = 9
+|  |  SCMethod (65:5): version 3.16: range_generator_from_zero { ^(: ..3) }
+|  |  |  SCBody (65:33)
+|  |  |  |  SCExplicitReturn (65:33)
+|  |  |  |  |  SCRangeGenerator (65:34)
+|  |  |  |  |  |  SCLiteral (65:34) = 0
+|  |  |  |  |  |  SCMissing (65:34)
+|  |  |  |  |  |  SCLiteral (65:39) = 3
+|  |  SCMethod (68:5): version 3.16: range_generator_unbounded { ^(: 1..) }
+|  |  |  SCBody (68:33)
+|  |  |  |  SCExplicitReturn (68:33)
+|  |  |  |  |  SCRangeGenerator (68:34)
+|  |  |  |  |  |  SCLiteral (68:37) = 1
+|  |  |  |  |  |  SCMissing (68:34)
+|  |  |  |  |  |  SCMissing (68:34)
+|  |  SCMethod (69:5): version 3.16: range_generator_unbounded_step { ^(: 1, 3..) }
+|  |  |  SCBody (69:38)
+|  |  |  |  SCExplicitReturn (69:38)
+|  |  |  |  |  SCRangeGenerator (69:39)
+|  |  |  |  |  |  SCLiteral (69:42) = 1
+|  |  |  |  |  |  SCLiteral (69:45) = 3
+|  |  |  |  |  |  SCMissing (69:39)
+|  |  SCMethod (71:5): version 3.16: range_generator_not_constant { ^(: 1..instance_var) }
+|  |  |  SCBody (71:36)
+|  |  |  |  SCExplicitReturn (71:36)
+|  |  |  |  |  SCRangeGenerator (71:37)
+|  |  |  |  |  |  SCLiteral (71:40) = 1
+|  |  |  |  |  |  SCMissing (71:37)
+|  |  |  |  |  |  SCRead (71:43): instance instance_var, declared (3:9): instance_var
 Successfully compiled 16 classes.

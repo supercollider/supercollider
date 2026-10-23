@@ -1,3 +1,4 @@
+// interpreted-version: 3.16
 // Each item of a region is compiled into its own function, inside an SCRegion, whether it is an expression or a block.
 // The list's result is the last region's.
 // expect: -> 7

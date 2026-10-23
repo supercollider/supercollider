@@ -4,70 +4,70 @@
 IR GRAPH DUMP 
 
 
-SCClass (1:1): RangeInitialisers
+SCClass (2:1): RangeInitialisers, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Not a constant
-|  ranges/initialisers.sc:9:23
-|      7 │     var nested = [(1..2), (a: (3..4))];
-|      8 │     var immutable = #[(1..2)];
-|      9 │     var float_range = (1.0..3);
+|  ranges/initialisers.sc:10:23
+|      8 │     var nested = [(1..2), (a: (3..4))];
+|      9 │     var immutable = #[(1..2)];
+|     10 │     var float_range = (1.0..3);
 |        ┆                       ^^^^^^^^ this can't be evaluated when compiling.
-|     10 │     var unbounded = (1..);
-|     11 │     var not_constant = (1..2.foo);
-|     12 │     var too_large = (1..2000);
+|     11 │     var unbounded = (1..);
+|     12 │     var not_constant = (1..2.foo);
+|     13 │     var too_large = (1..2000);
 |
 |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Range has no end
-|  ranges/initialisers.sc:10:21
-|      8 │     var immutable = #[(1..2)];
-|      9 │     var float_range = (1.0..3);
-|     10 │     var unbounded = (1..);
+|  ranges/initialisers.sc:11:21
+|      9 │     var immutable = #[(1..2)];
+|     10 │     var float_range = (1.0..3);
+|     11 │     var unbounded = (1..);
 |        ┆                     ^^^^^ this would create an infinite array.
-|     11 │     var not_constant = (1..2.foo);
-|     12 │     var too_large = (1..2000);
-|     13 │ }
+|     12 │     var not_constant = (1..2.foo);
+|     13 │     var too_large = (1..2000);
+|     14 │ }
 |
 |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Not a constant
-|  ranges/initialisers.sc:11:28
-|      9 │     var float_range = (1.0..3);
-|     10 │     var unbounded = (1..);
-|     11 │     var not_constant = (1..2.foo);
+|  ranges/initialisers.sc:12:28
+|     10 │     var float_range = (1.0..3);
+|     11 │     var unbounded = (1..);
+|     12 │     var not_constant = (1..2.foo);
 |        ┆                            ^^^^^ this can't be evaluated when compiling.
-|     12 │     var too_large = (1..2000);
-|     13 │ }
+|     13 │     var too_large = (1..2000);
+|     14 │ }
 |
 |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Not a constant
-|  ranges/initialisers.sc:12:21
-|     10 │     var unbounded = (1..);
-|     11 │     var not_constant = (1..2.foo);
-|     12 │     var too_large = (1..2000);
+|  ranges/initialisers.sc:13:21
+|     11 │     var unbounded = (1..);
+|     12 │     var not_constant = (1..2.foo);
+|     13 │     var too_large = (1..2000);
 |        ┆                     ^^^^^^^^^ this can't be evaluated when compiling.
-|     13 │ }
+|     14 │ }
 |
 |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  SCMemberList (1:1)
-|  |  SCMember (5:9): instance_range = [0, 1, 2]
-|  |  SCMember (6:9): uses_const = [1, 2, 3]
-|  |  SCMember (7:9): nested = [[1, 2], (a: [3, 4])]
-|  |  SCMember (8:9): immutable = [[1, 2]]
-|  SCMethodList (1:1)
-SCClass (1:1): Meta_RangeInitialisers
-|  SCMemberList (1:1)
-|  |  SCMember (2:11): bound = 3
-|  |  SCMember (3:11): constant_range = [1, 2, 3]
-|  |  SCMember (4:14): class_range = [1, 3, 5, 7, 9]
-|  SCMethodList (1:1)
+|  SCMemberList (2:1)
+|  |  SCMember (6:9): instance_range = [0, 1, 2]
+|  |  SCMember (7:9): uses_const = [1, 2, 3]
+|  |  SCMember (8:9): nested = [[1, 2], (a: [3, 4])]
+|  |  SCMember (9:9): immutable = [[1, 2]]
+|  SCMethodList (2:1)
+SCClass (2:1): Meta_RangeInitialisers, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (3:11): bound = 3
+|  |  SCMember (4:11): constant_range = [1, 2, 3]
+|  |  SCMember (5:14): class_range = [1, 3, 5, 7, 9]
+|  SCMethodList (2:1)
 Successfully compiled 16 classes.

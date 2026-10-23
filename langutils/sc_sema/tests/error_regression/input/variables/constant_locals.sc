@@ -1,3 +1,4 @@
+//# VERSION 3.16
 ConstantLocals {
     var instance_var = 1;
 

@@ -4,199 +4,199 @@
 IR GRAPH DUMP 
 
 
-SCClass (3:1): Arithmetic
-|  SCMemberList (3:1)
-|  SCMethodList (3:1)
-|  |  SCMethod (8:5): integer_add { ^1 + 2 } -> 3
-|  |  |  SCBody (8:19)
-|  |  |  |  SCExplicitReturn (8:19)
-|  |  |  |  |  SCMessage (8:20): + = 3
-|  |  |  |  |  |  SCLiteral (8:20) = 1
-|  |  |  |  |  |  SCPositionalArgs (8:20)
-|  |  |  |  |  |  |  SCLiteral (8:24) = 2
-|  |  SCMethod (10:5): integer_subtract { ^1 - 2 } -> -1
-|  |  |  SCBody (10:24)
-|  |  |  |  SCExplicitReturn (10:24)
-|  |  |  |  |  SCMessage (10:25): - = -1
-|  |  |  |  |  |  SCLiteral (10:25) = 1
-|  |  |  |  |  |  SCPositionalArgs (10:25)
-|  |  |  |  |  |  |  SCLiteral (10:29) = 2
-|  |  SCMethod (12:5): integer_multiply { ^2 * 3 } -> 6
-|  |  |  SCBody (12:24)
-|  |  |  |  SCExplicitReturn (12:24)
-|  |  |  |  |  SCMessage (12:25): * = 6
-|  |  |  |  |  |  SCLiteral (12:25) = 2
-|  |  |  |  |  |  SCPositionalArgs (12:25)
-|  |  |  |  |  |  |  SCLiteral (12:29) = 3
-|  |  SCMethod (14:5): integer_divide { ^5 / 2 } -> 2.5
-|  |  |  SCBody (14:22)
-|  |  |  |  SCExplicitReturn (14:22)
-|  |  |  |  |  SCMessage (14:23): / = 2.5
-|  |  |  |  |  |  SCLiteral (14:23) = 5
-|  |  |  |  |  |  SCPositionalArgs (14:23)
-|  |  |  |  |  |  |  SCLiteral (14:27) = 2
-|  |  SCMethod (16:5): integer_divide_exact { ^4 / 2 } -> 2.0
-|  |  |  SCBody (16:28)
-|  |  |  |  SCExplicitReturn (16:28)
-|  |  |  |  |  SCMessage (16:29): / = 2.0
-|  |  |  |  |  |  SCLiteral (16:29) = 4
-|  |  |  |  |  |  SCPositionalArgs (16:29)
-|  |  |  |  |  |  |  SCLiteral (16:33) = 2
-|  |  SCMethod (18:5): float_add { ^1.5 + 2 } -> 3.5
-|  |  |  SCBody (18:17)
-|  |  |  |  SCExplicitReturn (18:17)
-|  |  |  |  |  SCMessage (18:18): + = 3.5
-|  |  |  |  |  |  SCLiteral (18:18) = 1.5
-|  |  |  |  |  |  SCPositionalArgs (18:18)
-|  |  |  |  |  |  |  SCLiteral (18:24) = 2
-|  |  SCMethod (20:5): float_subtract { ^2 - 1.5 } -> 0.5
-|  |  |  SCBody (20:22)
-|  |  |  |  SCExplicitReturn (20:22)
-|  |  |  |  |  SCMessage (20:23): - = 0.5
-|  |  |  |  |  |  SCLiteral (20:23) = 2
-|  |  |  |  |  |  SCPositionalArgs (20:23)
-|  |  |  |  |  |  |  SCLiteral (20:27) = 1.5
-|  |  SCMethod (22:5): float_multiply { ^0.5 * 1.5 } -> 0.75
-|  |  |  SCBody (22:22)
-|  |  |  |  SCExplicitReturn (22:22)
-|  |  |  |  |  SCMessage (22:23): * = 0.75
-|  |  |  |  |  |  SCLiteral (22:23) = 0.5
-|  |  |  |  |  |  SCPositionalArgs (22:23)
-|  |  |  |  |  |  |  SCLiteral (22:29) = 1.5
-|  |  SCMethod (24:5): float_divide { ^0.5 / 2 } -> 0.25
-|  |  |  SCBody (24:20)
-|  |  |  |  SCExplicitReturn (24:20)
-|  |  |  |  |  SCMessage (24:21): / = 0.25
-|  |  |  |  |  |  SCLiteral (24:21) = 0.5
-|  |  |  |  |  |  SCPositionalArgs (24:21)
-|  |  |  |  |  |  |  SCLiteral (24:27) = 2
-|  |  SCMethod (27:5): left_to_right { ^1 + 2 * 3 } -> 9
-|  |  |  SCBody (27:21)
-|  |  |  |  SCExplicitReturn (27:21)
-|  |  |  |  |  SCMessage (27:22): * = 9
-|  |  |  |  |  |  SCMessage (27:22): + = 3
-|  |  |  |  |  |  |  SCLiteral (27:22) = 1
-|  |  |  |  |  |  |  SCPositionalArgs (27:22)
-|  |  |  |  |  |  |  |  SCLiteral (27:26) = 2
-|  |  |  |  |  |  SCPositionalArgs (27:22)
-|  |  |  |  |  |  |  SCLiteral (27:30) = 3
-|  |  SCMethod (29:5): parenthesised { ^1 + (2 * 3) } -> 7
-|  |  |  SCBody (29:21)
-|  |  |  |  SCExplicitReturn (29:21)
-|  |  |  |  |  SCMessage (29:22): + = 7
-|  |  |  |  |  |  SCLiteral (29:22) = 1
-|  |  |  |  |  |  SCPositionalArgs (29:22)
-|  |  |  |  |  |  |  SCMessage (29:27): * = 6
-|  |  |  |  |  |  |  |  SCLiteral (29:27) = 2
-|  |  |  |  |  |  |  |  SCPositionalArgs (29:27)
-|  |  |  |  |  |  |  |  |  SCLiteral (29:31) = 3
-|  |  SCMethod (32:5): overflow_wraps { ^2147483647 + 1 } -> -2147483648
-|  |  |  SCBody (32:22)
-|  |  |  |  SCExplicitReturn (32:22)
-|  |  |  |  |  SCMessage (32:23): + = -2147483648
-|  |  |  |  |  |  SCLiteral (32:23) = 2147483647
-|  |  |  |  |  |  SCPositionalArgs (32:23)
-|  |  |  |  |  |  |  SCLiteral (32:36) = 1
-|  |  SCMethod (34:5): multiply_wraps { ^65536 * 65536 } -> 0
-|  |  |  SCBody (34:22)
-|  |  |  |  SCExplicitReturn (34:22)
-|  |  |  |  |  SCMessage (34:23): * = 0
-|  |  |  |  |  |  SCLiteral (34:23) = 65536
-|  |  |  |  |  |  SCPositionalArgs (34:23)
-|  |  |  |  |  |  |  SCLiteral (34:31) = 65536
-|  |  SCMethod (37:5): constant_locals { var a = 1, b = 2; ^a + b } -> 3
-|  |  |  SCBody (37:23)
-|  |  |  |  SCVariableDeclare (37:27): a
-|  |  |  |  |  SCLiteral (37:31) = 1
-|  |  |  |  SCVariableDeclare (37:34): b
-|  |  |  |  |  SCLiteral (37:38) = 2
-|  |  |  |  SCExplicitReturn (37:41)
-|  |  |  |  |  SCMessage (37:42): + = 3
-|  |  |  |  |  |  SCRead (37:42): local a = 1, declared (37:27): a = 1
-|  |  |  |  |  |  SCPositionalArgs (37:42)
-|  |  |  |  |  |  |  SCRead (37:46): local b = 2, declared (37:34): b = 2
-|  |  SCMethod (40:5): class_constant { ^sum }
-|  |  |  SCBody (40:22)
-|  |  |  |  SCExplicitReturn (40:22)
-|  |  |  |  |  SCRead (40:23): class sum, declared (4:11): sum
-|  |  SCMethod (43:5): divide_by_zero { ^1 / 0 }
-|  |  |  SCBody (43:22)
-|  |  |  |  SCExplicitReturn (43:22)
-|  |  |  |  |  SCMessage (43:23): /
-|  |  |  |  |  |  SCLiteral (43:23) = 1
-|  |  |  |  |  |  SCPositionalArgs (43:23)
-|  |  |  |  |  |  |  SCLiteral (43:27) = 0
-|  |  SCMethod (45:5): float_divide_by_zero { ^1.0 / 0.0 }
-|  |  |  SCBody (45:28)
-|  |  |  |  SCExplicitReturn (45:28)
-|  |  |  |  |  SCMessage (45:29): /
-|  |  |  |  |  |  SCLiteral (45:29) = 1.0
-|  |  |  |  |  |  SCPositionalArgs (45:29)
-|  |  |  |  |  |  |  SCLiteral (45:35) = 0.0
-|  |  SCMethod (47:5): with_adverb { ^1 +.x 2 }
-|  |  |  SCBody (47:19)
-|  |  |  |  SCExplicitReturn (47:19)
-|  |  |  |  |  SCMessage (47:20): +
-|  |  |  |  |  |  SCLiteral (47:20) = 1
-|  |  |  |  |  |  SCPositionalArgs (47:20)
-|  |  |  |  |  |  |  SCLiteral (47:26) = 2
-|  |  |  |  |  |  SCLiteral (47:24) = \x
-|  |  SCMethod (49:5): not_numbers { ^"a" + 1 }
-|  |  |  SCBody (49:19)
-|  |  |  |  SCExplicitReturn (49:19)
-|  |  |  |  |  SCMessage (49:20): +
-|  |  |  |  |  |  SCLiteral (49:20) = "a"
-|  |  |  |  |  |  SCPositionalArgs (49:20)
-|  |  |  |  |  |  |  SCLiteral (49:26) = 1
-|  |  SCMethod (51:5): other_operator { ^5 % 2 }
-|  |  |  SCBody (51:22)
-|  |  |  |  SCExplicitReturn (51:22)
-|  |  |  |  |  SCMessage (51:23): %
-|  |  |  |  |  |  SCLiteral (51:23) = 5
-|  |  |  |  |  |  SCPositionalArgs (51:23)
-|  |  |  |  |  |  |  SCLiteral (51:27) = 2
-|  |  SCMethod (53:5): argument { |a| ^a + 1 }
-|  |  |  SCArgumentDeclareList (53:17)
-|  |  |  |  SCArgumentDeclare (53:17): a
-|  |  |  SCBody (53:20)
-|  |  |  |  SCExplicitReturn (53:20)
-|  |  |  |  |  SCMessage (53:21): +
-|  |  |  |  |  |  SCRead (53:21): local a, declared (53:17): a
-|  |  |  |  |  |  SCPositionalArgs (53:21)
-|  |  |  |  |  |  |  SCLiteral (53:25) = 1
-|  |  SCMethod (55:5): mutable_local { var a = 1; a = 2; ^a + 1 }
-|  |  |  SCBody (55:21)
-|  |  |  |  SCVariableDeclare (55:25): a
-|  |  |  |  |  SCLiteral (55:29) = 1
-|  |  |  |  SCAssign (55:32): local a, declared (55:25): a = 1
-|  |  |  |  |  SCLiteral (55:36) = 2
-|  |  |  |  SCExplicitReturn (55:39)
-|  |  |  |  |  SCMessage (55:40): +
-|  |  |  |  |  |  SCRead (55:40): local a, declared (55:25): a = 1
-|  |  |  |  |  |  SCPositionalArgs (55:40)
-|  |  |  |  |  |  |  SCLiteral (55:44) = 1
-|  |  SCMethod (59:5): non_local_return { |x| if (x) { ^1 + 1 }; ^2 * 2 }
-|  |  |  SCArgumentDeclareList (59:25)
-|  |  |  |  SCArgumentDeclare (59:25): x
-|  |  |  SCBody (59:28)
-|  |  |  |  SCMessage (59:28): if
-|  |  |  |  |  SCRead (59:32): local x, declared (59:25): x
-|  |  |  |  |  SCPositionalArgs (59:28)
-|  |  |  |  |  |  SCFunction (59:35)
-|  |  |  |  |  |  |  SCBody (59:35)
-|  |  |  |  |  |  |  |  SCExplicitReturn (59:37)
-|  |  |  |  |  |  |  |  |  SCMessage (59:38): + = 2
-|  |  |  |  |  |  |  |  |  |  SCLiteral (59:38) = 1
-|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (59:38)
-|  |  |  |  |  |  |  |  |  |  |  SCLiteral (59:42) = 1
-|  |  |  |  SCExplicitReturn (59:47)
-|  |  |  |  |  SCMessage (59:48): * = 4
-|  |  |  |  |  |  SCLiteral (59:48) = 2
-|  |  |  |  |  |  SCPositionalArgs (59:48)
-|  |  |  |  |  |  |  SCLiteral (59:52) = 2
-SCClass (3:1): Meta_Arithmetic
-|  SCMemberList (3:1)
-|  |  SCMember (4:11): sum = 3
-|  |  SCMember (5:11): mixed = 3.0
-|  SCMethodList (3:1)
+SCClass (4:1): Arithmetic, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (9:5): version 3.16: integer_add { ^1 + 2 } -> 3
+|  |  |  SCBody (9:19)
+|  |  |  |  SCExplicitReturn (9:19)
+|  |  |  |  |  SCMessage (9:20): + = 3
+|  |  |  |  |  |  SCLiteral (9:20) = 1
+|  |  |  |  |  |  SCPositionalArgs (9:20)
+|  |  |  |  |  |  |  SCLiteral (9:24) = 2
+|  |  SCMethod (11:5): version 3.16: integer_subtract { ^1 - 2 } -> -1
+|  |  |  SCBody (11:24)
+|  |  |  |  SCExplicitReturn (11:24)
+|  |  |  |  |  SCMessage (11:25): - = -1
+|  |  |  |  |  |  SCLiteral (11:25) = 1
+|  |  |  |  |  |  SCPositionalArgs (11:25)
+|  |  |  |  |  |  |  SCLiteral (11:29) = 2
+|  |  SCMethod (13:5): version 3.16: integer_multiply { ^2 * 3 } -> 6
+|  |  |  SCBody (13:24)
+|  |  |  |  SCExplicitReturn (13:24)
+|  |  |  |  |  SCMessage (13:25): * = 6
+|  |  |  |  |  |  SCLiteral (13:25) = 2
+|  |  |  |  |  |  SCPositionalArgs (13:25)
+|  |  |  |  |  |  |  SCLiteral (13:29) = 3
+|  |  SCMethod (15:5): version 3.16: integer_divide { ^5 / 2 } -> 2.5
+|  |  |  SCBody (15:22)
+|  |  |  |  SCExplicitReturn (15:22)
+|  |  |  |  |  SCMessage (15:23): / = 2.5
+|  |  |  |  |  |  SCLiteral (15:23) = 5
+|  |  |  |  |  |  SCPositionalArgs (15:23)
+|  |  |  |  |  |  |  SCLiteral (15:27) = 2
+|  |  SCMethod (17:5): version 3.16: integer_divide_exact { ^4 / 2 } -> 2.0
+|  |  |  SCBody (17:28)
+|  |  |  |  SCExplicitReturn (17:28)
+|  |  |  |  |  SCMessage (17:29): / = 2.0
+|  |  |  |  |  |  SCLiteral (17:29) = 4
+|  |  |  |  |  |  SCPositionalArgs (17:29)
+|  |  |  |  |  |  |  SCLiteral (17:33) = 2
+|  |  SCMethod (19:5): version 3.16: float_add { ^1.5 + 2 } -> 3.5
+|  |  |  SCBody (19:17)
+|  |  |  |  SCExplicitReturn (19:17)
+|  |  |  |  |  SCMessage (19:18): + = 3.5
+|  |  |  |  |  |  SCLiteral (19:18) = 1.5
+|  |  |  |  |  |  SCPositionalArgs (19:18)
+|  |  |  |  |  |  |  SCLiteral (19:24) = 2
+|  |  SCMethod (21:5): version 3.16: float_subtract { ^2 - 1.5 } -> 0.5
+|  |  |  SCBody (21:22)
+|  |  |  |  SCExplicitReturn (21:22)
+|  |  |  |  |  SCMessage (21:23): - = 0.5
+|  |  |  |  |  |  SCLiteral (21:23) = 2
+|  |  |  |  |  |  SCPositionalArgs (21:23)
+|  |  |  |  |  |  |  SCLiteral (21:27) = 1.5
+|  |  SCMethod (23:5): version 3.16: float_multiply { ^0.5 * 1.5 } -> 0.75
+|  |  |  SCBody (23:22)
+|  |  |  |  SCExplicitReturn (23:22)
+|  |  |  |  |  SCMessage (23:23): * = 0.75
+|  |  |  |  |  |  SCLiteral (23:23) = 0.5
+|  |  |  |  |  |  SCPositionalArgs (23:23)
+|  |  |  |  |  |  |  SCLiteral (23:29) = 1.5
+|  |  SCMethod (25:5): version 3.16: float_divide { ^0.5 / 2 } -> 0.25
+|  |  |  SCBody (25:20)
+|  |  |  |  SCExplicitReturn (25:20)
+|  |  |  |  |  SCMessage (25:21): / = 0.25
+|  |  |  |  |  |  SCLiteral (25:21) = 0.5
+|  |  |  |  |  |  SCPositionalArgs (25:21)
+|  |  |  |  |  |  |  SCLiteral (25:27) = 2
+|  |  SCMethod (28:5): version 3.16: left_to_right { ^1 + 2 * 3 } -> 9
+|  |  |  SCBody (28:21)
+|  |  |  |  SCExplicitReturn (28:21)
+|  |  |  |  |  SCMessage (28:22): * = 9
+|  |  |  |  |  |  SCMessage (28:22): + = 3
+|  |  |  |  |  |  |  SCLiteral (28:22) = 1
+|  |  |  |  |  |  |  SCPositionalArgs (28:22)
+|  |  |  |  |  |  |  |  SCLiteral (28:26) = 2
+|  |  |  |  |  |  SCPositionalArgs (28:22)
+|  |  |  |  |  |  |  SCLiteral (28:30) = 3
+|  |  SCMethod (30:5): version 3.16: parenthesised { ^1 + (2 * 3) } -> 7
+|  |  |  SCBody (30:21)
+|  |  |  |  SCExplicitReturn (30:21)
+|  |  |  |  |  SCMessage (30:22): + = 7
+|  |  |  |  |  |  SCLiteral (30:22) = 1
+|  |  |  |  |  |  SCPositionalArgs (30:22)
+|  |  |  |  |  |  |  SCMessage (30:27): * = 6
+|  |  |  |  |  |  |  |  SCLiteral (30:27) = 2
+|  |  |  |  |  |  |  |  SCPositionalArgs (30:27)
+|  |  |  |  |  |  |  |  |  SCLiteral (30:31) = 3
+|  |  SCMethod (33:5): version 3.16: overflow_wraps { ^2147483647 + 1 } -> -2147483648
+|  |  |  SCBody (33:22)
+|  |  |  |  SCExplicitReturn (33:22)
+|  |  |  |  |  SCMessage (33:23): + = -2147483648
+|  |  |  |  |  |  SCLiteral (33:23) = 2147483647
+|  |  |  |  |  |  SCPositionalArgs (33:23)
+|  |  |  |  |  |  |  SCLiteral (33:36) = 1
+|  |  SCMethod (35:5): version 3.16: multiply_wraps { ^65536 * 65536 } -> 0
+|  |  |  SCBody (35:22)
+|  |  |  |  SCExplicitReturn (35:22)
+|  |  |  |  |  SCMessage (35:23): * = 0
+|  |  |  |  |  |  SCLiteral (35:23) = 65536
+|  |  |  |  |  |  SCPositionalArgs (35:23)
+|  |  |  |  |  |  |  SCLiteral (35:31) = 65536
+|  |  SCMethod (38:5): version 3.16: constant_locals { var a = 1, b = 2; ^a + b } -> 3
+|  |  |  SCBody (38:23)
+|  |  |  |  SCVariableDeclare (38:27): a
+|  |  |  |  |  SCLiteral (38:31) = 1
+|  |  |  |  SCVariableDeclare (38:34): b
+|  |  |  |  |  SCLiteral (38:38) = 2
+|  |  |  |  SCExplicitReturn (38:41)
+|  |  |  |  |  SCMessage (38:42): + = 3
+|  |  |  |  |  |  SCRead (38:42): local a = 1, declared (38:27): a = 1
+|  |  |  |  |  |  SCPositionalArgs (38:42)
+|  |  |  |  |  |  |  SCRead (38:46): local b = 2, declared (38:34): b = 2
+|  |  SCMethod (41:5): version 3.16: class_constant { ^sum }
+|  |  |  SCBody (41:22)
+|  |  |  |  SCExplicitReturn (41:22)
+|  |  |  |  |  SCRead (41:23): class sum, declared (5:11): sum
+|  |  SCMethod (44:5): version 3.16: divide_by_zero { ^1 / 0 }
+|  |  |  SCBody (44:22)
+|  |  |  |  SCExplicitReturn (44:22)
+|  |  |  |  |  SCMessage (44:23): /
+|  |  |  |  |  |  SCLiteral (44:23) = 1
+|  |  |  |  |  |  SCPositionalArgs (44:23)
+|  |  |  |  |  |  |  SCLiteral (44:27) = 0
+|  |  SCMethod (46:5): version 3.16: float_divide_by_zero { ^1.0 / 0.0 }
+|  |  |  SCBody (46:28)
+|  |  |  |  SCExplicitReturn (46:28)
+|  |  |  |  |  SCMessage (46:29): /
+|  |  |  |  |  |  SCLiteral (46:29) = 1.0
+|  |  |  |  |  |  SCPositionalArgs (46:29)
+|  |  |  |  |  |  |  SCLiteral (46:35) = 0.0
+|  |  SCMethod (48:5): version 3.16: with_adverb { ^1 +.x 2 }
+|  |  |  SCBody (48:19)
+|  |  |  |  SCExplicitReturn (48:19)
+|  |  |  |  |  SCMessage (48:20): +
+|  |  |  |  |  |  SCLiteral (48:20) = 1
+|  |  |  |  |  |  SCPositionalArgs (48:20)
+|  |  |  |  |  |  |  SCLiteral (48:26) = 2
+|  |  |  |  |  |  SCLiteral (48:24) = \x
+|  |  SCMethod (50:5): version 3.16: not_numbers { ^"a" + 1 }
+|  |  |  SCBody (50:19)
+|  |  |  |  SCExplicitReturn (50:19)
+|  |  |  |  |  SCMessage (50:20): +
+|  |  |  |  |  |  SCLiteral (50:20) = "a"
+|  |  |  |  |  |  SCPositionalArgs (50:20)
+|  |  |  |  |  |  |  SCLiteral (50:26) = 1
+|  |  SCMethod (52:5): version 3.16: other_operator { ^5 % 2 }
+|  |  |  SCBody (52:22)
+|  |  |  |  SCExplicitReturn (52:22)
+|  |  |  |  |  SCMessage (52:23): %
+|  |  |  |  |  |  SCLiteral (52:23) = 5
+|  |  |  |  |  |  SCPositionalArgs (52:23)
+|  |  |  |  |  |  |  SCLiteral (52:27) = 2
+|  |  SCMethod (54:5): version 3.16: argument { |a| ^a + 1 }
+|  |  |  SCArgumentDeclareList (54:17)
+|  |  |  |  SCArgumentDeclare (54:17): a
+|  |  |  SCBody (54:20)
+|  |  |  |  SCExplicitReturn (54:20)
+|  |  |  |  |  SCMessage (54:21): +
+|  |  |  |  |  |  SCRead (54:21): local a, declared (54:17): a
+|  |  |  |  |  |  SCPositionalArgs (54:21)
+|  |  |  |  |  |  |  SCLiteral (54:25) = 1
+|  |  SCMethod (56:5): version 3.16: mutable_local { var a = 1; a = 2; ^a + 1 }
+|  |  |  SCBody (56:21)
+|  |  |  |  SCVariableDeclare (56:25): a
+|  |  |  |  |  SCLiteral (56:29) = 1
+|  |  |  |  SCAssign (56:32): local a, declared (56:25): a = 1
+|  |  |  |  |  SCLiteral (56:36) = 2
+|  |  |  |  SCExplicitReturn (56:39)
+|  |  |  |  |  SCMessage (56:40): +
+|  |  |  |  |  |  SCRead (56:40): local a, declared (56:25): a = 1
+|  |  |  |  |  |  SCPositionalArgs (56:40)
+|  |  |  |  |  |  |  SCLiteral (56:44) = 1
+|  |  SCMethod (60:5): version 3.16: non_local_return { |x| if (x) { ^1 + 1 }; ^2 * 2 }
+|  |  |  SCArgumentDeclareList (60:25)
+|  |  |  |  SCArgumentDeclare (60:25): x
+|  |  |  SCBody (60:28)
+|  |  |  |  SCMessage (60:28): if
+|  |  |  |  |  SCRead (60:32): local x, declared (60:25): x
+|  |  |  |  |  SCPositionalArgs (60:28)
+|  |  |  |  |  |  SCFunction (60:35)
+|  |  |  |  |  |  |  SCBody (60:35)
+|  |  |  |  |  |  |  |  SCExplicitReturn (60:37)
+|  |  |  |  |  |  |  |  |  SCMessage (60:38): + = 2
+|  |  |  |  |  |  |  |  |  |  SCLiteral (60:38) = 1
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (60:38)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (60:42) = 1
+|  |  |  |  SCExplicitReturn (60:47)
+|  |  |  |  |  SCMessage (60:48): * = 4
+|  |  |  |  |  |  SCLiteral (60:48) = 2
+|  |  |  |  |  |  SCPositionalArgs (60:48)
+|  |  |  |  |  |  |  SCLiteral (60:52) = 2
+SCClass (4:1): Meta_Arithmetic, version 3.16
+|  SCMemberList (4:1)
+|  |  SCMember (5:11): sum = 3
+|  |  SCMember (6:11): mixed = 3.0
+|  SCMethodList (4:1)
 Successfully compiled 16 classes.

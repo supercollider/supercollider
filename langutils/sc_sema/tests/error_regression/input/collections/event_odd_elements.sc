@@ -1,3 +1,4 @@
+//# VERSION 3.16
 EventKeyWithoutValue {
     odd_constant { ^Event[a: 1, \b] }
     odd_not_constant { ^Event[a: 1.foo, \b] }

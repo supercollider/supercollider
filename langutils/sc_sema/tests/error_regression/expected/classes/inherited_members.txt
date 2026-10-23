@@ -4,24 +4,24 @@
 IR GRAPH DUMP 
 
 
-SCClass (1:1): Foo
-|  SCMemberList (1:1)
-|  |  SCMember (2:9): bar
-|  |  SCMember (2:14): car
-|  |  SCMember (2:19): tar
-|  SCMethodList (1:1)
-SCClass (1:1): Meta_Foo
-|  SCMemberList (1:1)
-|  |  SCMember (3:11): foo_const1
-|  |  SCMember (3:23): foo_const_2
-|  SCMethodList (1:1)
-SCClass (8:1): Foo2
-|  SCMemberList (8:1)
-|  |  SCMember (9:9): foo2_a
-|  |  SCMember (9:17): foo2_b
-|  SCMethodList (8:1)
-SCClass (8:1): Meta_Foo2
-|  SCMemberList (8:1)
-|  |  SCMember (11:14): foo2_class_var
-|  SCMethodList (8:1)
+SCClass (2:1): Foo, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (3:9): bar
+|  |  SCMember (3:14): car
+|  |  SCMember (3:19): tar
+|  SCMethodList (2:1)
+SCClass (2:1): Meta_Foo, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (4:11): foo_const1
+|  |  SCMember (4:23): foo_const_2
+|  SCMethodList (2:1)
+SCClass (9:1): Foo2, version 3.16
+|  SCMemberList (9:1)
+|  |  SCMember (10:9): foo2_a
+|  |  SCMember (10:17): foo2_b
+|  SCMethodList (9:1)
+SCClass (9:1): Meta_Foo2, version 3.16
+|  SCMemberList (9:1)
+|  |  SCMember (12:14): foo2_class_var
+|  SCMethodList (9:1)
 Successfully compiled 17 classes.

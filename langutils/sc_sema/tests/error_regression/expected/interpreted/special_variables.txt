@@ -4,15 +4,15 @@
 IR GRAPH DUMP 
 
 
-SCInterpreted (1:1): interpreted/special_variables.scd
+SCInterpreted (1:1): version 3.16: interpreted/special_variables.scd
 |  SCRegionList (1:1)
-|  |  SCRegion (3:1)
-|  |  |  SCFunction (3:1)
-|  |  |  |  SCBody (3:1)
-|  |  |  |  |  SCMessage (3:1): postln
-|  |  |  |  |  |  SCSpecial (3:1): this
-|  |  SCRegion (3:14)
-|  |  |  SCFunction (3:14)
-|  |  |  |  SCBody (3:14)
-|  |  |  |  |  SCSpecial (3:14): thisMethod
+|  |  SCRegion (4:1)
+|  |  |  SCFunction (4:1)
+|  |  |  |  SCBody (4:1)
+|  |  |  |  |  SCMessage (4:1): postln
+|  |  |  |  |  |  SCSpecial (4:1): this
+|  |  SCRegion (4:14)
+|  |  |  SCFunction (4:14)
+|  |  |  |  SCBody (4:14)
+|  |  |  |  |  SCSpecial (4:14): thisMethod
 Successfully compiled 15 classes.

@@ -1,3 +1,4 @@
+//# VERSION 3.16
 Poisoning {
     var instance_var;
     classvar class_var;

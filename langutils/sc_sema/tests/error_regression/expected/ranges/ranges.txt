@@ -4,150 +4,150 @@
 IR GRAPH DUMP 
 
 
-SCClass (1:1): Ranges
-|  SCMemberList (1:1)
-|  SCMethodList (1:1)
-|  |  SCMethod (2:5): ascending { ^(1..5) } -> [1, 2, 3, 4, 5]
-|  |  |  SCBody (2:17)
-|  |  |  |  SCExplicitReturn (2:17)
-|  |  |  |  |  SCRange (2:18) = [1, 2, 3, 4, 5]
-|  |  |  |  |  |  SCLiteral (2:19) = 1
-|  |  |  |  |  |  SCMissing (2:18)
-|  |  |  |  |  |  SCLiteral (2:22) = 5
-|  |  SCMethod (3:5): descending { ^(5..1) } -> [5, 4, 3, 2, 1]
-|  |  |  SCBody (3:18)
-|  |  |  |  SCExplicitReturn (3:18)
-|  |  |  |  |  SCRange (3:19) = [5, 4, 3, 2, 1]
-|  |  |  |  |  |  SCLiteral (3:20) = 5
-|  |  |  |  |  |  SCMissing (3:19)
-|  |  |  |  |  |  SCLiteral (3:23) = 1
-|  |  SCMethod (4:5): step { ^(1, 3..9) } -> [1, 3, 5, 7, 9]
-|  |  |  SCBody (4:12)
-|  |  |  |  SCExplicitReturn (4:12)
-|  |  |  |  |  SCRange (4:13) = [1, 3, 5, 7, 9]
-|  |  |  |  |  |  SCLiteral (4:14) = 1
-|  |  |  |  |  |  SCLiteral (4:17) = 3
-|  |  |  |  |  |  SCLiteral (4:20) = 9
-|  |  SCMethod (5:5): step_uneven { ^(1, 3..8) } -> [1, 3, 5, 7]
-|  |  |  SCBody (5:19)
-|  |  |  |  SCExplicitReturn (5:19)
-|  |  |  |  |  SCRange (5:20) = [1, 3, 5, 7]
-|  |  |  |  |  |  SCLiteral (5:21) = 1
-|  |  |  |  |  |  SCLiteral (5:24) = 3
-|  |  |  |  |  |  SCLiteral (5:27) = 8
-|  |  SCMethod (6:5): from_zero { ^(..3) } -> [0, 1, 2, 3]
-|  |  |  SCBody (6:17)
-|  |  |  |  SCExplicitReturn (6:17)
-|  |  |  |  |  SCRange (6:18) = [0, 1, 2, 3]
-|  |  |  |  |  |  SCLiteral (6:18) = 0
-|  |  |  |  |  |  SCMissing (6:18)
-|  |  |  |  |  |  SCLiteral (6:21) = 3
-|  |  SCMethod (7:5): single { ^(2..2) } -> [2]
-|  |  |  SCBody (7:14)
-|  |  |  |  SCExplicitReturn (7:14)
-|  |  |  |  |  SCRange (7:15) = [2]
-|  |  |  |  |  |  SCLiteral (7:16) = 2
-|  |  |  |  |  |  SCMissing (7:15)
-|  |  |  |  |  |  SCLiteral (7:19) = 2
-|  |  SCMethod (8:5): step_away_from_end { ^(1, 2..0) }
-|  |  |  SCBody (8:26)
-|  |  |  |  SCExplicitReturn (8:26)
-|  |  |  |  |  SCRange (8:27)
-|  |  |  |  |  |  SCLiteral (8:28) = 1
-|  |  |  |  |  |  SCLiteral (8:31) = 2
-|  |  |  |  |  |  SCLiteral (8:34) = 0
-|  |  SCMethod (9:5): zero_step { ^(1, 1..5) }
-|  |  |  SCBody (9:17)
-|  |  |  |  SCExplicitReturn (9:17)
-|  |  |  |  |  SCRange (9:18)
-|  |  |  |  |  |  SCLiteral (9:19) = 1
-|  |  |  |  |  |  SCLiteral (9:22) = 1
-|  |  |  |  |  |  SCLiteral (9:25) = 5
-|  |  SCMethod (10:5): floats { ^(1.0..3) }
-|  |  |  SCBody (10:14)
-|  |  |  |  SCExplicitReturn (10:14)
-|  |  |  |  |  SCRange (10:15)
-|  |  |  |  |  |  SCLiteral (10:16) = 1.0
-|  |  |  |  |  |  SCMissing (10:15)
-|  |  |  |  |  |  SCLiteral (10:21) = 3
-|  |  SCMethod (11:5): not_constant { ^(1..2.foo) }
-|  |  |  SCBody (11:20)
-|  |  |  |  SCExplicitReturn (11:20)
-|  |  |  |  |  SCRange (11:21)
-|  |  |  |  |  |  SCLiteral (11:22) = 1
-|  |  |  |  |  |  SCMissing (11:21)
-|  |  |  |  |  |  SCMessage (11:25): foo
-|  |  |  |  |  |  |  SCLiteral (11:25) = 2
-|  |  SCMethod (12:5): too_large { ^(1..2000) }
-|  |  |  SCBody (12:17)
-|  |  |  |  SCExplicitReturn (12:17)
-|  |  |  |  |  SCRange (12:18)
-|  |  |  |  |  |  SCLiteral (12:19) = 1
-|  |  |  |  |  |  SCMissing (12:18)
-|  |  |  |  |  |  SCLiteral (12:22) = 2000
-|  |  SCMethod (13:5): poisoned: unbounded { ^(1..) }
-|  |  |
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: Range has no end
-|  |  |  ranges/ranges.sc:13:18
-|  |  |     11 │     not_constant { ^(1..2.foo) }
-|  |  |     12 │     too_large { ^(1..2000) }
-|  |  |     13 │     unbounded { ^(1..) }
-|  |  |        ┆                  ^^^^^ this would create an infinite array.
-|  |  |     14 │     unbounded_step { ^(1, 3..) }
-|  |  |     15 │     in_array { ^[(1..3), 4] }
-|  |  |     16 │     receiver { ^(1..3).do { |x| x } }
-|  |  |
-|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+SCClass (2:1): Ranges, version 3.16
+|  SCMemberList (2:1)
+|  SCMethodList (2:1)
+|  |  SCMethod (3:5): version 3.16: ascending { ^(1..5) } -> [1, 2, 3, 4, 5]
+|  |  |  SCBody (3:17)
+|  |  |  |  SCExplicitReturn (3:17)
+|  |  |  |  |  SCRange (3:18) = [1, 2, 3, 4, 5]
+|  |  |  |  |  |  SCLiteral (3:19) = 1
+|  |  |  |  |  |  SCMissing (3:18)
+|  |  |  |  |  |  SCLiteral (3:22) = 5
+|  |  SCMethod (4:5): version 3.16: descending { ^(5..1) } -> [5, 4, 3, 2, 1]
+|  |  |  SCBody (4:18)
+|  |  |  |  SCExplicitReturn (4:18)
+|  |  |  |  |  SCRange (4:19) = [5, 4, 3, 2, 1]
+|  |  |  |  |  |  SCLiteral (4:20) = 5
+|  |  |  |  |  |  SCMissing (4:19)
+|  |  |  |  |  |  SCLiteral (4:23) = 1
+|  |  SCMethod (5:5): version 3.16: step { ^(1, 3..9) } -> [1, 3, 5, 7, 9]
+|  |  |  SCBody (5:12)
+|  |  |  |  SCExplicitReturn (5:12)
+|  |  |  |  |  SCRange (5:13) = [1, 3, 5, 7, 9]
+|  |  |  |  |  |  SCLiteral (5:14) = 1
+|  |  |  |  |  |  SCLiteral (5:17) = 3
+|  |  |  |  |  |  SCLiteral (5:20) = 9
+|  |  SCMethod (6:5): version 3.16: step_uneven { ^(1, 3..8) } -> [1, 3, 5, 7]
+|  |  |  SCBody (6:19)
+|  |  |  |  SCExplicitReturn (6:19)
+|  |  |  |  |  SCRange (6:20) = [1, 3, 5, 7]
+|  |  |  |  |  |  SCLiteral (6:21) = 1
+|  |  |  |  |  |  SCLiteral (6:24) = 3
+|  |  |  |  |  |  SCLiteral (6:27) = 8
+|  |  SCMethod (7:5): version 3.16: from_zero { ^(..3) } -> [0, 1, 2, 3]
+|  |  |  SCBody (7:17)
+|  |  |  |  SCExplicitReturn (7:17)
+|  |  |  |  |  SCRange (7:18) = [0, 1, 2, 3]
+|  |  |  |  |  |  SCLiteral (7:18) = 0
+|  |  |  |  |  |  SCMissing (7:18)
+|  |  |  |  |  |  SCLiteral (7:21) = 3
+|  |  SCMethod (8:5): version 3.16: single { ^(2..2) } -> [2]
+|  |  |  SCBody (8:14)
+|  |  |  |  SCExplicitReturn (8:14)
+|  |  |  |  |  SCRange (8:15) = [2]
+|  |  |  |  |  |  SCLiteral (8:16) = 2
+|  |  |  |  |  |  SCMissing (8:15)
+|  |  |  |  |  |  SCLiteral (8:19) = 2
+|  |  SCMethod (9:5): version 3.16: step_away_from_end { ^(1, 2..0) }
+|  |  |  SCBody (9:26)
+|  |  |  |  SCExplicitReturn (9:26)
+|  |  |  |  |  SCRange (9:27)
+|  |  |  |  |  |  SCLiteral (9:28) = 1
+|  |  |  |  |  |  SCLiteral (9:31) = 2
+|  |  |  |  |  |  SCLiteral (9:34) = 0
+|  |  SCMethod (10:5): version 3.16: zero_step { ^(1, 1..5) }
+|  |  |  SCBody (10:17)
+|  |  |  |  SCExplicitReturn (10:17)
+|  |  |  |  |  SCRange (10:18)
+|  |  |  |  |  |  SCLiteral (10:19) = 1
+|  |  |  |  |  |  SCLiteral (10:22) = 1
+|  |  |  |  |  |  SCLiteral (10:25) = 5
+|  |  SCMethod (11:5): version 3.16: floats { ^(1.0..3) }
+|  |  |  SCBody (11:14)
+|  |  |  |  SCExplicitReturn (11:14)
+|  |  |  |  |  SCRange (11:15)
+|  |  |  |  |  |  SCLiteral (11:16) = 1.0
+|  |  |  |  |  |  SCMissing (11:15)
+|  |  |  |  |  |  SCLiteral (11:21) = 3
+|  |  SCMethod (12:5): version 3.16: not_constant { ^(1..2.foo) }
+|  |  |  SCBody (12:20)
+|  |  |  |  SCExplicitReturn (12:20)
+|  |  |  |  |  SCRange (12:21)
+|  |  |  |  |  |  SCLiteral (12:22) = 1
+|  |  |  |  |  |  SCMissing (12:21)
+|  |  |  |  |  |  SCMessage (12:25): foo
+|  |  |  |  |  |  |  SCLiteral (12:25) = 2
+|  |  SCMethod (13:5): version 3.16: too_large { ^(1..2000) }
 |  |  |  SCBody (13:17)
 |  |  |  |  SCExplicitReturn (13:17)
 |  |  |  |  |  SCRange (13:18)
 |  |  |  |  |  |  SCLiteral (13:19) = 1
 |  |  |  |  |  |  SCMissing (13:18)
-|  |  |  |  |  |  SCMissing (13:18)
-|  |  SCMethod (14:5): poisoned: unbounded_step { ^(1, 3..) }
+|  |  |  |  |  |  SCLiteral (13:22) = 2000
+|  |  SCMethod (14:5): poisoned: version 3.16: unbounded { ^(1..) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Range has no end
-|  |  |  ranges/ranges.sc:14:23
-|  |  |     12 │     too_large { ^(1..2000) }
-|  |  |     13 │     unbounded { ^(1..) }
-|  |  |     14 │     unbounded_step { ^(1, 3..) }
-|  |  |        ┆                       ^^^^^^^^ this would create an infinite array.
-|  |  |     15 │     in_array { ^[(1..3), 4] }
-|  |  |     16 │     receiver { ^(1..3).do { |x| x } }
-|  |  |     17 │ }
+|  |  |  ranges/ranges.sc:14:18
+|  |  |     12 │     not_constant { ^(1..2.foo) }
+|  |  |     13 │     too_large { ^(1..2000) }
+|  |  |     14 │     unbounded { ^(1..) }
+|  |  |        ┆                  ^^^^^ this would create an infinite array.
+|  |  |     15 │     unbounded_step { ^(1, 3..) }
+|  |  |     16 │     in_array { ^[(1..3), 4] }
+|  |  |     17 │     receiver { ^(1..3).do { |x| x } }
 |  |  |
 |  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (14:22)
-|  |  |  |  SCExplicitReturn (14:22)
-|  |  |  |  |  SCRange (14:23)
-|  |  |  |  |  |  SCLiteral (14:24) = 1
-|  |  |  |  |  |  SCLiteral (14:27) = 3
-|  |  |  |  |  |  SCMissing (14:23)
-|  |  SCMethod (15:5): in_array { ^[(1..3), 4] } -> [[1, 2, 3], 4]
-|  |  |  SCBody (15:16)
-|  |  |  |  SCExplicitReturn (15:16)
-|  |  |  |  |  SCCollection (15:17): Array = [[1, 2, 3], 4]
-|  |  |  |  |  |  SCRange (15:18) = [1, 2, 3]
-|  |  |  |  |  |  |  SCLiteral (15:19) = 1
-|  |  |  |  |  |  |  SCMissing (15:18)
-|  |  |  |  |  |  |  SCLiteral (15:22) = 3
-|  |  |  |  |  |  SCLiteral (15:26) = 4
-|  |  SCMethod (16:5): receiver { ^(1..3).do { |x| x } }
+|  |  |  SCBody (14:17)
+|  |  |  |  SCExplicitReturn (14:17)
+|  |  |  |  |  SCRange (14:18)
+|  |  |  |  |  |  SCLiteral (14:19) = 1
+|  |  |  |  |  |  SCMissing (14:18)
+|  |  |  |  |  |  SCMissing (14:18)
+|  |  SCMethod (15:5): poisoned: version 3.16: unbounded_step { ^(1, 3..) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Range has no end
+|  |  |  ranges/ranges.sc:15:23
+|  |  |     13 │     too_large { ^(1..2000) }
+|  |  |     14 │     unbounded { ^(1..) }
+|  |  |     15 │     unbounded_step { ^(1, 3..) }
+|  |  |        ┆                       ^^^^^^^^ this would create an infinite array.
+|  |  |     16 │     in_array { ^[(1..3), 4] }
+|  |  |     17 │     receiver { ^(1..3).do { |x| x } }
+|  |  |     18 │ }
+|  |  |
+|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (15:22)
+|  |  |  |  SCExplicitReturn (15:22)
+|  |  |  |  |  SCRange (15:23)
+|  |  |  |  |  |  SCLiteral (15:24) = 1
+|  |  |  |  |  |  SCLiteral (15:27) = 3
+|  |  |  |  |  |  SCMissing (15:23)
+|  |  SCMethod (16:5): version 3.16: in_array { ^[(1..3), 4] } -> [[1, 2, 3], 4]
 |  |  |  SCBody (16:16)
 |  |  |  |  SCExplicitReturn (16:16)
-|  |  |  |  |  SCMessage (16:17): do
-|  |  |  |  |  |  SCRange (16:17) = [1, 2, 3]
-|  |  |  |  |  |  |  SCLiteral (16:18) = 1
-|  |  |  |  |  |  |  SCMissing (16:17)
-|  |  |  |  |  |  |  SCLiteral (16:21) = 3
-|  |  |  |  |  |  SCPositionalArgs (16:17)
-|  |  |  |  |  |  |  SCFunction (16:27)
-|  |  |  |  |  |  |  |  SCArgumentDeclareList (16:30)
-|  |  |  |  |  |  |  |  |  SCArgumentDeclare (16:30): x
-|  |  |  |  |  |  |  |  SCBody (16:27)
-|  |  |  |  |  |  |  |  |  SCRead (16:33): local x, declared (16:30): x
+|  |  |  |  |  SCCollection (16:17): Array = [[1, 2, 3], 4]
+|  |  |  |  |  |  SCRange (16:18) = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (16:19) = 1
+|  |  |  |  |  |  |  SCMissing (16:18)
+|  |  |  |  |  |  |  SCLiteral (16:22) = 3
+|  |  |  |  |  |  SCLiteral (16:26) = 4
+|  |  SCMethod (17:5): version 3.16: receiver { ^(1..3).do { |x| x } }
+|  |  |  SCBody (17:16)
+|  |  |  |  SCExplicitReturn (17:16)
+|  |  |  |  |  SCMessage (17:17): do
+|  |  |  |  |  |  SCRange (17:17) = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (17:18) = 1
+|  |  |  |  |  |  |  SCMissing (17:17)
+|  |  |  |  |  |  |  SCLiteral (17:21) = 3
+|  |  |  |  |  |  SCPositionalArgs (17:17)
+|  |  |  |  |  |  |  SCFunction (17:27)
+|  |  |  |  |  |  |  |  SCArgumentDeclareList (17:30)
+|  |  |  |  |  |  |  |  |  SCArgumentDeclare (17:30): x
+|  |  |  |  |  |  |  |  SCBody (17:27)
+|  |  |  |  |  |  |  |  |  SCRead (17:33): local x, declared (17:30): x
 Successfully compiled 16 classes.

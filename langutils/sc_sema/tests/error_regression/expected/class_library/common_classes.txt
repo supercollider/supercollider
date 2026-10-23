@@ -4,46 +4,46 @@
 IR GRAPH DUMP 
 
 
-SCClass (7:1): AbstractObjectExperimental
-|  SCMemberList (7:1)
-|  SCMethodList (7:1)
-SCClass (8:1): Object
+SCClass (8:1): AbstractObjectExperimental, version 3.16
 |  SCMemberList (8:1)
 |  SCMethodList (8:1)
-SCClass (9:1): Class
+SCClass (9:1): Object, version 3.16
 |  SCMemberList (9:1)
 |  SCMethodList (9:1)
-SCClass (10:1): String
+SCClass (10:1): Class, version 3.16
 |  SCMemberList (10:1)
 |  SCMethodList (10:1)
-SCClass (11:1): True
+SCClass (11:1): String, version 3.16
 |  SCMemberList (11:1)
 |  SCMethodList (11:1)
-SCClass (12:1): False
+SCClass (12:1): True, version 3.16
 |  SCMemberList (12:1)
 |  SCMethodList (12:1)
-SCClass (13:1): Nil
+SCClass (13:1): False, version 3.16
 |  SCMemberList (13:1)
 |  SCMethodList (13:1)
-SCClass (14:1): Float
+SCClass (14:1): Nil, version 3.16
 |  SCMemberList (14:1)
 |  SCMethodList (14:1)
-SCClass (15:1): Integer
+SCClass (15:1): Float, version 3.16
 |  SCMemberList (15:1)
 |  SCMethodList (15:1)
-SCClass (16:1): Char
+SCClass (16:1): Integer, version 3.16
 |  SCMemberList (16:1)
 |  SCMethodList (16:1)
-SCClass (17:1): Symbol
+SCClass (17:1): Char, version 3.16
 |  SCMemberList (17:1)
 |  SCMethodList (17:1)
-SCClass (18:1): Ref
+SCClass (18:1): Symbol, version 3.16
 |  SCMemberList (18:1)
 |  SCMethodList (18:1)
-SCClass (19:1): Array
+SCClass (19:1): Ref, version 3.16
 |  SCMemberList (19:1)
 |  SCMethodList (19:1)
-SCClass (20:1): Event
+SCClass (20:1): Array, version 3.16
 |  SCMemberList (20:1)
 |  SCMethodList (20:1)
+SCClass (21:1): Event, version 3.16
+|  SCMemberList (21:1)
+|  SCMethodList (21:1)
 Successfully compiled 14 classes.

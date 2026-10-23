@@ -4,53 +4,53 @@
 IR GRAPH DUMP 
 
 
-SCInterpreted (1:1): region_tests/many_regions.scd
+SCInterpreted (1:1): version 3.16: region_tests/many_regions.scd
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Warning: Region missing semi-colon.
-|  region_tests/many_regions.scd:4:1
-|      2 │ (
-|      3 │     a + 1;
-|      4 │ )
+|  region_tests/many_regions.scd:5:1
+|      3 │ (
+|      4 │     a + 1;
+|      5 │ )
 |        ┆ ^ Add a semi-colon after this.
-|      5 │ 
 |      6 │ 
-|      7 │ (
+|      7 │ 
+|      8 │ (
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Warning: Region missing semi-colon.
-|  region_tests/many_regions.scd:11:1
-|      9 │     var a = 10;
-|     10 │     a * ~bar
-|     11 │ )
+|  region_tests/many_regions.scd:12:1
+|     10 │     var a = 10;
+|     11 │     a * ~bar
+|     12 │ )
 |        ┆ ^ Add a semi-colon after this.
-|     12 │ 
 |     13 │ 
-|     14 │ (
+|     14 │ 
+|     15 │ (
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCRegionList (1:1)
-|  |  SCRegion (3:5)
-|  |  |  SCFunction (3:5)
-|  |  |  |  SCBody (3:5)
-|  |  |  |  |  SCMessage (3:5): +
-|  |  |  |  |  |  SCRead (3:5): instance a, declared (36:11): a
-|  |  |  |  |  |  SCPositionalArgs (3:5)
-|  |  |  |  |  |  |  SCLiteral (3:9) = 1
-|  |  SCRegion (7:1)
-|  |  |  SCFunction (7:1)
-|  |  |  |  SCBody (7:1)
-|  |  |  |  |  SCVariableDeclare (9:9): a
-|  |  |  |  |  |  SCLiteral (9:13) = 10
-|  |  |  |  |  SCMessage (10:5): *
-|  |  |  |  |  |  SCRead (10:5): local a = 10, declared (9:9): a = 10
-|  |  |  |  |  |  SCPositionalArgs (10:5)
-|  |  |  |  |  |  |  SCRead (10:9): environment bar
-|  |  SCRegion (15:5)
-|  |  |  SCFunction (15:5)
-|  |  |  |  SCBody (15:5)
-|  |  |  |  |  SCAssign (15:5): environment f
-|  |  |  |  |  |  SCLiteral (15:10) = 10
+|  |  SCRegion (4:5)
+|  |  |  SCFunction (4:5)
+|  |  |  |  SCBody (4:5)
+|  |  |  |  |  SCMessage (4:5): +
+|  |  |  |  |  |  SCRead (4:5): instance a, declared (37:11): a
+|  |  |  |  |  |  SCPositionalArgs (4:5)
+|  |  |  |  |  |  |  SCLiteral (4:9) = 1
+|  |  SCRegion (8:1)
+|  |  |  SCFunction (8:1)
+|  |  |  |  SCBody (8:1)
+|  |  |  |  |  SCVariableDeclare (10:9): a
+|  |  |  |  |  |  SCLiteral (10:13) = 10
+|  |  |  |  |  SCMessage (11:5): *
+|  |  |  |  |  |  SCRead (11:5): local a = 10, declared (10:9): a = 10
+|  |  |  |  |  |  SCPositionalArgs (11:5)
+|  |  |  |  |  |  |  SCRead (11:9): environment bar
+|  |  SCRegion (16:5)
+|  |  |  SCFunction (16:5)
+|  |  |  |  SCBody (16:5)
+|  |  |  |  |  SCAssign (16:5): environment f
+|  |  |  |  |  |  SCLiteral (16:10) = 10
 Successfully compiled 15 classes.

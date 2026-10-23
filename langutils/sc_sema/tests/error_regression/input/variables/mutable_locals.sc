@@ -1,3 +1,4 @@
+//# VERSION 3.16
 MutableLocals {
     array { var a = [1, 2]; ^a }
     array_put { var a = [1, 2]; a[0] = 10; ^a }

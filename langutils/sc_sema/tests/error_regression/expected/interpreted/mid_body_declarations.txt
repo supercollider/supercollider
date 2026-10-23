@@ -4,19 +4,19 @@
 IR GRAPH DUMP 
 
 
-SCInterpreted (1:1): interpreted/mid_body_declarations.scd
+SCInterpreted (1:1): version 3.16: interpreted/mid_body_declarations.scd
 |  SCFunction (1:1)
 |  |  SCBody (1:1)
-|  |  |  SCVariableDeclare (5:5): c
-|  |  |  |  SCLiteral (5:9) = 1
-|  |  |  SCMessage (5:12): postln
-|  |  |  |  SCRead (5:12): local c, declared (5:5): c = 1
-|  |  |  SCVariableDeclare (5:26): f
-|  |  |  |  SCFunction (5:30)
-|  |  |  |  |  SCBody (5:30)
-|  |  |  |  |  |  SCRead (5:32): local c, declared (5:5): c = 1
-|  |  |  SCAssign (5:37): instance a, declared (36:11): a
-|  |  |  |  SCRead (5:41): local f, declared (5:26): f = { c }
-|  |  |  SCMessage (5:44): value
-|  |  |  |  SCRead (5:44): local f, declared (5:26): f = { c }
+|  |  |  SCVariableDeclare (6:5): c
+|  |  |  |  SCLiteral (6:9) = 1
+|  |  |  SCMessage (6:12): postln
+|  |  |  |  SCRead (6:12): local c, declared (6:5): c = 1
+|  |  |  SCVariableDeclare (6:26): f
+|  |  |  |  SCFunction (6:30)
+|  |  |  |  |  SCBody (6:30)
+|  |  |  |  |  |  SCRead (6:32): local c, declared (6:5): c = 1
+|  |  |  SCAssign (6:37): instance a, declared (37:11): a
+|  |  |  |  SCRead (6:41): local f, declared (6:26): f = { c }
+|  |  |  SCMessage (6:44): value
+|  |  |  |  SCRead (6:44): local f, declared (6:26): f = { c }
 Successfully compiled 15 classes.

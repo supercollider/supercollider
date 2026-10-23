@@ -1,3 +1,4 @@
+//# VERSION 3.16
 Generators {
     var instance_var;
 

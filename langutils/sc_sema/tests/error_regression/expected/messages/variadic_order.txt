@@ -4,254 +4,254 @@
 IR GRAPH DUMP 
 
 
-SCClass (1:1): VariadicOrder
-|  SCMemberList (1:1)
-|  |  SCMember (2:9): instance_var
-|  SCMethodList (1:1)
-|  |  SCMethod (4:5): variadic_last { ^1.foo(2, *3) }
-|  |  |  SCBody (4:21)
-|  |  |  |  SCExplicitReturn (4:21)
-|  |  |  |  |  SCMessage (4:22): foo
-|  |  |  |  |  |  SCLiteral (4:22) = 1
-|  |  |  |  |  |  SCPositionalArgs (4:22)
-|  |  |  |  |  |  |  SCLiteral (4:28) = 2
-|  |  |  |  |  |  SCVariadicArgs (4:22)
-|  |  |  |  |  |  |  SCLiteral (4:32) = 3
-|  |  SCMethod (5:5): poisoned: variadic_first { ^1.foo(*2, 3) }
+SCClass (2:1): VariadicOrder, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (3:9): instance_var
+|  SCMethodList (2:1)
+|  |  SCMethod (5:5): version 3.16: variadic_last { ^1.foo(2, *3) }
+|  |  |  SCBody (5:21)
+|  |  |  |  SCExplicitReturn (5:21)
+|  |  |  |  |  SCMessage (5:22): foo
+|  |  |  |  |  |  SCLiteral (5:22) = 1
+|  |  |  |  |  |  SCPositionalArgs (5:22)
+|  |  |  |  |  |  |  SCLiteral (5:28) = 2
+|  |  |  |  |  |  SCVariadicArgs (5:22)
+|  |  |  |  |  |  |  SCLiteral (5:32) = 3
+|  |  SCMethod (6:5): poisoned: version 3.16: variadic_first { ^1.foo(*2, 3) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
-|  |  |  messages/variadic_order.sc:5:29
-|  |  |      3 │ 
-|  |  |      4 │     variadic_last { ^1.foo(2, *3) }
-|  |  |      5 │     variadic_first { ^1.foo(*2, 3) }
+|  |  |  messages/variadic_order.sc:6:29
+|  |  |      4 │ 
+|  |  |      5 │     variadic_last { ^1.foo(2, *3) }
+|  |  |      6 │     variadic_first { ^1.foo(*2, 3) }
 |  |  |        ┆                             ^^ the elements of this are passed after...
-|  |  |      6 │     two_after { ^1.foo(*2, 3, 4) }
-|  |  |      7 │     keyword_after { ^1.foo(*2, bar: 3) }
-|  |  |      8 │     prefix { ^foo(1, *2, 3) }
+|  |  |      7 │     two_after { ^1.foo(*2, 3, 4) }
+|  |  |      8 │     keyword_after { ^1.foo(*2, bar: 3) }
+|  |  |      9 │     prefix { ^foo(1, *2, 3) }
 |  |  |
-|  |  |  messages/variadic_order.sc:5:33
-|  |  |      3 │ 
-|  |  |      4 │     variadic_last { ^1.foo(2, *3) }
-|  |  |      5 │     variadic_first { ^1.foo(*2, 3) }
+|  |  |  messages/variadic_order.sc:6:33
+|  |  |      4 │ 
+|  |  |      5 │     variadic_last { ^1.foo(2, *3) }
+|  |  |      6 │     variadic_first { ^1.foo(*2, 3) }
 |  |  |        ┆                                 ^ ...this argument, which is written after it.
-|  |  |      6 │     two_after { ^1.foo(*2, 3, 4) }
-|  |  |      7 │     keyword_after { ^1.foo(*2, bar: 3) }
-|  |  |      8 │     prefix { ^foo(1, *2, 3) }
+|  |  |      7 │     two_after { ^1.foo(*2, 3, 4) }
+|  |  |      8 │     keyword_after { ^1.foo(*2, bar: 3) }
+|  |  |      9 │     prefix { ^foo(1, *2, 3) }
 |  |  |
 |  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (5:22)
-|  |  |  |  SCExplicitReturn (5:22)
-|  |  |  |  |  SCMessage (5:23): foo
-|  |  |  |  |  |  SCLiteral (5:23) = 1
-|  |  |  |  |  |  SCPositionalArgs (5:23)
-|  |  |  |  |  |  |  SCLiteral (5:33) = 3
-|  |  |  |  |  |  SCVariadicArgs (5:23)
-|  |  |  |  |  |  |  SCLiteral (5:30) = 2
-|  |  SCMethod (6:5): poisoned: two_after { ^1.foo(*2, 3, 4) }
+|  |  |  SCBody (6:22)
+|  |  |  |  SCExplicitReturn (6:22)
+|  |  |  |  |  SCMessage (6:23): foo
+|  |  |  |  |  |  SCLiteral (6:23) = 1
+|  |  |  |  |  |  SCPositionalArgs (6:23)
+|  |  |  |  |  |  |  SCLiteral (6:33) = 3
+|  |  |  |  |  |  SCVariadicArgs (6:23)
+|  |  |  |  |  |  |  SCLiteral (6:30) = 2
+|  |  SCMethod (7:5): poisoned: version 3.16: two_after { ^1.foo(*2, 3, 4) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
-|  |  |  messages/variadic_order.sc:6:24
-|  |  |      4 │     variadic_last { ^1.foo(2, *3) }
-|  |  |      5 │     variadic_first { ^1.foo(*2, 3) }
-|  |  |      6 │     two_after { ^1.foo(*2, 3, 4) }
+|  |  |  messages/variadic_order.sc:7:24
+|  |  |      5 │     variadic_last { ^1.foo(2, *3) }
+|  |  |      6 │     variadic_first { ^1.foo(*2, 3) }
+|  |  |      7 │     two_after { ^1.foo(*2, 3, 4) }
 |  |  |        ┆                        ^^ the elements of this are passed after...
-|  |  |      7 │     keyword_after { ^1.foo(*2, bar: 3) }
-|  |  |      8 │     prefix { ^foo(1, *2, 3) }
-|  |  |      9 │     prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |      8 │     keyword_after { ^1.foo(*2, bar: 3) }
+|  |  |      9 │     prefix { ^foo(1, *2, 3) }
+|  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
 |  |  |
-|  |  |  messages/variadic_order.sc:6:28
-|  |  |      4 │     variadic_last { ^1.foo(2, *3) }
-|  |  |      5 │     variadic_first { ^1.foo(*2, 3) }
-|  |  |      6 │     two_after { ^1.foo(*2, 3, 4) }
+|  |  |  messages/variadic_order.sc:7:28
+|  |  |      5 │     variadic_last { ^1.foo(2, *3) }
+|  |  |      6 │     variadic_first { ^1.foo(*2, 3) }
+|  |  |      7 │     two_after { ^1.foo(*2, 3, 4) }
 |  |  |        ┆                            ^ ...this argument, which is written after it.
-|  |  |      7 │     keyword_after { ^1.foo(*2, bar: 3) }
-|  |  |      8 │     prefix { ^foo(1, *2, 3) }
-|  |  |      9 │     prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |      8 │     keyword_after { ^1.foo(*2, bar: 3) }
+|  |  |      9 │     prefix { ^foo(1, *2, 3) }
+|  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
 |  |  |
 |  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (6:17)
-|  |  |  |  SCExplicitReturn (6:17)
-|  |  |  |  |  SCMessage (6:18): foo
-|  |  |  |  |  |  SCLiteral (6:18) = 1
-|  |  |  |  |  |  SCPositionalArgs (6:18)
-|  |  |  |  |  |  |  SCLiteral (6:28) = 3
-|  |  |  |  |  |  |  SCLiteral (6:31) = 4
-|  |  |  |  |  |  SCVariadicArgs (6:18)
-|  |  |  |  |  |  |  SCLiteral (6:25) = 2
-|  |  SCMethod (7:5): keyword_after { ^1.foo(*2, bar: 3) }
-|  |  |  SCBody (7:21)
-|  |  |  |  SCExplicitReturn (7:21)
-|  |  |  |  |  SCMessage (7:22): foo
-|  |  |  |  |  |  SCLiteral (7:22) = 1
-|  |  |  |  |  |  SCKwArgs (7:22)
-|  |  |  |  |  |  |  SCKwArg (7:32): bar
-|  |  |  |  |  |  |  |  SCLiteral (7:37) = 3
-|  |  |  |  |  |  SCVariadicArgs (7:22)
-|  |  |  |  |  |  |  SCLiteral (7:29) = 2
-|  |  SCMethod (8:5): poisoned: prefix { ^foo(1, *2, 3) }
+|  |  |  SCBody (7:17)
+|  |  |  |  SCExplicitReturn (7:17)
+|  |  |  |  |  SCMessage (7:18): foo
+|  |  |  |  |  |  SCLiteral (7:18) = 1
+|  |  |  |  |  |  SCPositionalArgs (7:18)
+|  |  |  |  |  |  |  SCLiteral (7:28) = 3
+|  |  |  |  |  |  |  SCLiteral (7:31) = 4
+|  |  |  |  |  |  SCVariadicArgs (7:18)
+|  |  |  |  |  |  |  SCLiteral (7:25) = 2
+|  |  SCMethod (8:5): version 3.16: keyword_after { ^1.foo(*2, bar: 3) }
+|  |  |  SCBody (8:21)
+|  |  |  |  SCExplicitReturn (8:21)
+|  |  |  |  |  SCMessage (8:22): foo
+|  |  |  |  |  |  SCLiteral (8:22) = 1
+|  |  |  |  |  |  SCKwArgs (8:22)
+|  |  |  |  |  |  |  SCKwArg (8:32): bar
+|  |  |  |  |  |  |  |  SCLiteral (8:37) = 3
+|  |  |  |  |  |  SCVariadicArgs (8:22)
+|  |  |  |  |  |  |  SCLiteral (8:29) = 2
+|  |  SCMethod (9:5): poisoned: version 3.16: prefix { ^foo(1, *2, 3) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
-|  |  |  messages/variadic_order.sc:8:22
-|  |  |      6 │     two_after { ^1.foo(*2, 3, 4) }
-|  |  |      7 │     keyword_after { ^1.foo(*2, bar: 3) }
-|  |  |      8 │     prefix { ^foo(1, *2, 3) }
+|  |  |  messages/variadic_order.sc:9:22
+|  |  |      7 │     two_after { ^1.foo(*2, 3, 4) }
+|  |  |      8 │     keyword_after { ^1.foo(*2, bar: 3) }
+|  |  |      9 │     prefix { ^foo(1, *2, 3) }
 |  |  |        ┆                      ^^ the elements of this are passed after...
-|  |  |      9 │     prefix_variadic_receiver { ^foo(*1, 2) }
-|  |  |     10 │     array_after { ^1.foo(*2, [3]) }
-|  |  |     11 │     put_variadic { instance_var[*0] = 1 }
+|  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |     11 │     array_after { ^1.foo(*2, [3]) }
+|  |  |     12 │     put_variadic { instance_var[*0] = 1 }
 |  |  |
-|  |  |  messages/variadic_order.sc:8:26
-|  |  |      6 │     two_after { ^1.foo(*2, 3, 4) }
-|  |  |      7 │     keyword_after { ^1.foo(*2, bar: 3) }
-|  |  |      8 │     prefix { ^foo(1, *2, 3) }
+|  |  |  messages/variadic_order.sc:9:26
+|  |  |      7 │     two_after { ^1.foo(*2, 3, 4) }
+|  |  |      8 │     keyword_after { ^1.foo(*2, bar: 3) }
+|  |  |      9 │     prefix { ^foo(1, *2, 3) }
 |  |  |        ┆                          ^ ...this argument, which is written after it.
-|  |  |      9 │     prefix_variadic_receiver { ^foo(*1, 2) }
-|  |  |     10 │     array_after { ^1.foo(*2, [3]) }
-|  |  |     11 │     put_variadic { instance_var[*0] = 1 }
+|  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |     11 │     array_after { ^1.foo(*2, [3]) }
+|  |  |     12 │     put_variadic { instance_var[*0] = 1 }
 |  |  |
 |  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (8:14)
-|  |  |  |  SCExplicitReturn (8:14)
-|  |  |  |  |  SCMessage (8:15): foo
-|  |  |  |  |  |  SCLiteral (8:19) = 1
-|  |  |  |  |  |  SCPositionalArgs (8:15)
-|  |  |  |  |  |  |  SCLiteral (8:26) = 3
-|  |  |  |  |  |  SCVariadicArgs (8:15)
-|  |  |  |  |  |  |  SCLiteral (8:23) = 2
-|  |  SCMethod (9:5): poisoned: prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |  SCBody (9:14)
+|  |  |  |  SCExplicitReturn (9:14)
+|  |  |  |  |  SCMessage (9:15): foo
+|  |  |  |  |  |  SCLiteral (9:19) = 1
+|  |  |  |  |  |  SCPositionalArgs (9:15)
+|  |  |  |  |  |  |  SCLiteral (9:26) = 3
+|  |  |  |  |  |  SCVariadicArgs (9:15)
+|  |  |  |  |  |  |  SCLiteral (9:23) = 2
+|  |  SCMethod (10:5): poisoned: version 3.16: prefix_variadic_receiver { ^foo(*1, 2) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
-|  |  |  messages/variadic_order.sc:9:37
-|  |  |      7 │     keyword_after { ^1.foo(*2, bar: 3) }
-|  |  |      8 │     prefix { ^foo(1, *2, 3) }
-|  |  |      9 │     prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |  messages/variadic_order.sc:10:37
+|  |  |      8 │     keyword_after { ^1.foo(*2, bar: 3) }
+|  |  |      9 │     prefix { ^foo(1, *2, 3) }
+|  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
 |  |  |        ┆                                     ^^ the elements of this are passed after...
-|  |  |     10 │     array_after { ^1.foo(*2, [3]) }
-|  |  |     11 │     put_variadic { instance_var[*0] = 1 }
-|  |  |     12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
+|  |  |     11 │     array_after { ^1.foo(*2, [3]) }
+|  |  |     12 │     put_variadic { instance_var[*0] = 1 }
+|  |  |     13 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
 |  |  |
-|  |  |  messages/variadic_order.sc:9:41
-|  |  |      7 │     keyword_after { ^1.foo(*2, bar: 3) }
-|  |  |      8 │     prefix { ^foo(1, *2, 3) }
-|  |  |      9 │     prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |  messages/variadic_order.sc:10:41
+|  |  |      8 │     keyword_after { ^1.foo(*2, bar: 3) }
+|  |  |      9 │     prefix { ^foo(1, *2, 3) }
+|  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
 |  |  |        ┆                                         ^ ...this argument, which is written after it.
-|  |  |     10 │     array_after { ^1.foo(*2, [3]) }
-|  |  |     11 │     put_variadic { instance_var[*0] = 1 }
-|  |  |     12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
+|  |  |     11 │     array_after { ^1.foo(*2, [3]) }
+|  |  |     12 │     put_variadic { instance_var[*0] = 1 }
+|  |  |     13 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
 |  |  |
 |  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (9:32)
-|  |  |  |  SCExplicitReturn (9:32)
-|  |  |  |  |  SCMessage (9:33): foo
-|  |  |  |  |  |  SCLiteral (9:41) = 2
-|  |  |  |  |  |  SCVariadicArgs (9:33)
-|  |  |  |  |  |  |  SCLiteral (9:38) = 1
-|  |  SCMethod (10:5): poisoned: array_after { ^1.foo(*2, [3]) }
+|  |  |  SCBody (10:32)
+|  |  |  |  SCExplicitReturn (10:32)
+|  |  |  |  |  SCMessage (10:33): foo
+|  |  |  |  |  |  SCLiteral (10:41) = 2
+|  |  |  |  |  |  SCVariadicArgs (10:33)
+|  |  |  |  |  |  |  SCLiteral (10:38) = 1
+|  |  SCMethod (11:5): poisoned: version 3.16: array_after { ^1.foo(*2, [3]) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
-|  |  |  messages/variadic_order.sc:10:26
-|  |  |      8 │     prefix { ^foo(1, *2, 3) }
-|  |  |      9 │     prefix_variadic_receiver { ^foo(*1, 2) }
-|  |  |     10 │     array_after { ^1.foo(*2, [3]) }
+|  |  |  messages/variadic_order.sc:11:26
+|  |  |      9 │     prefix { ^foo(1, *2, 3) }
+|  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |     11 │     array_after { ^1.foo(*2, [3]) }
 |  |  |        ┆                          ^^ the elements of this are passed after...
-|  |  |     11 │     put_variadic { instance_var[*0] = 1 }
-|  |  |     12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
-|  |  |     13 │     after_errors { ^5 }
+|  |  |     12 │     put_variadic { instance_var[*0] = 1 }
+|  |  |     13 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
+|  |  |     14 │     after_errors { ^5 }
 |  |  |
-|  |  |  messages/variadic_order.sc:10:30
-|  |  |      8 │     prefix { ^foo(1, *2, 3) }
-|  |  |      9 │     prefix_variadic_receiver { ^foo(*1, 2) }
-|  |  |     10 │     array_after { ^1.foo(*2, [3]) }
+|  |  |  messages/variadic_order.sc:11:30
+|  |  |      9 │     prefix { ^foo(1, *2, 3) }
+|  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |     11 │     array_after { ^1.foo(*2, [3]) }
 |  |  |        ┆                              ^^^ ...this argument, which is written after it.
-|  |  |     11 │     put_variadic { instance_var[*0] = 1 }
-|  |  |     12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
-|  |  |     13 │     after_errors { ^5 }
+|  |  |     12 │     put_variadic { instance_var[*0] = 1 }
+|  |  |     13 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
+|  |  |     14 │     after_errors { ^5 }
 |  |  |
 |  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (10:19)
-|  |  |  |  SCExplicitReturn (10:19)
-|  |  |  |  |  SCMessage (10:20): foo
-|  |  |  |  |  |  SCLiteral (10:20) = 1
-|  |  |  |  |  |  SCPositionalArgs (10:20)
-|  |  |  |  |  |  |  SCCollection (10:30): Array = [3]
-|  |  |  |  |  |  |  |  SCLiteral (10:31) = 3
-|  |  |  |  |  |  SCVariadicArgs (10:20)
-|  |  |  |  |  |  |  SCLiteral (10:27) = 2
-|  |  SCMethod (11:5): poisoned: put_variadic { instance_var[*0] = 1 }
+|  |  |  SCBody (11:19)
+|  |  |  |  SCExplicitReturn (11:19)
+|  |  |  |  |  SCMessage (11:20): foo
+|  |  |  |  |  |  SCLiteral (11:20) = 1
+|  |  |  |  |  |  SCPositionalArgs (11:20)
+|  |  |  |  |  |  |  SCCollection (11:30): Array = [3]
+|  |  |  |  |  |  |  |  SCLiteral (11:31) = 3
+|  |  |  |  |  |  SCVariadicArgs (11:20)
+|  |  |  |  |  |  |  SCLiteral (11:27) = 2
+|  |  SCMethod (12:5): poisoned: version 3.16: put_variadic { instance_var[*0] = 1 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
-|  |  |  messages/variadic_order.sc:11:33
-|  |  |      9 │     prefix_variadic_receiver { ^foo(*1, 2) }
-|  |  |     10 │     array_after { ^1.foo(*2, [3]) }
-|  |  |     11 │     put_variadic { instance_var[*0] = 1 }
+|  |  |  messages/variadic_order.sc:12:33
+|  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |     11 │     array_after { ^1.foo(*2, [3]) }
+|  |  |     12 │     put_variadic { instance_var[*0] = 1 }
 |  |  |        ┆                                 ^^ the elements of this are passed after...
-|  |  |     12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
-|  |  |     13 │     after_errors { ^5 }
-|  |  |     14 │ }
+|  |  |     13 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
+|  |  |     14 │     after_errors { ^5 }
+|  |  |     15 │ }
 |  |  |
-|  |  |  messages/variadic_order.sc:11:39
-|  |  |      9 │     prefix_variadic_receiver { ^foo(*1, 2) }
-|  |  |     10 │     array_after { ^1.foo(*2, [3]) }
-|  |  |     11 │     put_variadic { instance_var[*0] = 1 }
+|  |  |  messages/variadic_order.sc:12:39
+|  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
+|  |  |     11 │     array_after { ^1.foo(*2, [3]) }
+|  |  |     12 │     put_variadic { instance_var[*0] = 1 }
 |  |  |        ┆                                       ^ ...this argument, which is written after it.
-|  |  |     12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
-|  |  |     13 │     after_errors { ^5 }
-|  |  |     14 │ }
+|  |  |     13 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
+|  |  |     14 │     after_errors { ^5 }
+|  |  |     15 │ }
 |  |  |
 |  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (11:20)
-|  |  |  |  SCMessage (11:20): put
-|  |  |  |  |  SCRead (11:20): instance instance_var, declared (2:9): instance_var
-|  |  |  |  |  SCPositionalArgs (11:20)
-|  |  |  |  |  |  SCLiteral (11:39) = 1
-|  |  |  |  |  SCVariadicArgs (11:20)
-|  |  |  |  |  |  SCLiteral (11:34) = 0
-|  |  SCMethod (12:5): poisoned: put_variadic_keyword { instance_var[*0, b: 1] = 2 }
+|  |  |  SCBody (12:20)
+|  |  |  |  SCMessage (12:20): put
+|  |  |  |  |  SCRead (12:20): instance instance_var, declared (3:9): instance_var
+|  |  |  |  |  SCPositionalArgs (12:20)
+|  |  |  |  |  |  SCLiteral (12:39) = 1
+|  |  |  |  |  SCVariadicArgs (12:20)
+|  |  |  |  |  |  SCLiteral (12:34) = 0
+|  |  SCMethod (13:5): poisoned: version 3.16: put_variadic_keyword { instance_var[*0, b: 1] = 2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
-|  |  |  messages/variadic_order.sc:12:41
-|  |  |     10 │     array_after { ^1.foo(*2, [3]) }
-|  |  |     11 │     put_variadic { instance_var[*0] = 1 }
-|  |  |     12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
+|  |  |  messages/variadic_order.sc:13:41
+|  |  |     11 │     array_after { ^1.foo(*2, [3]) }
+|  |  |     12 │     put_variadic { instance_var[*0] = 1 }
+|  |  |     13 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
 |  |  |        ┆                                         ^^ the elements of this are passed after...
-|  |  |     13 │     after_errors { ^5 }
-|  |  |     14 │ }
+|  |  |     14 │     after_errors { ^5 }
+|  |  |     15 │ }
 |  |  |
-|  |  |  messages/variadic_order.sc:12:53
-|  |  |     10 │     array_after { ^1.foo(*2, [3]) }
-|  |  |     11 │     put_variadic { instance_var[*0] = 1 }
-|  |  |     12 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
+|  |  |  messages/variadic_order.sc:13:53
+|  |  |     11 │     array_after { ^1.foo(*2, [3]) }
+|  |  |     12 │     put_variadic { instance_var[*0] = 1 }
+|  |  |     13 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
 |  |  |        ┆                                                     ^ ...this argument, which is written after it.
-|  |  |     13 │     after_errors { ^5 }
-|  |  |     14 │ }
+|  |  |     14 │     after_errors { ^5 }
+|  |  |     15 │ }
 |  |  |
 |  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (12:28)
-|  |  |  |  SCMessage (12:28): put
-|  |  |  |  |  SCRead (12:28): instance instance_var, declared (2:9): instance_var
-|  |  |  |  |  SCPositionalArgs (12:28)
-|  |  |  |  |  |  SCLiteral (12:53) = 2
-|  |  |  |  |  SCKwArgs (12:28)
-|  |  |  |  |  |  SCKwArg (12:45): b
-|  |  |  |  |  |  |  SCLiteral (12:48) = 1
-|  |  |  |  |  SCVariadicArgs (12:28)
-|  |  |  |  |  |  SCLiteral (12:42) = 0
-|  |  SCMethod (13:5): after_errors { ^5 } -> 5
-|  |  |  SCBody (13:20)
-|  |  |  |  SCExplicitReturn (13:20)
-|  |  |  |  |  SCLiteral (13:21) = 5
+|  |  |  SCBody (13:28)
+|  |  |  |  SCMessage (13:28): put
+|  |  |  |  |  SCRead (13:28): instance instance_var, declared (3:9): instance_var
+|  |  |  |  |  SCPositionalArgs (13:28)
+|  |  |  |  |  |  SCLiteral (13:53) = 2
+|  |  |  |  |  SCKwArgs (13:28)
+|  |  |  |  |  |  SCKwArg (13:45): b
+|  |  |  |  |  |  |  SCLiteral (13:48) = 1
+|  |  |  |  |  SCVariadicArgs (13:28)
+|  |  |  |  |  |  SCLiteral (13:42) = 0
+|  |  SCMethod (14:5): version 3.16: after_errors { ^5 } -> 5
+|  |  |  SCBody (14:20)
+|  |  |  |  SCExplicitReturn (14:20)
+|  |  |  |  |  SCLiteral (14:21) = 5
 Successfully compiled 16 classes.

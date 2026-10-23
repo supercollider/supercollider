@@ -1,3 +1,4 @@
+//# VERSION 3.16
 // The slot types the class library uses, which set how an instance's elements are stored, e.g., `String[char]`.
 NotIndexed {}
 SlotArray[slot] {}

@@ -4,160 +4,160 @@
 IR GRAPH DUMP 
 
 
-SCClass (1:1): Setters
-|  SCMemberList (1:1)
-|  |  SCMember (2:9): x
-|  SCMethodList (1:1)
-|  |  SCMethod (4:5): simple { x.foo = 10 }
-|  |  |  SCBody (4:14)
-|  |  |  |  SCMessage (4:14): foo_
-|  |  |  |  |  SCRead (4:14): instance x, declared (2:9): x
-|  |  |  |  |  SCPositionalArgs (4:14)
-|  |  |  |  |  |  SCLiteral (4:22) = 10
-|  |  SCMethod (5:5): expression_receiver { 1.bar.foo = 10 }
-|  |  |  SCBody (5:27)
-|  |  |  |  SCMessage (5:27): foo_
-|  |  |  |  |  SCMessage (5:27): bar
-|  |  |  |  |  |  SCLiteral (5:27) = 1
-|  |  |  |  |  SCPositionalArgs (5:27)
-|  |  |  |  |  |  SCLiteral (5:39) = 10
-|  |  SCMethod (6:5): literal_receiver { 1.foo = 2 }
-|  |  |  SCBody (6:24)
-|  |  |  |  SCMessage (6:24): foo_
-|  |  |  |  |  SCLiteral (6:24) = 1
-|  |  |  |  |  SCPositionalArgs (6:24)
-|  |  |  |  |  |  SCLiteral (6:32) = 2
-|  |  SCMethod (7:5): chained_value { x.foo = x.bar = 2 }
-|  |  |  SCBody (7:21)
-|  |  |  |  SCMessage (7:21): foo_
-|  |  |  |  |  SCRead (7:21): instance x, declared (2:9): x
-|  |  |  |  |  SCPositionalArgs (7:21)
-|  |  |  |  |  |  SCMessage (7:29): bar_
-|  |  |  |  |  |  |  SCRead (7:29): instance x, declared (2:9): x
-|  |  |  |  |  |  |  SCPositionalArgs (7:29)
-|  |  |  |  |  |  |  |  SCLiteral (7:37) = 2
-|  |  SCMethod (8:5): as_argument { ^3.baz(x.foo = 1) }
-|  |  |  SCBody (8:19)
-|  |  |  |  SCExplicitReturn (8:19)
-|  |  |  |  |  SCMessage (8:20): baz
-|  |  |  |  |  |  SCLiteral (8:20) = 3
-|  |  |  |  |  |  SCPositionalArgs (8:20)
-|  |  |  |  |  |  |  SCMessage (8:26): foo_
-|  |  |  |  |  |  |  |  SCRead (8:26): instance x, declared (2:9): x
-|  |  |  |  |  |  |  |  SCPositionalArgs (8:26)
-|  |  |  |  |  |  |  |  |  SCLiteral (8:34) = 1
-|  |  SCMethod (9:5): functional { foo(x, 1) = 2 }
-|  |  |  SCBody (9:18)
-|  |  |  |  SCMessage (9:18): foo_
-|  |  |  |  |  SCRead (9:22): instance x, declared (2:9): x
-|  |  |  |  |  SCPositionalArgs (9:18)
-|  |  |  |  |  |  SCLiteral (9:25) = 1
-|  |  |  |  |  |  SCLiteral (9:30) = 2
-|  |  SCMethod (10:5): functional_receiver_only { foo(x) = 2 }
-|  |  |  SCBody (10:32)
-|  |  |  |  SCMessage (10:32): foo_
-|  |  |  |  |  SCRead (10:36): instance x, declared (2:9): x
-|  |  |  |  |  SCPositionalArgs (10:32)
-|  |  |  |  |  |  SCLiteral (10:41) = 2
-|  |  SCMethod (11:5): functional_keyword { foo(x, b: 1) = 2 }
-|  |  |  SCBody (11:26)
-|  |  |  |  SCMessage (11:26): foo_
-|  |  |  |  |  SCRead (11:30): instance x, declared (2:9): x
-|  |  |  |  |  SCPositionalArgs (11:26)
+SCClass (2:1): Setters, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (3:9): x
+|  SCMethodList (2:1)
+|  |  SCMethod (5:5): version 3.16: simple { x.foo = 10 }
+|  |  |  SCBody (5:14)
+|  |  |  |  SCMessage (5:14): foo_
+|  |  |  |  |  SCRead (5:14): instance x, declared (3:9): x
+|  |  |  |  |  SCPositionalArgs (5:14)
+|  |  |  |  |  |  SCLiteral (5:22) = 10
+|  |  SCMethod (6:5): version 3.16: expression_receiver { 1.bar.foo = 10 }
+|  |  |  SCBody (6:27)
+|  |  |  |  SCMessage (6:27): foo_
+|  |  |  |  |  SCMessage (6:27): bar
+|  |  |  |  |  |  SCLiteral (6:27) = 1
+|  |  |  |  |  SCPositionalArgs (6:27)
+|  |  |  |  |  |  SCLiteral (6:39) = 10
+|  |  SCMethod (7:5): version 3.16: literal_receiver { 1.foo = 2 }
+|  |  |  SCBody (7:24)
+|  |  |  |  SCMessage (7:24): foo_
+|  |  |  |  |  SCLiteral (7:24) = 1
+|  |  |  |  |  SCPositionalArgs (7:24)
+|  |  |  |  |  |  SCLiteral (7:32) = 2
+|  |  SCMethod (8:5): version 3.16: chained_value { x.foo = x.bar = 2 }
+|  |  |  SCBody (8:21)
+|  |  |  |  SCMessage (8:21): foo_
+|  |  |  |  |  SCRead (8:21): instance x, declared (3:9): x
+|  |  |  |  |  SCPositionalArgs (8:21)
+|  |  |  |  |  |  SCMessage (8:29): bar_
+|  |  |  |  |  |  |  SCRead (8:29): instance x, declared (3:9): x
+|  |  |  |  |  |  |  SCPositionalArgs (8:29)
+|  |  |  |  |  |  |  |  SCLiteral (8:37) = 2
+|  |  SCMethod (9:5): version 3.16: as_argument { ^3.baz(x.foo = 1) }
+|  |  |  SCBody (9:19)
+|  |  |  |  SCExplicitReturn (9:19)
+|  |  |  |  |  SCMessage (9:20): baz
+|  |  |  |  |  |  SCLiteral (9:20) = 3
+|  |  |  |  |  |  SCPositionalArgs (9:20)
+|  |  |  |  |  |  |  SCMessage (9:26): foo_
+|  |  |  |  |  |  |  |  SCRead (9:26): instance x, declared (3:9): x
+|  |  |  |  |  |  |  |  SCPositionalArgs (9:26)
+|  |  |  |  |  |  |  |  |  SCLiteral (9:34) = 1
+|  |  SCMethod (10:5): version 3.16: functional { foo(x, 1) = 2 }
+|  |  |  SCBody (10:18)
+|  |  |  |  SCMessage (10:18): foo_
+|  |  |  |  |  SCRead (10:22): instance x, declared (3:9): x
+|  |  |  |  |  SCPositionalArgs (10:18)
+|  |  |  |  |  |  SCLiteral (10:25) = 1
+|  |  |  |  |  |  SCLiteral (10:30) = 2
+|  |  SCMethod (11:5): version 3.16: functional_receiver_only { foo(x) = 2 }
+|  |  |  SCBody (11:32)
+|  |  |  |  SCMessage (11:32): foo_
+|  |  |  |  |  SCRead (11:36): instance x, declared (3:9): x
+|  |  |  |  |  SCPositionalArgs (11:32)
 |  |  |  |  |  |  SCLiteral (11:41) = 2
-|  |  |  |  |  SCKwArgs (11:26)
-|  |  |  |  |  |  SCKwArg (11:33): b
-|  |  |  |  |  |  |  SCLiteral (11:36) = 1
-|  |  SCMethod (12:5): poisoned: functional_no_receiver { foo(b: 1) = 2 }
+|  |  SCMethod (12:5): version 3.16: functional_keyword { foo(x, b: 1) = 2 }
+|  |  |  SCBody (12:26)
+|  |  |  |  SCMessage (12:26): foo_
+|  |  |  |  |  SCRead (12:30): instance x, declared (3:9): x
+|  |  |  |  |  SCPositionalArgs (12:26)
+|  |  |  |  |  |  SCLiteral (12:41) = 2
+|  |  |  |  |  SCKwArgs (12:26)
+|  |  |  |  |  |  SCKwArg (12:33): b
+|  |  |  |  |  |  |  SCLiteral (12:36) = 1
+|  |  SCMethod (13:5): poisoned: version 3.16: functional_no_receiver { foo(b: 1) = 2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Message has no receiver
-|  |  |  messages/setters.sc:12:30
-|  |  |     10 │     functional_receiver_only { foo(x) = 2 }
-|  |  |     11 │     functional_keyword { foo(x, b: 1) = 2 }
-|  |  |     12 │     functional_no_receiver { foo(b: 1) = 2 }
+|  |  |  messages/setters.sc:13:30
+|  |  |     11 │     functional_receiver_only { foo(x) = 2 }
+|  |  |     12 │     functional_keyword { foo(x, b: 1) = 2 }
+|  |  |     13 │     functional_no_receiver { foo(b: 1) = 2 }
 |  |  |        ┆                              ^^^^^^^^^^^^^ there is nothing to send this message to.
-|  |  |     13 │     functional_variadic { foo(x, *x) = 2 }
-|  |  |     14 │     functional_variadic_receiver { foo(*x) = 2 }
-|  |  |     15 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
+|  |  |     14 │     functional_variadic { foo(x, *x) = 2 }
+|  |  |     15 │     functional_variadic_receiver { foo(*x) = 2 }
+|  |  |     16 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
 |  |  |
 |  |  |  Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (12:30)
-|  |  |  |  SCExprList (12:30)
-|  |  SCMethod (13:5): poisoned: functional_variadic { foo(x, *x) = 2 }
+|  |  |  SCBody (13:30)
+|  |  |  |  SCExprList (13:30)
+|  |  SCMethod (14:5): poisoned: version 3.16: functional_variadic { foo(x, *x) = 2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
-|  |  |  messages/setters.sc:13:34
-|  |  |     11 │     functional_keyword { foo(x, b: 1) = 2 }
-|  |  |     12 │     functional_no_receiver { foo(b: 1) = 2 }
-|  |  |     13 │     functional_variadic { foo(x, *x) = 2 }
+|  |  |  messages/setters.sc:14:34
+|  |  |     12 │     functional_keyword { foo(x, b: 1) = 2 }
+|  |  |     13 │     functional_no_receiver { foo(b: 1) = 2 }
+|  |  |     14 │     functional_variadic { foo(x, *x) = 2 }
 |  |  |        ┆                                  ^^ the elements of this are passed after...
-|  |  |     14 │     functional_variadic_receiver { foo(*x) = 2 }
-|  |  |     15 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
-|  |  |     16 │ }
+|  |  |     15 │     functional_variadic_receiver { foo(*x) = 2 }
+|  |  |     16 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
+|  |  |     17 │ }
 |  |  |
-|  |  |  messages/setters.sc:13:40
-|  |  |     11 │     functional_keyword { foo(x, b: 1) = 2 }
-|  |  |     12 │     functional_no_receiver { foo(b: 1) = 2 }
-|  |  |     13 │     functional_variadic { foo(x, *x) = 2 }
+|  |  |  messages/setters.sc:14:40
+|  |  |     12 │     functional_keyword { foo(x, b: 1) = 2 }
+|  |  |     13 │     functional_no_receiver { foo(b: 1) = 2 }
+|  |  |     14 │     functional_variadic { foo(x, *x) = 2 }
 |  |  |        ┆                                        ^ ...this argument, which is written after it.
-|  |  |     14 │     functional_variadic_receiver { foo(*x) = 2 }
-|  |  |     15 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
-|  |  |     16 │ }
+|  |  |     15 │     functional_variadic_receiver { foo(*x) = 2 }
+|  |  |     16 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
+|  |  |     17 │ }
 |  |  |
 |  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (13:27)
-|  |  |  |  SCMessage (13:27): foo_
-|  |  |  |  |  SCRead (13:31): instance x, declared (2:9): x
-|  |  |  |  |  SCPositionalArgs (13:27)
-|  |  |  |  |  |  SCLiteral (13:40) = 2
-|  |  |  |  |  SCVariadicArgs (13:27)
-|  |  |  |  |  |  SCRead (13:35): instance x, declared (2:9): x
-|  |  SCMethod (14:5): poisoned: functional_variadic_receiver { foo(*x) = 2 }
+|  |  |  SCBody (14:27)
+|  |  |  |  SCMessage (14:27): foo_
+|  |  |  |  |  SCRead (14:31): instance x, declared (3:9): x
+|  |  |  |  |  SCPositionalArgs (14:27)
+|  |  |  |  |  |  SCLiteral (14:40) = 2
+|  |  |  |  |  SCVariadicArgs (14:27)
+|  |  |  |  |  |  SCRead (14:35): instance x, declared (3:9): x
+|  |  SCMethod (15:5): poisoned: version 3.16: functional_variadic_receiver { foo(*x) = 2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Message has no receiver
-|  |  |  messages/setters.sc:14:36
-|  |  |     12 │     functional_no_receiver { foo(b: 1) = 2 }
-|  |  |     13 │     functional_variadic { foo(x, *x) = 2 }
-|  |  |     14 │     functional_variadic_receiver { foo(*x) = 2 }
+|  |  |  messages/setters.sc:15:36
+|  |  |     13 │     functional_no_receiver { foo(b: 1) = 2 }
+|  |  |     14 │     functional_variadic { foo(x, *x) = 2 }
+|  |  |     15 │     functional_variadic_receiver { foo(*x) = 2 }
 |  |  |        ┆                                    ^^^^^^^^^^^ there is nothing to send this message to.
-|  |  |     15 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
-|  |  |     16 │ }
+|  |  |     16 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
+|  |  |     17 │ }
 |  |  |
 |  |  |  Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (14:36)
-|  |  |  |  SCExprList (14:36)
-|  |  SCMethod (15:5): poisoned: functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
+|  |  |  SCBody (15:36)
+|  |  |  |  SCExprList (15:36)
+|  |  SCMethod (16:5): poisoned: version 3.16: functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
-|  |  |  messages/setters.sc:15:53
-|  |  |     13 │     functional_variadic { foo(x, *x) = 2 }
-|  |  |     14 │     functional_variadic_receiver { foo(*x) = 2 }
-|  |  |     15 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
+|  |  |  messages/setters.sc:16:53
+|  |  |     14 │     functional_variadic { foo(x, *x) = 2 }
+|  |  |     15 │     functional_variadic_receiver { foo(*x) = 2 }
+|  |  |     16 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
 |  |  |        ┆                                                     ^^ the elements of this are passed after...
-|  |  |     16 │ }
+|  |  |     17 │ }
 |  |  |
-|  |  |  messages/setters.sc:15:59
-|  |  |     13 │     functional_variadic { foo(x, *x) = 2 }
-|  |  |     14 │     functional_variadic_receiver { foo(*x) = 2 }
-|  |  |     15 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
+|  |  |  messages/setters.sc:16:59
+|  |  |     14 │     functional_variadic { foo(x, *x) = 2 }
+|  |  |     15 │     functional_variadic_receiver { foo(*x) = 2 }
+|  |  |     16 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
 |  |  |        ┆                                                           ^ ...this argument, which is written after it.
-|  |  |     16 │ }
+|  |  |     17 │ }
 |  |  |
 |  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (15:43)
-|  |  |  |  SCMessage (15:43): foo_
-|  |  |  |  |  SCRead (15:47): instance x, declared (2:9): x
-|  |  |  |  |  SCPositionalArgs (15:43)
-|  |  |  |  |  |  SCLiteral (15:50) = 1
-|  |  |  |  |  |  SCLiteral (15:59) = 2
-|  |  |  |  |  SCVariadicArgs (15:43)
-|  |  |  |  |  |  SCRead (15:54): instance x, declared (2:9): x
+|  |  |  SCBody (16:43)
+|  |  |  |  SCMessage (16:43): foo_
+|  |  |  |  |  SCRead (16:47): instance x, declared (3:9): x
+|  |  |  |  |  SCPositionalArgs (16:43)
+|  |  |  |  |  |  SCLiteral (16:50) = 1
+|  |  |  |  |  |  SCLiteral (16:59) = 2
+|  |  |  |  |  SCVariadicArgs (16:43)
+|  |  |  |  |  |  SCRead (16:54): instance x, declared (3:9): x
 Successfully compiled 16 classes.

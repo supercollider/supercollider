@@ -1,3 +1,4 @@
+//# VERSION 3.16
 Arrays {
     constant { ^[1, 2.5, "three"] }
     empty { ^[] }

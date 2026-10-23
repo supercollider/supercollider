@@ -4,25 +4,25 @@
 IR GRAPH DUMP 
 
 
-SCInterpreted (1:1): poisoned: interpreted/return.scd
+SCInterpreted (1:1): poisoned: version 3.16: interpreted/return.scd
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Return in interpreted code
-|  interpreted/return.scd:4:4
-|      2 │ // expect-error: Return in interpreted code
-|      3 │ // expect: poisoned
-|      4 │ 1; ^2
+|  interpreted/return.scd:5:4
+|      3 │ // expect-error: Return in interpreted code
+|      4 │ // expect: poisoned
+|      5 │ 1; ^2
 |        ┆    ^^ there is no method to return from.
 |
 |  `^` returns from the method the code is written in, but interpreted code isn't in a method, so this includes the functions it defines. The value of interpreted code is its last expression, so remove the `^`.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCRegionList (1:1)
-|  |  SCRegion (4:1)
-|  |  |  SCFunction (4:1) -> 1
-|  |  |  |  SCBody (4:1)
-|  |  |  |  |  SCLiteral (4:1) = 1
-|  |  SCRegion (4:4)
-|  |  |  SCFunction (4:4)
-|  |  |  |  SCBody (4:4)
-|  |  |  |  |  SCLiteral (4:5) = 2
+|  |  SCRegion (5:1)
+|  |  |  SCFunction (5:1) -> 1
+|  |  |  |  SCBody (5:1)
+|  |  |  |  |  SCLiteral (5:1) = 1
+|  |  SCRegion (5:4)
+|  |  |  SCFunction (5:4)
+|  |  |  |  SCBody (5:4)
+|  |  |  |  |  SCLiteral (5:5) = 2
 Successfully compiled 15 classes.

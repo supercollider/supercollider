@@ -4,153 +4,153 @@
 IR GRAPH DUMP 
 
 
-SCClass (1:1): Messages
-|  SCMemberList (1:1)
-|  SCMethodList (1:1)
-|  |  SCMethod (2:5): postfix { ^1.foo }
-|  |  |  SCBody (2:15)
-|  |  |  |  SCExplicitReturn (2:15)
-|  |  |  |  |  SCMessage (2:16): foo
-|  |  |  |  |  |  SCLiteral (2:16) = 1
-|  |  SCMethod (3:5): postfix_args { ^1.foo(2, 3) }
-|  |  |  SCBody (3:20)
-|  |  |  |  SCExplicitReturn (3:20)
-|  |  |  |  |  SCMessage (3:21): foo
-|  |  |  |  |  |  SCLiteral (3:21) = 1
-|  |  |  |  |  |  SCPositionalArgs (3:21)
-|  |  |  |  |  |  |  SCLiteral (3:27) = 2
-|  |  |  |  |  |  |  SCLiteral (3:30) = 3
-|  |  SCMethod (4:5): postfix_keyword { ^1.foo(2, bar: 3) }
-|  |  |  SCBody (4:23)
-|  |  |  |  SCExplicitReturn (4:23)
-|  |  |  |  |  SCMessage (4:24): foo
-|  |  |  |  |  |  SCLiteral (4:24) = 1
-|  |  |  |  |  |  SCPositionalArgs (4:24)
-|  |  |  |  |  |  |  SCLiteral (4:30) = 2
-|  |  |  |  |  |  SCKwArgs (4:24)
-|  |  |  |  |  |  |  SCKwArg (4:33): bar
-|  |  |  |  |  |  |  |  SCLiteral (4:38) = 3
-|  |  SCMethod (5:5): postfix_variadic { ^1.foo(2, *3) }
-|  |  |  SCBody (5:24)
-|  |  |  |  SCExplicitReturn (5:24)
-|  |  |  |  |  SCMessage (5:25): foo
-|  |  |  |  |  |  SCLiteral (5:25) = 1
-|  |  |  |  |  |  SCPositionalArgs (5:25)
-|  |  |  |  |  |  |  SCLiteral (5:31) = 2
-|  |  |  |  |  |  SCVariadicArgs (5:25)
-|  |  |  |  |  |  |  SCLiteral (5:35) = 3
-|  |  SCMethod (6:5): prefix { ^foo(1, 2) }
-|  |  |  SCBody (6:14)
-|  |  |  |  SCExplicitReturn (6:14)
-|  |  |  |  |  SCMessage (6:15): foo
-|  |  |  |  |  |  SCLiteral (6:19) = 1
-|  |  |  |  |  |  SCPositionalArgs (6:15)
-|  |  |  |  |  |  |  SCLiteral (6:22) = 2
-|  |  SCMethod (7:5): poisoned: prefix_no_receiver { ^foo(bar: 1) }
+SCClass (2:1): Messages, version 3.16
+|  SCMemberList (2:1)
+|  SCMethodList (2:1)
+|  |  SCMethod (3:5): version 3.16: postfix { ^1.foo }
+|  |  |  SCBody (3:15)
+|  |  |  |  SCExplicitReturn (3:15)
+|  |  |  |  |  SCMessage (3:16): foo
+|  |  |  |  |  |  SCLiteral (3:16) = 1
+|  |  SCMethod (4:5): version 3.16: postfix_args { ^1.foo(2, 3) }
+|  |  |  SCBody (4:20)
+|  |  |  |  SCExplicitReturn (4:20)
+|  |  |  |  |  SCMessage (4:21): foo
+|  |  |  |  |  |  SCLiteral (4:21) = 1
+|  |  |  |  |  |  SCPositionalArgs (4:21)
+|  |  |  |  |  |  |  SCLiteral (4:27) = 2
+|  |  |  |  |  |  |  SCLiteral (4:30) = 3
+|  |  SCMethod (5:5): version 3.16: postfix_keyword { ^1.foo(2, bar: 3) }
+|  |  |  SCBody (5:23)
+|  |  |  |  SCExplicitReturn (5:23)
+|  |  |  |  |  SCMessage (5:24): foo
+|  |  |  |  |  |  SCLiteral (5:24) = 1
+|  |  |  |  |  |  SCPositionalArgs (5:24)
+|  |  |  |  |  |  |  SCLiteral (5:30) = 2
+|  |  |  |  |  |  SCKwArgs (5:24)
+|  |  |  |  |  |  |  SCKwArg (5:33): bar
+|  |  |  |  |  |  |  |  SCLiteral (5:38) = 3
+|  |  SCMethod (6:5): version 3.16: postfix_variadic { ^1.foo(2, *3) }
+|  |  |  SCBody (6:24)
+|  |  |  |  SCExplicitReturn (6:24)
+|  |  |  |  |  SCMessage (6:25): foo
+|  |  |  |  |  |  SCLiteral (6:25) = 1
+|  |  |  |  |  |  SCPositionalArgs (6:25)
+|  |  |  |  |  |  |  SCLiteral (6:31) = 2
+|  |  |  |  |  |  SCVariadicArgs (6:25)
+|  |  |  |  |  |  |  SCLiteral (6:35) = 3
+|  |  SCMethod (7:5): version 3.16: prefix { ^foo(1, 2) }
+|  |  |  SCBody (7:14)
+|  |  |  |  SCExplicitReturn (7:14)
+|  |  |  |  |  SCMessage (7:15): foo
+|  |  |  |  |  |  SCLiteral (7:19) = 1
+|  |  |  |  |  |  SCPositionalArgs (7:15)
+|  |  |  |  |  |  |  SCLiteral (7:22) = 2
+|  |  SCMethod (8:5): poisoned: version 3.16: prefix_no_receiver { ^foo(bar: 1) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Message has no receiver
-|  |  |  messages/messages.sc:7:27
-|  |  |      5 │     postfix_variadic { ^1.foo(2, *3) }
-|  |  |      6 │     prefix { ^foo(1, 2) }
-|  |  |      7 │     prefix_no_receiver { ^foo(bar: 1) }
+|  |  |  messages/messages.sc:8:27
+|  |  |      6 │     postfix_variadic { ^1.foo(2, *3) }
+|  |  |      7 │     prefix { ^foo(1, 2) }
+|  |  |      8 │     prefix_no_receiver { ^foo(bar: 1) }
 |  |  |        ┆                           ^^^^^^^^^^^ there is nothing to send this message to.
-|  |  |      8 │     binary { ^1 + 2 }
-|  |  |      9 │     binary_keyword { ^1 max: 2 }
-|  |  |     10 │     binary_adverb_name { ^1 +.x 2 }
+|  |  |      9 │     binary { ^1 + 2 }
+|  |  |     10 │     binary_keyword { ^1 max: 2 }
+|  |  |     11 │     binary_adverb_name { ^1 +.x 2 }
 |  |  |
 |  |  |  Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (7:26)
-|  |  |  |  SCExplicitReturn (7:26)
-|  |  |  |  |  SCExprList (7:27)
-|  |  SCMethod (8:5): binary { ^1 + 2 } -> 3
-|  |  |  SCBody (8:14)
-|  |  |  |  SCExplicitReturn (8:14)
-|  |  |  |  |  SCMessage (8:15): + = 3
-|  |  |  |  |  |  SCLiteral (8:15) = 1
-|  |  |  |  |  |  SCPositionalArgs (8:15)
-|  |  |  |  |  |  |  SCLiteral (8:19) = 2
-|  |  SCMethod (9:5): binary_keyword { ^1 max: 2 }
-|  |  |  SCBody (9:22)
-|  |  |  |  SCExplicitReturn (9:22)
-|  |  |  |  |  SCMessage (9:23): max
-|  |  |  |  |  |  SCLiteral (9:23) = 1
-|  |  |  |  |  |  SCPositionalArgs (9:23)
-|  |  |  |  |  |  |  SCLiteral (9:30) = 2
-|  |  SCMethod (10:5): binary_adverb_name { ^1 +.x 2 }
-|  |  |  SCBody (10:26)
-|  |  |  |  SCExplicitReturn (10:26)
-|  |  |  |  |  SCMessage (10:27): +
-|  |  |  |  |  |  SCLiteral (10:27) = 1
-|  |  |  |  |  |  SCPositionalArgs (10:27)
-|  |  |  |  |  |  |  SCLiteral (10:33) = 2
-|  |  |  |  |  |  SCLiteral (10:31) = \x
-|  |  SCMethod (11:5): binary_adverb_int { ^1 +.1 2 }
-|  |  |  SCBody (11:25)
-|  |  |  |  SCExplicitReturn (11:25)
-|  |  |  |  |  SCMessage (11:26): +
-|  |  |  |  |  |  SCLiteral (11:26) = 1
-|  |  |  |  |  |  SCPositionalArgs (11:26)
-|  |  |  |  |  |  |  SCLiteral (11:32) = 2
-|  |  |  |  |  |  SCLiteral (11:30) = 1
-|  |  SCMethod (12:5): binary_adverb_expr { ^1 +.(3) 2 }
-|  |  |  SCBody (12:26)
-|  |  |  |  SCExplicitReturn (12:26)
-|  |  |  |  |  SCMessage (12:27): +
-|  |  |  |  |  |  SCLiteral (12:27) = 1
-|  |  |  |  |  |  SCPositionalArgs (12:27)
-|  |  |  |  |  |  |  SCLiteral (12:35) = 2
-|  |  |  |  |  |  SCLiteral (12:32) = 3
-|  |  SCMethod (13:5): value { ^1.(2) }
-|  |  |  SCBody (13:13)
-|  |  |  |  SCExplicitReturn (13:13)
-|  |  |  |  |  SCMessage (13:14): value
-|  |  |  |  |  |  SCLiteral (13:14) = 1
-|  |  |  |  |  |  SCPositionalArgs (13:14)
-|  |  |  |  |  |  |  SCLiteral (13:17) = 2
-|  |  SCMethod (14:5): value_empty { ^1.() }
-|  |  |  SCBody (14:19)
-|  |  |  |  SCExplicitReturn (14:19)
-|  |  |  |  |  SCMessage (14:20): value
-|  |  |  |  |  |  SCLiteral (14:20) = 1
-|  |  SCMethod (15:5): new_message { ^Object(1) }
+|  |  |  SCBody (8:26)
+|  |  |  |  SCExplicitReturn (8:26)
+|  |  |  |  |  SCExprList (8:27)
+|  |  SCMethod (9:5): version 3.16: binary { ^1 + 2 } -> 3
+|  |  |  SCBody (9:14)
+|  |  |  |  SCExplicitReturn (9:14)
+|  |  |  |  |  SCMessage (9:15): + = 3
+|  |  |  |  |  |  SCLiteral (9:15) = 1
+|  |  |  |  |  |  SCPositionalArgs (9:15)
+|  |  |  |  |  |  |  SCLiteral (9:19) = 2
+|  |  SCMethod (10:5): version 3.16: binary_keyword { ^1 max: 2 }
+|  |  |  SCBody (10:22)
+|  |  |  |  SCExplicitReturn (10:22)
+|  |  |  |  |  SCMessage (10:23): max
+|  |  |  |  |  |  SCLiteral (10:23) = 1
+|  |  |  |  |  |  SCPositionalArgs (10:23)
+|  |  |  |  |  |  |  SCLiteral (10:30) = 2
+|  |  SCMethod (11:5): version 3.16: binary_adverb_name { ^1 +.x 2 }
+|  |  |  SCBody (11:26)
+|  |  |  |  SCExplicitReturn (11:26)
+|  |  |  |  |  SCMessage (11:27): +
+|  |  |  |  |  |  SCLiteral (11:27) = 1
+|  |  |  |  |  |  SCPositionalArgs (11:27)
+|  |  |  |  |  |  |  SCLiteral (11:33) = 2
+|  |  |  |  |  |  SCLiteral (11:31) = \x
+|  |  SCMethod (12:5): version 3.16: binary_adverb_int { ^1 +.1 2 }
+|  |  |  SCBody (12:25)
+|  |  |  |  SCExplicitReturn (12:25)
+|  |  |  |  |  SCMessage (12:26): +
+|  |  |  |  |  |  SCLiteral (12:26) = 1
+|  |  |  |  |  |  SCPositionalArgs (12:26)
+|  |  |  |  |  |  |  SCLiteral (12:32) = 2
+|  |  |  |  |  |  SCLiteral (12:30) = 1
+|  |  SCMethod (13:5): version 3.16: binary_adverb_expr { ^1 +.(3) 2 }
+|  |  |  SCBody (13:26)
+|  |  |  |  SCExplicitReturn (13:26)
+|  |  |  |  |  SCMessage (13:27): +
+|  |  |  |  |  |  SCLiteral (13:27) = 1
+|  |  |  |  |  |  SCPositionalArgs (13:27)
+|  |  |  |  |  |  |  SCLiteral (13:35) = 2
+|  |  |  |  |  |  SCLiteral (13:32) = 3
+|  |  SCMethod (14:5): version 3.16: value { ^1.(2) }
+|  |  |  SCBody (14:13)
+|  |  |  |  SCExplicitReturn (14:13)
+|  |  |  |  |  SCMessage (14:14): value
+|  |  |  |  |  |  SCLiteral (14:14) = 1
+|  |  |  |  |  |  SCPositionalArgs (14:14)
+|  |  |  |  |  |  |  SCLiteral (14:17) = 2
+|  |  SCMethod (15:5): version 3.16: value_empty { ^1.() }
 |  |  |  SCBody (15:19)
 |  |  |  |  SCExplicitReturn (15:19)
-|  |  |  |  |  SCMessage (15:20): new
-|  |  |  |  |  |  SCLiteral (15:20) = Object
-|  |  |  |  |  |  SCPositionalArgs (15:20)
-|  |  |  |  |  |  |  SCLiteral (15:27) = 1
-|  |  SCMethod (16:5): new_message_empty { ^Object() }
-|  |  |  SCBody (16:25)
-|  |  |  |  SCExplicitReturn (16:25)
-|  |  |  |  |  SCMessage (16:26): new
-|  |  |  |  |  |  SCLiteral (16:26) = Object
-|  |  SCMethod (17:5): at { ^"abc"[0] }
-|  |  |  SCBody (17:10)
-|  |  |  |  SCExplicitReturn (17:10)
-|  |  |  |  |  SCMessage (17:11): at
-|  |  |  |  |  |  SCLiteral (17:11) = "abc"
-|  |  |  |  |  |  SCPositionalArgs (17:11)
-|  |  |  |  |  |  |  SCLiteral (17:17) = 0
-|  |  SCMethod (18:5): at_range { ^"abc"[0..1] } -> "ab"
-|  |  |  SCBody (18:16)
-|  |  |  |  SCExplicitReturn (18:16)
-|  |  |  |  |  SCMessage (18:17): copySeries = "ab"
-|  |  |  |  |  |  SCLiteral (18:17) = "abc"
-|  |  |  |  |  |  SCPositionalArgs (18:17)
-|  |  |  |  |  |  |  SCLiteral (18:23) = 0
-|  |  |  |  |  |  |  SCLiteral (18:22) = nil
-|  |  |  |  |  |  |  SCLiteral (18:26) = 1
-|  |  SCMethod (19:5): nested { ^1.foo(2.bar) + 3 }
-|  |  |  SCBody (19:14)
-|  |  |  |  SCExplicitReturn (19:14)
-|  |  |  |  |  SCMessage (19:15): +
-|  |  |  |  |  |  SCMessage (19:15): foo
-|  |  |  |  |  |  |  SCLiteral (19:15) = 1
-|  |  |  |  |  |  |  SCPositionalArgs (19:15)
-|  |  |  |  |  |  |  |  SCMessage (19:21): bar
-|  |  |  |  |  |  |  |  |  SCLiteral (19:21) = 2
-|  |  |  |  |  |  SCPositionalArgs (19:15)
-|  |  |  |  |  |  |  SCLiteral (19:30) = 3
+|  |  |  |  |  SCMessage (15:20): value
+|  |  |  |  |  |  SCLiteral (15:20) = 1
+|  |  SCMethod (16:5): version 3.16: new_message { ^Object(1) }
+|  |  |  SCBody (16:19)
+|  |  |  |  SCExplicitReturn (16:19)
+|  |  |  |  |  SCMessage (16:20): new
+|  |  |  |  |  |  SCLiteral (16:20) = Object
+|  |  |  |  |  |  SCPositionalArgs (16:20)
+|  |  |  |  |  |  |  SCLiteral (16:27) = 1
+|  |  SCMethod (17:5): version 3.16: new_message_empty { ^Object() }
+|  |  |  SCBody (17:25)
+|  |  |  |  SCExplicitReturn (17:25)
+|  |  |  |  |  SCMessage (17:26): new
+|  |  |  |  |  |  SCLiteral (17:26) = Object
+|  |  SCMethod (18:5): version 3.16: at { ^"abc"[0] }
+|  |  |  SCBody (18:10)
+|  |  |  |  SCExplicitReturn (18:10)
+|  |  |  |  |  SCMessage (18:11): at
+|  |  |  |  |  |  SCLiteral (18:11) = "abc"
+|  |  |  |  |  |  SCPositionalArgs (18:11)
+|  |  |  |  |  |  |  SCLiteral (18:17) = 0
+|  |  SCMethod (19:5): version 3.16: at_range { ^"abc"[0..1] } -> "ab"
+|  |  |  SCBody (19:16)
+|  |  |  |  SCExplicitReturn (19:16)
+|  |  |  |  |  SCMessage (19:17): copySeries = "ab"
+|  |  |  |  |  |  SCLiteral (19:17) = "abc"
+|  |  |  |  |  |  SCPositionalArgs (19:17)
+|  |  |  |  |  |  |  SCLiteral (19:23) = 0
+|  |  |  |  |  |  |  SCLiteral (19:22) = nil
+|  |  |  |  |  |  |  SCLiteral (19:26) = 1
+|  |  SCMethod (20:5): version 3.16: nested { ^1.foo(2.bar) + 3 }
+|  |  |  SCBody (20:14)
+|  |  |  |  SCExplicitReturn (20:14)
+|  |  |  |  |  SCMessage (20:15): +
+|  |  |  |  |  |  SCMessage (20:15): foo
+|  |  |  |  |  |  |  SCLiteral (20:15) = 1
+|  |  |  |  |  |  |  SCPositionalArgs (20:15)
+|  |  |  |  |  |  |  |  SCMessage (20:21): bar
+|  |  |  |  |  |  |  |  |  SCLiteral (20:21) = 2
+|  |  |  |  |  |  SCPositionalArgs (20:15)
+|  |  |  |  |  |  |  SCLiteral (20:30) = 3
 Successfully compiled 16 classes.

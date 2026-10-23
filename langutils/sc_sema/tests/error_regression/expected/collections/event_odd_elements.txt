@@ -4,83 +4,84 @@
 IR GRAPH DUMP 
 
 
-SCClass (1:1): EventKeyWithoutValue
-|  SCMemberList (1:1)
-|  SCMethodList (1:1)
-|  |  SCMethod (2:5): odd_constant { ^Event[a: 1, \b] }
+SCClass (2:1): EventKeyWithoutValue, version 3.16
+|  SCMemberList (2:1)
+|  SCMethodList (2:1)
+|  |  SCMethod (3:5): version 3.16: odd_constant { ^Event[a: 1, \b] }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Event key without a value
-|  |  |  collections/event_odd_elements.sc:2:33
-|  |  |      1 │ EventKeyWithoutValue {
-|  |  |      2 │     odd_constant { ^Event[a: 1, \b] }
+|  |  |  collections/event_odd_elements.sc:3:33
+|  |  |      1 │ //# VERSION 3.16
+|  |  |      2 │ EventKeyWithoutValue {
+|  |  |      3 │     odd_constant { ^Event[a: 1, \b] }
 |  |  |        ┆                                 ^^ this key has no value.
-|  |  |      3 │     odd_not_constant { ^Event[a: 1.foo, \b] }
-|  |  |      4 │     single { ^Event[\a] }
-|  |  |      5 │     even { ^Event[a: 1, b: 2] }
+|  |  |      4 │     odd_not_constant { ^Event[a: 1.foo, \b] }
+|  |  |      5 │     single { ^Event[\a] }
+|  |  |      6 │     even { ^Event[a: 1, b: 2] }
 |  |  |
 |  |  |  The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (2:20)
-|  |  |  |  SCExplicitReturn (2:20)
-|  |  |  |  |  SCCollection (2:21): Event
-|  |  |  |  |  |  SCLiteral (2:27) = \a
-|  |  |  |  |  |  SCLiteral (2:30) = 1
-|  |  |  |  |  |  SCLiteral (2:33) = \b
-|  |  SCMethod (3:5): odd_not_constant { ^Event[a: 1.foo, \b] }
+|  |  |  SCBody (3:20)
+|  |  |  |  SCExplicitReturn (3:20)
+|  |  |  |  |  SCCollection (3:21): Event
+|  |  |  |  |  |  SCLiteral (3:27) = \a
+|  |  |  |  |  |  SCLiteral (3:30) = 1
+|  |  |  |  |  |  SCLiteral (3:33) = \b
+|  |  SCMethod (4:5): version 3.16: odd_not_constant { ^Event[a: 1.foo, \b] }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Event key without a value
-|  |  |  collections/event_odd_elements.sc:3:41
-|  |  |      1 │ EventKeyWithoutValue {
-|  |  |      2 │     odd_constant { ^Event[a: 1, \b] }
-|  |  |      3 │     odd_not_constant { ^Event[a: 1.foo, \b] }
+|  |  |  collections/event_odd_elements.sc:4:41
+|  |  |      2 │ EventKeyWithoutValue {
+|  |  |      3 │     odd_constant { ^Event[a: 1, \b] }
+|  |  |      4 │     odd_not_constant { ^Event[a: 1.foo, \b] }
 |  |  |        ┆                                         ^^ this key has no value.
-|  |  |      4 │     single { ^Event[\a] }
-|  |  |      5 │     even { ^Event[a: 1, b: 2] }
-|  |  |      6 │     array_odd_is_fine { ^Array[1, 2, 3] }
+|  |  |      5 │     single { ^Event[\a] }
+|  |  |      6 │     even { ^Event[a: 1, b: 2] }
+|  |  |      7 │     array_odd_is_fine { ^Array[1, 2, 3] }
 |  |  |
 |  |  |  The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (3:24)
-|  |  |  |  SCExplicitReturn (3:24)
-|  |  |  |  |  SCCollection (3:25): Event
-|  |  |  |  |  |  SCLiteral (3:31) = \a
-|  |  |  |  |  |  SCMessage (3:34): foo
-|  |  |  |  |  |  |  SCLiteral (3:34) = 1
-|  |  |  |  |  |  SCLiteral (3:41) = \b
-|  |  SCMethod (4:5): single { ^Event[\a] }
+|  |  |  SCBody (4:24)
+|  |  |  |  SCExplicitReturn (4:24)
+|  |  |  |  |  SCCollection (4:25): Event
+|  |  |  |  |  |  SCLiteral (4:31) = \a
+|  |  |  |  |  |  SCMessage (4:34): foo
+|  |  |  |  |  |  |  SCLiteral (4:34) = 1
+|  |  |  |  |  |  SCLiteral (4:41) = \b
+|  |  SCMethod (5:5): version 3.16: single { ^Event[\a] }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Event key without a value
-|  |  |  collections/event_odd_elements.sc:4:21
-|  |  |      2 │     odd_constant { ^Event[a: 1, \b] }
-|  |  |      3 │     odd_not_constant { ^Event[a: 1.foo, \b] }
-|  |  |      4 │     single { ^Event[\a] }
+|  |  |  collections/event_odd_elements.sc:5:21
+|  |  |      3 │     odd_constant { ^Event[a: 1, \b] }
+|  |  |      4 │     odd_not_constant { ^Event[a: 1.foo, \b] }
+|  |  |      5 │     single { ^Event[\a] }
 |  |  |        ┆                     ^^ this key has no value.
-|  |  |      5 │     even { ^Event[a: 1, b: 2] }
-|  |  |      6 │     array_odd_is_fine { ^Array[1, 2, 3] }
-|  |  |      7 │ }
+|  |  |      6 │     even { ^Event[a: 1, b: 2] }
+|  |  |      7 │     array_odd_is_fine { ^Array[1, 2, 3] }
+|  |  |      8 │ }
 |  |  |
 |  |  |  The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (4:14)
-|  |  |  |  SCExplicitReturn (4:14)
-|  |  |  |  |  SCCollection (4:15): Event
-|  |  |  |  |  |  SCLiteral (4:21) = \a
-|  |  SCMethod (5:5): even { ^Event[a: 1, b: 2] } -> (a: 1, b: 2)
-|  |  |  SCBody (5:12)
-|  |  |  |  SCExplicitReturn (5:12)
-|  |  |  |  |  SCCollection (5:13): Event = (a: 1, b: 2)
-|  |  |  |  |  |  SCLiteral (5:19) = \a
-|  |  |  |  |  |  SCLiteral (5:22) = 1
-|  |  |  |  |  |  SCLiteral (5:25) = \b
-|  |  |  |  |  |  SCLiteral (5:28) = 2
-|  |  SCMethod (6:5): array_odd_is_fine { ^Array[1, 2, 3] } -> [1, 2, 3]
-|  |  |  SCBody (6:25)
-|  |  |  |  SCExplicitReturn (6:25)
-|  |  |  |  |  SCCollection (6:26): Array = [1, 2, 3]
-|  |  |  |  |  |  SCLiteral (6:32) = 1
-|  |  |  |  |  |  SCLiteral (6:35) = 2
-|  |  |  |  |  |  SCLiteral (6:38) = 3
+|  |  |  SCBody (5:14)
+|  |  |  |  SCExplicitReturn (5:14)
+|  |  |  |  |  SCCollection (5:15): Event
+|  |  |  |  |  |  SCLiteral (5:21) = \a
+|  |  SCMethod (6:5): version 3.16: even { ^Event[a: 1, b: 2] } -> (a: 1, b: 2)
+|  |  |  SCBody (6:12)
+|  |  |  |  SCExplicitReturn (6:12)
+|  |  |  |  |  SCCollection (6:13): Event = (a: 1, b: 2)
+|  |  |  |  |  |  SCLiteral (6:19) = \a
+|  |  |  |  |  |  SCLiteral (6:22) = 1
+|  |  |  |  |  |  SCLiteral (6:25) = \b
+|  |  |  |  |  |  SCLiteral (6:28) = 2
+|  |  SCMethod (7:5): version 3.16: array_odd_is_fine { ^Array[1, 2, 3] } -> [1, 2, 3]
+|  |  |  SCBody (7:25)
+|  |  |  |  SCExplicitReturn (7:25)
+|  |  |  |  |  SCCollection (7:26): Array = [1, 2, 3]
+|  |  |  |  |  |  SCLiteral (7:32) = 1
+|  |  |  |  |  |  SCLiteral (7:35) = 2
+|  |  |  |  |  |  SCLiteral (7:38) = 3
 Successfully compiled 16 classes.

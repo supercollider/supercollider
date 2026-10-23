@@ -4,74 +4,74 @@
 IR GRAPH DUMP 
 
 
-SCClass (1:1): Foo
-|  SCMemberList (1:1)
-|  |  SCMember (2:9): instance_var
-|  SCMethodList (1:1)
-|  |  SCMethod (6:5): assign_instance { instance_var = 1 }
-|  |  |  SCBody (6:23)
-|  |  |  |  SCAssign (6:23): instance instance_var, declared (2:9): instance_var
-|  |  |  |  |  SCLiteral (6:38) = 1
-|  |  SCMethod (7:5): assign_class { class_var = 2.0 }
-|  |  |  SCBody (7:20)
-|  |  |  |  SCAssign (7:20): class class_var, declared (3:14): class_var
-|  |  |  |  |  SCLiteral (7:32) = 2.0
-|  |  SCMethod (9:5): assign_env { ~env_var = 3 }
-|  |  |  SCBody (9:18)
-|  |  |  |  SCAssign (9:18): environment env_var
-|  |  |  |  |  SCLiteral (9:29) = 3
-|  |  SCMethod (12:5): poisoned: assign_undefined { undefined_var = 4 }
+SCClass (2:1): Foo, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (3:9): instance_var
+|  SCMethodList (2:1)
+|  |  SCMethod (7:5): version 3.16: assign_instance { instance_var = 1 }
+|  |  |  SCBody (7:23)
+|  |  |  |  SCAssign (7:23): instance instance_var, declared (3:9): instance_var
+|  |  |  |  |  SCLiteral (7:38) = 1
+|  |  SCMethod (8:5): version 3.16: assign_class { class_var = 2.0 }
+|  |  |  SCBody (8:20)
+|  |  |  |  SCAssign (8:20): class class_var, declared (4:14): class_var
+|  |  |  |  |  SCLiteral (8:32) = 2.0
+|  |  SCMethod (10:5): version 3.16: assign_env { ~env_var = 3 }
+|  |  |  SCBody (10:18)
+|  |  |  |  SCAssign (10:18): environment env_var
+|  |  |  |  |  SCLiteral (10:29) = 3
+|  |  SCMethod (13:5): poisoned: version 3.16: assign_undefined { undefined_var = 4 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
-|  |  |  variables/assignment.sc:12:24
-|  |  |     10 │     // expect-error: Variable not defined
-|  |  |     11 │     // expect: poisoned
-|  |  |     12 │     assign_undefined { undefined_var = 4 }
+|  |  |  variables/assignment.sc:13:24
+|  |  |     11 │     // expect-error: Variable not defined
+|  |  |     12 │     // expect: poisoned
+|  |  |     13 │     assign_undefined { undefined_var = 4 }
 |  |  |        ┆                        ^^^^^^^^^^^^^ this is not defined.
-|  |  |     13 │     assign_chain { instance_var = class_var = 5 }
-|  |  |     14 │ 
-|  |  |     15 │     // expect: no diagnostics
+|  |  |     14 │     assign_chain { instance_var = class_var = 5 }
+|  |  |     15 │ 
+|  |  |     16 │     // expect: no diagnostics
 |  |  |
 |  |  |  Declare it with 'var', or use '~undefined_var' to refer to an environment variable.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (12:24)
-|  |  |  |  SCLiteral (12:40) = 4
-|  |  SCMethod (13:5): assign_chain { instance_var = class_var = 5 }
-|  |  |  SCBody (13:20)
-|  |  |  |  SCAssign (13:20): instance instance_var, declared (2:9): instance_var
-|  |  |  |  |  SCAssign (13:35): class class_var, declared (3:14): class_var
-|  |  |  |  |  |  SCLiteral (13:47) = 5
-SCClass (1:1): Meta_Foo
-|  SCMemberList (1:1)
-|  |  SCMember (3:14): class_var
-|  SCMethodList (1:1)
-|  |  SCMethod (16:5): *class_method_assign_class { class_var = 6 }
-|  |  |  SCBody (16:34)
-|  |  |  |  SCAssign (16:34): instance class_var, declared (3:14): class_var
-|  |  |  |  |  SCLiteral (16:46) = 6
-|  |  SCMethod (17:5): poisoned: *class_method_assign_instance { instance_var = 7 }
+|  |  |  SCBody (13:24)
+|  |  |  |  SCLiteral (13:40) = 4
+|  |  SCMethod (14:5): version 3.16: assign_chain { instance_var = class_var = 5 }
+|  |  |  SCBody (14:20)
+|  |  |  |  SCAssign (14:20): instance instance_var, declared (3:9): instance_var
+|  |  |  |  |  SCAssign (14:35): class class_var, declared (4:14): class_var
+|  |  |  |  |  |  SCLiteral (14:47) = 5
+SCClass (2:1): Meta_Foo, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (4:14): class_var
+|  SCMethodList (2:1)
+|  |  SCMethod (17:5): version 3.16: *class_method_assign_class { class_var = 6 }
+|  |  |  SCBody (17:34)
+|  |  |  |  SCAssign (17:34): instance class_var, declared (4:14): class_var
+|  |  |  |  |  SCLiteral (17:46) = 6
+|  |  SCMethod (18:5): poisoned: version 3.16: *class_method_assign_instance { instance_var = 7 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
-|  |  |  variables/assignment.sc:17:37
-|  |  |     15 │     // expect: no diagnostics
-|  |  |     16 │     *class_method_assign_class { class_var = 6 }
-|  |  |     17 │     *class_method_assign_instance { instance_var = 7 }
+|  |  |  variables/assignment.sc:18:37
+|  |  |     16 │     // expect: no diagnostics
+|  |  |     17 │     *class_method_assign_class { class_var = 6 }
+|  |  |     18 │     *class_method_assign_instance { instance_var = 7 }
 |  |  |        ┆                                     ^^^^^^^^^^^^ this is not defined.
-|  |  |     18 │ }
-|  |  |     19 │ 
-|  |  |     20 │ Bar : Foo {
+|  |  |     19 │ }
+|  |  |     20 │ 
+|  |  |     21 │ Bar : Foo {
 |  |  |
 |  |  |  Declare it with 'var', or use '~instance_var' to refer to an environment variable.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (17:37)
-|  |  |  |  SCLiteral (17:52) = 7
-SCClass (20:1): Bar
-|  SCMemberList (20:1)
-|  SCMethodList (20:1)
-|  |  SCMethod (22:5): assign_inherited { instance_var = 8 }
-|  |  |  SCBody (22:24)
-|  |  |  |  SCAssign (22:24): instance instance_var, declared (2:9): instance_var
-|  |  |  |  |  SCLiteral (22:39) = 8
+|  |  |  SCBody (18:37)
+|  |  |  |  SCLiteral (18:52) = 7
+SCClass (21:1): Bar, version 3.16
+|  SCMemberList (21:1)
+|  SCMethodList (21:1)
+|  |  SCMethod (23:5): version 3.16: assign_inherited { instance_var = 8 }
+|  |  |  SCBody (23:24)
+|  |  |  |  SCAssign (23:24): instance instance_var, declared (3:9): instance_var
+|  |  |  |  |  SCLiteral (23:39) = 8
 Successfully compiled 17 classes.

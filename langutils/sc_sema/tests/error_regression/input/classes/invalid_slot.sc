@@ -1,3 +1,4 @@
+//# VERSION 3.16
 // A class with an invalid slot type is poisoned while declaring the classes, and so are the classes inheriting from
 // it. Only the invalid slot type is reported.
 BadSlot[bad] {

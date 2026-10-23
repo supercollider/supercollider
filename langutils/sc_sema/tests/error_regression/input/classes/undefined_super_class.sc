@@ -1,3 +1,4 @@
+//# VERSION 3.16
 // A class whose superclass isn't defined is poisoned while declaring the classes. Only that is reported: its methods,
 // and those of its subclasses, aren't compiled, so its undefined members aren't reported too.
 Orphan : Undefined {

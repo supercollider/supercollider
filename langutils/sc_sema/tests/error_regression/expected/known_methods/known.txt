@@ -4,130 +4,130 @@
 IR GRAPH DUMP 
 
 
-SCClass (2:1): AbstractObjectExperimental
-|  SCMemberList (2:1)
-|  SCMethodList (2:1)
-SCClass (4:1): Object
-|  SCMemberList (4:1)
-|  SCMethodList (4:1)
-|  |  SCMethod (6:5): perform { ^nil } -> nil
-|  |  |  SCBody (6:15)
-|  |  |  |  SCExplicitReturn (6:15)
-|  |  |  |  |  SCLiteral (6:16) = nil
-SCClass (4:1): Meta_Object
-|  SCMemberList (4:1)
-|  |  SCMember (5:14): dependantsDictionary
-|  |  SCMember (5:36): currentEnvironment
-|  |  SCMember (5:56): topEnvironment
-|  |  SCMember (5:72): uniqueMethods
-|  SCMethodList (4:1)
-SCClass (9:1): Class
-|  SCMemberList (9:1)
-|  SCMethodList (9:1)
-SCClass (11:1): ArrayedCollection
-|  SCMemberList (11:1)
-|  SCMethodList (11:1)
-|  |  SCMethod (12:5): copySeries { ^nil } -> nil
-|  |  |  SCBody (12:18)
-|  |  |  |  SCExplicitReturn (12:18)
-|  |  |  |  |  SCLiteral (12:19) = nil
-|  |  SCMethod (13:5): add { ^nil } -> nil
-|  |  |  SCBody (13:11)
-|  |  |  |  SCExplicitReturn (13:11)
-|  |  |  |  |  SCLiteral (13:12) = nil
-SCClass (16:1): String
-|  SCMemberList (16:1)
-|  SCMethodList (16:1)
-SCClass (18:1): True
-|  SCMemberList (18:1)
-|  SCMethodList (18:1)
-SCClass (20:1): False
-|  SCMemberList (20:1)
-|  SCMethodList (20:1)
-SCClass (22:1): Nil
-|  SCMemberList (22:1)
-|  SCMethodList (22:1)
-SCClass (24:1): Float
-|  SCMemberList (24:1)
-|  SCMethodList (24:1)
-SCClass (26:1): SimpleNumber
-|  SCMemberList (26:1)
-|  SCMethodList (26:1)
-|  |  SCMethod (27:5): series { ^nil } -> nil
-|  |  |  SCBody (27:14)
-|  |  |  |  SCExplicitReturn (27:14)
-|  |  |  |  |  SCLiteral (27:15) = nil
-SCClass (30:1): Integer
-|  SCMemberList (30:1)
-|  SCMethodList (30:1)
-SCClass (32:1): Char
-|  SCMemberList (32:1)
-|  SCMethodList (32:1)
-SCClass (34:1): Symbol
-|  SCMemberList (34:1)
-|  SCMethodList (34:1)
-SCClass (36:1): Ref
-|  SCMemberList (36:1)
-|  SCMethodList (36:1)
-SCClass (38:1): Array
-|  SCMemberList (38:1)
-|  SCMethodList (38:1)
-SCClass (40:1): Dictionary
-|  SCMemberList (40:1)
-|  SCMethodList (40:1)
-|  |  SCMethod (41:5): add { ^nil } -> nil
-|  |  |  SCBody (41:11)
-|  |  |  |  SCExplicitReturn (41:11)
-|  |  |  |  |  SCLiteral (41:12) = nil
-SCClass (44:1): Event
-|  SCMemberList (44:1)
-|  SCMethodList (44:1)
-SCClass (46:1): KnownMethods
-|  SCMemberList (46:1)
-|  SCMethodList (46:1)
-|  |  SCMethod (47:5): range { ^(1..3) } -> [1, 2, 3]
-|  |  |  SCBody (47:13)
-|  |  |  |  SCExplicitReturn (47:13)
-|  |  |  |  |  SCRange (47:14) = [1, 2, 3]
-|  |  |  |  |  |  SCLiteral (47:15) = 1
-|  |  |  |  |  |  SCMissing (47:14)
-|  |  |  |  |  |  SCLiteral (47:18) = 3
-|  |  SCMethod (48:5): slice { ^[1, 2, 3][1..] } -> [2, 3]
+SCClass (3:1): AbstractObjectExperimental, version 3.16
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+SCClass (5:1): Object, version 3.16
+|  SCMemberList (5:1)
+|  SCMethodList (5:1)
+|  |  SCMethod (7:5): version 3.16: perform { ^nil } -> nil
+|  |  |  SCBody (7:15)
+|  |  |  |  SCExplicitReturn (7:15)
+|  |  |  |  |  SCLiteral (7:16) = nil
+SCClass (5:1): Meta_Object, version 3.16
+|  SCMemberList (5:1)
+|  |  SCMember (6:14): dependantsDictionary
+|  |  SCMember (6:36): currentEnvironment
+|  |  SCMember (6:56): topEnvironment
+|  |  SCMember (6:72): uniqueMethods
+|  SCMethodList (5:1)
+SCClass (10:1): Class, version 3.16
+|  SCMemberList (10:1)
+|  SCMethodList (10:1)
+SCClass (12:1): ArrayedCollection, version 3.16
+|  SCMemberList (12:1)
+|  SCMethodList (12:1)
+|  |  SCMethod (13:5): version 3.16: copySeries { ^nil } -> nil
+|  |  |  SCBody (13:18)
+|  |  |  |  SCExplicitReturn (13:18)
+|  |  |  |  |  SCLiteral (13:19) = nil
+|  |  SCMethod (14:5): version 3.16: add { ^nil } -> nil
+|  |  |  SCBody (14:11)
+|  |  |  |  SCExplicitReturn (14:11)
+|  |  |  |  |  SCLiteral (14:12) = nil
+SCClass (17:1): String, version 3.16
+|  SCMemberList (17:1)
+|  SCMethodList (17:1)
+SCClass (19:1): True, version 3.16
+|  SCMemberList (19:1)
+|  SCMethodList (19:1)
+SCClass (21:1): False, version 3.16
+|  SCMemberList (21:1)
+|  SCMethodList (21:1)
+SCClass (23:1): Nil, version 3.16
+|  SCMemberList (23:1)
+|  SCMethodList (23:1)
+SCClass (25:1): Float, version 3.16
+|  SCMemberList (25:1)
+|  SCMethodList (25:1)
+SCClass (27:1): SimpleNumber, version 3.16
+|  SCMemberList (27:1)
+|  SCMethodList (27:1)
+|  |  SCMethod (28:5): version 3.16: series { ^nil } -> nil
+|  |  |  SCBody (28:14)
+|  |  |  |  SCExplicitReturn (28:14)
+|  |  |  |  |  SCLiteral (28:15) = nil
+SCClass (31:1): Integer, version 3.16
+|  SCMemberList (31:1)
+|  SCMethodList (31:1)
+SCClass (33:1): Char, version 3.16
+|  SCMemberList (33:1)
+|  SCMethodList (33:1)
+SCClass (35:1): Symbol, version 3.16
+|  SCMemberList (35:1)
+|  SCMethodList (35:1)
+SCClass (37:1): Ref, version 3.16
+|  SCMemberList (37:1)
+|  SCMethodList (37:1)
+SCClass (39:1): Array, version 3.16
+|  SCMemberList (39:1)
+|  SCMethodList (39:1)
+SCClass (41:1): Dictionary, version 3.16
+|  SCMemberList (41:1)
+|  SCMethodList (41:1)
+|  |  SCMethod (42:5): version 3.16: add { ^nil } -> nil
+|  |  |  SCBody (42:11)
+|  |  |  |  SCExplicitReturn (42:11)
+|  |  |  |  |  SCLiteral (42:12) = nil
+SCClass (45:1): Event, version 3.16
+|  SCMemberList (45:1)
+|  SCMethodList (45:1)
+SCClass (47:1): KnownMethods, version 3.16
+|  SCMemberList (47:1)
+|  SCMethodList (47:1)
+|  |  SCMethod (48:5): version 3.16: range { ^(1..3) } -> [1, 2, 3]
 |  |  |  SCBody (48:13)
 |  |  |  |  SCExplicitReturn (48:13)
-|  |  |  |  |  SCMessage (48:14): copySeries = [2, 3]
-|  |  |  |  |  |  SCCollection (48:14): Array = [1, 2, 3]
-|  |  |  |  |  |  |  SCLiteral (48:15) = 1
-|  |  |  |  |  |  |  SCLiteral (48:18) = 2
-|  |  |  |  |  |  |  SCLiteral (48:21) = 3
-|  |  |  |  |  |  SCPositionalArgs (48:14)
-|  |  |  |  |  |  |  SCLiteral (48:24) = 1
-|  |  |  |  |  |  |  SCLiteral (48:23) = nil
-|  |  |  |  |  |  |  SCLiteral (48:23) = nil
-|  |  SCMethod (49:5): string_slice { ^"hello"[1..3] } -> "ell"
-|  |  |  SCBody (49:20)
-|  |  |  |  SCExplicitReturn (49:20)
-|  |  |  |  |  SCMessage (49:21): copySeries = "ell"
-|  |  |  |  |  |  SCLiteral (49:21) = "hello"
-|  |  |  |  |  |  SCPositionalArgs (49:21)
-|  |  |  |  |  |  |  SCLiteral (49:29) = 1
-|  |  |  |  |  |  |  SCLiteral (49:28) = nil
-|  |  |  |  |  |  |  SCLiteral (49:32) = 3
-|  |  SCMethod (50:5): array_collection { ^Array[1, 2] } -> [1, 2]
-|  |  |  SCBody (50:24)
-|  |  |  |  SCExplicitReturn (50:24)
-|  |  |  |  |  SCCollection (50:25): Array = [1, 2]
-|  |  |  |  |  |  SCLiteral (50:31) = 1
-|  |  |  |  |  |  SCLiteral (50:34) = 2
-|  |  SCMethod (51:5): event_collection { ^Event[a: 1] } -> (a: 1)
+|  |  |  |  |  SCRange (48:14) = [1, 2, 3]
+|  |  |  |  |  |  SCLiteral (48:15) = 1
+|  |  |  |  |  |  SCMissing (48:14)
+|  |  |  |  |  |  SCLiteral (48:18) = 3
+|  |  SCMethod (49:5): version 3.16: slice { ^[1, 2, 3][1..] } -> [2, 3]
+|  |  |  SCBody (49:13)
+|  |  |  |  SCExplicitReturn (49:13)
+|  |  |  |  |  SCMessage (49:14): copySeries = [2, 3]
+|  |  |  |  |  |  SCCollection (49:14): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (49:15) = 1
+|  |  |  |  |  |  |  SCLiteral (49:18) = 2
+|  |  |  |  |  |  |  SCLiteral (49:21) = 3
+|  |  |  |  |  |  SCPositionalArgs (49:14)
+|  |  |  |  |  |  |  SCLiteral (49:24) = 1
+|  |  |  |  |  |  |  SCLiteral (49:23) = nil
+|  |  |  |  |  |  |  SCLiteral (49:23) = nil
+|  |  SCMethod (50:5): version 3.16: string_slice { ^"hello"[1..3] } -> "ell"
+|  |  |  SCBody (50:20)
+|  |  |  |  SCExplicitReturn (50:20)
+|  |  |  |  |  SCMessage (50:21): copySeries = "ell"
+|  |  |  |  |  |  SCLiteral (50:21) = "hello"
+|  |  |  |  |  |  SCPositionalArgs (50:21)
+|  |  |  |  |  |  |  SCLiteral (50:29) = 1
+|  |  |  |  |  |  |  SCLiteral (50:28) = nil
+|  |  |  |  |  |  |  SCLiteral (50:32) = 3
+|  |  SCMethod (51:5): version 3.16: array_collection { ^Array[1, 2] } -> [1, 2]
 |  |  |  SCBody (51:24)
 |  |  |  |  SCExplicitReturn (51:24)
-|  |  |  |  |  SCCollection (51:25): Event = (a: 1)
-|  |  |  |  |  |  SCLiteral (51:31) = \a
-|  |  |  |  |  |  SCLiteral (51:34) = 1
-|  |  SCMethod (52:5): perform_rewrite { ^1.perform(\foo) }
-|  |  |  SCBody (52:23)
-|  |  |  |  SCExplicitReturn (52:23)
-|  |  |  |  |  SCMessage (52:24): foo
-|  |  |  |  |  |  SCLiteral (52:24) = 1
+|  |  |  |  |  SCCollection (51:25): Array = [1, 2]
+|  |  |  |  |  |  SCLiteral (51:31) = 1
+|  |  |  |  |  |  SCLiteral (51:34) = 2
+|  |  SCMethod (52:5): version 3.16: event_collection { ^Event[a: 1] } -> (a: 1)
+|  |  |  SCBody (52:24)
+|  |  |  |  SCExplicitReturn (52:24)
+|  |  |  |  |  SCCollection (52:25): Event = (a: 1)
+|  |  |  |  |  |  SCLiteral (52:31) = \a
+|  |  |  |  |  |  SCLiteral (52:34) = 1
+|  |  SCMethod (53:5): version 3.16: perform_rewrite { ^1.perform(\foo) }
+|  |  |  SCBody (53:23)
+|  |  |  |  SCExplicitReturn (53:23)
+|  |  |  |  |  SCMessage (53:24): foo
+|  |  |  |  |  |  SCLiteral (53:24) = 1
 Successfully compiled 18 classes.

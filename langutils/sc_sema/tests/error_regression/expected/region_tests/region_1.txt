@@ -4,122 +4,123 @@
 IR GRAPH DUMP 
 
 
-SCInterpreted (1:1): region_tests/region_1.scd
+SCInterpreted (1:1): version 3.16: region_tests/region_1.scd
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Warning: Region missing semi-colon.
-|  region_tests/region_1.scd:1:5
-|      1 │ 1 + 2
+|  region_tests/region_1.scd:2:5
+|      1 │ // interpreted-version: 3.16
+|      2 │ 1 + 2
 |        ┆     ^ Add a semi-colon after this.
-|      2 │ 
 |      3 │ 
-|      4 │ (
+|      4 │ 
+|      5 │ (
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Warning: Region missing semi-colon.
-|  region_tests/region_1.scd:8:1
-|      6 │ 
-|      7 │     a + 1
-|      8 │ )
+|  region_tests/region_1.scd:9:1
+|      7 │ 
+|      8 │     a + 1
+|      9 │ )
 |        ┆ ^ Add a semi-colon after this.
-|      9 │ 
 |     10 │ 
-|     11 │ [1, 2].postln
+|     11 │ 
+|     12 │ [1, 2].postln
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Unexpected Token.
-|  region_tests/region_1.scd:16:5
-|     14 │ 
-|     15 │ (
-|     16 │     var a;
+|  region_tests/region_1.scd:17:5
+|     15 │ 
+|     16 │ (
+|     17 │     var a;
 |        ┆     ^^^ Expected an expression, `)`, a keyword binary operator, or `*`, but found `var`.
-|     17 │ )
-|     18 │ 
+|     18 │ )
 |     19 │ 
+|     20 │ 
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Warning: Region missing semi-colon.
-|  region_tests/region_1.scd:17:1
-|     15 │ (
-|     16 │     var a;
-|     17 │ )
+|  region_tests/region_1.scd:18:1
+|     16 │ (
+|     17 │     var a;
+|     18 │ )
 |        ┆ ^ Add a semi-colon after this.
-|     18 │ 
 |     19 │ 
-|     20 │ [1, 2].postln
+|     20 │ 
+|     21 │ [1, 2].postln
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Warning: Region missing semi-colon.
-|  region_tests/region_1.scd:20:8
-|     18 │ 
+|  region_tests/region_1.scd:21:8
 |     19 │ 
-|     20 │ [1, 2].postln
+|     20 │ 
+|     21 │ [1, 2].postln
 |        ┆        ^^^^^^ Add a semi-colon after this.
-|     21 │ 
-|     22 │ 1 * 2
-|     23 │ + 45
+|     22 │ 
+|     23 │ 1 * 2
+|     24 │ + 45
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCRegionList (1:1)
-|  |  SCRegion (1:1)
-|  |  |  SCFunction (1:1) -> 3
-|  |  |  |  SCBody (1:1)
-|  |  |  |  |  SCMessage (1:1): + = 3
-|  |  |  |  |  |  SCLiteral (1:1) = 1
-|  |  |  |  |  |  SCPositionalArgs (1:1)
-|  |  |  |  |  |  |  SCLiteral (1:5) = 2
-|  |  SCRegion (4:1)
-|  |  |  SCFunction (4:1) -> 11
-|  |  |  |  SCBody (4:1)
-|  |  |  |  |  SCVariableDeclare (5:9): a
-|  |  |  |  |  |  SCLiteral (5:13) = 10
-|  |  |  |  |  SCMessage (7:5): + = 11
-|  |  |  |  |  |  SCRead (7:5): local a = 10, declared (5:9): a = 10
-|  |  |  |  |  |  SCPositionalArgs (7:5)
-|  |  |  |  |  |  |  SCLiteral (7:9) = 1
-|  |  SCRegion (20:1)
-|  |  |  SCFunction (20:1)
-|  |  |  |  SCBody (20:1)
-|  |  |  |  |  SCMessage (20:1): postln
-|  |  |  |  |  |  SCCollection (20:1): Array = [1, 2]
-|  |  |  |  |  |  |  SCLiteral (20:2) = 1
-|  |  |  |  |  |  |  SCLiteral (20:5) = 2
-|  |  SCRegion (22:1)
-|  |  |  SCFunction (22:1)
-|  |  |  |  SCBody (22:1)
-|  |  |  |  |  SCMessage (22:1): +
-|  |  |  |  |  |  SCMessage (22:1): * = 2
-|  |  |  |  |  |  |  SCLiteral (22:1) = 1
-|  |  |  |  |  |  |  SCPositionalArgs (22:1)
-|  |  |  |  |  |  |  |  SCLiteral (22:5) = 2
-|  |  |  |  |  |  SCPositionalArgs (22:1)
-|  |  |  |  |  |  |  SCMessage (23:3): postln
-|  |  |  |  |  |  |  |  SCLiteral (23:3) = 45
-|  |  SCRegion (29:1)
-|  |  |  SCFunction (29:1)
-|  |  |  |  SCBody (29:1)
-|  |  |  |  |  SCMessage (29:1): +
-|  |  |  |  |  |  SCMessage (29:1): * = 2
-|  |  |  |  |  |  |  SCLiteral (29:1) = 1
-|  |  |  |  |  |  |  SCPositionalArgs (29:1)
-|  |  |  |  |  |  |  |  SCLiteral (29:5) = 2
-|  |  |  |  |  |  SCPositionalArgs (29:1)
-|  |  |  |  |  |  |  SCMessage (30:3): postln
-|  |  |  |  |  |  |  |  SCLiteral (30:3) = 45
-|  |  SCRegion (36:1)
-|  |  |  SCFunction (36:1)
-|  |  |  |  SCBody (36:1)
-|  |  |  |  |  SCVariableDeclare (37:9): a
-|  |  |  |  |  SCMessage (38:5): +
-|  |  |  |  |  |  SCRead (38:5): local a = nil, declared (37:9): a
-|  |  |  |  |  |  SCPositionalArgs (38:5)
-|  |  |  |  |  |  |  SCLiteral (38:9) = 1
+|  |  SCRegion (2:1)
+|  |  |  SCFunction (2:1) -> 3
+|  |  |  |  SCBody (2:1)
+|  |  |  |  |  SCMessage (2:1): + = 3
+|  |  |  |  |  |  SCLiteral (2:1) = 1
+|  |  |  |  |  |  SCPositionalArgs (2:1)
+|  |  |  |  |  |  |  SCLiteral (2:5) = 2
+|  |  SCRegion (5:1)
+|  |  |  SCFunction (5:1) -> 11
+|  |  |  |  SCBody (5:1)
+|  |  |  |  |  SCVariableDeclare (6:9): a
+|  |  |  |  |  |  SCLiteral (6:13) = 10
+|  |  |  |  |  SCMessage (8:5): + = 11
+|  |  |  |  |  |  SCRead (8:5): local a = 10, declared (6:9): a = 10
+|  |  |  |  |  |  SCPositionalArgs (8:5)
+|  |  |  |  |  |  |  SCLiteral (8:9) = 1
+|  |  SCRegion (21:1)
+|  |  |  SCFunction (21:1)
+|  |  |  |  SCBody (21:1)
+|  |  |  |  |  SCMessage (21:1): postln
+|  |  |  |  |  |  SCCollection (21:1): Array = [1, 2]
+|  |  |  |  |  |  |  SCLiteral (21:2) = 1
+|  |  |  |  |  |  |  SCLiteral (21:5) = 2
+|  |  SCRegion (23:1)
+|  |  |  SCFunction (23:1)
+|  |  |  |  SCBody (23:1)
+|  |  |  |  |  SCMessage (23:1): +
+|  |  |  |  |  |  SCMessage (23:1): * = 2
+|  |  |  |  |  |  |  SCLiteral (23:1) = 1
+|  |  |  |  |  |  |  SCPositionalArgs (23:1)
+|  |  |  |  |  |  |  |  SCLiteral (23:5) = 2
+|  |  |  |  |  |  SCPositionalArgs (23:1)
+|  |  |  |  |  |  |  SCMessage (24:3): postln
+|  |  |  |  |  |  |  |  SCLiteral (24:3) = 45
+|  |  SCRegion (30:1)
+|  |  |  SCFunction (30:1)
+|  |  |  |  SCBody (30:1)
+|  |  |  |  |  SCMessage (30:1): +
+|  |  |  |  |  |  SCMessage (30:1): * = 2
+|  |  |  |  |  |  |  SCLiteral (30:1) = 1
+|  |  |  |  |  |  |  SCPositionalArgs (30:1)
+|  |  |  |  |  |  |  |  SCLiteral (30:5) = 2
+|  |  |  |  |  |  SCPositionalArgs (30:1)
+|  |  |  |  |  |  |  SCMessage (31:3): postln
+|  |  |  |  |  |  |  |  SCLiteral (31:3) = 45
+|  |  SCRegion (37:1)
+|  |  |  SCFunction (37:1)
+|  |  |  |  SCBody (37:1)
+|  |  |  |  |  SCVariableDeclare (38:9): a
+|  |  |  |  |  SCMessage (39:5): +
+|  |  |  |  |  |  SCRead (39:5): local a = nil, declared (38:9): a
+|  |  |  |  |  |  SCPositionalArgs (39:5)
+|  |  |  |  |  |  |  SCLiteral (39:9) = 1
 Successfully compiled 15 classes.

@@ -1,3 +1,4 @@
+//# VERSION 3.16
 // An error inside brackets is recovered from at the matching bracket, so the rest of the method and class still parse.
 // The error poisons the method, the parser has already reported it.
 ParenthesisedError {

@@ -4,57 +4,59 @@
 IR GRAPH DUMP 
 
 
-SCClass (1:1): Dup1
+SCClass (2:1): Dup1, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Duplicate member in class
-|  classes/duplicate_members.sc:2:8
-|      1 │ Dup1 {
-|      2 │     var a, a;
+|  classes/duplicate_members.sc:3:8
+|      1 │ //# VERSION 3.16
+|      2 │ Dup1 {
+|      3 │     var a, a;
 |        ┆        ^^ 
-|      3 │ }
-|      4 │ 
-|      5 │ Dup2B {
+|      4 │ }
+|      5 │ 
+|      6 │ Dup2B {
 |
-|  classes/duplicate_members.sc:2:11
-|      1 │ Dup1 {
-|      2 │     var a, a;
+|  classes/duplicate_members.sc:3:11
+|      1 │ //# VERSION 3.16
+|      2 │ Dup1 {
+|      3 │     var a, a;
 |        ┆           ^^ 
-|      3 │ }
-|      4 │ 
-|      5 │ Dup2B {
+|      4 │ }
+|      5 │ 
+|      6 │ Dup2B {
 |
 |  Duplicate members are not allowed in a class definition. Please delete one.
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  SCMemberList (1:1)
-|  |  SCMember (2:9): a
-|  SCMethodList (1:1)
-SCClass (5:1): Dup2B
-|  SCMemberList (5:1)
-|  |  SCMember (6:9): a
-|  SCMethodList (5:1)
-SCClass (9:1): Dup2D
+|  SCMemberList (2:1)
+|  |  SCMember (3:9): a
+|  SCMethodList (2:1)
+SCClass (6:1): Dup2B, version 3.16
+|  SCMemberList (6:1)
+|  |  SCMember (7:9): a
+|  SCMethodList (6:1)
+SCClass (10:1): Dup2D, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Duplicate member with base class.
-|  classes/duplicate_members.sc:6:9
-|      4 │ 
-|      5 │ Dup2B {
-|      6 │     var a;
+|  classes/duplicate_members.sc:7:9
+|      5 │ 
+|      6 │ Dup2B {
+|      7 │     var a;
 |        ┆         ^ First declared here...
-|      7 │ }
-|      8 │ 
-|      9 │ Dup2D : Dup2B {
+|      8 │ }
+|      9 │ 
+|     10 │ Dup2D : Dup2B {
 |
-|  classes/duplicate_members.sc:10:9
-|      8 │ 
-|      9 │ Dup2D : Dup2B {
-|     10 │     var a;
+|  classes/duplicate_members.sc:11:9
+|      9 │ 
+|     10 │ Dup2D : Dup2B {
+|     11 │     var a;
 |        ┆         ^  ...duplicated here.
-|     11 │ }
+|     12 │ }
 |
 |  Duplicate members are not allowed within a class hierarchy. Please delete one.
 |  ──────────────────────────────────────────────────────────────────────────────────
-|  SCMemberList (9:1)
-|  SCMethodList (9:1)
+|  SCMemberList (10:1)
+|  SCMethodList (10:1)
 Successfully compiled 18 classes.

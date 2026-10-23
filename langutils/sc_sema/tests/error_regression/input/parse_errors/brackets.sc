@@ -1,3 +1,4 @@
+//# VERSION 3.16
 // Brackets are paired before parsing. Those that don't match are reported and repaired, so the rest of the method,
 // and the methods after it, are parsed as written.
 Brackets {

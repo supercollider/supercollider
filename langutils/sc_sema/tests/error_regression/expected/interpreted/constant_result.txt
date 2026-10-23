@@ -4,17 +4,17 @@
 IR GRAPH DUMP 
 
 
-SCInterpreted (1:1): interpreted/constant_result.scd
+SCInterpreted (1:1): version 3.16: interpreted/constant_result.scd
 |  SCRegionList (1:1) -> 5
-|  |  SCRegion (4:1)
-|  |  |  SCFunction (4:1) -> 1
-|  |  |  |  SCBody (4:1)
-|  |  |  |  |  SCLiteral (4:1) = 1
-|  |  SCRegion (4:4)
-|  |  |  SCFunction (4:4) -> 5
-|  |  |  |  SCBody (4:4)
-|  |  |  |  |  SCMessage (4:4): + = 5
-|  |  |  |  |  |  SCLiteral (4:4) = 2
-|  |  |  |  |  |  SCPositionalArgs (4:4)
-|  |  |  |  |  |  |  SCLiteral (4:8) = 3
+|  |  SCRegion (5:1)
+|  |  |  SCFunction (5:1) -> 1
+|  |  |  |  SCBody (5:1)
+|  |  |  |  |  SCLiteral (5:1) = 1
+|  |  SCRegion (5:4)
+|  |  |  SCFunction (5:4) -> 5
+|  |  |  |  SCBody (5:4)
+|  |  |  |  |  SCMessage (5:4): + = 5
+|  |  |  |  |  |  SCLiteral (5:4) = 2
+|  |  |  |  |  |  SCPositionalArgs (5:4)
+|  |  |  |  |  |  |  SCLiteral (5:8) = 3
 Successfully compiled 15 classes.

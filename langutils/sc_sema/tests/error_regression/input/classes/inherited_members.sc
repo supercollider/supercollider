@@ -1,3 +1,4 @@
+//# VERSION 3.16
 Foo {
     var bar, car, tar;
     const foo_const1, foo_const_2;
