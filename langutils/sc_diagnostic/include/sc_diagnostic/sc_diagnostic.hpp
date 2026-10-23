@@ -141,6 +141,13 @@ public:
 
     // `this = 1` or `#this = a`, see declared_special_variable.
     [[nodiscard]] static Diagnostic assigned_special_variable(TextInfoPtr t, sc::lex::SourceCodeRange l);
+    // `x = 1`, or `#x = ...`, at assign_l, where x is declared `const` at const_l. The assignment is last, so the
+    // diagnostic is the method's.
+    [[nodiscard]] static Diagnostic assigned_constant(TextInfoPtr const_t, sc::lex::SourceCodeRange const_l,
+                                                      TextInfoPtr assign_t, sc::lex::SourceCodeRange assign_l);
+    // `const >x = 1` or `const <>x = 1`, the accessor at l asks for a setter, which a constant can't have. The setter
+    // is left out, so the class still compiles.
+    [[nodiscard]] static Diagnostic constant_setter(TextInfoPtr t, sc::lex::SourceCodeRange l);
     // `var this`, `|thisProcess|`, ..., `this`, `super` and the pseudo variables, e.g., `thisProcess`, are set by the
     // language.
     [[nodiscard]] static Diagnostic declared_special_variable(TextInfoPtr t, sc::lex::SourceCodeRange l);

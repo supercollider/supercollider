@@ -196,9 +196,10 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
                         auto accessor = synthesize_literal(accessor_i_t, *ast_graph);
 
 
+                        // An error, but the setter is left out so the class still compiles.
                         if (has(accessor, ast::ReadWriteAccessor::ExternallyWriteable)) {
-                            // We remove the writable flag and carry on compiling.
-                            // TODO: create a diagnostic, this is an error, but not a fatal one.
+                            cxt.diagnostics(diag::Diagnostic::constant_setter(get_text_info(*ast_graph),
+                                                                              get_location(*ast_graph, accessor_i)));
                             accessor = remove(accessor, ast::ReadWriteAccessor::ExternallyWriteable);
                         }
 

@@ -32,6 +32,8 @@ struct ScopeEntry {
     lex::SourceCodeRange declaration_range {};
     OptionalLocalIndex local {};
     std::optional<SymSCClassName> owning_class {};
+    // A member declared `const`, which can't be assigned.
+    bool is_const { false };
 };
 
 // Where entry is declared, as a location in ir.

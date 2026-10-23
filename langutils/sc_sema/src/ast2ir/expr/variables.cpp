@@ -251,6 +251,15 @@ LocalIndex resolve_initialising(InitialisingUse use, bool assigns, DiagnosticSin
     return variable.local;
 }
 
+// Reports assigning to a constant at the name at, returns whether it is one.
+bool assigns_to_constant(Expr& expr, const ScopeEntry& entry, const ast::ASTGraph& g, ast::Index at) {
+    if (!entry.is_const)
+        return false;
+    expr.sink(sc::diag::Diagnostic::assigned_constant(entry.declaration_text, entry.declaration_range, get_text_info(g),
+                                                      get_location(g, at)));
+    return true;
+}
+
 // A member is found by the class declaring it, see MemberVariable, locals by their index.
 OptionalMemberIndex member_of(IRGraph& ir, SymSCIdentifier name, const ScopeEntry& entry) {
     if (!entry.owning_class)
@@ -319,8 +328,9 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
         return make_return(SCAssign::Kind::Local, resolve_initialising(*use, true, sink, ir, *ast_graph, { *name }),
                            {});
 
-    // TODO: error when assigning to a const once ScopeEntry records const-ness.
     if (const auto entry = resolve_symbol(name_sym)) {
+        if (assigns_to_constant(*this, *entry, *ast_graph, { *name }))
+            return expr_r;
         if (entry->local)
             record_local_use(name_sym, LocalIndex { *entry->local }, true);
         return make_return(to_assign_kind(entry->kind), entry->local, member_of(ir, name_sym, *entry));
@@ -367,6 +377,8 @@ Return<SCAnyExpr_I> Expr::operator()(ast::VariablePackAssignIndex i) {
             return;
         }
         if (const auto entry = resolve_symbol(sym)) {
+            if (assigns_to_constant(*this, *entry, *ast_graph, { **name }))
+                return;
             if (entry->local)
                 record_local_use(sym, LocalIndex { *entry->local }, true);
             ir.append(targets,

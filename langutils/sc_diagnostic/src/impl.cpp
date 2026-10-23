@@ -783,6 +783,24 @@ Diagnostic Diagnostic::assigned_special_variable(TextInfoPtr t, sc::lex::SourceC
              std::string { special_variables } + ", so can't be assigned." };
 }
 
+Diagnostic Diagnostic::assigned_constant(TextInfoPtr const_t, sc::lex::SourceCodeRange const_l, TextInfoPtr assign_t,
+                                         sc::lex::SourceCodeRange assign_l) {
+    return { "Assigning to a constant",
+             Severity::Error,
+             {
+                 { std::move(const_t), const_l, "Declared as a constant here..." },
+                 { std::move(assign_t), assign_l, "...but assigned here." },
+             },
+             "A constant's value can't change. Declare it with `classvar` if it needs to be assigned." };
+}
+
+Diagnostic Diagnostic::constant_setter(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+    return { "Constant with a setter",
+             Severity::Error,
+             { { std::move(t), l, "this makes a setter." } },
+             "A constant can't be assigned, so it can only have a getter, `<`. The setter is left out." };
+}
+
 Diagnostic Diagnostic::declared_special_variable(TextInfoPtr t, sc::lex::SourceCodeRange l) {
     return { "Special variable declared",
              Severity::Error,

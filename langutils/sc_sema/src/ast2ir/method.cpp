@@ -32,6 +32,7 @@ Scope member_scope(std::shared_ptr<const IRGraph> class_ir, SCMemberList_I membe
                            class_ir->text_info(loc.source),
                            IRGraph::range(loc) };
         entry.owning_class = member.owning_class;
+        entry.is_const = member.is_const;
         scope.insert({ member.name, entry });
     }
     return scope;

@@ -1,0 +1,222 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): LegacyConstantAssignment
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Constant with a setter
+|  versions/legacy_constant_assignment.sc:6:11
+|      4 │     const a = 1, <b = 2;
+|      5 │     // A constant can only have a getter, the setter is left out.
+|      6 │     const >c = 3, <>d = 4;
+|        ┆           ^ this makes a setter.
+|      7 │     classvar e;
+|      8 │ 
+|      9 │     // expect-error: Assigning to a constant
+|
+|  A constant can't be assigned, so it can only have a getter, `<`. The setter is left out.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Constant with a setter
+|  versions/legacy_constant_assignment.sc:6:19
+|      4 │     const a = 1, <b = 2;
+|      5 │     // A constant can only have a getter, the setter is left out.
+|      6 │     const >c = 3, <>d = 4;
+|        ┆                   ^^ this makes a setter.
+|      7 │     classvar e;
+|      8 │ 
+|      9 │     // expect-error: Assigning to a constant
+|
+|  A constant can't be assigned, so it can only have a getter, `<`. The setter is left out.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (10:5): poisoned: instance_method { a = 2; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Assigning to a constant
+|  |  |  versions/legacy_constant_assignment.sc:4:11
+|  |  |      2 │ // A constant can't be assigned, in a method, a class method, a pack or a function.
+|  |  |      3 │ LegacyConstantAssignment {
+|  |  |      4 │     const a = 1, <b = 2;
+|  |  |        ┆           ^ Declared as a constant here...
+|  |  |      5 │     // A constant can only have a getter, the setter is left out.
+|  |  |      6 │     const >c = 3, <>d = 4;
+|  |  |      7 │     classvar e;
+|  |  |
+|  |  |  versions/legacy_constant_assignment.sc:10:23
+|  |  |      8 │ 
+|  |  |      9 │     // expect-error: Assigning to a constant
+|  |  |     10 │     instance_method { a = 2; ^a }
+|  |  |        ┆                       ^ ...but assigned here.
+|  |  |     11 │     // expect-error: Assigning to a constant
+|  |  |     12 │     *class_method { a = 2; ^a }
+|  |  |     13 │     // expect-error: Assigning to a constant
+|  |  |
+|  |  |  A constant's value can't change. Declare it with `classvar` if it needs to be assigned.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (10:23)
+|  |  |  |  SCLiteral (10:27) = 2
+|  |  |  |  SCExplicitReturn (10:30)
+|  |  |  |  |  SCRead (10:31): class a, declared (4:11): a
+|  |  SCMethod (14:5): poisoned: pack { #a, e = [1, 2]; ^e }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Assigning to a constant
+|  |  |  versions/legacy_constant_assignment.sc:4:11
+|  |  |      2 │ // A constant can't be assigned, in a method, a class method, a pack or a function.
+|  |  |      3 │ LegacyConstantAssignment {
+|  |  |      4 │     const a = 1, <b = 2;
+|  |  |        ┆           ^ Declared as a constant here...
+|  |  |      5 │     // A constant can only have a getter, the setter is left out.
+|  |  |      6 │     const >c = 3, <>d = 4;
+|  |  |      7 │     classvar e;
+|  |  |
+|  |  |  versions/legacy_constant_assignment.sc:14:13
+|  |  |     12 │     *class_method { a = 2; ^a }
+|  |  |     13 │     // expect-error: Assigning to a constant
+|  |  |     14 │     pack { #a, e = [1, 2]; ^e }
+|  |  |        ┆             ^ ...but assigned here.
+|  |  |     15 │     // expect-error: Assigning to a constant
+|  |  |     16 │     in_function { ^{ b = 3 } }
+|  |  |     17 │     // expect-error: Assigning to a constant
+|  |  |
+|  |  |  A constant's value can't change. Declare it with `classvar` if it needs to be assigned.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (14:12)
+|  |  |  |  SCPackAssign (14:12)
+|  |  |  |  |  SCCollection (14:20): Array
+|  |  |  |  |  |  SCLiteral (14:21) = 1
+|  |  |  |  |  |  SCLiteral (14:24) = 2
+|  |  |  |  |  SCPackTargets (14:12)
+|  |  |  |  |  |  SCPackTarget (14:16): class e at 1, declared (7:14): e
+|  |  |  |  SCExplicitReturn (14:28)
+|  |  |  |  |  SCRead (14:29): class e, declared (7:14): e
+|  |  SCMethod (16:5): poisoned: in_function { ^{ b = 3 } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Assigning to a constant
+|  |  |  versions/legacy_constant_assignment.sc:4:19
+|  |  |      2 │ // A constant can't be assigned, in a method, a class method, a pack or a function.
+|  |  |      3 │ LegacyConstantAssignment {
+|  |  |      4 │     const a = 1, <b = 2;
+|  |  |        ┆                   ^ Declared as a constant here...
+|  |  |      5 │     // A constant can only have a getter, the setter is left out.
+|  |  |      6 │     const >c = 3, <>d = 4;
+|  |  |      7 │     classvar e;
+|  |  |
+|  |  |  versions/legacy_constant_assignment.sc:16:22
+|  |  |     14 │     pack { #a, e = [1, 2]; ^e }
+|  |  |     15 │     // expect-error: Assigning to a constant
+|  |  |     16 │     in_function { ^{ b = 3 } }
+|  |  |        ┆                      ^ ...but assigned here.
+|  |  |     17 │     // expect-error: Assigning to a constant
+|  |  |     18 │     nested_return { |x| if (x) { a = 2; ^1 }; ^2 }
+|  |  |     19 │ 
+|  |  |
+|  |  |  A constant's value can't change. Declare it with `classvar` if it needs to be assigned.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (16:19)
+|  |  |  |  SCExplicitReturn (16:19)
+|  |  |  |  |  SCFunction (16:20)
+|  |  |  |  |  |  SCBody (16:20)
+|  |  |  |  |  |  |  SCLiteral (16:26) = 3
+|  |  SCMethod (18:5): poisoned: nested_return { |x| if (x) { a = 2; ^1 }; ^2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Assigning to a constant
+|  |  |  versions/legacy_constant_assignment.sc:4:11
+|  |  |      2 │ // A constant can't be assigned, in a method, a class method, a pack or a function.
+|  |  |      3 │ LegacyConstantAssignment {
+|  |  |      4 │     const a = 1, <b = 2;
+|  |  |        ┆           ^ Declared as a constant here...
+|  |  |      5 │     // A constant can only have a getter, the setter is left out.
+|  |  |      6 │     const >c = 3, <>d = 4;
+|  |  |      7 │     classvar e;
+|  |  |
+|  |  |  versions/legacy_constant_assignment.sc:18:34
+|  |  |     16 │     in_function { ^{ b = 3 } }
+|  |  |     17 │     // expect-error: Assigning to a constant
+|  |  |     18 │     nested_return { |x| if (x) { a = 2; ^1 }; ^2 }
+|  |  |        ┆                                  ^ ...but assigned here.
+|  |  |     19 │ 
+|  |  |     20 │     // expect: no diagnostics
+|  |  |     21 │     reads { ^a + b }
+|  |  |
+|  |  |  A constant's value can't change. Declare it with `classvar` if it needs to be assigned.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (18:22)
+|  |  |  |  SCArgumentDeclare (18:22): x
+|  |  |  SCBody (18:25)
+|  |  |  |  SCMessage (18:25): if
+|  |  |  |  |  SCRead (18:29): local x, declared (18:22): x
+|  |  |  |  |  SCPositionalArgs (18:25)
+|  |  |  |  |  |  SCFunction (18:32)
+|  |  |  |  |  |  |  SCBody (18:32)
+|  |  |  |  |  |  |  |  SCLiteral (18:38) = 2
+|  |  |  |  |  |  |  |  SCExplicitReturn (18:41)
+|  |  |  |  |  |  |  |  |  SCLiteral (18:42) = 1
+|  |  |  |  SCExplicitReturn (18:47)
+|  |  |  |  |  SCLiteral (18:48) = 2
+|  |  SCMethod (21:5): reads { ^a + b }
+|  |  |  SCBody (21:13)
+|  |  |  |  SCExplicitReturn (21:13)
+|  |  |  |  |  SCMessage (21:14): +
+|  |  |  |  |  |  SCRead (21:14): class a, declared (4:11): a
+|  |  |  |  |  |  SCPositionalArgs (21:14)
+|  |  |  |  |  |  |  SCRead (21:18): class b, declared (4:19): b
+|  |  SCMethod (23:5): class_variable { e = 1; ^e }
+|  |  |  SCBody (23:22)
+|  |  |  |  SCAssign (23:22): class e, declared (7:14): e
+|  |  |  |  |  SCLiteral (23:26) = 1
+|  |  |  |  SCExplicitReturn (23:29)
+|  |  |  |  |  SCRead (23:30): class e, declared (7:14): e
+|  |  SCMethod (26:5): hidden { var a = 1; a = 2; ^a }
+|  |  |  SCBody (26:14)
+|  |  |  |  SCVariableDeclare (26:18): a (assigned), prototype
+|  |  |  |  |  SCLiteral (26:22) = 1
+|  |  |  |  SCAssign (26:25): local a, declared (26:18): a = 1
+|  |  |  |  |  SCLiteral (26:29) = 2
+|  |  |  |  SCExplicitReturn (26:32)
+|  |  |  |  |  SCRead (26:33): local a, declared (26:18): a = 1
+SCClass (3:1): Meta_LegacyConstantAssignment
+|  SCMemberList (3:1)
+|  |  SCMember (4:11): a = 1
+|  |  SCMember (4:19): b = 2
+|  |  SCMember (6:12): c = 3
+|  |  SCMember (6:21): d = 4
+|  |  SCMember (7:14): e
+|  SCMethodList (3:1)
+|  |  SCMethod (12:5): poisoned: *class_method { a = 2; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Assigning to a constant
+|  |  |  versions/legacy_constant_assignment.sc:4:11
+|  |  |      2 │ // A constant can't be assigned, in a method, a class method, a pack or a function.
+|  |  |      3 │ LegacyConstantAssignment {
+|  |  |      4 │     const a = 1, <b = 2;
+|  |  |        ┆           ^ Declared as a constant here...
+|  |  |      5 │     // A constant can only have a getter, the setter is left out.
+|  |  |      6 │     const >c = 3, <>d = 4;
+|  |  |      7 │     classvar e;
+|  |  |
+|  |  |  versions/legacy_constant_assignment.sc:12:21
+|  |  |     10 │     instance_method { a = 2; ^a }
+|  |  |     11 │     // expect-error: Assigning to a constant
+|  |  |     12 │     *class_method { a = 2; ^a }
+|  |  |        ┆                     ^ ...but assigned here.
+|  |  |     13 │     // expect-error: Assigning to a constant
+|  |  |     14 │     pack { #a, e = [1, 2]; ^e }
+|  |  |     15 │     // expect-error: Assigning to a constant
+|  |  |
+|  |  |  A constant's value can't change. Declare it with `classvar` if it needs to be assigned.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (12:21)
+|  |  |  |  SCLiteral (12:25) = 2
+|  |  |  |  SCExplicitReturn (12:28)
+|  |  |  |  |  SCRead (12:29): instance a, declared (4:11): a
+Successfully compiled 16 classes.
