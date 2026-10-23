@@ -2533,12 +2533,14 @@ void handle_b_set(ReceivedMessage const& msg) {
         return;
     }
 
+    const uint32_t buf_samples = buf->samples;
+
     while (it != end) {
-        osc::int32 index = it->AsInt32();
+        uint32_t index = it->AsInt32();
         ++it;
         float value = extract_float_argument(it++);
-
-        data[index] = value;
+        if (index < buf_samples)
+            data[index] = value;
     }
 }
 
@@ -2556,17 +2558,24 @@ void handle_b_setn(ReceivedMessage const& msg) {
         return;
     }
 
+    const uint32_t buf_samples = buf->samples;
+
     while (it != end) {
-        osc::int32 index = it->AsInt32();
+        uint32_t start = it->AsInt32();
         ++it;
         verify_argument(it, end);
-        osc::int32 samples = it->AsInt32();
+        int32_t count = it->AsInt32();
+        if (count < 0) {
+            log_printf("/b_setn: bad count argument (%d)\n", count);
+        }
         ++it;
 
-        for (int i = 0; i != samples; ++i) {
+        for (uint32_t i = 0; i < (uint32_t)count; ++i) {
             verify_argument(it, end);
             float value = extract_float_argument(it++);
-            data[index + i] = value;
+            uint32_t index = start + i;
+            if (index < buf_samples)
+                data[index] = value;
         }
     }
 }
@@ -2604,24 +2613,20 @@ void handle_b_fill(ReceivedMessage const& msg) {
         return;
     }
 
-    int bufSamples = sc_factory->get_buffer_struct(bufnum)->samples;
+    const int32_t buf_samples = buf->samples; // signed int, see below!
 
     while (it != end) {
         osc::int32 index = it->AsInt32();
         ++it;
         verify_argument(it, end);
-        osc::int32 samples = it->AsInt32();
+        osc::int32 count = it->AsInt32();
         ++it;
         verify_argument(it, end);
         float value = extract_float_argument(it++);
 
-        for (int i = 0; i != samples; ++i) {
-            data[index] = value;
-            ++index;
-            if (index >= bufSamples) {
-                break;
-            }
-        }
+        count = std::min(count, buf_samples - index);
+        if (count > 0)
+            std::fill(data, data + count, value);
     }
 }
 
@@ -2670,8 +2675,9 @@ template <bool realtime> void handle_b_close(ReceivedMessage const& msg, endpoin
 }
 
 template <bool realtime> void handle_b_get(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
-    const size_t elem_size = sizeof(int) * sizeof(float);
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    const size_t elem_size = sizeof(int) * sizeof(float);
     const size_t index_count = msg.ArgumentCount() - 1;
     const size_t alloc_size = index_count * elem_size + 128; /* hopefully enough */
 
@@ -2687,17 +2693,18 @@ template <bool realtime> void handle_b_get(ReceivedMessage const& msg, endpoint_
         return;
     }
 
-    const int max_sample = buf->frames * buf->channels;
+    const int32_t buf_samples = buf->samples; // signed int, see below!
 
     osc::OutboundPacketStream p(buffer.data(), buffer.size());
     p << osc::BeginMessage("/b_set") << bufnum;
 
     while (!args.Eos()) {
+        // use original (signed) value because we pass it to the reply
         osc::int32 index;
         args >> index;
         p << index;
 
-        if (index < max_sample)
+        if (index >= 0 && index < buf_samples)
             p << data[index];
         else
             p << 0.f;
