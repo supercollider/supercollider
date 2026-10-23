@@ -101,7 +101,8 @@ struct Expr : private Base {
 
     // A variable or argument whose initial value is being compiled, it is only added to its scope afterwards. A
     // function in the initial value can refer to it, as the function is called after the variable is assigned, e.g.,
-    // `var f = { f.value }`, but nothing else can, e.g., `var f = f`.
+    // `var f = { f.value }`. Elsewhere in the initial value its name refers to what it hides, e.g., `var x = x + 1`
+    // reads the outer `x`.
     // Legacy code's frame also holds the function's arguments and leading variables that aren't declared yet, so they
     // can be used before their declarations, see declare_frame.
     struct Initialising {
@@ -109,12 +110,18 @@ struct Expr : private Base {
         // The index of the scope it will be in.
         std::size_t scope;
         SourceLocation declaration;
+        // Assigned, or used in a function, before it is declared, so it can't be constant.
+        bool escaped { false };
+
+        // Everything down here referes to legacy look up rules. These are complicated, beware!
+
         // A function's argument or variable, which legacy code's frame holds, rather than, e.g., a generator's.
         bool in_frame { false };
         // In legacy code's frame, but its initial value isn't being compiled, it is declared later.
         bool later { false };
-        // Assigned, or used in a function, before it is declared, so it can't be constant.
-        bool escaped { false };
+        // A legacy generator qualifier's, whose value the old compiler put outside the block declaring it, so the value
+        // can't refer to it, even in a function, see find_initialising.
+        bool outside_value { false };
     };
     std::vector<Initialising> initialising;
     // The `_` of the innermost call being partially applied, in order, see partially_apply. Each reads the function's

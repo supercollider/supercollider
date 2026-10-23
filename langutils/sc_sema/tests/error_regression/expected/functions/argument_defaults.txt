@@ -64,9 +64,9 @@ SCClass (2:1): ArgumentDefaults, version 3.16
 |  |  |     14 │     // expect-error: Variable not defined
 |  |  |     15 │     block_later_argument { ^{ |a = (b), b| a } }
 |  |  |        ┆                                     ^ this is not defined.
-|  |  |     16 │     // expect-error: Variable used in its own initial value
-|  |  |     17 │     block_itself { ^{ |a = (a)| a } }
-|  |  |     18 │ 
+|  |  |     16 │     // Its own name is what it hides, here nothing.
+|  |  |     17 │     // expect-error: Variable not defined
+|  |  |     18 │     block_itself { ^{ |a = (a)| a } }
 |  |  |
 |  |  |  Declare it with 'var', or use '~b' to refer to an environment variable.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -79,49 +79,49 @@ SCClass (2:1): ArgumentDefaults, version 3.16
 |  |  |  |  |  |  |  SCArgumentDeclare (15:41): b
 |  |  |  |  |  |  SCBody (15:29)
 |  |  |  |  |  |  |  SCRead (15:44): local a, declared (15:32): a = (b)
-|  |  SCMethod (17:5): poisoned: version 3.16: block_itself { ^{ |a = (a)| a } }
+|  |  SCMethod (18:5): poisoned: version 3.16: block_itself { ^{ |a = (a)| a } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: Variable used in its own initial value
-|  |  |  functions/argument_defaults.sc:17:29
-|  |  |     15 │     block_later_argument { ^{ |a = (b), b| a } }
-|  |  |     16 │     // expect-error: Variable used in its own initial value
-|  |  |     17 │     block_itself { ^{ |a = (a)| a } }
-|  |  |        ┆                             ^ this hasn't been assigned yet.
-|  |  |     18 │ 
-|  |  |     19 │     // expect: no result
-|  |  |     20 │     method_constant { |a = 1| ^1 }
+|  |  |  Error: Variable not defined
+|  |  |  functions/argument_defaults.sc:18:29
+|  |  |     16 │     // Its own name is what it hides, here nothing.
+|  |  |     17 │     // expect-error: Variable not defined
+|  |  |     18 │     block_itself { ^{ |a = (a)| a } }
+|  |  |        ┆                             ^ this is not defined.
+|  |  |     19 │ 
+|  |  |     20 │     // expect: no result
+|  |  |     21 │     method_constant { |a = 1| ^1 }
 |  |  |
-|  |  |  A variable can only refer to itself from a function in its initial value, e.g., `var f = { f.value }`, as the function is called after the variable is assigned.
+|  |  |  Declare it with 'var', or use '~a' to refer to an environment variable.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (17:20)
-|  |  |  |  SCExplicitReturn (17:20)
-|  |  |  |  |  SCFunction (17:21)
-|  |  |  |  |  |  SCArgumentDeclareList (17:24)
-|  |  |  |  |  |  |  SCArgumentDeclare (17:24): a
-|  |  |  |  |  |  |  |  SCExprList (17:29)
-|  |  |  |  |  |  SCBody (17:21)
-|  |  |  |  |  |  |  SCRead (17:33): local a, declared (17:24): a = (a)
-|  |  SCMethod (20:5): version 3.16: method_constant { |a = 1| ^1 }
-|  |  |  SCArgumentDeclareList (20:24)
-|  |  |  |  SCArgumentDeclare (20:24): a
-|  |  |  |  |  SCLiteral (20:28) = 1
-|  |  |  SCBody (20:31)
-|  |  |  |  SCExplicitReturn (20:31)
-|  |  |  |  |  SCLiteral (20:32) = 1
-|  |  SCMethod (22:5): version 3.16: method_instance_var { |a = (instance_var)| ^1 }
-|  |  |  SCArgumentDeclareList (22:28)
-|  |  |  |  SCArgumentDeclare (22:28): a
-|  |  |  |  |  SCRead (22:33): instance instance_var, declared (3:9): instance_var
-|  |  |  SCBody (22:48)
-|  |  |  |  SCExplicitReturn (22:48)
-|  |  |  |  |  SCLiteral (22:49) = 1
-|  |  SCMethod (24:5): version 3.16: method_other_argument { |a, b = (a)| ^1 }
-|  |  |  SCArgumentDeclareList (24:30)
-|  |  |  |  SCArgumentDeclare (24:30): a
-|  |  |  |  SCArgumentDeclare (24:33): b
-|  |  |  |  |  SCRead (24:38): local a, declared (24:30): a
-|  |  |  SCBody (24:42)
-|  |  |  |  SCExplicitReturn (24:42)
-|  |  |  |  |  SCLiteral (24:43) = 1
+|  |  |  SCBody (18:20)
+|  |  |  |  SCExplicitReturn (18:20)
+|  |  |  |  |  SCFunction (18:21)
+|  |  |  |  |  |  SCArgumentDeclareList (18:24)
+|  |  |  |  |  |  |  SCArgumentDeclare (18:24): a
+|  |  |  |  |  |  |  |  SCExprList (18:29)
+|  |  |  |  |  |  SCBody (18:21)
+|  |  |  |  |  |  |  SCRead (18:33): local a, declared (18:24): a = (a)
+|  |  SCMethod (21:5): version 3.16: method_constant { |a = 1| ^1 }
+|  |  |  SCArgumentDeclareList (21:24)
+|  |  |  |  SCArgumentDeclare (21:24): a
+|  |  |  |  |  SCLiteral (21:28) = 1
+|  |  |  SCBody (21:31)
+|  |  |  |  SCExplicitReturn (21:31)
+|  |  |  |  |  SCLiteral (21:32) = 1
+|  |  SCMethod (23:5): version 3.16: method_instance_var { |a = (instance_var)| ^1 }
+|  |  |  SCArgumentDeclareList (23:28)
+|  |  |  |  SCArgumentDeclare (23:28): a
+|  |  |  |  |  SCRead (23:33): instance instance_var, declared (3:9): instance_var
+|  |  |  SCBody (23:48)
+|  |  |  |  SCExplicitReturn (23:48)
+|  |  |  |  |  SCLiteral (23:49) = 1
+|  |  SCMethod (25:5): version 3.16: method_other_argument { |a, b = (a)| ^1 }
+|  |  |  SCArgumentDeclareList (25:30)
+|  |  |  |  SCArgumentDeclare (25:30): a
+|  |  |  |  SCArgumentDeclare (25:33): b
+|  |  |  |  |  SCRead (25:38): local a, declared (25:30): a
+|  |  |  SCBody (25:42)
+|  |  |  |  SCExplicitReturn (25:42)
+|  |  |  |  |  SCLiteral (25:43) = 1
 Successfully compiled 16 classes.

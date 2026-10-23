@@ -124,9 +124,6 @@ public:
     [[nodiscard]] static Diagnostic undefined_variable(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
                                                        std::string_view name);
 
-    // `var f = f`, a variable can only refer to itself from a function in its initial value, e.g., `var f = { f }`.
-    [[nodiscard]] static Diagnostic used_in_own_initial_value(TextInfoPtr t, sc::lex::SourceCodeRange l);
-
     // `this = 1` or `#this = a`, see declared_special_variable.
     [[nodiscard]] static Diagnostic assigned_special_variable(TextInfoPtr t, sc::lex::SourceCodeRange l);
     // `var this`, `|thisProcess|`, ..., `this`, `super` and the pseudo variables, e.g., `thisProcess`, are set by the
@@ -151,6 +148,12 @@ public:
     [[nodiscard]] static Diagnostic used_before_declaration(TextInfoPtr declaration_t,
                                                             sc::lex::SourceCodeRange declaration, TextInfoPtr use_t,
                                                             sc::lex::SourceCodeRange use);
+
+    // A warning, legacy code using a generator qualifier's variable from a function in its own value, e.g.,
+    // `{: y, var y = { y } }`, which, as in the old compiler, refers to what the variable hides, but 3.16 doesn't.
+    [[nodiscard]] static Diagnostic qualifier_hidden_from_value(TextInfoPtr declaration_t,
+                                                                sc::lex::SourceCodeRange declaration, TextInfoPtr use_t,
+                                                                sc::lex::SourceCodeRange use);
 
     // `//# VERSION` not followed by `major.minor`, e.g., `//# VERSION 3`.
     [[nodiscard]] static Diagnostic malformed_version(TextInfoPtr t, sc::lex::SourceCodeRange l);

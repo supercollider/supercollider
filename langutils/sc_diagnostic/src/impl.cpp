@@ -659,8 +659,20 @@ Diagnostic Diagnostic::used_before_declaration(TextInfoPtr declaration_t, sc::le
              { { std::move(declaration_t), declaration, "This is declared here..." },
                { std::move(use_t), use, "...but used before its initial value has run." } },
              "In the legacy version this is the variable, which is nil until its initial value runs, unless that is a "
-             "literal. From 3.16 a name can only be used after its declaration, so this would be an error, or a "
-             "different variable. Move the declaration first, or add `//# VERSION 3.16` once it is." };
+             "literal. From 3.16 a name can only be used after its declaration, other than in a function in its own "
+             "initial value, so this would be a different variable, or an error. Move the declaration first, or add "
+             "`//# VERSION 3.16` once it is." };
+}
+
+Diagnostic Diagnostic::qualifier_hidden_from_value(TextInfoPtr declaration_t, sc::lex::SourceCodeRange declaration,
+                                                   TextInfoPtr use_t, sc::lex::SourceCodeRange use) {
+    return { "Qualifier's variable used in its own value",
+             Severity::Warning,
+             { { std::move(declaration_t), declaration, "This qualifier declares it..." },
+               { std::move(use_t), use, "...but this function in its value can't see it." } },
+             "In the legacy version, as in the old compiler, the value is outside the qualifier, so this is what the "
+             "name refers to there instead. From 3.16 a function in a qualifier's value refers to the qualifier's "
+             "variable. Rename one of them to keep this meaning." };
 }
 
 Diagnostic Diagnostic::malformed_version(TextInfoPtr t, sc::lex::SourceCodeRange l) {
@@ -728,15 +740,5 @@ Diagnostic Diagnostic::declared_special_variable(TextInfoPtr t, sc::lex::SourceC
              Severity::Error,
              { { std::move(t), l, "this name is reserved." } },
              std::string { special_variables } + ". Use a different name." };
-}
-
-Diagnostic Diagnostic::used_in_own_initial_value(TextInfoPtr t, sc::lex::SourceCodeRange l) {
-    return {
-        "Variable used in its own initial value",
-        Severity::Error,
-        { { std::move(t), l, "this hasn't been assigned yet." } },
-        "A variable can only refer to itself from a function in its initial value, e.g., `var f = { f.value }`, as "
-        "the function is called after the variable is assigned."
-    };
 }
 }

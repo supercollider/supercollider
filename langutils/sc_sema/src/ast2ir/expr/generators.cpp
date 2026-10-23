@@ -101,7 +101,17 @@ void iterate(GeneratorContext& c, ast::GeneratorQualAssignIndex q) {
     declare(c, *index, node);
 }
 
-// `var x = value`. Only a function in the value can use the name it declares.
+
+// Generator name resolution is complicated...
+// {:  ..., x <- ...,  var x = x }
+//          ^                  ^
+// these two are the same.
+// In legacy, they were the same if the wrapped the second 'x' in curlies, {x}.
+// In the newer version, they are not. Here the latter 'x' refers to the previous declaration.
+
+// This is done to match they way lookup works elsewhere, there is nothing stopping the user from declaring a new name,
+// and function in generators are rare.
+
 void declare_variable(GeneratorContext& c, ast::GeneratorQualDeclareIndex q) {
     const auto [name_i, value] = c.ast_graph->children(q);
     const auto name = name_of(c, name_i);
@@ -109,7 +119,9 @@ void declare_variable(GeneratorContext& c, ast::GeneratorQualDeclareIndex q) {
     // still refer to it, see Expr::initialising.
     open_scope(c);
     const auto here = location_of(c.ir, *c.ast_graph, { *q });
-    c.expr.initialising.push_back({ *name, c.expr.scope.size() - 1, here });
+    Expr::Initialising variable { *name, c.expr.scope.size() - 1, here };
+    variable.outside_value = frame_scoped(c.expr.version);
+    c.expr.initialising.push_back(variable);
     const auto value_r = c.expr(value);
     c.expr.initialising.pop_back();
     const auto node = c.ir.create(SCGenQualDeclare { name }, here, value_r.ir_node);

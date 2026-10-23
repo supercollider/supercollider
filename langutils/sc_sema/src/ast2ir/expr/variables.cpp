@@ -113,18 +113,34 @@ namespace {
 // Expr::initialising.
 struct InitialisingUse {
     Expr::Initialising* variable;
-    // Whether the use is in a function in the initial value, which is all that 3.16 allows.
+    // Whether the use is in a function in the initial value.
     bool in_function;
 };
 
+// Whether a use of the variable refers to it before it is declared. A function in its initial value runs after it is
+// assigned, so can, e.g., `var f = { f }`. Legacy code's frame holds a function's arguments and variables, so they
+// can be used anywhere in its leading declarations. Otherwise the use refers to the name it hides, e.g., `var x = x +
+// 1` reads the outer `x`.
+bool visible(const Expr::Initialising& variable, bool in_function, ast::LanguageVersion version) {
+    return variable.later || in_function || (variable.in_frame && frame_scoped(version));
+}
+
 // Whether name refers to a variable being initialised, rather than one already declared, which it would hide. The one
-// being initialised is the latest, so it is found before its own entry in legacy code's frame.
-std::optional<InitialisingUse> find_initialising(Expr& expr, Symbol name) {
+// being initialised is the latest, so it is found before its own entry in legacy code's frame. One that isn't visible
+// is skipped, so the search goes on to the names it hides. A legacy generator qualifier's is skipped even from a
+// function, which 3.16 would refer to, so that use, at, warns.
+std::optional<InitialisingUse> find_initialising(Expr& expr, Symbol name, const ast::ASTGraph& g, ast::Index at) {
     bool in_function = false;
     for (std::size_t k = expr.scope.size(); k-- > 0;) {
-        for (auto variable = expr.initialising.rbegin(); variable != expr.initialising.rend(); ++variable)
-            if (variable->scope == k && variable->name == name)
+        for (auto variable = expr.initialising.rbegin(); variable != expr.initialising.rend(); ++variable) {
+            if (variable->scope != k || variable->name != name || !visible(*variable, in_function, expr.version))
+                continue;
+            if (!variable->outside_value)
                 return InitialisingUse { &*variable, in_function };
+            const auto& d = variable->declaration;
+            expr.sink(sc::diag::Diagnostic::qualifier_hidden_from_value(g.text_info(), IRGraph::range(d),
+                                                                        get_text_info(g), get_location(g, at)));
+        }
         if (expr.scope[k].count(name))
             return std::nullopt;
         if (expr.scope[k].starts_function)
@@ -133,24 +149,19 @@ std::optional<InitialisingUse> find_initialising(Expr& expr, Symbol name) {
     return std::nullopt;
 }
 
-// The declaration a use of an initialising variable refers to, or nothing when it is an error. Legacy code refers to
-// the variable in its frame, which is nil until its initial value runs, unless that is a literal, but 3.16 doesn't, so
-// it warns.
-std::optional<SourceLocation> resolve_initialising(InitialisingUse use, bool assigns, ast::LanguageVersion version,
-                                                   DiagnosticSink& sink, IRGraph& ir, const ast::ASTGraph& g,
-                                                   ast::Index at) {
+// The declaration a use of an initialising variable refers to. Legacy code using one before its declaration refers to
+// the variable in its frame, which is nil until its initial value runs, unless that is a literal, but 3.16 doesn't,
+// so it warns.
+SourceLocation resolve_initialising(InitialisingUse use, bool assigns, DiagnosticSink& sink, IRGraph& ir,
+                                    const ast::ASTGraph& g, ast::Index at) {
     auto& variable = *use.variable;
-    if (!variable.later && use.in_function)
-        return variable.declaration;
-    if (variable.later || (variable.in_frame && frame_scoped(version))) {
+    if (variable.later || !use.in_function) {
         sink(sc::diag::Diagnostic::used_before_declaration(ir.text_info(variable.declaration.source),
                                                            IRGraph::range(variable.declaration), get_text_info(g),
                                                            get_location(g, at)));
         variable.escaped = variable.escaped || assigns || use.in_function;
-        return variable.declaration;
     }
-    sink(sc::diag::Diagnostic::used_in_own_initial_value(get_text_info(g), get_location(g, at)));
-    return std::nullopt;
+    return variable.declaration;
 }
 }
 
@@ -160,11 +171,10 @@ Return<SCAnyExpr_I> Expr::operator()(ast::NamedIdentifierIndex i) {
     // These can't be declared, so can't be hidden by a variable.
     if (const auto kind = special_kind(ctx.common_symbols, name_sym))
         return { ir.create(SCSpecial { *kind }, location({ *i })) };
-    if (const auto use = find_initialising(*this, name_sym)) {
-        if (const auto declaration = resolve_initialising(*use, false, version, sink, ir, *ast_graph, { *i }))
-            return { ir.create(SCRead { name_sym, SCRead::Kind::Local, *declaration }, location({ *i })) };
-        return { ir.create(SCExprList {}, location({ *i })) };
-    }
+    if (const auto use = find_initialising(*this, name_sym, *ast_graph, { *i }))
+        return { ir.create(
+            SCRead { name_sym, SCRead::Kind::Local, resolve_initialising(*use, false, sink, ir, *ast_graph, { *i }) },
+            location({ *i })) };
     if (const auto entry = resolve_symbol(name_sym)) {
         const auto read = ir.create(SCRead { name_sym, to_read_kind(entry->kind), declaration_location(ir, *entry) },
                                     location({ *i }));
@@ -208,11 +218,8 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
             sc::diag::Diagnostic::assigned_special_variable(get_text_info(*ast_graph), get_location(*ast_graph, name)));
         return expr_r;
     }
-    if (const auto use = find_initialising(*this, name_sym)) {
-        if (const auto declaration = resolve_initialising(*use, true, version, sink, ir, *ast_graph, { *name }))
-            return make_return(SCAssign::Kind::Local, *declaration);
-        return expr_r;
-    }
+    if (const auto use = find_initialising(*this, name_sym, *ast_graph, { *name }))
+        return make_return(SCAssign::Kind::Local, resolve_initialising(*use, true, sink, ir, *ast_graph, { *name }));
 
     // TODO: error when assigning to a const once ScopeEntry records const-ness.
     if (const auto entry = resolve_symbol(name_sym))
@@ -248,13 +255,14 @@ Return<SCAnyExpr_I> Expr::operator()(ast::VariablePackAssignIndex i) {
                                                                  get_location(*ast_graph, *name)));
             return;
         }
-        if (const auto use = find_initialising(*this, sym)) {
-            if (const auto declaration = resolve_initialising(*use, true, version, sink, ir, *ast_graph, { **name }))
-                ir.append(targets,
-                          ir.create(
-                              SCPackTarget {
-                                  { location({ **name }), sym }, SCAssign::Kind::Local, index, is_rest, *declaration },
-                              location({ **name })));
+        if (const auto use = find_initialising(*this, sym, *ast_graph, { **name })) {
+            ir.append(targets,
+                      ir.create(SCPackTarget { { location({ **name }), sym },
+                                               SCAssign::Kind::Local,
+                                               index,
+                                               is_rest,
+                                               resolve_initialising(*use, true, sink, ir, *ast_graph, { **name }) },
+                                location({ **name })));
             return;
         }
         if (const auto entry = resolve_symbol(sym)) {

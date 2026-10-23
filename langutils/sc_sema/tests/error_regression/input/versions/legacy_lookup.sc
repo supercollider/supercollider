@@ -68,9 +68,24 @@ LegacyLookup {
     // A declaration after an expression isn't in the frame, the old compiler didn't allow one, so 3.16's rules apply.
     // expect-error: Variable not defined
     after_expression { 1; var a = b; var b = 2; ^a }
-    // A generator's qualifiers aren't in the frame either.
-    // expect-error: Variable used in its own initial value
+    // A generator's qualifiers aren't in the frame either, so the name is what it hides, as in the old compiler.
+    // expect-error: Variable not defined
     generator { ^{: y, var y = y } }
+    // expect: no diagnostics
+    // expect-reads: y -> var y = y * 2; y <- [1, 2]
+    generator_rebinds { ^{: y, y <- [1, 2], var y = y * 2 } }
+    // The old compiler made the qualifier `{ |y| y.yield }.value({ y })`, so the function is outside the block declaring
+    // `y`, and is the outer `y`, unlike 3.16.
+    // expect-warning: Qualifier's variable used in its own value
+    // expect-reads: y -> var y = { y }; y = \outer
+    generator_function_in_value { var y = \outer; ^{: y, var y = { y } } }
+    // With nothing outside, it isn't defined, the old compiler read the Interpreter's `y` in interpreted code.
+    // expect-error: Variable not defined
+    generator_function_in_value_undefined { ^{: y, var y = { y } } }
+    // The frame's `foo` is nil while its initial value runs, so this is `nil + 1`, unlike 3.16.
+    // expect-warning: Variable used before its declaration
+    // expect-reads: foo -> foo = foo + 1; foo = foo + 1
+    shadows_outer_expression { var foo = 10; ^{ var foo = foo + 1; foo == 11 } }
     // expect-warning: Variable used before its declaration
     // expect: no result
     nested_return { |x| var a = { if (x) { ^b }; ^2 }, b = 1; ^a }
@@ -99,12 +114,18 @@ LookupThreeSixteen {
         }.()
     }
 
-    // expect-error: Variable used in its own initial value
+    // expect-error: Variable not defined
     self_reference { var f = f; ^f }
+    // expect: no diagnostics
+    // expect-reads: foo -> foo = 10; foo = foo + 1
+    shadows_outer_expression { var foo = 10; ^{ var foo = foo + 1; foo == 11 } }
     // expect-error: Variable not defined
     later_variable { var a = b, b = 1; ^a }
     // expect-reads: x -> x = 1
     hides_outer { var x = 1; ^{ var a = x, x = 2; a } }
     // expect-error: Variable not defined
     later_argument { arg a = b, b = 1; ^a }
+    // expect: no diagnostics
+    // expect-reads: y -> var y = { y }; var y = { y }
+    generator_function_in_value { var y = \outer; ^{: y, var y = { y } } }
 }

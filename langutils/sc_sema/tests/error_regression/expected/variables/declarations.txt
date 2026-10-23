@@ -48,157 +48,157 @@ SCClass (2:1): Variables, version 3.16
 |  |  |  |  |  |  |  SCLiteral (18:33) = 2
 |  |  |  |  SCExplicitReturn (18:37)
 |  |  |  |  |  SCRead (18:38): local a = 3, declared (18:27): a(1 + 2)
-|  |  SCMethod (21:5): poisoned: version 3.16: refers_to_itself { var a = a; ^a }
-|  |  |
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: Variable used in its own initial value
-|  |  |  variables/declarations.sc:21:32
-|  |  |     19 │     // expect-error: Variable used in its own initial value
-|  |  |     20 │     // expect: poisoned
-|  |  |     21 │     refers_to_itself { var a = a; ^a }
-|  |  |        ┆                                ^ this hasn't been assigned yet.
-|  |  |     22 │     // expect-error: Variable not defined
-|  |  |     23 │     used_before_declared { a; var a = 1 }
-|  |  |     24 │     // expect-reads: a -> a = 2
-|  |  |
-|  |  |  A variable can only refer to itself from a function in its initial value, e.g., `var f = { f.value }`, as the function is called after the variable is assigned.
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (21:24)
-|  |  |  |  SCVariableDeclare (21:28): a
-|  |  |  |  |  SCExprList (21:32)
-|  |  |  |  SCExplicitReturn (21:35)
-|  |  |  |  |  SCRead (21:36): local a, declared (21:28): a = a
-|  |  SCMethod (23:5): poisoned: version 3.16: used_before_declared { a; var a = 1 }
+|  |  SCMethod (22:5): poisoned: version 3.16: refers_to_itself { var a = a; ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable not defined
-|  |  |  variables/declarations.sc:23:28
-|  |  |     21 │     refers_to_itself { var a = a; ^a }
-|  |  |     22 │     // expect-error: Variable not defined
-|  |  |     23 │     used_before_declared { a; var a = 1 }
-|  |  |        ┆                            ^ this is not defined.
-|  |  |     24 │     // expect-reads: a -> a = 2
-|  |  |     25 │     // expect: -> 2
-|  |  |     26 │     declared_after_expression { 1; var a = 2; ^a }
+|  |  |  variables/declarations.sc:22:32
+|  |  |     20 │     // expect-error: Variable not defined
+|  |  |     21 │     // expect: poisoned
+|  |  |     22 │     refers_to_itself { var a = a; ^a }
+|  |  |        ┆                                ^ this is not defined.
+|  |  |     23 │     // expect-error: Variable not defined
+|  |  |     24 │     used_before_declared { a; var a = 1 }
+|  |  |     25 │     // expect-reads: a -> a = 2
 |  |  |
 |  |  |  Declare it with 'var', or use '~a' to refer to an environment variable.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (23:28)
-|  |  |  |  SCExprList (23:28)
-|  |  |  |  SCVariableDeclare (23:35): a
-|  |  |  |  |  SCLiteral (23:39) = 1
-|  |  SCMethod (26:5): version 3.16: declared_after_expression { 1; var a = 2; ^a } -> 2
-|  |  |  SCBody (26:33)
-|  |  |  |  SCLiteral (26:33) = 1
-|  |  |  |  SCVariableDeclare (26:40): a
-|  |  |  |  |  SCLiteral (26:44) = 2
-|  |  |  |  SCExplicitReturn (26:47)
-|  |  |  |  |  SCRead (26:48): local a = 2, declared (26:40): a = 2
-|  |  SCMethod (28:5): poisoned: version 3.16: duplicate { var a, a; ^a }
+|  |  |  SCBody (22:24)
+|  |  |  |  SCVariableDeclare (22:28): a
+|  |  |  |  |  SCExprList (22:32)
+|  |  |  |  SCExplicitReturn (22:35)
+|  |  |  |  |  SCRead (22:36): local a, declared (22:28): a = a
+|  |  SCMethod (24:5): poisoned: version 3.16: used_before_declared { a; var a = 1 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  variables/declarations.sc:24:28
+|  |  |     22 │     refers_to_itself { var a = a; ^a }
+|  |  |     23 │     // expect-error: Variable not defined
+|  |  |     24 │     used_before_declared { a; var a = 1 }
+|  |  |        ┆                            ^ this is not defined.
+|  |  |     25 │     // expect-reads: a -> a = 2
+|  |  |     26 │     // expect: -> 2
+|  |  |     27 │     declared_after_expression { 1; var a = 2; ^a }
+|  |  |
+|  |  |  Declare it with 'var', or use '~a' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (24:28)
+|  |  |  |  SCExprList (24:28)
+|  |  |  |  SCVariableDeclare (24:35): a
+|  |  |  |  |  SCLiteral (24:39) = 1
+|  |  SCMethod (27:5): version 3.16: declared_after_expression { 1; var a = 2; ^a } -> 2
+|  |  |  SCBody (27:33)
+|  |  |  |  SCLiteral (27:33) = 1
+|  |  |  |  SCVariableDeclare (27:40): a
+|  |  |  |  |  SCLiteral (27:44) = 2
+|  |  |  |  SCExplicitReturn (27:47)
+|  |  |  |  |  SCRead (27:48): local a = 2, declared (27:40): a = 2
+|  |  SCMethod (29:5): poisoned: version 3.16: duplicate { var a, a; ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable already declared
-|  |  |  variables/declarations.sc:28:21
-|  |  |     26 │     declared_after_expression { 1; var a = 2; ^a }
-|  |  |     27 │     // expect-error: Variable already declared
-|  |  |     28 │     duplicate { var a, a; ^a }
+|  |  |  variables/declarations.sc:29:21
+|  |  |     27 │     declared_after_expression { 1; var a = 2; ^a }
+|  |  |     28 │     // expect-error: Variable already declared
+|  |  |     29 │     duplicate { var a, a; ^a }
 |  |  |        ┆                     ^ First declared here...
-|  |  |     29 │     // expect-error: Variable already declared
-|  |  |     30 │     duplicate_argument { |a| var a; ^a }
-|  |  |     31 │     // expect-reads: instance_var -> instance_var = 1
+|  |  |     30 │     // expect-error: Variable already declared
+|  |  |     31 │     duplicate_argument { |a| var a; ^a }
+|  |  |     32 │     // expect-reads: instance_var -> instance_var = 1
 |  |  |
-|  |  |  variables/declarations.sc:28:24
-|  |  |     26 │     declared_after_expression { 1; var a = 2; ^a }
-|  |  |     27 │     // expect-error: Variable already declared
-|  |  |     28 │     duplicate { var a, a; ^a }
+|  |  |  variables/declarations.sc:29:24
+|  |  |     27 │     declared_after_expression { 1; var a = 2; ^a }
+|  |  |     28 │     // expect-error: Variable already declared
+|  |  |     29 │     duplicate { var a, a; ^a }
 |  |  |        ┆                        ^ ...declared again here.
-|  |  |     29 │     // expect-error: Variable already declared
-|  |  |     30 │     duplicate_argument { |a| var a; ^a }
-|  |  |     31 │     // expect-reads: instance_var -> instance_var = 1
+|  |  |     30 │     // expect-error: Variable already declared
+|  |  |     31 │     duplicate_argument { |a| var a; ^a }
+|  |  |     32 │     // expect-reads: instance_var -> instance_var = 1
 |  |  |
 |  |  |  Arguments and variables in the same function or method must have different names. Rename one.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (28:17)
-|  |  |  |  SCVariableDeclare (28:21): a
-|  |  |  |  SCVariableDeclare (28:24): a
-|  |  |  |  SCExplicitReturn (28:27)
-|  |  |  |  |  SCRead (28:28): local a = nil, declared (28:21): a
-|  |  SCMethod (30:5): poisoned: version 3.16: duplicate_argument { |a| var a; ^a }
+|  |  |  SCBody (29:17)
+|  |  |  |  SCVariableDeclare (29:21): a
+|  |  |  |  SCVariableDeclare (29:24): a
+|  |  |  |  SCExplicitReturn (29:27)
+|  |  |  |  |  SCRead (29:28): local a = nil, declared (29:21): a
+|  |  SCMethod (31:5): poisoned: version 3.16: duplicate_argument { |a| var a; ^a }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable already declared
-|  |  |  variables/declarations.sc:30:27
-|  |  |     28 │     duplicate { var a, a; ^a }
-|  |  |     29 │     // expect-error: Variable already declared
-|  |  |     30 │     duplicate_argument { |a| var a; ^a }
+|  |  |  variables/declarations.sc:31:27
+|  |  |     29 │     duplicate { var a, a; ^a }
+|  |  |     30 │     // expect-error: Variable already declared
+|  |  |     31 │     duplicate_argument { |a| var a; ^a }
 |  |  |        ┆                           ^ First declared here...
-|  |  |     31 │     // expect-reads: instance_var -> instance_var = 1
-|  |  |     32 │     // expect: -> 1
-|  |  |     33 │     shadows_instance { var instance_var = 1; ^instance_var }
+|  |  |     32 │     // expect-reads: instance_var -> instance_var = 1
+|  |  |     33 │     // expect: -> 1
+|  |  |     34 │     shadows_instance { var instance_var = 1; ^instance_var }
 |  |  |
-|  |  |  variables/declarations.sc:30:34
-|  |  |     28 │     duplicate { var a, a; ^a }
-|  |  |     29 │     // expect-error: Variable already declared
-|  |  |     30 │     duplicate_argument { |a| var a; ^a }
+|  |  |  variables/declarations.sc:31:34
+|  |  |     29 │     duplicate { var a, a; ^a }
+|  |  |     30 │     // expect-error: Variable already declared
+|  |  |     31 │     duplicate_argument { |a| var a; ^a }
 |  |  |        ┆                                  ^ ...declared again here.
-|  |  |     31 │     // expect-reads: instance_var -> instance_var = 1
-|  |  |     32 │     // expect: -> 1
-|  |  |     33 │     shadows_instance { var instance_var = 1; ^instance_var }
+|  |  |     32 │     // expect-reads: instance_var -> instance_var = 1
+|  |  |     33 │     // expect: -> 1
+|  |  |     34 │     shadows_instance { var instance_var = 1; ^instance_var }
 |  |  |
 |  |  |  Arguments and variables in the same function or method must have different names. Rename one.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCArgumentDeclareList (30:27)
-|  |  |  |  SCArgumentDeclare (30:27): a
-|  |  |  SCBody (30:30)
-|  |  |  |  SCVariableDeclare (30:34): a
-|  |  |  |  SCExplicitReturn (30:37)
-|  |  |  |  |  SCRead (30:38): local a, declared (30:27): a
-|  |  SCMethod (33:5): version 3.16: shadows_instance { var instance_var = 1; ^instance_var } -> 1
-|  |  |  SCBody (33:24)
-|  |  |  |  SCVariableDeclare (33:28): instance_var
-|  |  |  |  |  SCLiteral (33:43) = 1
-|  |  |  |  SCExplicitReturn (33:46)
-|  |  |  |  |  SCRead (33:47): local instance_var = 1, declared (33:28): instance_var = 1
-|  |  SCMethod (34:5): version 3.16: assign { var a; a = 2 }
-|  |  |  SCBody (34:14)
-|  |  |  |  SCVariableDeclare (34:18): a
-|  |  |  |  SCAssign (34:21): local a, declared (34:18): a
-|  |  |  |  |  SCLiteral (34:25) = 2
-|  |  SCMethod (36:5): version 3.16: in_block { ^{ var a = 1; a } }
-|  |  |  SCBody (36:16)
-|  |  |  |  SCExplicitReturn (36:16)
-|  |  |  |  |  SCFunction (36:17) -> 1
-|  |  |  |  |  |  SCBody (36:17)
-|  |  |  |  |  |  |  SCVariableDeclare (36:23): a
-|  |  |  |  |  |  |  |  SCLiteral (36:27) = 1
-|  |  |  |  |  |  |  SCRead (36:30): local a = 1, declared (36:23): a = 1
-|  |  SCMethod (38:5): version 3.16: block_shadows_outer { var a = 1; ^{ var a = 2; a } }
-|  |  |  SCBody (38:27)
-|  |  |  |  SCVariableDeclare (38:31): a
-|  |  |  |  |  SCLiteral (38:35) = 1
-|  |  |  |  SCExplicitReturn (38:38)
-|  |  |  |  |  SCFunction (38:39) -> 2
-|  |  |  |  |  |  SCBody (38:39)
-|  |  |  |  |  |  |  SCVariableDeclare (38:45): a
-|  |  |  |  |  |  |  |  SCLiteral (38:49) = 2
-|  |  |  |  |  |  |  SCRead (38:52): local a = 2, declared (38:45): a = 2
-|  |  SCMethod (41:5): version 3.16: block_reads_outer { var a = 1; ^{ a } }
-|  |  |  SCBody (41:25)
-|  |  |  |  SCVariableDeclare (41:29): a
-|  |  |  |  |  SCLiteral (41:33) = 1
-|  |  |  |  SCExplicitReturn (41:36)
-|  |  |  |  |  SCFunction (41:37)
-|  |  |  |  |  |  SCBody (41:37)
-|  |  |  |  |  |  |  SCRead (41:39): local a, declared (41:29): a = 1
-|  |  SCMethod (44:5): version 3.16: pack { var #a, b = [1, 2]; ^a } -> 1
-|  |  |  SCBody (44:12)
-|  |  |  |  SCPackDeclare (44:16)
-|  |  |  |  |  SCCollection (44:24): Array = [1, 2]
-|  |  |  |  |  |  SCLiteral (44:25) = 1
-|  |  |  |  |  |  SCLiteral (44:28) = 2
-|  |  |  |  |  SCPackTargets (44:16)
-|  |  |  |  |  |  SCPackTarget (44:17): local a at 0
-|  |  |  |  |  |  SCPackTarget (44:20): local b at 1
-|  |  |  |  SCExplicitReturn (44:32)
-|  |  |  |  |  SCRead (44:33): local a = 1, declared (44:17): a
+|  |  |  SCArgumentDeclareList (31:27)
+|  |  |  |  SCArgumentDeclare (31:27): a
+|  |  |  SCBody (31:30)
+|  |  |  |  SCVariableDeclare (31:34): a
+|  |  |  |  SCExplicitReturn (31:37)
+|  |  |  |  |  SCRead (31:38): local a, declared (31:27): a
+|  |  SCMethod (34:5): version 3.16: shadows_instance { var instance_var = 1; ^instance_var } -> 1
+|  |  |  SCBody (34:24)
+|  |  |  |  SCVariableDeclare (34:28): instance_var
+|  |  |  |  |  SCLiteral (34:43) = 1
+|  |  |  |  SCExplicitReturn (34:46)
+|  |  |  |  |  SCRead (34:47): local instance_var = 1, declared (34:28): instance_var = 1
+|  |  SCMethod (35:5): version 3.16: assign { var a; a = 2 }
+|  |  |  SCBody (35:14)
+|  |  |  |  SCVariableDeclare (35:18): a
+|  |  |  |  SCAssign (35:21): local a, declared (35:18): a
+|  |  |  |  |  SCLiteral (35:25) = 2
+|  |  SCMethod (37:5): version 3.16: in_block { ^{ var a = 1; a } }
+|  |  |  SCBody (37:16)
+|  |  |  |  SCExplicitReturn (37:16)
+|  |  |  |  |  SCFunction (37:17) -> 1
+|  |  |  |  |  |  SCBody (37:17)
+|  |  |  |  |  |  |  SCVariableDeclare (37:23): a
+|  |  |  |  |  |  |  |  SCLiteral (37:27) = 1
+|  |  |  |  |  |  |  SCRead (37:30): local a = 1, declared (37:23): a = 1
+|  |  SCMethod (39:5): version 3.16: block_shadows_outer { var a = 1; ^{ var a = 2; a } }
+|  |  |  SCBody (39:27)
+|  |  |  |  SCVariableDeclare (39:31): a
+|  |  |  |  |  SCLiteral (39:35) = 1
+|  |  |  |  SCExplicitReturn (39:38)
+|  |  |  |  |  SCFunction (39:39) -> 2
+|  |  |  |  |  |  SCBody (39:39)
+|  |  |  |  |  |  |  SCVariableDeclare (39:45): a
+|  |  |  |  |  |  |  |  SCLiteral (39:49) = 2
+|  |  |  |  |  |  |  SCRead (39:52): local a = 2, declared (39:45): a = 2
+|  |  SCMethod (42:5): version 3.16: block_reads_outer { var a = 1; ^{ a } }
+|  |  |  SCBody (42:25)
+|  |  |  |  SCVariableDeclare (42:29): a
+|  |  |  |  |  SCLiteral (42:33) = 1
+|  |  |  |  SCExplicitReturn (42:36)
+|  |  |  |  |  SCFunction (42:37)
+|  |  |  |  |  |  SCBody (42:37)
+|  |  |  |  |  |  |  SCRead (42:39): local a, declared (42:29): a = 1
+|  |  SCMethod (45:5): version 3.16: pack { var #a, b = [1, 2]; ^a } -> 1
+|  |  |  SCBody (45:12)
+|  |  |  |  SCPackDeclare (45:16)
+|  |  |  |  |  SCCollection (45:24): Array = [1, 2]
+|  |  |  |  |  |  SCLiteral (45:25) = 1
+|  |  |  |  |  |  SCLiteral (45:28) = 2
+|  |  |  |  |  SCPackTargets (45:16)
+|  |  |  |  |  |  SCPackTarget (45:17): local a at 0
+|  |  |  |  |  |  SCPackTarget (45:20): local b at 1
+|  |  |  |  SCExplicitReturn (45:32)
+|  |  |  |  |  SCRead (45:33): local a = 1, declared (45:17): a
 Successfully compiled 16 classes.

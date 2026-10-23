@@ -241,7 +241,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |        ┆                                   ^^ this can't be declared.
 |  |  |     46 │     // expect-error: Variable already declared
 |  |  |     47 │     declare_duplicate { var #a, a = [1, 2]; ^a }
-|  |  |     48 │     // expect-error: Variable used in its own initial value
+|  |  |     48 │     // expect-error: Variable not defined
 |  |  |
 |  |  |  Only local variables can be declared with 'var'. Remove the '~' to declare a variable, or assign the environment variable after the declaration.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -263,7 +263,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |     46 │     // expect-error: Variable already declared
 |  |  |     47 │     declare_duplicate { var #a, a = [1, 2]; ^a }
 |  |  |        ┆                              ^ First declared here...
-|  |  |     48 │     // expect-error: Variable used in its own initial value
+|  |  |     48 │     // expect-error: Variable not defined
 |  |  |     49 │     declare_refers_to_itself { var #a, b = [a]; ^b }
 |  |  |     50 │     // expect-reads: x -> x = 1
 |  |  |
@@ -272,7 +272,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |     46 │     // expect-error: Variable already declared
 |  |  |     47 │     declare_duplicate { var #a, a = [1, 2]; ^a }
 |  |  |        ┆                                 ^ ...declared again here.
-|  |  |     48 │     // expect-error: Variable used in its own initial value
+|  |  |     48 │     // expect-error: Variable not defined
 |  |  |     49 │     declare_refers_to_itself { var #a, b = [a]; ^b }
 |  |  |     50 │     // expect-reads: x -> x = 1
 |  |  |
@@ -291,17 +291,17 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  SCMethod (49:5): poisoned: version 3.16: declare_refers_to_itself { var #a, b = [a]; ^b }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: Variable used in its own initial value
+|  |  |  Error: Variable not defined
 |  |  |  variables/pack_assignment.sc:49:45
 |  |  |     47 │     declare_duplicate { var #a, a = [1, 2]; ^a }
-|  |  |     48 │     // expect-error: Variable used in its own initial value
+|  |  |     48 │     // expect-error: Variable not defined
 |  |  |     49 │     declare_refers_to_itself { var #a, b = [a]; ^b }
-|  |  |        ┆                                             ^ this hasn't been assigned yet.
+|  |  |        ┆                                             ^ this is not defined.
 |  |  |     50 │     // expect-reads: x -> x = 1
 |  |  |     51 │     // expect-reads: a -> a
 |  |  |     52 │     // expect: -> 1
 |  |  |
-|  |  |  A variable can only refer to itself from a function in its initial value, e.g., `var f = { f.value }`, as the function is called after the variable is assigned.
+|  |  |  Declare it with 'var', or use '~a' to refer to an environment variable.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (49:32)
 |  |  |  |  SCPackDeclare (49:36)
