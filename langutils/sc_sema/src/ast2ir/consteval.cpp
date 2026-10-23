@@ -518,7 +518,11 @@ ConstEval::Result ConstEval::operator()(ast::PiLitIndex pi_i) {
 }
 
 ConstEval::Result ConstEval::operator()(ast::AccidentalIndex i) {
-    return { Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, i)) };
+    const auto r = synthesize_literal(ast_graph->payload(i), get_string_view(*ast_graph, i));
+    if (!r)
+        return { Diagnostic::literal_out_of_range(get_text_info(*ast_graph), get_location(*ast_graph, i), true) };
+    const auto const_i = cxt.constant_table.register_constexpr({ *r });
+    return Success { const_i, TypeInfo { cxt.common_classes.float_, TypeConfidence::Absolute } };
 }
 
 ConstEval::Result ConstEval::operator()(ast::StringLitIndex i) {

@@ -510,8 +510,8 @@ Diagnostic Diagnostic::duplicate_member(TextInfoPtr first_t, sc::lex::SourceCode
     return { "Duplicate member in class",
              Severity::Error,
              {
-                 { std::move(first_t), first_l },
-                 { std::move(second_t), second_l },
+                 { std::move(first_t), first_l, "This member is declared here..." },
+                 { std::move(second_t), second_l, "...and again here." },
              },
              "Duplicate members are not allowed in a class definition. Please delete one." };
 }

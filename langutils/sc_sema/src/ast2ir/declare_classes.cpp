@@ -67,8 +67,11 @@ void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ClassDeclaratio
                                                                   { type_info },
                                                                   is_const });
             if (!r) {
-                cxt.diagnostics(
-                    diag::Diagnostic::todo(get_text_info(*decl.ast_graph()), get_location(*decl.ast_graph(), name_i)));
+                const auto* mem = decl.find_member(name);
+                assert(mem);
+                cxt.diagnostics(diag::Diagnostic::duplicate_member(
+                    get_text_info(*decl.ast_graph()), get_location(*decl.ast_graph(), mem->total_index),
+                    get_text_info(*decl.ast_graph()), get_location(*decl.ast_graph(), total)));
             }
         },
         [&](diag::Diagnostic&& d) {

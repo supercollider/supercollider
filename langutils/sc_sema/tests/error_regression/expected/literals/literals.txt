@@ -63,19 +63,8 @@ SCClass (2:1): Literals, version 3.16
 |  |  |  SCBody (16:20)
 |  |  |  |  SCExplicitReturn (16:20)
 |  |  |  |  |  SCLiteral (16:21) = \symbol
-|  |  SCMethod (17:5): poisoned: version 3.16: accidental { ^2s }
-|  |  |
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: TODO NOT IMPLEMENTED
-|  |  |  literals/literals.sc:17:19
-|  |  |     15 │     symbol_quote { ^'a symbol' }
-|  |  |     16 │     symbol_slash { ^\symbol }
-|  |  |     17 │     accidental { ^2s }
-|  |  |        ┆                   ^^ diagnostic not implemented
-|  |  |     18 │ }
-|  |  |
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  SCMethod (17:5): version 3.16: accidental { ^2s } -> 2.1
 |  |  |  SCBody (17:18)
 |  |  |  |  SCExplicitReturn (17:18)
-|  |  |  |  |  SCExprList (17:19)
+|  |  |  |  |  SCLiteral (17:19) = 2.1
 Successfully compiled 16 classes.

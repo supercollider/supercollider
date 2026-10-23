@@ -42,7 +42,7 @@ inline sc::ast::parser::parser::token_kind_type to_parser_token(sc::lex::TokenTy
     case TokenType::AccidentalSteps:
         return T::TOKEN_ACCIDENTAL_STEPS;
     case TokenType::AccidentalCents:
-        return T::TOKEN_ACCIDENTAL_STEPS;
+        return T::TOKEN_ACCIDENTAL_CENTS;
     case TokenType::SymbolSlash:
         return T::TOKEN_SYMBOL_SLASH;
     case TokenType::SymbolQuote:

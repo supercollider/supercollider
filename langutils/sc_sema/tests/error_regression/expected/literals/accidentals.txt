@@ -1,0 +1,85 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): Accidentals, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (7:5): version 3.16: sharp { ^3s } -> 3.1
+|  |  |  SCBody (7:13)
+|  |  |  |  SCExplicitReturn (7:13)
+|  |  |  |  |  SCLiteral (7:14) = 3.1
+|  |  SCMethod (9:5): version 3.16: flat { ^3b } -> 2.9
+|  |  |  SCBody (9:12)
+|  |  |  |  SCExplicitReturn (9:12)
+|  |  |  |  |  SCLiteral (9:13) = 2.9
+|  |  SCMethod (11:5): version 3.16: double_sharp { ^3ss } -> 3.2
+|  |  |  SCBody (11:20)
+|  |  |  |  SCExplicitReturn (11:20)
+|  |  |  |  |  SCLiteral (11:21) = 3.2
+|  |  SCMethod (13:5): version 3.16: double_flat { ^3bb } -> 2.8
+|  |  |  SCBody (13:19)
+|  |  |  |  SCExplicitReturn (13:19)
+|  |  |  |  |  SCLiteral (13:20) = 2.8
+|  |  SCMethod (16:5): version 3.16: many_sharps { ^3sssss } -> 3.4
+|  |  |  SCBody (16:19)
+|  |  |  |  SCExplicitReturn (16:19)
+|  |  |  |  |  SCLiteral (16:20) = 3.4
+|  |  SCMethod (18:5): version 3.16: sharp_cents { ^3s40 } -> 3.04
+|  |  |  SCBody (18:19)
+|  |  |  |  SCExplicitReturn (18:19)
+|  |  |  |  |  SCLiteral (18:20) = 3.04
+|  |  SCMethod (20:5): version 3.16: flat_cents { ^3b40 } -> 2.96
+|  |  |  SCBody (20:18)
+|  |  |  |  SCExplicitReturn (20:18)
+|  |  |  |  |  SCLiteral (20:19) = 2.96
+|  |  SCMethod (23:5): version 3.16: cents_clamped { ^3s999 } -> 3.499
+|  |  |  SCBody (23:21)
+|  |  |  |  SCExplicitReturn (23:21)
+|  |  |  |  |  SCLiteral (23:22) = 3.499
+|  |  SCMethod (26:5): version 3.16: negative_sharp { ^-3s } -> -2.9
+|  |  |  SCBody (26:22)
+|  |  |  |  SCExplicitReturn (26:22)
+|  |  |  |  |  SCLiteral (26:24) = -2.9
+|  |  SCMethod (28:5): version 3.16: negative_flat { ^-3b } -> -3.1
+|  |  |  SCBody (28:21)
+|  |  |  |  SCExplicitReturn (28:21)
+|  |  |  |  |  SCLiteral (28:23) = -3.1
+|  |  SCMethod (30:5): version 3.16: negative_cents { ^-3s40 } -> -2.96
+|  |  |  SCBody (30:22)
+|  |  |  |  SCExplicitReturn (30:22)
+|  |  |  |  |  SCLiteral (30:24) = -2.96
+|  |  SCMethod (33:5): version 3.16: immutable_array { ^#[1s, 2b] } -> [1.1, 1.9]
+|  |  |  SCBody (33:23)
+|  |  |  |  SCExplicitReturn (33:23)
+|  |  |  |  |  SCCollection (33:24): Array = [1.1, 1.9]
+|  |  |  |  |  |  SCLiteral (33:26) = 1.1
+|  |  |  |  |  |  SCLiteral (33:30) = 1.9
+|  |  SCMethod (36:5): poisoned: version 3.16: degree_out_of_range { |x| if (x) { ^9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999s }; ^2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Literal out of range
+|  |  |  literals/accidentals.sc:36:41
+|  |  |     34 │     // expect-error: Literal out of range
+|  |  |     35 │     // expect: poisoned
+|  |  |     36 │     degree_out_of_range { |x| if (x) { ^9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999s }; ^2 }
+|  |  |        ┆                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ this Float is too large or too small to be represented.
+|  |  |     37 │ }
+|  |  |
+|  |  |  Floats are 64 bit, so other than zero, a Float literal's size must be between about 4.9e-324 and 1.8e308. Use `inf` for infinity.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (36:28)
+|  |  |  |  SCArgumentDeclare (36:28): x
+|  |  |  SCBody (36:31)
+|  |  |  |  SCMessage (36:31): if
+|  |  |  |  |  SCRead (36:35): local x, declared (36:28): x
+|  |  |  |  |  SCPositionalArgs (36:31)
+|  |  |  |  |  |  SCFunction (36:38)
+|  |  |  |  |  |  |  SCBody (36:38)
+|  |  |  |  |  |  |  |  SCExplicitReturn (36:40)
+|  |  |  |  |  |  |  |  |  SCExprList (36:41)
+|  |  |  |  SCExplicitReturn (36:437)
+|  |  |  |  |  SCLiteral (36:438) = 2
+Successfully compiled 16 classes.

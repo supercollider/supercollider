@@ -131,6 +131,40 @@ char synthesize_literal(const ast::ASCIINode&, std::string_view str) {
         }
     }
 }
+std::optional<double> synthesize_literal(const ast::AccidentalNode& node, std::string_view str) {
+    // The degree, then an `s` for sharp or `b` for flat, then for steps the same again, or for cents the cents.
+    const auto accidental = str.find_first_of("bs");
+    assert(accidental != std::string_view::npos); // The lexer ensures this.
+    double degree { 0 };
+    for (const char c : str.substr(0, accidental))
+        degree = degree * 10. + digit_value(c);
+    const bool flat = str[accidental] == 'b';
+    const auto rest = str.substr(accidental + 1);
+
+    double value { 0 };
+    if (node.kind == ast::AccidentalNode::Kind::Cents) {
+        // Thousandths, at most 499, so it can't reach the next degree, e.g., `3s40` is 3.04.
+        double cents { 0 };
+        for (const char c : rest)
+            cents = cents * 10. + digit_value(c);
+        cents = std::min(cents, 499.);
+        value = degree + cents / (flat ? -1000. : 1000.);
+    } else {
+        // A tenth for each accidental, at most 4, e.g., `3ss` is 3.2.
+        const double steps = std::min(static_cast<double>(rest.size() + 1), 4.);
+        value = degree + (flat ? -steps : steps) / 10.;
+    }
+    if (!std::isfinite(value))
+        return std::nullopt;
+    if (node.sign == ast::AccidentalNode::Sign::Negative) {
+        // Only the degree is negated, the accidental still raises or lowers it, e.g., `-3s` is -2.9, as the old
+        // compiler did, by rounding to the degree.
+        const double whole = std::floor(value + 0.5);
+        value = -whole + (value - whole);
+    }
+    return value;
+}
+
 namespace {
 // A radix float, e.g., `16rA.8`, as the old compiler computed it, the digits as one number divided by the base for each
 // digit after the point. Digits that are too small to change the value are dropped, and the division is split, so a

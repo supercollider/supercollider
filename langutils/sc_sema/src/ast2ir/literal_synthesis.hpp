@@ -20,6 +20,10 @@ namespace sc::ir {
 
 [[nodiscard]] char synthesize_literal(const ast::ASCIINode&, std::string_view str);
 
+// A scale degree with an accidental, as the old compiler computed it, e.g., `3s` is 3.1 and `3s40` is 3.04. Nothing if
+// the degree is too large to be represented.
+[[nodiscard]] std::optional<double> synthesize_literal(const ast::AccidentalNode& node, std::string_view str);
+
 // Nothing if the value overflows, or underflows to zero, other than `inf`.
 [[nodiscard]] std::optional<double> synthesize_literal(const ast::FloatNode& node, std::string_view str);
 
