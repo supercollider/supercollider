@@ -116,6 +116,35 @@ static int prAppClockSchedNotify(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+/**
+ *  Recompiles the library and reports its status via the interpreter status.
+ *  This can be called through a primitive or via an emscripten binding.
+ *
+ *  In both cases this runs in the worker thread in order to not block the main browser thread.
+ */
+static void cRecompile() {
+    auto client = SC_LanguageClient::instance();
+    // client can not be null when invoked via emscripten
+    // though not if it is called through a primitive.
+    if (client == nullptr) {
+        std::cerr << "Recompile requires a booted interpreter" << std::endl;
+        return;
+    }
+    {
+        std::lock_guard lock(gInterpreterStatusMutex);
+        gInterpreterStatus = InterpreterStatus::Idle;
+    }
+    auto compileSuccess = SC_LanguageClient::instance()->recompileLibrary(false);
+    std::lock_guard lock(gInterpreterStatusMutex);
+    gInterpreterStatus = compileSuccess ? InterpreterStatus::Running : InterpreterStatus::CompilationFailed;
+}
+
+/** Recompile primitive - dispatches async to the worker thread */
+static int prRecompile(VMGlobals* g, int numArgsPushed) {
+    emscripten_dispatch_to_thread_async(gSclangWasmWorkerThread, EM_FUNC_SIG_V, cRecompile, nullptr);
+    return errNone;
+}
+
 void SC_WasmClient::onLibraryStartup() {
     SC_LanguageClient::onLibraryStartup();
     int index = 0;
@@ -123,6 +152,7 @@ void SC_WasmClient::onLibraryStartup() {
     definePrimitive(base, index++, "_Wasm_runCode", prRunJsCode, 2, 0);
     definePrimitive(base, index++, "_Wasm_ideSend", prIdeSend, 2, 0);
     definePrimitive(base, index++, "_AppClock_SchedNotify", prAppClockSchedNotify, 1, 0);
+    definePrimitive(base, index++, "_Recompile", prRecompile, 1, 0);
 }
 
 void SC_WasmClient::runCode(const std::string& code, const bool silent) {
@@ -398,6 +428,13 @@ EMSCRIPTEN_BINDINGS(sclangWasm) {
     // .runCode(code) => .runCode(code, silent=false) in C++
     emscripten::function("runCode", &runCodeSclangThreadLoud);
     emscripten::function("sendOsc", &passOscMessageToSclangThread);
+    emscripten::function("recompile", emscripten::optional_override([]() {
+                             if (gSclangWasmWorkerThread == 0) {
+                                 std::cerr << "Need to boot sclang before it can be recompiled" << std::endl;
+                                 return;
+                             }
+                             emscripten_dispatch_to_thread(gSclangWasmWorkerThread, EM_FUNC_SIG_V, cRecompile, nullptr);
+                         }));
 }
 
 // export this to avoid dead code elimination
