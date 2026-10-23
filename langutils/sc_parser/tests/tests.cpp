@@ -426,3 +426,86 @@ BOOST_AUTO_TEST_CASE(invalid_utf8_reported_once) {
     BOOST_TEST(d.locations()[0].range.begin.line_number == 1);
     BOOST_TEST(d.locations()[0].msg.find("nor are 2 more") != std::string::npos);
 }
+
+namespace {
+using V = P::LanguageVersion;
+
+// The version of each class and extension, in order, and the names of the diagnostics.
+void check_versions(const char* src, const std::vector<V>& versions, const std::vector<std::string>& diagnostics,
+                    bool is_class_file = true) {
+    auto text_info = std::make_shared<sc::lex::TextInfo>(sc::lex::NormalisedSource(src), sc::lex::FileCodeLocation {},
+                                                         "test_file", is_class_file);
+    auto [graph, result] = P::parse(text_info);
+
+    std::vector<V> found_versions;
+    if (const auto root = graph->root())
+        if (const auto list = std::get_if<P::ClassOrExtensionListIndex>(&*root))
+            for (auto it = graph->children(*list).iter(); it; ++it) {
+                if (const auto c = graph->as_a<P::ClassIndex>(*it))
+                    found_versions.push_back(graph->payload(*c).version);
+                else if (const auto e = graph->as_a<P::ClassExtensionIndex>(*it))
+                    found_versions.push_back(graph->payload(*e).version);
+            }
+    std::vector<std::string> found_diagnostics;
+    for (const auto& d : graph->diagnostics())
+        found_diagnostics.emplace_back(d.name());
+
+    BOOST_TEST_INFO("src: " << src);
+    BOOST_TEST((found_versions == versions));
+    BOOST_TEST(found_diagnostics == diagnostics, boost::test_tools::per_element());
+}
+}
+
+BOOST_AUTO_TEST_CASE(version_for_release) {
+    BOOST_TEST((P::version_for_release(3, 13) == V::Legacy));
+    BOOST_TEST((P::version_for_release(3, 16) == V::V3_16));
+    BOOST_TEST(!P::version_for_release(3, 17).has_value());
+    BOOST_TEST(!P::version_for_release(4, 0).has_value());
+}
+
+BOOST_AUTO_TEST_CASE(versions_placed) {
+    check_versions("Foo {}", { V::Legacy }, {});
+    check_versions("Foo {\n    //# VERSION 3.16\n    var a;\n}", { V::V3_16 }, {});
+    check_versions("+ Foo {\n    //# VERSION 3.16\n    bar { ^1 }\n}", { V::V3_16 }, {});
+    check_versions("Foo { //# VERSION 3.16\n}", { V::V3_16 }, {});
+    // A release before the first that changed the rules.
+    check_versions("Foo {\n    //# VERSION 3.13\n}", { V::Legacy }, {});
+
+    // The file's is used by every class without its own.
+    check_versions("//# VERSION 3.16\nFoo {}\n+ Bar {}\nCar {\n    //# VERSION 3.13\n}",
+                   { V::V3_16, V::V3_16, V::Legacy }, {});
+    check_versions("// Some licence.\n/* more */\n//# VERSION 3.16\nFoo {}", { V::V3_16 }, {});
+    check_versions("//# VERSION 3.13\nFoo {\n    //# VERSION 3.16\n}\nBar {}", { V::V3_16, V::Legacy }, {});
+}
+
+BOOST_AUTO_TEST_CASE(versions_invalid) {
+    check_versions("Foo {\n    //# VERSION 3\n}", { V::Legacy }, { "Malformed version" });
+    check_versions("Foo {\n    //# VERSION 3.16x\n}", { V::Legacy }, { "Malformed version" });
+    check_versions("Foo {\n    //# VERSION abc\n}", { V::Legacy }, { "Malformed version" });
+    check_versions("Foo {\n    //# VERSION 3.16 // why\n}", { V::Legacy }, { "Malformed version" });
+    check_versions("Foo {\n    //# VERSION 3.16 \t\n}", { V::V3_16 }, {});
+    check_versions("Foo {\n    //# VERSION 4.0\n}", { V::Legacy }, { "Unknown version" });
+    // A broken file version doesn't fall back to anything else.
+    check_versions("//# VERSION 99.0\nFoo {}", { V::Legacy }, { "Unknown version" });
+    // Malformed, but still in the class's place, so it doesn't use the file's.
+    check_versions("//# VERSION 3.16\nFoo {\n    //# VERSION 3\n}", { V::Legacy }, { "Malformed version" });
+}
+
+BOOST_AUTO_TEST_CASE(versions_duplicate) {
+    check_versions("Foo {\n    //# VERSION 3.13\n    //# VERSION 3.16\n}", { V::V3_16 }, { "Duplicate version" });
+    check_versions("//# VERSION 3.16\n//# VERSION 3.13\nFoo {}", { V::Legacy }, { "Duplicate version" });
+}
+
+BOOST_AUTO_TEST_CASE(versions_misplaced) {
+    check_versions("Foo {}\n//# VERSION 3.16\nBar {}", { V::Legacy, V::Legacy }, { "Misplaced version" });
+    check_versions("Foo {}\n//# VERSION 3.16", { V::Legacy }, { "Misplaced version" });
+    check_versions("Foo {\n    var a;\n    //# VERSION 3.16\n}", { V::Legacy }, { "Misplaced version" });
+    check_versions("Foo {\n    bar {\n        //# VERSION 3.16\n        if (x) { ^1 }; ^2\n    }\n}", { V::Legacy },
+                   { "Misplaced version" });
+    check_versions("Foo : Object\n//# VERSION 3.16\n{}", { V::Legacy }, { "Misplaced version" });
+}
+
+BOOST_AUTO_TEST_CASE(versions_interpreted) {
+    check_versions("//# VERSION 3.16\n1 + 1", {}, { "Version in interpreted code" }, false);
+    check_versions("(\n//# VERSION 3.16\n1 + 1\n)", {}, { "Version in interpreted code" }, false);
+}

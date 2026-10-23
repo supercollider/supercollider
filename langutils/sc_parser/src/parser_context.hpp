@@ -3,6 +3,7 @@
 
 #include "sc_lexer/codepoint_stream.hpp"
 #include "sc_parser/ast.hpp"
+#include "sc_parser/sc_grammar_shared.hpp"
 
 #include "sc_lexer/normalise_source.hpp"
 #include "sc_lexer/text_info.hpp"
@@ -53,10 +54,21 @@ private:
 };
 static_assert(sizeof(Token) == 32);
 
-// Lexes all of the stream, reporting the lexer's errors, then pairs the brackets.
-// Attempt to repair any mismatched brackets.
-[[nodiscard]] std::vector<Token> tokenise(std::shared_ptr<const sc::lex::TextInfo> text_info,
-                                          sc::lex::CodePointStream cps, ASTGraph& graph);
+// A `//# VERSION 3.16` comment, which the parser doesn't see, see ParserContext::take_version.
+struct VersionDirective {
+    sc::lex::SourceCodeRange range;
+    // Nothing if it is malformed or unknown, which has been reported.
+    std::optional<LanguageVersion> version;
+    // The token before it, nothing at the start of the file.
+    std::optional<sc::lex::SourceCodeRange> after;
+    bool used { false };
+};
+
+struct ParserContext;
+
+// Lexes all of the stream into the context's tokens and version directives, reporting the lexer's errors, then pairs
+// the brackets. Attempt to repair any mismatched brackets.
+void tokenise(ParserContext& cxt, sc::lex::CodePointStream cps);
 
 struct UnexpectedToken {
     sc::lex::SourceCodeRange location;
@@ -78,6 +90,23 @@ struct ParserContext {
     std::shared_ptr<sc::ast::ASTGraph> graph = std::make_shared<ASTGraph>(text_info);
 
     std::vector<Token> tokens {};
+
+    // In source order, see tokenise.
+    std::vector<VersionDirective> directives {};
+
+    // The version of classes without their own, from the directives at the start of the file, see claim_file_version.
+    std::optional<LanguageVersion> file_version {};
+
+    // Takes the directives at the start of a class file as its version. In interpreted code, which is given its version
+    // when compiled, they are all reported as ignored.
+    void claim_file_version();
+
+    // The version of the class or extension whose body opens with open_curly: the directive directly after it, else the
+    // file's, else Legacy.
+    [[nodiscard]] LanguageVersion take_version(sc::lex::SourceCodeRange open_curly);
+
+    // Those not taken don't apply to anything.
+    void report_misplaced_versions();
 
     // The next token to emit, see yylex.
     std::uint32_t next { 0 };

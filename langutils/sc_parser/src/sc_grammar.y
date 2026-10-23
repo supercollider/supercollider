@@ -262,7 +262,7 @@ classOrExtList.item
 
 class 
 	: CLASSNAME[name] class.slot.opt[slot] class.super.opt[super] OPENCURLY members.opt[vars] method.list.opt[meths] CLOSECURLY
-		{ $$ = cxt.create(Class{}, @$, cxt.create(ClassNameIdentifier{}, @name), $slot, $super, $vars, $meths); }
+		{ $$ = cxt.create(Class{ cxt.take_version(@OPENCURLY) }, @$, cxt.create(ClassNameIdentifier{}, @name), $slot, $super, $vars, $meths); }
 	;
 
 class.super.opt 
@@ -278,7 +278,7 @@ class.slot.opt
 
 class.extension 
 	: ADD CLASSNAME[name] OPENCURLY method.list.opt[meths] CLOSECURLY
-		{ $$ = cxt.create(ClassExtension{}, @$, cxt.create(ClassNameIdentifier{}, @name), $meths); }
+		{ $$ = cxt.create(ClassExtension{ cxt.take_version(@OPENCURLY) }, @$, cxt.create(ClassNameIdentifier{}, @name), $meths); }
 	;
 
 ////////////////////////////////////////////////////////////////////////////////

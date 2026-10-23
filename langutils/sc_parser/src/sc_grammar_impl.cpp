@@ -29,6 +29,52 @@ void sc::ast::parser::parser::error(const sc::lex::SourceCodeRange&, const std::
     ////////////////	cxt.error_handler->operator()(cxt.text_info, loc, message);
 }
 
+namespace sc::ast::parser {
+
+namespace {
+// Uses the directives in [begin, end), all in the same place, so the last is used and the others are duplicates.
+LanguageVersion use_versions(ParserContext& cxt, std::vector<VersionDirective>::iterator begin,
+                             std::vector<VersionDirective>::iterator end) {
+    assert(begin != end);
+    for (auto it = begin; it != end; ++it) {
+        it->used = true;
+        if (it != begin)
+            cxt.graph->add_diagnostic(diag::Diagnostic::duplicate_version(cxt.text_info, (it - 1)->range, it->range));
+    }
+    return (end - 1)->version.value_or(LanguageVersion::Legacy);
+}
+}
+
+void ParserContext::claim_file_version() {
+    if (mode != Mode::ClassLibrary) {
+        for (auto& d : directives) {
+            d.used = true;
+            graph->add_diagnostic(diag::Diagnostic::version_in_interpreted_code(text_info, d.range));
+        }
+        return;
+    }
+    const auto end = std::find_if(directives.begin(), directives.end(), [](const auto& d) { return d.after; });
+    if (end != directives.begin())
+        file_version = use_versions(*this, directives.begin(), end);
+}
+
+LanguageVersion ParserContext::take_version(sc::lex::SourceCodeRange open_curly) {
+    const auto begin = std::lower_bound(directives.begin(), directives.end(), open_curly.end,
+                                        [](const auto& d, const auto& l) { return d.range.begin < l; });
+    const auto end = std::find_if(begin, directives.end(), [&](const auto& d) { return d.after != open_curly; });
+    if (begin == end)
+        return file_version.value_or(LanguageVersion::Legacy);
+    return use_versions(*this, begin, end);
+}
+
+void ParserContext::report_misplaced_versions() {
+    for (const auto& d : directives)
+        if (!d.used)
+            graph->add_diagnostic(diag::Diagnostic::misplaced_version(text_info, d.range));
+}
+
+}
+
 
 namespace sc::ast::parser::error_recovery {
 

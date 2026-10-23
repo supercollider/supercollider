@@ -2875,7 +2875,7 @@ namespace sc { namespace ast { namespace parser {
 
   case 24: // class: CLASSNAME class.slot.opt class.super.opt OPENCURLY members.opt method.list.opt CLOSECURLY
 #line 265 "langutils/sc_parser/src/sc_grammar.y"
-                { yylhs.value.as < ClassIndex > () = cxt.create(Class{}, yylhs.location, cxt.create(ClassNameIdentifier{}, yystack_[6].location), yystack_[5].value.as < maybe<NamedIdentifierIndex> > (), yystack_[4].value.as < maybe<ClassNameIdentifierIndex> > (), yystack_[2].value.as < BigMemberListIndex > (), yystack_[1].value.as < MethodListIndex > ()); }
+                { yylhs.value.as < ClassIndex > () = cxt.create(Class{ cxt.take_version(yystack_[3].location) }, yylhs.location, cxt.create(ClassNameIdentifier{}, yystack_[6].location), yystack_[5].value.as < maybe<NamedIdentifierIndex> > (), yystack_[4].value.as < maybe<ClassNameIdentifierIndex> > (), yystack_[2].value.as < BigMemberListIndex > (), yystack_[1].value.as < MethodListIndex > ()); }
 #line 2880 "langutils/sc_parser/src/sc_grammar_parser.cpp"
     break;
 
@@ -2911,7 +2911,7 @@ namespace sc { namespace ast { namespace parser {
 
   case 30: // class.extension: ADD CLASSNAME OPENCURLY method.list.opt CLOSECURLY
 #line 281 "langutils/sc_parser/src/sc_grammar.y"
-                { yylhs.value.as < ClassExtensionIndex > () = cxt.create(ClassExtension{}, yylhs.location, cxt.create(ClassNameIdentifier{}, yystack_[3].location), yystack_[1].value.as < MethodListIndex > ()); }
+                { yylhs.value.as < ClassExtensionIndex > () = cxt.create(ClassExtension{ cxt.take_version(yystack_[2].location) }, yylhs.location, cxt.create(ClassNameIdentifier{}, yystack_[3].location), yystack_[1].value.as < MethodListIndex > ()); }
 #line 2916 "langutils/sc_parser/src/sc_grammar_parser.cpp"
     break;
 

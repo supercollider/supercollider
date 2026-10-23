@@ -4,6 +4,7 @@
 #include "sc_diagnostic/sc_diagnostic.hpp"
 #include "sc_lexer/lexer.hpp"
 
+#include <charconv>
 #include <stdexcept>
 #include <string>
 
@@ -13,7 +14,7 @@ namespace {
 using sc::lex::SourceCodeRange;
 using sc::lex::TokenType;
 
-// Drops the whitespace and comments, which the parser never sees.
+// Drops the whitespace and comments, which the parser never sees, other than version comments, see tokenise.
 struct Action {
     struct Output {
         TokenType token;
@@ -21,12 +22,48 @@ struct Action {
     };
 
     template <TokenType T> [[nodiscard]] std::optional<Output> process(SourceCodeRange loc) {
-        if constexpr (sc::lex::is_whitespace(T) || sc::lex::is_comment(T))
+        if constexpr (T != TokenType::VersionComment && (sc::lex::is_whitespace(T) || sc::lex::is_comment(T)))
             return std::nullopt;
         else
             return Output { T, loc };
     }
 };
+
+// The version in a version comment, `//# VERSION 3.16`, reporting it if it isn't `major.minor` or is unknown.
+std::optional<LanguageVersion> parse_version(const std::shared_ptr<const sc::lex::TextInfo>& text_info, ASTGraph& graph,
+                                             SourceCodeRange r) {
+    auto text = text_info->read(r);
+    text.remove_prefix(std::string_view { "//# VERSION" }.size());
+    const auto skip_blank = [&] {
+        while (!text.empty() && (text.front() == ' ' || text.front() == '\t'))
+            text.remove_prefix(1);
+    };
+    const auto number = [&]() -> std::optional<unsigned> {
+        unsigned n { 0 };
+        const auto [end, ec] = std::from_chars(text.data(), text.data() + text.size(), n);
+        if (ec != std::errc {})
+            return std::nullopt;
+        text.remove_prefix(static_cast<size_t>(end - text.data()));
+        return n;
+    };
+
+    skip_blank();
+    const auto major = number();
+    const bool dot = !text.empty() && text.front() == '.';
+    if (dot)
+        text.remove_prefix(1);
+    const auto minor = dot ? number() : std::nullopt;
+    skip_blank();
+    if (!major || !minor || !text.empty()) {
+        graph.add_diagnostic(diag::Diagnostic::malformed_version(text_info, r));
+        return std::nullopt;
+    }
+    const auto version = version_for_release(*major, *minor);
+    if (!version)
+        graph.add_diagnostic(
+            diag::Diagnostic::unknown_version(text_info, r, to_string(language_releases.back().version)));
+    return version;
+}
 
 bool closes(TokenType open, TokenType close) { return sc::lex::get_closing_bracket(open) == close; }
 
@@ -149,10 +186,9 @@ struct BracketPairing {
 };
 }
 
-std::vector<Token> tokenise(std::shared_ptr<const sc::lex::TextInfo> text_info, sc::lex::CodePointStream cps,
-                            ASTGraph& graph) {
-    Lexed lexed { text_info, graph, std::move(cps) };
-    BracketPairing pairing { std::move(text_info), graph };
+void tokenise(ParserContext& cxt, sc::lex::CodePointStream cps) {
+    Lexed lexed { cxt.text_info, *cxt.graph, std::move(cps) };
+    BracketPairing pairing { cxt.text_info, *cxt.graph };
     while (true) {
         const auto [t, r] = lexed.next();
         if (sc::lex::is_open_bracket(t)) {
@@ -160,6 +196,9 @@ std::vector<Token> tokenise(std::shared_ptr<const sc::lex::TextInfo> text_info, 
             pairing.tokens.emplace_back(t, r);
         } else if (sc::lex::is_close_bracket(t)) {
             pairing.close_bracket(lexed, t, r);
+        } else if (t == TokenType::VersionComment) {
+            const auto after = pairing.tokens.empty() ? std::nullopt : std::optional { pairing.tokens.back().range };
+            cxt.directives.push_back({ r, parse_version(cxt.text_info, *cxt.graph, r), after });
         } else if (t == TokenType::EndOfFile) {
             pairing.close_unclosed(0, std::nullopt);
             pairing.tokens.emplace_back(t, r);
@@ -172,7 +211,6 @@ std::vector<Token> tokenise(std::shared_ptr<const sc::lex::TextInfo> text_info, 
     if (pairing.tokens.size() > Token::max_tokens)
         throw std::length_error { "source has more than the " + std::to_string(Token::max_tokens)
                                   + " tokens supported" };
-    return std::move(pairing.tokens);
+    cxt.tokens = std::move(pairing.tokens);
 }
-
 }

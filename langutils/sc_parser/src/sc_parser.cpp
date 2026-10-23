@@ -21,7 +21,8 @@ namespace sc::ast {
         text_info->is_class_file ? parser::ParserContext::Mode::ClassLibrary
                                  : parser::ParserContext::Mode::CommandInitial,
     };
-    ctx.tokens = parser::tokenise(text_info, std::move(cps), *ctx.graph);
+    parser::tokenise(ctx, std::move(cps));
+    ctx.claim_file_version();
 
     parser::parser p { ctx };
     ctx.owner = &p;
@@ -29,6 +30,7 @@ namespace sc::ast {
     const auto ret = p(); // if ret is false, some unknown error was encountered
     // The parse can end on an error without recovering from it.
     parser::error_recovery::report(ctx);
+    ctx.report_misplaced_versions();
     const bool result = ret && ctx.graph;
     return { std::move(ctx.graph), result };
 }

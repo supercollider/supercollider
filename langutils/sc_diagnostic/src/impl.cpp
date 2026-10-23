@@ -652,6 +652,43 @@ Diagnostic Diagnostic::return_in_interpreted_code(TextInfoPtr t, sc::lex::Source
     };
 }
 
+Diagnostic Diagnostic::malformed_version(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+    return { "Malformed version",
+             Severity::Error,
+             { { std::move(t), l, "expected a version, e.g., `//# VERSION 3.16`." } },
+             "The classes it applies to are compiled as the legacy version." };
+}
+
+Diagnostic Diagnostic::unknown_version(TextInfoPtr t, sc::lex::SourceCodeRange l, std::string_view latest) {
+    return { "Unknown version",
+             Severity::Error,
+             { { std::move(t), l, "this version is newer than the compiler." } },
+             "The latest version is " + std::string { latest }
+                 + ". The classes it applies to are compiled as the legacy version." };
+}
+
+Diagnostic Diagnostic::duplicate_version(TextInfoPtr t, sc::lex::SourceCodeRange first,
+                                         sc::lex::SourceCodeRange second) {
+    return { "Duplicate version",
+             Severity::Warning,
+             { { t, first, "This version is ignored..." }, { t, second, "...as this one is used." } } };
+}
+
+Diagnostic Diagnostic::misplaced_version(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+    return { "Misplaced version",
+             Severity::Warning,
+             { { std::move(t), l, "this version applies to nothing." } },
+             "A version must be the first thing in the file, for every class in it, or the first thing in a class's "
+             "body, for that class." };
+}
+
+Diagnostic Diagnostic::version_in_interpreted_code(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+    return { "Version in interpreted code",
+             Severity::Warning,
+             { { std::move(t), l, "this version is ignored." } },
+             "Interpreted code is given its version when it is compiled." };
+}
+
 Diagnostic Diagnostic::curry_outside_call(TextInfoPtr t, sc::lex::SourceCodeRange l) {
     return {
         "Partial application outside of a call",

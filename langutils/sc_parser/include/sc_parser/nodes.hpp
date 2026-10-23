@@ -430,10 +430,15 @@ struct Class
     : Node<ClassIndex(ClassNameIdentifierIndex name, maybe<NamedIdentifierIndex> slot,
                       maybe<ClassNameIdentifierIndex> super, BigMemberListIndex members, MethodListIndex meths)> {
     static constexpr auto name { "Class" };
+    LanguageVersion version;
+    constexpr Class(LanguageVersion v = LanguageVersion::Legacy): version(v) {}
 };
 
+// Has its own version, as it is often in another file, by another author, than the class.
 struct ClassExtension : Node<ClassExtensionIndex(ClassNameIdentifierIndex name, MethodListIndex meths)> {
     static constexpr auto name { "ClassExtension" };
+    LanguageVersion version;
+    constexpr ClassExtension(LanguageVersion v = LanguageVersion::Legacy): version(v) {}
 };
 
 struct ClassOrExtensionList : ListNode<ClassOrExtensionListIndex, ClassOrExtensionIndex> {

@@ -146,6 +146,22 @@ public:
     // `^1` in interpreted code, including inside its functions, there is no method to return from.
     [[nodiscard]] static Diagnostic return_in_interpreted_code(TextInfoPtr t, sc::lex::SourceCodeRange l);
 
+    // `//# VERSION` not followed by `major.minor`, e.g., `//# VERSION 3`.
+    [[nodiscard]] static Diagnostic malformed_version(TextInfoPtr t, sc::lex::SourceCodeRange l);
+
+    // A version after the latest release, whose rules the compiler doesn't know.
+    [[nodiscard]] static Diagnostic unknown_version(TextInfoPtr t, sc::lex::SourceCodeRange l, std::string_view latest);
+
+    // A warning, two versions for the same class or file, the second is used.
+    [[nodiscard]] static Diagnostic duplicate_version(TextInfoPtr t, sc::lex::SourceCodeRange first,
+                                                      sc::lex::SourceCodeRange second);
+
+    // A warning, a version that isn't the first thing in the file or in a class's body, so applies to nothing.
+    [[nodiscard]] static Diagnostic misplaced_version(TextInfoPtr t, sc::lex::SourceCodeRange l);
+
+    // A warning, interpreted code is given its version when it is compiled.
+    [[nodiscard]] static Diagnostic version_in_interpreted_code(TextInfoPtr t, sc::lex::SourceCodeRange l);
+
 
     Diagnostic() = delete;
     Diagnostic(Diagnostic&&) noexcept = default;
