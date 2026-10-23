@@ -122,6 +122,8 @@
         return "Comment";
     case TokenType::MultilineComment:
         return "MultilineComment";
+    case TokenType::VersionComment:
+        return "VersionComment";
     case TokenType::ErUnexpected:
         return "ErUnexpected";
     case TokenType::ErSymbolQuoteUnclosed:

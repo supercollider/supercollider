@@ -319,6 +319,27 @@ BOOST_AUTO_TEST_CASE(unicode_comments_2) {
           std::array<sc::lex::TokenType, 0> {});
 }
 
+BOOST_AUTO_TEST_CASE(version_comments) {
+    using T = sc::lex::TokenType;
+    const auto none = std::array<T, 0> {};
+    match("//# VERSION 3.16", std::array { T::VersionComment }, none);
+    match("//# VERSION\t3.16", std::array { T::VersionComment }, none);
+    match("//# VERSION nonsense", std::array { T::VersionComment }, none);
+    match("//# VERSION 3.16\n1", std::array { T::VersionComment, T::NewLine, T::Integer }, none);
+    match("1 //# VERSION 3.16", std::array { T::Integer, T::Space, T::VersionComment }, none);
+
+    // Only the exact prefix, as code may already use `//#`.
+    match("//#", std::array { T::Comment }, none);
+    match("//# version 3.16", std::array { T::Comment }, none);
+    match("//#VERSION 3.16", std::array { T::Comment }, none);
+    match("//# VERSIONS 3.16", std::array { T::Comment }, none);
+    match("// # VERSION 3.16", std::array { T::Comment }, none);
+    match("/// VERSION 3.16", std::array { T::Comment }, none);
+    match("//# VERSION", std::array { T::Comment }, none);
+    match("//# VERSION\n1", std::array { T::Comment, T::NewLine, T::Integer }, none);
+    match("/*# VERSION 3.16 */", std::array { T::MultilineComment }, none);
+}
+
 
 using TSource = std::pair<sc::lex::TokenType, const char*>;
 template <size_t I> void match_str(const char* text, const std::array<TSource, I>& expected) {

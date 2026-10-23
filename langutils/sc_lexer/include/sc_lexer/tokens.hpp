@@ -133,6 +133,7 @@ enum struct TokenType : unsigned int {
     START_OF_COMMENTS = END_OF_WHITESPACE,
         Comment = START_OF_COMMENTS,
         MultilineComment,
+        VersionComment, // `//# VERSION 3.16`, the lexer doesn't check the version.
     END_OF_COMMENTS,
 
     // errors

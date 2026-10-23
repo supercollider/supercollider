@@ -380,7 +380,13 @@ next_token : {
 
         // '//'
         else if (p == '/') {
+            // Exactly `//# VERSION ` (or a tab), so other comments starting with `//#` aren't mistaken for one.
+            const auto v = stream.peek_n<11>();
+            const bool is_version = v.starts_with("/# VERSION") && (v[10] == ' ' || v[10] == '\t');
             stream.advance_while([](auto c) { return !is_newline(c); });
+            if (is_version)
+                return_orelse_next_token(
+                    action.template process<TokenType::VersionComment>({ token_start, stream.end_token() }));
             return_orelse_next_token(action.template process<TokenType::Comment>({ token_start, stream.end_token() }));
         }
 

@@ -28,6 +28,15 @@ template <std::size_t N> struct Peek {
         return characters[I];
     }
 
+    // Whether the peeked characters start with the string, e.g., `peek.starts_with("abc")`.
+    template <std::size_t M> [[nodiscard]] constexpr bool starts_with(const char (&str)[M]) const noexcept {
+        static_assert(M - 1 <= N, "string is longer than the peek");
+        for (std::size_t i { 0 }; i < M - 1; ++i)
+            if (characters[i] != static_cast<unsigned char>(str[i]))
+                return false;
+        return true;
+    }
+
     std::array<CodePoint, N> characters;
 };
 
