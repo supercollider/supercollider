@@ -43,6 +43,8 @@ private:
 };
 
 
+struct SymbolTable;
+
 struct InheritanceEdges {
     void insert(SymSCClassName parent, SymSCClassName child);
     // A class with no parent, e.g., the root.
@@ -52,7 +54,11 @@ struct InheritanceEdges {
     /// Requires root has no parents.
     /// Returns inheritance cycles.
     /// If empty, no cycles.
-    std::vector<std::vector<SymSCClassName>> cycle_check(SymSCClassName root, std::vector<SymSCClassName>& topo_ordering) const;
+    // Sorts each class's subclasses by name first, as they are inserted from several threads, and symbols are numbered
+    // in the order they are first seen, so the cycles, their order, and the topological ordering are the same every
+    // time.
+    std::vector<std::vector<SymSCClassName>>
+    cycle_check(SymSCClassName root, std::vector<SymSCClassName>& topo_ordering, const SymbolTable& symbols);
 
     // Not thread safe.
     const std::vector<SymSCClassName>& get_unsafe(SymSCClassName n) const;
@@ -71,10 +77,15 @@ private:
     std::unordered_map<SymSCClassName, SymSCClassName, std::hash<Symbol>> m_super_class { };
 };
 
+// Where each class is first defined, by module, then file, then position, so when one is defined twice, the same one
+// is used every time, however the classes are declared, see IRCompiler::compile_class_library.
 struct ClassNames {
     using V = std::pair<std::shared_ptr<const ast::ASTGraph>, ast::ClassNameIdentifierIndex>;
-    [[nodiscard]] std::optional<V> encountered_class_before(SymSCClassName n, std::shared_ptr<const ast::ASTGraph> g,
-                                                            ast::ClassNameIdentifierIndex i);
+    // Called in that order, before the classes are declared, keeps the first.
+    void define(SymSCClassName n, std::shared_ptr<const ast::ASTGraph> g, ast::ClassNameIdentifierIndex i);
+    // The first definition of n, when it isn't this one, which is then a duplicate.
+    [[nodiscard]] std::optional<V> defined_elsewhere(SymSCClassName n, const std::shared_ptr<const ast::ASTGraph>& g,
+                                                     ast::ClassNameIdentifierIndex i) const;
 
 private:
     mutable std::mutex m_lock {};

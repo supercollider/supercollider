@@ -34,7 +34,9 @@ assertions apply to all of it, wherever they are, as long as each is alone on it
 It is compiled as the legacy version, unless its first lines say which release, as interpreted code has no version
 comment, e.g.,
     // interpreted-version: 3.16
-The first lines can also be `// no-prelude`, to compile it without the shared prelude.sc.
+The first lines can also be `// no-prelude`, to compile it without the shared prelude.sc, and any number of
+`// module: NAME`, which compiles modules/NAME.sc as its own module, before the test, e.g., to test extensions in
+different modules. A module is a path given to the compiler.
 A test fails when an assertion doesn't hold, even when its output is overridden, so overriding can't hide a change
 the test was written to catch.
 
@@ -71,6 +73,10 @@ PRELUDE = Path(__file__).parent / 'prelude.sc'
 NO_PRELUDE = '// no-prelude'
 # The release interpreted code is compiled as, e.g., `// interpreted-version: 3.16`.
 INTERPRETED_VERSION = re.compile(r'^// interpreted-version: (?P<release>\S+)$')
+# Another module compiled before the test, e.g., `// module: other` is modules/other.sc.
+MODULE = re.compile(r'^// module: (?P<name>\S+)$')
+# Outside input, so the modules aren't tests themselves.
+MODULES_DIR = Path(__file__).parent / 'modules'
 
 # Tests are grouped by topic in directories under input, which are mirrored in expected and the output directory.
 INPUT_DIR = Path(__file__).parent / 'input'
@@ -239,9 +245,11 @@ def test_name(sc_file):
 
 
 def headers(sc_file):
-    """Whether the test uses the prelude, and the release its interpreted code is compiled as, from its first lines."""
+    """Whether the test uses the prelude, the release its interpreted code is compiled as, and the modules compiled
+    before it, from its first lines."""
     uses_prelude = True
     release = None
+    modules = []
     with open(sc_file) as f:
         for line in f:
             line = line.strip()
@@ -249,19 +257,24 @@ def headers(sc_file):
                 uses_prelude = False
             elif version := INTERPRETED_VERSION.match(line):
                 release = version['release']
+            elif module := MODULE.match(line):
+                modules.append(MODULES_DIR / f"{module['name']}.sc")
             else:
                 break
-    return uses_prelude, release
+    return uses_prelude, release, modules
 
 
 def run_ir_dump(cmd, sc_file):
-    uses_prelude, release = headers(sc_file)
+    uses_prelude, release, modules = headers(sc_file)
     # Paths in diagnostics are relative to the input directory, so the output doesn't depend on where it is run.
     # The output is the same however many threads compile it, two checks that, while leaving cpus for other tests.
     args = [cmd, '--threads', '2', '--relative-to', INPUT_DIR]
     if release:
         args += ['--interpreted-version', release]
-    args += ['--prelude', PRELUDE, sc_file] if uses_prelude else [sc_file]
+    if uses_prelude:
+        args += ['--prelude', PRELUDE]
+    # Each path is its own module, in order, so the test is the last.
+    args += modules + [sc_file]
     return subprocess.run(args, capture_output=True, text=True, check=True).stdout
 
 

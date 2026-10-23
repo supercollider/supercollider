@@ -1,0 +1,72 @@
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Inheritance cycle detected.
+classes/inheritance_cycle.sc:4:10
+    2 │ // Classes in an inheritance cycle, or under a superclass that isn't defined, are poisoned, so aren't compiled. The
+    3 │ // diagnostics, and the order of the classes in them, are the same every time, by name.
+    4 │ CycleB : CycleA {}
+      ┆          ^^^^^^ cycle detected
+    5 │ CycleA : CycleB {}
+    6 │ 
+    7 │ ItsOwnSuper : ItsOwnSuper {}
+
+classes/inheritance_cycle.sc:5:10
+    3 │ // diagnostics, and the order of the classes in them, are the same every time, by name.
+    4 │ CycleB : CycleA {}
+    5 │ CycleA : CycleB {}
+      ┆          ^^^^^^ cycle detected
+    6 │ 
+    7 │ ItsOwnSuper : ItsOwnSuper {}
+    8 │ 
+
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Self inheritance
+classes/inheritance_cycle.sc:7:15
+    5 │ CycleA : CycleB {}
+    6 │ 
+    7 │ ItsOwnSuper : ItsOwnSuper {}
+      ┆               ^^^^^^^^^^^ Remove the super class here, classes cannot inherit from themselves.
+    8 │ 
+    9 │ ChildZ : NotDefined {}
+   10 │ ChildY : NotDefined {}
+
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Super class not defined.
+classes/inheritance_cycle.sc:10:10
+    8 │ 
+    9 │ ChildZ : NotDefined {}
+   10 │ ChildY : NotDefined {}
+      ┆          ^^^^^^^^^^ super class not defined.
+   11 │ 
+   12 │ Fine {
+   13 │     // expect: no diagnostics
+
+classes/inheritance_cycle.sc:9:10
+    7 │ ItsOwnSuper : ItsOwnSuper {}
+    8 │ 
+    9 │ ChildZ : NotDefined {}
+      ┆          ^^^^^^^^^^ super class not defined.
+   10 │ ChildY : NotDefined {}
+   11 │ 
+   12 │ Fine {
+
+The class NotDefined was not defined.
+──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (12:1): Fine, version 3.16
+|  SCMemberList (12:1)
+|  SCMethodList (12:1)
+|  |  SCMethod (15:5): version 3.16: one { ^1 } -> 1
+|  |  |  SCBody (15:11)
+|  |  |  |  SCExplicitReturn (15:11)
+|  |  |  |  |  SCLiteral (15:12) = 1
+Successfully compiled 16 classes.

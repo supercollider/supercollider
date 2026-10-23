@@ -80,13 +80,27 @@ public:
     [[nodiscard]] const Method* find_method(Symbol i) const;
     [[nodiscard]] Method* find_method(Symbol i);
 
+    // What inserting an extension method did, when it clashes with another extension. Overriding the class's own
+    // method, or an accessor, is fine, as it was in the old compiler.
+    // A module is a directory given to the compiler, which isn't an official SuperCollider idea yet.
     enum struct MethodInsertResult {
         Ok,
-        DuplicatedByMethod,
-        DuplicatedByExtentionMethod,
-        DuplicatedByAccessor,
+        // Another extension in the same module, whose order the old compiler took from the filesystem, so neither
+        // can be chosen. The first is kept but poisoned.
+        DuplicateInModule,
+        // Legacy extensions in different modules, the later one is used, as the old compiler did.
+        OverwrittenBetweenModules,
+        // Extensions in different modules, either 3.16, which can't silently choose one. The first is kept, poisoned.
+        ConflictBetweenModules,
     };
-    [[nodiscard]] MethodInsertResult insert(Method m);
+    struct MethodInsert {
+        MethodInsertResult result;
+        // The extension it clashed with, when it did, as it was before being replaced or poisoned.
+        std::optional<Method> previous;
+    };
+    // Extensions must be inserted in a fixed order, by module, then file, then position, so the result doesn't depend
+    // on how the files were found.
+    [[nodiscard]] MethodInsert insert(Method m);
 
     // Called from within the class declaration, here we assume we are in the original class declaration.
     enum struct DuplicateLocation {
@@ -124,9 +138,7 @@ private:
     std::unordered_map<Symbol, Member, std::hash<Symbol>> m_members_map;
     std::vector<Symbol> m_members_order { };
 
-    // Either the Method, or the method and its extention.
-    // It is an error to have multiple extention methods, we just taken a random one and produce a warning.
-    // Note, each method has its own ast_graph associated with it.
+    // The method in use, the class's own or an extension, see insert. Each has its own ast_graph.
     std::unordered_map<Symbol, Method, std::hash<Symbol>> m_methods { };
     std::unordered_map<Symbol, Method, std::hash<Symbol>> m_overriden_methods { };
 

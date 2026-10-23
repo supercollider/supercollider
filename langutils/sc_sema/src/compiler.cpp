@@ -27,31 +27,50 @@
 namespace sc::ir {
 
 
-struct ModuleExtentions {
-    [[nodiscard]] bool encountered(ModuleIndex mod, SymSCClassName cl, SymSCSelector sel) {
-        std::scoped_lock lk { m_lock };
-        auto& m = m_ext[mod];
-        auto& c = m[cl];
-        if (auto fnd = c.find(sel); fnd != c.end()) {
-            return false;
-        }
-        c.insert(sel);
-        return true;
-    }
-
-private:
-    std::mutex m_lock;
-    using M =
-        std::unordered_map<SymSCClassName, std::unordered_set<SymSCSelector, std::hash<Symbol>>, std::hash<Symbol>>;
-    std::unordered_map<ModuleIndex, M> m_ext { };
-};
-
-
 std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
     const IntrinsicConstraints& intrinsic_constraints, //
     size_t num_threads) //
 {
     num_threads = std::max<size_t>(1, num_threads);
+
+    // The files' classes and extensions in a fixed order, by module, then file, then position, as when two define the
+    // same class or method, which is used depends on it. The classes are declared on several threads, so the first
+    // definition of each is found beforehand.
+    struct Defined {
+        const SourceEntry* entry;
+        ast::Index index;
+        std::string path;
+        sc::lex::SourceCodeLocation begin;
+    };
+    std::vector<Defined> classes;
+    std::vector<Defined> extensions;
+    for (const auto& opt : ctx.class_library_ast) {
+        if (!opt)
+            continue;
+        const auto& g = *opt->graph;
+        const auto& path = g.text_info()->file_path;
+        for (auto child = g.children(opt->index).iter(); child; ++child) {
+            const ast::Index i { **child };
+            const Defined defined { &*opt, i, path ? path->string() : std::string {}, g.location(i).begin };
+            if (g.as_a<ast::ClassIndex>(i))
+                classes.push_back(defined);
+            else if (g.as_a<ast::ClassExtensionIndex>(i))
+                extensions.push_back(defined);
+        }
+    }
+    const auto source_order = [](const Defined& l, const Defined& r) {
+        const auto l_module = *l.entry->module;
+        const auto r_module = *r.entry->module;
+        return std::tie(l_module, l.path, l.begin) < std::tie(r_module, r.path, r.begin);
+    };
+    std::sort(classes.begin(), classes.end(), source_order);
+    std::sort(extensions.begin(), extensions.end(), source_order);
+    for (const auto& defined : classes) {
+        const auto& g = defined.entry->graph;
+        const auto [class_name_i, backing_slot, super_name_i, members, methods] =
+            g->children(*g->as_a<ast::ClassIndex>(defined.index));
+        ctx.class_names.define(ctx.symbol_table.get_class_name(g->string(class_name_i)), g, class_name_i);
+    }
 
     {
         boost::asio::thread_pool pool { num_threads };
@@ -99,188 +118,63 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
     }
 
 
-    // add extentsion methods to decl
+    // Adds the extension methods to their classes, in source order, as when two define the same method, which is used
+    // depends on it, see ClassDeclaration::insert. Inserting is cheap, so this isn't threaded.
     {
-        boost::asio::thread_pool pool { num_threads };
-        ModuleExtentions exts { };
+        for (const auto& extension : extensions) {
+            const auto& ast_graph = extension.entry->graph;
+            const auto extension_i = *ast_graph->as_a<ast::ClassExtensionIndex>(extension.index);
+            const auto [class_name_i, method_list_i] = ast_graph->children(extension_i);
+            const auto version = ast_graph->payload(extension_i).version;
+            const auto class_name = ctx.symbol_table.get_class_name(ast_graph->string(class_name_i));
+            const auto meta_class_name = ctx.symbol_table.get_meta_class_name(ast_graph->string(class_name_i));
 
-        for (const auto& opt : ctx.class_library_ast) {
-            if (!opt)
-                continue;
-            const auto& graph_and_index = *opt;
-            const auto& ast_graph_ptr = graph_and_index.graph;
-            const auto& ast_graph = *ast_graph_ptr;
-            const auto module = graph_and_index.module;
-
-            const auto classes_or_extensions = ast_graph.children(graph_and_index.index);
-
-            for (auto child { classes_or_extensions.iter() }; child; ++child) {
-                if (const auto ext_i = ast_graph.as_a<ast::ClassExtensionIndex>(*child)) {
-                    const auto [class_name_i, method_list_i_t] = ast_graph.children(*ext_i);
-                    const auto method_list_i = method_list_i_t;
-                    const auto version = ast_graph.payload(*ext_i).version;
-
-
-                    // TODO: this is a lot of fucking code, it made sense before they were turned into lambda for the
-                    // thread pool. Refactor.
-
-                    // Inserts methods
-                    const auto class_name = ctx.symbol_table.get_class_name(ast_graph.string(class_name_i));
-
-                    auto& ctx2 = ctx;
-                    const auto on_decl = [&ctx2, &exts, module, ast_graph = ast_graph_ptr, class_name, method_list_i,
-                                          version]() {
-                        ctx2.class_declarations.with_decl(
-                            class_name,
-                            [&, method_list_i = method_list_i](ClassDeclaration& decl) {
-                                for (auto method_it = ast_graph->children(method_list_i).iter(); method_it;
-                                     ++method_it) {
-                                    if (auto meth_i = ast_graph->as_a<ast::MethodIndex>(*method_it)) {
-                                        const auto [selector, args, maybe_prim, body] = ast_graph->children(*meth_i);
-                                        const auto selector_sym =
-                                            ctx2.symbol_table.get_selector(ast_graph->string(selector));
-
-                                        if (!exts.encountered(module, class_name, selector_sym)) {
-                                            const auto* ptr = decl.find_method(selector_sym);
-                                            assert(ptr); // Encountered only checks extentions methods, so we know its a
-                                                         // method.
-                                            ctx2.diagnostics(sc::diag::Diagnostic::duplicate_extention(
-                                                ast_graph->text_info(), ast_graph->location(selector),
-                                                ptr->ast_graph->text_info(),
-                                                ptr->ast_graph->location(ptr->name_index)));
-                                            continue;
-                                        }
-
-                                        const auto r = decl.insert(ClassDeclaration::Method {
-                                            ast_graph, //
-                                            module, //
-                                            *meth_i, //
-                                            selector_sym, //
-                                            ast::Index::from(*selector), //
-                                            version, //
-                                            true, //
-                                        });
-                                        switch (r) {
-                                        case ClassDeclaration::MethodInsertResult::Ok:
-                                            break;
-                                        case ClassDeclaration::MethodInsertResult::DuplicatedByMethod: {
-                                            // TODO: I don't think this is possible.
-                                            const auto* ptr = decl.find_method(selector_sym);
-
-                                            ctx2.diagnostics(sc::diag::Diagnostic::duplicate_method_name(
-                                                ast_graph->text_info(), ast_graph->location(selector),
-                                                ptr->ast_graph->text_info(),
-                                                ptr->ast_graph->location(ptr->name_index)));
-                                            break;
-                                        }
-                                        case ClassDeclaration::MethodInsertResult::DuplicatedByExtentionMethod: {
-                                            const auto* ptr = decl.find_method(selector_sym);
-                                            assert(ptr); // shouldn't have told us this error if doesn't exist.
-                                            ctx2.diagnostics(sc::diag::Diagnostic::duplicate_extention(
-                                                ast_graph->text_info(), ast_graph->location(selector),
-                                                ptr->ast_graph->text_info(),
-                                                ptr->ast_graph->location(ptr->name_index)));
-                                            break;
-                                        }
-                                        case ClassDeclaration::MethodInsertResult::DuplicatedByAccessor: {
-                                            const auto* member = decl.find_member(selector_sym);
-                                            assert(member);
-
-                                            ctx2.diagnostics(sc::diag::Diagnostic::duplicate_method_name(
-                                                ast_graph->text_info(), ast_graph->location(selector),
-                                                decl.ast_graph()->text_info(),
-                                                decl.ast_graph()->location(member->name_index)));
-                                            break;
-                                        }
-                                        }
-                                    }
-                                }
-                            } //
-                        );
-                    };
-
-
-                    // Inserts class methods
-                    const auto meta_class_name = ctx.symbol_table.get_meta_class_name(ast_graph.string(class_name_i));
-
-
-                    const auto on_meta_decl = [&ctx2, &exts, module, ast_graph = ast_graph_ptr, meta_class_name,
-                                               method_list_i, version]() {
-                        ctx2.class_declarations.with_decl(
-                            meta_class_name,
-                            [&, method_list_i = method_list_i](ClassDeclaration& decl) {
-                                for (auto method_it = ast_graph->children(method_list_i).iter(); method_it;
-                                     ++method_it) {
-                                    if (auto meth_i = ast_graph->as_a<ast::ClassMethodIndex>(*method_it)) {
-                                        const auto [selector, args, maybe_prim, body] = ast_graph->children(*meth_i);
-                                        const auto selector_sym =
-                                            ctx2.symbol_table.get_selector(ast_graph->string(selector));
-                                        if (!exts.encountered(module, meta_class_name, selector_sym)) {
-                                            const auto* ptr = decl.find_method(selector_sym);
-                                            assert(ptr); // Encountered only checks extentions methods, so we know its a
-                                                         // method.
-                                            ctx2.diagnostics(sc::diag::Diagnostic::duplicate_extention(
-                                                ast_graph->text_info(), ast_graph->location(selector),
-                                                ptr->ast_graph->text_info(),
-                                                ptr->ast_graph->location(ptr->name_index)));
-                                            continue;
-                                        }
-
-                                        const auto r = decl.insert(ClassDeclaration::Method {
-                                            ast_graph, //
-                                            module, //
-                                            *meth_i, //
-                                            selector_sym, //
-                                            ast::Index::from(*selector), //
-                                            version, //
-                                            true, //
-                                        });
-                                        switch (r) {
-                                        case ClassDeclaration::MethodInsertResult::Ok:
-                                            break;
-                                        case ClassDeclaration::MethodInsertResult::DuplicatedByMethod: {
-                                            // TODO: I don't think this is possible.
-                                            const auto* ptr = decl.find_method(selector_sym);
-
-                                            ctx2.diagnostics(sc::diag::Diagnostic::duplicate_method_name(
-                                                ast_graph->text_info(), ast_graph->location(selector),
-                                                ptr->ast_graph->text_info(),
-                                                ptr->ast_graph->location(ptr->name_index)));
-                                            break;
-                                        }
-                                        case ClassDeclaration::MethodInsertResult::DuplicatedByExtentionMethod: {
-                                            const auto* ptr = decl.find_method(selector_sym);
-                                            assert(ptr); // shouldn't have told us this error if doesn't exist.
-                                            ctx2.diagnostics(sc::diag::Diagnostic::duplicate_extention(
-                                                ast_graph->text_info(), ast_graph->location(selector),
-                                                ptr->ast_graph->text_info(),
-                                                ptr->ast_graph->location(ptr->name_index)));
-                                            break;
-                                        }
-                                        case ClassDeclaration::MethodInsertResult::DuplicatedByAccessor: {
-                                            const auto* member = decl.find_member(selector_sym);
-                                            assert(member);
-
-                                            ctx2.diagnostics(sc::diag::Diagnostic::duplicate_method_name(
-                                                ast_graph->text_info(), ast_graph->location(selector),
-                                                decl.ast_graph()->text_info(),
-                                                decl.ast_graph()->location(member->name_index)));
-                                            break;
-                                        }
-                                        }
-                                    }
-                                }
-                            } //
-                        );
-                    };
-
-                    boost::asio::post(pool, on_decl);
-                    boost::asio::post(pool, on_meta_decl);
+            const auto insert = [&](SymSCClassName name, auto method_i) {
+                // An extension of a class that isn't defined is skipped.
+                auto* decl = ctx.class_declarations.get_unsafe(name);
+                if (!decl)
+                    return;
+                const auto [selector, args, maybe_prim, body] = ast_graph->children(method_i);
+                const auto r = decl->insert(ClassDeclaration::Method {
+                    ast_graph, //
+                    extension.entry->module, //
+                    method_i, //
+                    ctx.symbol_table.get_selector(ast_graph->string(selector)), //
+                    ast::Index::from(*selector), //
+                    version, //
+                    true, //
+                });
+                if (!r.previous)
+                    return;
+                const auto& previous = *r.previous;
+                const auto previous_t = previous.ast_graph->text_info();
+                const auto previous_l = previous.ast_graph->location(previous.name_index);
+                const auto here_t = ast_graph->text_info();
+                const auto here_l = ast_graph->location(selector);
+                // The last location is the method the diagnostic is about: the poisoned one that was kept for the
+                // errors, the one used for the warning.
+                switch (r.result) {
+                case ClassDeclaration::MethodInsertResult::Ok:
+                    break;
+                case ClassDeclaration::MethodInsertResult::DuplicateInModule:
+                    ctx.diagnostics(sc::diag::Diagnostic::duplicate_extention(here_t, here_l, previous_t, previous_l));
+                    break;
+                case ClassDeclaration::MethodInsertResult::OverwrittenBetweenModules:
+                    ctx.diagnostics(
+                        sc::diag::Diagnostic::extension_overwritten(previous_t, previous_l, here_t, here_l));
+                    break;
+                case ClassDeclaration::MethodInsertResult::ConflictBetweenModules:
+                    ctx.diagnostics(sc::diag::Diagnostic::extension_conflict(here_t, here_l, previous_t, previous_l));
+                    break;
                 }
+            };
+            for (auto method_it = ast_graph->children(method_list_i).iter(); method_it; ++method_it) {
+                if (const auto method_i = ast_graph->as_a<ast::MethodIndex>(*method_it))
+                    insert(class_name, *method_i);
+                else if (const auto class_method_i = ast_graph->as_a<ast::ClassMethodIndex>(*method_it))
+                    insert(meta_class_name, *class_method_i);
             }
         }
-
-        pool.join(); // ext is destroyed after this scope.
     }
 
 
@@ -323,14 +217,12 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
 
     // Step 2: Check hierarchy makes sense.
 
-    // Chains don't intersect, this is thread safe.
+    // Reported in order, rather than threaded, so the diagnostics are too, there are only ever a few.
     {
-        boost::asio::thread_pool pool { num_threads };
-        const auto cycles =
-            ctx.inheritance_edges.cycle_check({ *ctx.common_classes.root_object }, m_topological_ordering);
+        const auto cycles = ctx.inheritance_edges.cycle_check({ *ctx.common_classes.root_object },
+                                                              m_topological_ordering, ctx.symbol_table);
         for (const auto& chain : cycles) {
-            const auto process = [&]() {
-                // TODO: create diagnostic for inheritance chain.
+            {
                 std::optional<SymSCClassName> missing { };
                 for (const auto c : chain) {
                     if (auto decl = ctx.class_declarations.get_unsafe(c)) {
@@ -371,9 +263,8 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                         ctx.diagnostics(
                             sc::diag::Diagnostic::self_inheritance(graph.text_info(), graph.location(super_loc)));
                     }
-                } else {
-                    // Loop
-
+                } else if (!ctx.symbol_table.is_meta(chain[0])) {
+                    // A loop. The meta classes form the same loop, which isn't reported again.
                     std::vector<std::pair<std::shared_ptr<const sc::lex::TextInfo>, sc::lex::SourceCodeRange>> a;
 
                     for (const auto c : chain) {
@@ -385,12 +276,8 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                     }
                     ctx.diagnostics(sc::diag::Diagnostic::inheritance_cycle(std::move(a)));
                 }
-            };
-
-            boost::asio::post(pool, process);
+            }
         }
-
-        pool.join();
     }
 
     // A class inheriting from a poisoned class is poisoned too, e.g., from one with an invalid slot type,
@@ -585,6 +472,12 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                     const auto r = ast2ir::Method {
                         *build.ir, method->ast_graph, ctx, method->version, meta_members, build.members
                     }(method->ast_node_index);
+                    // Still compiled, so its own diagnostics are reported, e.g., an extension that clashes. Like any
+                    // poisoned method, its result isn't known.
+                    if (method->poisoned) {
+                        build.ir->payload(r.ir_node).poisoned = true;
+                        build.ir->payload(r.ir_node).constant_result = {};
+                    }
                     build.ir->append(build.method_list, r.ir_node);
                 }
 

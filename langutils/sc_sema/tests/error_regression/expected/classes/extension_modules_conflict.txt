@@ -1,0 +1,51 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (2:1): Foo
+|  SCMemberList (2:1)
+|  SCMethodList (2:1)
+|  |  SCMethod (12:5): version 3.16: own { ^2 } -> 2
+|  |  |  SCBody (12:11)
+|  |  |  |  SCExplicitReturn (12:11)
+|  |  |  |  |  SCLiteral (12:12) = 2
+|  |  SCMethod (7:5): overwritten { ^1 } -> 1
+|  |  |  SCBody (7:19)
+|  |  |  |  SCExplicitReturn (7:19)
+|  |  |  |  |  SCLiteral (7:20) = 1
+|  |  SCMethod (8:5): poisoned: conflicting { ^1 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Extensions conflict
+|  |  |  classes/extension_modules_conflict.sc:7:5
+|  |  |      5 │     //# VERSION 3.16
+|  |  |      6 │ 
+|  |  |      7 │     conflicting { ^2 }
+|  |  |        ┆     ^^^^^^^^^^^ This extension defines the method...
+|  |  |      8 │ 
+|  |  |      9 │     // Overriding the class's own method is still fine.
+|  |  |     10 │     // expect: no diagnostics
+|  |  |
+|  |  |  ../modules/extensions_legacy.sc:8:5
+|  |  |      6 │ +Foo {
+|  |  |      7 │     overwritten { ^1 }
+|  |  |      8 │     conflicting { ^1 }
+|  |  |        ┆     ^^^^^^^^^^^ ...and so does this one, in another module.
+|  |  |      9 │     *class_overwritten { ^1 }
+|  |  |     10 │ }
+|  |  |
+|  |  |  From 3.16, extensions in different modules can't define the same method, as which is used would depend on the order the modules are given, so the method can't be used. Delete or rename one.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (8:19)
+|  |  |  |  SCExplicitReturn (8:19)
+|  |  |  |  |  SCLiteral (8:20) = 1
+SCClass (2:1): Meta_Foo
+|  SCMemberList (2:1)
+|  SCMethodList (2:1)
+|  |  SCMethod (9:5): *class_overwritten { ^1 } -> 1
+|  |  |  SCBody (9:26)
+|  |  |  |  SCExplicitReturn (9:26)
+|  |  |  |  |  SCLiteral (9:27) = 1
+Successfully compiled 16 classes.

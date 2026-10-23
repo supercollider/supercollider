@@ -49,27 +49,27 @@ SCClass (16:1): Event, version 3.16
 SCClass (24:1): Foo, version 3.16
 |  SCMemberList (24:1)
 |  SCMethodList (24:1)
-|  |  SCMethod (21:5): version 3.16: bar {}
+|  |  SCMethod (21:5): poisoned: version 3.16: bar {}
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: Duplicate extention.
+|  |  |  Error: Duplicate extension
 |  |  |  classes/duplicate_extension.sc:27:5
 |  |  |     25 │ 
 |  |  |     26 │ +Foo {
 |  |  |     27 │     bar {} 
-|  |  |        ┆     ^^^ Overrideen here...
+|  |  |        ┆     ^^^ This extension defines the method...
 |  |  |     28 │ }
 |  |  |
 |  |  |  classes/duplicate_extension.sc:21:5
 |  |  |     19 │ 
 |  |  |     20 │ +Foo {
 |  |  |     21 │     bar {} 
-|  |  |        ┆     ^^^ ... and also overrideen here.
+|  |  |        ┆     ^^^ ...and so does this one, in the same module.
 |  |  |     22 │ }
 |  |  |     23 │ 
 |  |  |     24 │ Foo { }
 |  |  |
-|  |  |  The compile cannot determine which should implementation should be used, please delete one.
+|  |  |  The order of the files in a module isn't defined, so neither can be chosen, and the method can't be used. Delete one.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (21:10)
 Successfully compiled 15 classes.

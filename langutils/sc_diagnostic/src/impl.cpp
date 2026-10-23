@@ -391,13 +391,38 @@ Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::T
 
 [[nodiscard]] Diagnostic Diagnostic::duplicate_extention(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
                                                          TextInfoPtr second_t, sc::lex::SourceCodeRange second_l) {
-    return { "Duplicate extention.",
+    return { "Duplicate extension",
              Severity::Error,
              {
-                 { std::move(first_t), first_l, "Overrideen here..." },
-                 { std::move(second_t), second_l, "... and also overrideen here." },
+                 { std::move(first_t), first_l, "This extension defines the method..." },
+                 { std::move(second_t), second_l, "...and so does this one, in the same module." },
              },
-             "The compile cannot determine which should implementation should be used, please delete one." };
+             "The order of the files in a module isn't defined, so neither can be chosen, and the method can't be "
+             "used. Delete one." };
+}
+
+[[nodiscard]] Diagnostic Diagnostic::extension_conflict(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+                                                        TextInfoPtr second_t, sc::lex::SourceCodeRange second_l) {
+    return { "Extensions conflict",
+             Severity::Error,
+             {
+                 { std::move(first_t), first_l, "This extension defines the method..." },
+                 { std::move(second_t), second_l, "...and so does this one, in another module." },
+             },
+             "From 3.16, extensions in different modules can't define the same method, as which is used would depend "
+             "on the order the modules are given, so the method can't be used. Delete or rename one." };
+}
+
+[[nodiscard]] Diagnostic Diagnostic::extension_overwritten(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+                                                           TextInfoPtr second_t, sc::lex::SourceCodeRange second_l) {
+    return { "Extension overwritten",
+             Severity::Warning,
+             {
+                 { std::move(first_t), first_l, "This extension defines the method..." },
+                 { std::move(second_t), second_l, "...but is replaced by this one, from a later module." },
+             },
+             "In the legacy version, as in the old compiler, the extension from the module given last is used. From "
+             "3.16 this is an error, as which is used depends on the order the modules are given." };
 }
 [[nodiscard]] Diagnostic Diagnostic::default_inheritor_must_have_super(TextInfoPtr first_t,
                                                                        sc::lex::SourceCodeRange first_l) {

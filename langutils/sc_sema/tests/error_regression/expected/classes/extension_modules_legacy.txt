@@ -1,0 +1,120 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (2:1): Foo
+|  SCMemberList (2:1)
+|  SCMethodList (2:1)
+|  |  SCMethod (7:5): overwritten { ^2 } -> 2
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Warning: Extension overwritten
+|  |  |  ../modules/extensions_legacy.sc:7:5
+|  |  |      5 │ 
+|  |  |      6 │ +Foo {
+|  |  |      7 │     overwritten { ^1 }
+|  |  |        ┆     ^^^^^^^^^^^ This extension defines the method...
+|  |  |      8 │     conflicting { ^1 }
+|  |  |      9 │     *class_overwritten { ^1 }
+|  |  |     10 │ }
+|  |  |
+|  |  |  classes/extension_modules_legacy.sc:7:5
+|  |  |      5 │     // expect-warning: Extension overwritten
+|  |  |      6 │     // expect: -> 2
+|  |  |      7 │     overwritten { ^2 }
+|  |  |        ┆     ^^^^^^^^^^^ ...but is replaced by this one, from a later module.
+|  |  |      8 │     // expect-warning: Extension overwritten
+|  |  |      9 │     // expect: -> 2
+|  |  |     10 │     conflicting { ^2 }
+|  |  |
+|  |  |  In the legacy version, as in the old compiler, the extension from the module given last is used. From 3.16 this is an error, as which is used depends on the order the modules are given.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (7:19)
+|  |  |  |  SCExplicitReturn (7:19)
+|  |  |  |  |  SCLiteral (7:20) = 2
+|  |  SCMethod (10:5): conflicting { ^2 } -> 2
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Warning: Extension overwritten
+|  |  |  ../modules/extensions_legacy.sc:8:5
+|  |  |      6 │ +Foo {
+|  |  |      7 │     overwritten { ^1 }
+|  |  |      8 │     conflicting { ^1 }
+|  |  |        ┆     ^^^^^^^^^^^ This extension defines the method...
+|  |  |      9 │     *class_overwritten { ^1 }
+|  |  |     10 │ }
+|  |  |
+|  |  |  classes/extension_modules_legacy.sc:10:5
+|  |  |      8 │     // expect-warning: Extension overwritten
+|  |  |      9 │     // expect: -> 2
+|  |  |     10 │     conflicting { ^2 }
+|  |  |        ┆     ^^^^^^^^^^^ ...but is replaced by this one, from a later module.
+|  |  |     11 │     // Overriding the class's own method is fine.
+|  |  |     12 │     // expect: no diagnostics
+|  |  |     13 │     // expect: -> 2
+|  |  |
+|  |  |  In the legacy version, as in the old compiler, the extension from the module given last is used. From 3.16 this is an error, as which is used depends on the order the modules are given.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (10:19)
+|  |  |  |  SCExplicitReturn (10:19)
+|  |  |  |  |  SCLiteral (10:20) = 2
+|  |  SCMethod (14:5): own { ^2 } -> 2
+|  |  |  SCBody (14:11)
+|  |  |  |  SCExplicitReturn (14:11)
+|  |  |  |  |  SCLiteral (14:12) = 2
+|  |  SCMethod (22:5): poisoned: duplicated { ^1 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Duplicate extension
+|  |  |  classes/extension_modules_legacy.sc:26:5
+|  |  |     24 │ 
+|  |  |     25 │ +Foo {
+|  |  |     26 │     duplicated { ^2 }
+|  |  |        ┆     ^^^^^^^^^^ This extension defines the method...
+|  |  |     27 │ }
+|  |  |
+|  |  |  classes/extension_modules_legacy.sc:22:5
+|  |  |     20 │     // expect-error: Duplicate extension
+|  |  |     21 │     // expect: poisoned
+|  |  |     22 │     duplicated { ^1 }
+|  |  |        ┆     ^^^^^^^^^^ ...and so does this one, in the same module.
+|  |  |     23 │ }
+|  |  |     24 │ 
+|  |  |     25 │ +Foo {
+|  |  |
+|  |  |  The order of the files in a module isn't defined, so neither can be chosen, and the method can't be used. Delete one.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (22:18)
+|  |  |  |  SCExplicitReturn (22:18)
+|  |  |  |  |  SCLiteral (22:19) = 1
+SCClass (2:1): Meta_Foo
+|  SCMemberList (2:1)
+|  SCMethodList (2:1)
+|  |  SCMethod (17:5): *class_overwritten { ^2 } -> 2
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Warning: Extension overwritten
+|  |  |  ../modules/extensions_legacy.sc:9:6
+|  |  |      7 │     overwritten { ^1 }
+|  |  |      8 │     conflicting { ^1 }
+|  |  |      9 │     *class_overwritten { ^1 }
+|  |  |        ┆      ^^^^^^^^^^^^^^^^^ This extension defines the method...
+|  |  |     10 │ }
+|  |  |
+|  |  |  classes/extension_modules_legacy.sc:17:6
+|  |  |     15 │     // expect-warning: Extension overwritten
+|  |  |     16 │     // expect: -> 2
+|  |  |     17 │     *class_overwritten { ^2 }
+|  |  |        ┆      ^^^^^^^^^^^^^^^^^ ...but is replaced by this one, from a later module.
+|  |  |     18 │ 
+|  |  |     19 │     // Within one module, the order isn't defined, so neither is used, in any version.
+|  |  |     20 │     // expect-error: Duplicate extension
+|  |  |
+|  |  |  In the legacy version, as in the old compiler, the extension from the module given last is used. From 3.16 this is an error, as which is used depends on the order the modules are given.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (17:26)
+|  |  |  |  SCExplicitReturn (17:26)
+|  |  |  |  |  SCLiteral (17:27) = 2
+Successfully compiled 16 classes.

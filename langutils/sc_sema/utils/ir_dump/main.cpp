@@ -43,7 +43,7 @@ std::atomic<size_t> time_parsing { 0 };
 #endif
 
 std::optional<std::pair<std::shared_ptr<const sc::ast::ASTGraph>, sc::ast::ClassOrExtensionListIndex>>
-parse_file(std::filesystem::path dir_entry, std::vector<sc::diag::Diagnostic>& diagnostics) {
+parse_file(std::filesystem::path dir_entry, std::vector<sc::diag::Diagnostic>& diagnostics, std::ostream& log) {
 #if TIME_LOGGING
     const auto start = std::chrono::high_resolution_clock::now();
 #endif
@@ -52,7 +52,7 @@ parse_file(std::filesystem::path dir_entry, std::vector<sc::diag::Diagnostic>& d
     std::ifstream file_stream { dir_entry };
     if (!file_stream.is_open()) {
 #if DIAG_LOGGING
-        std::cout << "Could not open file" << dir_entry << "\n";
+        log << "Could not open file" << dir_entry << "\n";
 #endif
         return { };
     }
@@ -77,8 +77,8 @@ parse_file(std::filesystem::path dir_entry, std::vector<sc::diag::Diagnostic>& d
     auto [ast_graph, accepted] = sc::ast::parse(text_info);
     if (!accepted) {
 #if DIAG_LOGGING
-        std::cout << "Failed to parse " << dir_entry
-                  << " diagnostic count = " << (ast_graph ? ast_graph->diagnostics().size() : 0) << "\n";
+        log << "Failed to parse " << dir_entry
+            << " diagnostic count = " << (ast_graph ? ast_graph->diagnostics().size() : 0) << "\n";
 #endif
     }
     if (!ast_graph)
@@ -100,13 +100,13 @@ parse_file(std::filesystem::path dir_entry, std::vector<sc::diag::Diagnostic>& d
     const auto roots = ast_graph->root();
     if (!roots) {
 #if DIAG_LOGGING
-        std::cout << "No roots  " << dir_entry << "\n";
+        log << "No roots  " << dir_entry << "\n";
 #endif
         return { };
     }
     if (!std::get_if<sc::ast::ClassOrExtensionListIndex>(&*roots)) {
 #if DIAG_LOGGING
-        std::cout << "Parser returned an scd file, not a class file.";
+        log << "Parser returned an scd file, not a class file.\n";
 #endif
         return { };
     }
@@ -289,6 +289,8 @@ int main(int argc, char* argv[]) {
 
         entries.resize(sc_files.size());
         parse_diagnostics.resize(sc_files.size());
+        // Per file, printed in order once they are all parsed, so the output doesn't depend on the threads.
+        std::vector<std::ostringstream> parse_logs(sc_files.size());
 
         const auto process_files = [&]() {
             while (true) {
@@ -296,7 +298,7 @@ int main(int argc, char* argv[]) {
                 if (file_index >= sc_files.size())
                     return;
                 const auto& [path, module_index] = sc_files[file_index];
-                if (auto r = parse_file(path, parse_diagnostics[file_index])) {
+                if (auto r = parse_file(path, parse_diagnostics[file_index], parse_logs[file_index])) {
                     assert(!entries[file_index].has_value());
                     entries[file_index] = sc::ir::SourceEntry { std::move(r->first), r->second, module_index };
                 }
@@ -309,6 +311,8 @@ int main(int argc, char* argv[]) {
         }
 
         pool.join();
+        for (const auto& log : parse_logs)
+            std::cout << log.str();
 
 #if TIME_LOGGING
 

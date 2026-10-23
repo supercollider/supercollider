@@ -95,7 +95,7 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
     }
     const auto class_name = cxt.symbol_table.get_class_name(class_name_str);
 
-    if (auto before = cxt.class_names.encountered_class_before(class_name, ast_graph, class_name_i)) {
+    if (auto before = cxt.class_names.defined_elsewhere(class_name, ast_graph, class_name_i)) {
         const auto& [g, i] = *before;
         cxt.diagnostics( //
             diag::Diagnostic::duplicate_class(g->text_info(), get_location(*g, i), get_text_info(*ast_graph),

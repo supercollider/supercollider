@@ -1,0 +1,63 @@
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Duplicate Class definition.
+../modules/duplicate_class.sc:3:1
+    1 │ //# VERSION 3.16
+    2 │ // A module compiled before the tests that name it, see test.py.
+    3 │ InEarlierModule {
+      ┆ ^^^^^^^^^^^^^^^ Duplicate here...
+    4 │     which { ^\earlier }
+    5 │ }
+
+classes/duplicate_class.sc:6:1
+    4 │ // the same one every time, however many threads declare the classes. This is the duplicate, the earlier module's is
+    5 │ // compiled.
+    6 │ InEarlierModule {
+      ┆ ^^^^^^^^^^^^^^^ ...and here.
+    7 │     which { ^\later }
+    8 │ }
+    9 │ 
+
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Duplicate Class definition.
+classes/duplicate_class.sc:10:1
+    8 │ }
+    9 │ 
+   10 │ DefinedTwice {
+      ┆ ^^^^^^^^^^^^ Duplicate here...
+   11 │     // expect: no diagnostics
+   12 │     // expect: -> \first
+   13 │     which { ^\first }
+
+classes/duplicate_class.sc:16:1
+   14 │ }
+   15 │ 
+   16 │ DefinedTwice {
+      ┆ ^^^^^^^^^^^^ ...and here.
+   17 │     which { ^\second }
+   18 │ }
+
+──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (10:1): DefinedTwice, version 3.16
+|  SCMemberList (10:1)
+|  SCMethodList (10:1)
+|  |  SCMethod (13:5): version 3.16: which { ^\first } -> \first
+|  |  |  SCBody (13:13)
+|  |  |  |  SCExplicitReturn (13:13)
+|  |  |  |  |  SCLiteral (13:14) = \first
+SCClass (3:1): InEarlierModule, version 3.16
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (4:5): version 3.16: which { ^\earlier } -> \earlier
+|  |  |  SCBody (4:13)
+|  |  |  |  SCExplicitReturn (4:13)
+|  |  |  |  |  SCLiteral (4:14) = \earlier
+Successfully compiled 17 classes.

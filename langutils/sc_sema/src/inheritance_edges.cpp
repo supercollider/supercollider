@@ -1,4 +1,5 @@
 #include "sc_sema/context.hpp"
+#include "sc_sema/symbol_table.hpp"
 #include <algorithm>
 #include <unordered_set>
 
@@ -21,10 +22,16 @@ void InheritanceEdges::insert(SymSCClassName none) {
     m_sub_classes[none];
 }
 
-std::vector<std::vector<SymSCClassName>> InheritanceEdges::cycle_check(SymSCClassName root, std::vector<SymSCClassName>& topo_order) const {
+std::vector<std::vector<SymSCClassName>> InheritanceEdges::cycle_check(SymSCClassName root,
+                                                                       std::vector<SymSCClassName>& topo_order,
+                                                                       const SymbolTable& symbols) {
     topo_order.clear();
     assert(!m_sub_classes.empty());
     std::scoped_lock l { m_lock };
+
+    const auto by_name = [&](SymSCClassName a, SymSCClassName b) { return symbols(a) < symbols(b); };
+    for (auto& [_, children] : m_sub_classes)
+        std::sort(children.begin(), children.end(), by_name);
 
     // Because root is empty, and we have single inheritance, it is impossible to create cycles that are attached to
     // root.
@@ -64,11 +71,11 @@ std::vector<std::vector<SymSCClassName>> InheritanceEdges::cycle_check(SymSCClas
         }
     };
 
-    // Effectively pulls a random class from the not_visited set and returns the cycle it is connected to.
+    // Takes the first class by name that isn't reachable from the root, and returns the cycle it is connected to.
     // Repeats until there are no more.
     while (!not_visited.empty()) {
         std::vector<SymSCClassName> cycles;
-        SymSCClassName n = *not_visited.begin();
+        SymSCClassName n = *std::min_element(not_visited.begin(), not_visited.end(), by_name);
         std::unordered_set<SymSCClassName, std::hash<Symbol>> parent_visited;
         parent_visited.insert(n);
 
@@ -96,13 +103,20 @@ const std::vector<SymSCClassName>& InheritanceEdges::get_unsafe(SymSCClassName n
     return m_sub_classes.at(n);
 }
 
-[[nodiscard]] std::optional<ClassNames::V> ClassNames::encountered_class_before(SymSCClassName n,
-                                                                                std::shared_ptr<const ast::ASTGraph> g,
-                                                                                ast::ClassNameIdentifierIndex i) {
+void ClassNames::define(SymSCClassName n, std::shared_ptr<const ast::ASTGraph> g, ast::ClassNameIdentifierIndex i) {
     std::scoped_lock lk { m_lock };
-    if (auto fnd = m_class_locations.find(n); fnd != m_class_locations.end())
-        return { fnd->second };
-    m_class_locations.insert({ n, std::pair { g, i } });
-    return {};
+    m_class_locations.insert({ n, std::pair { std::move(g), i } });
+}
+
+[[nodiscard]] std::optional<ClassNames::V> ClassNames::defined_elsewhere(SymSCClassName n,
+                                                                         const std::shared_ptr<const ast::ASTGraph>& g,
+                                                                         ast::ClassNameIdentifierIndex i) const {
+    std::scoped_lock lk { m_lock };
+    const auto fnd = m_class_locations.find(n);
+    assert(fnd != m_class_locations.end());
+    const auto& [first_g, first_i] = fnd->second;
+    if (first_g == g && first_i == i)
+        return std::nullopt;
+    return { fnd->second };
 }
 }

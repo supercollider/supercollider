@@ -62,8 +62,17 @@ public:
     [[nodiscard]] static Diagnostic intrinsic_class_wrong_member_name(TextInfoPtr, sc::lex::SourceCodeRange loc,
                                                                       std::string_view expected);
 
+    // Two extensions of the same method in one module, whose order isn't defined.
     [[nodiscard]] static Diagnostic duplicate_extention(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
                                                         TextInfoPtr second_t, sc::lex::SourceCodeRange second_l);
+
+    // Extensions of the same method in different modules, one of them 3.16.
+    [[nodiscard]] static Diagnostic extension_conflict(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+                                                       TextInfoPtr second_t, sc::lex::SourceCodeRange second_l);
+
+    // A warning, legacy extensions of the same method in different modules, the second is used.
+    [[nodiscard]] static Diagnostic extension_overwritten(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+                                                          TextInfoPtr second_t, sc::lex::SourceCodeRange second_l);
 
     [[nodiscard]] static Diagnostic super_class_not_defined( //
         std::string name, std::vector<std::pair<TextInfoPtr, sc::lex::SourceCodeRange>>);

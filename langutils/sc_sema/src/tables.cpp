@@ -90,27 +90,33 @@ using Member = ClassDeclaration::Member;
 }
 
 
-/// Extention method overriding rules:
-///     You can only override an extention method if it was written in the decl module.
-///     If an extention method exists not from the decl module, it is ambiguos, and we generate a diagnostic.
-ClassDeclaration::MethodInsertResult ClassDeclaration::insert(Method m) {
-    ModuleIndex from = m.module_of_def;
+ClassDeclaration::MethodInsert ClassDeclaration::insert(Method m) {
+    assert(m.is_extention);
     const auto name = m.name;
-    if (auto existing = m_methods.find(name); existing != m_methods.end()) {
-        if (existing->second.is_extention && existing->second.module_of_def == module) {
-            m_overriden_methods.insert({ name, std::move(existing->second) });
-            existing->second = std::move(m);
-            return MethodInsertResult::Ok;
-        } else if (existing->second.is_extention) {
-            return MethodInsertResult::DuplicatedByExtentionMethod;
-        }
-        m_overriden_methods.insert({ name, std::move(existing->second) });
-        existing->second = std::move(m);
-        return MethodInsertResult::Ok;
-    } else {
-        m_methods.insert({name, std::move(m)});
-        return MethodInsertResult::Ok;
+    const auto existing = m_methods.find(name);
+    if (existing == m_methods.end()) {
+        m_methods.insert({ name, std::move(m) });
+        return { MethodInsertResult::Ok, std::nullopt };
     }
+    auto& current = existing->second;
+    if (!current.is_extention) {
+        m_overriden_methods.insert({ name, std::move(current) });
+        current = std::move(m);
+        return { MethodInsertResult::Ok, std::nullopt };
+    }
+
+    const Method previous = current;
+    if (current.module_of_def == m.module_of_def) {
+        current.poisoned = true;
+        return { MethodInsertResult::DuplicateInModule, previous };
+    }
+    const bool legacy = current.version == ast::LanguageVersion::Legacy && m.version == ast::LanguageVersion::Legacy;
+    if (legacy) {
+        current = std::move(m);
+        return { MethodInsertResult::OverwrittenBetweenModules, previous };
+    }
+    current.poisoned = true;
+    return { MethodInsertResult::ConflictBetweenModules, previous };
 }
 
 ClassDeclaration::DuplicateLocation ClassDeclaration::insert_no_ext(Method m) {
