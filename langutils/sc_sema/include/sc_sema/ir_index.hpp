@@ -128,5 +128,9 @@ using SCLocalOwner_I = join<SCFunction_I, SCMethod_I, SCGenQualList_I>;
 using LocalIndex = util::StrongIndex<std::uint32_t, struct LocalIndex__>;
 using OptionalLocalIndex =
     util::StrongOptionalIndex<std::uint32_t, struct LocalIndex__, std::numeric_limits<std::uint32_t>::max()>;
+
+using MemberIndex = util::StrongIndex<std::uint32_t, struct MemberIndex__>;
+using OptionalMemberIndex =
+    util::StrongOptionalIndex<std::uint32_t, struct MemberIndex__, std::numeric_limits<std::uint32_t>::max()>;
 // What holds a local variable in its frame.
 }

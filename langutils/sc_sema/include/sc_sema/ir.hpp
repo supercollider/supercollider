@@ -6,6 +6,7 @@
 #include "sc_util/overload.hpp"
 #include "sc_util/typed_graph_helper.hpp"
 #include "sc_util/typed_graph.hpp"
+#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <unordered_map>
@@ -84,6 +85,13 @@ namespace sc::ir {
 struct LocalVariable {
     SymSCIdentifier name;
     SCLocalOwner_I owner;
+    SourceLocation declaration;
+};
+
+// It is 1 IRGraph per class.
+struct MemberVariable {
+    SymSCIdentifier name;
+    SymSCClassName owner;
     SourceLocation declaration;
 };
 
@@ -210,7 +218,7 @@ public:
 
 
     ////////////////////////////////////////////////////////////////////////////////
-    // Local variables, see LocalVariable.
+    // Local variables
     ////////////////////////////////////////////////////////////////////////////////
     [[nodiscard]] LocalIndex add_local(LocalVariable v) {
         m_locals.push_back(v);
@@ -218,6 +226,20 @@ public:
     }
     [[nodiscard]] const LocalVariable& local(LocalIndex i) const { return m_locals[*i]; }
     [[nodiscard]] const std::vector<LocalVariable>& locals() const { return m_locals; }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Member variables
+    ////////////////////////////////////////////////////////////////////////////////
+    [[nodiscard]] MemberIndex member_index(MemberVariable v) {
+        const auto fnd = std::find_if(m_members.begin(), m_members.end(),
+                                      [&](const MemberVariable& m) { return m.owner == v.owner && m.name == v.name; });
+        if (fnd != m_members.end())
+            return MemberIndex { static_cast<std::uint32_t>(fnd - m_members.begin()) };
+        m_members.push_back(v);
+        return MemberIndex { static_cast<std::uint32_t>(m_members.size() - 1) };
+    }
+    [[nodiscard]] const MemberVariable& member(MemberIndex i) const { return m_members[*i]; }
+    [[nodiscard]] const std::vector<MemberVariable>& members() const { return m_members; }
 
     ////////////////////////////////////////////////////////////////////////////////
     // Constexprs
@@ -237,6 +259,7 @@ private:
     std::vector<SourceLocation> m_node_locations {};
     std::vector<std::shared_ptr<const lex::TextInfo>> m_sources {};
     std::vector<LocalVariable> m_locals {};
+    std::vector<MemberVariable> m_members {};
 
     std::unordered_map<NodeIndex, ConstExprIndex> nodes_to_constants { };
     std::variant<std::monostate, SCClass_I, SCAnyExpr_I, SCInterpreted_I> m_roots;

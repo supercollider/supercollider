@@ -31,6 +31,7 @@ struct ScopeEntry {
     std::shared_ptr<const lex::TextInfo> declaration_text {};
     lex::SourceCodeRange declaration_range {};
     OptionalLocalIndex local {};
+    std::optional<SymSCClassName> owning_class {};
 };
 
 // Where entry is declared, as a location in ir.

@@ -234,11 +234,11 @@ LocalIndex resolve_initialising(InitialisingUse use, bool assigns, DiagnosticSin
     return variable.local;
 }
 
-// A local is found by its index, a member by where it is declared.
-std::optional<SourceLocation> member_declaration(IRGraph& ir, const ScopeEntry& entry) {
-    if (entry.local)
-        return std::nullopt;
-    return declaration_location(ir, entry);
+// A member is found by the class declaring it, see MemberVariable, locals by their index.
+OptionalMemberIndex member_of(IRGraph& ir, SymSCIdentifier name, const ScopeEntry& entry) {
+    if (!entry.owning_class)
+        return {};
+    return ir.member_index({ name, *entry.owning_class, declaration_location(ir, entry) });
 }
 }
 
@@ -254,7 +254,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::NamedIdentifierIndex i) {
             location({ *i })) };
     if (const auto entry = resolve_symbol(name_sym)) {
         const auto read =
-            ir.create(SCRead { name_sym, to_read_kind(entry->kind), entry->local, member_declaration(ir, *entry) },
+            ir.create(SCRead { name_sym, to_read_kind(entry->kind), entry->local, member_of(ir, name_sym, *entry) },
                       location({ *i }));
         // Only locals can be constant, a member's initial value isn't, as the member can be assigned.
         if (entry->kind == ScopeEntry::Kind::Local && entry->const_expr) {
@@ -278,10 +278,9 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
     const Locatable<SymSCIdentifier> located_name { location({ *name }), name_sym };
 
     const auto make_return = [&](SCAssign::Kind kind, OptionalLocalIndex local,
-                                 std::optional<SourceLocation> declaration) -> Return<SCAnyExpr_I> {
+                                 OptionalMemberIndex member) -> Return<SCAnyExpr_I> {
         // Assignment returns the assigned value, but is never a const expression as it has a side effect.
-        const auto index =
-            ir.create(SCAssign { located_name, kind, local, declaration }, location({ *i }), expr_r.ir_node);
+        const auto index = ir.create(SCAssign { located_name, kind, local, member }, location({ *i }), expr_r.ir_node);
         if (expr_r.type)
             return { index, *expr_r.type };
         return { index };
@@ -289,7 +288,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
 
     // Environment vars are not registered in the scope.
     if (ast_graph->payload(i).target == ast::AssignmentNode::Target::Environment) {
-        return make_return(SCAssign::Kind::Environment, {}, std::nullopt);
+        return make_return(SCAssign::Kind::Environment, {}, {});
     }
 
     if (ctx.common_symbols.is_special(name_sym)) {
@@ -299,11 +298,11 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
     }
     if (const auto use = find_initialising(*this, name_sym, *ast_graph, { *name }))
         return make_return(SCAssign::Kind::Local, resolve_initialising(*use, true, sink, ir, *ast_graph, { *name }),
-                           std::nullopt);
+                           {});
 
     // TODO: error when assigning to a const once ScopeEntry records const-ness.
     if (const auto entry = resolve_symbol(name_sym))
-        return make_return(to_assign_kind(entry->kind), entry->local, member_declaration(ir, *entry));
+        return make_return(to_assign_kind(entry->kind), entry->local, member_of(ir, name_sym, *entry));
 
     sink(sc::diag::Diagnostic::undefined_variable(get_text_info(*ast_graph), get_location(*ast_graph, name), txt));
     return expr_r;
@@ -352,7 +351,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::VariablePackAssignIndex i) {
                                                index,
                                                is_rest,
                                                entry->local,
-                                               member_declaration(ir, *entry) },
+                                               member_of(ir, sym, *entry) },
                                 location({ **name })));
             return;
         }

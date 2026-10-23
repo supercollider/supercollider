@@ -41,12 +41,12 @@ struct SCRead : priv::Terminal<SCRead_I> {
     SymSCIdentifier name;
     Kind kind;
     OptionalLocalIndex local;
-    std::optional<SourceLocation> declaration;
-    SCRead(SymSCIdentifier n, Kind k, OptionalLocalIndex l = {}, std::optional<SourceLocation> d = std::nullopt):
+    OptionalMemberIndex member;
+    SCRead(SymSCIdentifier n, Kind k, OptionalLocalIndex l = {}, OptionalMemberIndex m = {}):
         name(n),
         kind(k),
         local(l),
-        declaration(d) {}
+        member(m) {}
 };
 
 // `this`, `super`, and the pseudo variables, e.g., `thisProcess`. These aren't variables: the language sets them,
@@ -73,13 +73,12 @@ struct SCAssign : priv::Node<SCAssign_I(SCAnyExpr_I)> {
     Locatable<SymSCIdentifier> name;
     Kind kind;
     OptionalLocalIndex local;
-    std::optional<SourceLocation> declaration;
-    SCAssign(Locatable<SymSCIdentifier> n, Kind k, OptionalLocalIndex l = {},
-             std::optional<SourceLocation> d = std::nullopt):
+    OptionalMemberIndex member;
+    SCAssign(Locatable<SymSCIdentifier> n, Kind k, OptionalLocalIndex l = {}, OptionalMemberIndex m = {}):
         name(n),
         kind(k),
         local(l),
-        declaration(d) {}
+        member(m) {}
 };
 
 
@@ -152,16 +151,15 @@ struct SCPackTarget : priv::Terminal<SCPackTarget_I> {
     // Whether it declares a local in SCPackDeclare or assigns it.
     bool declares { false };
     OptionalLocalIndex local;
-    // Where a member is declared, see SCRead::declaration.
-    std::optional<SourceLocation> declaration;
+    OptionalMemberIndex member;
     SCPackTarget(Locatable<SymSCIdentifier> n, SCAssign::Kind k, std::uint32_t i, bool r, OptionalLocalIndex l = {},
-                 std::optional<SourceLocation> d = std::nullopt):
+                 OptionalMemberIndex m = {}):
         name(n),
         kind(k),
         index(i),
         rest(r),
         local(l),
-        declaration(d) {}
+        member(m) {}
 };
 
 struct SCPackTargets : priv::List<SCPackTargetList_I, SCPackTarget_I> {
