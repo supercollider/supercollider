@@ -254,27 +254,46 @@ public:
 
     /* @{ */
     /* control bus handling */
-
 private:
     void controlbus_set_unchecked(uint32_t bus, float value) {
+        assert(bus < world.mNumControlBusChannels);
         world.mControlBus[bus] = value;
         world.mControlBusTouched[bus] = world.mBufCounter;
     }
 
 public:
+    /** @brief set the value of a control bus.
+     *  @param bus      the control bus index
+     *  @param value    the new value
+     *
+     *  Fails silently if `bus` is out-of-range
+     */
     void controlbus_set(uint32_t bus, float value) {
         if (bus < world.mNumControlBusChannels)
             controlbus_set_unchecked(bus, value);
     }
 
+    /** @brief fills a range of control buses with the given value.
+     *  @param bus      the control bus start index
+     *  @param count    the number of consecutive control buses
+     *  @param value    the new value
+     *
+     *  Out-of-range control buses are silently ignored.
+     */
     void controlbus_fill(uint32_t bus, size_t count, float value) {
-        if (bus + count >= world.mNumControlBusChannels)
-            count = world.mNumAudioBusChannels - bus;
+        if (bus < world.mNumControlBusChannels) {
+            if (bus + count >= world.mNumControlBusChannels)
+                count = world.mNumControlBusChannels - bus;
 
-        for (size_t i = 0; i != count; ++i)
-            controlbus_set_unchecked(bus + i, value);
+            for (size_t i = 0; i < count; ++i)
+                controlbus_set_unchecked(bus + i, value);
+        }
     }
 
+    /** @brief get the value of a control bus.
+     *  @param bus  the control bus index
+     *  @returns the control bus value or 0.0 if `bus` is out-of-range.
+     */
     sample controlbus_get(uint32_t bus) {
         if (bus < world.mNumControlBusChannels)
             return world.mControlBus[bus];
@@ -282,14 +301,27 @@ public:
             return 0.f;
     }
 
-    void controlbus_getn(uint32_t bus, size_t count, size_t* r_count, float* r_values) {
-        size_t remain = count;
-        if (bus + count >= world.mNumControlBusChannels)
-            remain = world.mNumAudioBusChannels - bus;
-        *r_count = remain;
+    /** @brief gets a range of control buses.
+     *  @param bus      the control bus start index
+     *  @param count    the number of consecutive control buses
+     *  @param r_count  the number of return values. Always <= `count`.
+     *  @param r_values the array that should receive the values.
+     *
+     *  Out-of-range control buses are silently ignored.
+     */
+    void controlbus_getn(uint32_t bus, size_t count, size_t& r_count, float* r_values) {
+        if (bus < world.mNumControlBusChannels) {
+            size_t remain = count;
+            if (bus + count >= world.mNumControlBusChannels)
+                remain = world.mNumControlBusChannels - bus;
+            r_count = remain;
 
-        for (size_t i = 0; i != remain; ++i)
-            r_values[i] = world.mControlBus[i];
+            assert(r_values != nullptr);
+            for (size_t i = 0; i < remain; ++i)
+                r_values[i] = world.mControlBus[i];
+        } else {
+            r_count = 0;
+        }
     }
     /* @}*/
 };
