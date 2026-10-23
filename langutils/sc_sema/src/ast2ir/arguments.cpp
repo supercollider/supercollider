@@ -45,7 +45,11 @@ void declare_arguments(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast:
                     Expr::Initialising variable { sym, expr.scope.size() - 1, location_of(ir, *ast_graph, { *i }) };
                     variable.in_frame = true;
                     expr.initialising.push_back(variable);
+                    // The parser records whether it is bracketed as preserve_nil, see Expr::unbracketed_default.
+                    const bool outer = expr.unbracketed_default;
+                    expr.unbracketed_default = outer || preseve_nil;
                     const auto default_r = expr(ast::AnyExprIndex { default_i });
+                    expr.unbracketed_default = outer;
                     expr.initialising.pop_back();
                     const auto arg = ir.create(SCArgumentDeclare { sym,
                                                                    preseve_nil ? DefaultBehaviour::PreserveNil

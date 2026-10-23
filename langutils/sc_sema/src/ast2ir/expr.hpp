@@ -129,6 +129,9 @@ struct Expr : private Base {
     std::vector<ast::CurryIndex> applied_curries;
     // Interpreted code isn't in a method, so `^` has nothing to return from, even in its functions.
     bool returns_allowed { true };
+    // An argument's default is only folded when it is bracketed, `arg a = (1 + 1)` or `a(1 + 1)`, not `arg a = 1 + 1`.
+    // Set while compiling one that isn't, see folds_constants(const Expr&).
+    bool unbracketed_default { false };
 
     [[nodiscard]] std::optional<ScopeEntry> resolve_symbol(Symbol i, bool get_uninitalised = false) const;
     void add_symbol(Symbol, ScopeEntry);
@@ -138,5 +141,8 @@ struct Expr : private Base {
     void close_frame();
 };
 
-
+// Whether the code being compiled folds constants, its version's rule, except in an unbracketed argument default.
+[[nodiscard]] inline bool folds_constants(const Expr& e) {
+    return folds_constants(e.version) && !e.unbracketed_default;
+}
 }

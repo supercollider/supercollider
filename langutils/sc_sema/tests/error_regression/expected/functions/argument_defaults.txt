@@ -27,7 +27,7 @@ SCClass (2:1): ArgumentDefaults, version 3.16
 |  |  |  |  |  |  |  |  |  SCLiteral (8:38) = 1
 |  |  |  |  |  |  |  |  |  SCLiteral (8:41) = 2
 |  |  |  |  |  |  |  SCArgumentDeclare (8:45): b
-|  |  |  |  |  |  |  |  SCCollection (8:49): Event = (c: 3)
+|  |  |  |  |  |  |  |  SCCollection (8:49): Event
 |  |  |  |  |  |  |  |  |  SCLiteral (8:50) = \c
 |  |  |  |  |  |  |  |  |  SCLiteral (8:53) = 3
 |  |  |  |  |  |  SCBody (8:29)

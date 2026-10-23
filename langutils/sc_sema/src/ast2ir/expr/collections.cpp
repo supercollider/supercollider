@@ -87,7 +87,7 @@ Return<SCAnyExpr_I> array(CollectionContext& c, ast::ArrayIndex i, bool is_immut
 
     // Legacy code only knows `#[...]`, the old compiler created the others when the code ran.
     auto values = append_elements(c, collection, i, is_immutable);
-    if (!values || (!is_immutable && !folds_constants(c.expr.version)))
+    if (!values || (!is_immutable && !folds_constants(c.expr)))
         return { collection, type };
 
     const auto const_i = c.ctx.constant_table.register_constexpr({ std::move(*values) });
@@ -196,7 +196,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::CollectionIndex i) {
         sink(sc::diag::Diagnostic::event_key_without_value(get_text_info(*ast_graph),
                                                            get_location(*ast_graph, ast_graph->last_child(elements))));
 
-    if (!values || !folds_constants(version))
+    if (!values || !folds_constants(*this))
         return { collection, type };
 
     auto constant = collection_constant(ctx, class_sym, std::move(*values));
@@ -238,7 +238,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::DictionaryIndex i) {
             all_constant = false;
     }
 
-    if (!all_constant || !folds_constants(version))
+    if (!all_constant || !folds_constants(*this))
         return { collection, type };
 
     const auto const_i = ctx.constant_table.register_constexpr({ std::move(values) });

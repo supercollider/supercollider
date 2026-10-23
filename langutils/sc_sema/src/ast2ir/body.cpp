@@ -298,7 +298,7 @@ bool declare_variable(BodyContext& b, ast::NamedIdentifierIndex name_i, std::opt
     b.expr.initialising.pop_back();
     // Legacy code only knows a literal, as the old compiler computed any other initial value when the code ran.
     const auto constant =
-        folds_constants(b.expr.version) || ConstEval::is_legacy_literal(g, *value) ? value_r.const_index : std::nullopt;
+        folds_constants(b.expr) || ConstEval::is_legacy_literal(g, *value) ? value_r.const_index : std::nullopt;
     (void)add_variable(b, name_i, name, declare_node(value_r.ir_node), constant, value_r.type);
     return value_r.const_index.has_value();
 }
@@ -344,7 +344,7 @@ bool declare_pack(BodyContext& b, ast::VariablePackAssignIndex pack) {
         std::optional<ConstExprIndex> constant;
         std::optional<TypeInfo> type;
         // Legacy code computes them when it runs, see folds_constants.
-        if (elements && !is_rest && folds_constants(b.expr.version)) {
+        if (elements && !is_rest && folds_constants(b.expr)) {
             constant =
                 index < elements->size() ? (*elements)[index] : b.ctx.constant_table.register_constexpr({ Nil {} });
             type = type_of_constant(b.ctx, b.ctx.constant_table(*constant));
