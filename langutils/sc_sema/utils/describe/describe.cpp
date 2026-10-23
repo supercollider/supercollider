@@ -131,14 +131,24 @@ void write_details(const Describe& d, std::ostream& out, const IRGraph::Variant&
         write_text(out, g.read(*declaration));
     };
 
+    // Only when it isn't Legacy, which almost all code is.
+    const auto write_version = [&](sc::ast::LanguageVersion v, const char* before, const char* after) {
+        if (v != sc::ast::LanguageVersion::Legacy)
+            out << before << "version " << sc::ast::to_string(v) << after;
+    };
+
     std::visit(sc::util::overload {
                    [](const auto&) {},
                    // The slot type, e.g., `String[char]`.
-                   [&](const SCClass& c) { out << ": " << symbol_table(c.name) << layout_name(c.memory_layout); },
+                   [&](const SCClass& c) {
+                       out << ": " << symbol_table(c.name) << layout_name(c.memory_layout);
+                       write_version(c.version, ", ", "");
+                   },
                    [&](const SCMethod& m) {
                        out << ": ";
                        if (m.poisoned)
                            out << "poisoned: ";
+                       write_version(m.version, "", ": ");
                        write_text(out, g.read(loc));
                    },
                    // Its file, as interpreted code isn't in a class.
@@ -146,6 +156,7 @@ void write_details(const Describe& d, std::ostream& out, const IRGraph::Variant&
                        out << ": ";
                        if (in.poisoned)
                            out << "poisoned: ";
+                       write_version(in.version, "", ": ");
                        if (const auto& path = g.text_info(loc.source)->file_path)
                            out << (d.relative_to ? path->lexically_relative(*d.relative_to) : *path).string();
                    },

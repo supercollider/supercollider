@@ -31,6 +31,10 @@ An scd file is a test of interpreted code, compiled as if written inside Interpr
 assertions apply to all of it, wherever they are, as long as each is alone on its line, e.g.,
     // expect: -> 2
     a = 1; a + 1
+It is compiled as the legacy version, unless its first lines say which release, as interpreted code has no version
+comment, e.g.,
+    // interpreted-version: 3.16
+The first lines can also be `// no-prelude`, to compile it without the shared prelude.sc.
 A test fails when an assertion doesn't hold, even when its output is overridden, so overriding can't hide a change
 the test was written to catch.
 
@@ -65,6 +69,8 @@ from pathlib import Path
 # The classes the compiler requires. Tests that define their own, e.g., to test the class hierarchy, start with this.
 PRELUDE = Path(__file__).parent / 'prelude.sc'
 NO_PRELUDE = '// no-prelude'
+# The release interpreted code is compiled as, e.g., `// interpreted-version: 3.16`.
+INTERPRETED_VERSION = re.compile(r'^// interpreted-version: (?P<release>\S+)$')
 
 # Tests are grouped by topic in directories under input, which are mirrored in expected and the output directory.
 INPUT_DIR = Path(__file__).parent / 'input'
@@ -232,12 +238,29 @@ def test_name(sc_file):
     return sc_file.resolve().relative_to(INPUT_DIR.resolve()).with_suffix('')
 
 
-def run_ir_dump(cmd, sc_file):
+def headers(sc_file):
+    """Whether the test uses the prelude, and the release its interpreted code is compiled as, from its first lines."""
+    uses_prelude = True
+    release = None
     with open(sc_file) as f:
-        uses_prelude = f.readline().strip() != NO_PRELUDE
+        for line in f:
+            line = line.strip()
+            if line == NO_PRELUDE:
+                uses_prelude = False
+            elif version := INTERPRETED_VERSION.match(line):
+                release = version['release']
+            else:
+                break
+    return uses_prelude, release
+
+
+def run_ir_dump(cmd, sc_file):
+    uses_prelude, release = headers(sc_file)
     # Paths in diagnostics are relative to the input directory, so the output doesn't depend on where it is run.
     # The output is the same however many threads compile it, two checks that, while leaving cpus for other tests.
     args = [cmd, '--threads', '2', '--relative-to', INPUT_DIR]
+    if release:
+        args += ['--interpreted-version', release]
     args += ['--prelude', PRELUDE, sc_file] if uses_prelude else [sc_file]
     return subprocess.run(args, capture_output=True, text=True, check=True).stdout
 

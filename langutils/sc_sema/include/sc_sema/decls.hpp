@@ -42,23 +42,28 @@ public:
         ast::AnyValidMethodIndex ast_node_index;
         SymSCSelector name;
         ast::Index name_index;
+        // Its class's, or its extension's, as an extension is often by another author.
+        ast::LanguageVersion version { ast::LanguageVersion::Legacy };
         bool is_extention { false };
         bool compiler_known_implementation { false };
         bool poisoned { false };
     };
 
     ClassDeclaration(std::shared_ptr<const ast::ASTGraph> ast_graph, ModuleIndex mod, ast::Index index,
-                     SymSCClassName name, ast::Index name_index):
+                     SymSCClassName name, ast::Index name_index, ast::LanguageVersion version):
         m_ast_graph_of_decl(ast_graph),
         module(mod),
         m_whole_index(index),
         m_name(name),
-        m_name_index(name_index) { }
+        m_name_index(name_index),
+        m_version(version) {}
 
     [[nodiscard]] ast::Index index() const { return m_whole_index; }
     [[nodiscard]] SymSCClassName name() const { return m_name; }
     [[nodiscard]] ast::Index name_index() const { return m_name_index; }
     [[nodiscard]] std::shared_ptr<const ast::ASTGraph> ast_graph() const { return m_ast_graph_of_decl; }
+    // The version of the class's own declaration, its extension methods have their own, see Method::version.
+    [[nodiscard]] ast::LanguageVersion version() const { return m_version; }
 
     void super(SymSCClassName n, ast::Index i) { m_super.emplace(n, i); };
     [[nodiscard]] std::optional<std::pair<SymSCClassName, ast::Index>> super() const { return m_super; }
@@ -109,6 +114,7 @@ private:
 
     SymSCClassName m_name;
     ast::Index m_name_index;
+    ast::LanguageVersion m_version;
 
     std::optional<std::pair<SymSCClassName, ast::Index>> m_super { };
     std::optional<std::pair<SymSCIdentifier, ast::Index>> m_slot_def { };

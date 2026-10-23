@@ -1,0 +1,44 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (2:1): Extended, version 3.16
+|  SCMemberList (2:1)
+|  SCMethodList (2:1)
+|  |  SCMethod (4:5): version 3.16: own { ^1 } -> 1
+|  |  |  SCBody (4:11)
+|  |  |  |  SCExplicitReturn (4:11)
+|  |  |  |  |  SCLiteral (4:12) = 1
+|  |  SCMethod (10:5): legacy_extension { ^2 } -> 2
+|  |  |  SCBody (10:24)
+|  |  |  |  SCExplicitReturn (10:24)
+|  |  |  |  |  SCLiteral (10:25) = 2
+|  |  SCMethod (15:5): version 3.16: versioned_extension { ^3 } -> 3
+|  |  |  SCBody (15:27)
+|  |  |  |  SCExplicitReturn (15:27)
+|  |  |  |  |  SCLiteral (15:28) = 3
+SCClass (2:1): Meta_Extended, version 3.16
+|  SCMemberList (2:1)
+|  SCMethodList (2:1)
+|  |  SCMethod (5:5): version 3.16: *class_own { ^1 } -> 1
+|  |  |  SCBody (5:18)
+|  |  |  |  SCExplicitReturn (5:18)
+|  |  |  |  |  SCLiteral (5:19) = 1
+|  |  SCMethod (16:5): version 3.16: *class_versioned_extension { ^3 } -> 3
+|  |  |  SCBody (16:34)
+|  |  |  |  SCExplicitReturn (16:34)
+|  |  |  |  |  SCLiteral (16:35) = 3
+SCClass (19:1): LegacyExtended
+|  SCMemberList (19:1)
+|  SCMethodList (19:1)
+|  |  SCMethod (20:5): own { ^1 } -> 1
+|  |  |  SCBody (20:11)
+|  |  |  |  SCExplicitReturn (20:11)
+|  |  |  |  |  SCLiteral (20:12) = 1
+|  |  SCMethod (25:5): version 3.16: versioned_extension { ^2 } -> 2
+|  |  |  SCBody (25:27)
+|  |  |  |  SCExplicitReturn (25:27)
+|  |  |  |  |  SCLiteral (25:28) = 2
+Successfully compiled 17 classes.

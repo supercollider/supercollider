@@ -118,6 +118,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                 if (const auto ext_i = ast_graph.as_a<ast::ClassExtensionIndex>(*child)) {
                     const auto [class_name_i, method_list_i_t] = ast_graph.children(*ext_i);
                     const auto method_list_i = method_list_i_t;
+                    const auto version = ast_graph.payload(*ext_i).version;
 
 
                     // TODO: this is a lot of fucking code, it made sense before they were turned into lambda for the
@@ -127,8 +128,8 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                     const auto class_name = ctx.symbol_table.get_class_name(ast_graph.string(class_name_i));
 
                     auto& ctx2 = ctx;
-                    const auto on_decl = [&ctx2, &exts, module, ast_graph = ast_graph_ptr, class_name,
-                                          method_list_i]() {
+                    const auto on_decl = [&ctx2, &exts, module, ast_graph = ast_graph_ptr, class_name, method_list_i,
+                                          version]() {
                         ctx2.class_declarations.with_decl(
                             class_name,
                             [&, method_list_i = method_list_i](ClassDeclaration& decl) {
@@ -156,6 +157,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                                             *meth_i, //
                                             selector_sym, //
                                             ast::Index::from(*selector), //
+                                            version, //
                                             true, //
                                         });
                                         switch (r) {
@@ -203,7 +205,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
 
 
                     const auto on_meta_decl = [&ctx2, &exts, module, ast_graph = ast_graph_ptr, meta_class_name,
-                                               method_list_i]() {
+                                               method_list_i, version]() {
                         ctx2.class_declarations.with_decl(
                             meta_class_name,
                             [&, method_list_i = method_list_i](ClassDeclaration& decl) {
@@ -230,6 +232,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                                             *meth_i, //
                                             selector_sym, //
                                             ast::Index::from(*selector), //
+                                            version, //
                                             true, //
                                         });
                                         switch (r) {
@@ -528,6 +531,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                     }
                 }
                 class_node.meta_class = decl.meta_class();
+                class_node.version = decl.version();
 
                 const auto class_i = class_ir->create(std::move(class_node),
                                                       ast2ir::location_of(*class_ir, *decl.ast_graph(), decl.index()),
@@ -578,8 +582,9 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                           [&](const auto* l, const auto* r) { return source_order(l) < source_order(r); });
 
                 for (const auto* method : methods) {
-                    const auto r = ast2ir::Method { *build.ir, method->ast_graph, ctx, meta_members,
-                                                    build.members }(method->ast_node_index);
+                    const auto r = ast2ir::Method {
+                        *build.ir, method->ast_graph, ctx, method->version, meta_members, build.members
+                    }(method->ast_node_index);
                     build.ir->append(build.method_list, r.ir_node);
                 }
 
@@ -600,7 +605,8 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
     return ctx.diagnostics.consume();
 }
 
-IRCompiler::Interpreted IRCompiler::compile_interpreted(std::shared_ptr<const ast::ASTGraph> ast_graph) {
+IRCompiler::Interpreted IRCompiler::compile_interpreted(std::shared_ptr<const ast::ASTGraph> ast_graph,
+                                                        ast::LanguageVersion version) {
     assert(m_compile_has_been_called);
     const auto root = ast_graph->root();
     assert(root && !std::holds_alternative<ast::ClassOrExtensionListIndex>(*root));
@@ -628,7 +634,7 @@ IRCompiler::Interpreted IRCompiler::compile_interpreted(std::shared_ptr<const as
     const auto members = ast2ir::member_scope(class_ir);
     const auto meta_members = meta_ir ? std::optional { ast2ir::member_scope(meta_ir) } : std::nullopt;
     auto ir = std::make_shared<IRGraph>();
-    ast2ir::Interpreted interpreted { *ir, ast_graph, ctx, meta_members ? &*meta_members : nullptr, members };
+    ast2ir::Interpreted interpreted { *ir, ast_graph, ctx, version, meta_members ? &*meta_members : nullptr, members };
     const auto r = std::visit(
         util::overload { [&](ast::RegionListIndex i) { return interpreted(i); },
                          [&](ast::FileAsFunctionIndex i) { return interpreted(i); },

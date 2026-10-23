@@ -2,6 +2,7 @@
 #include "sc_diagnostic/sc_diagnostic.hpp"
 #include "sc_parser/ast.hpp"
 #include "sc_parser/indexes_untyped.hpp"
+#include "sc_parser/sc_grammar_shared.hpp"
 #include "sc_sema/const_expr_index.hpp"
 #include "sc_sema/source_location.hpp"
 #include "sc_sema/type_info.hpp"
@@ -24,13 +25,17 @@ namespace sc::ir::ast2ir {
 [[nodiscard]] SourceLocation location_of(IRGraph& ir, const ast::ASTGraph& ast_graph, ast::Index i);
 
 struct Base {
-    Base(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt):
+    Base(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, ast::LanguageVersion v):
         ctx(cxt),
         ir(ir),
-        ast_graph(std::move(ast)) {}
+        ast_graph(std::move(ast)),
+        version(v) {}
     Context& ctx;
     IRGraph& ir;
     std::shared_ptr<const ast::ASTGraph> ast_graph;
+    // The version of the language the code is written in, which decides the rules that break compatibility with the
+    // old compiler.
+    ast::LanguageVersion version;
 
     [[nodiscard]] SourceLocation location(ast::Index i) const { return location_of(ir, *ast_graph, i); }
 };

@@ -18,8 +18,8 @@ void push_member_scopes(Expr& expr, const Scope* meta_class_members, const Scope
 
 struct Method : private Base {
     // See push_member_scopes.
-    Method(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, const Scope* meta_class_members,
-           const Scope& class_members);
+    Method(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, ast::LanguageVersion version,
+           const Scope* meta_class_members, const Scope& class_members);
 
     Return<SCMethod_I> operator()(ast::AnyValidMethodIndex);
 

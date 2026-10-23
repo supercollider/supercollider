@@ -1,0 +1,21 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): PerClass, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (7:5): version 3.16: one { ^1 } -> 1
+|  |  |  SCBody (7:11)
+|  |  |  |  SCExplicitReturn (7:11)
+|  |  |  |  |  SCLiteral (7:12) = 1
+SCClass (10:1): PerClassFile
+|  SCMemberList (10:1)
+|  SCMethodList (10:1)
+|  |  SCMethod (12:5): two { ^2 } -> 2
+|  |  |  SCBody (12:11)
+|  |  |  |  SCExplicitReturn (12:11)
+|  |  |  |  |  SCLiteral (12:12) = 2
+Successfully compiled 17 classes.

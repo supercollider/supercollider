@@ -1,0 +1,34 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): FileDefault, version 3.16
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (6:5): version 3.16: one { ^1 } -> 1
+|  |  |  SCBody (6:11)
+|  |  |  |  SCExplicitReturn (6:11)
+|  |  |  |  |  SCLiteral (6:12) = 1
+|  |  SCMethod (8:5): version 3.16: nested_return { |x| if (x) { ^1 }; ^2 }
+|  |  |  SCArgumentDeclareList (8:22)
+|  |  |  |  SCArgumentDeclare (8:22): x
+|  |  |  SCBody (8:25)
+|  |  |  |  SCMessage (8:25): if
+|  |  |  |  |  SCRead (8:29): local x, declared (8:22): x
+|  |  |  |  |  SCPositionalArgs (8:25)
+|  |  |  |  |  |  SCFunction (8:32)
+|  |  |  |  |  |  |  SCBody (8:32)
+|  |  |  |  |  |  |  |  SCExplicitReturn (8:34)
+|  |  |  |  |  |  |  |  |  SCLiteral (8:35) = 1
+|  |  |  |  SCExplicitReturn (8:40)
+|  |  |  |  |  SCLiteral (8:41) = 2
+SCClass (11:1): FileDefaultSecond, version 3.16
+|  SCMemberList (11:1)
+|  SCMethodList (11:1)
+|  |  SCMethod (13:5): version 3.16: two { ^2 } -> 2
+|  |  |  SCBody (13:11)
+|  |  |  |  SCExplicitReturn (13:11)
+|  |  |  |  |  SCLiteral (13:12) = 2
+Successfully compiled 17 classes.

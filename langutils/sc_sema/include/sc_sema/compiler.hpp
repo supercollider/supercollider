@@ -1,5 +1,6 @@
 #pragma once
 #include "sc_diagnostic/sc_diagnostic.hpp"
+#include "sc_parser/sc_grammar_shared.hpp"
 
 #include "sc_sema/common_classes.hpp"
 #include "sc_sema/intrinsic_constraint.hpp"
@@ -42,12 +43,13 @@ struct IRCompiler {
 
     // Interpreted code, whose root is a region or a file as a function, compiled after the class library, as if it
     // were written inside `Interpreter:functionCompileContext`. Without that method, or if Interpreter is poisoned, it
-    // isn't compiled, and ir is null.
+    // isn't compiled, and ir is null. Its version is given here, as it isn't in a class, see ast::LanguageVersion.
     struct Interpreted {
         std::shared_ptr<IRGraph> ir;
         std::vector<sc::diag::Diagnostic> diagnostics;
     };
-    [[nodiscard]] Interpreted compile_interpreted(std::shared_ptr<const ast::ASTGraph> ast_graph);
+    [[nodiscard]] Interpreted compile_interpreted(std::shared_ptr<const ast::ASTGraph> ast_graph,
+                                                  ast::LanguageVersion version = ast::LanguageVersion::Legacy);
 
     // Poisoned classes aren't compiled, so have no graph, and are skipped. Some are still in the hierarchy, e.g., one
     // declared with an invalid slot type, `Foo[bad] {}`.

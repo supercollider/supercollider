@@ -1,0 +1,133 @@
+
+──────────────────────────────────────────────────────────────────────────────────
+Warning: Misplaced version
+versions/misplaced.sc:24:1
+   22 │ }
+   23 │ 
+   24 │ //# VERSION 3.16
+      ┆ ^^^^^^^^^^^^^^^^ this version applies to nothing.
+   25 │ MisplacedAfter {
+   26 │     one { ^1 }
+   27 │ }
+
+A version must be the first thing in the file, for every class in it, or the first thing in a class's body, for that class.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Warning: Misplaced version
+versions/misplaced.sc:36:1
+   34 │ }
+   35 │ 
+   36 │ //# VERSION 3.16
+      ┆ ^^^^^^^^^^^^^^^^ this version applies to nothing.
+
+A version must be the first thing in the file, for every class in it, or the first thing in a class's body, for that class.
+──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): Misplaced
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Warning: Misplaced version
+|  versions/misplaced.sc:5:5
+|      3 │ Misplaced {
+|      4 │     var a;
+|      5 │     //# VERSION 3.16
+|        ┆     ^^^^^^^^^^^^^^^^ this version applies to nothing.
+|      6 │ 
+|      7 │     // expect-warning: Misplaced version
+|      8 │     // expect: not poisoned
+|
+|  A version must be the first thing in the file, for every class in it, or the first thing in a class's body, for that class.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (3:1)
+|  |  SCMember (4:9): a
+|  SCMethodList (3:1)
+|  |  SCMethod (9:5): in_method {'\n'        //# VERSION 3.16'\n'        if (a) { ^1 }; ^2'\n'    }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Warning: Misplaced version
+|  |  |  versions/misplaced.sc:10:9
+|  |  |      8 │     // expect: not poisoned
+|  |  |      9 │     in_method {
+|  |  |     10 │         //# VERSION 3.16
+|  |  |        ┆         ^^^^^^^^^^^^^^^^ this version applies to nothing.
+|  |  |     11 │         if (a) { ^1 }; ^2
+|  |  |     12 │     }
+|  |  |     13 │ 
+|  |  |
+|  |  |  A version must be the first thing in the file, for every class in it, or the first thing in a class's body, for that class.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (11:9)
+|  |  |  |  SCMessage (11:9): if
+|  |  |  |  |  SCRead (11:13): instance a, declared (4:9): a
+|  |  |  |  |  SCPositionalArgs (11:9)
+|  |  |  |  |  |  SCFunction (11:16)
+|  |  |  |  |  |  |  SCBody (11:16)
+|  |  |  |  |  |  |  |  SCExplicitReturn (11:18)
+|  |  |  |  |  |  |  |  |  SCLiteral (11:19) = 1
+|  |  |  |  SCExplicitReturn (11:24)
+|  |  |  |  |  SCLiteral (11:25) = 2
+|  |  SCMethod (16:5): in_nested_function { |x|'\n'        ^{'\n'            //# VERSION 3.16'\n'            if (x) { ^1 }; ^2'\n'        }'\n'    }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Warning: Misplaced version
+|  |  |  versions/misplaced.sc:18:13
+|  |  |     16 │     in_nested_function { |x|
+|  |  |     17 │         ^{
+|  |  |     18 │             //# VERSION 3.16
+|  |  |        ┆             ^^^^^^^^^^^^^^^^ this version applies to nothing.
+|  |  |     19 │             if (x) { ^1 }; ^2
+|  |  |     20 │         }
+|  |  |     21 │     }
+|  |  |
+|  |  |  A version must be the first thing in the file, for every class in it, or the first thing in a class's body, for that class.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (16:27)
+|  |  |  |  SCArgumentDeclare (16:27): x
+|  |  |  SCBody (17:9)
+|  |  |  |  SCExplicitReturn (17:9)
+|  |  |  |  |  SCFunction (17:10)
+|  |  |  |  |  |  SCBody (17:10)
+|  |  |  |  |  |  |  SCMessage (19:13): if
+|  |  |  |  |  |  |  |  SCRead (19:17): local x, declared (16:27): x
+|  |  |  |  |  |  |  |  SCPositionalArgs (19:13)
+|  |  |  |  |  |  |  |  |  SCFunction (19:20)
+|  |  |  |  |  |  |  |  |  |  SCBody (19:20)
+|  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (19:22)
+|  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (19:23) = 1
+|  |  |  |  |  |  |  SCExplicitReturn (19:28)
+|  |  |  |  |  |  |  |  SCLiteral (19:29) = 2
+SCClass (25:1): MisplacedAfter
+|  SCMemberList (25:1)
+|  SCMethodList (25:1)
+|  |  SCMethod (26:5): one { ^1 } -> 1
+|  |  |  SCBody (26:11)
+|  |  |  |  SCExplicitReturn (26:11)
+|  |  |  |  |  SCLiteral (26:12) = 1
+SCClass (30:1): MisplacedBeforeBody
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Warning: Misplaced version
+|  versions/misplaced.sc:31:1
+|     29 │ // Before the body's `{`, rather than the first thing in it.
+|     30 │ MisplacedBeforeBody : Object
+|     31 │ //# VERSION 3.16
+|        ┆ ^^^^^^^^^^^^^^^^ this version applies to nothing.
+|     32 │ {
+|     33 │     one { ^1 }
+|     34 │ }
+|
+|  A version must be the first thing in the file, for every class in it, or the first thing in a class's body, for that class.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (30:1)
+|  SCMethodList (30:1)
+|  |  SCMethod (33:5): one { ^1 } -> 1
+|  |  |  SCBody (33:11)
+|  |  |  |  SCExplicitReturn (33:11)
+|  |  |  |  |  SCLiteral (33:12) = 1
+Successfully compiled 18 classes.

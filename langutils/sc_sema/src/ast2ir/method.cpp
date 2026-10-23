@@ -47,10 +47,10 @@ void push_member_scopes(Expr& expr, const Scope* meta_class_members, const Scope
     expr.scope.push_back(class_members);
 }
 
-Method::Method(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, const Scope* meta_class_members,
-               const Scope& class_members):
-    Base(ir, ast, cxt),
-    expr(ir, std::move(ast), cxt, sink) {
+Method::Method(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, ast::LanguageVersion version,
+               const Scope* meta_class_members, const Scope& class_members):
+    Base(ir, ast, cxt, version),
+    expr(ir, std::move(ast), cxt, version, sink) {
     push_member_scopes(expr, meta_class_members, class_members);
 }
 
@@ -75,7 +75,8 @@ Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i) {
 
     const auto body_i = ir.create(SCBody {}, location({ *body }));
     // The method is created first, so its arguments can refer to it as their scope.
-    const auto method = ir.create(SCMethod { primitive }, location({ *i }), argument_list, variadic_args, body_i);
+    const auto method =
+        ir.create(SCMethod { primitive, version }, location({ *i }), argument_list, variadic_args, body_i);
 
     // Methods have their own scope, holding the arguments and variables, inside the member scopes.
     expr.scope.emplace_back();

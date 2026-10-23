@@ -11,8 +11,8 @@ namespace sc::ir::ast2ir {
 // `|x| x + 1`, compiled into a function, as if it were written inside `Interpreter:functionCompileContext`. The scopes
 // are the Interpreter's, see push_member_scopes.
 struct Interpreted : private Base {
-    Interpreted(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, const Scope* meta_class_members,
-                const Scope& class_members);
+    Interpreted(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, ast::LanguageVersion version,
+                const Scope* meta_class_members, const Scope& class_members);
 
     Return<SCInterpreted_I> operator()(ast::RegionListIndex);
     Return<SCInterpreted_I> operator()(ast::FileAsFunctionIndex);

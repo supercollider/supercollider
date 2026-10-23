@@ -17,7 +17,7 @@ compile_consteval(std::shared_ptr<const ast::ASTGraph> ast_graph, ast::AnyExprIn
     Context context { sym_table, std::move(common_c), mod_table, class_lib };
 
     using R = std::variant<ConstExpression, sc::diag::Diagnostic>;
-    auto r = ast2ir::ConstEval { context, ast_graph, ASTGraphIndex { 0 } }.eval(expr_i);
+    auto r = ast2ir::ConstEval { context, ast_graph, ASTGraphIndex { 0 }, ast::LanguageVersion::Legacy }.eval(expr_i);
 
     return std::move(r).visit([&](ast2ir::ConstEval::Success s) -> R { return { context.constant_table(s.first) }; },
                               [&](sc::diag::Diagnostic d) -> R { return { std::move(d) }; });

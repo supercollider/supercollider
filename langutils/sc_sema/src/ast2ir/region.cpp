@@ -10,9 +10,9 @@
 namespace sc::ir::ast2ir {
 
 Interpreted::Interpreted(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt,
-                         const Scope* meta_class_members, const Scope& class_members):
-    Base(ir, ast, cxt),
-    expr(ir, std::move(ast), cxt, sink) {
+                         ast::LanguageVersion version, const Scope* meta_class_members, const Scope& class_members):
+    Base(ir, ast, cxt, version),
+    expr(ir, std::move(ast), cxt, version, sink) {
     push_member_scopes(expr, meta_class_members, class_members);
     expr.returns_allowed = false;
 }
@@ -100,7 +100,7 @@ SCFunction_I Interpreted::immediately_evaluated(ast::ImmediatelyEvaluatedBlockIn
 }
 
 Return<SCInterpreted_I> Interpreted::finish(join<SCFunction_I, SCRegionList_I> code) {
-    const auto interpreted = ir.create(SCInterpreted {}, ir.location(NodeIndex { *code }), code);
+    const auto interpreted = ir.create(SCInterpreted { version }, ir.location(NodeIndex { *code }), code);
     ir.payload(interpreted).poisoned = sink.fatal;
     ctx.diagnostics(std::move(sink.diagnostics));
     sink = {};

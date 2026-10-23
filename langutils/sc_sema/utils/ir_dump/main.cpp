@@ -114,6 +114,20 @@ parse_file(std::filesystem::path dir_entry, std::vector<sc::diag::Diagnostic>& d
 }
 
 
+// A release, e.g., `3.16`, as the version it compiles as. Nothing if it isn't `major.minor`, or is after the latest.
+std::optional<sc::ast::LanguageVersion> parse_release(const std::string& release) {
+    unsigned major { 0 };
+    unsigned minor { 0 };
+    const auto* end = release.data() + release.size();
+    const auto [dot, major_error] = std::from_chars(release.data(), end, major);
+    if (major_error != std::errc {} || dot == end || *dot != '.')
+        return std::nullopt;
+    const auto [last, minor_error] = std::from_chars(dot + 1, end, minor);
+    if (minor_error != std::errc {} || last != end)
+        return std::nullopt;
+    return sc::ast::version_for_release(major, minor);
+}
+
 // An scd file, parsed as interpreted code. Null if it can't be read, or is a class file.
 std::shared_ptr<const sc::ast::ASTGraph> parse_interpreted(const std::filesystem::path& path,
                                                            std::vector<sc::diag::Diagnostic>& diagnostics) {
@@ -169,7 +183,8 @@ int main(int argc, char* argv[]) {
 #endif // _MSC_VER
     if (argc <= 1) {
         std::cout << "ERROR: incorrect number of arguments to ir_dump, expected "
-                     "[--threads n] [--relative-to dir] [--prelude dir|.sc file]... [dir|.sc file]... "
+                     "[--threads n] [--relative-to dir] [--interpreted-version x.y] [--prelude dir|.sc file]... "
+                     "[dir|.sc file]... "
                   << std::endl;
         return EXIT_FAILURE;
     }
@@ -186,10 +201,13 @@ int main(int argc, char* argv[]) {
     // Diagnostics write their paths relative to the directory after --relative-to, rather than as absolute uris.
     // The output is in source order, so it is the same however many threads compile it, --threads sets how many, all
     // of them by default.
+    // Interpreted code, the scd files, is compiled as the release after --interpreted-version, e.g., 3.16, as it has no
+    // version comment, legacy by default.
     std::vector<std::filesystem::path> module_paths;
     std::vector<std::filesystem::path> prelude_paths;
     std::optional<std::filesystem::path> relative_to;
     size_t num_threads = std::max(1u, std::thread::hardware_concurrency());
+    auto interpreted_version = sc::ast::LanguageVersion::Legacy;
     for (int i { 1 }; i < argc; ++i) {
         const auto arg = get_path(argv[i]);
         if (arg == "--threads" && i + 1 < argc) {
@@ -199,6 +217,15 @@ int main(int argc, char* argv[]) {
                 std::cout << "ERROR: --threads expects a positive number, not '" << count << "'" << std::endl;
                 return EXIT_FAILURE;
             }
+        } else if (arg == "--interpreted-version" && i + 1 < argc) {
+            const std::string release = get_path(argv[++i]).string();
+            const auto version = parse_release(release);
+            if (!version) {
+                std::cout << "ERROR: --interpreted-version expects a known release, e.g., 3.16, not '" << release << "'"
+                          << std::endl;
+                return EXIT_FAILURE;
+            }
+            interpreted_version = *version;
         } else if (arg == "--relative-to" && i + 1 < argc) {
             relative_to = get_path(argv[++i]);
         } else if (arg == "--prelude" && i + 1 < argc) {
@@ -343,7 +370,7 @@ int main(int argc, char* argv[]) {
         const auto ast_graph = parse_interpreted(path, diags);
         if (!ast_graph)
             continue;
-        auto r = comp.compile_interpreted(ast_graph);
+        auto r = comp.compile_interpreted(ast_graph, interpreted_version);
         for (auto& d : r.diagnostics)
             diags.push_back(std::move(d));
         if (r.ir)

@@ -49,7 +49,7 @@ void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ClassDeclaratio
         return;
     }
 
-    ast2ir::ConstEval { cxt, ast_graph, ast_index, &constants }.eval(expr_i).visit(
+    ast2ir::ConstEval { cxt, ast_graph, ast_index, decl.version(), &constants }.eval(expr_i).visit(
         [&](std::pair<ConstExprIndex, TypeInfo> p) {
             const auto [const_expr_index, type_info] = p;
             const auto name = cxt.symbol_table.get_identifier(get_string(*ast_graph, name_i));
@@ -105,9 +105,10 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
 
     // Create decls
     // These are the only mutable variables in this function, it is what we build.
-    ClassDeclaration class_decl { ast_graph, module, { *class_i }, class_name, { *class_name_i } };
+    const auto version = ast_graph->payload(class_i).version;
+    ClassDeclaration class_decl { ast_graph, module, { *class_i }, class_name, { *class_name_i }, version };
 
-    ClassDeclaration meta_class_decl { ast_graph, module, { *class_i }, meta_class_name, { *class_name_i } };
+    ClassDeclaration meta_class_decl { ast_graph, module, { *class_i }, meta_class_name, { *class_name_i }, version };
 
     class_decl.meta_class(meta_class_name);
 
@@ -245,7 +246,7 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
                            const auto name = cxt.symbol_table.get_selector(get_string(*ast_graph, name_i));
 
                            const auto r = class_decl.insert_no_ext(
-                               ClassDeclaration::Method { ast_graph, module, i, name, { *name_i } });
+                               ClassDeclaration::Method { ast_graph, module, i, name, { *name_i }, version });
                            switch (r) {
                            case ClassDeclaration::DuplicateLocation::None:
                                return;
@@ -274,7 +275,7 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
                            const auto [name_i, args_i, maybe_prim_i, body_i] = ast_graph->children(i);
                            const auto name = cxt.symbol_table.get_selector(get_string(*ast_graph, name_i));
                            const auto r = meta_class_decl.insert_no_ext(
-                               ClassDeclaration::Method { ast_graph, module, i, name, { *name_i } });
+                               ClassDeclaration::Method { ast_graph, module, i, name, { *name_i }, version });
                            switch (r) {
                            case ClassDeclaration::DuplicateLocation::None:
                                return;

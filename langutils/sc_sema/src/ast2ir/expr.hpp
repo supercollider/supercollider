@@ -45,9 +45,13 @@ extern template struct Return<SCAnyExpr_I>;
 
 struct Expr : private Base {
     // Diagnostics are reported to the sink, so the owner (e.g., the method) can tell whether any were fatal.
-    Expr(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, DiagnosticSink& diagnostic_sink):
-        Base(ir, std::move(ast), cxt),
+    Expr(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, ast::LanguageVersion v,
+         DiagnosticSink& diagnostic_sink):
+        Base(ir, std::move(ast), cxt, v),
         sink(diagnostic_sink) {}
+
+    // So the free functions given an Expr can check it.
+    using Base::version;
 
     Return<SCAnyExpr_I> operator()(ast::ErrorIndex);
     Return<SCAnyExpr_I> operator()(ast::IntLitIndex i);

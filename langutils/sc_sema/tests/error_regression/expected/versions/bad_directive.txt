@@ -1,0 +1,106 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): BadMalformed
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Malformed version
+|  versions/bad_directive.sc:4:5
+|      2 │ // in a method, no method is poisoned. Something that only looks like a version is a comment, as code already has them.
+|      3 │ BadMalformed {
+|      4 │     //# VERSION 3
+|        ┆     ^^^^^^^^^^^^^ expected a version, e.g., `//# VERSION 3.16`.
+|      5 │     // expect: not poisoned
+|      6 │     one { ^1 }
+|      7 │ }
+|
+|  The classes it applies to are compiled as the legacy version.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (6:5): one { ^1 } -> 1
+|  |  |  SCBody (6:11)
+|  |  |  |  SCExplicitReturn (6:11)
+|  |  |  |  |  SCLiteral (6:12) = 1
+SCClass (9:1): BadTrailing
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Malformed version
+|  versions/bad_directive.sc:10:5
+|      8 │ 
+|      9 │ BadTrailing {
+|     10 │     //# VERSION 3.16 // a comment after it
+|        ┆     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected a version, e.g., `//# VERSION 3.16`.
+|     11 │     one { ^1 }
+|     12 │ }
+|     13 │ 
+|
+|  The classes it applies to are compiled as the legacy version.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (9:1)
+|  SCMethodList (9:1)
+|  |  SCMethod (11:5): one { ^1 } -> 1
+|  |  |  SCBody (11:11)
+|  |  |  |  SCExplicitReturn (11:11)
+|  |  |  |  |  SCLiteral (11:12) = 1
+SCClass (14:1): BadUnknown
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unknown version
+|  versions/bad_directive.sc:15:5
+|     13 │ 
+|     14 │ BadUnknown {
+|     15 │     //# VERSION 99.0
+|        ┆     ^^^^^^^^^^^^^^^^ this version is newer than the compiler.
+|     16 │     one { ^1 }
+|     17 │ }
+|     18 │ 
+|
+|  The latest version is 3.16. The classes it applies to are compiled as the legacy version.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (14:1)
+|  SCMethodList (14:1)
+|  |  SCMethod (16:5): one { ^1 } -> 1
+|  |  |  SCBody (16:11)
+|  |  |  |  SCExplicitReturn (16:11)
+|  |  |  |  |  SCLiteral (16:12) = 1
+SCClass (20:1): BadDuplicate, version 3.16
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Warning: Duplicate version
+|  versions/bad_directive.sc:21:5
+|     19 │ // The last of two is used.
+|     20 │ BadDuplicate {
+|     21 │     //# VERSION 3.13
+|        ┆     ^^^^^^^^^^^^^^^^ This version is ignored...
+|     22 │     //# VERSION 3.16
+|     23 │     one { ^1 }
+|     24 │ }
+|
+|  versions/bad_directive.sc:22:5
+|     20 │ BadDuplicate {
+|     21 │     //# VERSION 3.13
+|     22 │     //# VERSION 3.16
+|        ┆     ^^^^^^^^^^^^^^^^ ...as this one is used.
+|     23 │     one { ^1 }
+|     24 │ }
+|     25 │ 
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (20:1)
+|  SCMethodList (20:1)
+|  |  SCMethod (23:5): version 3.16: one { ^1 } -> 1
+|  |  |  SCBody (23:11)
+|  |  |  |  SCExplicitReturn (23:11)
+|  |  |  |  |  SCLiteral (23:12) = 1
+SCClass (26:1): NotAVersion
+|  SCMemberList (26:1)
+|  SCMethodList (26:1)
+|  |  SCMethod (31:5): one { ^1 } -> 1
+|  |  |  SCBody (31:11)
+|  |  |  |  SCExplicitReturn (31:11)
+|  |  |  |  |  SCLiteral (31:12) = 1
+Successfully compiled 20 classes.
