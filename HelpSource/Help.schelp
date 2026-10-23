@@ -164,6 +164,7 @@ numberedlist::
 ## link::Guides/GUI-Layout-Management::
 ## link::Guides/FFT-Overview::
 ## link::Guides/Non-Realtime-Synthesis::
+## link::Guides/SC_as_Plugin::
 ::
 
 subsection:: Architecture
