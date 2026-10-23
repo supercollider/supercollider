@@ -4,9 +4,11 @@
 
 #include "sc_sema/common_classes.hpp"
 #include "sc_sema/intrinsic_constraint.hpp"
+#include "sc_util/indexed_vector.hpp"
+#include "sc_util/strong_index.hpp"
 
+#include <cstdint>
 #include <memory>
-#include <mutex>
 #include <thread>
 #include <atomic>
 #include <unordered_map>
@@ -58,22 +60,22 @@ struct IRCompiler {
     // declared with an invalid slot type, `Foo[bad] {}`.
     template<typename F>
     void depth_first_do(F&& f) const {
-        for(auto n : m_topological_ordering) {
-            if (const auto fnd = m_classes.find(n); fnd != m_classes.end())
-                std::invoke(f, *fnd->second);
-        }
+        for (const auto& g : m_classes.raw())
+            if (g)
+                std::invoke(f, *g);
     }
 
 private:
+    using TopologicalPosition = util::StrongIndex<std::uint32_t, struct TopologicalPosition__>;
+
     Context& ctx;
 
     std::atomic<bool> m_compile_has_been_called { false };
 
-    mutable std::mutex m_classes_lock;
-    std::unordered_map<SymSCClassName, std::shared_ptr<IRGraph>, std::hash<Symbol>> m_classes { };
-
-    // Topological ordering is only stable on a single threaded implementation, and only then, if the input files are in the same order.
     std::vector<SymSCClassName> m_topological_ordering{};
+    // This will be a nullptr if the class is poisoned.
+    util::IndexedVector<TopologicalPosition, std::shared_ptr<IRGraph>> m_classes {};
+    std::unordered_map<SymSCClassName, TopologicalPosition, std::hash<Symbol>> m_class_positions {};
 };
 
 

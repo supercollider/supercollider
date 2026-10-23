@@ -300,6 +300,10 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
     // The hierarchy is valid, so method lookups can be done.
     ctx.known_methods.check(ctx.class_declarations, ctx.common_classes, ctx.common_symbols);
 
+    m_classes.resize(m_topological_ordering.size());
+    for (std::uint32_t i { 0 }; i < m_topological_ordering.size(); ++i)
+        m_class_positions.insert({ m_topological_ordering[i], TopologicalPosition { i } });
+
     // Step 3: build class member layout
     // Must be done in order, cannot multithread.
     using MemberEntry = std::tuple<SCMember, std::shared_ptr<const ast::ASTGraph>, ast::Index>;
@@ -499,11 +503,10 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                     build.ir->append(build.method_list, r.ir_node);
                 }
 
-                {
-                    std::scoped_lock lk { m_classes_lock };
-                    assert(m_classes.count(name) == 0);
-                    m_classes.insert({ name, build.ir });
-                }
+                // Only poisoned classes aren't in the topological order, and they aren't built.
+                const auto position = m_class_positions.find(name);
+                assert(position != m_class_positions.end() && !m_classes[position->second]);
+                m_classes[position->second] = build.ir;
             };
 
             boost::asio::post(pool, process);
@@ -517,9 +520,8 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
 }
 
 std::shared_ptr<const IRGraph> IRCompiler::class_graph(SymSCClassName name) const {
-    std::scoped_lock lk { m_classes_lock };
-    if (const auto fnd = m_classes.find(name); fnd != m_classes.end())
-        return fnd->second;
+    if (const auto fnd = m_class_positions.find(name); fnd != m_class_positions.end())
+        return m_classes[fnd->second];
     return nullptr;
 }
 
@@ -536,12 +538,9 @@ IRCompiler::Interpreted IRCompiler::compile_interpreted(std::shared_ptr<const as
     std::shared_ptr<const IRGraph> class_ir;
     std::shared_ptr<const IRGraph> meta_ir;
     if (decl && !decl->poisoned() && decl->find_method(ctx.common_symbols.function_compile_context)) {
-        std::scoped_lock lk { m_classes_lock };
-        if (const auto fnd = m_classes.find(interpreter); fnd != m_classes.end())
-            class_ir = fnd->second;
+        class_ir = class_graph(interpreter);
         if (const auto meta = decl->meta_class())
-            if (const auto fnd = m_classes.find(*meta); fnd != m_classes.end())
-                meta_ir = fnd->second;
+            meta_ir = class_graph(*meta);
     }
     if (!class_ir) {
         ctx.diagnostics(sc::diag::Diagnostic::missing_interpreter_context(get_text_info(*ast_graph),
