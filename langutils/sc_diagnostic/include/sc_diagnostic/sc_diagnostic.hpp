@@ -162,6 +162,19 @@ public:
     // class library doesn't define it, or it is poisoned.
     [[nodiscard]] static Diagnostic missing_interpreter_context(TextInfoPtr t, sc::lex::SourceCodeRange l);
 
+    // A closed function, `#{ }`, at l, is compiled as if it were written inside the Interpreter, but the class library
+    // doesn't define it, or it is poisoned.
+    [[nodiscard]] static Diagnostic missing_interpreter_class(TextInfoPtr t, sc::lex::SourceCodeRange l);
+
+    // `^1` in a closed function, `#{ ^1 }`, including inside its functions, there is no method to return from. A
+    // warning in legacy code, which the old compiler compiled, an error from 3.16.
+    [[nodiscard]] static Diagnostic return_in_closed_function(TextInfoPtr t, sc::lex::SourceCodeRange l, bool legacy);
+
+    // A name used in a closed function, `#{ }`, that is only declared around it, e.g., `var a; #{ a }`.
+    [[nodiscard]] static Diagnostic outside_closed_function(TextInfoPtr declaration_t,
+                                                            sc::lex::SourceCodeRange declaration, TextInfoPtr use_t,
+                                                            sc::lex::SourceCodeRange use);
+
     // `^1` in interpreted code, including inside its functions, there is no method to return from.
     [[nodiscard]] static Diagnostic return_in_interpreted_code(TextInfoPtr t, sc::lex::SourceCodeRange l);
 

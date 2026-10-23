@@ -690,6 +690,39 @@ Diagnostic Diagnostic::missing_interpreter_context(TextInfoPtr t, sc::lex::Sourc
     };
 }
 
+Diagnostic Diagnostic::missing_interpreter_class(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+    return {
+        "Interpreter missing",
+        Severity::Error,
+        { { std::move(t), l, "this closed function can't be compiled without it." } },
+        "A closed function, `#{ }`, is compiled as if it were written inside the Interpreter, so it can use the "
+        "Interpreter's members, e.g., `a` to `z`, but not the variables around it. The class library must define the "
+        "Interpreter, and it must compile without errors."
+    };
+}
+
+Diagnostic Diagnostic::return_in_closed_function(TextInfoPtr t, sc::lex::SourceCodeRange l, bool legacy) {
+    const std::string why = "`^` returns from the method the code is written in, but a closed function, `#{ }`, isn't "
+                            "in one, even when it is written in a method";
+    const std::string fix =
+        "A function returns its last expression, so remove the `^`, or use `{ }` instead of `#{ }`.";
+    return { "Return in closed function",
+             legacy ? Severity::Warning : Severity::Error,
+             { { std::move(t), l, "there is no method to return from." } },
+             legacy ? why + ", so this fails when it runs. From 3.16 it is an error. " + fix : why + ". " + fix };
+}
+
+Diagnostic Diagnostic::outside_closed_function(TextInfoPtr declaration_t, sc::lex::SourceCodeRange declaration,
+                                               TextInfoPtr use_t, sc::lex::SourceCodeRange use) {
+    return { "Variable outside closed function",
+             Severity::Error,
+             { { std::move(declaration_t), declaration, "This is declared outside the closed function..." },
+               { std::move(use_t), use, "...so it can't be used inside it." } },
+             "A closed function, `#{ }`, is compiled as if it were written inside the Interpreter, so it can only use "
+             "its own arguments and variables, and the Interpreter's members, e.g., `a` to `z`. Pass the value in as "
+             "an argument, or use `{ }` instead of `#{ }`." };
+}
+
 Diagnostic Diagnostic::return_in_interpreted_code(TextInfoPtr t, sc::lex::SourceCodeRange l) {
     return {
         "Return in interpreted code",

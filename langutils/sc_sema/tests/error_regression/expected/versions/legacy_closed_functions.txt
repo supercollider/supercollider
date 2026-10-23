@@ -1,0 +1,158 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): LegacyClosedFunctions
+|  SCMemberList (3:1)
+|  |  SCMember (4:9): instance_var
+|  SCMethodList (3:1)
+|  |  SCMethod (7:5): interpreter_member { ^#{ a } }
+|  |  |  SCBody (7:26)
+|  |  |  |  SCExplicitReturn (7:26)
+|  |  |  |  |  SCFunction (7:27): closed
+|  |  |  |  |  |  SCBody (7:27)
+|  |  |  |  |  |  |  SCRead (7:30): instance a, declared (37:11): a
+|  |  SCMethod (9:5): poisoned: outer_variable { var foo = 10; ^#{ foo } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable outside closed function
+|  |  |  versions/legacy_closed_functions.sc:9:26
+|  |  |      7 │     interpreter_member { ^#{ a } }
+|  |  |      8 │     // expect-error: Variable outside closed function
+|  |  |      9 │     outer_variable { var foo = 10; ^#{ foo } }
+|  |  |        ┆                          ^^^^^^^^ This is declared outside the closed function...
+|  |  |     10 │     // expect-error: Variable outside closed function
+|  |  |     11 │     instance_variable { ^#{ instance_var } }
+|  |  |     12 │     // Legacy code's frame holds `later` from the start, but a closed function can't see it.
+|  |  |
+|  |  |  versions/legacy_closed_functions.sc:9:40
+|  |  |      7 │     interpreter_member { ^#{ a } }
+|  |  |      8 │     // expect-error: Variable outside closed function
+|  |  |      9 │     outer_variable { var foo = 10; ^#{ foo } }
+|  |  |        ┆                                        ^^^ ...so it can't be used inside it.
+|  |  |     10 │     // expect-error: Variable outside closed function
+|  |  |     11 │     instance_variable { ^#{ instance_var } }
+|  |  |     12 │     // Legacy code's frame holds `later` from the start, but a closed function can't see it.
+|  |  |
+|  |  |  A closed function, `#{ }`, is compiled as if it were written inside the Interpreter, so it can only use its own arguments and variables, and the Interpreter's members, e.g., `a` to `z`. Pass the value in as an argument, or use `{ }` instead of `#{ }`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (9:22)
+|  |  |  |  SCVariableDeclare (9:26): foo, prototype
+|  |  |  |  |  SCLiteral (9:32) = 10
+|  |  |  |  SCExplicitReturn (9:36)
+|  |  |  |  |  SCFunction (9:37): closed
+|  |  |  |  |  |  SCBody (9:37)
+|  |  |  |  |  |  |  SCExprList (9:40)
+|  |  SCMethod (11:5): poisoned: instance_variable { ^#{ instance_var } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable outside closed function
+|  |  |  versions/legacy_closed_functions.sc:4:9
+|  |  |      2 │ // compiled it, see closed_functions/lookup.sc and closed_functions/returns.sc.
+|  |  |      3 │ LegacyClosedFunctions {
+|  |  |      4 │     var instance_var;
+|  |  |        ┆         ^^^^^^^^^^^^ This is declared outside the closed function...
+|  |  |      5 │ 
+|  |  |      6 │     // expect-reads: a -> a
+|  |  |      7 │     interpreter_member { ^#{ a } }
+|  |  |
+|  |  |  versions/legacy_closed_functions.sc:11:29
+|  |  |      9 │     outer_variable { var foo = 10; ^#{ foo } }
+|  |  |     10 │     // expect-error: Variable outside closed function
+|  |  |     11 │     instance_variable { ^#{ instance_var } }
+|  |  |        ┆                             ^^^^^^^^^^^^ ...so it can't be used inside it.
+|  |  |     12 │     // Legacy code's frame holds `later` from the start, but a closed function can't see it.
+|  |  |     13 │     // expect-error: Variable outside closed function
+|  |  |     14 │     frame_variable { var f = #{ later }, later = 1; ^f }
+|  |  |
+|  |  |  A closed function, `#{ }`, is compiled as if it were written inside the Interpreter, so it can only use its own arguments and variables, and the Interpreter's members, e.g., `a` to `z`. Pass the value in as an argument, or use `{ }` instead of `#{ }`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (11:25)
+|  |  |  |  SCExplicitReturn (11:25)
+|  |  |  |  |  SCFunction (11:26): closed
+|  |  |  |  |  |  SCBody (11:26)
+|  |  |  |  |  |  |  SCExprList (11:29)
+|  |  SCMethod (14:5): poisoned: frame_variable { var f = #{ later }, later = 1; ^f }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable outside closed function
+|  |  |  versions/legacy_closed_functions.sc:14:42
+|  |  |     12 │     // Legacy code's frame holds `later` from the start, but a closed function can't see it.
+|  |  |     13 │     // expect-error: Variable outside closed function
+|  |  |     14 │     frame_variable { var f = #{ later }, later = 1; ^f }
+|  |  |        ┆                                          ^^^^^^^^^ This is declared outside the closed function...
+|  |  |     15 │     // expect-warning: Return in closed function
+|  |  |     16 │     // expect: not poisoned
+|  |  |     17 │     returns { ^#{ ^1 } }
+|  |  |
+|  |  |  versions/legacy_closed_functions.sc:14:33
+|  |  |     12 │     // Legacy code's frame holds `later` from the start, but a closed function can't see it.
+|  |  |     13 │     // expect-error: Variable outside closed function
+|  |  |     14 │     frame_variable { var f = #{ later }, later = 1; ^f }
+|  |  |        ┆                                 ^^^^^ ...so it can't be used inside it.
+|  |  |     15 │     // expect-warning: Return in closed function
+|  |  |     16 │     // expect: not poisoned
+|  |  |     17 │     returns { ^#{ ^1 } }
+|  |  |
+|  |  |  A closed function, `#{ }`, is compiled as if it were written inside the Interpreter, so it can only use its own arguments and variables, and the Interpreter's members, e.g., `a` to `z`. Pass the value in as an argument, or use `{ }` instead of `#{ }`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (14:22)
+|  |  |  |  SCVariableDeclare (14:26): f, computed
+|  |  |  |  |  SCFunction (14:30): closed
+|  |  |  |  |  |  SCBody (14:30)
+|  |  |  |  |  |  |  SCExprList (14:33)
+|  |  |  |  SCVariableDeclare (14:42): later, prototype
+|  |  |  |  |  SCLiteral (14:50) = 1
+|  |  |  |  SCExplicitReturn (14:53)
+|  |  |  |  |  SCRead (14:54): local f, declared (14:26): f = #{ later }
+|  |  SCMethod (17:5): returns { ^#{ ^1 } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Warning: Return in closed function
+|  |  |  versions/legacy_closed_functions.sc:17:19
+|  |  |     15 │     // expect-warning: Return in closed function
+|  |  |     16 │     // expect: not poisoned
+|  |  |     17 │     returns { ^#{ ^1 } }
+|  |  |        ┆                   ^^ there is no method to return from.
+|  |  |     18 │     // expect-warning: Return in closed function
+|  |  |     19 │     // expect: not poisoned
+|  |  |     20 │     nested { ^#{ |x| if (x) { ^1 }; 2 } }
+|  |  |
+|  |  |  `^` returns from the method the code is written in, but a closed function, `#{ }`, isn't in one, even when it is written in a method, so this fails when it runs. From 3.16 it is an error. A function returns its last expression, so remove the `^`, or use `{ }` instead of `#{ }`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (17:15)
+|  |  |  |  SCExplicitReturn (17:15)
+|  |  |  |  |  SCFunction (17:16): closed
+|  |  |  |  |  |  SCBody (17:16)
+|  |  |  |  |  |  |  SCExplicitReturn (17:19)
+|  |  |  |  |  |  |  |  SCLiteral (17:20) = 1
+|  |  SCMethod (20:5): nested { ^#{ |x| if (x) { ^1 }; 2 } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Warning: Return in closed function
+|  |  |  versions/legacy_closed_functions.sc:20:31
+|  |  |     18 │     // expect-warning: Return in closed function
+|  |  |     19 │     // expect: not poisoned
+|  |  |     20 │     nested { ^#{ |x| if (x) { ^1 }; 2 } }
+|  |  |        ┆                               ^^ there is no method to return from.
+|  |  |     21 │ }
+|  |  |
+|  |  |  `^` returns from the method the code is written in, but a closed function, `#{ }`, isn't in one, even when it is written in a method, so this fails when it runs. From 3.16 it is an error. A function returns its last expression, so remove the `^`, or use `{ }` instead of `#{ }`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (20:14)
+|  |  |  |  SCExplicitReturn (20:14)
+|  |  |  |  |  SCFunction (20:15): closed
+|  |  |  |  |  |  SCArgumentDeclareList (20:19)
+|  |  |  |  |  |  |  SCArgumentDeclare (20:19): x
+|  |  |  |  |  |  SCBody (20:15)
+|  |  |  |  |  |  |  SCMessage (20:22): if
+|  |  |  |  |  |  |  |  SCRead (20:26): local x, declared (20:19): x
+|  |  |  |  |  |  |  |  SCPositionalArgs (20:22)
+|  |  |  |  |  |  |  |  |  SCFunction (20:29)
+|  |  |  |  |  |  |  |  |  |  SCBody (20:29)
+|  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (20:31)
+|  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (20:32) = 1
+|  |  |  |  |  |  |  SCLiteral (20:37) = 2
+Successfully compiled 16 classes.

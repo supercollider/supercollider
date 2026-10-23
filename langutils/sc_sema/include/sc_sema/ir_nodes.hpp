@@ -285,6 +285,7 @@ struct SCFunction : priv::Node<SCFunction_I(SCArgumentDeclareList_I positional_a
     // What calling the function returns, when it is known and has no effects, e.g., `{ 1 }`. The function itself isn't
     // constant. Only set without arguments, as their values aren't known until the function is called.
     OptionalConstExprIndex constant_result {};
+    bool closed { false };
 };
 // One item of a region, e.g., `a = 1` or `( var b = 2; b )`, compiled into its own function, so each can be evaluated
 // on its own.

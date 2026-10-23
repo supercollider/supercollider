@@ -43,6 +43,14 @@ Return<SCAnyExpr_I> Expr::operator()(ast::NonLocalReturnExprIndex i) {
         sink(sc::diag::Diagnostic::return_in_interpreted_code(get_text_info(*ast_graph), get_location(*ast_graph, i)));
         return expr_return;
     }
+    // Even from a function inside it, a closed function has no method to return from.
+    if (in_closed_function()) {
+        const bool legacy = allows_closed_function_return(version);
+        sink(sc::diag::Diagnostic::return_in_closed_function(get_text_info(*ast_graph), get_location(*ast_graph, i),
+                                                             legacy));
+        if (!legacy)
+            return expr_return;
+    }
 
     if (auto n = ast::next_sibling(*ast_graph, expr)) {
         sink(sc::diag::Diagnostic::non_terminating_return(get_text_info(*ast_graph), get_location(*ast_graph, n)));

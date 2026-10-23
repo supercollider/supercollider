@@ -57,10 +57,11 @@ void push_member_scopes(Expr& expr, const Scope* meta_class_members, const Scope
 }
 
 Method::Method(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, ast::LanguageVersion version,
-               const Scope* meta_class_members, const Scope& class_members):
+               const Scope* meta_class_members, const Scope& class_members, const InterpreterScopes* interpreter):
     Base(ir, ast, cxt, version),
     expr(ir, std::move(ast), cxt, version, sink) {
     push_member_scopes(expr, meta_class_members, class_members);
+    expr.interpreter = interpreter;
 }
 
 Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i) {

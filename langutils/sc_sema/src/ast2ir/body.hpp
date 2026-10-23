@@ -19,7 +19,7 @@ struct BodyResult {
 
 Return<SCAnyExpr_I> compile_function(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast::ASTGraph>& ast_graph,
                                      Context& ctx, ast::Index whole, ast::DeclareArgumentListIndex arg_list,
-                                     std::optional<ast::BlockContentsListIndex> contents);
+                                     std::optional<ast::BlockContentsListIndex> contents, bool closed = false);
 
 [[nodiscard]] OptionalConstExprIndex can_be_prototyped(const ast::ASTGraph& g, ast::AnyExprIndex value,
                                                        std::optional<ConstExprIndex> constant);

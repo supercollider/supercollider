@@ -1,0 +1,54 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): ClosedFlag, version 3.16
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (5:5): version 3.16: closed { ^#{ 1 } }
+|  |  |  SCBody (5:14)
+|  |  |  |  SCExplicitReturn (5:14)
+|  |  |  |  |  SCFunction (5:15): closed -> 1
+|  |  |  |  |  |  SCBody (5:15)
+|  |  |  |  |  |  |  SCLiteral (5:18) = 1
+|  |  SCMethod (7:5): version 3.16: empty { ^#{} }
+|  |  |  SCBody (7:13)
+|  |  |  |  SCExplicitReturn (7:13)
+|  |  |  |  |  SCFunction (7:14): closed -> nil
+|  |  |  |  |  |  SCBody (7:14)
+|  |  SCMethod (9:5): version 3.16: with_arguments { ^#{ |a, b| } }
+|  |  |  SCBody (9:22)
+|  |  |  |  SCExplicitReturn (9:22)
+|  |  |  |  |  SCFunction (9:23): closed
+|  |  |  |  |  |  SCArgumentDeclareList (9:27)
+|  |  |  |  |  |  |  SCArgumentDeclare (9:27): a
+|  |  |  |  |  |  |  SCArgumentDeclare (9:30): b
+|  |  |  |  |  |  SCBody (9:23)
+|  |  SCMethod (11:5): version 3.16: open_inside_closed { ^#{ { 1 } } }
+|  |  |  SCBody (11:26)
+|  |  |  |  SCExplicitReturn (11:26)
+|  |  |  |  |  SCFunction (11:27): closed
+|  |  |  |  |  |  SCBody (11:27)
+|  |  |  |  |  |  |  SCFunction (11:30) -> 1
+|  |  |  |  |  |  |  |  SCBody (11:30)
+|  |  |  |  |  |  |  |  |  SCLiteral (11:32) = 1
+|  |  SCMethod (13:5): version 3.16: closed_inside_open { ^{ #{ 1 } } }
+|  |  |  SCBody (13:26)
+|  |  |  |  SCExplicitReturn (13:26)
+|  |  |  |  |  SCFunction (13:27)
+|  |  |  |  |  |  SCBody (13:27)
+|  |  |  |  |  |  |  SCFunction (13:29): closed -> 1
+|  |  |  |  |  |  |  |  SCBody (13:29)
+|  |  |  |  |  |  |  |  |  SCLiteral (13:32) = 1
+|  |  SCMethod (15:5): version 3.16: as_argument { ^1.do(#{ 2 }) }
+|  |  |  SCBody (15:19)
+|  |  |  |  SCExplicitReturn (15:19)
+|  |  |  |  |  SCMessage (15:20): do
+|  |  |  |  |  |  SCLiteral (15:20) = 1
+|  |  |  |  |  |  SCPositionalArgs (15:20)
+|  |  |  |  |  |  |  SCFunction (15:25): closed -> 2
+|  |  |  |  |  |  |  |  SCBody (15:25)
+|  |  |  |  |  |  |  |  |  SCLiteral (15:28) = 2
+Successfully compiled 16 classes.

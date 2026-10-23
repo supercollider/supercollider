@@ -45,6 +45,12 @@ struct Scope : std::unordered_map<Symbol, ScopeEntry> {
     bool starts_function { false };
 };
 
+// Used when entering a closed function.
+struct InterpreterScopes {
+    const Scope* meta_class_members;
+    const Scope& class_members;
+};
+
 extern template struct Return<SCAnyExpr_I>;
 
 struct Expr : private Base {
@@ -133,6 +139,19 @@ struct Expr : private Base {
 
     // Interpreted code should not use the '^'.
     bool returns_allowed { true };
+
+    // Null when the class library doesn't define Interpreter, or it is poisoned, so closed functions can't be compiled.
+    const InterpreterScopes* interpreter { nullptr };
+
+    // What surrounds a closed function.
+    // This is needed only for diagnostics.
+    struct OutsideClosed {
+        std::vector<Scope> scope;
+        std::vector<Initialising> initialising;
+    };
+    // This is a vector because nested closed functions can't see up into each other.
+    std::vector<OutsideClosed> outside_closed;
+    [[nodiscard]] bool in_closed_function() const { return !outside_closed.empty(); }
 
     bool in_unbracketed_argument_default { false };
 

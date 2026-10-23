@@ -10,11 +10,12 @@
 namespace sc::ir::ast2ir {
 
 Interpreted::Interpreted(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt,
-                         ast::LanguageVersion version, const Scope* meta_class_members, const Scope& class_members):
+                         ast::LanguageVersion version, const InterpreterScopes& interpreter):
     Base(ir, ast, cxt, version),
     expr(ir, std::move(ast), cxt, version, sink) {
-    push_member_scopes(expr, meta_class_members, class_members);
+    push_member_scopes(expr, interpreter.meta_class_members, interpreter.class_members);
     expr.returns_allowed = false;
+    expr.interpreter = &interpreter;
 }
 
 // Each item is a region, compiled into its own function, evaluated in turn, and the last's value is the result. Each

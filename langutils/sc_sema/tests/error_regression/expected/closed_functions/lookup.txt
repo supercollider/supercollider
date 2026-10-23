@@ -1,0 +1,419 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): ClosedLookup, version 3.16
+|  SCMemberList (3:1)
+|  |  SCMember (4:9): instance_var
+|  SCMethodList (3:1)
+|  |  SCMethod (8:5): version 3.16: interpreter_member { ^#{ a } }
+|  |  |  SCBody (8:26)
+|  |  |  |  SCExplicitReturn (8:26)
+|  |  |  |  |  SCFunction (8:27): closed
+|  |  |  |  |  |  SCBody (8:27)
+|  |  |  |  |  |  |  SCRead (8:30): instance a, declared (37:11): a
+|  |  SCMethod (10:5): version 3.16: assigns_interpreter_member { ^#{ z = 1 } }
+|  |  |  SCBody (10:34)
+|  |  |  |  SCExplicitReturn (10:34)
+|  |  |  |  |  SCFunction (10:35): closed
+|  |  |  |  |  |  SCBody (10:35)
+|  |  |  |  |  |  |  SCAssign (10:38): instance z, declared (39:36): z
+|  |  |  |  |  |  |  |  SCLiteral (10:42) = 1
+|  |  SCMethod (12:5): version 3.16: pack_assigns_interpreter_members { ^#{ #a, b = [1, 2] } }
+|  |  |  SCBody (12:40)
+|  |  |  |  SCExplicitReturn (12:40)
+|  |  |  |  |  SCFunction (12:41): closed
+|  |  |  |  |  |  SCBody (12:41)
+|  |  |  |  |  |  |  SCPackAssign (12:44)
+|  |  |  |  |  |  |  |  SCCollection (12:52): Array = [1, 2]
+|  |  |  |  |  |  |  |  |  SCLiteral (12:53) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (12:56) = 2
+|  |  |  |  |  |  |  |  SCPackTargets (12:44)
+|  |  |  |  |  |  |  |  |  SCPackTarget (12:45): instance a at 0, declared (37:11): a
+|  |  |  |  |  |  |  |  |  SCPackTarget (12:48): instance b at 1, declared (37:16): b
+|  |  SCMethod (14:5): version 3.16: interpreter_private_member { ^#{ cmdLine } }
+|  |  |  SCBody (14:34)
+|  |  |  |  SCExplicitReturn (14:34)
+|  |  |  |  |  SCFunction (14:35): closed
+|  |  |  |  |  |  SCBody (14:35)
+|  |  |  |  |  |  |  SCRead (14:38): instance cmdLine, declared (36:10): cmdLine
+|  |  SCMethod (16:5): version 3.16: own_argument { ^#{ |x| x } }
+|  |  |  SCBody (16:20)
+|  |  |  |  SCExplicitReturn (16:20)
+|  |  |  |  |  SCFunction (16:21): closed
+|  |  |  |  |  |  SCArgumentDeclareList (16:25)
+|  |  |  |  |  |  |  SCArgumentDeclare (16:25): x
+|  |  |  |  |  |  SCBody (16:21)
+|  |  |  |  |  |  |  SCRead (16:28): local x, declared (16:25): x
+|  |  SCMethod (18:5): version 3.16: own_variable { ^#{ var v = 1; v } }
+|  |  |  SCBody (18:20)
+|  |  |  |  SCExplicitReturn (18:20)
+|  |  |  |  |  SCFunction (18:21): closed -> 1
+|  |  |  |  |  |  SCBody (18:21)
+|  |  |  |  |  |  |  SCVariableDeclare (18:28): v, prototype
+|  |  |  |  |  |  |  |  SCLiteral (18:32) = 1
+|  |  |  |  |  |  |  SCRead (18:35): local v = 1, declared (18:28): v = 1
+|  |  SCMethod (20:5): version 3.16: nested_open_sees_closed { ^#{ |x| { x } } }
+|  |  |  SCBody (20:31)
+|  |  |  |  SCExplicitReturn (20:31)
+|  |  |  |  |  SCFunction (20:32): closed
+|  |  |  |  |  |  SCArgumentDeclareList (20:36)
+|  |  |  |  |  |  |  SCArgumentDeclare (20:36): x (captured)
+|  |  |  |  |  |  SCBody (20:32)
+|  |  |  |  |  |  |  SCFunction (20:39)
+|  |  |  |  |  |  |  |  SCBody (20:39)
+|  |  |  |  |  |  |  |  |  SCRead (20:41): local x, declared (20:36): x
+|  |  SCMethod (23:5): version 3.16: argument_hides_member { ^#{ |a| a } }
+|  |  |  SCBody (23:29)
+|  |  |  |  SCExplicitReturn (23:29)
+|  |  |  |  |  SCFunction (23:30): closed
+|  |  |  |  |  |  SCArgumentDeclareList (23:34)
+|  |  |  |  |  |  |  SCArgumentDeclare (23:34): a
+|  |  |  |  |  |  SCBody (23:30)
+|  |  |  |  |  |  |  SCRead (23:37): local a, declared (23:34): a
+|  |  SCMethod (25:5): version 3.16: special_names { ^#{ [this, thisProcess, thisThread, thisFunction, thisFunctionDef] } }
+|  |  |  SCBody (25:21)
+|  |  |  |  SCExplicitReturn (25:21)
+|  |  |  |  |  SCFunction (25:22): closed
+|  |  |  |  |  |  SCBody (25:22)
+|  |  |  |  |  |  |  SCCollection (25:25): Array
+|  |  |  |  |  |  |  |  SCSpecial (25:26): this
+|  |  |  |  |  |  |  |  SCSpecial (25:32): thisProcess
+|  |  |  |  |  |  |  |  SCSpecial (25:45): thisThread
+|  |  |  |  |  |  |  |  SCSpecial (25:57): thisFunction
+|  |  |  |  |  |  |  |  SCSpecial (25:71): thisFunctionDef
+|  |  SCMethod (28:5): poisoned: version 3.16: outer_variable { var foo = 10; ^#{ foo } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable outside closed function
+|  |  |  closed_functions/lookup.sc:28:26
+|  |  |     26 │ 
+|  |  |     27 │     // expect-error: Variable outside closed function
+|  |  |     28 │     outer_variable { var foo = 10; ^#{ foo } }
+|  |  |        ┆                          ^^^^^^^^ This is declared outside the closed function...
+|  |  |     29 │     // expect-error: Variable outside closed function
+|  |  |     30 │     outer_argument { |foo| ^#{ foo } }
+|  |  |     31 │     // expect-error: Variable outside closed function
+|  |  |
+|  |  |  closed_functions/lookup.sc:28:40
+|  |  |     26 │ 
+|  |  |     27 │     // expect-error: Variable outside closed function
+|  |  |     28 │     outer_variable { var foo = 10; ^#{ foo } }
+|  |  |        ┆                                        ^^^ ...so it can't be used inside it.
+|  |  |     29 │     // expect-error: Variable outside closed function
+|  |  |     30 │     outer_argument { |foo| ^#{ foo } }
+|  |  |     31 │     // expect-error: Variable outside closed function
+|  |  |
+|  |  |  A closed function, `#{ }`, is compiled as if it were written inside the Interpreter, so it can only use its own arguments and variables, and the Interpreter's members, e.g., `a` to `z`. Pass the value in as an argument, or use `{ }` instead of `#{ }`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (28:22)
+|  |  |  |  SCVariableDeclare (28:26): foo, prototype
+|  |  |  |  |  SCLiteral (28:32) = 10
+|  |  |  |  SCExplicitReturn (28:36)
+|  |  |  |  |  SCFunction (28:37): closed
+|  |  |  |  |  |  SCBody (28:37)
+|  |  |  |  |  |  |  SCExprList (28:40)
+|  |  SCMethod (30:5): poisoned: version 3.16: outer_argument { |foo| ^#{ foo } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable outside closed function
+|  |  |  closed_functions/lookup.sc:30:23
+|  |  |     28 │     outer_variable { var foo = 10; ^#{ foo } }
+|  |  |     29 │     // expect-error: Variable outside closed function
+|  |  |     30 │     outer_argument { |foo| ^#{ foo } }
+|  |  |        ┆                       ^^^ This is declared outside the closed function...
+|  |  |     31 │     // expect-error: Variable outside closed function
+|  |  |     32 │     instance_variable { ^#{ instance_var } }
+|  |  |     33 │     // expect-error: Variable outside closed function
+|  |  |
+|  |  |  closed_functions/lookup.sc:30:32
+|  |  |     28 │     outer_variable { var foo = 10; ^#{ foo } }
+|  |  |     29 │     // expect-error: Variable outside closed function
+|  |  |     30 │     outer_argument { |foo| ^#{ foo } }
+|  |  |        ┆                                ^^^ ...so it can't be used inside it.
+|  |  |     31 │     // expect-error: Variable outside closed function
+|  |  |     32 │     instance_variable { ^#{ instance_var } }
+|  |  |     33 │     // expect-error: Variable outside closed function
+|  |  |
+|  |  |  A closed function, `#{ }`, is compiled as if it were written inside the Interpreter, so it can only use its own arguments and variables, and the Interpreter's members, e.g., `a` to `z`. Pass the value in as an argument, or use `{ }` instead of `#{ }`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (30:23)
+|  |  |  |  SCArgumentDeclare (30:23): foo
+|  |  |  SCBody (30:28)
+|  |  |  |  SCExplicitReturn (30:28)
+|  |  |  |  |  SCFunction (30:29): closed
+|  |  |  |  |  |  SCBody (30:29)
+|  |  |  |  |  |  |  SCExprList (30:32)
+|  |  SCMethod (32:5): poisoned: version 3.16: instance_variable { ^#{ instance_var } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable outside closed function
+|  |  |  closed_functions/lookup.sc:4:9
+|  |  |      2 │ // A closed function, `#{ }`, only sees its own variables and the Interpreter's members, e.g., `a` to `z`.
+|  |  |      3 │ ClosedLookup {
+|  |  |      4 │     var instance_var;
+|  |  |        ┆         ^^^^^^^^^^^^ This is declared outside the closed function...
+|  |  |      5 │     classvar class_var;
+|  |  |      6 │ 
+|  |  |      7 │     // expect-reads: a -> a
+|  |  |
+|  |  |  closed_functions/lookup.sc:32:29
+|  |  |     30 │     outer_argument { |foo| ^#{ foo } }
+|  |  |     31 │     // expect-error: Variable outside closed function
+|  |  |     32 │     instance_variable { ^#{ instance_var } }
+|  |  |        ┆                             ^^^^^^^^^^^^ ...so it can't be used inside it.
+|  |  |     33 │     // expect-error: Variable outside closed function
+|  |  |     34 │     class_variable { ^#{ class_var } }
+|  |  |     35 │     // expect-error: Variable outside closed function
+|  |  |
+|  |  |  A closed function, `#{ }`, is compiled as if it were written inside the Interpreter, so it can only use its own arguments and variables, and the Interpreter's members, e.g., `a` to `z`. Pass the value in as an argument, or use `{ }` instead of `#{ }`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (32:25)
+|  |  |  |  SCExplicitReturn (32:25)
+|  |  |  |  |  SCFunction (32:26): closed
+|  |  |  |  |  |  SCBody (32:26)
+|  |  |  |  |  |  |  SCExprList (32:29)
+|  |  SCMethod (34:5): poisoned: version 3.16: class_variable { ^#{ class_var } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable outside closed function
+|  |  |  closed_functions/lookup.sc:5:14
+|  |  |      3 │ ClosedLookup {
+|  |  |      4 │     var instance_var;
+|  |  |      5 │     classvar class_var;
+|  |  |        ┆              ^^^^^^^^^ This is declared outside the closed function...
+|  |  |      6 │ 
+|  |  |      7 │     // expect-reads: a -> a
+|  |  |      8 │     interpreter_member { ^#{ a } }
+|  |  |
+|  |  |  closed_functions/lookup.sc:34:26
+|  |  |     32 │     instance_variable { ^#{ instance_var } }
+|  |  |     33 │     // expect-error: Variable outside closed function
+|  |  |     34 │     class_variable { ^#{ class_var } }
+|  |  |        ┆                          ^^^^^^^^^ ...so it can't be used inside it.
+|  |  |     35 │     // expect-error: Variable outside closed function
+|  |  |     36 │     assigns_outer { var foo; ^#{ foo = 1 } }
+|  |  |     37 │     // expect-error: Variable outside closed function
+|  |  |
+|  |  |  A closed function, `#{ }`, is compiled as if it were written inside the Interpreter, so it can only use its own arguments and variables, and the Interpreter's members, e.g., `a` to `z`. Pass the value in as an argument, or use `{ }` instead of `#{ }`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (34:22)
+|  |  |  |  SCExplicitReturn (34:22)
+|  |  |  |  |  SCFunction (34:23): closed
+|  |  |  |  |  |  SCBody (34:23)
+|  |  |  |  |  |  |  SCExprList (34:26)
+|  |  SCMethod (36:5): poisoned: version 3.16: assigns_outer { var foo; ^#{ foo = 1 } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable outside closed function
+|  |  |  closed_functions/lookup.sc:36:25
+|  |  |     34 │     class_variable { ^#{ class_var } }
+|  |  |     35 │     // expect-error: Variable outside closed function
+|  |  |     36 │     assigns_outer { var foo; ^#{ foo = 1 } }
+|  |  |        ┆                         ^^^ This is declared outside the closed function...
+|  |  |     37 │     // expect-error: Variable outside closed function
+|  |  |     38 │     pack_assigns_outer { var foo; ^#{ #foo, a = [1, 2] } }
+|  |  |     39 │     // expect-error: Variable outside closed function
+|  |  |
+|  |  |  closed_functions/lookup.sc:36:34
+|  |  |     34 │     class_variable { ^#{ class_var } }
+|  |  |     35 │     // expect-error: Variable outside closed function
+|  |  |     36 │     assigns_outer { var foo; ^#{ foo = 1 } }
+|  |  |        ┆                                  ^^^ ...so it can't be used inside it.
+|  |  |     37 │     // expect-error: Variable outside closed function
+|  |  |     38 │     pack_assigns_outer { var foo; ^#{ #foo, a = [1, 2] } }
+|  |  |     39 │     // expect-error: Variable outside closed function
+|  |  |
+|  |  |  A closed function, `#{ }`, is compiled as if it were written inside the Interpreter, so it can only use its own arguments and variables, and the Interpreter's members, e.g., `a` to `z`. Pass the value in as an argument, or use `{ }` instead of `#{ }`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (36:21)
+|  |  |  |  SCVariableDeclare (36:25): foo
+|  |  |  |  SCExplicitReturn (36:30)
+|  |  |  |  |  SCFunction (36:31): closed
+|  |  |  |  |  |  SCBody (36:31)
+|  |  |  |  |  |  |  SCLiteral (36:40) = 1
+|  |  SCMethod (38:5): poisoned: version 3.16: pack_assigns_outer { var foo; ^#{ #foo, a = [1, 2] } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable outside closed function
+|  |  |  closed_functions/lookup.sc:38:30
+|  |  |     36 │     assigns_outer { var foo; ^#{ foo = 1 } }
+|  |  |     37 │     // expect-error: Variable outside closed function
+|  |  |     38 │     pack_assigns_outer { var foo; ^#{ #foo, a = [1, 2] } }
+|  |  |        ┆                              ^^^ This is declared outside the closed function...
+|  |  |     39 │     // expect-error: Variable outside closed function
+|  |  |     40 │     outer_function_variable { ^{ |foo| #{ foo } } }
+|  |  |     41 │     // expect-error: Variable outside closed function
+|  |  |
+|  |  |  closed_functions/lookup.sc:38:40
+|  |  |     36 │     assigns_outer { var foo; ^#{ foo = 1 } }
+|  |  |     37 │     // expect-error: Variable outside closed function
+|  |  |     38 │     pack_assigns_outer { var foo; ^#{ #foo, a = [1, 2] } }
+|  |  |        ┆                                        ^^^ ...so it can't be used inside it.
+|  |  |     39 │     // expect-error: Variable outside closed function
+|  |  |     40 │     outer_function_variable { ^{ |foo| #{ foo } } }
+|  |  |     41 │     // expect-error: Variable outside closed function
+|  |  |
+|  |  |  A closed function, `#{ }`, is compiled as if it were written inside the Interpreter, so it can only use its own arguments and variables, and the Interpreter's members, e.g., `a` to `z`. Pass the value in as an argument, or use `{ }` instead of `#{ }`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (38:26)
+|  |  |  |  SCVariableDeclare (38:30): foo
+|  |  |  |  SCExplicitReturn (38:35)
+|  |  |  |  |  SCFunction (38:36): closed
+|  |  |  |  |  |  SCBody (38:36)
+|  |  |  |  |  |  |  SCPackAssign (38:39)
+|  |  |  |  |  |  |  |  SCCollection (38:49): Array = [1, 2]
+|  |  |  |  |  |  |  |  |  SCLiteral (38:50) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (38:53) = 2
+|  |  |  |  |  |  |  |  SCPackTargets (38:39)
+|  |  |  |  |  |  |  |  |  SCPackTarget (38:45): instance a at 1, declared (37:11): a
+|  |  SCMethod (40:5): poisoned: version 3.16: outer_function_variable { ^{ |foo| #{ foo } } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable outside closed function
+|  |  |  closed_functions/lookup.sc:40:35
+|  |  |     38 │     pack_assigns_outer { var foo; ^#{ #foo, a = [1, 2] } }
+|  |  |     39 │     // expect-error: Variable outside closed function
+|  |  |     40 │     outer_function_variable { ^{ |foo| #{ foo } } }
+|  |  |        ┆                                   ^^^ This is declared outside the closed function...
+|  |  |     41 │     // expect-error: Variable outside closed function
+|  |  |     42 │     outer_closed_variable { ^#{ |foo| #{ foo } } }
+|  |  |     43 │     // A function in its own initial value could see it, a closed one can't.
+|  |  |
+|  |  |  closed_functions/lookup.sc:40:43
+|  |  |     38 │     pack_assigns_outer { var foo; ^#{ #foo, a = [1, 2] } }
+|  |  |     39 │     // expect-error: Variable outside closed function
+|  |  |     40 │     outer_function_variable { ^{ |foo| #{ foo } } }
+|  |  |        ┆                                           ^^^ ...so it can't be used inside it.
+|  |  |     41 │     // expect-error: Variable outside closed function
+|  |  |     42 │     outer_closed_variable { ^#{ |foo| #{ foo } } }
+|  |  |     43 │     // A function in its own initial value could see it, a closed one can't.
+|  |  |
+|  |  |  A closed function, `#{ }`, is compiled as if it were written inside the Interpreter, so it can only use its own arguments and variables, and the Interpreter's members, e.g., `a` to `z`. Pass the value in as an argument, or use `{ }` instead of `#{ }`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (40:31)
+|  |  |  |  SCExplicitReturn (40:31)
+|  |  |  |  |  SCFunction (40:32)
+|  |  |  |  |  |  SCArgumentDeclareList (40:35)
+|  |  |  |  |  |  |  SCArgumentDeclare (40:35): foo
+|  |  |  |  |  |  SCBody (40:32)
+|  |  |  |  |  |  |  SCFunction (40:40): closed
+|  |  |  |  |  |  |  |  SCBody (40:40)
+|  |  |  |  |  |  |  |  |  SCExprList (40:43)
+|  |  SCMethod (42:5): poisoned: version 3.16: outer_closed_variable { ^#{ |foo| #{ foo } } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable outside closed function
+|  |  |  closed_functions/lookup.sc:42:34
+|  |  |     40 │     outer_function_variable { ^{ |foo| #{ foo } } }
+|  |  |     41 │     // expect-error: Variable outside closed function
+|  |  |     42 │     outer_closed_variable { ^#{ |foo| #{ foo } } }
+|  |  |        ┆                                  ^^^ This is declared outside the closed function...
+|  |  |     43 │     // A function in its own initial value could see it, a closed one can't.
+|  |  |     44 │     // expect-error: Variable outside closed function
+|  |  |     45 │     own_initial_value { var foo = #{ foo }; ^foo }
+|  |  |
+|  |  |  closed_functions/lookup.sc:42:42
+|  |  |     40 │     outer_function_variable { ^{ |foo| #{ foo } } }
+|  |  |     41 │     // expect-error: Variable outside closed function
+|  |  |     42 │     outer_closed_variable { ^#{ |foo| #{ foo } } }
+|  |  |        ┆                                          ^^^ ...so it can't be used inside it.
+|  |  |     43 │     // A function in its own initial value could see it, a closed one can't.
+|  |  |     44 │     // expect-error: Variable outside closed function
+|  |  |     45 │     own_initial_value { var foo = #{ foo }; ^foo }
+|  |  |
+|  |  |  A closed function, `#{ }`, is compiled as if it were written inside the Interpreter, so it can only use its own arguments and variables, and the Interpreter's members, e.g., `a` to `z`. Pass the value in as an argument, or use `{ }` instead of `#{ }`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (42:29)
+|  |  |  |  SCExplicitReturn (42:29)
+|  |  |  |  |  SCFunction (42:30): closed
+|  |  |  |  |  |  SCArgumentDeclareList (42:34)
+|  |  |  |  |  |  |  SCArgumentDeclare (42:34): foo
+|  |  |  |  |  |  SCBody (42:30)
+|  |  |  |  |  |  |  SCFunction (42:39): closed
+|  |  |  |  |  |  |  |  SCBody (42:39)
+|  |  |  |  |  |  |  |  |  SCExprList (42:42)
+|  |  SCMethod (45:5): poisoned: version 3.16: own_initial_value { var foo = #{ foo }; ^foo }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable outside closed function
+|  |  |  closed_functions/lookup.sc:45:29
+|  |  |     43 │     // A function in its own initial value could see it, a closed one can't.
+|  |  |     44 │     // expect-error: Variable outside closed function
+|  |  |     45 │     own_initial_value { var foo = #{ foo }; ^foo }
+|  |  |        ┆                             ^^^^^^^^^^^^^^ This is declared outside the closed function...
+|  |  |     46 │     // `f` is also the Interpreter's member, which is what the closed function reads.
+|  |  |     47 │     // expect-reads: f -> f; f = #{ f }
+|  |  |     48 │     own_initial_value_interpreter_name { var f = #{ f }; ^f }
+|  |  |
+|  |  |  closed_functions/lookup.sc:45:38
+|  |  |     43 │     // A function in its own initial value could see it, a closed one can't.
+|  |  |     44 │     // expect-error: Variable outside closed function
+|  |  |     45 │     own_initial_value { var foo = #{ foo }; ^foo }
+|  |  |        ┆                                      ^^^ ...so it can't be used inside it.
+|  |  |     46 │     // `f` is also the Interpreter's member, which is what the closed function reads.
+|  |  |     47 │     // expect-reads: f -> f; f = #{ f }
+|  |  |     48 │     own_initial_value_interpreter_name { var f = #{ f }; ^f }
+|  |  |
+|  |  |  A closed function, `#{ }`, is compiled as if it were written inside the Interpreter, so it can only use its own arguments and variables, and the Interpreter's members, e.g., `a` to `z`. Pass the value in as an argument, or use `{ }` instead of `#{ }`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (45:25)
+|  |  |  |  SCVariableDeclare (45:29): foo, computed
+|  |  |  |  |  SCFunction (45:35): closed
+|  |  |  |  |  |  SCBody (45:35)
+|  |  |  |  |  |  |  SCExprList (45:38)
+|  |  |  |  SCExplicitReturn (45:45)
+|  |  |  |  |  SCRead (45:46): local foo, declared (45:29): foo = #{ foo }
+|  |  SCMethod (48:5): version 3.16: own_initial_value_interpreter_name { var f = #{ f }; ^f }
+|  |  |  SCBody (48:42)
+|  |  |  |  SCVariableDeclare (48:46): f, computed
+|  |  |  |  |  SCFunction (48:50): closed
+|  |  |  |  |  |  SCBody (48:50)
+|  |  |  |  |  |  |  SCRead (48:53): instance f, declared (37:36): f
+|  |  |  |  SCExplicitReturn (48:58)
+|  |  |  |  |  SCRead (48:59): local f, declared (48:46): f = #{ f }
+|  |  SCMethod (50:5): poisoned: version 3.16: undefined { ^#{ nothing } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  closed_functions/lookup.sc:50:21
+|  |  |     48 │     own_initial_value_interpreter_name { var f = #{ f }; ^f }
+|  |  |     49 │     // expect-error: Variable not defined
+|  |  |     50 │     undefined { ^#{ nothing } }
+|  |  |        ┆                     ^^^^^^^ this is not defined.
+|  |  |     51 │ 
+|  |  |     52 │     // `a` in the closed function is the Interpreter's, so the variable isn't captured, and stays constant.
+|  |  |     53 │     // expect-reads: a -> a; a = 1
+|  |  |
+|  |  |  Declare it with 'var', or use '~nothing' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (50:17)
+|  |  |  |  SCExplicitReturn (50:17)
+|  |  |  |  |  SCFunction (50:18): closed
+|  |  |  |  |  |  SCBody (50:18)
+|  |  |  |  |  |  |  SCExprList (50:21)
+|  |  SCMethod (54:5): version 3.16: outer_not_captured { var a = 1; #{ a }; ^a }
+|  |  |  SCBody (54:26)
+|  |  |  |  SCVariableDeclare (54:30): a, prototype
+|  |  |  |  |  SCLiteral (54:34) = 1
+|  |  |  |  SCFunction (54:37): closed
+|  |  |  |  |  SCBody (54:37)
+|  |  |  |  |  |  SCRead (54:40): instance a, declared (37:11): a
+|  |  |  |  SCExplicitReturn (54:45)
+|  |  |  |  |  SCRead (54:46): local a = 1, declared (54:30): a = 1
+|  |  SCMethod (57:5): version 3.16: open_captures { var a = 1; { a }; ^a }
+|  |  |  SCBody (57:21)
+|  |  |  |  SCVariableDeclare (57:25): a (captured), prototype
+|  |  |  |  |  SCLiteral (57:29) = 1
+|  |  |  |  SCFunction (57:32)
+|  |  |  |  |  SCBody (57:32)
+|  |  |  |  |  |  SCRead (57:34): local a, declared (57:25): a = 1
+|  |  |  |  SCExplicitReturn (57:39)
+|  |  |  |  |  SCRead (57:40): local a, declared (57:25): a = 1
+SCClass (3:1): Meta_ClosedLookup, version 3.16
+|  SCMemberList (3:1)
+|  |  SCMember (5:14): class_var
+|  SCMethodList (3:1)
+Successfully compiled 16 classes.

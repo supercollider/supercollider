@@ -12,7 +12,7 @@ namespace sc::ir::ast2ir {
 // are the Interpreter's, see push_member_scopes.
 struct Interpreted : private Base {
     Interpreted(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, ast::LanguageVersion version,
-                const Scope* meta_class_members, const Scope& class_members);
+                const InterpreterScopes& interpreter);
 
     Return<SCInterpreted_I> operator()(ast::RegionListIndex);
     Return<SCInterpreted_I> operator()(ast::FileAsFunctionIndex);

@@ -436,6 +436,17 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
         pool.join();
     }
 
+    // Gather interpreter scope for use in closed functions.
+    std::optional<ast2ir::InterpreterScopes> interpreter_scopes;
+    if (const auto fnd = class_builds.find(ctx.common_symbols.interpreter); fnd != class_builds.end() && fnd->second) {
+        const ast2ir::Scope* meta_members = nullptr;
+        if (const auto meta = ctx.class_declarations.get_unsafe(fnd->first)->meta_class())
+            if (const auto meta_fnd = class_builds.find(*meta); meta_fnd != class_builds.end() && meta_fnd->second)
+                meta_members = &meta_fnd->second->members;
+        assert(meta_members);
+        interpreter_scopes.emplace(ast2ir::InterpreterScopes { meta_members, fnd->second->members });
+    }
+
     // Step 4b: Compile the methods.
     {
         boost::asio::thread_pool pool { num_threads };
@@ -469,9 +480,14 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                           [&](const auto* l, const auto* r) { return source_order(l) < source_order(r); });
 
                 for (const auto* method : methods) {
-                    const auto r = ast2ir::Method {
-                        *build.ir, method->ast_graph, ctx, method->version, meta_members, build.members
-                    }(method->ast_node_index);
+                    const auto r =
+                        ast2ir::Method { *build.ir,
+                                         method->ast_graph,
+                                         ctx,
+                                         method->version,
+                                         meta_members,
+                                         build.members,
+                                         interpreter_scopes ? &*interpreter_scopes : nullptr }(method->ast_node_index);
                     // Still compiled, so its own diagnostics are reported, e.g., an extension that clashes. Like any
                     // poisoned method, its result isn't known.
                     if (method->poisoned) {
@@ -527,7 +543,8 @@ IRCompiler::Interpreted IRCompiler::compile_interpreted(std::shared_ptr<const as
     const auto members = ast2ir::member_scope(class_ir);
     const auto meta_members = meta_ir ? std::optional { ast2ir::member_scope(meta_ir) } : std::nullopt;
     auto ir = std::make_shared<IRGraph>();
-    ast2ir::Interpreted interpreted { *ir, ast_graph, ctx, version, meta_members ? &*meta_members : nullptr, members };
+    const ast2ir::InterpreterScopes interpreter_scopes { meta_members ? &*meta_members : nullptr, members };
+    ast2ir::Interpreted interpreted { *ir, ast_graph, ctx, version, interpreter_scopes };
     const auto r = std::visit(
         util::overload { [&](ast::RegionListIndex i) { return interpreted(i); },
                          [&](ast::FileAsFunctionIndex i) { return interpreted(i); },

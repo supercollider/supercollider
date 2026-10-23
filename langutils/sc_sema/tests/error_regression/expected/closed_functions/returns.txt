@@ -1,0 +1,91 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): ClosedReturns, version 3.16
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (5:5): poisoned: version 3.16: returns { ^#{ ^1 } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Return in closed function
+|  |  |  closed_functions/returns.sc:5:19
+|  |  |      3 │ ClosedReturns {
+|  |  |      4 │     // expect-error: Return in closed function
+|  |  |      5 │     returns { ^#{ ^1 } }
+|  |  |        ┆                   ^^ there is no method to return from.
+|  |  |      6 │     // expect-error: Return in closed function
+|  |  |      7 │     nested { ^#{ |x| if (x) { ^1 }; 2 } }
+|  |  |      8 │     // The method's own return, after a closed function, is fine.
+|  |  |
+|  |  |  `^` returns from the method the code is written in, but a closed function, `#{ }`, isn't in one, even when it is written in a method. A function returns its last expression, so remove the `^`, or use `{ }` instead of `#{ }`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (5:15)
+|  |  |  |  SCExplicitReturn (5:15)
+|  |  |  |  |  SCFunction (5:16): closed
+|  |  |  |  |  |  SCBody (5:16)
+|  |  |  |  |  |  |  SCLiteral (5:20) = 1
+|  |  SCMethod (7:5): poisoned: version 3.16: nested { ^#{ |x| if (x) { ^1 }; 2 } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Return in closed function
+|  |  |  closed_functions/returns.sc:7:31
+|  |  |      5 │     returns { ^#{ ^1 } }
+|  |  |      6 │     // expect-error: Return in closed function
+|  |  |      7 │     nested { ^#{ |x| if (x) { ^1 }; 2 } }
+|  |  |        ┆                               ^^ there is no method to return from.
+|  |  |      8 │     // The method's own return, after a closed function, is fine.
+|  |  |      9 │     // expect: no diagnostics
+|  |  |     10 │     after { |x| if (x) { ^1 }; #{ 3 }; ^2 }
+|  |  |
+|  |  |  `^` returns from the method the code is written in, but a closed function, `#{ }`, isn't in one, even when it is written in a method. A function returns its last expression, so remove the `^`, or use `{ }` instead of `#{ }`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (7:14)
+|  |  |  |  SCExplicitReturn (7:14)
+|  |  |  |  |  SCFunction (7:15): closed
+|  |  |  |  |  |  SCArgumentDeclareList (7:19)
+|  |  |  |  |  |  |  SCArgumentDeclare (7:19): x
+|  |  |  |  |  |  SCBody (7:15)
+|  |  |  |  |  |  |  SCMessage (7:22): if
+|  |  |  |  |  |  |  |  SCRead (7:26): local x, declared (7:19): x
+|  |  |  |  |  |  |  |  SCPositionalArgs (7:22)
+|  |  |  |  |  |  |  |  |  SCFunction (7:29)
+|  |  |  |  |  |  |  |  |  |  SCBody (7:29)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (7:32) = 1
+|  |  |  |  |  |  |  SCLiteral (7:37) = 2
+|  |  SCMethod (10:5): version 3.16: after { |x| if (x) { ^1 }; #{ 3 }; ^2 }
+|  |  |  SCArgumentDeclareList (10:14)
+|  |  |  |  SCArgumentDeclare (10:14): x
+|  |  |  SCBody (10:17)
+|  |  |  |  SCMessage (10:17): if
+|  |  |  |  |  SCRead (10:21): local x, declared (10:14): x
+|  |  |  |  |  SCPositionalArgs (10:17)
+|  |  |  |  |  |  SCFunction (10:24)
+|  |  |  |  |  |  |  SCBody (10:24)
+|  |  |  |  |  |  |  |  SCExplicitReturn (10:26)
+|  |  |  |  |  |  |  |  |  SCLiteral (10:27) = 1
+|  |  |  |  SCFunction (10:32): closed -> 3
+|  |  |  |  |  SCBody (10:32)
+|  |  |  |  |  |  SCLiteral (10:35) = 3
+|  |  |  |  SCExplicitReturn (10:40)
+|  |  |  |  |  SCLiteral (10:41) = 2
+|  |  SCMethod (12:5): version 3.16: open_inside_method { ^{ |x| if (x) { ^1 }; #{ 2 } } }
+|  |  |  SCBody (12:26)
+|  |  |  |  SCExplicitReturn (12:26)
+|  |  |  |  |  SCFunction (12:27)
+|  |  |  |  |  |  SCArgumentDeclareList (12:30)
+|  |  |  |  |  |  |  SCArgumentDeclare (12:30): x
+|  |  |  |  |  |  SCBody (12:27)
+|  |  |  |  |  |  |  SCMessage (12:33): if
+|  |  |  |  |  |  |  |  SCRead (12:37): local x, declared (12:30): x
+|  |  |  |  |  |  |  |  SCPositionalArgs (12:33)
+|  |  |  |  |  |  |  |  |  SCFunction (12:40)
+|  |  |  |  |  |  |  |  |  |  SCBody (12:40)
+|  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (12:42)
+|  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (12:43) = 1
+|  |  |  |  |  |  |  SCFunction (12:48): closed -> 2
+|  |  |  |  |  |  |  |  SCBody (12:48)
+|  |  |  |  |  |  |  |  |  SCLiteral (12:51) = 2
+Successfully compiled 16 classes.

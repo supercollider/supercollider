@@ -17,9 +17,8 @@ namespace sc::ir::ast2ir {
 void push_member_scopes(Expr& expr, const Scope* meta_class_members, const Scope& class_members);
 
 struct Method : private Base {
-    // See push_member_scopes.
     Method(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, ast::LanguageVersion version,
-           const Scope* meta_class_members, const Scope& class_members);
+           const Scope* meta_class_members, const Scope& class_members, const InterpreterScopes* interpreter);
 
     Return<SCMethod_I> operator()(ast::AnyValidMethodIndex);
 
@@ -28,5 +27,4 @@ private:
     DiagnosticSink sink;
     Expr expr;
 };
-
 }

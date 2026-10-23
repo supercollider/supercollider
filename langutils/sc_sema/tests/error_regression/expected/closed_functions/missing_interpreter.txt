@@ -1,0 +1,107 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): AbstractObjectExperimental, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+SCClass (6:1): Object, version 3.16
+|  SCMemberList (6:1)
+|  SCMethodList (6:1)
+SCClass (6:1): Meta_Object, version 3.16
+|  SCMemberList (6:1)
+|  |  SCMember (7:14): dependantsDictionary
+|  |  SCMember (7:36): currentEnvironment
+|  |  SCMember (7:56): topEnvironment
+|  |  SCMember (7:72): uniqueMethods
+|  SCMethodList (6:1)
+SCClass (10:1): Class, version 3.16
+|  SCMemberList (10:1)
+|  SCMethodList (10:1)
+SCClass (12:1): String, version 3.16
+|  SCMemberList (12:1)
+|  SCMethodList (12:1)
+SCClass (14:1): True, version 3.16
+|  SCMemberList (14:1)
+|  SCMethodList (14:1)
+SCClass (16:1): False, version 3.16
+|  SCMemberList (16:1)
+|  SCMethodList (16:1)
+SCClass (18:1): Nil, version 3.16
+|  SCMemberList (18:1)
+|  SCMethodList (18:1)
+SCClass (20:1): Float, version 3.16
+|  SCMemberList (20:1)
+|  SCMethodList (20:1)
+SCClass (22:1): Integer, version 3.16
+|  SCMemberList (22:1)
+|  SCMethodList (22:1)
+SCClass (24:1): Char, version 3.16
+|  SCMemberList (24:1)
+|  SCMethodList (24:1)
+SCClass (26:1): Symbol, version 3.16
+|  SCMemberList (26:1)
+|  SCMethodList (26:1)
+SCClass (28:1): Ref, version 3.16
+|  SCMemberList (28:1)
+|  SCMethodList (28:1)
+SCClass (30:1): Array, version 3.16
+|  SCMemberList (30:1)
+|  SCMethodList (30:1)
+SCClass (32:1): Event, version 3.16
+|  SCMemberList (32:1)
+|  SCMethodList (32:1)
+SCClass (34:1): NoInterpreter, version 3.16
+|  SCMemberList (34:1)
+|  SCMethodList (34:1)
+|  |  SCMethod (37:5): poisoned: version 3.16: closed { ^#{ 1 } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Interpreter missing
+|  |  |  closed_functions/missing_interpreter.sc:37:15
+|  |  |     35 │     // expect-error: Interpreter missing
+|  |  |     36 │     // expect: poisoned
+|  |  |     37 │     closed { ^#{ 1 } }
+|  |  |        ┆               ^^^^^^ this closed function can't be compiled without it.
+|  |  |     38 │     // expect-error: Interpreter missing
+|  |  |     39 │     // expect: poisoned
+|  |  |     40 │     nested { ^{ #{ 1 } } }
+|  |  |
+|  |  |  A closed function, `#{ }`, is compiled as if it were written inside the Interpreter, so it can use the Interpreter's members, e.g., `a` to `z`, but not the variables around it. The class library must define the Interpreter, and it must compile without errors.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (37:14)
+|  |  |  |  SCExplicitReturn (37:14)
+|  |  |  |  |  SCFunction (37:15): closed
+|  |  |  |  |  |  SCBody (37:15)
+|  |  |  |  |  |  |  SCLiteral (37:18) = 1
+|  |  SCMethod (40:5): poisoned: version 3.16: nested { ^{ #{ 1 } } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Interpreter missing
+|  |  |  closed_functions/missing_interpreter.sc:40:17
+|  |  |     38 │     // expect-error: Interpreter missing
+|  |  |     39 │     // expect: poisoned
+|  |  |     40 │     nested { ^{ #{ 1 } } }
+|  |  |        ┆                 ^^^^^^ this closed function can't be compiled without it.
+|  |  |     41 │     // expect: not poisoned
+|  |  |     42 │     open { ^{ 1 } }
+|  |  |     43 │ }
+|  |  |
+|  |  |  A closed function, `#{ }`, is compiled as if it were written inside the Interpreter, so it can use the Interpreter's members, e.g., `a` to `z`, but not the variables around it. The class library must define the Interpreter, and it must compile without errors.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (40:14)
+|  |  |  |  SCExplicitReturn (40:14)
+|  |  |  |  |  SCFunction (40:15)
+|  |  |  |  |  |  SCBody (40:15)
+|  |  |  |  |  |  |  SCFunction (40:17): closed
+|  |  |  |  |  |  |  |  SCBody (40:17)
+|  |  |  |  |  |  |  |  |  SCLiteral (40:20) = 1
+|  |  SCMethod (42:5): version 3.16: open { ^{ 1 } }
+|  |  |  SCBody (42:12)
+|  |  |  |  SCExplicitReturn (42:12)
+|  |  |  |  |  SCFunction (42:13) -> 1
+|  |  |  |  |  |  SCBody (42:13)
+|  |  |  |  |  |  |  SCLiteral (42:15) = 1
+Successfully compiled 15 classes.

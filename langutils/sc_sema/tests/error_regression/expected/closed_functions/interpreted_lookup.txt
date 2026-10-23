@@ -1,0 +1,37 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): poisoned: version 3.16: closed_functions/interpreted_lookup.scd
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Variable outside closed function
+|  closed_functions/interpreted_lookup.scd:5:6
+|      3 │ // expect-error: Variable outside closed function
+|      4 │ // expect-reads: a -> a
+|      5 │ (var foo = 1; #{ a + foo })
+|        ┆      ^^^^^^^ This is declared outside the closed function...
+|
+|  closed_functions/interpreted_lookup.scd:5:22
+|      3 │ // expect-error: Variable outside closed function
+|      4 │ // expect-reads: a -> a
+|      5 │ (var foo = 1; #{ a + foo })
+|        ┆                      ^^^ ...so it can't be used inside it.
+|
+|  A closed function, `#{ }`, is compiled as if it were written inside the Interpreter, so it can only use its own arguments and variables, and the Interpreter's members, e.g., `a` to `z`. Pass the value in as an argument, or use `{ }` instead of `#{ }`.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCRegionList (1:1)
+|  |  SCRegion (5:1)
+|  |  |  SCFunction (5:1)
+|  |  |  |  SCBody (5:1)
+|  |  |  |  |  SCVariableDeclare (5:6): foo, prototype
+|  |  |  |  |  |  SCLiteral (5:12) = 1
+|  |  |  |  |  SCFunction (5:15): closed
+|  |  |  |  |  |  SCBody (5:15)
+|  |  |  |  |  |  |  SCMessage (5:18): +
+|  |  |  |  |  |  |  |  SCRead (5:18): instance a, declared (37:11): a
+|  |  |  |  |  |  |  |  SCPositionalArgs (5:18)
+|  |  |  |  |  |  |  |  |  SCExprList (5:22)
+Successfully compiled 15 classes.

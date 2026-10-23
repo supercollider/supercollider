@@ -1,0 +1,25 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): version 3.16: closed_functions/interpreted.scd
+|  SCRegionList (1:1)
+|  |  SCRegion (4:1)
+|  |  |  SCFunction (4:1)
+|  |  |  |  SCBody (4:1)
+|  |  |  |  |  SCAssign (4:1): instance f, declared (37:36): f
+|  |  |  |  |  |  SCFunction (4:5): closed -> 1
+|  |  |  |  |  |  |  SCBody (4:5)
+|  |  |  |  |  |  |  |  SCLiteral (4:8) = 1
+|  |  SCRegion (4:13)
+|  |  |  SCFunction (4:13)
+|  |  |  |  SCBody (4:13)
+|  |  |  |  |  SCAssign (4:13): instance g, declared (37:41): g
+|  |  |  |  |  |  SCFunction (4:17)
+|  |  |  |  |  |  |  SCBody (4:17)
+|  |  |  |  |  |  |  |  SCFunction (4:19): closed -> 2
+|  |  |  |  |  |  |  |  |  SCBody (4:19)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (4:22) = 2
+Successfully compiled 15 classes.

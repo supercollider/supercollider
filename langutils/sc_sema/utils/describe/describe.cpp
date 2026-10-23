@@ -189,6 +189,10 @@ void write_details(const Describe& d, std::ostream& out, const IRGraph::Variant&
                        if (const auto& path = g.text_info(loc.source)->file_path)
                            out << (d.relative_to ? path->lexically_relative(*d.relative_to) : *path).string();
                    },
+                   [&](const SCFunction& f) {
+                       if (f.closed)
+                           out << ": closed";
+                   },
                    [&](const SCMessage& m) { out << ": " << symbol_table(*m.selector); },
                    [&](const SCKwArg& k) { out << ": " << symbol_table(*k.name); },
                    [&](const SCVariableDeclare& v) {

@@ -45,6 +45,11 @@ struct Base {
 
 [[nodiscard]] constexpr bool is_frame_scoped(ast::LanguageVersion v) { return v < ast::LanguageVersion::V3_16; }
 
+// The old compiler compiles `^` in a closed function, which fails when it runs, as there is no method to return from.
+[[nodiscard]] constexpr bool allows_closed_function_return(ast::LanguageVersion v) {
+    return v < ast::LanguageVersion::V3_16;
+}
+
 // Collects the diagnostics of one unit of compilation, e.g., a method, so it knows whether it should be poisoned.
 // This is NOT thread safe.
 struct DiagnosticSink {

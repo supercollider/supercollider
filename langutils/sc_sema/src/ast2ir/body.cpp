@@ -59,6 +59,9 @@ public:
             return;
         }
         if (const auto block = g.as_a<ast::BlockIndex>(node)) {
+            // A closed function can't refer to what is around it, see compile_function.
+            if (g.payload(*block).closed)
+                return;
             const auto [args, contents] = g.children(*block);
             scan_function(args, { *contents });
             return;

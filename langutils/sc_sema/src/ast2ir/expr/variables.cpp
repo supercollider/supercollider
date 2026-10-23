@@ -260,6 +260,26 @@ bool assigns_to_constant(Expr& expr, const ScopeEntry& entry, const ast::ASTGrap
     return true;
 }
 
+void report_undefined(Expr& expr, IRGraph& ir, Symbol name, const ast::ASTGraph& g, ast::Index at) {
+    const auto declaration = [&]() -> std::optional<SourceLocation> {
+        for (auto outside = expr.outside_closed.rbegin(); outside != expr.outside_closed.rend(); ++outside) {
+            for (auto v = outside->initialising.rbegin(); v != outside->initialising.rend(); ++v)
+                if (v->name == name)
+                    return v->declaration;
+            for (auto s = outside->scope.rbegin(); s != outside->scope.rend(); ++s)
+                if (const auto fnd = s->find(name); fnd != s->end())
+                    return declaration_location(ir, fnd->second);
+        }
+        return std::nullopt;
+    }();
+    if (declaration) {
+        expr.sink(sc::diag::Diagnostic::outside_closed_function(
+            ir.text_info(declaration->source), IRGraph::range(*declaration), get_text_info(g), get_location(g, at)));
+        return;
+    }
+    expr.sink(sc::diag::Diagnostic::undefined_variable(get_text_info(g), get_location(g, at), get_string_view(g, at)));
+}
+
 // A member is found by the class declaring it, see MemberVariable, locals by their index.
 OptionalMemberIndex member_of(IRGraph& ir, SymSCIdentifier name, const ScopeEntry& entry) {
     if (!entry.owning_class)
@@ -293,7 +313,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::NamedIdentifierIndex i) {
         return { read };
     }
 
-    sink(sc::diag::Diagnostic::undefined_variable(get_text_info(*ast_graph), get_location(*ast_graph, i), txt));
+    report_undefined(*this, ir, name_sym, *ast_graph, { *i });
     return { ir.create(SCExprList {}, location({ *i })) };
 }
 
@@ -336,7 +356,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
         return make_return(to_assign_kind(entry->kind), entry->local, member_of(ir, name_sym, *entry));
     }
 
-    sink(sc::diag::Diagnostic::undefined_variable(get_text_info(*ast_graph), get_location(*ast_graph, name), txt));
+    report_undefined(*this, ir, name_sym, *ast_graph, { *name });
     return expr_r;
 }
 
@@ -391,7 +411,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::VariablePackAssignIndex i) {
                                 location({ **name })));
             return;
         }
-        sink(sc::diag::Diagnostic::undefined_variable(get_text_info(*ast_graph), get_location(*ast_graph, *name), txt));
+        report_undefined(*this, ir, sym, *ast_graph, { **name });
     };
 
     std::uint32_t index { 0 };
