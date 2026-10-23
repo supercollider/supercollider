@@ -961,11 +961,18 @@ variable_declarations.list.item
 	| name EQUALSSIGN expr
 		{ $$ = cxt.create(DeclareVariableWithDefaultNode{}, @$, $1, $3); }
 	| name OPENPAREN expr_or_seq CLOSEPAREN
-		{ $$ = cxt.create(DeclareVariableWithDefaultNode{}, @$, $1, $3); }
+		{
+			// Bracketed, as in the old compiler, so it isn't a literal, see ConstEval::is_legacy_literal.
+			cxt.graph->register_bracketed_expr($3);
+			$$ = cxt.create(DeclareVariableWithDefaultNode{}, @$, $1, $3);
+		}
 	| name.pack[names] EQUALSSIGN expr
 		{ $$ = cxt.create(VariablePackAssign{}, @$, $names, $expr); }
 	| name.pack[names] OPENPAREN expr_or_seq[expr] CLOSEPAREN
-		{ $$ = cxt.create(VariablePackAssign{}, @$, $names, $expr); }
+		{
+			cxt.graph->register_bracketed_expr($expr);
+			$$ = cxt.create(VariablePackAssign{}, @$, $names, $expr);
+		}
 	;
 
 variable_declarations.list

@@ -38,8 +38,13 @@ Return<SCAnyExpr_I> Expr::operator()(ast::NilLitIndex i) { return literal(ctx, i
 Return<SCAnyExpr_I> Expr::operator()(ast::SymbolQuoteIndex i) { return literal(ctx, ir, ast_graph, version, sink, i); }
 Return<SCAnyExpr_I> Expr::operator()(ast::SymbolSlashIndex i) { return literal(ctx, ir, ast_graph, version, sink, i); }
 
-// The class, its type is the meta class.
+// The class, its type is the meta class. Legacy code doesn't know it is constant, as the old compiler didn't treat it
+// as a literal.
 Return<SCAnyExpr_I> Expr::operator()(ast::ClassNameIdentifierIndex i) {
-    return literal(ctx, ir, ast_graph, version, sink, i);
+    if (folds_constants(version))
+        return literal(ctx, ir, ast_graph, version, sink, i);
+    const auto r = ConstEval { ctx, ast_graph, ASTGraphIndex { 0 }, version }(i).success();
+    assert(r);
+    return { ir.create(SCLiteral { r->first }, location({ *i })), r->second };
 }
 }

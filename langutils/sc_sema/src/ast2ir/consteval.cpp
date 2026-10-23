@@ -16,6 +16,42 @@
 namespace sc::ir::ast2ir {
     using Diagnostic = diag::Diagnostic;
 
+    namespace {
+    // An element of `#[...]`, where a name is a symbol and `[...]` is immutable too.
+    bool is_legacy_literal_element(const ast::ASTGraph& g, ast::AnyExprIndex i) {
+        const ast::Index node { *i };
+        if (g.is_bracketed(node))
+            return false;
+        if (g.as_a<ast::NamedIdentifierIndex>(node))
+            return true;
+        if (const auto array = g.as_a<ast::ArrayIndex>(node)) {
+            for (auto it = g.children(*array).iter(); it; ++it)
+                if (!is_legacy_literal_element(g, ast::AnyExprIndex { **it }))
+                    return false;
+            return true;
+        }
+        return ConstEval::is_legacy_literal(g, i);
+    }
+    }
+
+    bool ConstEval::is_legacy_literal(const ast::ASTGraph& g, ast::AnyExprIndex i) {
+        const ast::Index node { *i };
+        if (g.is_bracketed(node))
+            return false;
+        if (g.as_a<ast::IntLitIndex>(node) || g.as_a<ast::FloatLitIndex>(node) || g.as_a<ast::PiLitIndex>(node)
+            || g.as_a<ast::AccidentalIndex>(node) || g.as_a<ast::ASCIIIndex>(node) || g.as_a<ast::StringLitIndex>(node)
+            || g.as_a<ast::BooleanLitIndex>(node) || g.as_a<ast::NilLitIndex>(node)
+            || g.as_a<ast::SymbolQuoteIndex>(node) || g.as_a<ast::SymbolSlashIndex>(node))
+            return true;
+        const auto array = g.as_a<ast::ArrayIndex>(node);
+        if (!array || !g.payload(*array).is_immutable)
+            return false;
+        for (auto it = g.children(*array).iter(); it; ++it)
+            if (!is_legacy_literal_element(g, ast::AnyExprIndex { **it }))
+                return false;
+        return true;
+    }
+
     ConstEval::Result ConstEval::eval(ast::AnyExprIndex i) { return std::visit(*this, ast_graph->index_to_variant(i)); }
 
     ConstEval::Result ConstEval::operator()(ast::ErrorIndex i) {

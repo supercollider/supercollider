@@ -1,0 +1,252 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): LegacyFolding
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Not a constant
+|  versions/legacy_folding.sc:5:18
+|      3 │ // literal, and a member's initial value must be a literal.
+|      4 │ LegacyFolding {
+|      5 │     var member = 1 + 2;
+|        ┆                  ^^^^^ this can't be evaluated when compiling.
+|      6 │     classvar class_member = Object;
+|      7 │     const constant = #[1, a, [2]];
+|      8 │ 
+|
+|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Not a constant
+|  versions/legacy_folding.sc:6:29
+|      4 │ LegacyFolding {
+|      5 │     var member = 1 + 2;
+|      6 │     classvar class_member = Object;
+|        ┆                             ^^^^^^ this can't be evaluated when compiling.
+|      7 │     const constant = #[1, a, [2]];
+|      8 │ 
+|      9 │     // expect: -> 1
+|
+|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (10:5): literal { ^1 } -> 1
+|  |  |  SCBody (10:15)
+|  |  |  |  SCExplicitReturn (10:15)
+|  |  |  |  |  SCLiteral (10:16) = 1
+|  |  SCMethod (12:5): negative { ^-1 } -> -1
+|  |  |  SCBody (12:16)
+|  |  |  |  SCExplicitReturn (12:16)
+|  |  |  |  |  SCLiteral (12:18) = -1
+|  |  SCMethod (14:5): string { ^"a" } -> "a"
+|  |  |  SCBody (14:14)
+|  |  |  |  SCExplicitReturn (14:14)
+|  |  |  |  |  SCLiteral (14:15) = "a"
+|  |  SCMethod (16:5): symbol { ^\a } -> \a
+|  |  |  SCBody (16:14)
+|  |  |  |  SCExplicitReturn (16:14)
+|  |  |  |  |  SCLiteral (16:15) = \a
+|  |  SCMethod (18:5): immutable_array { ^#[1, a, [2]] } -> [1, \a, [2]]
+|  |  |  SCBody (18:23)
+|  |  |  |  SCExplicitReturn (18:23)
+|  |  |  |  |  SCCollection (18:24): Array = [1, \a, [2]]
+|  |  |  |  |  |  SCLiteral (18:26) = 1
+|  |  |  |  |  |  SCLiteral (18:29) = \a
+|  |  |  |  |  |  SCCollection (18:32): Array = [2]
+|  |  |  |  |  |  |  SCLiteral (18:33) = 2
+|  |  SCMethod (20:5): without_initial_value { var a; ^a } -> nil
+|  |  |  SCBody (20:29)
+|  |  |  |  SCVariableDeclare (20:33): a
+|  |  |  |  SCExplicitReturn (20:36)
+|  |  |  |  |  SCRead (20:37): local a = nil, declared (20:33): a
+|  |  SCMethod (22:5): literal_variable { var a = 1; ^a } -> 1
+|  |  |  SCBody (22:24)
+|  |  |  |  SCVariableDeclare (22:28): a
+|  |  |  |  |  SCLiteral (22:32) = 1
+|  |  |  |  SCExplicitReturn (22:35)
+|  |  |  |  |  SCRead (22:36): local a = 1, declared (22:28): a = 1
+|  |  SCMethod (25:5): arithmetic { ^1 + 1 }
+|  |  |  SCBody (25:18)
+|  |  |  |  SCExplicitReturn (25:18)
+|  |  |  |  |  SCMessage (25:19): +
+|  |  |  |  |  |  SCLiteral (25:19) = 1
+|  |  |  |  |  |  SCPositionalArgs (25:19)
+|  |  |  |  |  |  |  SCLiteral (25:23) = 1
+|  |  SCMethod (27:5): computed_variable { var a = 1 + 1; ^a }
+|  |  |  SCBody (27:25)
+|  |  |  |  SCVariableDeclare (27:29): a
+|  |  |  |  |  SCMessage (27:33): +
+|  |  |  |  |  |  SCLiteral (27:33) = 1
+|  |  |  |  |  |  SCPositionalArgs (27:33)
+|  |  |  |  |  |  |  SCLiteral (27:37) = 1
+|  |  |  |  SCExplicitReturn (27:40)
+|  |  |  |  |  SCRead (27:41): local a, declared (27:29): a = 1 + 1
+|  |  SCMethod (29:5): from_variable { var a = 1, b = a; ^b }
+|  |  |  SCBody (29:21)
+|  |  |  |  SCVariableDeclare (29:25): a
+|  |  |  |  |  SCLiteral (29:29) = 1
+|  |  |  |  SCVariableDeclare (29:32): b
+|  |  |  |  |  SCRead (29:36): local a = 1, declared (29:25): a = 1
+|  |  |  |  SCExplicitReturn (29:39)
+|  |  |  |  |  SCRead (29:40): local b, declared (29:32): b = a
+|  |  SCMethod (32:5): bracketed { ^(1) } -> 1
+|  |  |  SCBody (32:17)
+|  |  |  |  SCExplicitReturn (32:17)
+|  |  |  |  |  SCLiteral (32:19) = 1
+|  |  SCMethod (34:5): bracketed_sequence { ^(1; 2) }
+|  |  |  SCBody (34:26)
+|  |  |  |  SCExplicitReturn (34:26)
+|  |  |  |  |  SCExprList (34:28)
+|  |  |  |  |  |  SCLiteral (34:28) = 1
+|  |  |  |  |  |  SCLiteral (34:31) = 2
+|  |  SCMethod (36:5): bracketed_value { var a = (1); ^a }
+|  |  |  SCBody (36:23)
+|  |  |  |  SCVariableDeclare (36:27): a
+|  |  |  |  |  SCLiteral (36:32) = 1
+|  |  |  |  SCExplicitReturn (36:36)
+|  |  |  |  |  SCRead (36:37): local a, declared (36:27): a = (1)
+|  |  SCMethod (38:5): bracketed_variable { var a(1); ^a }
+|  |  |  SCBody (38:26)
+|  |  |  |  SCVariableDeclare (38:30): a
+|  |  |  |  |  SCLiteral (38:32) = 1
+|  |  |  |  SCExplicitReturn (38:36)
+|  |  |  |  |  SCRead (38:37): local a, declared (38:30): a(1)
+|  |  SCMethod (40:5): class_name { ^Object }
+|  |  |  SCBody (40:18)
+|  |  |  |  SCExplicitReturn (40:18)
+|  |  |  |  |  SCLiteral (40:19)
+|  |  SCMethod (42:5): range { ^(1..3) }
+|  |  |  SCBody (42:13)
+|  |  |  |  SCExplicitReturn (42:13)
+|  |  |  |  |  SCRange (42:14)
+|  |  |  |  |  |  SCLiteral (42:15) = 1
+|  |  |  |  |  |  SCMissing (42:14)
+|  |  |  |  |  |  SCLiteral (42:18) = 3
+|  |  SCMethod (44:5): slice { ^#[1, 2, 3][0..1] }
+|  |  |  SCBody (44:13)
+|  |  |  |  SCExplicitReturn (44:13)
+|  |  |  |  |  SCMessage (44:14): copySeries
+|  |  |  |  |  |  SCCollection (44:14): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (44:16) = 1
+|  |  |  |  |  |  |  SCLiteral (44:19) = 2
+|  |  |  |  |  |  |  SCLiteral (44:22) = 3
+|  |  |  |  |  |  SCPositionalArgs (44:14)
+|  |  |  |  |  |  |  SCLiteral (44:25) = 0
+|  |  |  |  |  |  |  SCLiteral (44:24) = nil
+|  |  |  |  |  |  |  SCLiteral (44:28) = 1
+|  |  SCMethod (46:5): array { ^[1, 2] }
+|  |  |  SCBody (46:13)
+|  |  |  |  SCExplicitReturn (46:13)
+|  |  |  |  |  SCCollection (46:14): Array
+|  |  |  |  |  |  SCLiteral (46:15) = 1
+|  |  |  |  |  |  SCLiteral (46:18) = 2
+|  |  SCMethod (48:5): event { ^(a: 1) }
+|  |  |  SCBody (48:13)
+|  |  |  |  SCExplicitReturn (48:13)
+|  |  |  |  |  SCCollection (48:14): Event
+|  |  |  |  |  |  SCLiteral (48:15) = \a
+|  |  |  |  |  |  SCLiteral (48:18) = 1
+|  |  SCMethod (50:5): pack { var #a, b = #[1, 2]; ^a }
+|  |  |  SCBody (50:12)
+|  |  |  |  SCPackDeclare (50:16)
+|  |  |  |  |  SCCollection (50:24): Array = [1, 2]
+|  |  |  |  |  |  SCLiteral (50:26) = 1
+|  |  |  |  |  |  SCLiteral (50:29) = 2
+|  |  |  |  |  SCPackTargets (50:16)
+|  |  |  |  |  |  SCPackTarget (50:17): local a at 0
+|  |  |  |  |  |  SCPackTarget (50:20): local b at 1
+|  |  |  |  SCExplicitReturn (50:33)
+|  |  |  |  |  SCRead (50:34): local a, declared (50:17): a
+|  |  SCMethod (52:5): nested_return { |x| if (x) { ^1 }; ^2 }
+|  |  |  SCArgumentDeclareList (52:22)
+|  |  |  |  SCArgumentDeclare (52:22): x
+|  |  |  SCBody (52:25)
+|  |  |  |  SCMessage (52:25): if
+|  |  |  |  |  SCRead (52:29): local x, declared (52:22): x
+|  |  |  |  |  SCPositionalArgs (52:25)
+|  |  |  |  |  |  SCFunction (52:32)
+|  |  |  |  |  |  |  SCBody (52:32)
+|  |  |  |  |  |  |  |  SCExplicitReturn (52:34)
+|  |  |  |  |  |  |  |  |  SCLiteral (52:35) = 1
+|  |  |  |  SCExplicitReturn (52:40)
+|  |  |  |  |  SCLiteral (52:41) = 2
+SCClass (4:1): Meta_LegacyFolding
+|  SCMemberList (4:1)
+|  |  SCMember (7:11): constant = [1, \a, [2]]
+|  SCMethodList (4:1)
+SCClass (56:1): Folding, version 3.16
+|  SCMemberList (56:1)
+|  |  SCMember (58:9): member = 3
+|  SCMethodList (56:1)
+|  |  SCMethod (62:5): version 3.16: arithmetic { ^1 + 1 } -> 2
+|  |  |  SCBody (62:18)
+|  |  |  |  SCExplicitReturn (62:18)
+|  |  |  |  |  SCMessage (62:19): + = 2
+|  |  |  |  |  |  SCLiteral (62:19) = 1
+|  |  |  |  |  |  SCPositionalArgs (62:19)
+|  |  |  |  |  |  |  SCLiteral (62:23) = 1
+|  |  SCMethod (64:5): version 3.16: computed_variable { var a = 1 + 1; ^a } -> 2
+|  |  |  SCBody (64:25)
+|  |  |  |  SCVariableDeclare (64:29): a
+|  |  |  |  |  SCMessage (64:33): + = 2
+|  |  |  |  |  |  SCLiteral (64:33) = 1
+|  |  |  |  |  |  SCPositionalArgs (64:33)
+|  |  |  |  |  |  |  SCLiteral (64:37) = 1
+|  |  |  |  SCExplicitReturn (64:40)
+|  |  |  |  |  SCRead (64:41): local a = 2, declared (64:29): a = 1 + 1
+|  |  SCMethod (66:5): version 3.16: from_variable { var a = 1, b = a; ^b } -> 1
+|  |  |  SCBody (66:21)
+|  |  |  |  SCVariableDeclare (66:25): a
+|  |  |  |  |  SCLiteral (66:29) = 1
+|  |  |  |  SCVariableDeclare (66:32): b
+|  |  |  |  |  SCRead (66:36): local a = 1, declared (66:25): a = 1
+|  |  |  |  SCExplicitReturn (66:39)
+|  |  |  |  |  SCRead (66:40): local b = 1, declared (66:32): b = a
+|  |  SCMethod (68:5): version 3.16: bracketed { ^(1) } -> 1
+|  |  |  SCBody (68:17)
+|  |  |  |  SCExplicitReturn (68:17)
+|  |  |  |  |  SCLiteral (68:19) = 1
+|  |  SCMethod (70:5): version 3.16: bracketed_variable { var a(1); ^a } -> 1
+|  |  |  SCBody (70:26)
+|  |  |  |  SCVariableDeclare (70:30): a
+|  |  |  |  |  SCLiteral (70:32) = 1
+|  |  |  |  SCExplicitReturn (70:36)
+|  |  |  |  |  SCRead (70:37): local a = 1, declared (70:30): a(1)
+|  |  SCMethod (72:5): version 3.16: class_name { ^Object } -> Object
+|  |  |  SCBody (72:18)
+|  |  |  |  SCExplicitReturn (72:18)
+|  |  |  |  |  SCLiteral (72:19) = Object
+|  |  SCMethod (74:5): version 3.16: pack { var #a, b = #[1, 2]; ^a } -> 1
+|  |  |  SCBody (74:12)
+|  |  |  |  SCPackDeclare (74:16)
+|  |  |  |  |  SCCollection (74:24): Array = [1, 2]
+|  |  |  |  |  |  SCLiteral (74:26) = 1
+|  |  |  |  |  |  SCLiteral (74:29) = 2
+|  |  |  |  |  SCPackTargets (74:16)
+|  |  |  |  |  |  SCPackTarget (74:17): local a at 0
+|  |  |  |  |  |  SCPackTarget (74:20): local b at 1
+|  |  |  |  SCExplicitReturn (74:33)
+|  |  |  |  |  SCRead (74:34): local a = 1, declared (74:17): a
+|  |  SCMethod (76:5): version 3.16: nested_return { |x| if (x) { ^1 }; ^2 }
+|  |  |  SCArgumentDeclareList (76:22)
+|  |  |  |  SCArgumentDeclare (76:22): x
+|  |  |  SCBody (76:25)
+|  |  |  |  SCMessage (76:25): if
+|  |  |  |  |  SCRead (76:29): local x, declared (76:22): x
+|  |  |  |  |  SCPositionalArgs (76:25)
+|  |  |  |  |  |  SCFunction (76:32)
+|  |  |  |  |  |  |  SCBody (76:32)
+|  |  |  |  |  |  |  |  SCExplicitReturn (76:34)
+|  |  |  |  |  |  |  |  |  SCLiteral (76:35) = 1
+|  |  |  |  SCExplicitReturn (76:40)
+|  |  |  |  |  SCLiteral (76:41) = 2
+SCClass (56:1): Meta_Folding, version 3.16
+|  SCMemberList (56:1)
+|  |  SCMember (59:14): class_member = Object
+|  SCMethodList (56:1)
+Successfully compiled 17 classes.

@@ -79,6 +79,11 @@ struct ConstEval {
     [[nodiscard]] static std::optional<std::pair<ConstExpression, TypeInfo>>
     fold_arithmetic(Context& cxt, SymSCSelector selector, const ConstExpression& lhs, const ConstExpression& rhs);
 
+    // Whether the old compiler treated it as a literal, putting it in the frame rather than computing it: numbers,
+    // characters, strings, symbols, `true`, `false`, `nil`, and `#[...]` of these, where a name is a symbol. Not class
+    // names, functions, or anything bracketed, e.g., `(1)` or `var a(1)`.
+    [[nodiscard]] static bool is_legacy_literal(const ast::ASTGraph& ast_graph, ast::AnyExprIndex i);
+
     // Dispatches to the overloads below. The dispatch is only instantiated in consteval.cpp, so use this rather than
     // visiting yourself. Not an operator() overload, as that would make the conversions to the sets below ambiguous.
     Result eval(ast::AnyExprIndex);

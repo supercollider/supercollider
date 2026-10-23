@@ -1,4 +1,5 @@
 #include "ast2ir/body.hpp"
+#include "ast2ir/consteval.hpp"
 #include "ast2ir/partial_application.hpp"
 #include "sc_parser/ast.hpp"
 #include "sc_parser/ast_untyped.hpp"
@@ -291,7 +292,10 @@ bool declare_variable(BodyContext& b, ast::NamedIdentifierIndex name_i, std::opt
     b.expr.initialising.push_back({ name, b.expr.scope.size() - 1, location_of(b.ir, g, whole) });
     const auto value_r = b.expr(*value);
     b.expr.initialising.pop_back();
-    (void)add_variable(b, name_i, name, declare_node(value_r.ir_node), value_r.const_index, value_r.type);
+    // Legacy code only knows a literal, as the old compiler computed any other initial value when the code ran.
+    const auto constant =
+        folds_constants(b.expr.version) || ConstEval::is_legacy_literal(g, *value) ? value_r.const_index : std::nullopt;
+    (void)add_variable(b, name_i, name, declare_node(value_r.ir_node), constant, value_r.type);
     return value_r.const_index.has_value();
 }
 
@@ -332,7 +336,8 @@ bool declare_pack(BodyContext& b, ast::VariablePackAssignIndex pack) {
         // `at` past the end is nil, the rest is a new array, so is never constant.
         std::optional<ConstExprIndex> constant;
         std::optional<TypeInfo> type;
-        if (elements && !is_rest) {
+        // Legacy code computes them when it runs, see folds_constants.
+        if (elements && !is_rest && folds_constants(b.expr.version)) {
             ConstExpression element = index < elements->size() ? (*elements)[index] : ConstExpression { Nil {} };
             type = type_of_constant(b.ctx, element);
             constant = b.ctx.constant_table.register_constexpr(std::move(element));

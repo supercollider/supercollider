@@ -27,7 +27,8 @@ Return<SCAnyExpr_I> Expr::operator()(ast::ExprSeqIndex i) {
         ir.append(expr_list, last_index->ir_node);
     }
 
-    if (body_is_const_expr && last_index) {
+    // Brackets aren't a literal, so legacy code doesn't know the value.
+    if (folds_constants(version) && body_is_const_expr && last_index) {
         return { expr_list, *last_index->const_index, *last_index->type };
     }
     if (last_index->type)

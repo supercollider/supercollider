@@ -274,7 +274,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::BinaryMessageIndex i) {
     append_positional(msg_ctx, args, rhs_r);
     const auto message = create_message(msg_ctx, { *i }, lhs_r.ir_node, sel, args);
     // Arithmetic on constant numbers is folded, unless an adverb changes what it does.
-    if (sel.adverb || !lhs_r.const_index || !rhs_r.const_index)
+    if (!folds_constants(version) || sel.adverb || !lhs_r.const_index || !rhs_r.const_index)
         return message;
     auto folded = ConstEval::fold_arithmetic(ctx, *sel.name, ctx.constant_table(*lhs_r.const_index),
                                              ctx.constant_table(*rhs_r.const_index));
@@ -332,7 +332,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AtMessageIndex i) {
         auto args = make_arguments(msg_ctx, { *i }, sel);
         const auto bounds = append_range(msg_ctx, args, *range);
         const auto message = create_message(msg_ctx, { *i }, receiver_r.ir_node, sel, args);
-        if (!bounds || !receiver_r.const_index)
+        if (!folds_constants(version) || !bounds || !receiver_r.const_index)
             return message;
 
         // A constant array or string sliced with constant bounds is folded, if copySeries is known.

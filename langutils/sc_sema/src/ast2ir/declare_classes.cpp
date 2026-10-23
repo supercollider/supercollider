@@ -49,7 +49,12 @@ void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ClassDeclaratio
         return;
     }
 
-    ast2ir::ConstEval { cxt, ast_graph, ast_index, decl.version(), &constants }.eval(expr_i).visit(
+    // Legacy code only allows a literal, as the old compiler's grammar did, see ConstEval::is_legacy_literal.
+    auto result = !folds_constants(decl.version()) && !ast2ir::ConstEval::is_legacy_literal(*ast_graph, expr_i)
+        ? ast2ir::ConstEval::Result { diag::Diagnostic::not_constant(get_text_info(*ast_graph),
+                                                                     get_location(*ast_graph, expr_i)) }
+        : ast2ir::ConstEval { cxt, ast_graph, ast_index, decl.version(), &constants }.eval(expr_i);
+    std::move(result).visit(
         [&](std::pair<ConstExprIndex, TypeInfo> p) {
             const auto [const_expr_index, type_info] = p;
             const auto name = cxt.symbol_table.get_identifier(get_string(*ast_graph, name_i));

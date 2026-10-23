@@ -40,6 +40,10 @@ struct Base {
     [[nodiscard]] SourceLocation location(ast::Index i) const { return location_of(ir, *ast_graph, i); }
 };
 
+// Whether constants are folded. Legacy code only knows the values of literals, as the old compiler only put those in
+// the frame, everything else was computed when the code ran, see ConstEval::is_legacy_literal.
+[[nodiscard]] constexpr bool folds_constants(ast::LanguageVersion v) { return v >= ast::LanguageVersion::V3_16; }
+
 // Collects the diagnostics of one unit of compilation, e.g., a method, so it knows whether it should be poisoned.
 // This is NOT thread safe.
 struct DiagnosticSink {
