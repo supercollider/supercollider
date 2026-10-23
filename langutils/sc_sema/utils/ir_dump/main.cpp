@@ -653,14 +653,14 @@ int main(int argc, char* argv[]) {
         // Every node is entered and exited, even those hidden, so it follows the frames.
         std::optional<sc::backend::FrameCursor> cursor;
         if (const auto fnd = frames.find(&g); fnd != frames.end())
-            cursor.emplace(fnd->second.layout);
+            cursor.emplace(g, fnd->second.layout);
         g.depth_first_traverse(
             dumped.index,
             [&](const sc::ir::IRGraph::Edges& edges, const sc::ir::IRGraph::Variant& payload,
                 const sc::ir::SourceLocation& loc, sc::ir::NodeIndex i, size_t depth) {
                 const auto current = cursor ? cursor->current() : sc::backend::OptionalFrameIndex {};
                 if (cursor)
-                    (void)cursor->enter(payload, i);
+                    (void)cursor->enter(i);
                 if (sc::ir::describe::hidden(describe, edges, payload, dumped.class_name))
                     return;
 
@@ -681,10 +681,10 @@ int main(int argc, char* argv[]) {
                 }
             },
             sc::ir::IRGraph::Default {}, sc::ir::IRGraph::Default {},
-            [&](const sc::ir::IRGraph::Edges&, const sc::ir::IRGraph::Variant& payload, const sc::ir::SourceLocation&,
+            [&](const sc::ir::IRGraph::Edges&, const sc::ir::IRGraph::Variant&, const sc::ir::SourceLocation&,
                 sc::ir::NodeIndex i, size_t) {
                 if (cursor)
-                    (void)cursor->exit(payload, i);
+                    (void)cursor->exit(i);
             });
     }
 #endif

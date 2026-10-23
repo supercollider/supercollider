@@ -641,6 +641,18 @@ Diagnostic Diagnostic::nested_too_deeply(TextInfoPtr t, sc::lex::SourceCodeRange
              "binary operators, `a + b + c ...`, which is as deep as it is long. Split it up, e.g., into variables." };
 }
 
+Diagnostic Diagnostic::too_many_variables(TextInfoPtr t, sc::lex::SourceCodeRange l, std::size_t count,
+                                          std::size_t limit) {
+    return { "Too many variables",
+             Severity::Error,
+             { { std::move(t), l,
+                 "this has " + std::to_string(count) + " arguments and variables, more than " + std::to_string(limit)
+                     + "." } },
+             "A method or function can have at most " + std::to_string(limit)
+                 + " arguments and variables, counting `this` for a method. Group them, e.g., into an Array or an "
+                   "Event, or split the code into smaller functions." };
+}
+
 Diagnostic Diagnostic::literal_out_of_range(TextInfoPtr t, sc::lex::SourceCodeRange l, bool is_float) {
     if (is_float)
         return { "Literal out of range",
