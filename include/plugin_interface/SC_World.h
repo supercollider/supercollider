@@ -118,13 +118,13 @@ struct World {
 typedef struct World World;
 
 SC_INLINE SndBuf* World_GetBuf(World* inWorld, uint32 index) {
-    if (index > inWorld->mNumSndBufs)
+    if (index >= inWorld->mNumSndBufs)
         index = 0;
     return inWorld->mSndBufs + index;
 }
 
 SC_INLINE SndBuf* World_GetNRTBuf(World* inWorld, uint32 index) {
-    if (index > inWorld->mNumSndBufs)
+    if (index >= inWorld->mNumSndBufs)
         index = 0;
     return inWorld->mSndBufsNonRealTimeMirror + index;
 }
