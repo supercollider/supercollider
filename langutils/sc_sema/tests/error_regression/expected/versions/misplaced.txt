@@ -88,7 +88,7 @@ SCClass (3:1): Misplaced
 |  |  |  A version must be the first thing in the file, for every class in it, or the first thing in a class's body, for that class.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (16:27)
-|  |  |  |  SCArgumentDeclare (16:27): x
+|  |  |  |  SCArgumentDeclare (16:27): x (captured)
 |  |  |  SCBody (17:9)
 |  |  |  |  SCExplicitReturn (17:9)
 |  |  |  |  |  SCFunction (17:10)

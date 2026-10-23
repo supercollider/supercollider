@@ -140,6 +140,19 @@ void write_details(const Describe& d, std::ostream& out, const IRGraph::Variant&
     };
 
     // How a declaration with an initial value starts, see SCVariableDeclare::prototype.
+    // How a declared local is used, see LocalVariable::assigned_to and captured.
+    const auto write_uses = [&](OptionalLocalIndex local) {
+        if (!local)
+            return;
+        const auto& variable = g.local(LocalIndex { *local });
+        if (variable.assigned_to && variable.captured)
+            out << " (assigned, captured)";
+        else if (variable.assigned_to)
+            out << " (assigned)";
+        else if (variable.captured)
+            out << " (captured)";
+    };
+
     const auto write_initial = [&](auto declare, OptionalConstExprIndex prototype) {
         const auto [value] = g.children(declare);
         if (g.as_a<SCMissing_I>(NodeIndex { *value }))
@@ -180,10 +193,12 @@ void write_details(const Describe& d, std::ostream& out, const IRGraph::Variant&
                    [&](const SCKwArg& k) { out << ": " << symbol_table(*k.name); },
                    [&](const SCVariableDeclare& v) {
                        out << ": " << symbol_table(*v.name);
+                       write_uses(v.local);
                        write_initial(*g.as_a<SCVariableDeclare_I>(i), v.prototype);
                    },
                    [&](const SCArgumentDeclare& a) {
                        out << ": " << symbol_table(a.name);
+                       write_uses(a.local);
                        write_initial(*g.as_a<SCArgumentDeclare_I>(i), a.prototype);
                    },
                    [&](const SCMember& m) { out << ": " << symbol_table(m.name); },
@@ -191,8 +206,10 @@ void write_details(const Describe& d, std::ostream& out, const IRGraph::Variant&
                    [&](const SCRead& r) { out << ": " << read_kind_name(r.kind) << " " << symbol_table(r.name); },
                    [&](const SCAssign& a) { out << ": " << kind_name(a.kind) << " " << symbol_table(*a.name); },
                    [&](const SCPackTarget& t) {
-                       out << ": " << kind_name(t.kind) << " " << symbol_table(*t.name)
-                           << (t.rest ? " rest from " : " at ") << t.index;
+                       out << ": " << kind_name(t.kind) << " " << symbol_table(*t.name);
+                       if (t.declares)
+                           write_uses(t.local);
+                       out << (t.rest ? " rest from " : " at ") << t.index;
                    },
                    [&](const SCCollection& c) { out << ": " << symbol_table(*c.collection_class); },
                    [&](const SCGenerator& gen) {
@@ -200,10 +217,16 @@ void write_details(const Describe& d, std::ostream& out, const IRGraph::Variant&
                    },
                    [&](const SCGenQualIterate& q) {
                        out << ": " << symbol_table(*q.element);
-                       if (q.index)
+                       write_uses(q.element_local);
+                       if (q.index) {
                            out << ", " << symbol_table(**q.index);
+                           write_uses(q.index_local);
+                       }
                    },
-                   [&](const SCGenQualDeclare& q) { out << ": " << symbol_table(*q.name); } },
+                   [&](const SCGenQualDeclare& q) {
+                       out << ": " << symbol_table(*q.name);
+                       write_uses(q.local);
+                   } },
                payload);
 
     if (const auto const_i = g.node_as_constexpr(i)) {

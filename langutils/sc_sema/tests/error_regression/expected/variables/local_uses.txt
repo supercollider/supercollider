@@ -1,0 +1,153 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): LocalUses, version 3.16
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (5:5): version 3.16: plain { var a = 1; ^a } -> 1
+|  |  |  SCBody (5:13)
+|  |  |  |  SCVariableDeclare (5:17): a, prototype
+|  |  |  |  |  SCLiteral (5:21) = 1
+|  |  |  |  SCExplicitReturn (5:24)
+|  |  |  |  |  SCRead (5:25): local a = 1, declared (5:17): a = 1
+|  |  SCMethod (6:5): version 3.16: assigned { var a = 1; a = 2; ^a }
+|  |  |  SCBody (6:16)
+|  |  |  |  SCVariableDeclare (6:20): a (assigned), prototype
+|  |  |  |  |  SCLiteral (6:24) = 1
+|  |  |  |  SCAssign (6:27): local a, declared (6:20): a = 1
+|  |  |  |  |  SCLiteral (6:31) = 2
+|  |  |  |  SCExplicitReturn (6:34)
+|  |  |  |  |  SCRead (6:35): local a, declared (6:20): a = 1
+|  |  SCMethod (7:5): version 3.16: pack_assigned { var a, b; #a, b = [1, 2]; ^a }
+|  |  |  SCBody (7:21)
+|  |  |  |  SCVariableDeclare (7:25): a (assigned)
+|  |  |  |  SCVariableDeclare (7:28): b (assigned)
+|  |  |  |  SCPackAssign (7:31)
+|  |  |  |  |  SCCollection (7:39): Array = [1, 2]
+|  |  |  |  |  |  SCLiteral (7:40) = 1
+|  |  |  |  |  |  SCLiteral (7:43) = 2
+|  |  |  |  |  SCPackTargets (7:31)
+|  |  |  |  |  |  SCPackTarget (7:32): local a at 0, declared (7:25): a
+|  |  |  |  |  |  SCPackTarget (7:35): local b at 1, declared (7:28): b
+|  |  |  |  SCExplicitReturn (7:47)
+|  |  |  |  |  SCRead (7:48): local a, declared (7:25): a
+|  |  SCMethod (9:5): version 3.16: block { var a = 1; ^{ a } }
+|  |  |  SCBody (9:13)
+|  |  |  |  SCVariableDeclare (9:17): a (captured), prototype
+|  |  |  |  |  SCLiteral (9:21) = 1
+|  |  |  |  SCExplicitReturn (9:24)
+|  |  |  |  |  SCFunction (9:25)
+|  |  |  |  |  |  SCBody (9:25)
+|  |  |  |  |  |  |  SCRead (9:27): local a, declared (9:17): a = 1
+|  |  SCMethod (10:5): version 3.16: block_assigns { var a = 1; ^{ a = 2 } }
+|  |  |  SCBody (10:21)
+|  |  |  |  SCVariableDeclare (10:25): a (assigned, captured), prototype
+|  |  |  |  |  SCLiteral (10:29) = 1
+|  |  |  |  SCExplicitReturn (10:32)
+|  |  |  |  |  SCFunction (10:33)
+|  |  |  |  |  |  SCBody (10:33)
+|  |  |  |  |  |  |  SCAssign (10:35): local a, declared (10:25): a = 1
+|  |  |  |  |  |  |  |  SCLiteral (10:39) = 2
+|  |  SCMethod (11:5): version 3.16: partial { var a = 1; ^(a + _) }
+|  |  |  SCBody (11:15)
+|  |  |  |  SCVariableDeclare (11:19): a (captured), prototype
+|  |  |  |  |  SCLiteral (11:23) = 1
+|  |  |  |  SCExplicitReturn (11:26)
+|  |  |  |  |  SCFunction (11:28)
+|  |  |  |  |  |  SCArgumentDeclareList (11:28)
+|  |  |  |  |  |  |  SCArgumentDeclare (11:32): _
+|  |  |  |  |  |  SCBody (11:28)
+|  |  |  |  |  |  |  SCMessage (11:28): +
+|  |  |  |  |  |  |  |  SCRead (11:28): local a, declared (11:19): a = 1
+|  |  |  |  |  |  |  |  SCPositionalArgs (11:28)
+|  |  |  |  |  |  |  |  |  SCRead (11:32): local _, declared (11:32): _
+|  |  SCMethod (12:5): version 3.16: routine { var a = 1; ^{: a + x, x <- [1, 2] } }
+|  |  |  SCBody (12:15)
+|  |  |  |  SCVariableDeclare (12:19): a (captured), prototype
+|  |  |  |  |  SCLiteral (12:23) = 1
+|  |  |  |  SCExplicitReturn (12:26)
+|  |  |  |  |  SCGenerator (12:27): routine
+|  |  |  |  |  |  SCGenQualList (12:37)
+|  |  |  |  |  |  |  SCGenQualIterate (12:37): x
+|  |  |  |  |  |  |  |  SCCollection (12:42): Array = [1, 2]
+|  |  |  |  |  |  |  |  |  SCLiteral (12:43) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (12:46) = 2
+|  |  |  |  |  |  SCMessage (12:30): +
+|  |  |  |  |  |  |  SCRead (12:30): local a, declared (12:19): a = 1
+|  |  |  |  |  |  |  SCPositionalArgs (12:30)
+|  |  |  |  |  |  |  |  SCRead (12:34): local x, declared (12:37): x <- [1, 2]
+|  |  SCMethod (13:5): version 3.16: immediate { var a = 1; ^{; a + x, x <- [1, 2] } }
+|  |  |  SCBody (13:17)
+|  |  |  |  SCVariableDeclare (13:21): a, prototype
+|  |  |  |  |  SCLiteral (13:25) = 1
+|  |  |  |  SCExplicitReturn (13:28)
+|  |  |  |  |  SCGenerator (13:29): immediate
+|  |  |  |  |  |  SCGenQualList (13:39)
+|  |  |  |  |  |  |  SCGenQualIterate (13:39): x
+|  |  |  |  |  |  |  |  SCCollection (13:44): Array = [1, 2]
+|  |  |  |  |  |  |  |  |  SCLiteral (13:45) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (13:48) = 2
+|  |  |  |  |  |  SCMessage (13:32): +
+|  |  |  |  |  |  |  SCRead (13:32): local a, declared (13:21): a = 1
+|  |  |  |  |  |  |  SCPositionalArgs (13:32)
+|  |  |  |  |  |  |  |  SCRead (13:36): local x, declared (13:39): x <- [1, 2]
+|  |  SCMethod (15:5): version 3.16: block_own { ^{ |b| var c = b; c = 2; c } }
+|  |  |  SCBody (15:17)
+|  |  |  |  SCExplicitReturn (15:17)
+|  |  |  |  |  SCFunction (15:18)
+|  |  |  |  |  |  SCArgumentDeclareList (15:21)
+|  |  |  |  |  |  |  SCArgumentDeclare (15:21): b
+|  |  |  |  |  |  SCBody (15:18)
+|  |  |  |  |  |  |  SCVariableDeclare (15:28): c (assigned), computed
+|  |  |  |  |  |  |  |  SCRead (15:32): local b, declared (15:21): b
+|  |  |  |  |  |  |  SCAssign (15:35): local c, declared (15:28): c = b
+|  |  |  |  |  |  |  |  SCLiteral (15:39) = 2
+|  |  |  |  |  |  |  SCRead (15:42): local c, declared (15:28): c = b
+|  |  SCMethod (17:5): version 3.16: hidden { var a = 1; ^{ var a = 2; a } }
+|  |  |  SCBody (17:14)
+|  |  |  |  SCVariableDeclare (17:18): a, prototype
+|  |  |  |  |  SCLiteral (17:22) = 1
+|  |  |  |  SCExplicitReturn (17:25)
+|  |  |  |  |  SCFunction (17:26) -> 2
+|  |  |  |  |  |  SCBody (17:26)
+|  |  |  |  |  |  |  SCVariableDeclare (17:32): a, prototype
+|  |  |  |  |  |  |  |  SCLiteral (17:36) = 2
+|  |  |  |  |  |  |  SCRead (17:39): local a = 2, declared (17:32): a = 2
+|  |  SCMethod (19:5): version 3.16: self_reference { var f = { f }; ^f }
+|  |  |  SCBody (19:22)
+|  |  |  |  SCVariableDeclare (19:26): f (captured), computed
+|  |  |  |  |  SCFunction (19:30)
+|  |  |  |  |  |  SCBody (19:30)
+|  |  |  |  |  |  |  SCRead (19:32): local f, declared (19:26): f = { f }
+|  |  |  |  SCExplicitReturn (19:37)
+|  |  |  |  |  SCRead (19:38): local f, declared (19:26): f = { f }
+|  |  SCMethod (20:5): version 3.16: arguments { |a, b| b = a; ^{ a } }
+|  |  |  SCArgumentDeclareList (20:18)
+|  |  |  |  SCArgumentDeclare (20:18): a (captured)
+|  |  |  |  SCArgumentDeclare (20:21): b (assigned)
+|  |  |  SCBody (20:24)
+|  |  |  |  SCAssign (20:24): local b, declared (20:21): b
+|  |  |  |  |  SCRead (20:28): local a, declared (20:18): a
+|  |  |  |  SCExplicitReturn (20:31)
+|  |  |  |  |  SCFunction (20:32)
+|  |  |  |  |  |  SCBody (20:32)
+|  |  |  |  |  |  |  SCRead (20:34): local a, declared (20:18): a
+|  |  SCMethod (21:5): version 3.16: nested_return { |x| var y = 1; if (x) { ^y }; ^x }
+|  |  |  SCArgumentDeclareList (21:22)
+|  |  |  |  SCArgumentDeclare (21:22): x
+|  |  |  SCBody (21:25)
+|  |  |  |  SCVariableDeclare (21:29): y (captured), prototype
+|  |  |  |  |  SCLiteral (21:33) = 1
+|  |  |  |  SCMessage (21:36): if
+|  |  |  |  |  SCRead (21:40): local x, declared (21:22): x
+|  |  |  |  |  SCPositionalArgs (21:36)
+|  |  |  |  |  |  SCFunction (21:43)
+|  |  |  |  |  |  |  SCBody (21:43)
+|  |  |  |  |  |  |  |  SCExplicitReturn (21:45)
+|  |  |  |  |  |  |  |  |  SCRead (21:46): local y, declared (21:29): y = 1
+|  |  |  |  SCExplicitReturn (21:51)
+|  |  |  |  |  SCRead (21:52): local x, declared (21:22): x
+Successfully compiled 16 classes.

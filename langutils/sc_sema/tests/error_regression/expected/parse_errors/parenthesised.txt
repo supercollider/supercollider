@@ -211,7 +211,7 @@ SCClass (4:1): ParenthesisedError, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (36:25)
-|  |  |  |  SCArgumentDeclare (36:25): x
+|  |  |  |  SCArgumentDeclare (36:25): x (captured)
 |  |  |  SCBody (36:28)
 |  |  |  |  SCExplicitReturn (36:28)
 |  |  |  |  |  SCFunction (36:29)

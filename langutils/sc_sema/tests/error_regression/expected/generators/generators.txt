@@ -285,7 +285,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  |  |  |  SCRead (47:28): instance instance_var, declared (3:9): instance_var
 |  |  SCMethod (50:5): version 3.16: captures_outer { var a = 1; ^{: a, x <- [1, 2] } }
 |  |  |  SCBody (50:22)
-|  |  |  |  SCVariableDeclare (50:26): a, prototype
+|  |  |  |  SCVariableDeclare (50:26): a (captured), prototype
 |  |  |  |  |  SCLiteral (50:30) = 1
 |  |  |  |  SCExplicitReturn (50:33)
 |  |  |  |  |  SCGenerator (50:34): routine
@@ -311,7 +311,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  |  SCRead (52:55): local x = 1, declared (52:25): x = 1
 |  |  SCMethod (55:5): version 3.16: source_reads_outer { var x = 1; { {: x, x <- [x] } }; ^x }
 |  |  |  SCBody (55:26)
-|  |  |  |  SCVariableDeclare (55:30): x, prototype
+|  |  |  |  SCVariableDeclare (55:30): x (captured), prototype
 |  |  |  |  |  SCLiteral (55:34) = 1
 |  |  |  |  SCFunction (55:37)
 |  |  |  |  |  SCBody (55:37)
@@ -328,7 +328,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  |  SCExplicitReturn (57:30)
 |  |  |  |  |  SCGenerator (57:31): routine
 |  |  |  |  |  |  SCGenQualList (57:48)
-|  |  |  |  |  |  |  SCGenQualIterate (57:48): x
+|  |  |  |  |  |  |  SCGenQualIterate (57:48): x (captured)
 |  |  |  |  |  |  |  |  SCCollection (57:53): Array = [1, 2]
 |  |  |  |  |  |  |  |  |  SCLiteral (57:54) = 1
 |  |  |  |  |  |  |  |  |  SCLiteral (57:57) = 2
@@ -341,7 +341,7 @@ SCClass (2:1): Generators, version 3.16
 |  |  |  SCBody (60:34)
 |  |  |  |  SCGenerator (60:34): immediate
 |  |  |  |  |  SCGenQualList (60:40)
-|  |  |  |  |  |  SCGenQualIterate (60:40): x
+|  |  |  |  |  |  SCGenQualIterate (60:40): x (captured)
 |  |  |  |  |  |  |  SCCollection (60:45): Array = [1, 2]
 |  |  |  |  |  |  |  |  SCLiteral (60:46) = 1
 |  |  |  |  |  |  |  |  SCLiteral (60:49) = 2

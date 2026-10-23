@@ -42,7 +42,7 @@ SCClass (2:1): ConstantLocals, version 3.16
 |  |  |  |  |  SCRead (14:49): local a, declared (14:30): a = instance_var
 |  |  SCMethod (16:5): version 3.16: assigned { var a = 1; a = 2; ^a }
 |  |  |  SCBody (16:16)
-|  |  |  |  SCVariableDeclare (16:20): a, prototype
+|  |  |  |  SCVariableDeclare (16:20): a (assigned), prototype
 |  |  |  |  |  SCLiteral (16:24) = 1
 |  |  |  |  SCAssign (16:27): local a, declared (16:20): a = 1
 |  |  |  |  |  SCLiteral (16:31) = 2
@@ -50,7 +50,7 @@ SCClass (2:1): ConstantLocals, version 3.16
 |  |  |  |  |  SCRead (16:35): local a, declared (16:20): a = 1
 |  |  SCMethod (18:5): version 3.16: assigned_later { var a = 1; ^a; a = 2 }
 |  |  |  SCBody (18:22)
-|  |  |  |  SCVariableDeclare (18:26): a, prototype
+|  |  |  |  SCVariableDeclare (18:26): a (assigned), prototype
 |  |  |  |  |  SCLiteral (18:30) = 1
 |  |  |  |  SCExplicitReturn (18:33)
 |  |  |  |  |  SCRead (18:34): local a, declared (18:26): a = 1
@@ -58,7 +58,7 @@ SCClass (2:1): ConstantLocals, version 3.16
 |  |  |  |  |  SCLiteral (18:41) = 2
 |  |  SCMethod (20:5): version 3.16: assigned_in_block { var a = 1; { a = 2 }; ^a }
 |  |  |  SCBody (20:25)
-|  |  |  |  SCVariableDeclare (20:29): a, prototype
+|  |  |  |  SCVariableDeclare (20:29): a (assigned, captured), prototype
 |  |  |  |  |  SCLiteral (20:33) = 1
 |  |  |  |  SCFunction (20:36)
 |  |  |  |  |  SCBody (20:36)
@@ -68,7 +68,7 @@ SCClass (2:1): ConstantLocals, version 3.16
 |  |  |  |  |  SCRead (20:48): local a, declared (20:29): a = 1
 |  |  SCMethod (22:5): version 3.16: read_by_block { var a = 1; ^{ a } }
 |  |  |  SCBody (22:21)
-|  |  |  |  SCVariableDeclare (22:25): a, prototype
+|  |  |  |  SCVariableDeclare (22:25): a (captured), prototype
 |  |  |  |  |  SCLiteral (22:29) = 1
 |  |  |  |  SCExplicitReturn (22:32)
 |  |  |  |  |  SCFunction (22:33)
@@ -76,7 +76,7 @@ SCClass (2:1): ConstantLocals, version 3.16
 |  |  |  |  |  |  |  SCRead (22:35): local a, declared (22:25): a = 1
 |  |  SCMethod (24:5): version 3.16: read_by_nested_block { var a = 1; ^{ { a } } }
 |  |  |  SCBody (24:28)
-|  |  |  |  SCVariableDeclare (24:32): a, prototype
+|  |  |  |  SCVariableDeclare (24:32): a (captured), prototype
 |  |  |  |  |  SCLiteral (24:36) = 1
 |  |  |  |  SCExplicitReturn (24:39)
 |  |  |  |  |  SCFunction (24:40)
@@ -108,7 +108,7 @@ SCClass (2:1): ConstantLocals, version 3.16
 |  |  |  |  |  SCRead (28:58): local a = 1, declared (28:32): a = 1
 |  |  SCMethod (30:5): version 3.16: used_before_inner_declaration { var a = 1; { a; var a = 2 }; ^a }
 |  |  |  SCBody (30:37)
-|  |  |  |  SCVariableDeclare (30:41): a, prototype
+|  |  |  |  SCVariableDeclare (30:41): a (captured), prototype
 |  |  |  |  |  SCLiteral (30:45) = 1
 |  |  |  |  SCFunction (30:48)
 |  |  |  |  |  SCBody (30:48)
@@ -119,7 +119,7 @@ SCClass (2:1): ConstantLocals, version 3.16
 |  |  |  |  |  SCRead (30:67): local a, declared (30:41): a = 1
 |  |  SCMethod (32:5): version 3.16: inner_default_reads_outer { var a = 1; { var b = a; b }; ^a }
 |  |  |  SCBody (32:33)
-|  |  |  |  SCVariableDeclare (32:37): a, prototype
+|  |  |  |  SCVariableDeclare (32:37): a (captured), prototype
 |  |  |  |  |  SCLiteral (32:41) = 1
 |  |  |  |  SCFunction (32:44)
 |  |  |  |  |  SCBody (32:44)

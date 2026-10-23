@@ -141,6 +141,8 @@ struct Expr : private Base {
     }
 
     [[nodiscard]] std::optional<ScopeEntry> resolve_symbol(Symbol i, bool get_uninitalised = false) const;
+    // Records a use of the local name resolves to, see LocalVariable::assigned_to and captured.
+    void record_local_use(Symbol name, LocalIndex local, bool assigns);
     void add_symbol(Symbol, ScopeEntry);
 
     // Removes name from legacy code's frame, as it is declared in the current scope. Returns whether it escaped.

@@ -161,7 +161,7 @@ SCClass (2:1): Variables, version 3.16
 |  |  |  |  |  SCRead (34:47): local instance_var = 1, declared (34:28): instance_var = 1
 |  |  SCMethod (35:5): version 3.16: assign { var a; a = 2 }
 |  |  |  SCBody (35:14)
-|  |  |  |  SCVariableDeclare (35:18): a
+|  |  |  |  SCVariableDeclare (35:18): a (assigned)
 |  |  |  |  SCAssign (35:21): local a, declared (35:18): a
 |  |  |  |  |  SCLiteral (35:25) = 2
 |  |  SCMethod (37:5): version 3.16: in_block { ^{ var a = 1; a } }
@@ -184,7 +184,7 @@ SCClass (2:1): Variables, version 3.16
 |  |  |  |  |  |  |  SCRead (39:52): local a = 2, declared (39:45): a = 2
 |  |  SCMethod (42:5): version 3.16: block_reads_outer { var a = 1; ^{ a } }
 |  |  |  SCBody (42:25)
-|  |  |  |  SCVariableDeclare (42:29): a, prototype
+|  |  |  |  SCVariableDeclare (42:29): a (captured), prototype
 |  |  |  |  |  SCLiteral (42:33) = 1
 |  |  |  |  SCExplicitReturn (42:36)
 |  |  |  |  |  SCFunction (42:37)

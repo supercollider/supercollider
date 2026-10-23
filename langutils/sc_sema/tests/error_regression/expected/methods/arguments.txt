@@ -16,7 +16,7 @@ SCClass (2:1): MethodArguments, version 3.16
 |  |  |  |  |  SCRead (7:26): local a, declared (7:22): a
 |  |  SCMethod (8:5): version 3.16: assign_argument { |a| a = 1 }
 |  |  |  SCArgumentDeclareList (8:24)
-|  |  |  |  SCArgumentDeclare (8:24): a
+|  |  |  |  SCArgumentDeclare (8:24): a (assigned)
 |  |  |  SCBody (8:27)
 |  |  |  |  SCAssign (8:27): local a, declared (8:24): a
 |  |  |  |  |  SCLiteral (8:31) = 1
@@ -69,7 +69,7 @@ SCClass (2:1): MethodArguments, version 3.16
 |  |  |  |  |  SCRead (17:30): local rest, declared (17:23): rest
 |  |  SCMethod (19:5): version 3.16: block_uses_argument { |a| ^{ a } }
 |  |  |  SCArgumentDeclareList (19:28)
-|  |  |  |  SCArgumentDeclare (19:28): a
+|  |  |  |  SCArgumentDeclare (19:28): a (captured)
 |  |  |  SCBody (19:31)
 |  |  |  |  SCExplicitReturn (19:31)
 |  |  |  |  |  SCFunction (19:32)

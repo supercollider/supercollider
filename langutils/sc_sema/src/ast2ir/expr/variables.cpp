@@ -117,6 +117,20 @@ std::optional<ScopeEntry> Expr::resolve_symbol(Symbol i, bool get_uninitalised) 
     return {};
 }
 
+void Expr::record_local_use(Symbol name, LocalIndex local, bool assigns) {
+    // Found the same way as resolve_symbol, it is captured if a function starts inside the scope declaring it.
+    bool in_function = false;
+    for (std::size_t k = scope.size(); k-- > 0;) {
+        if (const auto fnd = scope[k].find(name);
+            fnd != scope[k].end() && fnd->second.state == ScopeEntry::State::Initalised)
+            break;
+        in_function = in_function || scope[k].starts_function;
+    }
+    auto& variable = ir.local(local);
+    variable.assigned_to = variable.assigned_to || assigns;
+    variable.captured = variable.captured || in_function;
+}
+
 Return<SCAnyExpr_I> Expr::operator()(ast::EnvIdentifierIndex i) {
     const auto& t = get_text_info(*ast_graph);
     const auto [child] = ast_graph->children(i);
@@ -231,6 +245,9 @@ LocalIndex resolve_initialising(InitialisingUse use, bool assigns, DiagnosticSin
                                                            get_location(g, at)));
         variable.escaped = variable.escaped || assigns || use.in_function;
     }
+    auto& local = ir.local(variable.local);
+    local.assigned_to = local.assigned_to || assigns;
+    local.captured = local.captured || use.in_function;
     return variable.local;
 }
 
@@ -253,6 +270,8 @@ Return<SCAnyExpr_I> Expr::operator()(ast::NamedIdentifierIndex i) {
             SCRead { name_sym, SCRead::Kind::Local, resolve_initialising(*use, false, sink, ir, *ast_graph, { *i }) },
             location({ *i })) };
     if (const auto entry = resolve_symbol(name_sym)) {
+        if (entry->local)
+            record_local_use(name_sym, LocalIndex { *entry->local }, false);
         const auto read =
             ir.create(SCRead { name_sym, to_read_kind(entry->kind), entry->local, member_of(ir, name_sym, *entry) },
                       location({ *i }));
@@ -301,8 +320,11 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
                            {});
 
     // TODO: error when assigning to a const once ScopeEntry records const-ness.
-    if (const auto entry = resolve_symbol(name_sym))
+    if (const auto entry = resolve_symbol(name_sym)) {
+        if (entry->local)
+            record_local_use(name_sym, LocalIndex { *entry->local }, true);
         return make_return(to_assign_kind(entry->kind), entry->local, member_of(ir, name_sym, *entry));
+    }
 
     sink(sc::diag::Diagnostic::undefined_variable(get_text_info(*ast_graph), get_location(*ast_graph, name), txt));
     return expr_r;
@@ -345,6 +367,8 @@ Return<SCAnyExpr_I> Expr::operator()(ast::VariablePackAssignIndex i) {
             return;
         }
         if (const auto entry = resolve_symbol(sym)) {
+            if (entry->local)
+                record_local_use(sym, LocalIndex { *entry->local }, true);
             ir.append(targets,
                       ir.create(SCPackTarget { { location({ **name }), sym },
                                                to_assign_kind(entry->kind),

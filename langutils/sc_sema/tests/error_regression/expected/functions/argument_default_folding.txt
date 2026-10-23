@@ -132,7 +132,7 @@ SCClass (3:1): ArgumentDefaultFolding, version 3.16
 |  |  |  |  |  |  SCLiteral (18:29) = 1
 |  |  |  |  |  |  SCPositionalArgs (18:29)
 |  |  |  |  |  |  |  SCLiteral (18:33) = 1
-|  |  |  |  SCArgumentDeclare (18:36): b, computed
+|  |  |  |  SCArgumentDeclare (18:36): b (captured), computed
 |  |  |  |  |  SCMessage (18:41): + = 4
 |  |  |  |  |  |  SCLiteral (18:41) = 2
 |  |  |  |  |  |  SCPositionalArgs (18:41)

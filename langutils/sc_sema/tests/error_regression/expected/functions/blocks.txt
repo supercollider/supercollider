@@ -70,7 +70,7 @@ SCClass (2:1): Blocks, version 3.16
 |  |  |  |  SCExplicitReturn (18:24)
 |  |  |  |  |  SCFunction (18:25)
 |  |  |  |  |  |  SCArgumentDeclareList (18:28)
-|  |  |  |  |  |  |  SCArgumentDeclare (18:28): a
+|  |  |  |  |  |  |  SCArgumentDeclare (18:28): a (assigned)
 |  |  |  |  |  |  SCBody (18:25)
 |  |  |  |  |  |  |  SCAssign (18:31): local a, declared (18:28): a
 |  |  |  |  |  |  |  |  SCLiteral (18:35) = 2
@@ -79,7 +79,7 @@ SCClass (2:1): Blocks, version 3.16
 |  |  |  |  SCExplicitReturn (21:14)
 |  |  |  |  |  SCFunction (21:15)
 |  |  |  |  |  |  SCArgumentDeclareList (21:18)
-|  |  |  |  |  |  |  SCArgumentDeclare (21:18): a
+|  |  |  |  |  |  |  SCArgumentDeclare (21:18): a (captured)
 |  |  |  |  |  |  SCBody (21:15)
 |  |  |  |  |  |  |  SCFunction (21:21)
 |  |  |  |  |  |  |  |  SCArgumentDeclareList (21:24)

@@ -110,7 +110,7 @@ SCClass (14:1): TypedArrays, version 3.16
 |  |  |  |  |  |  SCLiteral (44:34) = 1
 |  |  SCMethod (47:5): version 3.16: non_local_return { |x| ^{ if (x) { ^Int8Array[1] }; SymbolArray[\a] } }
 |  |  |  SCArgumentDeclareList (47:25)
-|  |  |  |  SCArgumentDeclare (47:25): x
+|  |  |  |  SCArgumentDeclare (47:25): x (captured)
 |  |  |  SCBody (47:28)
 |  |  |  |  SCExplicitReturn (47:28)
 |  |  |  |  |  SCFunction (47:29)

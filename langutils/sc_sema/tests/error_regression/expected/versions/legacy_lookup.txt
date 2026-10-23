@@ -111,7 +111,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  SCRead (38:34): local f, declared (38:26): f = f
 |  |  SCMethod (42:5): self_reference_in_function { var f = { f }; ^f }
 |  |  |  SCBody (42:34)
-|  |  |  |  SCVariableDeclare (42:38): f, computed
+|  |  |  |  SCVariableDeclare (42:38): f (captured), computed
 |  |  |  |  |  SCFunction (42:42)
 |  |  |  |  |  |  SCBody (42:42)
 |  |  |  |  |  |  |  SCRead (42:44): local f, declared (42:38): f = { f }
@@ -244,7 +244,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  |  SCBody (56:42)
 |  |  |  |  |  |  |  SCMessage (56:44): value
 |  |  |  |  |  |  |  |  SCRead (56:44): local g, declared (56:52): g = { 1 }
-|  |  |  |  SCVariableDeclare (56:52): g, computed
+|  |  |  |  SCVariableDeclare (56:52): g (captured), computed
 |  |  |  |  |  SCFunction (56:56) -> 1
 |  |  |  |  |  |  SCBody (56:56)
 |  |  |  |  |  |  |  SCLiteral (56:58) = 1
@@ -311,7 +311,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  SCAssign (64:39): local x, declared (64:51): x = 1
 |  |  |  |  |  |  SCLiteral (64:43) = 5
 |  |  |  SCBody (64:47)
-|  |  |  |  SCVariableDeclare (64:51): x, prototype
+|  |  |  |  SCVariableDeclare (64:51): x (assigned), prototype
 |  |  |  |  |  SCLiteral (64:55) = 1
 |  |  |  |  SCExplicitReturn (64:58)
 |  |  |  |  |  SCRead (64:59): local x, declared (64:51): x = 1
@@ -345,7 +345,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  |  SCBody (67:39)
 |  |  |  |  |  |  |  SCRead (67:41): local x, declared (67:50): x = 1
 |  |  |  SCBody (67:46)
-|  |  |  |  SCVariableDeclare (67:50): x, prototype
+|  |  |  |  SCVariableDeclare (67:50): x (captured), prototype
 |  |  |  |  |  SCLiteral (67:54) = 1
 |  |  |  |  SCExplicitReturn (67:57)
 |  |  |  |  |  SCRead (67:58): local x, declared (67:50): x = 1
@@ -434,7 +434,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  In the legacy version, as in the old compiler, the value is outside the qualifier, so this is what the name refers to there instead. From 3.16 a function in a qualifier's value refers to the qualifier's variable. Rename one of them to keep this meaning.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (81:35)
-|  |  |  |  SCVariableDeclare (81:39): y, prototype
+|  |  |  |  SCVariableDeclare (81:39): y (captured), prototype
 |  |  |  |  |  SCLiteral (81:43) = \outer
 |  |  |  |  SCExplicitReturn (81:51)
 |  |  |  |  |  SCGenerator (81:52): routine
@@ -555,7 +555,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  In the legacy version this is the variable, which is nil until its initial value runs, unless that is a literal. From 3.16 a name can only be used after its declaration, other than in a function in its own initial value, so this would be a different variable, or an error. Move the declaration first, or add `//# VERSION 3.16` once it is.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (91:22)
-|  |  |  |  SCArgumentDeclare (91:22): x
+|  |  |  |  SCArgumentDeclare (91:22): x (captured)
 |  |  |  SCBody (91:25)
 |  |  |  |  SCVariableDeclare (91:29): a, computed
 |  |  |  |  |  SCFunction (91:33)
@@ -569,7 +569,7 @@ SCClass (5:1): LegacyLookup
 |  |  |  |  |  |  |  |  |  |  |  |  SCRead (91:45): local b, declared (91:56): b = 1
 |  |  |  |  |  |  |  SCExplicitReturn (91:50)
 |  |  |  |  |  |  |  |  SCLiteral (91:51) = 2
-|  |  |  |  SCVariableDeclare (91:56): b, prototype
+|  |  |  |  SCVariableDeclare (91:56): b (captured), prototype
 |  |  |  |  |  SCLiteral (91:60) = 1
 |  |  |  |  SCExplicitReturn (91:63)
 |  |  |  |  |  SCRead (91:64): local a, declared (91:29): a = { if (x) { ^b }; ^2 }
@@ -653,7 +653,7 @@ SCClass (94:1): LookupThreeSixteen, version 3.16
 |  |  |  |  |  SCRead (118:34): local f, declared (118:26): f = f
 |  |  SCMethod (121:5): version 3.16: shadows_outer_expression { var foo = 10; ^{ var foo = foo + 1; foo == 11 } }
 |  |  |  SCBody (121:32)
-|  |  |  |  SCVariableDeclare (121:36): foo, prototype
+|  |  |  |  SCVariableDeclare (121:36): foo (captured), prototype
 |  |  |  |  |  SCLiteral (121:42) = 10
 |  |  |  |  SCExplicitReturn (121:46)
 |  |  |  |  |  SCFunction (121:47)
@@ -691,7 +691,7 @@ SCClass (94:1): LookupThreeSixteen, version 3.16
 |  |  |  |  |  SCRead (123:41): local a, declared (123:26): a = b
 |  |  SCMethod (125:5): version 3.16: hides_outer { var x = 1; ^{ var a = x, x = 2; a } }
 |  |  |  SCBody (125:19)
-|  |  |  |  SCVariableDeclare (125:23): x, prototype
+|  |  |  |  SCVariableDeclare (125:23): x (captured), prototype
 |  |  |  |  |  SCLiteral (125:27) = 1
 |  |  |  |  SCExplicitReturn (125:30)
 |  |  |  |  |  SCFunction (125:31)
@@ -731,7 +731,7 @@ SCClass (94:1): LookupThreeSixteen, version 3.16
 |  |  |  |  SCExplicitReturn (130:51)
 |  |  |  |  |  SCGenerator (130:52): routine
 |  |  |  |  |  |  SCGenQualList (130:58)
-|  |  |  |  |  |  |  SCGenQualDeclare (130:58): y
+|  |  |  |  |  |  |  SCGenQualDeclare (130:58): y (captured)
 |  |  |  |  |  |  |  |  SCFunction (130:66)
 |  |  |  |  |  |  |  |  |  SCBody (130:66)
 |  |  |  |  |  |  |  |  |  |  SCRead (130:68): local y, declared (130:58): var y = { y }

@@ -166,7 +166,7 @@ SCClass (4:1): Arithmetic, version 3.16
 |  |  |  |  |  |  |  SCLiteral (54:25) = 1
 |  |  SCMethod (56:5): version 3.16: mutable_local { var a = 1; a = 2; ^a + 1 }
 |  |  |  SCBody (56:21)
-|  |  |  |  SCVariableDeclare (56:25): a, prototype
+|  |  |  |  SCVariableDeclare (56:25): a (assigned), prototype
 |  |  |  |  |  SCLiteral (56:29) = 1
 |  |  |  |  SCAssign (56:32): local a, declared (56:25): a = 1
 |  |  |  |  |  SCLiteral (56:36) = 2

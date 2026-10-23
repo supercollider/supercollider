@@ -271,7 +271,7 @@ SCClass (2:1): PartialApplication, version 3.16
 |  |  |  |  |  |  |  SCLiteral (29:34) = 2
 |  |  SCMethod (32:5): version 3.16: captures_local { var a = 1; ^a + _ }
 |  |  |  SCBody (32:22)
-|  |  |  |  SCVariableDeclare (32:26): a, prototype
+|  |  |  |  SCVariableDeclare (32:26): a (captured), prototype
 |  |  |  |  |  SCLiteral (32:30) = 1
 |  |  |  |  SCExplicitReturn (32:33)
 |  |  |  |  |  SCFunction (32:34)
@@ -287,7 +287,7 @@ SCClass (2:1): PartialApplication, version 3.16
 |  |  |  |  SCExplicitReturn (34:16)
 |  |  |  |  |  SCFunction (34:17)
 |  |  |  |  |  |  SCArgumentDeclareList (34:20)
-|  |  |  |  |  |  |  SCArgumentDeclare (34:20): x
+|  |  |  |  |  |  |  SCArgumentDeclare (34:20): x (captured)
 |  |  |  |  |  |  SCBody (34:17)
 |  |  |  |  |  |  |  SCFunction (34:23)
 |  |  |  |  |  |  |  |  SCArgumentDeclareList (34:23)

@@ -157,6 +157,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::CurryIndex i) {
         const auto name = curry_argument_name(ctx, fnd - applied_curries.begin(), applied_curries.size());
         const auto entry = resolve_symbol(name);
         assert(entry);
+        record_local_use(name, LocalIndex { *entry->local }, false);
         return { ir.create(SCRead { name, SCRead::Kind::Local, entry->local }, location({ *i })) };
     }
     sink(sc::diag::Diagnostic::curry_outside_call(get_text_info(*ast_graph), get_location(*ast_graph, i)));

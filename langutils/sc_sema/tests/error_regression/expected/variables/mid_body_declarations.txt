@@ -37,7 +37,7 @@ SCClass (4:1): MidBodyDeclarations, version 3.16
 |  |  |  |  |  SCRead (15:53): local a, declared (15:40): a = member
 |  |  SCMethod (18:5): version 3.16: after_assignment { var a = 1; a = a + 1; var b = a; ^b }
 |  |  |  SCBody (18:24)
-|  |  |  |  SCVariableDeclare (18:28): a, prototype
+|  |  |  |  SCVariableDeclare (18:28): a (assigned), prototype
 |  |  |  |  |  SCLiteral (18:32) = 1
 |  |  |  |  SCAssign (18:35): local a, declared (18:28): a = 1
 |  |  |  |  |  SCMessage (18:39): +
@@ -51,7 +51,7 @@ SCClass (4:1): MidBodyDeclarations, version 3.16
 |  |  SCMethod (21:5): version 3.16: without_value { 1; var b; b = 2; ^b }
 |  |  |  SCBody (21:21)
 |  |  |  |  SCLiteral (21:21) = 1
-|  |  |  |  SCVariableDeclare (21:28): b
+|  |  |  |  SCVariableDeclare (21:28): b (assigned)
 |  |  |  |  SCAssign (21:31): local b, declared (21:28): b
 |  |  |  |  |  SCLiteral (21:35) = 2
 |  |  |  |  SCExplicitReturn (21:38)
@@ -148,7 +148,7 @@ SCClass (4:1): MidBodyDeclarations, version 3.16
 |  |  |  |  |  SCRead (32:50): local a = 1, declared (32:28): a = 1
 |  |  SCMethod (36:5): version 3.16: hides_outer_after_read { var x = 1; ^{ x.postln; var x = 2; x } }
 |  |  |  SCBody (36:30)
-|  |  |  |  SCVariableDeclare (36:34): x, prototype
+|  |  |  |  SCVariableDeclare (36:34): x (captured), prototype
 |  |  |  |  |  SCLiteral (36:38) = 1
 |  |  |  |  SCExplicitReturn (36:41)
 |  |  |  |  |  SCFunction (36:42)
@@ -193,7 +193,7 @@ SCClass (4:1): MidBodyDeclarations, version 3.16
 |  |  SCMethod (49:5): version 3.16: captured_by_later_function { 1; var g = 1; var f = { g }; ^f }
 |  |  |  SCBody (49:34)
 |  |  |  |  SCLiteral (49:34) = 1
-|  |  |  |  SCVariableDeclare (49:41): g, prototype
+|  |  |  |  SCVariableDeclare (49:41): g (captured), prototype
 |  |  |  |  |  SCLiteral (49:45) = 1
 |  |  |  |  SCVariableDeclare (49:52): f, computed
 |  |  |  |  |  SCFunction (49:56)
@@ -240,7 +240,7 @@ SCClass (4:1): MidBodyDeclarations, version 3.16
 |  |  |  |  |  SCRead (57:61): local a = 1, declared (57:53): a = 1
 |  |  SCMethod (60:5): version 3.16: non_local_return_in_nested_body { |x| ^{ if (x) { var a = 1; ^a }; var a = 2; a } }
 |  |  |  SCArgumentDeclareList (60:40)
-|  |  |  |  SCArgumentDeclare (60:40): x
+|  |  |  |  SCArgumentDeclare (60:40): x (captured)
 |  |  |  SCBody (60:43)
 |  |  |  |  SCExplicitReturn (60:43)
 |  |  |  |  |  SCFunction (60:44)

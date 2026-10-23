@@ -86,6 +86,8 @@ struct LocalVariable {
     SymSCIdentifier name;
     SCLocalOwner_I owner;
     SourceLocation declaration;
+    bool assigned_to { false }; // Delcaration doesn't count.
+    bool captured { false };
 };
 
 // It is 1 IRGraph per class.
@@ -225,6 +227,7 @@ public:
         return LocalIndex { static_cast<std::uint32_t>(m_locals.size() - 1) };
     }
     [[nodiscard]] const LocalVariable& local(LocalIndex i) const { return m_locals[*i]; }
+    [[nodiscard]] LocalVariable& local(LocalIndex i) { return m_locals[*i]; }
     [[nodiscard]] const std::vector<LocalVariable>& locals() const { return m_locals; }
 
     ////////////////////////////////////////////////////////////////////////////////

@@ -110,7 +110,7 @@ SCClass (2:1): LegacyInitialValues
 |  |  |  SCArgumentDeclareList (11:22)
 |  |  |  |  SCArgumentDeclare (11:22): x, prototype
 |  |  |  |  |  SCLiteral (11:26) = 1
-|  |  |  |  SCArgumentDeclare (11:29): y, computed
+|  |  |  |  SCArgumentDeclare (11:29): y (captured), computed
 |  |  |  |  |  SCLiteral (11:34) = 2
 |  |  |  SCBody (11:38)
 |  |  |  |  SCVariableDeclare (11:42): z, prototype

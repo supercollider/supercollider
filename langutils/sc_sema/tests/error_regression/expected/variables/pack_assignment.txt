@@ -10,8 +10,8 @@ SCClass (2:1): PackAssign, version 3.16
 |  SCMethodList (2:1)
 |  |  SCMethod (8:5): version 3.16: assign_locals { var a, b; #a, b = [1, 2]; ^a }
 |  |  |  SCBody (8:21)
-|  |  |  |  SCVariableDeclare (8:25): a
-|  |  |  |  SCVariableDeclare (8:28): b
+|  |  |  |  SCVariableDeclare (8:25): a (assigned)
+|  |  |  |  SCVariableDeclare (8:28): b (assigned)
 |  |  |  |  SCPackAssign (8:31)
 |  |  |  |  |  SCCollection (8:39): Array = [1, 2]
 |  |  |  |  |  |  SCLiteral (8:40) = 1
@@ -23,9 +23,9 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  SCRead (8:48): local a, declared (8:25): a
 |  |  SCMethod (10:5): version 3.16: assign_rest { var a, b, c; #a, b ...c = [1, 2, 3]; ^c }
 |  |  |  SCBody (10:19)
-|  |  |  |  SCVariableDeclare (10:23): a
-|  |  |  |  SCVariableDeclare (10:26): b
-|  |  |  |  SCVariableDeclare (10:29): c
+|  |  |  |  SCVariableDeclare (10:23): a (assigned)
+|  |  |  |  SCVariableDeclare (10:26): b (assigned)
+|  |  |  |  SCVariableDeclare (10:29): c (assigned)
 |  |  |  |  SCPackAssign (10:32)
 |  |  |  |  |  SCCollection (10:45): Array = [1, 2, 3]
 |  |  |  |  |  |  SCLiteral (10:46) = 1
@@ -48,7 +48,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCPackTarget (11:37): class class_var at 1, declared (4:14): class_var
 |  |  SCMethod (13:5): version 3.16: assign_argument { |x| #x = [1]; ^x }
 |  |  |  SCArgumentDeclareList (13:24)
-|  |  |  |  SCArgumentDeclare (13:24): x
+|  |  |  |  SCArgumentDeclare (13:24): x (assigned)
 |  |  |  SCBody (13:27)
 |  |  |  |  SCPackAssign (13:27)
 |  |  |  |  |  SCCollection (13:32): Array = [1]
@@ -59,7 +59,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  SCRead (13:38): local x, declared (13:24): x
 |  |  SCMethod (14:5): version 3.16: assign_environment { var a; #~e, a ...~rest = [1, 2, 3] }
 |  |  |  SCBody (14:26)
-|  |  |  |  SCVariableDeclare (14:30): a
+|  |  |  |  SCVariableDeclare (14:30): a (assigned)
 |  |  |  |  SCPackAssign (14:33)
 |  |  |  |  |  SCCollection (14:51): Array = [1, 2, 3]
 |  |  |  |  |  |  SCLiteral (14:52) = 1
@@ -71,8 +71,8 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCPackTarget (14:43): environment rest rest from 2
 |  |  SCMethod (16:5): version 3.16: assign_parenthesised { var a, b; #a, b ([1, 2]); ^b }
 |  |  |  SCBody (16:28)
-|  |  |  |  SCVariableDeclare (16:32): a
-|  |  |  |  SCVariableDeclare (16:35): b
+|  |  |  |  SCVariableDeclare (16:32): a (assigned)
+|  |  |  |  SCVariableDeclare (16:35): b (assigned)
 |  |  |  |  SCPackAssign (16:38)
 |  |  |  |  |  SCCollection (16:45): Array = [1, 2]
 |  |  |  |  |  |  SCLiteral (16:46) = 1
@@ -84,8 +84,8 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  SCRead (16:55): local b, declared (16:35): b
 |  |  SCMethod (17:5): version 3.16: assign_result { var a, b; ^#a, b = [1, 2] }
 |  |  |  SCBody (17:21)
-|  |  |  |  SCVariableDeclare (17:25): a
-|  |  |  |  SCVariableDeclare (17:28): b
+|  |  |  |  SCVariableDeclare (17:25): a (assigned)
+|  |  |  |  SCVariableDeclare (17:28): b (assigned)
 |  |  |  |  SCExplicitReturn (17:31)
 |  |  |  |  |  SCPackAssign (17:32)
 |  |  |  |  |  |  SCCollection (17:40): Array = [1, 2]
@@ -110,7 +110,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  Declare it with 'var', or use '~undefined' to refer to an environment variable.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (19:24)
-|  |  |  |  SCVariableDeclare (19:28): a
+|  |  |  |  SCVariableDeclare (19:28): a (assigned)
 |  |  |  |  SCPackAssign (19:31)
 |  |  |  |  |  SCCollection (19:47): Array = [1, 2]
 |  |  |  |  |  |  SCLiteral (19:48) = 1
@@ -119,9 +119,9 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCPackTarget (19:32): local a at 0, declared (19:28): a
 |  |  SCMethod (22:5): version 3.16: assign_makes_not_constant { var a = 1, b; #a, b = [2, 3]; ^a }
 |  |  |  SCBody (22:33)
-|  |  |  |  SCVariableDeclare (22:37): a, prototype
+|  |  |  |  SCVariableDeclare (22:37): a (assigned), prototype
 |  |  |  |  |  SCLiteral (22:41) = 1
-|  |  |  |  SCVariableDeclare (22:44): b
+|  |  |  |  SCVariableDeclare (22:44): b (assigned)
 |  |  |  |  SCPackAssign (22:47)
 |  |  |  |  |  SCCollection (22:55): Array = [2, 3]
 |  |  |  |  |  |  SCLiteral (22:56) = 2
@@ -133,9 +133,9 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  SCRead (22:64): local a, declared (22:37): a = 1
 |  |  SCMethod (25:5): version 3.16: assign_in_block { var a = 1, b; { #a, b = [2, 3] }; ^a }
 |  |  |  SCBody (25:23)
-|  |  |  |  SCVariableDeclare (25:27): a, prototype
+|  |  |  |  SCVariableDeclare (25:27): a (assigned, captured), prototype
 |  |  |  |  |  SCLiteral (25:31) = 1
-|  |  |  |  SCVariableDeclare (25:34): b
+|  |  |  |  SCVariableDeclare (25:34): b (assigned, captured)
 |  |  |  |  SCFunction (25:37)
 |  |  |  |  |  SCBody (25:37)
 |  |  |  |  |  |  SCPackAssign (25:39)
@@ -224,7 +224,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCLiteral (43:43) = 1
 |  |  |  |  |  |  SCLiteral (43:46) = 2
 |  |  |  |  |  SCPackTargets (43:34)
-|  |  |  |  |  |  SCPackTarget (43:35): local a at 0
+|  |  |  |  |  |  SCPackTarget (43:35): local a (assigned) at 0
 |  |  |  |  |  |  SCPackTarget (43:38): local b at 1
 |  |  |  |  SCAssign (43:50): local a, declared (43:35): a
 |  |  |  |  |  SCLiteral (43:54) = 3
@@ -372,7 +372,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCLiteral (61:37) = 1
 |  |  |  |  |  |  SCLiteral (61:40) = 2
 |  |  |  |  |  SCPackTargets (61:28)
-|  |  |  |  |  |  SCPackTarget (61:29): local a at 0
+|  |  |  |  |  |  SCPackTarget (61:29): local a (captured) at 0
 |  |  |  |  |  |  SCPackTarget (61:32): local b at 1
 |  |  |  |  SCExplicitReturn (61:44)
 |  |  |  |  |  SCFunction (61:45)
@@ -385,7 +385,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  SCLiteral (65:50) = 1
 |  |  |  |  |  |  SCLiteral (65:53) = 2
 |  |  |  |  |  SCPackTargets (65:41)
-|  |  |  |  |  |  SCPackTarget (65:42): local a at 0
+|  |  |  |  |  |  SCPackTarget (65:42): local a (captured) at 0
 |  |  |  |  |  |  SCPackTarget (65:45): local b at 1
 |  |  |  |  SCMessage (65:57): value
 |  |  |  |  |  SCFunction (65:57)
@@ -405,7 +405,7 @@ SCClass (2:1): PackAssign, version 3.16
 |  |  |  |  |  |  |  |  |  SCLiteral (68:63) = 2
 |  |  |  |  |  |  |  |  SCPackTargets (68:51)
 |  |  |  |  |  |  |  |  |  SCPackTarget (68:52): local a at 0
-|  |  |  |  |  |  |  |  |  SCPackTarget (68:55): local b at 1
+|  |  |  |  |  |  |  |  |  SCPackTarget (68:55): local b (captured) at 1
 |  |  |  |  |  |  |  SCMessage (68:67): value
 |  |  |  |  |  |  |  |  SCFunction (68:67)
 |  |  |  |  |  |  |  |  |  SCBody (68:67)

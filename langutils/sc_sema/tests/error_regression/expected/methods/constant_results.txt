@@ -106,7 +106,7 @@ SCClass (2:1): ConstantResults, version 3.16
 |  |  |  |  |  |  |  |  SCLiteral (17:28) = 1
 |  |  SCMethod (18:5): version 3.16: function_reads_outer { var a = 1; ^{ a } }
 |  |  |  SCBody (18:28)
-|  |  |  |  SCVariableDeclare (18:32): a, prototype
+|  |  |  |  SCVariableDeclare (18:32): a (captured), prototype
 |  |  |  |  |  SCLiteral (18:36) = 1
 |  |  |  |  SCExplicitReturn (18:39)
 |  |  |  |  |  SCFunction (18:40)

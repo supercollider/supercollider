@@ -110,7 +110,7 @@ SCClass (3:1): InitialValues, version 3.16
 |  |  |  SCArgumentDeclareList (12:22)
 |  |  |  |  SCArgumentDeclare (12:22): x, prototype
 |  |  |  |  |  SCLiteral (12:26) = 1
-|  |  |  |  SCArgumentDeclare (12:29): y, computed
+|  |  |  |  SCArgumentDeclare (12:29): y (captured), computed
 |  |  |  |  |  SCLiteral (12:34) = 2
 |  |  |  SCBody (12:38)
 |  |  |  |  SCVariableDeclare (12:42): z, prototype
