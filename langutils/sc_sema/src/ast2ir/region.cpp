@@ -120,7 +120,7 @@ SCFunction_I Interpreted::immediately_evaluated(ast::ImmediatelyEvaluatedBlockIn
 Return<SCInterpreted_I> Interpreted::finish(join<SCFunction_I, SCRegionList_I> code) {
     const auto interpreted = ir.create(SCInterpreted { version }, ir.location(NodeIndex { *code }), code);
     ir.payload(interpreted).poisoned = sink.fatal;
-    ctx.diagnostics(std::move(sink.diagnostics));
+    diagnostics = std::move(sink.diagnostics);
     sink = {};
     return { interpreted };
 }

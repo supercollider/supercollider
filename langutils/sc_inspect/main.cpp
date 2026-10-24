@@ -444,22 +444,41 @@ int main(int argc, char* argv[]) {
     auto diags = comp.compile_class_library(constraints, num_threads);
     times.sema = seconds_since(sema_start);
 
-    // In path order, so the dump doesn't depend on how the directories are listed.
+    // In path order, so the dump doesn't depend on how the directories are listed. Each file is parsed, then
+    // compiled, on several threads, each writing only its own entry, and gathered in that order.
     std::sort(scd_files.begin(), scd_files.end());
-    std::vector<std::shared_ptr<sc::ir::IRGraph>> interpreted_graphs;
-    for (const auto& path : scd_files) {
-        const auto parse_start = Clock::now();
-        const auto ast_graph = parse_interpreted(path, diags);
-        times.interpreted_parse += seconds_since(parse_start);
-        if (!ast_graph)
-            continue;
-        const auto sema_start = Clock::now();
-        auto r = comp.compile_interpreted(ast_graph, interpreted_version);
-        times.interpreted_sema += seconds_since(sema_start);
+    const auto for_each_scd_file = [&](auto&& f) {
+        std::atomic<size_t> next { 0 };
+        boost::asio::thread_pool pool { num_threads };
+        for (size_t i { 0 }; i < num_threads; ++i)
+            boost::asio::post(pool, [&] {
+                for (size_t file_index; (file_index = next.fetch_add(1, std::memory_order_relaxed)) < scd_files.size();)
+                    f(file_index);
+            });
+        pool.join();
+    };
+    std::vector<std::vector<sc::diag::Diagnostic>> scd_diagnostics(scd_files.size());
+    std::vector<std::shared_ptr<const sc::ast::ASTGraph>> scd_asts(scd_files.size());
+    std::vector<std::shared_ptr<sc::ir::IRGraph>> scd_graphs(scd_files.size());
+    const auto interpreted_parse_start = Clock::now();
+    for_each_scd_file([&](size_t i) { scd_asts[i] = parse_interpreted(scd_files[i], scd_diagnostics[i]); });
+    times.interpreted_parse = seconds_since(interpreted_parse_start);
+    const auto interpreted_sema_start = Clock::now();
+    for_each_scd_file([&](size_t i) {
+        if (!scd_asts[i])
+            return;
+        auto r = comp.compile_interpreted(scd_asts[i], interpreted_version);
         for (auto& d : r.diagnostics)
+            scd_diagnostics[i].push_back(std::move(d));
+        scd_graphs[i] = std::move(r.ir);
+    });
+    times.interpreted_sema = seconds_since(interpreted_sema_start);
+    std::vector<std::shared_ptr<sc::ir::IRGraph>> interpreted_graphs;
+    for (size_t i { 0 }; i < scd_files.size(); ++i) {
+        for (auto& d : scd_diagnostics[i])
             diags.push_back(std::move(d));
-        if (r.ir)
-            interpreted_graphs.push_back(std::move(r.ir));
+        if (scd_graphs[i])
+            interpreted_graphs.push_back(std::move(scd_graphs[i]));
     }
 
     // The backend's frames, lowered ir and bytecode, by graph, and its diagnostics, printed with the others. Each

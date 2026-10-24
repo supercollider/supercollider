@@ -46,6 +46,8 @@ struct IRCompiler {
     // Interpreted code, whose root is a region or a file as a function, compiled after the class library, as if it
     // were written inside `Interpreter:functionCompileContext`. Without that method, or if Interpreter is poisoned, it
     // isn't compiled, and ir is null. Its version is given here, as it isn't in a class, see ast::LanguageVersion.
+    // Several can be compiled at once, on different threads, as each keeps its own diagnostics and only reads the
+    // class library.
     struct Interpreted {
         std::shared_ptr<IRGraph> ir;
         std::vector<sc::diag::Diagnostic> diagnostics;

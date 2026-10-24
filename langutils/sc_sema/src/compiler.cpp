@@ -543,9 +543,9 @@ IRCompiler::Interpreted IRCompiler::compile_interpreted(std::shared_ptr<const as
             meta_ir = class_graph(*meta);
     }
     if (!class_ir) {
-        ctx.diagnostics(sc::diag::Diagnostic::missing_interpreter_context(get_text_info(*ast_graph),
-                                                                          get_location(*ast_graph, root_i)));
-        return { nullptr, ctx.diagnostics.consume() };
+        return { nullptr,
+                 { sc::diag::Diagnostic::missing_interpreter_context(get_text_info(*ast_graph),
+                                                                     get_location(*ast_graph, root_i)) } };
     }
 
     const auto members = ast2ir::member_scope(class_ir);
@@ -559,6 +559,6 @@ IRCompiler::Interpreted IRCompiler::compile_interpreted(std::shared_ptr<const as
                          [&](ast::ClassOrExtensionListIndex) -> ast2ir::Return<SCInterpreted_I> { std::abort(); } },
         *root);
     ir->add_root(r.ir_node);
-    return { std::move(ir), ctx.diagnostics.consume() };
+    return { std::move(ir), std::move(interpreted.diagnostics) };
 }
 }
