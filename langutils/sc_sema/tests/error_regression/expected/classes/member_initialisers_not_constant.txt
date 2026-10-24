@@ -119,7 +119,7 @@ SCClass (2:1): NotConstant : Object, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (14:23)
 |  |  |  |  SCExplicitReturn (14:23)
-|  |  |  |  |  SCCollection (14:24): Array
+|  |  |  |  |  SCCollection (14:24): Array, literal
 |  |  |  |  |  |  SCLiteral (14:26) = 1
 |  |  |  |  |  |  SCMessage (14:29): foo
 |  |  |  |  |  |  |  SCLiteral (14:29) = 2

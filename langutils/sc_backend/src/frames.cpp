@@ -55,6 +55,19 @@ std::optional<FrameIndex> FrameCursor::exit(ir::NodeIndex i) {
     return std::nullopt;
 }
 
+void FrameCursor::skip_over_children(ir::NodeIndex i) {
+    (void)enter(i);
+    if (const auto child = m_graph->first_child(i))
+        m_graph->depth_first_traverse(
+            ir::NodeIndex { *child },
+            [&](const ir::IRGraph::Edges&, const ir::IRGraph::Variant&, const ir::SourceLocation&, ir::NodeIndex n,
+                size_t) { (void)enter(n); },
+            ir::IRGraph::Default {}, ir::IRGraph::Default {},
+            [&](const ir::IRGraph::Edges&, const ir::IRGraph::Variant&, const ir::SourceLocation&, ir::NodeIndex n,
+                size_t) { (void)exit(n); });
+    (void)exit(i);
+}
+
 namespace {
 
 struct FrameCreator {

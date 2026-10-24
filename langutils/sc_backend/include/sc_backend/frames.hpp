@@ -88,6 +88,9 @@ public:
     std::optional<FrameIndex> enter(ir::NodeIndex i);
     std::optional<FrameIndex> exit(ir::NodeIndex i);
 
+    // Enters and exits the node, skips the children.
+    void skip_over_children(ir::NodeIndex i);
+
     [[nodiscard]] OptionalFrameIndex current() const {
         return m_stack.empty() ? OptionalFrameIndex {} : OptionalFrameIndex { m_stack.back() };
     }

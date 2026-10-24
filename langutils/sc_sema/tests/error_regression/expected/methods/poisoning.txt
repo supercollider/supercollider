@@ -95,7 +95,7 @@ SCClass (2:1): Poisoning : Object, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (11:22)
 |  |  |  |  SCExplicitReturn (11:22)
-|  |  |  |  |  SCCollection (11:23): Array
+|  |  |  |  |  SCCollection (11:23): Array, literal
 |  |  |  |  |  |  SCLiteral (11:25) = 1
 |  |  |  |  |  |  SCMessage (11:28): foo
 |  |  |  |  |  |  |  SCLiteral (11:28) = 2
@@ -240,7 +240,7 @@ SCClass (2:1): Meta_Poisoning : Meta_Object, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (20:23)
 |  |  |  |  SCExplicitReturn (20:23)
-|  |  |  |  |  SCCollection (20:24): Array
+|  |  |  |  |  SCCollection (20:24): Array, literal
 |  |  |  |  |  |  SCLiteral (20:26) = 1
 |  |  |  |  |  |  SCMessage (20:29): foo
 |  |  |  |  |  |  |  SCLiteral (20:29) = 2

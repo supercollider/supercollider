@@ -1,0 +1,134 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): LirCollections : Object, version 3.16
+|  SCMemberList (5:1)
+|  SCMethodList (5:1)
+|  |  SCMethod (7:5): array, version 3.16: array { |a| ^[a, 2] }
+|  |  |  SCArgumentDeclareList (7:14)
+|  |  |  |  SCArgumentDeclare (7:14): a
+|  |  |  SCBody (7:17)
+|  |  |  |  SCExplicitReturn (7:17)
+|  |  |  |  |  SCCollection (7:18): Array
+|  |  |  |  |  |  SCRead (7:19): local a, declared (7:14): a
+|  |  |  |  |  |  SCLiteral (7:22) = 2
+|  |  SCMethod (9:5): set, version 3.16: set { |a| ^Set[a] }
+|  |  |  SCArgumentDeclareList (9:12)
+|  |  |  |  SCArgumentDeclare (9:12): a
+|  |  |  SCBody (9:15)
+|  |  |  |  SCExplicitReturn (9:15)
+|  |  |  |  |  SCCollection (9:16): Set
+|  |  |  |  |  |  SCRead (9:20): local a, declared (9:12): a
+|  |  SCMethod (11:5): event, version 3.16: event { |v| ^(a: v, b: 2) }
+|  |  |  SCArgumentDeclareList (11:14)
+|  |  |  |  SCArgumentDeclare (11:14): v
+|  |  |  SCBody (11:17)
+|  |  |  |  SCExplicitReturn (11:17)
+|  |  |  |  |  SCCollection (11:18): Event
+|  |  |  |  |  |  SCLiteral (11:19) = \a
+|  |  |  |  |  |  SCRead (11:22): local v, declared (11:14): v
+|  |  |  |  |  |  SCLiteral (11:25) = \b
+|  |  |  |  |  |  SCLiteral (11:28) = 2
+|  |  SCMethod (14:5): pack, version 3.16: pack { |v| var #p, q ...r = v; ^p }
+|  |  |  SCArgumentDeclareList (14:13)
+|  |  |  |  SCArgumentDeclare (14:13): v
+|  |  |  SCBody (14:16)
+|  |  |  |  SCPackDeclare (14:20)
+|  |  |  |  |  SCRead (14:33): local v, declared (14:13): v
+|  |  |  |  |  SCPackTargets (14:20)
+|  |  |  |  |  |  SCPackTarget (14:21): local p at 0
+|  |  |  |  |  |  SCPackTarget (14:24): local q at 1
+|  |  |  |  |  |  SCPackTarget (14:29): local r rest from 2
+|  |  |  |  SCExplicitReturn (14:36)
+|  |  |  |  |  SCRead (14:37): local p, declared (14:21): p
+|  |  SCMethod (16:5): pack_assign, version 3.16: pack_assign { |v| var p, q; ^#p, q = v }
+|  |  |  SCArgumentDeclareList (16:20)
+|  |  |  |  SCArgumentDeclare (16:20): v
+|  |  |  SCBody (16:23)
+|  |  |  |  SCVariableDeclare (16:27): p (assigned)
+|  |  |  |  SCVariableDeclare (16:30): q (assigned)
+|  |  |  |  SCExplicitReturn (16:33)
+|  |  |  |  |  SCPackAssign (16:34)
+|  |  |  |  |  |  SCRead (16:42): local v, declared (16:20): v
+|  |  |  |  |  |  SCPackTargets (16:34)
+|  |  |  |  |  |  |  SCPackTarget (16:35): local p at 0, declared (16:27): p
+|  |  |  |  |  |  |  SCPackTarget (16:38): local q at 1, declared (16:30): q
+
+
+
+LIR DUMP 
+
+
+LirCollections
+|  function 0 (7:5): method array
+|  |  region 0
+|  |  |  PushClass Array
+|  |  |  PushInteger 2
+|  |  |  Send new (positional 1)
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send add (positional 1)
+|  |  |  PushConstant 2
+|  |  |  Send add (positional 1)
+|  |  |  Return
+|  function 1 (9:5): method set
+|  |  region 0
+|  |  |  PushClass Set
+|  |  |  PushInteger 1
+|  |  |  Send new (positional 1)
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send add (positional 1)
+|  |  |  Return
+|  function 2 (11:5): method event
+|  |  region 0
+|  |  |  PushClass Event
+|  |  |  PushInteger 2
+|  |  |  PushSpecialValue nil
+|  |  |  PushSpecialValue nil
+|  |  |  PushSpecialValue true
+|  |  |  Send new (positional 4)
+|  |  |  PushConstant \a
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send put (positional 2)
+|  |  |  PushConstant \b
+|  |  |  PushConstant 2
+|  |  |  Send put (positional 2)
+|  |  |  Return
+|  function 3 (14:5): method pack
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Dup
+|  |  |  PushInteger 0
+|  |  |  Send at (positional 1)
+|  |  |  StoreLocal depth 0, slot 2
+|  |  |  Drop
+|  |  |  Dup
+|  |  |  PushInteger 1
+|  |  |  Send at (positional 1)
+|  |  |  StoreLocal depth 0, slot 3
+|  |  |  Drop
+|  |  |  Dup
+|  |  |  PushInteger 2
+|  |  |  Send copyToEnd (positional 1)
+|  |  |  StoreLocal depth 0, slot 4
+|  |  |  Drop
+|  |  |  Drop
+|  |  |  PushLocal depth 0, slot 2
+|  |  |  Return
+|  function 4 (16:5): method pack_assign
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Dup
+|  |  |  PushInteger 0
+|  |  |  Send at (positional 1)
+|  |  |  StoreLocal depth 0, slot 2
+|  |  |  Drop
+|  |  |  Dup
+|  |  |  PushInteger 1
+|  |  |  Send at (positional 1)
+|  |  |  StoreLocal depth 0, slot 3
+|  |  |  Drop
+|  |  |  Return
+Successfully compiled 16 classes.

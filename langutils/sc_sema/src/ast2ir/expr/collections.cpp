@@ -84,6 +84,7 @@ Return<SCAnyExpr_I> array(CollectionContext& c, ast::ArrayIndex i, bool is_immut
     const TypeInfo type { c.ctx.common_classes.array, TypeConfidence::Absolute };
     const auto collection = c.ir.create(SCCollection { { std::nullopt, c.ctx.common_classes.array } },
                                         location_of(c.ir, *c.ast_graph, { *i }));
+    c.ir.payload(collection).literal = is_immutable;
 
     // Legacy code only knows `#[...]`, the old compiler created the others when the code ran.
     auto values = append_elements(c, collection, i, is_immutable);

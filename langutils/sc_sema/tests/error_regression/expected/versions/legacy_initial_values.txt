@@ -18,7 +18,7 @@ SCClass (2:1): LegacyInitialValues : Object
 |  |  |  |  SCArgumentDeclare (4:52): d, prototype
 |  |  |  |  |  SCLiteral (4:56) = \x
 |  |  |  |  SCArgumentDeclare (4:60): e, prototype
-|  |  |  |  |  SCCollection (4:64): Array = [1, \y]
+|  |  |  |  |  SCCollection (4:64): Array, literal = [1, \y]
 |  |  |  |  |  |  SCLiteral (4:66) = 1
 |  |  |  |  |  |  SCLiteral (4:69) = \y
 |  |  |  |  SCArgumentDeclare (4:74): f, prototype
@@ -99,7 +99,7 @@ SCClass (2:1): LegacyInitialValues : Object
 |  |  |  |  |  SCCollection (10:52): Array
 |  |  |  |  |  |  SCLiteral (10:53) = 1
 |  |  |  |  SCVariableDeclare (10:57): e, prototype
-|  |  |  |  |  SCCollection (10:61): Array = [1]
+|  |  |  |  |  SCCollection (10:61): Array, literal = [1]
 |  |  |  |  |  |  SCLiteral (10:63) = 1
 |  |  |  |  SCVariableDeclare (10:67): f
 |  |  |  |  SCVariableDeclare (10:70): g, prototype

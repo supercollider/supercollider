@@ -53,7 +53,7 @@ SCClass (2:1): Arrays : Object, version 3.16
 |  |  SCMethod (9:5): immutable, version 3.16: immutable { ^#[1, name, \symbol] } -> [1, \name, \symbol]
 |  |  |  SCBody (9:17)
 |  |  |  |  SCExplicitReturn (9:17)
-|  |  |  |  |  SCCollection (9:18): Array = [1, \name, \symbol]
+|  |  |  |  |  SCCollection (9:18): Array, literal = [1, \name, \symbol]
 |  |  |  |  |  |  SCLiteral (9:20) = 1
 |  |  |  |  |  |  SCLiteral (9:23) = \name
 |  |  |  |  |  |  SCLiteral (9:29) = \symbol
@@ -73,15 +73,15 @@ SCClass (2:1): Arrays : Object, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (10:29)
 |  |  |  |  SCExplicitReturn (10:29)
-|  |  |  |  |  SCCollection (10:30): Array
+|  |  |  |  |  SCCollection (10:30): Array, literal
 |  |  |  |  |  |  SCLiteral (10:32) = 1
 |  |  |  |  |  |  SCMessage (10:35): foo
 |  |  |  |  |  |  |  SCLiteral (10:35) = 2
 |  |  SCMethod (11:5): immutable_nested, version 3.16: immutable_nested { ^#[[a, 1], b] } -> [[\a, 1], \b]
 |  |  |  SCBody (11:24)
 |  |  |  |  SCExplicitReturn (11:24)
-|  |  |  |  |  SCCollection (11:25): Array = [[\a, 1], \b]
-|  |  |  |  |  |  SCCollection (11:27): Array = [\a, 1]
+|  |  |  |  |  SCCollection (11:25): Array, literal = [[\a, 1], \b]
+|  |  |  |  |  |  SCCollection (11:27): Array, literal = [\a, 1]
 |  |  |  |  |  |  |  SCLiteral (11:28) = \a
 |  |  |  |  |  |  |  SCLiteral (11:31) = 1
 |  |  |  |  |  |  SCLiteral (11:35) = \b

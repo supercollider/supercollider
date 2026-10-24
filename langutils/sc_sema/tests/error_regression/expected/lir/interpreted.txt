@@ -1,0 +1,49 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): version 3.16: lir/interpreted.scd
+|  SCRegionList (1:1)
+|  |  SCRegion (5:1)
+|  |  |  SCFunction (5:1)
+|  |  |  |  SCBody (5:1)
+|  |  |  |  |  SCVariableDeclare (5:7): x, prototype
+|  |  |  |  |  |  SCLiteral (5:11) = 1
+|  |  |  |  |  SCAssign (5:14): instance a, declared (37:11): a
+|  |  |  |  |  |  SCMessage (5:18): + = 2
+|  |  |  |  |  |  |  SCRead (5:18): local x = 1, declared (5:7): x = 1
+|  |  |  |  |  |  |  SCPositionalArgs (5:18)
+|  |  |  |  |  |  |  |  SCLiteral (5:22) = 1
+|  |  SCRegion (6:3)
+|  |  |  SCFunction (6:3)
+|  |  |  |  SCBody (6:3)
+|  |  |  |  |  SCFunction (6:3)
+|  |  |  |  |  |  SCArgumentDeclareList (6:6)
+|  |  |  |  |  |  |  SCArgumentDeclare (6:6): y
+|  |  |  |  |  |  SCBody (6:3)
+|  |  |  |  |  |  |  SCMessage (6:9): +
+|  |  |  |  |  |  |  |  SCRead (6:9): local y, declared (6:6): y
+|  |  |  |  |  |  |  |  SCPositionalArgs (6:9)
+|  |  |  |  |  |  |  |  |  SCRead (6:13): instance a, declared (37:11): a
+
+
+
+LIR DUMP 
+
+
+Interpreted
+|  function 0 (5:1)
+|  |  region 0
+|  |  |  PushConstant 2
+|  |  |  StoreInstance slot 5
+|  function 1 (6:3)
+|  |  region 0
+|  |  |  PushFunction 2
+|  function 2 (6:3)
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 0
+|  |  |  PushInstance slot 5
+|  |  |  Send + (positional 1, tail from function)
+Successfully compiled 15 classes.

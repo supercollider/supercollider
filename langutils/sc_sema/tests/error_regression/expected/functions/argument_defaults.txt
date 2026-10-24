@@ -23,7 +23,7 @@ SCClass (2:1): ArgumentDefaults : Object, version 3.16
 |  |  |  |  |  SCFunction (8:29)
 |  |  |  |  |  |  SCArgumentDeclareList (8:32)
 |  |  |  |  |  |  |  SCArgumentDeclare (8:32): a, prototype
-|  |  |  |  |  |  |  |  SCCollection (8:36): Array = [1, 2]
+|  |  |  |  |  |  |  |  SCCollection (8:36): Array, literal = [1, 2]
 |  |  |  |  |  |  |  |  |  SCLiteral (8:38) = 1
 |  |  |  |  |  |  |  |  |  SCLiteral (8:41) = 2
 |  |  |  |  |  |  |  SCArgumentDeclare (8:45): b, computed

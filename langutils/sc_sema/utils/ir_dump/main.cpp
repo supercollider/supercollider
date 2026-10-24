@@ -21,6 +21,7 @@
 #include "boost/asio/post.hpp"
 #include "boost/asio/thread_pool.hpp"
 #include "sc_backend/frames.hpp"
+#include "sc_backend/lower.hpp"
 #include "sc_backend/members.hpp"
 #include "sc_diagnostic/sc_diagnostic.hpp"
 #include "sc_lexer/normalise_source.hpp"
@@ -212,6 +213,7 @@ int main(int argc, char* argv[]) {
     // --no-dump only compiles, printing how many diagnostics and classes there are, e.g., to time the compiler, as
     // writing the dump takes longer than compiling.
     // --frames adds the backend's frame layout, each frame's slots, and where each variable read or assigned is.
+    // --lir adds the backend's lowered ir, after the dump, each class's functions and their instructions.
     std::vector<std::filesystem::path> module_paths;
     std::vector<std::filesystem::path> prelude_paths;
     std::optional<std::filesystem::path> relative_to;
@@ -219,6 +221,7 @@ int main(int argc, char* argv[]) {
     auto interpreted_version = sc::ast::LanguageVersion::Legacy;
     bool dump = true;
     bool show_frames = false;
+    bool show_lir = false;
     for (int i { 1 }; i < argc; ++i) {
         const auto arg = get_path(argv[i]);
         if (arg == "--threads" && i + 1 < argc) {
@@ -241,6 +244,8 @@ int main(int argc, char* argv[]) {
             dump = false;
         } else if (arg == "--frames") {
             show_frames = true;
+        } else if (arg == "--lir") {
+            show_lir = true;
         } else if (arg == "--relative-to" && i + 1 < argc) {
             relative_to = get_path(argv[++i]);
         } else if (arg == "--prelude" && i + 1 < argc) {
@@ -482,12 +487,13 @@ int main(int argc, char* argv[]) {
     // The backend's frames, by graph, and its diagnostics, printed with the others. Each frame's owner is written when
     // the owner is, which for a qualifier is before its frame starts, so they are found by owner.
     struct DumpFrames {
+        sc::ir::join<sc::ir::SCClass_I, sc::ir::SCInterpreted_I> root;
         sc::backend::Frames layout;
         std::unordered_map<std::uint32_t, sc::backend::FrameIndex> by_owner;
     };
     std::optional<sc::backend::MemberTable> member_table;
     std::map<const sc::ir::IRGraph*, DumpFrames> frames;
-    if (show_frames) {
+    if (show_frames || show_lir) {
         member_table.emplace(comp, symbol_table);
         for (const auto& dumped : classes) {
             const auto& g = *dumped.graph;
@@ -496,7 +502,7 @@ int main(int argc, char* argv[]) {
                     return *c;
                 return *g.as_a<sc::ir::SCInterpreted_I>(dumped.index);
             }();
-            DumpFrames f { sc::backend::layout_frames(g, root) };
+            DumpFrames f { root, sc::backend::layout_frames(g, root) };
             for (auto& d : f.layout.diagnostics)
                 all_diagnostics.push_back(std::move(d));
             for (std::uint32_t fi { 0 }; fi < f.layout.frames.size(); ++fi)
@@ -512,7 +518,7 @@ int main(int argc, char* argv[]) {
     const auto write_frame = [&](const sc::ir::IRGraph& g, const sc::ir::IRGraph::Variant& payload, sc::ir::NodeIndex i,
                                  sc::backend::OptionalFrameIndex current) {
         const auto fnd = frames.find(&g);
-        if (fnd == frames.end())
+        if (!show_frames || fnd == frames.end())
             return;
         const auto& f = fnd->second.layout;
         const auto owner = [&](sc::backend::FrameOwner_I o) {
@@ -552,7 +558,7 @@ int main(int argc, char* argv[]) {
             }
             // A class variable as its position among its class's own, so it doesn't depend on the other classes.
             std::visit(sc::util::overload {
-                           [](sc::backend::InstanceSlot slot) { std::cout << " [instance slot " << *slot << "]"; },
+                           [](sc::backend::InstanceSlotIndex slot) { std::cout << " [instance slot " << *slot << "]"; },
                            [&](sc::backend::ClassVariableIndex index) {
                                std::cout << " [class variable "
                                          << *index - *member_table->class_variable_base(variable.owner) << " of "
@@ -652,7 +658,7 @@ int main(int argc, char* argv[]) {
         const sc::ir::describe::Describe describe { g, ctx, relative_to };
         // Every node is entered and exited, even those hidden, so it follows the frames.
         std::optional<sc::backend::FrameCursor> cursor;
-        if (const auto fnd = frames.find(&g); fnd != frames.end())
+        if (const auto fnd = frames.find(&g); show_frames && fnd != frames.end())
             cursor.emplace(g, fnd->second.layout);
         g.depth_first_traverse(
             dumped.index,
@@ -686,6 +692,51 @@ int main(int argc, char* argv[]) {
                 if (cursor)
                     (void)cursor->exit(i);
             });
+    }
+    // Each function's regions, the body first, each instruction on its own line. A method or interpreted function that
+    // can't be emitted, e.g., one using something not lowered yet, is marked.
+    if (show_lir) {
+        const sc::backend::LoweringSymbols selectors { symbol_table };
+        std::cout << "\n\n\nLIR DUMP \n\n\n";
+        for (const auto& dumped : classes) {
+            const auto& g = *dumped.graph;
+            const auto& f = frames.at(&g);
+            const sc::backend::LoweringContext lowering { g,
+                                                          f.layout,
+                                                          *member_table,
+                                                          ctx.constant_table,
+                                                          symbol_table,
+                                                          selectors,
+                                                          ctx.common_classes.array,
+                                                          ctx.common_classes.event };
+            const auto lowered = sc::backend::lower(lowering, f.root);
+            std::cout << (dumped.class_name ? std::string { symbol_table(*dumped.class_name) } : "Interpreted") << "\n";
+            for (std::uint32_t fi { 0 }; fi < lowered.functions.size(); ++fi) {
+                const sc::backend::lir::FunctionIndex index { fi };
+                const auto& function = lowered.functions[index];
+                const auto& frame = f.layout.frames[function.frame];
+                const sc::ir::NodeIndex owner { *frame.owner };
+                std::cout << "|  function " << fi << " ";
+                sc::ir::describe::write_location(std::cout, g.location(owner));
+                if (const auto method = g.as_a<sc::ir::SCMethod_I>(owner))
+                    std::cout << ": method " << symbol_table(*g.payload(*method).selector);
+                const auto& roots = lowered.roots;
+                if (!frame.parent && std::find(roots.begin(), roots.end(), index) == roots.end())
+                    std::cout << " (not emitted)";
+                std::cout << "\n";
+                for (std::uint32_t ri { 0 }; ri < function.sub_regions.size(); ++ri) {
+                    const auto& region = function.sub_regions[sc::backend::lir::FunctionSubRegionIndex { ri }];
+                    std::cout << "|  |  region " << ri << "\n";
+                    for (std::uint32_t k { *region.begin }; k < *region.begin + region.size; ++k) {
+                        std::cout << "|  |  |  ";
+                        sc::backend::write_instruction(std::cout,
+                                                       function.instructions[sc::backend::lir::InstructionIndex { k }],
+                                                       g, symbol_table, ctx.constant_table);
+                        std::cout << "\n";
+                    }
+                }
+            }
+        }
     }
 #endif
 

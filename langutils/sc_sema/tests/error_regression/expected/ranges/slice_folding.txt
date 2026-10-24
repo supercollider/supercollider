@@ -147,7 +147,7 @@ SCClass (2:1): SliceFolding : Object, version 3.16
 |  |  |  SCBody (24:17)
 |  |  |  |  SCExplicitReturn (24:17)
 |  |  |  |  |  SCMessage (24:18): copySeries = [\b, \c]
-|  |  |  |  |  |  SCCollection (24:18): Array = [\a, \b, \c]
+|  |  |  |  |  |  SCCollection (24:18): Array, literal = [\a, \b, \c]
 |  |  |  |  |  |  |  SCLiteral (24:20) = \a
 |  |  |  |  |  |  |  SCLiteral (24:23) = \b
 |  |  |  |  |  |  |  SCLiteral (24:26) = \c

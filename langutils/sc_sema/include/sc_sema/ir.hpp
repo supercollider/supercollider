@@ -170,6 +170,9 @@ public:
     // accessors
     ////////////////////////////////////////////////////////////////////////////////
     using Base::payload;
+    // To walk one node's children without its siblings, depth_first_traverse continues along the siblings.
+    [[nodiscard]] OptNodeIndex first_child(NodeIndex i) const { return Base::edges(i).first_child; }
+    using Base::last_child;
     [[nodiscard]] SourceLocation location(NodeIndex i) const { return m_node_locations[*i]; }
 
     ////////////////////////////////////////////////////////////////////////////////

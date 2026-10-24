@@ -20,8 +20,8 @@ MemberTable::MemberTable(const ir::IRCompiler& compiler, const ir::SymbolTable& 
             const auto& m = g.payload(*it);
             if (symbols.is_meta(m.owning_class))
                 continue;
-            const auto [fnd, inserted] = m_members.insert({ key(m.owning_class, m.name), InstanceSlot { slot } });
-            assert(inserted || *std::get<InstanceSlot>(fnd->second) == slot);
+            const auto [fnd, inserted] = m_members.insert({ key(m.owning_class, m.name), InstanceSlotIndex { slot } });
+            assert(inserted || *std::get<InstanceSlotIndex>(fnd->second) == slot);
             (void)fnd;
             (void)inserted;
         }

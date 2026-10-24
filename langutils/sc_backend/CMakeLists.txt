@@ -3,6 +3,7 @@ include(${CMAKE_SOURCE_DIR}/cmake_modules/CompilerWarnings.cmake)
 # Lowers sc_sema's ir to bytecode for the VM in lang/, as plain data, so it doesn't depend on the VM.
 add_library(sc_backend STATIC
 	src/frames.cpp
+	src/lower.cpp
 	src/members.cpp
 )
 

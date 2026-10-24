@@ -1,0 +1,46 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): LirUnimplemented : Object, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (6:5): generator, version 3.16: generator { |a| ^{: x, x <- a } }
+|  |  |  SCArgumentDeclareList (6:18)
+|  |  |  |  SCArgumentDeclare (6:18): a (captured)
+|  |  |  SCBody (6:21)
+|  |  |  |  SCExplicitReturn (6:21)
+|  |  |  |  |  SCRoutineGenerator (6:22)
+|  |  |  |  |  |  SCGenQualList (6:28)
+|  |  |  |  |  |  |  SCGenQualIterate (6:28): x
+|  |  |  |  |  |  |  |  SCRead (6:33): local a, declared (6:18): a
+|  |  |  |  |  |  SCRead (6:25): local x, declared (6:28): x <- a
+|  |  SCMethod (8:5): environment_target, version 3.16: environment_target { |v| var q; ^#~p, q = v }
+|  |  |  SCArgumentDeclareList (8:27)
+|  |  |  |  SCArgumentDeclare (8:27): v
+|  |  |  SCBody (8:30)
+|  |  |  |  SCVariableDeclare (8:34): q (assigned)
+|  |  |  |  SCExplicitReturn (8:37)
+|  |  |  |  |  SCPackAssign (8:38)
+|  |  |  |  |  |  SCRead (8:47): local v, declared (8:27): v
+|  |  |  |  |  |  SCPackTargets (8:38)
+|  |  |  |  |  |  |  SCPackTarget (8:39): environment p at 0
+|  |  |  |  |  |  |  SCPackTarget (8:43): local q at 1, declared (8:34): q
+
+
+
+LIR DUMP 
+
+
+LirUnimplemented
+|  function 0 (6:5): method generator (not emitted)
+|  |  region 0
+|  |  |  Unimplemented SCRoutineGenerator
+|  |  |  Return
+|  function 1 (8:5): method environment_target (not emitted)
+|  |  region 0
+|  |  |  Unimplemented SCPackAssign
+|  |  |  Return
+Successfully compiled 16 classes.

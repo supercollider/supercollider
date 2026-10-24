@@ -1,0 +1,217 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): LirExpressions : Object, version 3.16
+|  SCMemberList (5:1)
+|  |  SCMember (6:9): inst
+|  SCMethodList (5:1)
+|  |  SCMethod (11:5): locals, version 3.16: locals { |a, b| var x = a; x = b; ^x }
+|  |  |  SCArgumentDeclareList (11:15)
+|  |  |  |  SCArgumentDeclare (11:15): a
+|  |  |  |  SCArgumentDeclare (11:18): b
+|  |  |  SCBody (11:21)
+|  |  |  |  SCVariableDeclare (11:25): x (assigned), computed
+|  |  |  |  |  SCRead (11:29): local a, declared (11:15): a
+|  |  |  |  SCAssign (11:32): local x, declared (11:25): x = a
+|  |  |  |  |  SCRead (11:36): local b, declared (11:18): b
+|  |  |  |  SCExplicitReturn (11:39)
+|  |  |  |  |  SCRead (11:40): local x, declared (11:25): x = a
+|  |  SCMethod (13:5): members, version 3.16: members { inst = 1; shared = inst; ^k }
+|  |  |  SCBody (13:15)
+|  |  |  |  SCAssign (13:15): instance inst, declared (6:9): inst
+|  |  |  |  |  SCLiteral (13:22) = 1
+|  |  |  |  SCAssign (13:25): class shared, declared (7:14): shared
+|  |  |  |  |  SCRead (13:34): instance inst, declared (6:9): inst
+|  |  |  |  SCExplicitReturn (13:40)
+|  |  |  |  |  SCRead (13:41): class k, declared (8:11): k
+|  |  SCMethod (15:5): sends, version 3.16: sends { |a| ^a.foo(1, key: 2) }
+|  |  |  SCArgumentDeclareList (15:14)
+|  |  |  |  SCArgumentDeclare (15:14): a
+|  |  |  SCBody (15:17)
+|  |  |  |  SCExplicitReturn (15:17)
+|  |  |  |  |  SCMessage (15:18): foo
+|  |  |  |  |  |  SCRead (15:18): local a, declared (15:14): a
+|  |  |  |  |  |  SCPositionalArgs (15:18)
+|  |  |  |  |  |  |  SCLiteral (15:24) = 1
+|  |  |  |  |  |  SCKwArgs (15:18)
+|  |  |  |  |  |  |  SCKwArg (15:27): key
+|  |  |  |  |  |  |  |  SCLiteral (15:32) = 2
+|  |  SCMethod (17:5): supers, version 3.16: supers { ^super.foo(1) }
+|  |  |  SCBody (17:14)
+|  |  |  |  SCExplicitReturn (17:14)
+|  |  |  |  |  SCMessage (17:15): foo
+|  |  |  |  |  |  SCSpecial (17:15): super
+|  |  |  |  |  |  SCPositionalArgs (17:15)
+|  |  |  |  |  |  |  SCLiteral (17:25) = 1
+|  |  SCMethod (19:5): adverb, version 3.16: adverb { |a| ^a +.x 1 }
+|  |  |  SCArgumentDeclareList (19:15)
+|  |  |  |  SCArgumentDeclare (19:15): a
+|  |  |  SCBody (19:18)
+|  |  |  |  SCExplicitReturn (19:18)
+|  |  |  |  |  SCMessage (19:19): +
+|  |  |  |  |  |  SCRead (19:19): local a, declared (19:15): a
+|  |  |  |  |  |  SCPositionalArgs (19:19)
+|  |  |  |  |  |  |  SCLiteral (19:25) = 1
+|  |  |  |  |  |  SCLiteral (19:23) = \x
+|  |  SCMethod (21:5): variadic, version 3.16: variadic { |a, b| ^a.foo(1, *b) }
+|  |  |  SCArgumentDeclareList (21:17)
+|  |  |  |  SCArgumentDeclare (21:17): a
+|  |  |  |  SCArgumentDeclare (21:20): b
+|  |  |  SCBody (21:23)
+|  |  |  |  SCExplicitReturn (21:23)
+|  |  |  |  |  SCMessage (21:24): foo
+|  |  |  |  |  |  SCRead (21:24): local a, declared (21:17): a
+|  |  |  |  |  |  SCPositionalArgs (21:24)
+|  |  |  |  |  |  |  SCLiteral (21:30) = 1
+|  |  |  |  |  |  SCVariadicArgs (21:24)
+|  |  |  |  |  |  |  SCRead (21:34): local b, declared (21:20): b
+|  |  SCMethod (23:5): super_variadic, version 3.16: super_variadic { |b| ^super.foo(*b) }
+|  |  |  SCArgumentDeclareList (23:23)
+|  |  |  |  SCArgumentDeclare (23:23): b
+|  |  |  SCBody (23:26)
+|  |  |  |  SCExplicitReturn (23:26)
+|  |  |  |  |  SCMessage (23:27): foo
+|  |  |  |  |  |  SCSpecial (23:27): super
+|  |  |  |  |  |  SCVariadicArgs (23:27)
+|  |  |  |  |  |  |  SCRead (23:38): local b, declared (23:23): b
+|  |  SCMethod (25:5): environment, version 3.16: environment { ~x = 3; ^~x }
+|  |  |  SCBody (25:19)
+|  |  |  |  SCAssign (25:19): environment x
+|  |  |  |  |  SCLiteral (25:24) = 3
+|  |  |  |  SCExplicitReturn (25:27)
+|  |  |  |  |  SCRead (25:28): environment x
+|  |  SCMethod (27:5): range, version 3.16: range { |n| ^(1..n) }
+|  |  |  SCArgumentDeclareList (27:14)
+|  |  |  |  SCArgumentDeclare (27:14): n
+|  |  |  SCBody (27:17)
+|  |  |  |  SCExplicitReturn (27:17)
+|  |  |  |  |  SCRange (27:18)
+|  |  |  |  |  |  SCLiteral (27:19) = 1
+|  |  |  |  |  |  SCMissing (27:18)
+|  |  |  |  |  |  SCRead (27:22): local n, declared (27:14): n
+|  |  SCMethod (29:5): specials, version 3.16: specials { ^[this, thisProcess, thisFunction] }
+|  |  |  SCBody (29:16)
+|  |  |  |  SCExplicitReturn (29:16)
+|  |  |  |  |  SCCollection (29:17): Array
+|  |  |  |  |  |  SCSpecial (29:18): this
+|  |  |  |  |  |  SCSpecial (29:24): thisProcess
+|  |  |  |  |  |  SCSpecial (29:37): thisFunction
+|  |  SCMethod (31:5): expression_list, version 3.16: expression_list { |a| ^(a.foo; a.bar) }
+|  |  |  SCArgumentDeclareList (31:24)
+|  |  |  |  SCArgumentDeclare (31:24): a
+|  |  |  SCBody (31:27)
+|  |  |  |  SCExplicitReturn (31:27)
+|  |  |  |  |  SCExprList (31:29)
+|  |  |  |  |  |  SCMessage (31:29): foo
+|  |  |  |  |  |  |  SCRead (31:29): local a, declared (31:24): a
+|  |  |  |  |  |  SCMessage (31:36): bar
+|  |  |  |  |  |  |  SCRead (31:36): local a, declared (31:24): a
+SCClass (5:1): Meta_LirExpressions : Meta_Object, version 3.16
+|  SCMemberList (5:1)
+|  |  SCMember (8:11): k = 7
+|  |  SCMember (7:14): shared
+|  SCMethodList (5:1)
+
+
+
+LIR DUMP 
+
+
+LirExpressions
+|  function 0 (11:5): method locals
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  StoreLocal depth 0, slot 3
+|  |  |  Drop
+|  |  |  PushLocal depth 0, slot 2
+|  |  |  StoreLocal depth 0, slot 3
+|  |  |  Drop
+|  |  |  PushLocal depth 0, slot 3
+|  |  |  Return
+|  function 1 (13:5): method members
+|  |  region 0
+|  |  |  PushConstant 1
+|  |  |  StoreInstance slot 0
+|  |  |  Drop
+|  |  |  PushInstance slot 0
+|  |  |  StoreClassVariable 0
+|  |  |  Drop
+|  |  |  PushConstant 7
+|  |  |  Return
+|  function 2 (15:5): method sends
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  PushConstant 1
+|  |  |  PushSymbol \key
+|  |  |  PushConstant 2
+|  |  |  Send foo (positional 1, keyword 1, tail from method)
+|  |  |  Return
+|  function 3 (17:5): method supers
+|  |  region 0
+|  |  |  PushSpecial this
+|  |  |  PushConstant 1
+|  |  |  Send foo (positional 1, super, tail from method)
+|  |  |  Return
+|  function 4 (19:5): method adverb
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  PushConstant 1
+|  |  |  PushConstant \x
+|  |  |  Send + (positional 1, adverb, tail from method)
+|  |  |  Return
+|  function 5 (21:5): method variadic
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  PushSymbol \foo
+|  |  |  PushConstant 1
+|  |  |  PushLocal depth 0, slot 2
+|  |  |  Send performList (positional 3, tail from method)
+|  |  |  Return
+|  function 6 (23:5): method super_variadic
+|  |  region 0
+|  |  |  PushSpecial this
+|  |  |  PushSymbol \foo
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send superPerformList (positional 2, tail from method)
+|  |  |  Return
+|  function 7 (25:5): method environment
+|  |  region 0
+|  |  |  PushSymbol \x
+|  |  |  PushConstant 3
+|  |  |  Send envirPut (positional 1)
+|  |  |  Drop
+|  |  |  PushSymbol \x
+|  |  |  Send envirGet (positional 0, tail from method)
+|  |  |  Return
+|  function 8 (27:5): method range
+|  |  region 0
+|  |  |  PushConstant 1
+|  |  |  PushSpecialValue nil
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send series (positional 2, tail from method)
+|  |  |  Return
+|  function 9 (29:5): method specials
+|  |  region 0
+|  |  |  PushClass Array
+|  |  |  PushInteger 3
+|  |  |  Send new (positional 1)
+|  |  |  PushSpecial this
+|  |  |  Send add (positional 1)
+|  |  |  PushSpecial thisProcess
+|  |  |  Send add (positional 1)
+|  |  |  PushSpecial thisFunction
+|  |  |  Send add (positional 1)
+|  |  |  Return
+|  function 10 (31:5): method expression_list
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send foo (positional 0)
+|  |  |  Drop
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send bar (positional 0, tail from method)
+|  |  |  Return
+Meta_LirExpressions
+Successfully compiled 16 classes.

@@ -132,6 +132,7 @@ struct SCCollection : priv::List<SCCollection_I, SCAnyExpr_I> {
     static constexpr auto type_name { "SCCollection" };
     OptionallyLocatable<SymSCClassName> collection_class;
     std::uint32_t size {};
+    bool literal { false };
     SCCollection(OptionallyLocatable<SymSCClassName> c): collection_class(c) {}
 };
 

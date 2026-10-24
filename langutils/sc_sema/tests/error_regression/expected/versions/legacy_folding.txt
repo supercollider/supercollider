@@ -54,10 +54,10 @@ SCClass (4:1): LegacyFolding : Object
 |  |  SCMethod (18:5): immutable_array: immutable_array { ^#[1, a, [2]] } -> [1, \a, [2]]
 |  |  |  SCBody (18:23)
 |  |  |  |  SCExplicitReturn (18:23)
-|  |  |  |  |  SCCollection (18:24): Array = [1, \a, [2]]
+|  |  |  |  |  SCCollection (18:24): Array, literal = [1, \a, [2]]
 |  |  |  |  |  |  SCLiteral (18:26) = 1
 |  |  |  |  |  |  SCLiteral (18:29) = \a
-|  |  |  |  |  |  SCCollection (18:32): Array = [2]
+|  |  |  |  |  |  SCCollection (18:32): Array, literal = [2]
 |  |  |  |  |  |  |  SCLiteral (18:33) = 2
 |  |  SCMethod (20:5): without_initial_value: without_initial_value { var a; ^a } -> nil
 |  |  |  SCBody (20:29)
@@ -131,7 +131,7 @@ SCClass (4:1): LegacyFolding : Object
 |  |  |  SCBody (44:13)
 |  |  |  |  SCExplicitReturn (44:13)
 |  |  |  |  |  SCMessage (44:14): copySeries
-|  |  |  |  |  |  SCCollection (44:14): Array = [1, 2, 3]
+|  |  |  |  |  |  SCCollection (44:14): Array, literal = [1, 2, 3]
 |  |  |  |  |  |  |  SCLiteral (44:16) = 1
 |  |  |  |  |  |  |  SCLiteral (44:19) = 2
 |  |  |  |  |  |  |  SCLiteral (44:22) = 3
@@ -154,7 +154,7 @@ SCClass (4:1): LegacyFolding : Object
 |  |  SCMethod (50:5): pack: pack { var #a, b = #[1, 2]; ^a }
 |  |  |  SCBody (50:12)
 |  |  |  |  SCPackDeclare (50:16)
-|  |  |  |  |  SCCollection (50:24): Array = [1, 2]
+|  |  |  |  |  SCCollection (50:24): Array, literal = [1, 2]
 |  |  |  |  |  |  SCLiteral (50:26) = 1
 |  |  |  |  |  |  SCLiteral (50:29) = 2
 |  |  |  |  |  SCPackTargets (50:16)
@@ -224,7 +224,7 @@ SCClass (56:1): Folding : Object, version 3.16
 |  |  SCMethod (74:5): pack, version 3.16: pack { var #a, b = #[1, 2]; ^a } -> 1
 |  |  |  SCBody (74:12)
 |  |  |  |  SCPackDeclare (74:16)
-|  |  |  |  |  SCCollection (74:24): Array = [1, 2]
+|  |  |  |  |  SCCollection (74:24): Array, literal = [1, 2]
 |  |  |  |  |  |  SCLiteral (74:26) = 1
 |  |  |  |  |  |  SCLiteral (74:29) = 2
 |  |  |  |  |  SCPackTargets (74:16)

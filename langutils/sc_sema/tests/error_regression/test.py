@@ -37,7 +37,7 @@ comment, e.g.,
 The first lines can also be `// no-prelude`, to compile it without the shared prelude.sc, and any number of
 `// module: NAME`, which compiles modules/NAME.sc as its own module, before the test, e.g., to test extensions in
 different modules. A module is a path given to the compiler. `// frames` adds the backend's frame layout to the
-output, see ir_dump's --frames.
+output, see ir_dump's --frames, and `// lir` adds the backend's lowered ir after the dump, see --lir.
 A test fails when an assertion doesn't hold, even when its output is overridden, so overriding can't hide a change
 the test was written to catch.
 
@@ -76,6 +76,10 @@ NO_PRELUDE = '// no-prelude'
 INTERPRETED_VERSION = re.compile(r'^// interpreted-version: (?P<release>\S+)$')
 # Adds the backend's frames to the output, see ir_dump's --frames.
 FRAMES = '// frames'
+# Adds the backend's lowered ir after the dump, see ir_dump's --lir.
+LIR = '// lir'
+# Where the lowered ir starts, assertions are only about the dump before it.
+LIR_HEADER = 'LIR DUMP'
 # Another module compiled before the test, e.g., `// module: other` is modules/other.sc.
 MODULE = re.compile(r'^// module: (?P<name>\S+)$')
 # Outside input, so the modules aren't tests themselves.
@@ -142,6 +146,8 @@ class Method:
 def methods_in(output):
     """The methods in ir_dump's output."""
     lines = [FRAME_SUFFIX.sub('', line) for line in output.split('\n')]
+    if LIR_HEADER in [line.strip() for line in lines]:
+        lines = lines[:[line.strip() for line in lines].index(LIR_HEADER)]
     methods = []
     for i, line in enumerate(lines):
         match = METHOD_LINE.match(line) or INTERPRETED_LINE.match(line)
@@ -251,11 +257,12 @@ def test_name(sc_file):
 
 def headers(sc_file):
     """Whether the test uses the prelude, the release its interpreted code is compiled as, the modules compiled before
-    it, and whether it shows the frames, from its first lines."""
+    it, and whether it shows the frames and the lowered ir, from its first lines."""
     uses_prelude = True
     release = None
     modules = []
     frames = False
+    lir = False
     with open(sc_file) as f:
         for line in f:
             line = line.strip()
@@ -263,17 +270,19 @@ def headers(sc_file):
                 uses_prelude = False
             elif line == FRAMES:
                 frames = True
+            elif line == LIR:
+                lir = True
             elif version := INTERPRETED_VERSION.match(line):
                 release = version['release']
             elif module := MODULE.match(line):
                 modules.append(MODULES_DIR / f"{module['name']}.sc")
             else:
                 break
-    return uses_prelude, release, modules, frames
+    return uses_prelude, release, modules, frames, lir
 
 
 def run_ir_dump(cmd, sc_file):
-    uses_prelude, release, modules, frames = headers(sc_file)
+    uses_prelude, release, modules, frames, lir = headers(sc_file)
     # Paths in diagnostics are relative to the input directory, so the output doesn't depend on where it is run.
     # The output is the same however many threads compile it, two checks that, while leaving cpus for other tests.
     args = [cmd, '--threads', '2', '--relative-to', INPUT_DIR]
@@ -281,6 +290,8 @@ def run_ir_dump(cmd, sc_file):
         args += ['--interpreted-version', release]
     if frames:
         args += ['--frames']
+    if lir:
+        args += ['--lir']
     if uses_prelude:
         args += ['--prelude', PRELUDE]
     # Each path is its own module, in order, so the test is the last.
