@@ -9,7 +9,7 @@
 #include <optional>
 #include <ostream>
 
-// How a node of the ir is written, shared by ir_dump and sc_explorer, so they show the same thing.
+// How a node of the ir is written, shared by sc_inspect and sc_explorer, so they show the same thing.
 namespace sc::ir::describe {
 
 struct Describe {

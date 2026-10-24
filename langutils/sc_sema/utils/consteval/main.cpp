@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) {
                                                 sc::ir::ModuleIndex::from(0) });
     }
 
-    // As in ir_dump, just what the compiler needs, not the class library's constraints.
+    // As in sc_inspect, just what the compiler needs, not the class library's constraints.
     sc::ir::SymbolTable symbol_table;
     sc::ir::IntrinsicConstraints constraints {};
     const auto abstract_object = symbol_table.get_class_name("AbstractObjectExperimental");

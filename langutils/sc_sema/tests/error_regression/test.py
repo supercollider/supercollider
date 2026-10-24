@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 r"""
-Compiles each test's sc file with ir_dump and compares the output with its expected output.
+Compiles each test's sc file with sc_inspect and compares the output with its expected output.
 
-ir_dump is given by --cmd, or else by the SC_IR_DUMP environment variable, and find_assertions by
+sc_inspect is given by --cmd, or else by the SC_INSPECT environment variable, and find_assertions by
 --find-assertions, or else SC_FIND_ASSERTIONS, e.g.,
-    export SC_IR_DUMP=build/langutils/sc_sema/utils/ir_dump/ir_dump
+    export SC_INSPECT=build/langutils/sc_inspect/sc_inspect
     export SC_FIND_ASSERTIONS=build/langutils/sc_sema/tests/error_regression/find_assertions/find_assertions
 
 A test can also assert what a method should compile to, with comments on the lines directly above it, each alone on
@@ -15,7 +15,7 @@ its line:
     // expect-error: Variable already declared
     duplicate { var a, a; ^a }
 The assertions are
-    expect: -> VALUE                calling the method returns VALUE, as ir_dump writes it
+    expect: -> VALUE                calling the method returns VALUE, as sc_inspect writes it
     expect: no result               what calling the method returns isn't known
     expect: poisoned                the method is poisoned
     expect: not poisoned
@@ -37,12 +37,12 @@ comment, e.g.,
 The first lines can also be `// no-prelude`, to compile it without the shared prelude.sc, and any number of
 `// module: NAME`, which compiles modules/NAME.sc as its own module, before the test, e.g., to test extensions in
 different modules. A module is a path given to the compiler. `// frames` adds the backend's frame layout to the
-output, see ir_dump's --frames, `// lir` adds the backend's lowered ir after the dump, see --lir, and `// bytecode`
+output, see sc_inspect's --frames, `// lir` adds the backend's lowered ir after the dump, see --lir, and `// bytecode`
 adds its bytecode after that, see --bytecode.
 A test fails when an assertion doesn't hold, even when its output is overridden, so overriding can't hide a change
 the test was written to catch.
 
-To run the tests, use ctest, which builds ir_dump first:
+To run the tests, use ctest, which builds sc_inspect first:
     ctest -R sc_sema_regression                     every test
     ctest -R sc_sema_regression__literals            a topic
 
@@ -56,7 +56,7 @@ This can also run the suite, or some of it, with a summary, in parallel:
     test.py -j 1                                    one test at a time
 
 ctest runs one test at a time:
-    test.py --cmd ir_dump --inputSCFile input/literals/escapes.sc --outputDirectory out
+    test.py --cmd sc_inspect --inputSCFile input/literals/escapes.sc --outputDirectory out
 """
 
 import argparse
@@ -75,11 +75,11 @@ PRELUDE = Path(__file__).parent / 'prelude.sc'
 NO_PRELUDE = '// no-prelude'
 # The release interpreted code is compiled as, e.g., `// interpreted-version: 3.16`.
 INTERPRETED_VERSION = re.compile(r'^// interpreted-version: (?P<release>\S+)$')
-# Adds the backend's frames to the output, see ir_dump's --frames.
+# Adds the backend's frames to the output, see sc_inspect's --frames.
 FRAMES = '// frames'
-# Adds the backend's lowered ir after the dump, see ir_dump's --lir.
+# Adds the backend's lowered ir after the dump, see sc_inspect's --lir.
 LIR = '// lir'
-# Adds the backend's bytecode after the dump, see ir_dump's --bytecode.
+# Adds the backend's bytecode after the dump, see sc_inspect's --bytecode.
 BYTECODE = '// bytecode'
 # Where the lowered ir and the bytecode start, assertions are only about the dump before them.
 BACKEND_HEADERS = ['LIR DUMP', 'BYTECODE DUMP']
@@ -97,7 +97,7 @@ PASSED, FAILED, CREATED, UPDATED, UNCHANGED = 'passed', 'failed', 'created', 'up
 
 @dataclass(frozen=True)
 class Tools:
-    ir_dump: str
+    sc_inspect: str
     find_assertions: str
 
 
@@ -114,7 +114,7 @@ class Result:
         return self.status == FAILED or bool(self.failed_assertions)
 
 
-# A method in ir_dump's output, e.g., `|  |  SCMethod (5:5): poisoned: foo: foo { ^1 } -> 1`.
+# A method in sc_inspect's output, e.g., `|  |  SCMethod (5:5): poisoned: foo: foo { ^1 } -> 1`.
 METHOD_LINE = re.compile(r'^(?P<indent>(?:\|  )*)SCMethod \((?P<line>\d+):\d+\): (?P<poisoned>poisoned: )?(?P<rest>.*)$')
 # Interpreted code, e.g., `SCInterpreted (1:1): poisoned: interpreted/region.scd`, which is checked like a method.
 INTERPRETED_LINE = re.compile(r'^(?P<indent>)SCInterpreted \((?P<line>\d+):\d+\): (?P<poisoned>poisoned: )?(?P<rest>.*)$')
@@ -137,7 +137,7 @@ class Method:
     # Where its name is.
     line: int
     poisoned: bool
-    # What calling it returns, as ir_dump writes it, if it is known.
+    # What calling it returns, as sc_inspect writes it, if it is known.
     result: str | None
     diagnostics: list[tuple[str, str]]
     # (line, column, name, the declaration's source or None), in the order they are written.
@@ -147,7 +147,7 @@ class Method:
 
 
 def methods_in(output):
-    """The methods in ir_dump's output."""
+    """The methods in sc_inspect's output."""
     lines = [FRAME_SUFFIX.sub('', line) for line in output.split('\n')]
     stripped = [line.strip() for line in lines]
     starts = [stripped.index(header) for header in BACKEND_HEADERS if header in stripped]
@@ -222,7 +222,7 @@ def check_assertion(assertion, method):
 
 
 def check_assertions(tools, sc_file, output):
-    """The assertions in sc_file that don't hold for ir_dump's output, as messages."""
+    """The assertions in sc_file that don't hold for sc_inspect's output, as messages."""
     found = subprocess.run([tools.find_assertions, sc_file], capture_output=True, text=True, check=True).stdout
     assertions = []
     for entry in found.splitlines():
@@ -289,7 +289,7 @@ def headers(sc_file):
     return uses_prelude, release, modules, frames, lir, bytecode
 
 
-def run_ir_dump(cmd, sc_file):
+def run_sc_inspect(cmd, sc_file):
     uses_prelude, release, modules, frames, lir, bytecode = headers(sc_file)
     # Paths in diagnostics are relative to the input directory, so the output doesn't depend on where it is run.
     # The output is the same however many threads compile it, two checks that, while leaving cpus for other tests.
@@ -311,7 +311,7 @@ def run_ir_dump(cmd, sc_file):
 
 def process_file(tools, sc_file, output_dir, override):
     """Runs one test."""
-    output = run_ir_dump(tools.ir_dump, sc_file)
+    output = run_sc_inspect(tools.sc_inspect, sc_file)
     result = compare_output(sc_file, output, output_dir, override)
     result.failed_assertions = check_assertions(tools, sc_file, output)
     return result
@@ -408,7 +408,7 @@ def main():
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument('--cmd', help='path to ir_dump, SC_IR_DUMP by default', default=os.environ.get('SC_IR_DUMP'))
+    parser.add_argument('--cmd', help='path to sc_inspect, SC_INSPECT by default', default=os.environ.get('SC_INSPECT'))
     parser.add_argument('--find-assertions', help='path to find_assertions, SC_FIND_ASSERTIONS by default',
                         default=os.environ.get('SC_FIND_ASSERTIONS'))
     parser.add_argument('--inputSCFile', help='run only this sc file, as ctest does')
@@ -418,9 +418,9 @@ def main():
     parser.add_argument('tests', nargs='*', help='test names, e.g., literals/escapes, or topics, e.g., literals. All tests when none are given.')
     args = parser.parse_args()
     if not args.cmd:
-        parser.error('give the path to ir_dump with --cmd, or set SC_IR_DUMP')
+        parser.error('give the path to sc_inspect with --cmd, or set SC_INSPECT')
     if not Path(args.cmd).is_file():
-        parser.error(f"ir_dump not found at '{args.cmd}', build it, or check --cmd or SC_IR_DUMP")
+        parser.error(f"sc_inspect not found at '{args.cmd}', build it, or check --cmd or SC_INSPECT")
     if not args.find_assertions:
         parser.error('give the path to find_assertions with --find-assertions, or set SC_FIND_ASSERTIONS')
     if not Path(args.find_assertions).is_file():

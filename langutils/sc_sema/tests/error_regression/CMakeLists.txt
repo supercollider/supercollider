@@ -5,9 +5,9 @@ add_subdirectory(find_assertions)
 file(GLOB_RECURSE tests RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/input CONFIGURE_DEPENDS input/*.sc input/*.scd)
 
 # This is how we make tests depends on executables
-add_test(NAME build_ir_dump
-        COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target ir_dump find_assertions --config $<CONFIG>)
-set_tests_properties(build_ir_dump PROPERTIES FIXTURES_SETUP ir_dump_fixture)
+add_test(NAME build_sc_inspect
+        COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target sc_inspect find_assertions --config $<CONFIG>)
+set_tests_properties(build_sc_inspect PROPERTIES FIXTURES_SETUP sc_inspect_fixture)
 
 foreach(test ${tests})
     string(REGEX REPLACE "\\.scd?$" "" test_name ${test})
@@ -16,9 +16,9 @@ foreach(test ${tests})
 
     add_test(
         NAME ${test_target} 
-        COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/test.py --cmd=$<TARGET_FILE:ir_dump> --find-assertions=$<TARGET_FILE:find_assertions> --inputSCFile=${CMAKE_CURRENT_SOURCE_DIR}/input/${test} --outputDirectory=${CMAKE_CURRENT_BINARY_DIR}  
+        COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/test.py --cmd=$<TARGET_FILE:sc_inspect> --find-assertions=$<TARGET_FILE:find_assertions> --inputSCFile=${CMAKE_CURRENT_SOURCE_DIR}/input/${test} --outputDirectory=${CMAKE_CURRENT_BINARY_DIR}  
     )
 
-    # Makes sure ir_dump and find_assertions are built before.
-    set_tests_properties(${test_target} PROPERTIES FIXTURES_REQUIRED ir_dump_fixture)
+    # Makes sure sc_inspect and find_assertions are built before.
+    set_tests_properties(${test_target} PROPERTIES FIXTURES_REQUIRED sc_inspect_fixture)
 endforeach()

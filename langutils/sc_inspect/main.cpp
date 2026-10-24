@@ -190,7 +190,7 @@ int main(int argc, char* argv[]) {
 #endif // _MSC_VER
     if (argc <= 1) {
         std::cout
-            << "ERROR: incorrect number of arguments to ir_dump, expected "
+            << "ERROR: incorrect number of arguments to sc_inspect, expected "
                "[--threads n] [--relative-to dir] [--interpreted-version x.y] [--no-dump] [--prelude dir|.sc file]... "
                "[dir|.sc file]... "
             << std::endl;

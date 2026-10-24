@@ -255,7 +255,7 @@ int main(int argc, char* argv[]) {
     if (class_mode)
         source_ast = add_class_file(text, preludes.size());
 
-    // As ir_dump, these are only what the compiler needs, not the class library's constraints.
+    // As sc_inspect, these are only what the compiler needs, not the class library's constraints.
     sc::ir::SymbolTable symbol_table;
     sc::ir::ModuleTable module_table {};
     sc::ir::IntrinsicConstraints constraints {};

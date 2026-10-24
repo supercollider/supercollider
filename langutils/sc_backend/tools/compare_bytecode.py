@@ -4,9 +4,9 @@
 1. Dump old sclang's bytes and tables, with a config from sclang_conf.yaml.in:
        build/lang/sclang -l conf.yaml langutils/sc_backend/tools/dump_old_bytecode.scd old.txt
 2. Dump the backend's, given exactly what sclang compiled, as one module. sclang skips directories named after other
-   platforms anywhere (windows, osx, iphone, wasm), ir_dump doesn't, and ir_dump doesn't follow symlinked
+   platforms anywhere (windows, osx, iphone, wasm), sc_inspect doesn't, and sc_inspect doesn't follow symlinked
    directories, so copy the library (cp -rL) and delete those first:
-       build/langutils/sc_sema/utils/ir_dump/ir_dump --bytecode library_copy > new.txt
+       build/langutils/sc_inspect/sc_inspect --bytecode library_copy > new.txt
 3. Compare, every method by class and name, sorting differences into inlining (B4), hard coded methods and methods
    without code (B5, methType shortcuts), and the rest, which are printed:
        compare_bytecode.py --all old.txt new.txt

@@ -1,5 +1,5 @@
 // Prints the assertions in a regression test's sc file, the line comments starting with `expect`, e.g.,
-// `// expect: -> 1`, one per line as `line:column text`, counting from one. test.py checks them against ir_dump.
+// `// expect: -> 1`, one per line as `line:column text`, counting from one. test.py checks them against sc_inspect.
 // The lexer finds the comments, so `//` in a string, symbol or char isn't one, and nor is anything in a block comment.
 #include "sc_lexer/codepoint_stream.hpp"
 #include "sc_lexer/lexer.hpp"
@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
     }
     std::stringstream ss;
     ss << file.rdbuf();
-    // Normalised as the compiler does, so the positions match ir_dump's.
+    // Normalised as the compiler does, so the positions match sc_inspect's.
     const sc::lex::NormalisedSource source { std::move(ss).str() };
     const auto& text = static_cast<const std::string&>(source);
 
