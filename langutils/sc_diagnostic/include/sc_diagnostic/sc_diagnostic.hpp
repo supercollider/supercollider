@@ -135,6 +135,18 @@ public:
     [[nodiscard]] static Diagnostic too_many_variables(TextInfoPtr t, sc::lex::SourceCodeRange l, std::size_t count,
                                                        std::size_t limit);
 
+    // A method or function that uses more selectors, class names and functions than its bytecode can index.
+    [[nodiscard]] static Diagnostic selector_table_full(TextInfoPtr t, sc::lex::SourceCodeRange l, std::size_t limit);
+
+    // A method or function with code longer than the VM can jump over, e.g., a computed argument default.
+    [[nodiscard]] static Diagnostic jump_too_long(TextInfoPtr t, sc::lex::SourceCodeRange l, std::size_t length,
+                                                  std::size_t limit);
+
+    // A message sent with more arguments than the VM's argument count can hold, counting the receiver, and two for each
+    // keyword argument.
+    [[nodiscard]] static Diagnostic too_many_arguments(TextInfoPtr t, sc::lex::SourceCodeRange l, std::size_t count,
+                                                       std::size_t limit);
+
     // A number literal whose value can't be represented, e.g., `2147483648`, or `1e400`, a Float when is_float.
     [[nodiscard]] static Diagnostic literal_out_of_range(TextInfoPtr t, sc::lex::SourceCodeRange l, bool is_float);
 

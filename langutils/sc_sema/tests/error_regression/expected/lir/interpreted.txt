@@ -45,5 +45,5 @@ Interpreted
 |  |  region 0
 |  |  |  PushLocal depth 0, slot 0
 |  |  |  PushInstance slot 5
-|  |  |  Send + (positional 1, tail from function)
+|  |  |  Send + (positional 1, binary, tail from function)
 Successfully compiled 15 classes.

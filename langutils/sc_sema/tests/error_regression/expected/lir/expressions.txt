@@ -160,7 +160,7 @@ LirExpressions
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  PushConstant 1
 |  |  |  PushConstant \x
-|  |  |  Send + (positional 1, adverb, tail from method)
+|  |  |  Send + (positional 2, adverb, binary, tail from method)
 |  |  |  Return
 |  function 5 (21:5): method variadic
 |  |  region 0
@@ -191,19 +191,19 @@ LirExpressions
 |  |  |  PushConstant 1
 |  |  |  PushSpecialValue nil
 |  |  |  PushLocal depth 0, slot 1
-|  |  |  Send series (positional 2, tail from method)
+|  |  |  Send prSimpleNumberSeries (positional 2, tail from method)
 |  |  |  Return
 |  function 9 (29:5): method specials
 |  |  region 0
 |  |  |  PushClass Array
 |  |  |  PushInteger 3
-|  |  |  Send new (positional 1)
+|  |  |  Send new (positional 1, implicit)
 |  |  |  PushSpecial this
-|  |  |  Send add (positional 1)
+|  |  |  Send add (positional 1, implicit)
 |  |  |  PushSpecial thisProcess
-|  |  |  Send add (positional 1)
+|  |  |  Send add (positional 1, implicit)
 |  |  |  PushSpecial thisFunction
-|  |  |  Send add (positional 1)
+|  |  |  Send add (positional 1, implicit)
 |  |  |  Return
 |  function 10 (31:5): method expression_list
 |  |  region 0

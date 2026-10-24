@@ -30,11 +30,14 @@ using FunctionSubRegionIndex = util::StrongIndex<std::uint32_t, struct FunctionS
 using OptionalFunctionSubRegionIndex = util::StrongOptionalIndex<std::uint32_t, struct FunctionSubRegionIndex__,
                                                                  std::numeric_limits<std::uint32_t>::max()>;
 
+// A frame slot the VM can address, a byte, see FrameSlotIndex. The lowering checks it fits.
+using SlotIndex = util::StrongIndex<std::uint8_t, struct SlotIndex__>;
+
 // A local in the frame `depth` frames up from the current one, see Frames::depth. Frames have at most 255 slots, and
 // code is nested at most max_nesting_depth deep, so both fit.
 struct LocalRef {
     std::uint16_t depth;
-    std::uint8_t slot;
+    SlotIndex slot;
 };
 
 enum struct SpecialValue : std::uint8_t { Nil, True, False };
@@ -50,6 +53,13 @@ struct PushClassVariable {
 };
 
 struct PushConstant {
+    ir::ConstExprIndex value;
+};
+
+// In future, this can be removed, it is here for byte partiy testing only.
+// 3.16 uses it only for mutable constants, e.g., a string, which is the class's object.
+struct PushClassConstant {
+    ir::MemberIndex member;
     ir::ConstExprIndex value;
 };
 
@@ -96,21 +106,29 @@ enum struct Tail : std::uint8_t { None, ReturnFromFunction, ReturnFromMethod };
 
 enum struct SendKind : std::uint8_t { Normal, Super, WithAdverb };
 
+// Implicit is for new, value and at.
+// VM has special codes for these.
+enum struct SendForm : std::uint8_t { Call, Binary, Setter, Implicit };
+
+// An adverb is counted as the last positional argument.
 struct Send {
     ir::SymSCSelector selector;
     std::uint8_t num_positional;
     std::uint8_t num_keyword;
-    SendKind kind;
-    Tail tail;
+    SendKind kind : 2;
+    SendForm form : 2;
+    Tail tail : 2;
 };
 
 struct Return {}; // in methods
+
+struct ReturnSelf {}; // the end of a method without `^`
 
 struct NonLocalReturn {}; // in functions
 
 // Only applied to non-nil preserving arguments.
 struct DefaultArgument {
-    std::uint8_t slot;
+    SlotIndex slot;
     FunctionSubRegionIndex value; // code to call if slot is nil.
 };
 
@@ -118,10 +136,10 @@ struct Unimplemented {
     ir::NodeIndex node;
 };
 
-using Instruction =
-    std::variant<PushLocal, PushInstance, PushClassVariable, PushConstant, PushSpecialValue, PushInteger, PushSymbol,
-                 PushClass, PushSpecial, PushFunction, StoreLocal, StoreInstance, StoreClassVariable, Dup, Drop, Send,
-                 Return, NonLocalReturn, DefaultArgument, Unimplemented>;
+using Instruction = std::variant<PushLocal, PushInstance, PushClassVariable, PushConstant, PushClassConstant,
+                                 PushSpecialValue, PushInteger, PushSymbol, PushClass, PushSpecial, PushFunction,
+                                 StoreLocal, StoreInstance, StoreClassVariable, Dup, Drop, Send, Return, ReturnSelf,
+                                 NonLocalReturn, DefaultArgument, Unimplemented>;
 static_assert(sizeof(Instruction) <= 12);
 
 struct SourceSpan {
@@ -149,6 +167,7 @@ struct Function {
 
 inline constexpr FunctionSubRegionIndex body_sub_region { 0 };
 
+// This is the input to the emit function, the output is backend::EmittedGraph
 struct LoweredGraph {
     util::IndexedVector<FunctionIndex, Function> functions {};
     std::vector<FunctionIndex> roots {};

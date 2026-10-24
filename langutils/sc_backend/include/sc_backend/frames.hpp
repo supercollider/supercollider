@@ -52,9 +52,13 @@ struct Frame {
     [[nodiscard]] std::size_t num_slots() const { return locals.size() + (has_this ? 1 : 0); }
 };
 
+// A slot in a frame, `this` first in a method's. Layout can go past the VM's limit, which is reported, see
+// max_frame_slots, so this is wider than the slot the VM can address, lir::SlotIndex.
+using FrameSlotIndex = util::StrongIndex<std::uint32_t, struct FrameSlotIndex__>;
+
 struct LocalSlot {
     OptionalFrameIndex frame {};
-    std::uint32_t slot {};
+    FrameSlotIndex slot { 0 };
 };
 static_assert(sizeof(LocalSlot) == 8);
 

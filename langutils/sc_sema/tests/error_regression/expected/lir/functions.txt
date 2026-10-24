@@ -95,8 +95,7 @@ LirFunctions
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Send foo (positional 0)
 |  |  |  Drop
-|  |  |  PushSpecial this
-|  |  |  Return
+|  |  |  ReturnSelf
 |  function 1 (9:5): method nested
 |  |  region 0
 |  |  |  PushFunction 2
@@ -105,7 +104,7 @@ LirFunctions
 |  |  region 0
 |  |  |  PushLocal depth 1, slot 1
 |  |  |  PushLocal depth 0, slot 0
-|  |  |  Send + (positional 1)
+|  |  |  Send + (positional 1, binary)
 |  |  |  StoreLocal depth 0, slot 1
 |  |  |  Drop
 |  |  |  PushFunction 3
@@ -144,18 +143,18 @@ LirFunctions
 |  |  |  DefaultArgument slot 2, region 1
 |  |  |  PushClass Array
 |  |  |  PushInteger 3
-|  |  |  Send new (positional 1)
+|  |  |  Send new (positional 1, implicit)
 |  |  |  PushLocal depth 0, slot 1
-|  |  |  Send add (positional 1)
+|  |  |  Send add (positional 1, implicit)
 |  |  |  PushLocal depth 0, slot 2
-|  |  |  Send add (positional 1)
+|  |  |  Send add (positional 1, implicit)
 |  |  |  PushLocal depth 0, slot 3
-|  |  |  Send add (positional 1)
+|  |  |  Send add (positional 1, implicit)
 |  |  |  Return
 |  |  region 1
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  PushConstant 1
-|  |  |  Send + (positional 1)
+|  |  |  Send + (positional 1, binary)
 |  function 11 (20:5): method partial_application
 |  |  region 0
 |  |  |  PushFunction 12

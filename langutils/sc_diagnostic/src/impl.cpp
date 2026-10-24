@@ -653,6 +653,40 @@ Diagnostic Diagnostic::too_many_variables(TextInfoPtr t, sc::lex::SourceCodeRang
                    "Event, or split the code into smaller functions." };
 }
 
+Diagnostic Diagnostic::selector_table_full(TextInfoPtr t, sc::lex::SourceCodeRange l, std::size_t limit) {
+    return { "Too many selectors",
+             Severity::Error,
+             { { std::move(t), l,
+                 "this uses more than " + std::to_string(limit)
+                     + " different selectors, class names and functions." } },
+             "A method or function's bytecode refers to the selectors it sends, the class names it uses and the "
+             "functions written in it through a table of at most "
+                 + std::to_string(limit) + " entries. Split the code into smaller methods or functions." };
+}
+
+Diagnostic Diagnostic::jump_too_long(TextInfoPtr t, sc::lex::SourceCodeRange l, std::size_t length, std::size_t limit) {
+    return { "Code too long",
+             Severity::Error,
+             { { std::move(t), l,
+                 "this has " + std::to_string(length) + " bytes of bytecode to jump over, more than "
+                     + std::to_string(limit) + "." } },
+             "The VM can jump over at most " + std::to_string(limit)
+                 + " bytes of bytecode, e.g., to skip an argument's default when it is passed. Move the code into a "
+                   "method or function." };
+}
+
+Diagnostic Diagnostic::too_many_arguments(TextInfoPtr t, sc::lex::SourceCodeRange l, std::size_t count,
+                                          std::size_t limit) {
+    return { "Too many arguments",
+             Severity::Error,
+             { { std::move(t), l,
+                 "a message here is sent with " + std::to_string(count) + " arguments, more than "
+                     + std::to_string(limit) + "." } },
+             "A message can be sent with at most " + std::to_string(limit)
+                 + " arguments, counting the receiver, and two for each keyword argument. Pass them in an Array or an "
+                   "Event, or use performList." };
+}
+
 Diagnostic Diagnostic::literal_out_of_range(TextInfoPtr t, sc::lex::SourceCodeRange l, bool is_float) {
     if (is_float)
         return { "Literal out of range",

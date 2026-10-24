@@ -67,19 +67,19 @@ LirCollections
 |  |  region 0
 |  |  |  PushClass Array
 |  |  |  PushInteger 2
-|  |  |  Send new (positional 1)
+|  |  |  Send new (positional 1, implicit)
 |  |  |  PushLocal depth 0, slot 1
-|  |  |  Send add (positional 1)
+|  |  |  Send add (positional 1, implicit)
 |  |  |  PushConstant 2
-|  |  |  Send add (positional 1)
+|  |  |  Send add (positional 1, implicit)
 |  |  |  Return
 |  function 1 (9:5): method set
 |  |  region 0
 |  |  |  PushClass Set
 |  |  |  PushInteger 1
-|  |  |  Send new (positional 1)
+|  |  |  Send new (positional 1, implicit)
 |  |  |  PushLocal depth 0, slot 1
-|  |  |  Send add (positional 1)
+|  |  |  Send add (positional 1, implicit)
 |  |  |  Return
 |  function 2 (11:5): method event
 |  |  region 0
@@ -88,30 +88,30 @@ LirCollections
 |  |  |  PushSpecialValue nil
 |  |  |  PushSpecialValue nil
 |  |  |  PushSpecialValue true
-|  |  |  Send new (positional 4)
+|  |  |  Send new (positional 4, implicit)
 |  |  |  PushConstant \a
 |  |  |  PushLocal depth 0, slot 1
-|  |  |  Send put (positional 2)
+|  |  |  Send put (positional 2, implicit)
 |  |  |  PushConstant \b
 |  |  |  PushConstant 2
-|  |  |  Send put (positional 2)
+|  |  |  Send put (positional 2, implicit)
 |  |  |  Return
 |  function 3 (14:5): method pack
 |  |  region 0
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Dup
 |  |  |  PushInteger 0
-|  |  |  Send at (positional 1)
+|  |  |  Send at (positional 1, implicit)
 |  |  |  StoreLocal depth 0, slot 2
 |  |  |  Drop
 |  |  |  Dup
 |  |  |  PushInteger 1
-|  |  |  Send at (positional 1)
+|  |  |  Send at (positional 1, implicit)
 |  |  |  StoreLocal depth 0, slot 3
 |  |  |  Drop
 |  |  |  Dup
 |  |  |  PushInteger 2
-|  |  |  Send copyToEnd (positional 1)
+|  |  |  Send copyToEnd (positional 1, implicit)
 |  |  |  StoreLocal depth 0, slot 4
 |  |  |  Drop
 |  |  |  Drop
@@ -122,12 +122,12 @@ LirCollections
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Dup
 |  |  |  PushInteger 0
-|  |  |  Send at (positional 1)
+|  |  |  Send at (positional 1, implicit)
 |  |  |  StoreLocal depth 0, slot 2
 |  |  |  Drop
 |  |  |  Dup
 |  |  |  PushInteger 1
-|  |  |  Send at (positional 1)
+|  |  |  Send at (positional 1, implicit)
 |  |  |  StoreLocal depth 0, slot 3
 |  |  |  Drop
 |  |  |  Return

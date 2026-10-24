@@ -24,6 +24,7 @@ struct LoweringSymbols {
     ir::SymSCSelector at;
     ir::SymSCSelector copy;
     ir::SymSCSelector copy_to_end;
+    // `prSimpleNumberSeries`, which the old grammar named s_series, not the special selector `series`.
     ir::SymSCSelector series;
     ir::SymSCSelector envir_get;
     ir::SymSCSelector envir_put;

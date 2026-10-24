@@ -2,6 +2,7 @@
 #include "sc_sema/const_expr.hpp"
 #include "sc_sema/ir.hpp"
 #include "sc_sema/symbol_table.hpp"
+#include "sc_sema/versions.hpp"
 #include "sc_util/overload.hpp"
 
 #include <cassert>
@@ -16,7 +17,7 @@ LoweringSymbols::LoweringSymbols(ir::SymbolTable& symbols):
     at(symbols.get_selector("at")),
     copy(symbols.get_selector("copy")),
     copy_to_end(symbols.get_selector("copyToEnd")),
-    series(symbols.get_selector("series")),
+    series(symbols.get_selector("prSimpleNumberSeries")),
     envir_get(symbols.get_selector("envirGet")),
     envir_put(symbols.get_selector("envirPut")),
     perform_list(symbols.get_selector("performList")),
@@ -47,6 +48,9 @@ struct Lowerer {
     std::vector<Building> building {};
     // Set when the method or interpreted function being lowered can't be emitted, e.g., a frame over the VM's limit.
     bool failed { false };
+    // Whether the code's version folds constants. The old compiler didn't, so legacy code only uses literals' values,
+    // e.g., a read of a variable sema knows is 1 still reads the variable.
+    bool fold_constants { false };
 
     ////////////////////////////////////////////////////////////////////////////////
     // Functions and sub-regions
@@ -106,13 +110,15 @@ struct Lowerer {
     [[nodiscard]] ir::SymSCSymbol symbol(ir::Symbol name) const { return ctx.symbols.get_symbol(ctx.symbols(name)); }
 
     // A local's slot in the frame of the function being lowered.
-    [[nodiscard]] std::uint8_t own_slot(ir::LocalIndex l) {
-        const auto slot = ctx.frames.locals[l].slot;
-        if (slot > std::numeric_limits<std::uint8_t>::max()) {
+    [[nodiscard]] lir::SlotIndex own_slot(ir::LocalIndex l) { return addressable(ctx.frames.locals[l].slot); }
+
+    // The VM addresses a slot with a byte.
+    [[nodiscard]] lir::SlotIndex addressable(FrameSlotIndex slot) {
+        if (*slot > std::numeric_limits<std::uint8_t>::max()) {
             failed = true; // Reported by layout_frames.
-            return 0;
+            return lir::SlotIndex { 0 };
         }
-        return static_cast<std::uint8_t>(slot);
+        return lir::SlotIndex { static_cast<std::uint8_t>(*slot) };
     }
 
     [[nodiscard]] lir::LocalRef local_ref(ir::LocalIndex l) {
@@ -120,11 +126,7 @@ struct Lowerer {
         assert(slot.frame && cursor.current());
         const auto depth = ctx.frames.depth(*cursor.current(), FrameIndex { *slot.frame });
         assert(depth <= std::numeric_limits<std::uint16_t>::max());
-        if (slot.slot > std::numeric_limits<std::uint8_t>::max()) {
-            failed = true; // Reported by layout_frames.
-            return { 0, 0 };
-        }
-        return { static_cast<std::uint16_t>(depth), static_cast<std::uint8_t>(slot.slot) };
+        return { static_cast<std::uint16_t>(depth), addressable(slot.slot) };
     }
 
     void push_member(ir::MemberIndex m, ir::NodeIndex at) {
@@ -137,12 +139,15 @@ struct Lowerer {
         std::visit(util::overload {
                        [&](InstanceSlotIndex slot) { emit(lir::PushInstance { slot }, at); },
                        [&](ClassVariableIndex index) { emit(lir::PushClassVariable { index }, at); },
-                       // A constant member's value is shared, as the old compiler pushed constValues' slot.
+                       // From 3.16 an immutable constant is pushed as a literal would be, a mutable one is still
+                       // the class's object, so every use sees the same one.
                        [&](ir::OptionalConstExprIndex value) {
-                           if (value)
+                           if (!value)
+                               emit(lir::PushSpecialValue { lir::SpecialValue::Nil }, at);
+                           else if (fold_constants && !is_mutable(ir::ConstExprIndex { *value }))
                                emit(lir::PushConstant { ir::ConstExprIndex { *value } }, at);
                            else
-                               emit(lir::PushSpecialValue { lir::SpecialValue::Nil }, at);
+                               emit(lir::PushClassConstant { m, ir::ConstExprIndex { *value } }, at);
                        },
                    },
                    *location);
@@ -200,7 +205,8 @@ struct Lowerer {
     void push_copy(ir::ConstExprIndex c, ir::NodeIndex at) {
         emit(lir::PushConstant { c }, at);
         // Here is the copy.
-        emit(lir::Send { ctx.selectors.copy, 0, 0, lir::SendKind::Normal, lir::Tail::None }, at);
+        emit(lir::Send { ctx.selectors.copy, 0, 0, lir::SendKind::Normal, lir::SendForm::Implicit, lir::Tail::None },
+             at);
 
         const auto push_element = [&](ir::ConstExprIndex element) {
             if (is_mutable(element))
@@ -213,7 +219,8 @@ struct Lowerer {
             emit(lir::Dup {}, at);
             push_key();
             push_element(element);
-            emit(lir::Send { ctx.selectors.put, 2, 0, lir::SendKind::Normal, lir::Tail::None }, at);
+            emit(lir::Send { ctx.selectors.put, 2, 0, lir::SendKind::Normal, lir::SendForm::Implicit, lir::Tail::None },
+                 at);
             emit(lir::Drop {}, at);
         };
 
@@ -262,14 +269,9 @@ struct Lowerer {
         }
         if (const auto message = ir_graph.as_a<ir::SCMessage_I>(i)) {
             // performList takes one array, the old grammar only allowed one.
-            const auto [r, p, k, variadic, adverb] = ir_graph.children(*message);
+            const auto [r, p, k, variadic, a] = ir_graph.children(*message);
             if (num_variadic_args(ir::NodeIndex { *variadic }) > 1)
                 return false;
-            // `super +.x 1` would need a super send with an adverb, which the VM doesn't have.
-            if (const auto special = ir_graph.as_a<ir::SCSpecial_I>(ir::NodeIndex { *r }))
-                if (ir_graph.payload(*special).kind == ir::SCSpecial::Kind::Super
-                    && !missing(ir::NodeIndex { *adverb }))
-                    return false;
         }
         return true;
     }
@@ -282,7 +284,7 @@ struct Lowerer {
             cursor.skip_over_children(i);
             return;
         }
-        if (const auto c = ir_graph.node_as_constexpr(i)) {
+        if (const auto c = ir_graph.node_as_constexpr(i); c && (fold_constants || is_literal(i))) {
             push_constant(i, *c);
             cursor.skip_over_children(i);
             return;
@@ -341,7 +343,7 @@ struct Lowerer {
         // `~x` is `\x.envirGet`.
         case ir::SCRead::Kind::Environment:
             emit(lir::PushSymbol { symbol(r.name) }, i);
-            emit(lir::Send { ctx.selectors.envir_get, 0, 0, lir::SendKind::Normal, tail }, i);
+            emit(lir::Send { ctx.selectors.envir_get, 0, 0, lir::SendKind::Normal, lir::SendForm::Call, tail }, i);
             return;
         }
     }
@@ -354,7 +356,7 @@ struct Lowerer {
         if (payload.kind == ir::SCAssign::Kind::Environment) {
             emit(lir::PushSymbol { symbol(*payload.name) }, i);
             lower(ir::NodeIndex { *value });
-            emit(lir::Send { ctx.selectors.envir_put, 1, 0, lir::SendKind::Normal, tail }, i);
+            emit(lir::Send { ctx.selectors.envir_put, 1, 0, lir::SendKind::Normal, lir::SendForm::Call, tail }, i);
             return;
         }
         lower(ir::NodeIndex { *value });
@@ -395,6 +397,11 @@ struct Lowerer {
         if (const auto list = ir_graph.as_a<ir::SCVariadicArgList_I>(ir::NodeIndex { *variadic }))
             for (auto it = ir_graph.children(*list).iter(); it; ++it, ++num_positional)
                 lower(ir::NodeIndex { **it });
+        // An adverb is passed as the last argument, `a foo.x: b` is `a.foo(b, \x)`, as the old compiler did.
+        if (has_adverb) {
+            lower(ir::NodeIndex { *adverb });
+            ++num_positional;
+        }
         std::uint32_t num_keyword { 0 };
         if (const auto list = ir_graph.as_a<ir::SCKwArgList_I>(ir::NodeIndex { *keyword }))
             for (auto it = ir_graph.children(*list).iter(); it; ++it, ++num_keyword) {
@@ -402,8 +409,6 @@ struct Lowerer {
                 emit(lir::PushSymbol { symbol(*ir_graph.payload(*it).name) }, ir::NodeIndex { **it });
                 lower(ir::NodeIndex { *value });
             }
-        if (has_adverb)
-            lower(ir::NodeIndex { *adverb });
 
         auto selector = *payload.selector;
         auto kind = lir::SendKind::Normal;
@@ -413,7 +418,19 @@ struct Lowerer {
             kind = lir::SendKind::Super;
         else if (has_adverb)
             kind = lir::SendKind::WithAdverb;
-        emit(lir::Send { selector, count(num_positional), count(num_keyword), kind, tail }, i);
+        emit(lir::Send { selector, count(num_positional), count(num_keyword), kind, form(payload.form), tail }, i);
+    }
+
+    [[nodiscard]] static lir::SendForm form(ir::SCMessage::Form f) {
+        switch (f) {
+        case ir::SCMessage::Form::Call:
+            return lir::SendForm::Call;
+        case ir::SCMessage::Form::Binary:
+            return lir::SendForm::Binary;
+        case ir::SCMessage::Form::Setter:
+            return lir::SendForm::Setter;
+        }
+        return lir::SendForm::Call;
     }
 
     // Each expression's value is dropped but the last's.
@@ -447,24 +464,31 @@ struct Lowerer {
             emit(lir::PushSpecialValue { lir::SpecialValue::Nil }, i);
             emit(lir::PushSpecialValue { lir::SpecialValue::Nil }, i);
             emit(lir::PushSpecialValue { lir::SpecialValue::True }, i);
-            emit(lir::Send { ctx.selectors.new_, 4, 0, lir::SendKind::Normal, lir::Tail::None }, i);
+            emit(
+                lir::Send { ctx.selectors.new_, 4, 0, lir::SendKind::Normal, lir::SendForm::Implicit, lir::Tail::None },
+                i);
             std::uint32_t k { 0 };
             for (auto it = ir_graph.children(c).iter(); it; ++it, ++k) {
                 lower(ir::NodeIndex { **it });
                 if (k % 2 == 1)
-                    emit(lir::Send { ctx.selectors.put, 2, 0, lir::SendKind::Normal, lir::Tail::None }, i);
+                    emit(lir::Send { ctx.selectors.put, 2, 0, lir::SendKind::Normal, lir::SendForm::Implicit,
+                                     lir::Tail::None },
+                         i);
             }
             return;
         }
         emit(lir::PushInteger { static_cast<std::int32_t>(payload.size) }, i);
-        emit(lir::Send { ctx.selectors.new_, 1, 0, lir::SendKind::Normal, lir::Tail::None }, i);
+        emit(lir::Send { ctx.selectors.new_, 1, 0, lir::SendKind::Normal, lir::SendForm::Implicit, lir::Tail::None },
+             i);
         for (auto it = ir_graph.children(c).iter(); it; ++it) {
             lower(ir::NodeIndex { **it });
-            emit(lir::Send { ctx.selectors.add, 1, 0, lir::SendKind::Normal, lir::Tail::None }, i);
+            emit(lir::Send { ctx.selectors.add, 1, 0, lir::SendKind::Normal, lir::SendForm::Implicit, lir::Tail::None },
+                 i);
         }
     }
 
-    // `(first, second..last)` is `first.series(second, last)`, a missing part is nil.
+    // `(first, second..last)` is `first.prSimpleNumberSeries(second, last)`, a missing part is nil, as the old grammar
+    // did.
     void range(ir::SCRange_I r, lir::Tail tail) {
         const ir::NodeIndex i { *r };
         const auto [first, second, last] = ir_graph.children(r);
@@ -475,7 +499,7 @@ struct Lowerer {
             else
                 lower(part);
         }
-        emit(lir::Send { ctx.selectors.series, 2, 0, lir::SendKind::Normal, tail }, i);
+        emit(lir::Send { ctx.selectors.series, 2, 0, lir::SendKind::Normal, lir::SendForm::Call, tail }, i);
     }
 
     // `#a, b ...c = value` keeps value on the stack, and assigns each target value.at(index), or value.copyToEnd(index)
@@ -488,7 +512,7 @@ struct Lowerer {
             emit(lir::Dup {}, target_i);
             emit(lir::PushInteger { static_cast<std::int32_t>(target.index) }, target_i);
             emit(lir::Send { target.rest ? ctx.selectors.copy_to_end : ctx.selectors.at, 1, 0, lir::SendKind::Normal,
-                             lir::Tail::None },
+                             lir::SendForm::Implicit, lir::Tail::None },
                  target_i);
             if (target.local)
                 emit(lir::StoreLocal { local_ref(ir::LocalIndex { *target.local }) }, target_i);
@@ -568,10 +592,8 @@ struct Lowerer {
             }
         }
         if (is_method) {
-            if (!returns) {
-                emit(lir::PushSpecial { ir::SCSpecial::Kind::This }, body_i);
-                emit(lir::Return {}, body_i);
-            }
+            if (!returns)
+                emit(lir::ReturnSelf {}, body_i);
         } else if (!has_value) {
             emit(lir::PushSpecialValue { lir::SpecialValue::Nil }, body_i);
         }
@@ -594,16 +616,19 @@ struct Lowerer {
         const auto [members, methods] = ir_graph.children(c);
         for (auto it = ir_graph.children(methods).iter(); it; ++it) {
             const auto m = *it;
-            if (ir_graph.payload(m).poisoned)
+            if (ir_graph.payload(m).poisoned) {
                 cursor.skip_over_children(ir::NodeIndex { *m });
-            else
-                root(m, true);
+                continue;
+            }
+            fold_constants = ir::can_fold_constants(ir_graph.payload(m).version);
+            root(m, true);
         }
     }
 
     void lower_interpreted(ir::SCInterpreted_I in) {
         if (ir_graph.payload(in).poisoned)
             return;
+        fold_constants = ir::can_fold_constants(ir_graph.payload(in).version);
         const auto [code] = ir_graph.children(in);
         if (const auto f = ir_graph.as_a<ir::SCFunction_I>(ir::NodeIndex { *code })) {
             root(*f, false);
@@ -651,7 +676,7 @@ lir::LoweredGraph lower(const LoweringContext& ctx, ir::join<ir::SCClass_I, ir::
 
 void write_instruction(std::ostream& out, const lir::Instruction& instruction, const ir::IRGraph& graph,
                        const ir::SymbolTable& symbols, const ir::ConstantTable& constants) {
-    const auto local = [&](lir::LocalRef l) { out << " depth " << l.depth << ", slot " << unsigned { l.slot }; };
+    const auto local = [&](lir::LocalRef l) { out << " depth " << l.depth << ", slot " << unsigned { *l.slot }; };
     std::visit(util::overload {
                    [&](const lir::PushLocal& p) {
                        out << "PushLocal";
@@ -661,6 +686,10 @@ void write_instruction(std::ostream& out, const lir::Instruction& instruction, c
                    [&](const lir::PushClassVariable& p) { out << "PushClassVariable " << *p.index; },
                    [&](const lir::PushConstant& p) {
                        out << "PushConstant ";
+                       constants(p.value).to_literal(out, symbols, constants);
+                   },
+                   [&](const lir::PushClassConstant& p) {
+                       out << "PushClassConstant " << symbols(graph.member(p.member).name) << " = ";
                        constants(p.value).to_literal(out, symbols, constants);
                    },
                    [&](const lir::PushSpecialValue& p) {
@@ -690,6 +719,12 @@ void write_instruction(std::ostream& out, const lir::Instruction& instruction, c
                            out << ", super";
                        else if (s.kind == lir::SendKind::WithAdverb)
                            out << ", adverb";
+                       if (s.form == lir::SendForm::Binary)
+                           out << ", binary";
+                       else if (s.form == lir::SendForm::Setter)
+                           out << ", setter";
+                       else if (s.form == lir::SendForm::Implicit)
+                           out << ", implicit";
                        if (s.tail == lir::Tail::ReturnFromFunction)
                            out << ", tail from function";
                        else if (s.tail == lir::Tail::ReturnFromMethod)
@@ -697,9 +732,10 @@ void write_instruction(std::ostream& out, const lir::Instruction& instruction, c
                        out << ")";
                    },
                    [&](const lir::Return&) { out << "Return"; },
+                   [&](const lir::ReturnSelf&) { out << "ReturnSelf"; },
                    [&](const lir::NonLocalReturn&) { out << "NonLocalReturn"; },
                    [&](const lir::DefaultArgument& d) {
-                       out << "DefaultArgument slot " << unsigned { d.slot } << ", region " << *d.value;
+                       out << "DefaultArgument slot " << unsigned { *d.slot } << ", region " << *d.value;
                    },
                    [&](const lir::Unimplemented& u) {
                        out << "Unimplemented " << ir::IRGraph::node_name(graph.payload(u.node));

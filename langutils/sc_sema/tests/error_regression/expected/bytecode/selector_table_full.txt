@@ -1,0 +1,563 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): BytecodeSelectorTableFull : Object, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (6:5): many, version 3.16: many { |a| a.s0; a.s1; a.s2; a.s3; a.s4; a.s5; a.s6; a.s7; a.s8; a.s9; a.s10; a.s11; a.s12; a.s13; a.s14; a.s15; a.s16; a.s17; a.s18; a.s19; a.s20; a.s21; a.s22; a.s23; a.s24; a.s25; a.s26; a.s27; a.s28; a.s29; a.s30; a.s31; a.s32; a.s33; a.s34; a.s35; a.s36; a.s37; a.s38; a.s39; a.s40; a.s41; a.s42; a.s43; a.s44; a.s45; a.s46; a.s47; a.s48; a.s49; a.s50; a.s51; a.s52; a.s53; a.s54; a.s55; a.s56; a.s57; a.s58; a.s59; a.s60; a.s61; a.s62; a.s63; a.s64; a.s65; a.s66; a.s67; a.s68; a.s69; a.s70; a.s71; a.s72; a.s73; a.s74; a.s75; a.s76; a.s77; a.s78; a.s79; a.s80; a.s81; a.s82; a.s83; a.s84; a.s85; a.s86; a.s87; a.s88; a.s89; a.s90; a.s91; a.s92; a.s93; a.s94; a.s95; a.s96; a.s97; a.s98; a.s99; a.s100; a.s101; a.s102; a.s103; a.s104; a.s105; a.s106; a.s107; a.s108; a.s109; a.s110; a.s111; a.s112; a.s113; a.s114; a.s115; a.s116; a.s117; a.s118; a.s119; a.s120; a.s121; a.s122; a.s123; a.s124; a.s125; a.s126; a.s127; a.s128; a.s129; a.s130; a.s131; a.s132; a.s133; a.s134; a.s135; a.s136; a.s137; a.s138; a.s139; a.s140; a.s141; a.s142; a.s143; a.s144; a.s145; a.s146; a.s147; a.s148; a.s149; a.s150; a.s151; a.s152; a.s153; a.s154; a.s155; a.s156; a.s157; a.s158; a.s159; a.s160; a.s161; a.s162; a.s163; a.s164; a.s165; a.s166; a.s167; a.s168; a.s169; a.s170; a.s171; a.s172; a.s173; a.s174; a.s175; a.s176; a.s177; a.s178; a.s179; a.s180; a.s181; a.s182; a.s183; a.s184; a.s185; a.s186; a.s187; a.s188; a.s189; a.s190; a.s191; a.s192; a.s193; a.s194; a.s195; a.s196; a.s197; a.s198; a.s199; a.s200; a.s201; a.s202; a.s203; a.s204; a.s205; a.s206; a.s207; a.s208; a.s209; a.s210; a.s211; a.s212; a.s213; a.s214; a.s215; a.s216; a.s217; a.s218; a.s219; a.s220; a.s221; a.s222; a.s223; a.s224; a.s225; a.s226; a.s227; a.s228; a.s229; a.s230; a.s231; a.s232; a.s233; a.s234; a.s235; a.s236; a.s237; a.s238; a.s239; a.s240; a.s241; a.s242; a.s243; a.s244; a.s245; a.s246; a.s247; a.s248; a.s249; a.s250; a.s251; a.s252; a.s253; a.s254; a.s255; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Too many selectors
+|  |  |  bytecode/selector_table_full.sc:6:5
+|  |  |      4 │ BytecodeSelectorTableFull {
+|  |  |      5 │     // expect-error: Too many selectors
+|  |  |      6 │     many { |a| a.s0; a.s1; a.s2; a.s3; a.s4; a.s5; a.s6; a.s7; a.s8; a.s9; a.s10; a.s11; a.s12; a.s13; a.s14; a.s15; a.s16; a.s17; a.s18; a.s19; a.s20; a.s21; a.s22; a.s23; a.s24; a.s25; a.s26; a.s27; a.s28; a.s29; a.s30; a.s31; a.s32; a.s33; a.s34; a.s35; a.s36; a.s37; a.s38; a.s39; a.s40; a.s41; a.s42; a.s43; a.s44; a.s45; a.s46; a.s47; a.s48; a.s49; a.s50; a.s51; a.s52; a.s53; a.s54; a.s55; a.s56; a.s57; a.s58; a.s59; a.s60; a.s61; a.s62; a.s63; a.s64; a.s65; a.s66; a.s67; a.s68; a.s69; a.s70; a.s71; a.s72; a.s73; a.s74; a.s75; a.s76; a.s77; a.s78; a.s79; a.s80; a.s81; a.s82; a.s83; a.s84; a.s85; a.s86; a.s87; a.s88; a.s89; a.s90; a.s91; a.s92; a.s93; a.s94; a.s95; a.s96; a.s97; a.s98; a.s99; a.s100; a.s101; a.s102; a.s103; a.s104; a.s105; a.s106; a.s107; a.s108; a.s109; a.s110; a.s111; a.s112; a.s113; a.s114; a.s115; a.s116; a.s117; a.s118; a.s119; a.s120; a.s121; a.s122; a.s123; a.s124; a.s125; a.s126; a.s127; a.s128; a.s129; a.s130; a.s131; a.s132; a.s133; a.s134; a.s135; a.s136; a.s137; a.s138; a.s139; a.s140; a.s141; a.s142; a.s143; a.s144; a.s145; a.s146; a.s147; a.s148; a.s149; a.s150; a.s151; a.s152; a.s153; a.s154; a.s155; a.s156; a.s157; a.s158; a.s159; a.s160; a.s161; a.s162; a.s163; a.s164; a.s165; a.s166; a.s167; a.s168; a.s169; a.s170; a.s171; a.s172; a.s173; a.s174; a.s175; a.s176; a.s177; a.s178; a.s179; a.s180; a.s181; a.s182; a.s183; a.s184; a.s185; a.s186; a.s187; a.s188; a.s189; a.s190; a.s191; a.s192; a.s193; a.s194; a.s195; a.s196; a.s197; a.s198; a.s199; a.s200; a.s201; a.s202; a.s203; a.s204; a.s205; a.s206; a.s207; a.s208; a.s209; a.s210; a.s211; a.s212; a.s213; a.s214; a.s215; a.s216; a.s217; a.s218; a.s219; a.s220; a.s221; a.s222; a.s223; a.s224; a.s225; a.s226; a.s227; a.s228; a.s229; a.s230; a.s231; a.s232; a.s233; a.s234; a.s235; a.s236; a.s237; a.s238; a.s239; a.s240; a.s241; a.s242; a.s243; a.s244; a.s245; a.s246; a.s247; a.s248; a.s249; a.s250; a.s251; a.s252; a.s253; a.s254; a.s255; ^a }
+|  |  |        ┆     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ this uses more than 255 different selectors, class names and functions.
+|  |  |      7 │     // expect: no diagnostics
+|  |  |      8 │     few { |a| ^a.s0 }
+|  |  |      9 │ }
+|  |  |
+|  |  |  A method or function's bytecode refers to the selectors it sends, the class names it uses and the functions written in it through a table of at most 255 entries. Split the code into smaller methods or functions.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (6:13)
+|  |  |  |  SCArgumentDeclare (6:13): a
+|  |  |  SCBody (6:16)
+|  |  |  |  SCMessage (6:16): s0
+|  |  |  |  |  SCRead (6:16): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:22): s1
+|  |  |  |  |  SCRead (6:22): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:28): s2
+|  |  |  |  |  SCRead (6:28): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:34): s3
+|  |  |  |  |  SCRead (6:34): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:40): s4
+|  |  |  |  |  SCRead (6:40): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:46): s5
+|  |  |  |  |  SCRead (6:46): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:52): s6
+|  |  |  |  |  SCRead (6:52): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:58): s7
+|  |  |  |  |  SCRead (6:58): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:64): s8
+|  |  |  |  |  SCRead (6:64): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:70): s9
+|  |  |  |  |  SCRead (6:70): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:76): s10
+|  |  |  |  |  SCRead (6:76): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:83): s11
+|  |  |  |  |  SCRead (6:83): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:90): s12
+|  |  |  |  |  SCRead (6:90): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:97): s13
+|  |  |  |  |  SCRead (6:97): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:104): s14
+|  |  |  |  |  SCRead (6:104): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:111): s15
+|  |  |  |  |  SCRead (6:111): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:118): s16
+|  |  |  |  |  SCRead (6:118): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:125): s17
+|  |  |  |  |  SCRead (6:125): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:132): s18
+|  |  |  |  |  SCRead (6:132): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:139): s19
+|  |  |  |  |  SCRead (6:139): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:146): s20
+|  |  |  |  |  SCRead (6:146): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:153): s21
+|  |  |  |  |  SCRead (6:153): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:160): s22
+|  |  |  |  |  SCRead (6:160): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:167): s23
+|  |  |  |  |  SCRead (6:167): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:174): s24
+|  |  |  |  |  SCRead (6:174): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:181): s25
+|  |  |  |  |  SCRead (6:181): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:188): s26
+|  |  |  |  |  SCRead (6:188): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:195): s27
+|  |  |  |  |  SCRead (6:195): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:202): s28
+|  |  |  |  |  SCRead (6:202): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:209): s29
+|  |  |  |  |  SCRead (6:209): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:216): s30
+|  |  |  |  |  SCRead (6:216): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:223): s31
+|  |  |  |  |  SCRead (6:223): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:230): s32
+|  |  |  |  |  SCRead (6:230): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:237): s33
+|  |  |  |  |  SCRead (6:237): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:244): s34
+|  |  |  |  |  SCRead (6:244): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:251): s35
+|  |  |  |  |  SCRead (6:251): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:258): s36
+|  |  |  |  |  SCRead (6:258): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:265): s37
+|  |  |  |  |  SCRead (6:265): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:272): s38
+|  |  |  |  |  SCRead (6:272): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:279): s39
+|  |  |  |  |  SCRead (6:279): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:286): s40
+|  |  |  |  |  SCRead (6:286): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:293): s41
+|  |  |  |  |  SCRead (6:293): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:300): s42
+|  |  |  |  |  SCRead (6:300): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:307): s43
+|  |  |  |  |  SCRead (6:307): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:314): s44
+|  |  |  |  |  SCRead (6:314): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:321): s45
+|  |  |  |  |  SCRead (6:321): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:328): s46
+|  |  |  |  |  SCRead (6:328): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:335): s47
+|  |  |  |  |  SCRead (6:335): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:342): s48
+|  |  |  |  |  SCRead (6:342): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:349): s49
+|  |  |  |  |  SCRead (6:349): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:356): s50
+|  |  |  |  |  SCRead (6:356): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:363): s51
+|  |  |  |  |  SCRead (6:363): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:370): s52
+|  |  |  |  |  SCRead (6:370): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:377): s53
+|  |  |  |  |  SCRead (6:377): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:384): s54
+|  |  |  |  |  SCRead (6:384): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:391): s55
+|  |  |  |  |  SCRead (6:391): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:398): s56
+|  |  |  |  |  SCRead (6:398): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:405): s57
+|  |  |  |  |  SCRead (6:405): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:412): s58
+|  |  |  |  |  SCRead (6:412): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:419): s59
+|  |  |  |  |  SCRead (6:419): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:426): s60
+|  |  |  |  |  SCRead (6:426): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:433): s61
+|  |  |  |  |  SCRead (6:433): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:440): s62
+|  |  |  |  |  SCRead (6:440): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:447): s63
+|  |  |  |  |  SCRead (6:447): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:454): s64
+|  |  |  |  |  SCRead (6:454): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:461): s65
+|  |  |  |  |  SCRead (6:461): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:468): s66
+|  |  |  |  |  SCRead (6:468): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:475): s67
+|  |  |  |  |  SCRead (6:475): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:482): s68
+|  |  |  |  |  SCRead (6:482): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:489): s69
+|  |  |  |  |  SCRead (6:489): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:496): s70
+|  |  |  |  |  SCRead (6:496): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:503): s71
+|  |  |  |  |  SCRead (6:503): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:510): s72
+|  |  |  |  |  SCRead (6:510): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:517): s73
+|  |  |  |  |  SCRead (6:517): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:524): s74
+|  |  |  |  |  SCRead (6:524): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:531): s75
+|  |  |  |  |  SCRead (6:531): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:538): s76
+|  |  |  |  |  SCRead (6:538): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:545): s77
+|  |  |  |  |  SCRead (6:545): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:552): s78
+|  |  |  |  |  SCRead (6:552): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:559): s79
+|  |  |  |  |  SCRead (6:559): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:566): s80
+|  |  |  |  |  SCRead (6:566): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:573): s81
+|  |  |  |  |  SCRead (6:573): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:580): s82
+|  |  |  |  |  SCRead (6:580): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:587): s83
+|  |  |  |  |  SCRead (6:587): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:594): s84
+|  |  |  |  |  SCRead (6:594): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:601): s85
+|  |  |  |  |  SCRead (6:601): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:608): s86
+|  |  |  |  |  SCRead (6:608): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:615): s87
+|  |  |  |  |  SCRead (6:615): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:622): s88
+|  |  |  |  |  SCRead (6:622): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:629): s89
+|  |  |  |  |  SCRead (6:629): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:636): s90
+|  |  |  |  |  SCRead (6:636): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:643): s91
+|  |  |  |  |  SCRead (6:643): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:650): s92
+|  |  |  |  |  SCRead (6:650): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:657): s93
+|  |  |  |  |  SCRead (6:657): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:664): s94
+|  |  |  |  |  SCRead (6:664): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:671): s95
+|  |  |  |  |  SCRead (6:671): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:678): s96
+|  |  |  |  |  SCRead (6:678): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:685): s97
+|  |  |  |  |  SCRead (6:685): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:692): s98
+|  |  |  |  |  SCRead (6:692): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:699): s99
+|  |  |  |  |  SCRead (6:699): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:706): s100
+|  |  |  |  |  SCRead (6:706): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:714): s101
+|  |  |  |  |  SCRead (6:714): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:722): s102
+|  |  |  |  |  SCRead (6:722): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:730): s103
+|  |  |  |  |  SCRead (6:730): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:738): s104
+|  |  |  |  |  SCRead (6:738): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:746): s105
+|  |  |  |  |  SCRead (6:746): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:754): s106
+|  |  |  |  |  SCRead (6:754): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:762): s107
+|  |  |  |  |  SCRead (6:762): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:770): s108
+|  |  |  |  |  SCRead (6:770): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:778): s109
+|  |  |  |  |  SCRead (6:778): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:786): s110
+|  |  |  |  |  SCRead (6:786): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:794): s111
+|  |  |  |  |  SCRead (6:794): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:802): s112
+|  |  |  |  |  SCRead (6:802): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:810): s113
+|  |  |  |  |  SCRead (6:810): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:818): s114
+|  |  |  |  |  SCRead (6:818): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:826): s115
+|  |  |  |  |  SCRead (6:826): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:834): s116
+|  |  |  |  |  SCRead (6:834): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:842): s117
+|  |  |  |  |  SCRead (6:842): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:850): s118
+|  |  |  |  |  SCRead (6:850): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:858): s119
+|  |  |  |  |  SCRead (6:858): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:866): s120
+|  |  |  |  |  SCRead (6:866): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:874): s121
+|  |  |  |  |  SCRead (6:874): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:882): s122
+|  |  |  |  |  SCRead (6:882): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:890): s123
+|  |  |  |  |  SCRead (6:890): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:898): s124
+|  |  |  |  |  SCRead (6:898): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:906): s125
+|  |  |  |  |  SCRead (6:906): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:914): s126
+|  |  |  |  |  SCRead (6:914): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:922): s127
+|  |  |  |  |  SCRead (6:922): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:930): s128
+|  |  |  |  |  SCRead (6:930): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:938): s129
+|  |  |  |  |  SCRead (6:938): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:946): s130
+|  |  |  |  |  SCRead (6:946): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:954): s131
+|  |  |  |  |  SCRead (6:954): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:962): s132
+|  |  |  |  |  SCRead (6:962): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:970): s133
+|  |  |  |  |  SCRead (6:970): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:978): s134
+|  |  |  |  |  SCRead (6:978): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:986): s135
+|  |  |  |  |  SCRead (6:986): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:994): s136
+|  |  |  |  |  SCRead (6:994): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1002): s137
+|  |  |  |  |  SCRead (6:1002): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1010): s138
+|  |  |  |  |  SCRead (6:1010): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1018): s139
+|  |  |  |  |  SCRead (6:1018): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1026): s140
+|  |  |  |  |  SCRead (6:1026): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1034): s141
+|  |  |  |  |  SCRead (6:1034): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1042): s142
+|  |  |  |  |  SCRead (6:1042): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1050): s143
+|  |  |  |  |  SCRead (6:1050): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1058): s144
+|  |  |  |  |  SCRead (6:1058): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1066): s145
+|  |  |  |  |  SCRead (6:1066): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1074): s146
+|  |  |  |  |  SCRead (6:1074): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1082): s147
+|  |  |  |  |  SCRead (6:1082): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1090): s148
+|  |  |  |  |  SCRead (6:1090): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1098): s149
+|  |  |  |  |  SCRead (6:1098): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1106): s150
+|  |  |  |  |  SCRead (6:1106): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1114): s151
+|  |  |  |  |  SCRead (6:1114): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1122): s152
+|  |  |  |  |  SCRead (6:1122): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1130): s153
+|  |  |  |  |  SCRead (6:1130): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1138): s154
+|  |  |  |  |  SCRead (6:1138): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1146): s155
+|  |  |  |  |  SCRead (6:1146): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1154): s156
+|  |  |  |  |  SCRead (6:1154): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1162): s157
+|  |  |  |  |  SCRead (6:1162): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1170): s158
+|  |  |  |  |  SCRead (6:1170): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1178): s159
+|  |  |  |  |  SCRead (6:1178): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1186): s160
+|  |  |  |  |  SCRead (6:1186): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1194): s161
+|  |  |  |  |  SCRead (6:1194): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1202): s162
+|  |  |  |  |  SCRead (6:1202): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1210): s163
+|  |  |  |  |  SCRead (6:1210): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1218): s164
+|  |  |  |  |  SCRead (6:1218): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1226): s165
+|  |  |  |  |  SCRead (6:1226): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1234): s166
+|  |  |  |  |  SCRead (6:1234): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1242): s167
+|  |  |  |  |  SCRead (6:1242): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1250): s168
+|  |  |  |  |  SCRead (6:1250): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1258): s169
+|  |  |  |  |  SCRead (6:1258): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1266): s170
+|  |  |  |  |  SCRead (6:1266): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1274): s171
+|  |  |  |  |  SCRead (6:1274): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1282): s172
+|  |  |  |  |  SCRead (6:1282): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1290): s173
+|  |  |  |  |  SCRead (6:1290): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1298): s174
+|  |  |  |  |  SCRead (6:1298): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1306): s175
+|  |  |  |  |  SCRead (6:1306): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1314): s176
+|  |  |  |  |  SCRead (6:1314): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1322): s177
+|  |  |  |  |  SCRead (6:1322): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1330): s178
+|  |  |  |  |  SCRead (6:1330): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1338): s179
+|  |  |  |  |  SCRead (6:1338): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1346): s180
+|  |  |  |  |  SCRead (6:1346): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1354): s181
+|  |  |  |  |  SCRead (6:1354): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1362): s182
+|  |  |  |  |  SCRead (6:1362): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1370): s183
+|  |  |  |  |  SCRead (6:1370): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1378): s184
+|  |  |  |  |  SCRead (6:1378): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1386): s185
+|  |  |  |  |  SCRead (6:1386): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1394): s186
+|  |  |  |  |  SCRead (6:1394): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1402): s187
+|  |  |  |  |  SCRead (6:1402): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1410): s188
+|  |  |  |  |  SCRead (6:1410): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1418): s189
+|  |  |  |  |  SCRead (6:1418): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1426): s190
+|  |  |  |  |  SCRead (6:1426): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1434): s191
+|  |  |  |  |  SCRead (6:1434): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1442): s192
+|  |  |  |  |  SCRead (6:1442): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1450): s193
+|  |  |  |  |  SCRead (6:1450): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1458): s194
+|  |  |  |  |  SCRead (6:1458): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1466): s195
+|  |  |  |  |  SCRead (6:1466): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1474): s196
+|  |  |  |  |  SCRead (6:1474): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1482): s197
+|  |  |  |  |  SCRead (6:1482): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1490): s198
+|  |  |  |  |  SCRead (6:1490): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1498): s199
+|  |  |  |  |  SCRead (6:1498): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1506): s200
+|  |  |  |  |  SCRead (6:1506): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1514): s201
+|  |  |  |  |  SCRead (6:1514): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1522): s202
+|  |  |  |  |  SCRead (6:1522): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1530): s203
+|  |  |  |  |  SCRead (6:1530): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1538): s204
+|  |  |  |  |  SCRead (6:1538): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1546): s205
+|  |  |  |  |  SCRead (6:1546): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1554): s206
+|  |  |  |  |  SCRead (6:1554): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1562): s207
+|  |  |  |  |  SCRead (6:1562): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1570): s208
+|  |  |  |  |  SCRead (6:1570): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1578): s209
+|  |  |  |  |  SCRead (6:1578): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1586): s210
+|  |  |  |  |  SCRead (6:1586): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1594): s211
+|  |  |  |  |  SCRead (6:1594): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1602): s212
+|  |  |  |  |  SCRead (6:1602): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1610): s213
+|  |  |  |  |  SCRead (6:1610): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1618): s214
+|  |  |  |  |  SCRead (6:1618): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1626): s215
+|  |  |  |  |  SCRead (6:1626): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1634): s216
+|  |  |  |  |  SCRead (6:1634): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1642): s217
+|  |  |  |  |  SCRead (6:1642): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1650): s218
+|  |  |  |  |  SCRead (6:1650): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1658): s219
+|  |  |  |  |  SCRead (6:1658): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1666): s220
+|  |  |  |  |  SCRead (6:1666): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1674): s221
+|  |  |  |  |  SCRead (6:1674): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1682): s222
+|  |  |  |  |  SCRead (6:1682): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1690): s223
+|  |  |  |  |  SCRead (6:1690): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1698): s224
+|  |  |  |  |  SCRead (6:1698): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1706): s225
+|  |  |  |  |  SCRead (6:1706): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1714): s226
+|  |  |  |  |  SCRead (6:1714): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1722): s227
+|  |  |  |  |  SCRead (6:1722): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1730): s228
+|  |  |  |  |  SCRead (6:1730): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1738): s229
+|  |  |  |  |  SCRead (6:1738): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1746): s230
+|  |  |  |  |  SCRead (6:1746): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1754): s231
+|  |  |  |  |  SCRead (6:1754): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1762): s232
+|  |  |  |  |  SCRead (6:1762): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1770): s233
+|  |  |  |  |  SCRead (6:1770): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1778): s234
+|  |  |  |  |  SCRead (6:1778): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1786): s235
+|  |  |  |  |  SCRead (6:1786): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1794): s236
+|  |  |  |  |  SCRead (6:1794): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1802): s237
+|  |  |  |  |  SCRead (6:1802): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1810): s238
+|  |  |  |  |  SCRead (6:1810): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1818): s239
+|  |  |  |  |  SCRead (6:1818): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1826): s240
+|  |  |  |  |  SCRead (6:1826): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1834): s241
+|  |  |  |  |  SCRead (6:1834): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1842): s242
+|  |  |  |  |  SCRead (6:1842): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1850): s243
+|  |  |  |  |  SCRead (6:1850): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1858): s244
+|  |  |  |  |  SCRead (6:1858): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1866): s245
+|  |  |  |  |  SCRead (6:1866): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1874): s246
+|  |  |  |  |  SCRead (6:1874): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1882): s247
+|  |  |  |  |  SCRead (6:1882): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1890): s248
+|  |  |  |  |  SCRead (6:1890): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1898): s249
+|  |  |  |  |  SCRead (6:1898): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1906): s250
+|  |  |  |  |  SCRead (6:1906): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1914): s251
+|  |  |  |  |  SCRead (6:1914): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1922): s252
+|  |  |  |  |  SCRead (6:1922): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1930): s253
+|  |  |  |  |  SCRead (6:1930): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1938): s254
+|  |  |  |  |  SCRead (6:1938): local a, declared (6:13): a
+|  |  |  |  SCMessage (6:1946): s255
+|  |  |  |  |  SCRead (6:1946): local a, declared (6:13): a
+|  |  |  |  SCExplicitReturn (6:1954)
+|  |  |  |  |  SCRead (6:1955): local a, declared (6:13): a
+|  |  SCMethod (8:5): few, version 3.16: few { |a| ^a.s0 }
+|  |  |  SCArgumentDeclareList (8:12)
+|  |  |  |  SCArgumentDeclare (8:12): a
+|  |  |  SCBody (8:15)
+|  |  |  |  SCExplicitReturn (8:15)
+|  |  |  |  |  SCMessage (8:16): s0
+|  |  |  |  |  |  SCRead (8:16): local a, declared (8:12): a
+
+
+
+BYTECODE DUMP 
+
+
+BytecodeSelectorTableFull
+|  function 1 (8:5): method few
+|  |  selectors: s0,
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    FF              TailCallReturnFromMethod
+|  |  2    A1 00           SendMsg
+|  |  4    F3              Return
+Successfully compiled 16 classes.

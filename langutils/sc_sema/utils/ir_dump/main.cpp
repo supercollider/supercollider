@@ -20,6 +20,7 @@
 #include "describe/describe.hpp"
 #include "boost/asio/post.hpp"
 #include "boost/asio/thread_pool.hpp"
+#include "sc_backend/emit.hpp"
 #include "sc_backend/frames.hpp"
 #include "sc_backend/lower.hpp"
 #include "sc_backend/members.hpp"
@@ -214,6 +215,7 @@ int main(int argc, char* argv[]) {
     // writing the dump takes longer than compiling.
     // --frames adds the backend's frame layout, each frame's slots, and where each variable read or assigned is.
     // --lir adds the backend's lowered ir, after the dump, each class's functions and their instructions.
+    // --bytecode adds the backend's bytecode after that, each function's tables and bytes.
     std::vector<std::filesystem::path> module_paths;
     std::vector<std::filesystem::path> prelude_paths;
     std::optional<std::filesystem::path> relative_to;
@@ -222,6 +224,7 @@ int main(int argc, char* argv[]) {
     bool dump = true;
     bool show_frames = false;
     bool show_lir = false;
+    bool show_bytecode = false;
     for (int i { 1 }; i < argc; ++i) {
         const auto arg = get_path(argv[i]);
         if (arg == "--threads" && i + 1 < argc) {
@@ -246,6 +249,8 @@ int main(int argc, char* argv[]) {
             show_frames = true;
         } else if (arg == "--lir") {
             show_lir = true;
+        } else if (arg == "--bytecode") {
+            show_bytecode = true;
         } else if (arg == "--relative-to" && i + 1 < argc) {
             relative_to = get_path(argv[++i]);
         } else if (arg == "--prelude" && i + 1 < argc) {
@@ -484,16 +489,22 @@ int main(int argc, char* argv[]) {
         return std::tie(l.file, l.begin, l.is_meta) < std::tie(r.file, r.begin, r.is_meta);
     });
 
-    // The backend's frames, by graph, and its diagnostics, printed with the others. Each frame's owner is written when
-    // the owner is, which for a qualifier is before its frame starts, so they are found by owner.
+    // The backend's frames, lowered ir and bytecode, by graph, and its diagnostics, printed with the others. Each
+    // frame's owner is written when the owner is, which for a qualifier is before its frame starts, so they are found
+    // by owner.
     struct DumpFrames {
         sc::ir::join<sc::ir::SCClass_I, sc::ir::SCInterpreted_I> root;
         sc::backend::Frames layout;
         std::unordered_map<std::uint32_t, sc::backend::FrameIndex> by_owner;
+        sc::backend::lir::LoweredGraph lowered {};
+        sc::backend::EmittedGraph emitted {};
     };
     std::optional<sc::backend::MemberTable> member_table;
     std::map<const sc::ir::IRGraph*, DumpFrames> frames;
-    if (show_frames || show_lir) {
+    const bool show_backend = show_frames || show_lir || show_bytecode;
+    if (show_backend) {
+        const sc::backend::LoweringSymbols selectors { symbol_table };
+        const sc::backend::SpecialSymbols special_symbols { symbol_table };
         member_table.emplace(comp, symbol_table);
         for (const auto& dumped : classes) {
             const auto& g = *dumped.graph;
@@ -508,6 +519,23 @@ int main(int argc, char* argv[]) {
             for (std::uint32_t fi { 0 }; fi < f.layout.frames.size(); ++fi)
                 f.by_owner.insert(
                     { *f.layout.frames[sc::backend::FrameIndex { fi }].owner, sc::backend::FrameIndex { fi } });
+            if (show_lir || show_bytecode) {
+                const sc::backend::LoweringContext lowering { g,
+                                                              f.layout,
+                                                              *member_table,
+                                                              ctx.constant_table,
+                                                              symbol_table,
+                                                              selectors,
+                                                              ctx.common_classes.array,
+                                                              ctx.common_classes.event };
+                f.lowered = sc::backend::lower(lowering, root);
+            }
+            if (show_bytecode) {
+                const sc::backend::EmitContext emitting { g, f.layout, ctx.constant_table, special_symbols };
+                f.emitted = sc::backend::emit(emitting, f.lowered);
+                for (auto& d : f.emitted.diagnostics)
+                    all_diagnostics.push_back(std::move(d));
+            }
             frames.insert({ dumped.graph, std::move(f) });
         }
     }
@@ -547,7 +575,7 @@ int main(int argc, char* argv[]) {
             const auto& slot = f.locals[sc::ir::LocalIndex { *l }];
             if (!current || !slot.frame)
                 return;
-            std::cout << " [depth " << f.depth(*current, *slot.frame) << ", slot " << slot.slot << "]";
+            std::cout << " [depth " << f.depth(*current, *slot.frame) << ", slot " << *slot.slot << "]";
         };
         const auto member = [&](sc::ir::OptionalMemberIndex m) {
             const auto& variable = g.member(sc::ir::MemberIndex { *m });
@@ -696,20 +724,11 @@ int main(int argc, char* argv[]) {
     // Each function's regions, the body first, each instruction on its own line. A method or interpreted function that
     // can't be emitted, e.g., one using something not lowered yet, is marked.
     if (show_lir) {
-        const sc::backend::LoweringSymbols selectors { symbol_table };
         std::cout << "\n\n\nLIR DUMP \n\n\n";
         for (const auto& dumped : classes) {
             const auto& g = *dumped.graph;
             const auto& f = frames.at(&g);
-            const sc::backend::LoweringContext lowering { g,
-                                                          f.layout,
-                                                          *member_table,
-                                                          ctx.constant_table,
-                                                          symbol_table,
-                                                          selectors,
-                                                          ctx.common_classes.array,
-                                                          ctx.common_classes.event };
-            const auto lowered = sc::backend::lower(lowering, f.root);
+            const auto& lowered = f.lowered;
             std::cout << (dumped.class_name ? std::string { symbol_table(*dumped.class_name) } : "Interpreted") << "\n";
             for (std::uint32_t fi { 0 }; fi < lowered.functions.size(); ++fi) {
                 const sc::backend::lir::FunctionIndex index { fi };
@@ -735,6 +754,34 @@ int main(int argc, char* argv[]) {
                         std::cout << "\n";
                     }
                 }
+            }
+        }
+    }
+    // Each emitted function's tables and bytecode, see write_emitted. Functions of a method or interpreted function
+    // that can't be emitted are left out.
+    if (show_bytecode) {
+        std::cout << "\n\n\nBYTECODE DUMP \n\n\n";
+        for (const auto& dumped : classes) {
+            const auto& g = *dumped.graph;
+            const auto& f = frames.at(&g);
+            std::cout << (dumped.class_name ? std::string { symbol_table(*dumped.class_name) } : "Interpreted") << "\n";
+            std::optional<sc::backend::lir::FunctionIndex> root;
+            for (std::uint32_t fi { 0 }; fi < f.lowered.functions.size(); ++fi) {
+                const sc::backend::lir::FunctionIndex index { fi };
+                const auto& frame = f.layout.frames[f.lowered.functions[index].frame];
+                if (!frame.parent)
+                    root = index;
+                const auto& roots = f.emitted.roots;
+                if (std::find(roots.begin(), roots.end(), *root) == roots.end())
+                    continue;
+                const sc::ir::NodeIndex owner { *frame.owner };
+                std::cout << "|  function " << fi << " ";
+                sc::ir::describe::write_location(std::cout, g.location(owner));
+                if (const auto method = g.as_a<sc::ir::SCMethod_I>(owner))
+                    std::cout << ": method " << symbol_table(*g.payload(*method).selector);
+                std::cout << "\n";
+                sc::backend::write_emitted(std::cout, f.emitted.functions[index], "|  |  ", symbol_table,
+                                           ctx.constant_table);
             }
         }
     }

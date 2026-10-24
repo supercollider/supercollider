@@ -157,7 +157,7 @@ struct FrameCreator {
         for (std::uint32_t s { 0 }; s < f.locals.size(); ++s) {
             const auto l = f.locals[s];
             out.locals.grow_to_hold(l);
-            out.locals[l] = LocalSlot { index, first + s };
+            out.locals[l] = LocalSlot { index, FrameSlotIndex { first + s } };
         }
         if (f.num_slots() > max_frame_slots) {
             const auto loc = g.location(f.owner);
