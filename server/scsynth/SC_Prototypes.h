@@ -85,7 +85,7 @@ int32 GetHash(struct PlugInCmd* inPlugInCmd);
 bool AddPlugInCmd(struct PlugInCmd* inPlugInCmd);
 bool RemovePlugInCmd(struct PlugInCmd* inPlugInCmd);
 struct PlugInCmd* GetPlugInCmd(int32* inKey);
-SCErr PlugIn_DoCmd(World* inWorld, int inSize, char* inArgs, struct ReplyAddress* inReply);
+SCErr PlugIn_DoCmd(World* inWorld, int inSize, const char* inArgs, struct ReplyAddress* inReply);
 
 int32* GetKey(struct GraphDef* inGraphDef);
 int32 GetHash(struct GraphDef* inGraphDef);
@@ -95,7 +95,6 @@ struct GraphDef* World_GetGraphDef(World* inWorld, int32* inKey);
 void World_FreeAllGraphDefs(World* inWorld);
 void GraphDef_Free(GraphDef* inGraphDef);
 void GraphDef_Define(World* inWorld, GraphDef* inList);
-void GraphDef_FreeOverwritten(World* inWorld);
 
 SCErr bufAlloc(struct SndBuf* buf, int numChannels, int numFrames, double sampleRate);
 
@@ -213,6 +212,7 @@ int32 server_timeseed();
 
 ////////////////////////////////////////////////////////////////////////
 
+/** @see AsyncPluginCmd */
 SCErr PerformAsynchronousCommand(
     World* inWorld, void* replyAddr, const char* cmdName, void* cmdData,
     AsyncStageFn stage2, // stage2 is non real time
@@ -220,6 +220,7 @@ SCErr PerformAsynchronousCommand(
     AsyncStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
     AsyncFreeFn cleanup, int completionMsgSize, const void* completionMsgData);
 
+/** @see AsyncPluginCmdEx */
 SCErr PerformAsynchronousCommandEx(
     World* inWorld, void* replyAddr, const char* cmdName, void* cmdData,
     AsyncStageFnEx stage2, // stage2 is non real time
@@ -227,6 +228,7 @@ SCErr PerformAsynchronousCommandEx(
     AsyncStageFnEx stage4, // stage4 is non real time - sends done if stage4 returns true
     AsyncFreeFn cleanup, int completionMsgSize, const void* completionMsgData);
 
+/** @see AsyncUnitCmd */
 SCErr PerformAsyncUnitCommand(
     Unit* inUnit, void* replyAddr, const char* cmdName, void* cmdData,
     AsyncUnitStageFn stage2, // stage2 is non real time
