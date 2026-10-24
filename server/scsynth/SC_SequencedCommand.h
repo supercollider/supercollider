@@ -144,6 +144,8 @@ public:
 protected:
     void SendDone(const char* inCommandName);
     void SendDoneWithIntValue(const char* inCommandName, int value);
+    void SendFailure(const char* inCommandName, const char* errString);
+    void SendFailureWithIntValue(const char* inCommandName, const char* errString, int value);
 
     int mNextStage;
     ReplyAddress mReplyAddress;

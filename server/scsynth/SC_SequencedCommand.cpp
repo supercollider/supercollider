@@ -148,6 +148,14 @@ void SC_SequencedCommand::SendDoneWithIntValue(const char* inCommandName, int va
     ::SendDoneWithIntValue(&mReplyAddress, inCommandName, value);
 }
 
+void SC_SequencedCommand::SendFailure(const char* inCommandName, const char* errString) {
+    ::SendFailure(&mReplyAddress, inCommandName, errString);
+}
+
+void SC_SequencedCommand::SendFailureWithIntValue(const char* inCommandName, const char* errString, int value) {
+    ::SendFailureWithIntValue(&mReplyAddress, inCommandName, errString, value);
+}
+
 void SC_SequencedCommand::CallEveryStage() {
     switch (mNextStage) {
     case 1:
@@ -469,7 +477,7 @@ BufAllocReadCmd::~BufAllocReadCmd() { World_Free(mWorld, mFilename); }
 
 bool BufAllocReadCmd::Stage2() {
 #ifdef NO_LIBSNDFILE
-    SendFailure(&mReplyAddress, "/b_allocRead", "scsynth compiled without libsndfile\n");
+    SendFailure("/b_allocRead", "scsynth compiled without libsndfile\n");
     scprintf("scsynth compiled without libsndfile\n");
     return false;
 #else
@@ -480,8 +488,7 @@ bool BufAllocReadCmd::Stage2() {
     if (!sf) {
         char str[ERR_BUF_SIZE];
         snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(nullptr));
-        SendFailureWithIntValue(&mReplyAddress, "/b_allocRead", str,
-                                mBufIndex); // SendFailure(&mReplyAddress, "/b_allocRead", str);
+        SendFailureWithIntValue("/b_allocRead", str, mBufIndex);
         scprintf(str);
         return false;
     }
@@ -559,7 +566,7 @@ BufReadCmd::~BufReadCmd() { World_Free(mWorld, mFilename); }
 
 bool BufReadCmd::Stage2() {
 #ifdef NO_LIBSNDFILE
-    SendFailure(&mReplyAddress, "/b_read", "scsynth compiled without libsndfile\n");
+    SendFailure("/b_read", "scsynth compiled without libsndfile\n");
     scprintf("scsynth compiled without libsndfile\n");
     return false;
 #else
@@ -575,8 +582,7 @@ bool BufReadCmd::Stage2() {
     if (!sf) {
         char str[ERR_BUF_SIZE];
         snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(nullptr));
-        SendFailureWithIntValue(&mReplyAddress, "/b_read", str,
-                                mBufIndex); // SendFailure(&mReplyAddress, "/b_read", str);
+        SendFailureWithIntValue("/b_read", str, mBufIndex);
         scprintf(str);
         return false;
     }
@@ -585,8 +591,7 @@ bool BufReadCmd::Stage2() {
         sf_close(sf);
         snprintf(str, ERR_BUF_SIZE, "Channel mismatch. File '%s' has %d channels. Buffer has %d channels.\n", mFilename,
                  fileinfo.channels, buf->channels);
-        SendFailureWithIntValue(&mReplyAddress, "/b_read", str,
-                                mBufIndex); // SendFailure(&mReplyAddress, "/b_read", str);
+        SendFailureWithIntValue("/b_read", str, mBufIndex);
         scprintf(str);
         return false;
     }
@@ -727,7 +732,7 @@ BufAllocReadChannelCmd::~BufAllocReadChannelCmd() { World_Free(mWorld, mFilename
 
 bool BufAllocReadChannelCmd::Stage2() {
 #ifdef NO_LIBSNDFILE
-    SendFailure(&mReplyAddress, "/b_allocReadChannel", "scsynth compiled without libsndfile\n");
+    SendFailure("/b_allocReadChannel", "scsynth compiled without libsndfile\n");
     scprintf("scsynth compiled without libsndfile\n");
     return false;
 #else
@@ -739,8 +744,7 @@ bool BufAllocReadChannelCmd::Stage2() {
     if (!sf) {
         char str[ERR_BUF_SIZE];
         snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(nullptr));
-        SendFailureWithIntValue(&mReplyAddress, "/b_allocReadChannel", str,
-                                mBufIndex); // SendFailure(&mReplyAddress, "/b_allocRead", str);
+        SendFailureWithIntValue("/b_allocReadChannel", str, mBufIndex);
         scprintf(str);
         return false;
     }
@@ -764,8 +768,7 @@ bool BufAllocReadChannelCmd::Stage2() {
         // verify channel indexes
         if (!CheckChannels(fileinfo.channels)) {
             const char* str = "Channel index out of range.\n";
-            SendFailureWithIntValue(&mReplyAddress, "/b_allocReadChannel", str,
-                                    mBufIndex); // SendFailure(&mReplyAddress, "/b_allocRead", str);
+            SendFailureWithIntValue("/b_allocReadChannel", str, mBufIndex);
             scprintf(str);
             sf_close(sf);
             return false;
@@ -847,7 +850,7 @@ BufReadChannelCmd::~BufReadChannelCmd() { World_Free(mWorld, mFilename); }
 
 bool BufReadChannelCmd::Stage2() {
 #ifdef NO_LIBSNDFILE
-    SendFailure(&mReplyAddress, "/b_readChannel", "scsynth compiled without libsndfile\n");
+    SendFailure("/b_readChannel", "scsynth compiled without libsndfile\n");
     scprintf("scsynth compiled without libsndfile\n");
     return false;
 #else
@@ -861,8 +864,7 @@ bool BufReadChannelCmd::Stage2() {
         char str[ERR_BUF_SIZE];
         snprintf(str, ERR_BUF_SIZE, "Channel mismatch. %d channels provided. Buffer has %d channels.\n", mNumChannels,
                  buf->channels);
-        SendFailureWithIntValue(&mReplyAddress, "/b_readChannel", str,
-                                mBufIndex); // SendFailure(&mReplyAddress, "/b_read", str);
+        SendFailureWithIntValue("/b_readChannel", str, mBufIndex);
         scprintf(str);
         return false;
     }
@@ -874,8 +876,7 @@ bool BufReadChannelCmd::Stage2() {
     if (!sf) {
         char str[ERR_BUF_SIZE];
         snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(nullptr));
-        SendFailureWithIntValue(&mReplyAddress, "/b_readChannel", str,
-                                mBufIndex); // SendFailure(&mReplyAddress, "/b_read", str);
+        SendFailureWithIntValue("/b_readChannel", str, mBufIndex);
         scprintf(str);
         return false;
     }
@@ -884,8 +885,7 @@ bool BufReadChannelCmd::Stage2() {
         // verify channel indexes
         if (!(CheckChannels(fileinfo.channels))) {
             const char* str = "Channel index out of range.\n";
-            SendFailureWithIntValue(&mReplyAddress, "/b_readChannel", str,
-                                    mBufIndex); // SendFailure(&mReplyAddress, "/b_allocRead", str);
+            SendFailureWithIntValue("/b_readChannel", str, mBufIndex);
             scprintf(str);
             sf_close(sf);
             return false;
@@ -896,8 +896,7 @@ bool BufReadChannelCmd::Stage2() {
         sf_close(sf);
         snprintf(str, ERR_BUF_SIZE, "Channel mismatch. File '%s' has %d channels. Buffer has %d channels.\n", mFilename,
                  fileinfo.channels, buf->channels);
-        SendFailureWithIntValue(&mReplyAddress, "/b_readChannel", str,
-                                mBufIndex); // SendFailure(&mReplyAddress, "/b_read", str);
+        SendFailureWithIntValue("/b_readChannel", str, mBufIndex);
         scprintf(str);
         return false;
     }
@@ -972,7 +971,7 @@ struct SF_INFO {};
 
 int BufWriteCmd::Init(const char* inData, int inSize) {
 #ifdef NO_LIBSNDFILE
-    SendFailure(&mReplyAddress, "/b_write", "scsynth compiled without libsndfile\n");
+    SendFailure("/b_write", "scsynth compiled without libsndfile\n");
     scprintf("scsynth compiled without libsndfile\n");
     return false;
 #else
@@ -1022,8 +1021,7 @@ bool BufWriteCmd::Stage2() {
     if (!sf) {
         char str[ERR_BUF_SIZE];
         snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(nullptr));
-        SendFailureWithIntValue(&mReplyAddress, "/b_write", str,
-                                mBufIndex); // SendFailure(&mReplyAddress, "/b_write", str);
+        SendFailureWithIntValue("/b_write", str, mBufIndex);
         scprintf(str);
         return false;
     }
@@ -1078,7 +1076,7 @@ int BufCloseCmd::Init(const char* inData, int inSize) {
 
 bool BufCloseCmd::Stage2() {
 #ifdef NO_LIBSNDFILE
-    SendFailure(&mReplyAddress, "/b_close", "scsynth compiled without libsndfile\n");
+    SendFailure("/b_close", "scsynth compiled without libsndfile\n");
     scprintf("scsynth compiled without libsndfile\n");
     return false;
 #else
@@ -1108,7 +1106,7 @@ AudioQuitCmd::AudioQuitCmd(World* inWorld, const ReplyAddress* inReplyAddress):
 bool AudioQuitCmd::Stage1() { return true; }
 
 bool AudioQuitCmd::Stage2() {
-    SendFailure(&mReplyAddress, "/quit", "not allowed in AU host\n");
+    SendFailure("/quit", "not allowed in AU host\n");
     scprintf("/quit : quit not allowed in AU host\n");
     return false;
 }
@@ -1129,7 +1127,7 @@ bool AudioQuitCmd::Stage2() {
         mWorld->hw->mQuitProgram->post();
     } else {
         scprintf("/quit: already quitting\n");
-        SendFailure(&mReplyAddress, "/quit", "already quitting\n");
+        SendFailure("/quit", "already quitting\n");
     }
     return false;
 }
@@ -1183,15 +1181,15 @@ bool NotifyCmd::Stage2() {
         for (auto addr : *hw->mUsers) {
             if (mReplyAddress == addr) {
                 // already in table - don't fail though..
-                SendFailureWithIntValue(&mReplyAddress, "/notify", "already registered\n",
-                                        hw->mClientIDdict->at(mReplyAddress));
+                int id = hw->mClientIDdict->at(mReplyAddress);
+                SendFailureWithIntValue("/notify", "already registered\n", id);
                 scprintf("/notify: already registered\n");
                 return false;
             }
         }
 
         if (hw->mUsers->size() >= hw->mMaxUsers) {
-            SendFailure(&mReplyAddress, "/notify", "too many users\n");
+            SendFailure("/notify", "too many users\n");
             scprintf("/notify: too many users\n");
             return false;
         }
@@ -1214,7 +1212,7 @@ bool NotifyCmd::Stage2() {
             return false;
         }
 
-        SendFailure(&mReplyAddress, "/notify", "not registered\n");
+        SendFailure("/notify", "not registered\n");
         scprintf("/notify: not registered\n");
     }
     return false;
@@ -1244,7 +1242,7 @@ void SendFailureCmd::InitSendFailureCmd(const char* inCmdName, const char* inErr
 }
 
 bool SendFailureCmd::Stage2() {
-    SendFailure(&mReplyAddress, mCmdName, mErrString);
+    SendFailure(mCmdName, mErrString);
     return false;
 }
 
@@ -1326,7 +1324,7 @@ bool LoadSynthDefCmd::Stage2() {
     {
         char str[ERR_BUF_SIZE];
         snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened\n", mFilename);
-        SendFailure(&mReplyAddress, "/d_load", mFilename);
+        SendFailure("/d_load", mFilename);
         scprintf(str);
         return false;
     }
@@ -1373,7 +1371,7 @@ bool LoadSynthDefDirCmd::Stage2() {
     if (!std::filesystem::exists(mFilename)) {
         char str[ERR_BUF_SIZE];
         snprintf(str, ERR_BUF_SIZE, "Could not load synthdefs. Directory '%s' does not exist\n", mFilename);
-        SendFailure(&mReplyAddress, "/d_loadDir", mFilename);
+        SendFailure("/d_loadDir", mFilename);
         scprintf(str);
         return false;
     }
@@ -1384,7 +1382,7 @@ bool LoadSynthDefDirCmd::Stage2() {
     {
         char str[ERR_BUF_SIZE];
         snprintf(str, ERR_BUF_SIZE, "No synthdefs found in directory: '%s'\n", mFilename);
-        SendFailure(&mReplyAddress, "/d_loadDir", mFilename);
+        SendFailure("/d_loadDir", mFilename);
         scprintf(str);
         return false;
     }
