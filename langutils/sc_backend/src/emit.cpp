@@ -1198,6 +1198,87 @@ struct Emitter {
     }
 };
 
+////////////////////////////////////////////////////////////////////////////////
+// Function properties
+////////////////////////////////////////////////////////////////////////////////
+
+// What a function and those nested in it use of the frames around it.
+struct Uses {
+    // How many frames out the furthest variable used is.
+    std::uint32_t outer_depth { 0 };
+    // `this`, `super`, `thisFunction`, `^` or a member.
+    bool cant_be_closed { false };
+};
+
+bool explicitly_closed(const EmitContext& ctx, const Frame& frame) {
+    if (const auto f = ctx.graph.as_a<ir::SCFunction_I>(ir::NodeIndex { *frame.owner }))
+        return ctx.graph.payload(*f).closed || !frame.parent;
+    return false;
+}
+
+bool members_close(const EmitContext& ctx, const Frame& frame) {
+    if (ctx.interpreter_members)
+        return true;
+    for (const Frame* f = &frame;; f = &ctx.frames.frames[FrameIndex { *f->parent }]) {
+        if (explicitly_closed(ctx, *f))
+            return true;
+        if (!f->parent)
+            return false;
+    }
+}
+
+util::IndexedVector<lir::FunctionIndex, FunctionProperties>
+function_properties(const EmitContext& ctx, const util::IndexedVector<lir::FunctionIndex, lir::Function>& functions) {
+    util::IndexedVector<lir::FunctionIndex, FunctionProperties> out;
+    util::IndexedVector<lir::FunctionIndex, Uses> uses;
+    out.resize(functions.size());
+    uses.resize(functions.size());
+
+    // A nested function is numbered after the function it is in, so is done first.
+    for (auto fi = static_cast<std::uint32_t>(functions.size()); fi-- > 0;) {
+        const lir::FunctionIndex index { fi };
+        const auto& function = functions[index];
+        const auto& frame = ctx.frames.frames[function.frame];
+        const bool members_allowed = members_close(ctx, frame);
+        auto& used = uses[index];
+        auto& properties = out[index];
+
+        const auto local = [&](lir::LocalRef l) {
+            used.outer_depth = std::max<std::uint32_t>(used.outer_depth, l.depth);
+        };
+        const auto member = [&]() { used.cant_be_closed = used.cant_be_closed || !members_allowed; };
+        for (const auto& instruction : function.instructions.raw())
+            std::visit(util::overload {
+                           [](const auto&) {},
+                           [&](const lir::PushLocal& p) { local(p.local); },
+                           [&](const lir::StoreLocal& s) { local(s.local); },
+                           [&](const lir::PushInstance&) { member(); },
+                           [&](const lir::StoreInstance&) { member(); },
+                           [&](const lir::PushClassVariable&) { member(); },
+                           [&](const lir::StoreClassVariable&) { member(); },
+                           [&](const lir::PushSpecial& p) {
+                               if (p.kind == ir::SCSpecial::Kind::This || p.kind == ir::SCSpecial::Kind::Function)
+                                   used.cant_be_closed = true;
+                           },
+                           [&](const lir::NonLocalReturn&) { used.cant_be_closed = true; },
+                           [&](const lir::PushFunction& p) {
+                               const auto& nested = uses[p.function];
+                               used.cant_be_closed = used.cant_be_closed || nested.cant_be_closed;
+                               if (nested.outer_depth > 0)
+                                   used.outer_depth = std::max(used.outer_depth, nested.outer_depth - 1);
+                               properties.needs_heap_context =
+                                   properties.needs_heap_context || out[p.function].has_context;
+                           },
+                       },
+                       instruction);
+
+        if (ctx.graph.is_a<ir::SCMethod_I>(ir::NodeIndex { *frame.owner }))
+            continue;
+        properties.is_closed = !used.cant_be_closed && used.outer_depth == 0;
+        properties.has_context = !properties.is_closed && !explicitly_closed(ctx, frame);
+    }
+    return out;
+}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1206,6 +1287,7 @@ struct Emitter {
 
 EmittedGraph emit(const EmitContext& ctx, const lir::LoweredGraph& lowered) {
     EmittedGraph out;
+    const auto properties = function_properties(ctx, lowered.functions);
     // Nested functions follow their root, a function whose frame has no parent.
     std::optional<lir::FunctionIndex> root;
     bool root_failed { false };
@@ -1229,6 +1311,7 @@ EmittedGraph emit(const EmitContext& ctx, const lir::LoweredGraph& lowered) {
         Emitter emitter { ctx, function, frame, {}, out.diagnostics };
         emitter.run(ctx.graph.is_a<ir::SCMethod_I>(ir::NodeIndex { *frame.owner }));
         root_failed = emitter.failed;
+        emitter.out.properties = properties[index];
         out.functions.push_back(std::move(emitter.out));
     }
     finish_root();
@@ -1334,7 +1417,14 @@ const char* opcode_name(Byte b) {
 
 void write_emitted(std::ostream& out, const EmittedFunction& function, std::string_view indent,
                    const ir::SymbolTable& symbols, const ir::ConstantTable& constants) {
-    out << indent << "selectors:";
+    out << indent << "properties:";
+    if (function.properties.has_context)
+        out << " context,";
+    if (function.properties.is_closed)
+        out << " closed,";
+    if (function.properties.needs_heap_context)
+        out << " heap context,";
+    out << "\n" << indent << "selectors:";
     for (const auto& entry : function.selectors.raw()) {
         std::visit(util::overload {
                        [&](ir::SymSCSelector s) { out << " " << symbols(s); },

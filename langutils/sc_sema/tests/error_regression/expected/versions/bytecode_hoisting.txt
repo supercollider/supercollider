@@ -91,6 +91,7 @@ BYTECODE DUMP
 
 BytecodeHoistingLegacy
 |  function 0 (4:5): method ifVar
+|  |  properties: heap context,
 |  |  selectors: function 1, function 2,
 |  |  constants:
 |  |  0    31              PushTempZeroVar
@@ -100,6 +101,7 @@ BytecodeHoistingLegacy
 |  |  6    C3 0B           SendSpecialMsg
 |  |  8    F3              Return
 |  function 1 (4:25)
+|  |  properties: context,
 |  |  selectors: foo,
 |  |  constants:
 |  |  0    21 01           PushTempVar
@@ -108,11 +110,13 @@ BytecodeHoistingLegacy
 |  |  6    30              PushTempZeroVar
 |  |  7    F2              BlockReturn
 |  function 2 (4:46)
+|  |  properties: closed,
 |  |  selectors:
 |  |  constants:
 |  |  0    65              PushSpecialNumber
 |  |  1    F2              BlockReturn
 |  function 3 (5:5): method loop
+|  |  properties: heap context,
 |  |  selectors: function 4, function 5,
 |  |  constants:
 |  |  0    04 00           PushLiteralX
@@ -121,6 +125,7 @@ BytecodeHoistingLegacy
 |  |  6    F0              Drop
 |  |  7    F4              ReturnSelf
 |  function 4 (5:22)
+|  |  properties: context,
 |  |  selectors:
 |  |  constants:
 |  |  0    21 01           PushTempVar
@@ -128,6 +133,7 @@ BytecodeHoistingLegacy
 |  |  3    C1 04           SendSpecialMsg
 |  |  5    F2              BlockReturn
 |  function 5 (5:33)
+|  |  properties: closed,
 |  |  selectors:
 |  |  constants:
 |  |  0    30              PushTempZeroVar
@@ -137,6 +143,7 @@ BytecodeHoistingLegacy
 |  |  5    08 00 00        StoreTempVarX
 |  |  8    F2              BlockReturn
 |  function 6 (6:5): method nonLocalReturn
+|  |  properties: heap context,
 |  |  selectors: function 7,
 |  |  constants:
 |  |  0    31              PushTempZeroVar
@@ -146,6 +153,7 @@ BytecodeHoistingLegacy
 |  |  6    65              PushSpecialNumber
 |  |  7    F3              Return
 |  function 7 (6:33)
+|  |  properties: context,
 |  |  selectors: foo,
 |  |  constants:
 |  |  0    21 01           PushTempVar
@@ -160,6 +168,7 @@ BytecodeHoistingLegacy
 |  |  14   F3              Return
 |  |  15   F2              BlockReturn
 |  function 8 (7:5): method captured
+|  |  properties:
 |  |  selectors: function 9,
 |  |  constants:
 |  |  0    31              PushTempZeroVar
@@ -168,11 +177,13 @@ BytecodeHoistingLegacy
 |  |  4    C2 0B           SendSpecialMsg
 |  |  6    F3              Return
 |  function 9 (7:28)
+|  |  properties: closed, heap context,
 |  |  selectors: function 10,
 |  |  constants:
 |  |  0    04 00           PushLiteralX
 |  |  2    F2              BlockReturn
 |  function 10 (7:41)
+|  |  properties: context,
 |  |  selectors:
 |  |  constants:
 |  |  0    21 00           PushTempVar

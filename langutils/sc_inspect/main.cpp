@@ -528,7 +528,11 @@ int main(int argc, char* argv[]) {
         }
         if (show_bytecode) {
             const auto emit_start = Clock::now();
-            const sc::backend::EmitContext emitting { g, f.layout, ctx.constant_table, special_symbols };
+            const auto class_node = g.as_a<sc::ir::SCClass_I>(sc::ir::NodeIndex { *root });
+            const bool interpreter_members =
+                !class_node || g.payload(*class_node).name == ctx.common_symbols.interpreter;
+            const sc::backend::EmitContext emitting { g, f.layout, ctx.constant_table, special_symbols,
+                                                      interpreter_members };
             f.emitted = sc::backend::emit(emitting, f.lowered);
             times.emit += seconds_since(emit_start);
             for (auto& d : f.emitted.diagnostics)

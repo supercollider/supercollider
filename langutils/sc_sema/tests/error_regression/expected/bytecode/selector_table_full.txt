@@ -554,6 +554,7 @@ BYTECODE DUMP
 
 BytecodeSelectorTableFull
 |  function 1 (8:5): method few
+|  |  properties:
 |  |  selectors: s0,
 |  |  constants:
 |  |  0    31              PushTempZeroVar

@@ -303,6 +303,7 @@ BYTECODE DUMP
 
 BytecodeTooManyArguments
 |  function 1 (8:5): method few
+|  |  properties:
 |  |  selectors: foo,
 |  |  constants: \k0,
 |  |  0    31              PushTempZeroVar

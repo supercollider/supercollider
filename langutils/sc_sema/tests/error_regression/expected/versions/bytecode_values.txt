@@ -270,6 +270,7 @@ BYTECODE DUMP
 
 BytecodeValues
 |  function 0 (12:5): method numbers
+|  |  properties:
 |  |  selectors:
 |  |  constants: 1.25,
 |  |  0    50 00           PushClassVar 
@@ -313,6 +314,7 @@ BytecodeValues
 |  |  68   C2 08           SendSpecialMsg
 |  |  70   F3              Return
 |  function 1 (14:5): method symbolsAndStrings
+|  |  properties:
 |  |  selectors:
 |  |  constants: \a, "s", "s", $c, [1, 2],
 |  |  0    50 00           PushClassVar 
@@ -336,6 +338,7 @@ BytecodeValues
 |  |  28   C2 08           SendSpecialMsg
 |  |  30   F3              Return
 |  function 2 (16:5): method classConstants
+|  |  properties:
 |  |  selectors:
 |  |  constants: 2, "s", 1.5,
 |  |  0    50 00           PushClassVar 
@@ -357,6 +360,7 @@ BytecodeValues
 |  |  25   C2 08           SendSpecialMsg
 |  |  27   F3              Return
 |  function 3 (17:5): method classes
+|  |  properties:
 |  |  selectors: Interpreter,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -372,6 +376,7 @@ BytecodeValues
 |  |  19   C2 08           SendSpecialMsg
 |  |  21   F3              Return
 |  function 4 (18:5): method pseudoVariables
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -391,24 +396,28 @@ BytecodeValues
 |  |  27   C2 08           SendSpecialMsg
 |  |  29   F3              Return
 |  function 5 (20:5): method returnNil
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
 |  |  2    F0              Drop
 |  |  3    F7              ReturnNil
 |  function 6 (21:5): method returnTrue
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
 |  |  2    F0              Drop
 |  |  3    F5              ReturnTrue
 |  function 7 (22:5): method returnFalse
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
 |  |  2    F0              Drop
 |  |  3    F6              ReturnFalse
 |  function 8 (23:5): method returnThis
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -416,6 +425,7 @@ BytecodeValues
 |  |  3    60              PushSpecialValueThis
 |  |  4    F3              Return
 |  function 9 (24:5): method returnSelf
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -424,6 +434,7 @@ BytecodeValues
 |  |  4    F0              Drop
 |  |  5    F4              ReturnSelf
 |  function 10 (27:5): method knownVariable
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -431,6 +442,7 @@ BytecodeValues
 |  |  3    31              PushTempZeroVar
 |  |  4    F3              Return
 |  function 11 (29:5): method stores
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -445,6 +457,7 @@ BytecodeValues
 |  |  12   08 00 02        StoreTempVarX
 |  |  15   F3              Return
 |  function 12 (30:5): method highSlots
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -455,6 +468,7 @@ BytecodeValues
 |  |  8    03 11           PushTempZeroVarX
 |  |  10   F3              Return
 |  function 13 (31:5): method highInstanceVariable
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -465,6 +479,7 @@ BytecodeValues
 |  |  7    01 10           PushInstVarX
 |  |  9    F3              Return
 |  function 14 (32:5): method deepRead
+|  |  properties: heap context,
 |  |  selectors: function 15,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -472,51 +487,61 @@ BytecodeValues
 |  |  3    04 00           PushLiteralX
 |  |  5    F3              Return
 |  function 15 (32:25)
+|  |  properties: context, heap context,
 |  |  selectors: function 16,
 |  |  constants:
 |  |  0    04 00           PushLiteralX
 |  |  2    F2              BlockReturn
 |  function 16 (32:27)
+|  |  properties: context, heap context,
 |  |  selectors: function 17,
 |  |  constants:
 |  |  0    04 00           PushLiteralX
 |  |  2    F2              BlockReturn
 |  function 17 (32:29)
+|  |  properties: context, heap context,
 |  |  selectors: function 18,
 |  |  constants:
 |  |  0    04 00           PushLiteralX
 |  |  2    F2              BlockReturn
 |  function 18 (32:31)
+|  |  properties: context, heap context,
 |  |  selectors: function 19,
 |  |  constants:
 |  |  0    04 00           PushLiteralX
 |  |  2    F2              BlockReturn
 |  function 19 (32:33)
+|  |  properties: context, heap context,
 |  |  selectors: function 20,
 |  |  constants:
 |  |  0    04 00           PushLiteralX
 |  |  2    F2              BlockReturn
 |  function 20 (32:35)
+|  |  properties: context, heap context,
 |  |  selectors: function 21,
 |  |  constants:
 |  |  0    04 00           PushLiteralX
 |  |  2    F2              BlockReturn
 |  function 21 (32:37)
+|  |  properties: context, heap context,
 |  |  selectors: function 22,
 |  |  constants:
 |  |  0    04 00           PushLiteralX
 |  |  2    F2              BlockReturn
 |  function 22 (32:39)
+|  |  properties: context, heap context,
 |  |  selectors: function 23,
 |  |  constants:
 |  |  0    04 00           PushLiteralX
 |  |  2    F2              BlockReturn
 |  function 23 (32:41)
+|  |  properties: context,
 |  |  selectors:
 |  |  constants:
 |  |  0    02 09 01        PushTempVarX
 |  |  3    F2              BlockReturn
 |  function 24 (33:5): method deepStore
+|  |  properties: heap context,
 |  |  selectors: function 25,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -524,46 +549,55 @@ BytecodeValues
 |  |  3    04 00           PushLiteralX
 |  |  5    F3              Return
 |  function 25 (33:26)
+|  |  properties: context, heap context,
 |  |  selectors: function 26,
 |  |  constants:
 |  |  0    04 00           PushLiteralX
 |  |  2    F2              BlockReturn
 |  function 26 (33:28)
+|  |  properties: context, heap context,
 |  |  selectors: function 27,
 |  |  constants:
 |  |  0    04 00           PushLiteralX
 |  |  2    F2              BlockReturn
 |  function 27 (33:30)
+|  |  properties: context, heap context,
 |  |  selectors: function 28,
 |  |  constants:
 |  |  0    04 00           PushLiteralX
 |  |  2    F2              BlockReturn
 |  function 28 (33:32)
+|  |  properties: context, heap context,
 |  |  selectors: function 29,
 |  |  constants:
 |  |  0    04 00           PushLiteralX
 |  |  2    F2              BlockReturn
 |  function 29 (33:34)
+|  |  properties: context, heap context,
 |  |  selectors: function 30,
 |  |  constants:
 |  |  0    04 00           PushLiteralX
 |  |  2    F2              BlockReturn
 |  function 30 (33:36)
+|  |  properties: context, heap context,
 |  |  selectors: function 31,
 |  |  constants:
 |  |  0    04 00           PushLiteralX
 |  |  2    F2              BlockReturn
 |  function 31 (33:38)
+|  |  properties: context, heap context,
 |  |  selectors: function 32,
 |  |  constants:
 |  |  0    04 00           PushLiteralX
 |  |  2    F2              BlockReturn
 |  function 32 (33:40)
+|  |  properties: context, heap context,
 |  |  selectors: function 33,
 |  |  constants:
 |  |  0    04 00           PushLiteralX
 |  |  2    F2              BlockReturn
 |  function 33 (33:42)
+|  |  properties: context,
 |  |  selectors:
 |  |  constants:
 |  |  0    64              PushSpecialNumber
@@ -572,6 +606,7 @@ BytecodeValues
 |  |  5    65              PushSpecialNumber
 |  |  6    F2              BlockReturn
 |  function 34 (36:5): method defaults
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    31              PushTempZeroVar
@@ -586,6 +621,7 @@ BytecodeValues
 |  |  15   31              PushTempZeroVar
 |  |  16   F3              Return
 |  function 35 (37:5): method computedVariable
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    64              PushSpecialNumber
@@ -597,6 +633,7 @@ BytecodeValues
 |  |  8    31              PushTempZeroVar
 |  |  9    F3              Return
 |  function 36 (38:5): method pack
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 

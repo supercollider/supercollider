@@ -31,6 +31,9 @@ struct EmitContext {
     const Frames& frames;
     const ir::ConstantTable& constants;
     const SpecialSymbols& special_symbols;
+    // Interpreted code or the Interpreter class, whose members don't stop a function being closed, as the old compiler
+    // had it. A closed function's are the Interpreter's too.
+    bool interpreter_members;
 };
 
 [[nodiscard]] EmittedGraph emit(const EmitContext& ctx, const lir::LoweredGraph& lowered);
@@ -72,7 +75,18 @@ using ConstantContent = std::variant<ir::ConstExprIndex, ir::SymSCSymbol, ClassC
 static_assert(sizeof(ConstantContent) == 16);
 
 
+struct FunctionProperties {
+    // The FunctionDef's contextDef is the frame it is created in. Never for a method, or a function that is closed,
+    // explicitly (`#{ }`, interpreted code) or because it uses nothing of the frames around it.
+    bool has_context { false };
+    bool is_closed { false };
+    // Sometimes a frame can be reference counted.
+    bool needs_heap_context { false };
+};
+static_assert(sizeof(FunctionProperties) == 3);
+
 struct EmittedFunction {
+    FunctionProperties properties {};
     CompilingBytecodes::Data code {};
     util::IndexedVector<SelectorIndex, SelectorContent> selectors {};
     util::IndexedVector<ConstantIndex, ConstantContent> constants {};

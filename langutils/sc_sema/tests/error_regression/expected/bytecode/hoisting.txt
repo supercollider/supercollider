@@ -118,6 +118,7 @@ BYTECODE DUMP
 
 BytecodeHoisting
 |  function 0 (6:5): method ifVar
+|  |  properties:
 |  |  selectors: foo,
 |  |  constants:
 |  |  0    31              PushTempZeroVar
@@ -130,6 +131,7 @@ BytecodeHoisting
 |  |  13   65              PushSpecialNumber
 |  |  14   F3              Return
 |  function 1 (7:5): method loop
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    31              PushTempZeroVar
@@ -146,6 +148,7 @@ BytecodeHoisting
 |  |  20   F0              Drop
 |  |  21   F4              ReturnSelf
 |  function 2 (8:5): method nonLocalReturn
+|  |  properties:
 |  |  selectors: foo,
 |  |  constants:
 |  |  0    31              PushTempZeroVar
@@ -164,6 +167,7 @@ BytecodeHoisting
 |  |  19   65              PushSpecialNumber
 |  |  20   F3              Return
 |  function 3 (9:5): method captured
+|  |  properties:
 |  |  selectors: function 4,
 |  |  constants:
 |  |  0    31              PushTempZeroVar
@@ -172,11 +176,13 @@ BytecodeHoisting
 |  |  4    C2 0B           SendSpecialMsg
 |  |  6    F3              Return
 |  function 4 (9:28)
+|  |  properties: closed, heap context,
 |  |  selectors: function 5,
 |  |  constants:
 |  |  0    04 00           PushLiteralX
 |  |  2    F2              BlockReturn
 |  function 5 (9:41)
+|  |  properties: context,
 |  |  selectors:
 |  |  constants:
 |  |  0    21 00           PushTempVar

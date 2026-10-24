@@ -664,6 +664,7 @@ BYTECODE DUMP
 
 BytecodeInlining
 |  function 0 (11:5): method ifThen
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -676,6 +677,7 @@ BytecodeInlining
 |  |  10   65              PushSpecialNumber
 |  |  11   F3              Return
 |  function 1 (12:5): method ifThenElse
+|  |  properties:
 |  |  selectors: bar, foo,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -691,6 +693,7 @@ BytecodeInlining
 |  |  16   A1 00           SendMsg
 |  |  18   F3              Return
 |  function 2 (13:5): method ifMessage
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -702,6 +705,7 @@ BytecodeInlining
 |  |  11   65              PushSpecialNumber
 |  |  12   F3              Return
 |  function 3 (14:5): method ifKeywordBinary
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -711,6 +715,7 @@ BytecodeInlining
 |  |  7    64              PushSpecialNumber
 |  |  8    F3              Return
 |  function 4 (16:5): method ifEmpty
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -720,6 +725,7 @@ BytecodeInlining
 |  |  5    6E              PushSpecialValue
 |  |  6    F3              Return
 |  function 5 (17:5): method ifEmptyThen
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -731,6 +737,7 @@ BytecodeInlining
 |  |  11   65              PushSpecialNumber
 |  |  12   F3              Return
 |  function 6 (18:5): method ifEmptyElse
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -740,6 +747,7 @@ BytecodeInlining
 |  |  7    64              PushSpecialNumber
 |  |  8    F3              Return
 |  function 7 (19:5): method ifBothEmpty
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -749,6 +757,7 @@ BytecodeInlining
 |  |  5    6E              PushSpecialValue
 |  |  6    F3              Return
 |  function 8 (21:5): method ifIsNil
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -758,6 +767,7 @@ BytecodeInlining
 |  |  8    64              PushSpecialNumber
 |  |  9    F3              Return
 |  function 9 (22:5): method ifNotNil
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -769,6 +779,7 @@ BytecodeInlining
 |  |  12   65              PushSpecialNumber
 |  |  13   F3              Return
 |  function 10 (23:5): method ifIsNilEmpty
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -780,6 +791,7 @@ BytecodeInlining
 |  |  12   65              PushSpecialNumber
 |  |  13   F3              Return
 |  function 11 (25:5): method ifArguments
+|  |  properties:
 |  |  selectors: function 12,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -790,11 +802,13 @@ BytecodeInlining
 |  |  7    C2 0B           SendSpecialMsg
 |  |  9    F3              Return
 |  function 12 (25:35)
+|  |  properties: closed,
 |  |  selectors:
 |  |  constants:
 |  |  0    30              PushTempZeroVar
 |  |  1    F2              BlockReturn
 |  function 13 (26:5): method ifVariables
+|  |  properties:
 |  |  selectors: function 14,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -805,11 +819,13 @@ BytecodeInlining
 |  |  7    C2 0B           SendSpecialMsg
 |  |  9    F3              Return
 |  function 14 (26:35)
+|  |  properties: closed,
 |  |  selectors:
 |  |  constants:
 |  |  0    30              PushTempZeroVar
 |  |  1    F2              BlockReturn
 |  function 15 (27:5): method ifValue
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -820,6 +836,7 @@ BytecodeInlining
 |  |  6    C2 0B           SendSpecialMsg
 |  |  8    F3              Return
 |  function 16 (28:5): method ifKeyword
+|  |  properties:
 |  |  selectors: function 17,
 |  |  constants: \true,
 |  |  0    50 00           PushClassVar 
@@ -831,11 +848,13 @@ BytecodeInlining
 |  |  8    0C 03 01 0B     SendSpecialMsgX
 |  |  12   F3              Return
 |  function 17 (28:37)
+|  |  properties: closed,
 |  |  selectors:
 |  |  constants:
 |  |  0    64              PushSpecialNumber
 |  |  1    F2              BlockReturn
 |  function 18 (30:5): method ifPlain
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -847,6 +866,7 @@ BytecodeInlining
 |  |  7    C3 0B           SendSpecialMsg
 |  |  9    F3              Return
 |  function 19 (32:5): method andOr
+|  |  properties:
 |  |  selectors: foo, bar,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -861,6 +881,7 @@ BytecodeInlining
 |  |  15   A1 01           SendMsg
 |  |  17   F3              Return
 |  function 20 (33:5): method andNotInlined
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -871,6 +892,7 @@ BytecodeInlining
 |  |  6    C2 0E           SendSpecialMsg
 |  |  8    F3              Return
 |  function 21 (34:5): method nilCoalesce
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -880,6 +902,7 @@ BytecodeInlining
 |  |  8    64              PushSpecialNumber
 |  |  9    F3              Return
 |  function 22 (35:5): method notNilThen
+|  |  properties:
 |  |  selectors: foo,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -891,6 +914,7 @@ BytecodeInlining
 |  |  10   A1 00           SendMsg
 |  |  12   F3              Return
 |  function 23 (36:5): method questionMark
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -900,6 +924,7 @@ BytecodeInlining
 |  |  5    8F 16           ExtendedCodes
 |  |  7    F3              Return
 |  function 24 (39:5): method whileBody
+|  |  properties:
 |  |  selectors: notEmpty, pop,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -914,6 +939,7 @@ BytecodeInlining
 |  |  16   31              PushTempZeroVar
 |  |  17   F3              Return
 |  function 25 (40:5): method whileCondition
+|  |  properties:
 |  |  selectors: pop,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -928,6 +954,7 @@ BytecodeInlining
 |  |  16   31              PushTempZeroVar
 |  |  17   F3              Return
 |  function 26 (41:5): method whileEmptyBody
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -941,6 +968,7 @@ BytecodeInlining
 |  |  14   31              PushTempZeroVar
 |  |  15   F3              Return
 |  function 27 (42:5): method whileTrue
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -954,6 +982,7 @@ BytecodeInlining
 |  |  14   F0              Drop
 |  |  15   F4              ReturnSelf
 |  function 28 (44:5): method whileTrueFunction
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -969,6 +998,7 @@ BytecodeInlining
 |  |  18   F0              Drop
 |  |  19   F4              ReturnSelf
 |  function 29 (45:5): method loop
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -982,6 +1012,7 @@ BytecodeInlining
 |  |  14   F0              Drop
 |  |  15   F4              ReturnSelf
 |  function 30 (48:5): method case
+|  |  properties:
 |  |  selectors:
 |  |  constants: \other, \nil, \one,
 |  |  0    50 00           PushClassVar 
@@ -999,6 +1030,7 @@ BytecodeInlining
 |  |  22   40              PushLiteral
 |  |  23   F3              Return
 |  function 31 (49:5): method caseNoDefault
+|  |  properties:
 |  |  selectors:
 |  |  constants: \two, \one,
 |  |  0    50 00           PushClassVar 
@@ -1016,6 +1048,7 @@ BytecodeInlining
 |  |  19   40              PushLiteral
 |  |  20   F3              Return
 |  function 32 (50:5): method caseConditionStatements
+|  |  properties:
 |  |  selectors: foo, bar,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -1029,6 +1062,7 @@ BytecodeInlining
 |  |  13   64              PushSpecialNumber
 |  |  14   F3              Return
 |  function 33 (51:5): method caseNotInlined
+|  |  properties: heap context,
 |  |  selectors: function 34, function 35,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -1040,16 +1074,19 @@ BytecodeInlining
 |  |  9    C3 10           SendSpecialMsg
 |  |  11   F3              Return
 |  function 34 (51:39)
+|  |  properties: context,
 |  |  selectors:
 |  |  constants:
 |  |  0    21 01           PushTempVar
 |  |  2    F2              BlockReturn
 |  function 35 (51:46)
+|  |  properties: closed,
 |  |  selectors:
 |  |  constants:
 |  |  0    64              PushSpecialNumber
 |  |  1    F2              BlockReturn
 |  function 36 (54:5): method switch
+|  |  properties:
 |  |  selectors: foo,
 |  |  constants: switch table (capacity 16, 1: 0, \two: 4, $c: 11, default: 15), \one, \default,
 |  |  0    50 00           PushClassVar 
@@ -1068,6 +1105,7 @@ BytecodeInlining
 |  |  22   42              PushLiteral
 |  |  23   F3              Return
 |  function 37 (55:5): method switchNoDefault
+|  |  properties:
 |  |  selectors:
 |  |  constants: switch table (capacity 16, 1: 0, 2.0: 4, default: 8), \one, \two,
 |  |  0    50 00           PushClassVar 
@@ -1082,6 +1120,7 @@ BytecodeInlining
 |  |  15   6E              PushSpecialValue
 |  |  16   F3              Return
 |  function 38 (56:5): method switchFunctionKey
+|  |  properties:
 |  |  selectors:
 |  |  constants: switch table (capacity 8, 1: 0, default: 4), \one, \other,
 |  |  0    50 00           PushClassVar 
@@ -1094,6 +1133,7 @@ BytecodeInlining
 |  |  11   42              PushLiteral
 |  |  12   F3              Return
 |  function 39 (58:5): method switchString
+|  |  properties:
 |  |  selectors: function 40,
 |  |  constants: "s",
 |  |  0    50 00           PushClassVar 
@@ -1105,11 +1145,13 @@ BytecodeInlining
 |  |  8    C3 11           SendSpecialMsg
 |  |  10   F3              Return
 |  function 40 (58:45)
+|  |  properties: closed,
 |  |  selectors:
 |  |  constants:
 |  |  0    64              PushSpecialNumber
 |  |  1    F2              BlockReturn
 |  function 41 (59:5): method switchNil
+|  |  properties:
 |  |  selectors: function 42,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -1121,11 +1163,13 @@ BytecodeInlining
 |  |  8    C3 11           SendSpecialMsg
 |  |  10   F3              Return
 |  function 42 (59:42)
+|  |  properties: closed,
 |  |  selectors:
 |  |  constants:
 |  |  0    64              PushSpecialNumber
 |  |  1    F2              BlockReturn
 |  function 43 (62:5): method nestedFunction
+|  |  properties: heap context,
 |  |  selectors: function 44,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -1135,6 +1179,7 @@ BytecodeInlining
 |  |  7    04 00           PushLiteralX
 |  |  9    F3              Return
 |  function 44 (62:40)
+|  |  properties: context,
 |  |  selectors:
 |  |  constants:
 |  |  0    21 01           PushTempVar
@@ -1142,6 +1187,7 @@ BytecodeInlining
 Meta_BytecodeInlining
 BytecodeInliningFixes
 |  function 0 (70:5): method andEmpty
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 01           PushClassVar 
@@ -1151,6 +1197,7 @@ BytecodeInliningFixes
 |  |  7    6E              PushSpecialValue
 |  |  8    F3              Return
 |  function 1 (71:5): method whileEmptyCondition
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 01           PushClassVar 
@@ -1162,6 +1209,7 @@ BytecodeInliningFixes
 |  |  11   F0              Drop
 |  |  12   F7              ReturnNil
 |  function 2 (72:5): method loopEmpty
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 01           PushClassVar 
@@ -1171,6 +1219,7 @@ BytecodeInliningFixes
 |  |  7    F0              Drop
 |  |  8    F4              ReturnSelf
 |  function 3 (73:5): method caseEmptyCondition
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 01           PushClassVar 
@@ -1180,6 +1229,7 @@ BytecodeInliningFixes
 |  |  7    64              PushSpecialNumber
 |  |  8    F3              Return
 |  function 4 (75:5): method closed
+|  |  properties:
 |  |  selectors: function 5,
 |  |  constants:
 |  |  0    50 01           PushClassVar 
@@ -1190,11 +1240,13 @@ BytecodeInliningFixes
 |  |  7    C2 0B           SendSpecialMsg
 |  |  9    F3              Return
 |  function 5 (75:30)
+|  |  properties: closed,
 |  |  selectors:
 |  |  constants:
 |  |  0    64              PushSpecialNumber
 |  |  1    F2              BlockReturn
 |  function 6 (78:5): method switchDuplicateKeys
+|  |  properties:
 |  |  selectors:
 |  |  constants: switch table (capacity 16, 1: 0, default: 8), \first, \second,
 |  |  0    50 01           PushClassVar 

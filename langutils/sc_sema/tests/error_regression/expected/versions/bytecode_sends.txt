@@ -364,6 +364,7 @@ BYTECODE DUMP
 
 BytecodeSends
 |  function 0 (10:5): method thisOpt
+|  |  properties:
 |  |  selectors: foo,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -372,6 +373,7 @@ BytecodeSends
 |  |  4    A0 00           SendMsgThisOpt
 |  |  6    F3              Return
 |  function 1 (11:5): method specialThisOpt
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -380,6 +382,7 @@ BytecodeSends
 |  |  4    C0 09           SendSpecialMsgThisOpt
 |  |  6    F3              Return
 |  function 2 (13:5): method instanceSpecial
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -388,6 +391,7 @@ BytecodeSends
 |  |  4    88 00 09        PushInstVarAndSendSpecialMsg
 |  |  7    F3              Return
 |  function 3 (17:5): method pushAllArgs
+|  |  properties:
 |  |  selectors: foo,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -396,6 +400,7 @@ BytecodeSends
 |  |  4    89 00           PushAllArgsAndSendMsg
 |  |  6    F3              Return
 |  function 4 (18:5): method pushAllButFirst
+|  |  properties:
 |  |  selectors: foo,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -405,6 +410,7 @@ BytecodeSends
 |  |  7    8A 00           PushAllButFirstArgAndSendMsg
 |  |  9    F3              Return
 |  function 5 (19:5): method pushAllButFirstTwo
+|  |  properties:
 |  |  selectors: foo,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -415,6 +421,7 @@ BytecodeSends
 |  |  6    8D 00           PushAllButFirstTwoArgsAndSendMsg
 |  |  8    F3              Return
 |  function 6 (20:5): method specialPushAllArgs
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -423,6 +430,7 @@ BytecodeSends
 |  |  4    8B 03           PushAllArgsAndSendSpecialMsg
 |  |  6    F3              Return
 |  function 7 (22:5): method notTheArguments
+|  |  properties:
 |  |  selectors: foo,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -434,6 +442,7 @@ BytecodeSends
 |  |  8    A3 00           SendMsg
 |  |  10   F3              Return
 |  function 8 (25:5): method forSeries
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -446,6 +455,7 @@ BytecodeSends
 |  |  9    C4 40           SendSpecialMsg
 |  |  11   F3              Return
 |  function 9 (26:5): method seriesSelector
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -459,6 +469,7 @@ BytecodeSends
 |  |  11   C2 1D           SendSpecialMsg
 |  |  13   F3              Return
 |  function 10 (29:5): method unary
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -468,6 +479,7 @@ BytecodeSends
 |  |  5    0D 00           SendSpecialUnaryArithMsgX
 |  |  7    F3              Return
 |  function 11 (30:5): method unaryWithArgument
+|  |  properties:
 |  |  selectors: neg,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -478,6 +490,7 @@ BytecodeSends
 |  |  6    A2 00           SendMsg
 |  |  8    F3              Return
 |  function 12 (31:5): method unaryWrittenBinary
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -489,6 +502,7 @@ BytecodeSends
 |  |  7    D0              SendSpecialUnaryArithMsg
 |  |  8    F3              Return
 |  function 13 (32:5): method binary
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -499,6 +513,7 @@ BytecodeSends
 |  |  7    E2              SendSpecialBinaryArithMsg
 |  |  8    F3              Return
 |  function 14 (33:5): method binaryNotNibble
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -509,6 +524,7 @@ BytecodeSends
 |  |  7    0E 19           SendSpecialBinaryArithMsgX
 |  |  9    F3              Return
 |  function 15 (34:5): method adverb
+|  |  properties:
 |  |  selectors:
 |  |  constants: \x,
 |  |  0    50 00           PushClassVar 
@@ -520,6 +536,7 @@ BytecodeSends
 |  |  8    FE 00           SpecialBinaryOpWithAdverb
 |  |  10   F3              Return
 |  function 16 (35:5): method addOne
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -528,6 +545,7 @@ BytecodeSends
 |  |  4    6B              PushOneAndAddOne
 |  |  5    F3              Return
 |  function 17 (36:5): method subtractOne
+|  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -537,6 +555,7 @@ BytecodeSends
 |  |  5    61              PushOneAndSubtract
 |  |  6    F3              Return
 |  function 18 (39:5): method keywords
+|  |  properties:
 |  |  selectors: foo,
 |  |  constants: \x,
 |  |  0    50 00           PushClassVar 
@@ -549,6 +568,7 @@ BytecodeSends
 |  |  8    0A 04 01 00     SendMsgX
 |  |  12   F3              Return
 |  function 19 (40:5): method specialKeywords
+|  |  properties:
 |  |  selectors:
 |  |  constants: \x,
 |  |  0    50 00           PushClassVar 
@@ -561,6 +581,7 @@ BytecodeSends
 |  |  8    0C 04 01 02     SendSpecialMsgX
 |  |  12   F3              Return
 |  function 20 (41:5): method operatorKeywords
+|  |  properties:
 |  |  selectors: max,
 |  |  constants: \x,
 |  |  0    50 00           PushClassVar 
@@ -573,6 +594,7 @@ BytecodeSends
 |  |  8    0A 04 01 00     SendMsgX
 |  |  12   F3              Return
 |  function 21 (42:5): method manyArguments
+|  |  properties:
 |  |  selectors: foo,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -597,6 +619,7 @@ BytecodeSends
 |  |  33   0A 10 00 00     SendMsgX
 |  |  37   F3              Return
 |  function 22 (44:5): method superThisOpt
+|  |  properties:
 |  |  selectors: foo,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -605,6 +628,7 @@ BytecodeSends
 |  |  4    B1 00           SendSuperMsgThisOpt
 |  |  6    F3              Return
 |  function 23 (45:5): method superArguments
+|  |  properties:
 |  |  selectors: foo,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -615,6 +639,7 @@ BytecodeSends
 |  |  6    B3 00           SendSuperMsg
 |  |  8    F3              Return
 |  function 24 (46:5): method superKeywords
+|  |  properties:
 |  |  selectors: foo,
 |  |  constants: \x,
 |  |  0    50 00           PushClassVar 
@@ -627,6 +652,7 @@ BytecodeSends
 |  |  8    0B 04 01 00     SendSuperMsgX
 |  |  12   F3              Return
 |  function 25 (47:5): method setter
+|  |  properties:
 |  |  selectors: foo_,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -637,6 +663,7 @@ BytecodeSends
 |  |  7    F0              Drop
 |  |  8    F4              ReturnSelf
 |  function 26 (48:5): method superSetter
+|  |  properties:
 |  |  selectors: foo_,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -647,6 +674,7 @@ BytecodeSends
 |  |  7    F0              Drop
 |  |  8    F4              ReturnSelf
 |  function 27 (51:5): method tableOrder
+|  |  properties:
 |  |  selectors: foo, function 28, Interpreter,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -658,11 +686,13 @@ BytecodeSends
 |  |  9    A3 00           SendMsg
 |  |  11   F3              Return
 |  function 28 (51:33)
+|  |  properties: closed,
 |  |  selectors:
 |  |  constants:
 |  |  0    64              PushSpecialNumber
 |  |  1    F2              BlockReturn
 |  function 29 (52:5): method setterTableOrder
+|  |  properties:
 |  |  selectors: function 30, foo_,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -673,11 +703,13 @@ BytecodeSends
 |  |  8    F0              Drop
 |  |  9    F4              ReturnSelf
 |  function 30 (52:40)
+|  |  properties: closed,
 |  |  selectors:
 |  |  constants:
 |  |  0    64              PushSpecialNumber
 |  |  1    F2              BlockReturn
 |  function 31 (54:5): method environment
+|  |  properties:
 |  |  selectors:
 |  |  constants: \x,
 |  |  0    50 00           PushClassVar 
@@ -687,6 +719,7 @@ BytecodeSends
 |  |  5    C1 3C           SendSpecialMsg
 |  |  7    F3              Return
 |  function 32 (55:5): method performList
+|  |  properties:
 |  |  selectors:
 |  |  constants: \foo,
 |  |  0    50 00           PushClassVar 
@@ -698,6 +731,7 @@ BytecodeSends
 |  |  7    C3 38           SendSpecialMsg
 |  |  9    F3              Return
 |  function 33 (57:5): method tail
+|  |  properties:
 |  |  selectors: function 34,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
@@ -705,6 +739,7 @@ BytecodeSends
 |  |  3    04 00           PushLiteralX
 |  |  5    F3              Return
 |  function 34 (57:17)
+|  |  properties: closed,
 |  |  selectors: foo,
 |  |  constants:
 |  |  0    30              PushTempZeroVar

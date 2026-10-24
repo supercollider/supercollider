@@ -13,6 +13,9 @@
    or the methods of some classes, in order:
        compare_bytecode.py old.txt new.txt Class ...
 
+Each function's properties (context, closed, heap context) are compared too; the old dump derives heap context from
+its nested functions' contexts, as needsHeapContext isn't readable from sclang.
+
 Class variable operands are masked, as the backend numbers class variables differently, the loader sets them (B8).
 One line methods get methType shortcuts and no code, so a test method should start with a dummy statement, e.g. `cv;`.
 """
@@ -82,10 +85,14 @@ def parse_old(path):
         line = line.rstrip('\n')
         m = re.match(r'FUNC (.*)', line)
         if m:
-            cur = {'name': m.group(1).strip(), 'code': [], 'selectors': [], 'constants': []}
+            cur = {'name': m.group(1).strip(), 'properties': '', 'code': [], 'selectors': [], 'constants': []}
             funcs.append(cur)
             continue
         if cur is None:
+            continue
+        m = re.match(r'  properties:(.*)', line)
+        if m:
+            cur['properties'] = m.group(1).strip()
             continue
         m = re.match(r'  code: (.*)', line)
         if m:
@@ -140,9 +147,13 @@ def parse_new(path, classes):
             continue
         m = re.match(r'\|  function (\d+) (?:.*: method (\S+)$)?', line)
         if m:
-            cur = {'name': m.group(2) or '  nested', 'index': int(m.group(1)), 'code': [], 'selectors': [],
-                   'constants': [], 'nested': []}
+            cur = {'name': m.group(2) or '  nested', 'index': int(m.group(1)), 'properties': '', 'code': [],
+                   'selectors': [], 'constants': [], 'nested': []}
             funcs.setdefault(cls, []).append(cur)
+            continue
+        m = re.match(r'\|  \|  properties:(.*)', line)
+        if m:
+            cur['properties'] = m.group(1).strip()
             continue
         m = re.match(r'\|  \|  selectors:(.*)', line)
         if m:
@@ -177,6 +188,8 @@ def main():
             problems.append('selectors old %s new %s' % (o['selectors'], n['selectors']))
         if o['constants'] != n['constants']:
             problems.append('constants old %s new %s' % (o['constants'], n['constants']))
+        if o['properties'] != n['properties']:
+            problems.append('properties old %s new %s' % (o['properties'], n['properties']))
         if problems:
             print('DIFF %s:\n    %s' % (o['name'], '\n    '.join(problems)))
         else:
@@ -303,6 +316,8 @@ def compare_all(old_path, new_path):
             if o['constants'] != n['constants']:
                 k = next((j for j in range(min(len(o['constants']), len(n['constants']))) if o['constants'][j] != n['constants'][j]), 0)
                 problems.append('constants at %d old %s new %s' % (k, o['constants'][k:k + 3], n['constants'][k:k + 3]))
+            if o['properties'] != n['properties']:
+                problems.append('properties old %s new %s' % (o['properties'] or '-', n['properties'] or '-'))
         if not problems:
             stats['match'] += 1
         elif ofs[0]['code'][0] == 0x8F and len(ofs) == 1:
