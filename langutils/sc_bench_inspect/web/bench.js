@@ -369,7 +369,21 @@ function renderDistributions(view) {
       const pad = (hi - lo) * 0.06 || Math.abs(hi) * 0.05 || 1;
       return [state.fromZero && !state.relative ? lo : lo - pad, hi + pad];
     };
+    // Every thread count is drawn at the same scale, so a spread looks the same size in each. Relative values share
+    // one range; absolute ones differ too much between thread counts for that, so each keeps its own centre but takes
+    // the widest span (from zero, the highest top).
+    const ranges = plots.map((q) => (q.series.length ? range(q.series) : null));
+    const span = Math.max(0, ...ranges.filter(Boolean).map(([lo, hi]) => hi - lo));
+    const top = Math.max(...ranges.filter(Boolean).map(([, hi]) => hi));
     const shared = state.relative ? range(plots.flatMap((q) => q.series)) : null;
+    const rangeOf = (pi) => {
+      if (shared) return shared;
+      if (state.fromZero) return [0, top];
+      const [lo, hi] = ranges[pi];
+      // A time or size can't be negative, so the range is moved up rather than showing below zero.
+      const from = Math.max((lo + hi) / 2 - span / 2, 0);
+      return [from, from + span];
+    };
     // Every cell first, so each is measured at its share of the row.
     const row = el('div', { class: 'subplots' }, p);
     const cells = plots.map(({ t }) => {
@@ -384,7 +398,7 @@ function renderDistributions(view) {
       const H = 200;
       const box = { left: 52, top: 8, width: W - 60, height: H - 16 };
       const root = svg('svg', { width: W, height: H }, cell);
-      const [lo, hi] = shared ?? range(series);
+      const [lo, hi] = rangeOf(pi);
       const y = yAxis(root, lo, hi, box, unit(m));
       const slotW = Math.min(box.width / compared.length, 72);
       for (const x of series) {
