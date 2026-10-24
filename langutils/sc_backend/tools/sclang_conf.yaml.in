@@ -1,0 +1,9 @@
+# For dump_old_bytecode.scd: compile the class library, and a directory of test classes, without the IDE's classes or
+# any user extensions. Replace REPO and TESTS with absolute paths.
+includePaths:
+  - REPO/SCClassLibrary
+  - TESTS
+excludePaths:
+  - REPO/SCClassLibrary/scide_scqt
+postInlineWarnings: false
+excludeDefaultPaths: true
