@@ -65,32 +65,6 @@
           "ignoreFailures": true
         }
       ]
-    },
-{
-      "name": "sc_sema launch",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/langutils/sc_inspect/sc_inspect",
-      "args": [
-        //"/home/jordan/.repo/SuperCollider.worktrees/topic/lang_refactor_before_parser_lib/langutils/sc_sema/tests/error_regression/input/class_library/common_classes.sc",
-        "/home/jordan/.repo/sclang_corpus/corpus"
-      ],
-      "cwd": "${workspaceFolder}",
-      "environment": [],
-      "externalConsole": false,
-      "MIMode": "gdb",
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for gdb",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        },
-        {
-          "description": "Set Disassembly Flavor to Intel",
-          "text": "-gdb-set disassembly-flavor intel",
-          "ignoreFailures": true
-        }
-      ]
     }
   ]
 }

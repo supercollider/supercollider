@@ -103,11 +103,15 @@ def parse_old(path):
 
 
 def split_top(s):
-    parts, depth, cur, quote = [], 0, '', None
+    parts, depth, cur, quote, escaped = [], 0, '', None, False
     for ch in s:
         if quote:
             cur += ch
-            if ch == quote:
+            if escaped:
+                escaped = False
+            elif ch == '\\':
+                escaped = True
+            elif ch == quote:
                 quote = None
             continue
         if ch in '"\'':
@@ -134,15 +138,17 @@ def parse_new(path, classes):
         if line and not line.startswith('|'):
             cls = line.strip()
             continue
-        m = re.match(r'\|  function \d+ (?:.*: method (\S+)$)?', line)
+        m = re.match(r'\|  function (\d+) (?:.*: method (\S+)$)?', line)
         if m:
-            cur = {'name': m.group(1) or '  nested', 'code': [], 'selectors': [], 'constants': []}
+            cur = {'name': m.group(2) or '  nested', 'index': int(m.group(1)), 'code': [], 'selectors': [],
+                   'constants': [], 'nested': []}
             funcs.setdefault(cls, []).append(cur)
             continue
         m = re.match(r'\|  \|  selectors:(.*)', line)
         if m:
-            cur['selectors'] = ['function' if re.fullmatch(r'function \d+', s.strip()) else s.strip()
-                                for s in m.group(1).split(',') if s.strip()]
+            entries = [s.strip() for s in m.group(1).split(',') if s.strip()]
+            cur['nested'] = [int(e.split()[1]) for e in entries if re.fullmatch(r'function \d+', e)]
+            cur['selectors'] = ['function' if re.fullmatch(r'function \d+', e) else e for e in entries]
             continue
         m = re.match(r'\|  \|  constants:(.*)', line)
         if m:
@@ -193,6 +199,50 @@ def group(funcs_with_class):
     return out
 
 
+def in_selector_order(fs):
+    """A method's functions depth first through their selectors, the order the old dump writes them in, which isn't
+    the order the backend numbers them, e.g., an if's else function is added to the selectors first."""
+    if not fs or 'index' not in fs[0]:
+        return fs
+    by_index = {f['index']: f for f in fs}
+    out = []
+
+    def visit(f):
+        out.append(f)
+        for n in f['nested']:
+            if n in by_index:
+                visit(by_index[n])
+
+    visit(fs[0])
+    return out if len(out) == len(fs) else fs
+
+
+def switch_table(c):
+    """An inlined switch's table, an identity dictionary of keys to offsets whose order is the runtime's hashes, as
+    `switch {key: offset, ...; default}`, from old sclang's array or the backend's description."""
+    m = re.fullmatch(r'switch table \(capacity (\d+)(.*), default: (\d+)\)', c)
+    if m:
+        pairs = [p.rsplit(':', 1) for p in split_top(m.group(2)) if p.strip()]
+        keys = sorted('%s: %s' % (k.strip(), v.strip()) for k, v in pairs)
+        return 'switch %s {%s; default %s}' % (m.group(1), ', '.join(keys), m.group(3))
+    if not (c.startswith('[') and c.endswith(']')):
+        return c
+    items = [x.strip() for x in split_top(c[1:-1])]
+    if len(items) < 4 or len(items) & (len(items) - 1) or not all(re.fullmatch(r'\d+', v) for v in items[1::2]):
+        return c
+    defaults = {v for k, v in zip(items[::2], items[1::2]) if k == 'nil'}
+    if len(defaults) != 1:
+        return c
+    keys = sorted('%s: %s' % (k, v) for k, v in zip(items[::2], items[1::2]) if k != 'nil')
+    return 'switch %d {%s; default %s}' % (len(items), ', '.join(keys), defaults.pop())
+
+
+def normalise_switches(fs):
+    for f in fs:
+        if any(i.startswith('8F 1C') for i in instructions(f['code'])):
+            f['constants'] = [switch_table(c) for c in f['constants']]
+
+
 def parse_old_classes(path):
     res, cls = [], None
     funcs = parse_old(path)
@@ -233,7 +283,9 @@ def compare_all(old_path, new_path):
         if key not in new:
             stats['missing'] += 1
             continue
-        nfs = new[key]
+        nfs = in_selector_order(new[key])
+        normalise_switches(ofs)
+        normalise_switches(nfs)
         if not ofs[0]['code']:
             stats['nil code'] += 1
             continue
@@ -257,6 +309,7 @@ def compare_all(old_path, new_path):
             stats['hard coded'] += 1
         elif uses_inlining(ofs):
             stats['inlining'] += 1
+            others.append((key, problems))
         else:
             stats['other'] += 1
             others.append((key, problems))

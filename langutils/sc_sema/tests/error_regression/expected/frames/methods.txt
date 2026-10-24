@@ -88,7 +88,7 @@ SCClass (5:1): FrameMembers : Object, version 3.16
 |  |  |  |  SCMessage (22:25): if
 |  |  |  |  |  SCRead (22:29): local x, declared (22:22): x [depth 0, slot 1]
 |  |  |  |  |  SCPositionalArgs (22:25)
-|  |  |  |  |  |  SCFunction (22:32) [frame]
+|  |  |  |  |  |  SCFunction (22:32)
 |  |  |  |  |  |  |  SCBody (22:32)
 |  |  |  |  |  |  |  |  SCExplicitReturn (22:34)
 |  |  |  |  |  |  |  |  |  SCLiteral (22:35) = 1

@@ -34,7 +34,7 @@ SCClass (3:1): FrameLegacy : Object
 |  |  |  |  SCMessage (7:25): if
 |  |  |  |  |  SCRead (7:29): local x, declared (7:22): x [depth 0, slot 1]
 |  |  |  |  |  SCPositionalArgs (7:25)
-|  |  |  |  |  |  SCFunction (7:32) [frame]
+|  |  |  |  |  |  SCFunction (7:32)
 |  |  |  |  |  |  |  SCBody (7:32)
 |  |  |  |  |  |  |  |  SCExplicitReturn (7:34)
 |  |  |  |  |  |  |  |  |  SCLiteral (7:35) = 1

@@ -129,16 +129,14 @@ LirFunctions
 |  function 8 (15:5): method nested_return
 |  |  region 0
 |  |  |  PushLocal depth 0, slot 1
-|  |  |  PushFunction 9
-|  |  |  Send if (positional 1)
+|  |  |  If then region 1
 |  |  |  Drop
 |  |  |  PushConstant 2
 |  |  |  Return
-|  function 9 (15:32)
-|  |  region 0
+|  |  region 1
 |  |  |  PushConstant 1
-|  |  |  NonLocalReturn
-|  function 10 (18:5): method defaults
+|  |  |  Return
+|  function 9 (18:5): method defaults
 |  |  region 0
 |  |  |  DefaultArgument slot 2, region 1
 |  |  |  PushClass Array
@@ -155,11 +153,11 @@ LirFunctions
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  PushConstant 1
 |  |  |  Send + (positional 1, binary)
-|  function 11 (20:5): method partial_application
+|  function 10 (20:5): method partial_application
 |  |  region 0
-|  |  |  PushFunction 12
+|  |  |  PushFunction 11
 |  |  |  Return
-|  function 12 (20:28)
+|  function 11 (20:28)
 |  |  region 0
 |  |  |  PushLocal depth 0, slot 0
 |  |  |  PushConstant 1

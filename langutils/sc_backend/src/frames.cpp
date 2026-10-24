@@ -7,6 +7,10 @@
 
 namespace sc::backend {
 
+////////////////////////////////////////////////////////////////////////////////
+// Frames
+////////////////////////////////////////////////////////////////////////////////
+
 std::uint32_t Frames::depth(FrameIndex from, FrameIndex to) const {
     assert(encloses(to, from) && "the local's frame doesn't enclose the use");
     return frames[from].depth - frames[to].depth;
@@ -19,6 +23,10 @@ bool Frames::encloses(FrameIndex outer, FrameIndex inner) const {
     return static_cast<bool>(f);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Frame cursor
+////////////////////////////////////////////////////////////////////////////////
+
 FrameIndex FrameCursor::start(ir::NodeIndex owner) {
     const FrameIndex index { m_next++ };
     assert(!m_frames || (m_frames->frames.contains(index) && *m_frames->frames[index].owner == *owner));
@@ -27,8 +35,27 @@ FrameIndex FrameCursor::start(ir::NodeIndex owner) {
     return index;
 }
 
+bool FrameCursor::is_inlined(ir::SCFunction_I function) const {
+    return std::find(m_inlined.begin(), m_inlined.end(), function) != m_inlined.end();
+}
+
 std::optional<FrameIndex> FrameCursor::enter(ir::NodeIndex i) {
     const auto& g = *m_graph;
+    if (const auto m = g.as_a<ir::SCMessage_I>(i)) {
+        m_inlined_size_at_message.push_back(m_inlined.size());
+        if (const auto kind = inlining(*m_inlining, g, *m); kind && *kind != Inlined::QuestionMark) {
+            const auto [receiver, p, k, v, a] = g.children(*m);
+            if (inlines_receiver(*kind))
+                m_inlined.push_back(*g.as_a<ir::SCFunction_I>(ir::NodeIndex { *receiver }));
+            // Every function argument, a switch's `{ 1 }` keys too, though only their value is used.
+            for (const auto argument : positional_arguments(g, *m))
+                if (const auto f = g.as_a<ir::SCFunction_I>(ir::NodeIndex { *argument }))
+                    m_inlined.push_back(*f);
+        }
+        return std::nullopt;
+    }
+    if (const auto f = g.as_a<ir::SCFunction_I>(i); f && is_inlined(*f))
+        return std::nullopt;
     if (g.is_a<ir::SCMethod_I>(i) || g.is_a<ir::SCFunction_I>(i))
         return start(i);
     if (g.is_a<ir::SCRoutineGenerator_I>(i)) {
@@ -42,6 +69,14 @@ std::optional<FrameIndex> FrameCursor::enter(ir::NodeIndex i) {
 
 std::optional<FrameIndex> FrameCursor::exit(ir::NodeIndex i) {
     const auto& g = *m_graph;
+    if (g.is_a<ir::SCMessage_I>(i)) {
+        m_inlined.erase(m_inlined.begin() + static_cast<std::ptrdiff_t>(m_inlined_size_at_message.back()),
+                        m_inlined.end());
+        m_inlined_size_at_message.pop_back();
+        return std::nullopt;
+    }
+    if (const auto f = g.as_a<ir::SCFunction_I>(i); f && is_inlined(*f))
+        return std::nullopt;
     if (g.is_a<ir::SCMethod_I>(i) || g.is_a<ir::SCFunction_I>(i)) {
         m_stack.pop_back();
         return std::nullopt;
@@ -68,16 +103,19 @@ void FrameCursor::skip_over_children(ir::NodeIndex i) {
     (void)exit(i);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Layout
+////////////////////////////////////////////////////////////////////////////////
+
 namespace {
 
 struct FrameCreator {
     const ir::IRGraph& g;
+    FrameCursor cursor;
     Frames out {};
-    FrameCursor cursor { g };
     bool poisoned { false };
     bool any_poisoned { false };
 
-    // Creates the frame the cursor has started, whose parent is the frame it was started in.
     FrameIndex create(FrameIndex started, OptionalFrameIndex parent, FrameOwner_I owner, bool has_this) {
         Frame f { owner };
         f.parent = parent;
@@ -97,7 +135,6 @@ struct FrameCreator {
         }
     }
 
-    // A body's variables, in the order declared. Only bodies declare variables, a nested function has its own.
     void add_variables(Frame& f, ir::SCBody_I body) {
         for (auto it = g.children(body).iter(); it; ++it) {
             const ir::NodeIndex i { **it };
@@ -180,7 +217,11 @@ struct FrameCreator {
                            any_poisoned = any_poisoned || poisoned;
                            function(*started, parent, *g.as_a<ir::SCMethod_I>(i), true);
                        },
-                       [&](const ir::SCFunction&) { function(*started, parent, *g.as_a<ir::SCFunction_I>(i), false); },
+                       [&](const ir::SCFunction&) {
+                           // An inlined function has no frame.
+                           if (started)
+                               function(*started, parent, *g.as_a<ir::SCFunction_I>(i), false);
+                       },
                        [&](const ir::SCRoutineGenerator&) {
                            create(*started, parent, *g.as_a<ir::SCRoutineGenerator_I>(i), false);
                        },
@@ -208,8 +249,9 @@ struct FrameCreator {
 
 }
 
-Frames layout_frames(const ir::IRGraph& g, ir::join<ir::SCClass_I, ir::SCInterpreted_I> root) {
-    FrameCreator creator { g };
+Frames layout_frames(const ir::IRGraph& g, const InliningContext& inlining,
+                     ir::join<ir::SCClass_I, ir::SCInterpreted_I> root) {
+    FrameCreator creator { g, FrameCursor { g, inlining } };
     creator.out.locals.resize(g.locals().size());
 
     const auto on_enter = [&](const ir::IRGraph::Edges&, const ir::IRGraph::Variant& payload, const ir::SourceLocation&,
@@ -234,5 +276,4 @@ Frames layout_frames(const ir::IRGraph& g, ir::join<ir::SCClass_I, ir::SCInterpr
                           [](const LocalSlot& l) { return static_cast<bool>(l.frame); }));
     return std::move(creator.out);
 }
-
 }

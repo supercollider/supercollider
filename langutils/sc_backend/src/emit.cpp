@@ -1,6 +1,5 @@
 #include "sc_backend/emit.hpp"
 #include "sc_bytecode/Opcodes.h"
-#include "sc_bytecode/SpecialNames.h"
 #include "sc_sema/const_expr.hpp"
 #include "sc_sema/ir.hpp"
 #include "sc_sema/symbol_table.hpp"
@@ -14,20 +13,6 @@
 
 namespace sc::backend {
 
-SpecialSymbols::SpecialSymbols(ir::SymbolTable& symbols): series(symbols.get_selector("prSimpleNumberSeries")) {
-    // The first table a name is in wins, as the old compiler looked in them in this order.
-    const auto add = [&](const auto& names, auto table) {
-        using Enum = decltype(table);
-        for (std::size_t i { 0 }; i < names.size(); ++i)
-            special_selectors.insert({ symbols.get(names[i]), SpecialSelector { static_cast<Enum>(i) } });
-    };
-    add(Opcode::names::special_selectors, OpSpecialSelectors {});
-    add(Opcode::names::unary_math, OpUnaryMath {});
-    add(Opcode::names::binary_math, OpBinaryMath {});
-    for (std::size_t i { 0 }; i < Opcode::names::special_classes.size(); ++i)
-        special_classes.insert({ symbols.get(Opcode::names::special_classes[i]), static_cast<std::uint8_t>(i) });
-}
-
 namespace {
 
 using namespace Opcode;
@@ -37,7 +22,11 @@ constexpr std::size_t max_selectors { 255 };
 constexpr std::size_t max_jump { 65535 };
 constexpr std::size_t max_argument_count { 255 };
 
-// Helpers to compute slot equality
+////////////////////////////////////////////////////////////////////////////////
+// Slot identity
+////////////////////////////////////////////////////////////////////////////////
+
+// The old compiler shared table entries whose slots were equal.
 struct LiteralObject {
     friend bool operator==(LiteralObject, LiteralObject) { return false; }
 };
@@ -49,7 +38,6 @@ struct ClassObject {
         return l.owner == r.owner && l.name == r.name;
     }
 };
-// Never stored, size isn't a constraint.
 using SlotIdentity =
     std::variant<double, std::int32_t, ir::SymSCSymbol, char, ir::Nil, bool, ClassObject, LiteralObject>;
 
@@ -75,20 +63,25 @@ using SlotIdentity =
                                   identity = ClassObject { c.owner, c.name };
                               return identity;
                           },
+                          [&](SwitchTableIndex) -> SlotIdentity { return LiteralObject {}; },
                       },
                       entry);
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Plans
+////////////////////////////////////////////////////////////////////////////////
 
 // A value on the stack while a sub-region is read, as the instructions that start and finish computing it.
 struct Value {
     lir::InstructionIndex start;
     lir::InstructionIndex producer;
 
-    // A push, e.g., of a literal or a variable, which can be looked at, or left out, on its own.
+    // A push, which can be left out on its own.
     [[nodiscard]] bool pushed_by_one_instruction() const { return start == producer; }
 };
+static_assert(sizeof(Value) == 8);
 
-// Encoding of send.
 enum struct SendOp : std::uint8_t {
     None, // Not encoded, e.g., a send absorbed by another, `(a..b).do(f)` is one forSeries.
     Message,
@@ -130,6 +123,7 @@ struct SendPlan {
     InstanceSlotIndex instance { 0 };
     SelectorIndex selector { 0 };
 };
+static_assert(sizeof(SendPlan) == 16);
 
 
 struct RegionPlan {
@@ -137,7 +131,6 @@ struct RegionPlan {
 
     lir::FunctionSubRegion region;
     std::vector<SendPlan> sends {};
-    // Each send's instruction.
     std::vector<lir::InstructionIndex> send_instructions {};
     // The instruction each send's selector is added at, and the send, sorted by instruction. Sends added at the same
     // instruction are in the order the old compiler added them, the outer first.
@@ -154,9 +147,12 @@ private:
         assert(contains(i));
         return *i - *region.begin;
     }
-    // No references are stored to this, so weird proxy behaviour isn't an issue.
     std::vector<bool> m_left_out;
 };
+
+////////////////////////////////////////////////////////////////////////////////
+// Emitter
+////////////////////////////////////////////////////////////////////////////////
 
 struct Emitter {
     const EmitContext& ctx;
@@ -217,13 +213,12 @@ struct Emitter {
         return out.selectors.push_back(entry);
     }
 
-    std::uint32_t add_constant(ConstantContent entry) {
+    ConstantIndex add_constant(ConstantContent entry) {
         const auto identity = identity_of(ctx.constants, entry);
-        for (std::size_t i { 0 }; i < out.constants.size(); ++i)
-            if (identity == identity_of(ctx.constants, out.constants[i]))
-                return static_cast<std::uint32_t>(i);
-        out.constants.push_back(entry);
-        return static_cast<std::uint32_t>(out.constants.size() - 1);
+        for (std::uint32_t i { 0 }; i < out.constants.size(); ++i)
+            if (identity == identity_of(ctx.constants, out.constants[ConstantIndex { i }]))
+                return ConstantIndex { i };
+        return out.constants.push_back(std::move(entry));
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -266,7 +261,6 @@ struct Emitter {
         return local && local->local.depth == 0 && local->local.slot == k;
     }
 
-    // Argument k is in slot k, and a send or frame has at most 255.
     [[nodiscard]] static lir::SlotIndex argument_slot(std::uint32_t k) {
         assert(k <= std::numeric_limits<std::uint8_t>::max());
         return lir::SlotIndex { static_cast<std::uint8_t>(k) };
@@ -445,6 +439,9 @@ struct Emitter {
 
         if (special_selector) {
             p.op = SendOp::Special;
+            // Sent by the old compiler's inlining when it couldn't inline them, without the peepholes.
+            if (sent_plainly(*special_selector))
+                return p;
             if (n == 1) {
                 if (is_this(args[0])) {
                     p.op = SendOp::SpecialThisOpt;
@@ -497,6 +494,25 @@ struct Emitter {
         return p;
     }
 
+    // The selectors the old compiler could inline, see Inlined, which it otherwise sent with SendSpecialMsg.
+    [[nodiscard]] static bool sent_plainly(OpSpecialSelectors s) {
+        switch (s) {
+        case OpSpecialSelectors::If:
+        case OpSpecialSelectors::While:
+        case OpSpecialSelectors::And:
+        case OpSpecialSelectors::Or:
+        case OpSpecialSelectors::Case:
+        case OpSpecialSelectors::Switch:
+        case OpSpecialSelectors::Loop:
+        case OpSpecialSelectors::QuestionMark:
+        case OpSpecialSelectors::DoubleQuestionMark:
+        case OpSpecialSelectors::ExclamationQuestionMark:
+            return true;
+        default:
+            return false;
+        }
+    }
+
     template <typename LeaveOut>
     void special_push_all(SendPlan& p, const Value* args, std::uint32_t n, const LeaveOut& leave_out_arg) const {
         if (n <= 1)
@@ -528,6 +544,12 @@ struct Emitter {
             stack.pop_back();
             return v;
         };
+        const auto replace = [&](lir::InstructionIndex i, std::size_t count) {
+            assert(stack.size() >= count);
+            const auto start = stack[stack.size() - count].start;
+            stack.erase(stack.end() - static_cast<std::ptrdiff_t>(count), stack.end());
+            stack.push_back({ start, i });
+        };
         for (std::uint32_t k { begin }; k < begin + region.size; ++k) {
             const lir::InstructionIndex i { k };
             std::visit(util::overload {
@@ -548,8 +570,22 @@ struct Emitter {
                            [&](const lir::NonLocalReturn&) { return_value(plan, pop()); },
                            [&](const lir::ReturnSelf&) {},
                            [&](const lir::DefaultArgument&) {},
+                           [&](const lir::If&) { replace(i, 1); },
+                           [&](const lir::IfNil&) { replace(i, 1); },
+                           [&](const lir::IfNotNil&) { replace(i, 1); },
+                           [&](const lir::And&) { replace(i, 1); },
+                           [&](const lir::Or&) { replace(i, 1); },
+                           [&](const lir::OrIfNil&) { replace(i, 1); },
+                           [&](const lir::AndIfNotNil&) { replace(i, 1); },
+                           [&](const lir::QuestionMark&) { replace(i, 2); },
+                           [&](const lir::Switch&) { replace(i, 1); },
+                           [&](const lir::While&) {
+                               stack.push_back({ i, i });
+                           },
+                           [&](const lir::Loop&) {
+                               stack.push_back({ i, i });
+                           },
                            [&](const lir::Unimplemented&) {},
-                           // The pushes and Dup.
                            [&](const auto&) {
                                stack.push_back({ i, i });
                            },
@@ -585,7 +621,6 @@ struct Emitter {
             plan.leave_out(v.producer);
     }
 
-    // nil, true or false, pushed by a literal or a constant.
     [[nodiscard]] std::optional<lir::SpecialValue> special_value(lir::InstructionIndex i) const {
         const auto& in = instruction(i);
         if (const auto* p = std::get_if<lir::PushSpecialValue>(&in))
@@ -626,7 +661,7 @@ struct Emitter {
     }
 
     void push_constant_entry(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, ConstantContent entry) {
-        const std::uint32_t index = add_constant(entry);
+        const std::uint32_t index { *add_constant(std::move(entry)) };
         if (index < (1u << 4))
             PushLiteral.emit(bc, loc, index);
         else if (index < (1u << 8))
@@ -700,8 +735,7 @@ struct Emitter {
         }
     }
 
-    // A store followed by a Drop pops the value itself, when there is a short bytecode for it.
-    // Returns whether it did.
+    // Whether it popped the value, which only the short bytecodes can.
     bool store(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, const lir::Instruction& i, bool drop) {
         return std::visit(util::overload {
                               [&](const lir::StoreLocal& s) {
@@ -751,7 +785,6 @@ struct Emitter {
         }
         const auto n = p.num_args;
         const auto selector = Operands::SelectorIndex::fromRaw(*p.selector);
-        // Only read by the ops for that kind of selector.
         const auto special_index = [&]() { return static_cast<Byte>(std::get<OpSpecialSelectors>(p.special)); };
         const auto unary = [&]() { return std::get<OpUnaryMath>(p.special); };
         const auto binary = [&]() { return std::get<OpBinaryMath>(p.special); };
@@ -973,6 +1006,32 @@ struct Emitter {
                     [&](const lir::NonLocalReturn&) { emit_return(bc, loc, plan, i); },
                     [&](const lir::ReturnSelf&) { ReturnSelf.emit(bc, loc); },
                     [&](const lir::DefaultArgument& d) { default_argument(bc, loc, d); },
+                    [&](const lir::If& b) {
+                        branch(bc, loc, b.then_body, b.else_body, JumpIfFalsePushNil, JumpIfFalse);
+                    },
+                    [&](const lir::IfNil& b) {
+                        branch(bc, loc, b.then_body, b.else_body, Extended::IfNotNilJumpPushNilElsePop.Jump,
+                               Extended::IfNotNilJump.Jump);
+                    },
+                    [&](const lir::IfNotNil& b) {
+                        branch(bc, loc, b.then_body, b.else_body, Extended::IfNilThenJumpElsePopNil.Jump,
+                               Extended::IfNilJump.Jump);
+                    },
+                    [&](const lir::And& b) { jump_over(bc, loc, JumpIfFalsePushFalse, b.rhs); },
+                    [&](const lir::Or& b) { jump_over(bc, loc, JumpIfTruePushTrue, b.rhs); },
+                    [&](const lir::OrIfNil& b) { jump_over(bc, loc, Extended::DoubleQuestionMark.Jump, b.rhs); },
+                    [&](const lir::AndIfNotNil& b) {
+                        jump_over(bc, loc, Extended::IfNilThenJumpElsePopNil.Jump, b.rhs);
+                    },
+                    [&](const lir::QuestionMark&) { Extended::QuestionMark.emit(bc, loc); },
+                    [&](const lir::While& w) { while_(bc, loc, w); },
+                    [&](const lir::Loop& l) {
+                        auto body = encode_value(l.body, loc);
+                        const auto length = body.length();
+                        bc.consume(std::move(body));
+                        jump(bc, loc, JumpBack, length + 1);
+                    },
+                    [&](const lir::Switch& s) { switch_(bc, loc, s); },
                     [&](const lir::Unimplemented&) {
                         assert(false);
                         failed = true;
@@ -981,6 +1040,126 @@ struct Emitter {
                 in);
         }
         return bc;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Inlined sends, laid out as compileIfMsg and its neighbours in PyrParseNode.cpp did
+    ////////////////////////////////////////////////////////////////////////////////
+
+    template <typename Op>
+    void jump(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, const Op& op, std::size_t length) {
+        if (length > max_jump) {
+            const auto owner = owner_location();
+            report(sc::diag::Diagnostic::jump_too_long(ctx.graph.text_info(owner.source), ir::IRGraph::range(owner),
+                                                       length, max_jump));
+            length = 0;
+        }
+        const auto hi = Operands::UnsignedInt<16, 1>::fromFull(static_cast<std::uint32_t>(length));
+        const auto lo = Operands::UnsignedInt<16, 0>::fromFull(static_cast<std::uint32_t>(length));
+        op.emit(bc, loc, hi, lo);
+    }
+
+    // An empty body is nil. The old compiler left the stack without a value for some, `a and: { }`.
+    CompilingBytecodes encode_value(lir::FunctionSubRegionIndex r, sc::lex::SourceCodeRange loc) {
+        auto bc = encode(function.sub_regions[r]);
+        if (bc.length() == 0)
+            PushSpecialValue.emit(bc, loc, { OpSpecialValue::Nil_ });
+        return bc;
+    }
+
+    // short_jump skips the then body leaving nil, long_jump goes to the else body. The else body is encoded first, as
+    // the old compiler did, which orders the tables.
+    template <typename Short, typename Long>
+    void branch(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, lir::FunctionSubRegionIndex then_body,
+                lir::OptionalFunctionSubRegionIndex else_body, const Short& short_jump, const Long& long_jump) {
+        std::optional<CompilingBytecodes> else_bc;
+        if (else_body)
+            else_bc = encode(function.sub_regions[lir::FunctionSubRegionIndex { *else_body }]);
+        auto then_bc = encode(function.sub_regions[then_body]);
+        if (else_bc && else_bc->length() > 0) {
+            if (then_bc.length() == 0)
+                PushSpecialValue.emit(then_bc, loc, { OpSpecialValue::Nil_ });
+            jump(then_bc, loc, JumpFwd, else_bc->length());
+            jump(bc, loc, long_jump, then_bc.length());
+            bc.consume(std::move(then_bc));
+            bc.consume(std::move(*else_bc));
+        } else if (then_bc.length() > 0) {
+            jump(bc, loc, short_jump, then_bc.length());
+            bc.consume(std::move(then_bc));
+        } else {
+            Drop.emit(bc, loc);
+            PushSpecialValue.emit(bc, loc, { OpSpecialValue::Nil_ });
+        }
+    }
+
+    template <typename Op>
+    void jump_over(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, const Op& op,
+                   lir::FunctionSubRegionIndex rhs) {
+        auto rhs_bc = encode_value(rhs, loc);
+        jump(bc, loc, op, rhs_bc.length());
+        bc.consume(std::move(rhs_bc));
+    }
+
+    // The jump back drops the body's value. The lengths are the old compiler's.
+    void while_(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, const lir::While& w) {
+        auto condition = encode_value(w.condition, loc);
+        CompilingBytecodes body;
+        if (w.body)
+            body = encode_value(lir::FunctionSubRegionIndex { *w.body }, loc);
+        else
+            PushSpecialValue.emit(body, loc, { OpSpecialValue::Nil_ });
+        const auto condition_length = condition.length();
+        const auto body_length = body.length();
+        bc.consume(std::move(condition));
+        jump(bc, loc, JumpIfFalsePushNil, body_length + 3);
+        bc.consume(std::move(body));
+        jump(bc, loc, JumpBack, body_length + condition_length + 4);
+    }
+
+    // Nil is the default if there isn't one. The table is numbered before the bodies' constants, as the old compiler
+    // added it first.
+    void switch_(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, const lir::Switch& s) {
+        const auto table_index = out.switch_tables.push_back({});
+        push_constant_entry(bc, loc, table_index);
+        Extended::Switch.emit(bc, loc);
+
+        std::vector<CompilingBytecodes> bodies;
+        bool has_default { false };
+        for (std::uint32_t c { 0 }; c < s.count; ++c) {
+            const auto& sc = function.switch_cases[lir::switch_case(s, c)];
+            bodies.push_back(encode_value(sc.body, loc));
+            has_default = !sc.key;
+        }
+        if (!has_default) {
+            bodies.emplace_back();
+            PushSpecialValue.emit(bodies.back(), loc, { OpSpecialValue::Nil_ });
+        }
+        const std::size_t num_keys = bodies.size() - 1;
+        constexpr std::size_t jump_size { 3 };
+        std::size_t end { 0 };
+        for (std::size_t b { 0 }; b < bodies.size(); ++b)
+            end += bodies[b].length() + (b < num_keys ? jump_size : 0);
+
+        // The receiver, then a key and a body each, then the default, as the old compiler sized it.
+        const std::size_t num_args = 1 + 2 * num_keys + (has_default ? 1 : 0);
+        auto& table = out.switch_tables[table_index];
+        table.capacity = 1;
+        while (table.capacity < 2 * num_args)
+            table.capacity *= 2;
+        std::size_t offset { 0 };
+        for (std::size_t b { 0 }; b < num_keys; ++b) {
+            const ir::ConstExprIndex key { *function.switch_cases[lir::switch_case(s, b)].key };
+            // The first of equal keys is kept, as Object:switch tests them in order. The old compiler kept the last.
+            const auto identity = identity_of(ctx.constants, key);
+            if (std::none_of(table.offsets.begin(), table.offsets.end(),
+                             [&](const auto& o) { return identity_of(ctx.constants, o.first) == identity; }))
+                table.offsets.push_back({ key, CodeOffset::from(offset) });
+            offset += bodies[b].length() + jump_size;
+            jump(bodies[b], loc, JumpFwd, end - offset);
+        }
+        table.default_offset = CodeOffset::from(offset);
+        for (auto& body : bodies)
+            bc.consume(std::move(body));
     }
 
     [[nodiscard]] bool drop_follows(const RegionPlan& plan, lir::InstructionIndex i) const {
@@ -1021,6 +1200,10 @@ struct Emitter {
 
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// API
+////////////////////////////////////////////////////////////////////////////////
+
 EmittedGraph emit(const EmitContext& ctx, const lir::LoweredGraph& lowered) {
     EmittedGraph out;
     // Nested functions follow their root, a function whose frame has no parent.
@@ -1052,9 +1235,12 @@ EmittedGraph emit(const EmitContext& ctx, const lir::LoweredGraph& lowered) {
     return out;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Dump
+////////////////////////////////////////////////////////////////////////////////
+
 namespace {
 
-// The name of the bytecode starting with b, as Opcodes.h names it.
 const char* opcode_name(Byte b) {
     // Inclusive, as ints, `endCode - 1` isn't a Byte.
     struct Range {
@@ -1159,7 +1345,7 @@ void write_emitted(std::ostream& out, const EmittedFunction& function, std::stri
         out << ",";
     }
     out << "\n" << indent << "constants:";
-    for (const auto& entry : function.constants) {
+    for (const auto& entry : function.constants.raw()) {
         std::visit(util::overload {
                        [&](ir::ConstExprIndex c) {
                            out << " ";
@@ -1169,6 +1355,16 @@ void write_emitted(std::ostream& out, const EmittedFunction& function, std::stri
                        [&](const ClassConstant& c) {
                            out << " ";
                            constants(c.value).to_literal(out, symbols, constants);
+                       },
+                       [&](SwitchTableIndex i) {
+                           const auto& t = function.switch_tables[i];
+                           out << " switch table (capacity " << t.capacity;
+                           for (const auto& [key, offset] : t.offsets) {
+                               out << ", ";
+                               constants(key).to_literal(out, symbols, constants);
+                               out << ": " << *offset;
+                           }
+                           out << ", default: " << *t.default_offset << ")";
                        },
                    },
                    entry);

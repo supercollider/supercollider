@@ -1,5 +1,6 @@
 #pragma once
 
+#include "sc_backend/inlining.hpp"
 #include "sc_diagnostic/sc_diagnostic.hpp"
 #include "sc_sema/ir.hpp"
 #include "sc_sema/ir_index.hpp"
@@ -13,47 +14,51 @@
 
 namespace sc::backend {
 
+////////////////////////////////////////////////////////////////////////////////
+// API
+////////////////////////////////////////////////////////////////////////////////
+
+struct Frames;
+
+// An inlined function has no frame, its body is in the frame it is inlined into.
+[[nodiscard]] Frames layout_frames(const ir::IRGraph& g, const InliningContext& inlining,
+                                   ir::join<ir::SCClass_I, ir::SCInterpreted_I> root);
+
+////////////////////////////////////////////////////////////////////////////////
+// Frames
+////////////////////////////////////////////////////////////////////////////////
+
 using FrameIndex = util::StrongIndex<std::uint32_t, struct FrameIndex__>;
 using OptionalFrameIndex =
     util::StrongOptionalIndex<std::uint32_t, struct FrameIndex__, std::numeric_limits<std::uint32_t>::max()>;
 
+// Generator qualifiers have frames, as the old compiler made them functions.
 using FrameOwner_I = ir::join<ir::SCMethod_I, ir::SCFunction_I, ir::SCGenQualIterate_I, ir::SCGenQualDeclare_I,
                               ir::SCRoutineGenerator_I>;
 
-// Things that touch locals.
 using LocalUse_I = ir::join<ir::SCRead_I, ir::SCAssign_I, ir::SCPackTarget_I>;
 
 inline constexpr std::size_t max_frame_slots { 255 };
 
 enum struct Variadic : std::uint8_t { None, Args, ArgsAndKwargs };
 
-// Functions and methods store their variables, arguments, and 'this', in a frame.
-// We need to assign indices.
-// Generator expression also create frames, but only because they create functions.
+// Slots are `this`, then arguments, variadic arguments, and variables. All are optional.
 struct Frame {
     FrameOwner_I owner;
     OptionalFrameIndex parent {};
-    // How many frames enclose it, so the depth of one frame from another is a subtraction, see Frames::depth.
+    // The number of enclosing frames, so the depth of one frame from another is a subtraction.
     std::uint32_t depth { 0 };
     std::uint32_t num_positional { 0 };
     bool has_this { false };
     Variadic variadic { Variadic::None };
-
-    // Here are the locals we provide storage for and the layout. Everything is optional.
-    // Layout:
-    //      This
-    //      arguments,
-    //      variadic argument,
-    //      kw variadic argument,
-    //      varibles.
     std::vector<ir::LocalIndex> locals {};
 
     [[nodiscard]] std::uint32_t num_variadic() const { return static_cast<std::uint32_t>(variadic); }
     [[nodiscard]] std::size_t num_slots() const { return locals.size() + (has_this ? 1 : 0); }
 };
+static_assert(sizeof(Frame) == 48);
 
-// A slot in a frame, `this` first in a method's. Layout can go past the VM's limit, which is reported, see
-// max_frame_slots, so this is wider than the slot the VM can address, lir::SlotIndex.
+// Can exceed max_frame_slots, which is reported, so it is wider than lir::SlotIndex.
 using FrameSlotIndex = util::StrongIndex<std::uint32_t, struct FrameSlotIndex__>;
 
 struct LocalSlot {
@@ -62,37 +67,37 @@ struct LocalSlot {
 };
 static_assert(sizeof(LocalSlot) == 8);
 
-// The frames of a graph's methods and functions, before any inlining, so every function is its own frame.
-// These are the frames of a single ir graph, in other words, everything that is lexically in scope.
 struct Frames {
     util::IndexedVector<FrameIndex, Frame> frames {};
-
     util::IndexedVector<ir::LocalIndex, LocalSlot> locals {};
-
-    // A frame with more slots than the VM supports.
     std::vector<sc::diag::Diagnostic> diagnostics {};
 
     [[nodiscard]] std::uint32_t depth(FrameIndex from, FrameIndex to) const;
-    // Whether outer is inner or one of the frames enclosing it.
+    // Whether outer is inner or encloses it.
     [[nodiscard]] bool encloses(FrameIndex outer, FrameIndex inner) const;
 };
 
+////////////////////////////////////////////////////////////////////////////////
+// Frame cursor
+////////////////////////////////////////////////////////////////////////////////
 
-// Does a depth first search on the ir graph, numbering the frames it encounters.
-// A method, function or Routine starts its frame when it is entered. A qualifier starts its frame when it is exited, so
-// its own expression is in the frame before it, and the qualifiers after it and the generator's value are in its frame.
+// Follows the frames through a depth first walk that enters and exits every node, so no per-node table is needed. A
+// method, function or Routine starts its frame on entering, unless the function was inlined by the send being visited.
+// A qualifier starts its frame on exiting, so its own expression is in the frame before it (confusing given the
+// syntax).
 class FrameCursor {
 public:
     // For layout_frames, which creates each frame as it starts.
-    explicit FrameCursor(const ir::IRGraph& g): m_graph(&g) {}
-    // Follows frames already laid out, checking each starts at its owner, which fails if the walk's order differs.
-    FrameCursor(const ir::IRGraph& g, const Frames& frames): m_graph(&g), m_frames(&frames) {}
+    FrameCursor(const ir::IRGraph& g, const InliningContext& inlining): m_graph(&g), m_inlining(&inlining) {}
+    // Checks each frame starts at its owner, which fails if the walk's order differs from layout_frames'.
+    FrameCursor(const ir::IRGraph& g, const InliningContext& inlining, const Frames& frames):
+        m_graph(&g),
+        m_inlining(&inlining),
+        m_frames(&frames) {}
 
     // The frame the node starts, if it does.
     std::optional<FrameIndex> enter(ir::NodeIndex i);
     std::optional<FrameIndex> exit(ir::NodeIndex i);
-
-    // Enters and exits the node, skips the children.
     void skip_over_children(ir::NodeIndex i);
 
     [[nodiscard]] OptionalFrameIndex current() const {
@@ -101,20 +106,18 @@ public:
 
 private:
     FrameIndex start(ir::NodeIndex owner);
+    [[nodiscard]] bool is_inlined(ir::SCFunction_I function) const;
 
-    // Always valid, a reference without having to deal with the nasty move issues.
+    // Pointers, so the cursor can be moved.
     const ir::IRGraph* m_graph;
+    const InliningContext* m_inlining;
     const Frames* m_frames {};
     std::uint32_t m_next { 0 };
 
-    // Encountered frame stack.
     std::vector<FrameIndex> m_stack {};
-
-    // The stack's size when each generator being visited was entered, its qualifiers' frames end when it exits.
+    // A generator's qualifiers' frames end when it exits.
     std::vector<std::size_t> m_stack_size_at_generator {};
+    std::vector<ir::SCFunction_I> m_inlined {};
+    std::vector<std::size_t> m_inlined_size_at_message {};
 };
-
-// The frames of everything under root, a class's methods or interpreted code.
-[[nodiscard]] Frames layout_frames(const ir::IRGraph& g, ir::join<ir::SCClass_I, ir::SCInterpreted_I> root);
-
 }

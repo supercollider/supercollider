@@ -495,6 +495,7 @@ int main(int argc, char* argv[]) {
     const bool show_backend = show_frames || show_lir || show_bytecode;
     const sc::backend::LoweringSymbols selectors { symbol_table };
     const sc::backend::SpecialSymbols special_symbols { symbol_table };
+    const sc::backend::InliningContext inlining { special_symbols, ctx.constant_table };
     std::optional<sc::backend::MemberTable> member_table;
     if (show_backend) {
         const auto member_table_start = Clock::now();
@@ -504,7 +505,7 @@ int main(int argc, char* argv[]) {
     const auto run_backend = [&](const sc::ir::IRGraph& g, BackendRoot root,
                                  std::vector<sc::diag::Diagnostic>& diagnostics) {
         const auto frames_start = Clock::now();
-        DumpFrames f { root, sc::backend::layout_frames(g, root) };
+        DumpFrames f { root, sc::backend::layout_frames(g, inlining, root) };
         for (auto& d : f.layout.diagnostics)
             diagnostics.push_back(std::move(d));
         for (std::uint32_t fi { 0 }; fi < f.layout.frames.size(); ++fi)
@@ -519,6 +520,7 @@ int main(int argc, char* argv[]) {
                                                           ctx.constant_table,
                                                           symbol_table,
                                                           selectors,
+                                                          inlining,
                                                           ctx.common_classes.array,
                                                           ctx.common_classes.event };
             f.lowered = sc::backend::lower(lowering, root);
@@ -793,7 +795,7 @@ int main(int argc, char* argv[]) {
         // Every node is entered and exited, even those hidden, so it follows the frames.
         std::optional<sc::backend::FrameCursor> cursor;
         if (const auto fnd = frames.find(&g); show_frames && fnd != frames.end())
-            cursor.emplace(g, fnd->second.layout);
+            cursor.emplace(g, inlining, fnd->second.layout);
         g.depth_first_traverse(
             dumped.index,
             [&](const sc::ir::IRGraph::Edges& edges, const sc::ir::IRGraph::Variant& payload,
@@ -854,7 +856,7 @@ int main(int argc, char* argv[]) {
                     std::cout << "|  |  region " << ri << "\n";
                     for (std::uint32_t k { *region.begin }; k < *region.begin + region.size; ++k) {
                         std::cout << "|  |  |  ";
-                        sc::backend::write_instruction(std::cout,
+                        sc::backend::write_instruction(std::cout, function,
                                                        function.instructions[sc::backend::lir::InstructionIndex { k }],
                                                        g, symbol_table, ctx.constant_table);
                         std::cout << "\n";

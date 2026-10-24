@@ -4,6 +4,7 @@ include(${CMAKE_SOURCE_DIR}/cmake_modules/CompilerWarnings.cmake)
 add_library(sc_backend STATIC
 	src/emit.cpp
 	src/frames.cpp
+	src/inlining.cpp
 	src/lower.cpp
 	src/members.cpp
 )

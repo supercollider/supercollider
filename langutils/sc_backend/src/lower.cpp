@@ -7,8 +7,13 @@
 
 #include <cassert>
 #include <limits>
+#include <vector>
 
 namespace sc::backend {
+
+////////////////////////////////////////////////////////////////////////////////
+// Lowering symbols
+////////////////////////////////////////////////////////////////////////////////
 
 LoweringSymbols::LoweringSymbols(ir::SymbolTable& symbols):
     new_(symbols.get_selector("new")),
@@ -21,12 +26,17 @@ LoweringSymbols::LoweringSymbols(ir::SymbolTable& symbols):
     envir_get(symbols.get_selector("envirGet")),
     envir_put(symbols.get_selector("envirPut")),
     perform_list(symbols.get_selector("performList")),
-    super_perform_list(symbols.get_selector("superPerformList")) {}
+    super_perform_list(symbols.get_selector("superPerformList")),
+    if_(symbols.get_selector("if")) {}
+
+////////////////////////////////////////////////////////////////////////////////
+// Lowerer
+////////////////////////////////////////////////////////////////////////////////
 
 namespace {
 
-// A sub-region's instructions while it is being lowered. Sub-regions nest, e.g., a default argument's value inside a
-// body, so each is collected on its own and appended to its function when it ends, keeping every sub-region contiguous.
+// Sub-regions nest, e.g., a default argument's value in a body, so each is collected on its own and appended to its
+// function when it ends, keeping each contiguous.
 struct SubRegionBuild {
     std::vector<lir::Instruction> instructions {};
     std::vector<lir::SourceSpan> spans {};
@@ -35,21 +45,20 @@ struct SubRegionBuild {
 struct Lowerer {
     const LoweringContext& ctx;
     const ir::IRGraph& ir_graph;
-    // Walks the graph in the same order as layout_frames, so its frames are found again.
+    // Must walk in layout_frames' order.
     FrameCursor cursor;
     lir::LoweredGraph out {};
 
-    // The functions being lowered, innermost last, each with the sub-regions it is building, innermost last.
+    // Innermost last, as are each one's regions.
     struct Building {
         lir::FunctionIndex function;
         bool is_method;
         std::vector<SubRegionBuild> regions {};
     };
     std::vector<Building> building {};
-    // Set when the method or interpreted function being lowered can't be emitted, e.g., a frame over the VM's limit.
+    // The root being lowered can't be emitted, e.g., a frame is over the VM's limit.
     bool failed { false };
-    // Whether the code's version folds constants. The old compiler didn't, so legacy code only uses literals' values,
-    // e.g., a read of a variable sema knows is 1 still reads the variable.
+    // Legacy code only uses literals' values, a read of a variable sema knows is 1 still reads it.
     bool fold_constants { false };
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -58,7 +67,6 @@ struct Lowerer {
 
     lir::Function& function() { return out.functions[building.back().function]; }
 
-    // Gets the location data and pushes the instruction.
     void emit(lir::Instruction instruction, ir::NodeIndex at) {
         auto& region = building.back().regions.back();
         const auto range = ir::IRGraph::range(ir_graph.location(at));
@@ -68,7 +76,6 @@ struct Lowerer {
 
     void begin_sub_region() { building.back().regions.emplace_back(); }
 
-    // Appends the innermost sub-region to its function, returning where it is.
     lir::FunctionSubRegion append_sub_region() {
         auto region = std::move(building.back().regions.back());
         building.back().regions.pop_back();
@@ -86,7 +93,7 @@ struct Lowerer {
         return function().sub_regions.push_back(placed);
     }
 
-    // The body is sub-region 0, so it is reserved first, though it ends last.
+    // The body is sub-region 0, reserved first though it ends last.
     lir::FunctionIndex begin_function(FrameIndex frame, ir::NodeIndex owner) {
         lir::Function f { frame, ir_graph.location(owner).source };
         f.sub_regions.push_back({ lir::InstructionIndex { 0 }, 0 });
@@ -109,10 +116,8 @@ struct Lowerer {
 
     [[nodiscard]] ir::SymSCSymbol symbol(ir::Symbol name) const { return ctx.symbols.get_symbol(ctx.symbols(name)); }
 
-    // A local's slot in the frame of the function being lowered.
     [[nodiscard]] lir::SlotIndex own_slot(ir::LocalIndex l) { return addressable(ctx.frames.locals[l].slot); }
 
-    // The VM addresses a slot with a byte.
     [[nodiscard]] lir::SlotIndex addressable(FrameSlotIndex slot) {
         if (*slot > std::numeric_limits<std::uint8_t>::max()) {
             failed = true; // Reported by layout_frames.
@@ -175,8 +180,7 @@ struct Lowerer {
 
     [[nodiscard]] bool is_mutable(ir::ConstExprIndex c) const { return ctx.constants(c).is_mutable(); }
 
-    // Literals are not copied.
-    // Constants, which aren't literals, are copied.
+    // A literal is shared, a folded mutable constant is a new copy each time.
     [[nodiscard]] bool is_literal(ir::NodeIndex i) const {
         if (ir_graph.is_a<ir::SCLiteral_I>(i))
             return true;
@@ -190,10 +194,9 @@ struct Lowerer {
             return;
         }
 
-        //(1; 2; 3; 4) here we push 4.
+        // `(1; "a")` is its last expression's value, so is shared if that is a literal.
         if (const auto list = ir_graph.as_a<ir::SCExprList_I>(i)) {
             if (const auto last = ir_graph.last_child(ir::NodeIndex { *list })) {
-                // Push the constant, but write its location as the final.
                 push_constant(ir::NodeIndex { *last }, c);
                 return;
             }
@@ -201,10 +204,9 @@ struct Lowerer {
         push_copy(c, i);
     }
 
-    // Copies the element
+    // `copy`, then each mutable element copied and put, as constants have no cycles to need deepCopy.
     void push_copy(ir::ConstExprIndex c, ir::NodeIndex at) {
         emit(lir::PushConstant { c }, at);
-        // Here is the copy.
         emit(lir::Send { ctx.selectors.copy, 0, 0, lir::SendKind::Normal, lir::SendForm::Implicit, lir::Tail::None },
              at);
 
@@ -224,7 +226,6 @@ struct Lowerer {
             emit(lir::Drop {}, at);
         };
 
-        // Make mutable elements copy themselves.
         const auto& value = ctx.constants(c);
         if (const auto* array = value.get_if<ir::ConstExprArray>()) {
             for (std::size_t k { 0 }; k < array->size(); ++k)
@@ -276,7 +277,6 @@ struct Lowerer {
         return true;
     }
 
-    // tail is whether the expression's value is what its function returns
     void lower(ir::NodeIndex i, lir::Tail tail = lir::Tail::None) {
         if (!lowered_yet(i)) {
             emit(lir::Unimplemented { i }, i);
@@ -377,6 +377,10 @@ struct Lowerer {
     // `r.sel(a, k: v)`. With a variadic argument, `r.sel(a, *v)` is `r.performList(\sel, a, v)`, and `super` is
     // `this.superPerformList(\sel, ...)`, as the old grammar did. Keyword arguments are kept either way.
     void message(ir::SCMessage_I m, const ir::SCMessage& payload, lir::Tail tail) {
+        if (const auto kind = inlining(ctx.inlining, ir_graph, m)) {
+            inlined(m, *kind, tail);
+            return;
+        }
         const ir::NodeIndex i { *m };
         const auto [receiver, positional, keyword, variadic, adverb] = ir_graph.children(m);
         const ir::NodeIndex receiver_i { *receiver };
@@ -433,7 +437,208 @@ struct Lowerer {
         return lir::SendForm::Call;
     }
 
-    // Each expression's value is dropped but the last's.
+    ////////////////////////////////////////////////////////////////////////////////
+    // Inlined sends
+    ////////////////////////////////////////////////////////////////////////////////
+
+    [[nodiscard]] ir::SCFunction_I inlined_function(ir::SCAnyExpr_I argument) const {
+        const auto f = ir_graph.as_a<ir::SCFunction_I>(ir::NodeIndex { *argument });
+        assert(f);
+        return *f;
+    }
+
+    // Leaves nothing for an empty body.
+    template <typename Last> void inline_body(ir::SCFunction_I f, const Last& last) {
+        const ir::NodeIndex function { *f };
+        // Starts no frame, it was inlined when the send was entered.
+        (void)cursor.enter(function);
+        const auto [positional, variadic, body] = ir_graph.children(f);
+        const auto last_item = ir_graph.last_child(ir::NodeIndex { *body });
+        for (auto it = ir_graph.children(body).iter(); it; ++it) {
+            const ir::NodeIndex item { **it };
+            if (*item == *last_item) {
+                last(item);
+            } else {
+                lower(item);
+                emit(lir::Drop {}, item);
+            }
+        }
+        (void)cursor.exit(function);
+    }
+
+    void inline_body(ir::SCFunction_I f, lir::Tail tail) {
+        inline_body(f, [&](ir::NodeIndex item) { lower(item, tail); });
+    }
+
+    lir::FunctionSubRegionIndex body_region(ir::SCFunction_I f, lir::Tail tail) {
+        begin_sub_region();
+        inline_body(f, tail);
+        return end_sub_region();
+    }
+
+    // Lowers x of `x.isNil`, without the send.
+    void nil_tested(ir::SCMessage_I test) {
+        const ir::NodeIndex i { *test };
+        (void)cursor.enter(i);
+        const auto [receiver, positional, keyword, variadic, adverb] = ir_graph.children(test);
+        lower(ir::NodeIndex { *receiver });
+        for (const ir::NodeIndex rest : { ir::NodeIndex { *positional }, ir::NodeIndex { *keyword },
+                                          ir::NodeIndex { *variadic }, ir::NodeIndex { *adverb } })
+            cursor.skip_over_children(rest);
+        (void)cursor.exit(i);
+    }
+
+    template <typename Else>
+    void branch(Inlined kind, ir::SCFunction_I then_body, const Else& else_body, lir::Tail tail, ir::NodeIndex at) {
+        const auto then_region = body_region(then_body, tail);
+        const lir::OptionalFunctionSubRegionIndex else_region = else_body();
+        switch (kind) {
+        case Inlined::IfNil:
+            emit(lir::IfNil { then_region, else_region }, at);
+            return;
+        case Inlined::IfNotNil:
+            emit(lir::IfNotNil { then_region, else_region }, at);
+            return;
+        default:
+            emit(lir::If { then_region, else_region }, at);
+            return;
+        }
+    }
+
+    // `case { c } { a } { d } { b } { e }` is `if (c) { a } { if (d) { b } { e } }`, as the old compiler rewrote it.
+    // An empty condition is nil.
+    void case_(const std::vector<ir::SCFunction_I>& functions, std::size_t k, lir::Tail tail, ir::NodeIndex at) {
+        const auto condition = functions[k];
+        // A condition of only `x.isNil` is tested as an inlined `if` would.
+        const auto test = nil_test_body(ctx.inlining, ir_graph, condition);
+        if (test)
+            inline_body(condition, [&](ir::NodeIndex) { nil_tested(test->message); });
+        else
+            inline_body(condition, lir::Tail::None);
+        const auto [p, v, body] = ir_graph.children(condition);
+        if (!ir_graph.first_child(ir::NodeIndex { *body }))
+            emit(lir::PushSpecialValue { lir::SpecialValue::Nil }, ir::NodeIndex { *condition });
+
+        const auto remaining = functions.size() - k;
+        if (remaining == 1) {
+            // `case { c }` is `c.if`.
+            emit(lir::Send { ctx.selectors.if_, 0, 0, lir::SendKind::Normal, lir::SendForm::Call, tail }, at);
+            return;
+        }
+        branch(
+            test ? test->kind() : Inlined::If, functions[k + 1],
+            [&]() -> lir::OptionalFunctionSubRegionIndex {
+                if (remaining == 2)
+                    return {};
+                if (remaining == 3)
+                    return body_region(functions[k + 2], tail);
+                begin_sub_region();
+                case_(functions, k + 2, tail, at);
+                return end_sub_region();
+            },
+            tail, at);
+    }
+
+    void switch_(const std::vector<ir::SCAnyExpr_I>& cases, lir::Tail tail, ir::NodeIndex at) {
+        std::vector<lir::SwitchCase> lowered;
+        std::size_t k { 0 };
+        for (; k + 1 < cases.size(); k += 2) {
+            const auto key = switch_key(ctx.inlining, ir_graph, cases[k]);
+            cursor.skip_over_children(ir::NodeIndex { *cases[k] });
+            const auto body = body_region(inlined_function(cases[k + 1]), tail);
+            lowered.push_back({ ir::OptionalConstExprIndex { *key }, body });
+        }
+        if (k < cases.size())
+            lowered.push_back({ {}, body_region(inlined_function(cases[k]), tail) });
+        auto& switch_cases = function().switch_cases;
+        const auto first = switch_cases.push_back(lowered.front());
+        for (std::size_t c { 1 }; c < lowered.size(); ++c)
+            (void)switch_cases.push_back(lowered[c]);
+        emit(lir::Switch { first, static_cast<std::uint32_t>(lowered.size()) }, at);
+    }
+
+    // Bodies are in tail position when the send is, except a loop's.
+    void inlined(ir::SCMessage_I m, Inlined kind, lir::Tail tail) {
+        const ir::NodeIndex i { *m };
+        const auto [receiver, p, k, v, a] = ir_graph.children(m);
+        const auto args = positional_arguments(ir_graph, m);
+
+        switch (kind) {
+        case Inlined::If:
+            lower(ir::NodeIndex { *receiver });
+            break;
+        case Inlined::IfNil:
+        case Inlined::IfNotNil:
+            nil_tested(nil_test(ctx.inlining, ir_graph, receiver)->message);
+            break;
+        default:
+            break;
+        }
+
+        switch (kind) {
+        case Inlined::If:
+        case Inlined::IfNil:
+        case Inlined::IfNotNil:
+            branch(
+                kind, inlined_function(args[0]),
+                [&]() {
+                    return args.size() > 1
+                        ? lir::OptionalFunctionSubRegionIndex { body_region(inlined_function(args[1]), tail) }
+                        : lir::OptionalFunctionSubRegionIndex {};
+                },
+                tail, i);
+            return;
+        case Inlined::And:
+            lower(ir::NodeIndex { *receiver });
+            emit(lir::And { body_region(inlined_function(args[0]), tail) }, i);
+            return;
+        case Inlined::Or:
+            lower(ir::NodeIndex { *receiver });
+            emit(lir::Or { body_region(inlined_function(args[0]), tail) }, i);
+            return;
+        case Inlined::OrIfNil:
+            lower(ir::NodeIndex { *receiver });
+            emit(lir::OrIfNil { body_region(inlined_function(args[0]), tail) }, i);
+            return;
+        case Inlined::AndIfNotNil:
+            lower(ir::NodeIndex { *receiver });
+            emit(lir::AndIfNotNil { body_region(inlined_function(args[0]), tail) }, i);
+            return;
+        case Inlined::QuestionMark:
+            lower(ir::NodeIndex { *receiver });
+            lower(ir::NodeIndex { *args[0] });
+            emit(lir::QuestionMark {}, i);
+            return;
+        case Inlined::While: {
+            const auto condition = body_region(inlined_function(receiver), lir::Tail::None);
+            lir::OptionalFunctionSubRegionIndex body {};
+            if (!args.empty())
+                body = body_region(inlined_function(args[0]), lir::Tail::None);
+            emit(lir::While { condition, body }, i);
+            return;
+        }
+        case Inlined::WhileTrue:
+            // `true` isn't evaluated.
+            cursor.skip_over_children(ir::NodeIndex { *receiver });
+            emit(lir::Loop { body_region(inlined_function(args[0]), lir::Tail::None) }, i);
+            return;
+        case Inlined::Loop:
+            emit(lir::Loop { body_region(inlined_function(receiver), lir::Tail::None) }, i);
+            return;
+        case Inlined::Case: {
+            std::vector<ir::SCFunction_I> functions { inlined_function(receiver) };
+            for (const auto argument : args)
+                functions.push_back(inlined_function(argument));
+            case_(functions, 0, tail, i);
+            return;
+        }
+        case Inlined::Switch:
+            lower(ir::NodeIndex { *receiver });
+            switch_(args, tail, i);
+            return;
+        }
+    }
+
     void expression_list(ir::SCExprList_I list, lir::Tail tail) {
         const ir::NodeIndex i { *list };
         const auto last = ir_graph.last_child(i);
@@ -527,7 +732,7 @@ struct Lowerer {
     // Methods and functions
     ////////////////////////////////////////////////////////////////////////////////
 
-    // A literal default is in the frame's prototype, so needs no code. Any other runs when the argument is nil.
+    // A literal default is in the frame's prototype, any other runs when the argument is nil.
     template <typename Function> void contents(Function f, bool is_method) {
         const auto [positional, variadic, body_i] = ir_graph.children(f);
         for (auto it = ir_graph.children(positional).iter(); it; ++it) {
@@ -548,7 +753,7 @@ struct Lowerer {
         body(body_i, is_method);
     }
 
-    // A variable with a literal initial value is in the frame's prototype, so needs no code.
+    // A literal initial value is in the frame's prototype.
     void declare(ir::SCVariableDeclare_I d) {
         const auto& declaration = ir_graph.payload(d);
         const auto [value] = ir_graph.children(d);
@@ -562,8 +767,7 @@ struct Lowerer {
         emit(lir::Drop {}, ir::NodeIndex { *d });
     }
 
-    // A function returns its last expression's value, or nil. A method drops every value and returns this, unless it
-    // ends with `^`, as the old grammar added `^this`.
+    // A method returns this unless it ends with `^`, as the old grammar added `^this`.
     void body(ir::SCBody_I b, bool is_method) {
         const ir::NodeIndex body_i { *b };
         const auto last_item = ir_graph.last_child(body_i);
@@ -642,6 +846,10 @@ struct Lowerer {
     }
 };
 
+////////////////////////////////////////////////////////////////////////////////
+// Dump
+////////////////////////////////////////////////////////////////////////////////
+
 const char* special_name(ir::SCSpecial::Kind k) {
     switch (k) {
     case ir::SCSpecial::Kind::This:
@@ -664,8 +872,12 @@ const char* special_name(ir::SCSpecial::Kind k) {
 
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// API
+////////////////////////////////////////////////////////////////////////////////
+
 lir::LoweredGraph lower(const LoweringContext& ctx, ir::join<ir::SCClass_I, ir::SCInterpreted_I> root) {
-    Lowerer lowerer { ctx, ctx.graph, FrameCursor { ctx.graph, ctx.frames } };
+    Lowerer lowerer { ctx, ctx.graph, FrameCursor { ctx.graph, ctx.inlining, ctx.frames } };
     if (const auto c = ctx.graph.as_a<ir::SCClass_I>(ir::NodeIndex { *root }))
         lowerer.lower_class(*c);
     else
@@ -674,9 +886,15 @@ lir::LoweredGraph lower(const LoweringContext& ctx, ir::join<ir::SCClass_I, ir::
     return std::move(lowerer.out);
 }
 
-void write_instruction(std::ostream& out, const lir::Instruction& instruction, const ir::IRGraph& graph,
-                       const ir::SymbolTable& symbols, const ir::ConstantTable& constants) {
+void write_instruction(std::ostream& out, const lir::Function& function, const lir::Instruction& instruction,
+                       const ir::IRGraph& graph, const ir::SymbolTable& symbols, const ir::ConstantTable& constants) {
     const auto local = [&](lir::LocalRef l) { out << " depth " << l.depth << ", slot " << unsigned { *l.slot }; };
+    const auto branches = [&](const char* name, lir::FunctionSubRegionIndex then_body,
+                              lir::OptionalFunctionSubRegionIndex else_body) {
+        out << name << " then region " << *then_body;
+        if (else_body)
+            out << ", else region " << *else_body;
+    };
     std::visit(util::overload {
                    [&](const lir::PushLocal& p) {
                        out << "PushLocal";
@@ -737,11 +955,38 @@ void write_instruction(std::ostream& out, const lir::Instruction& instruction, c
                    [&](const lir::DefaultArgument& d) {
                        out << "DefaultArgument slot " << unsigned { *d.slot } << ", region " << *d.value;
                    },
+                   [&](const lir::If& b) { branches("If", b.then_body, b.else_body); },
+                   [&](const lir::IfNil& b) { branches("IfNil", b.then_body, b.else_body); },
+                   [&](const lir::IfNotNil& b) { branches("IfNotNil", b.then_body, b.else_body); },
+                   [&](const lir::And& b) { out << "And region " << *b.rhs; },
+                   [&](const lir::Or& b) { out << "Or region " << *b.rhs; },
+                   [&](const lir::OrIfNil& b) { out << "OrIfNil region " << *b.rhs; },
+                   [&](const lir::AndIfNotNil& b) { out << "AndIfNotNil region " << *b.rhs; },
+                   [&](const lir::QuestionMark&) { out << "QuestionMark"; },
+                   [&](const lir::While& w) {
+                       out << "While condition region " << *w.condition;
+                       if (w.body)
+                           out << ", body region " << *w.body;
+                   },
+                   [&](const lir::Loop& l) { out << "Loop region " << *l.body; },
+                   [&](const lir::Switch& s) {
+                       out << "Switch";
+                       const char* separator = " ";
+                       for (std::uint32_t c { 0 }; c < s.count; ++c) {
+                           const auto& sc = function.switch_cases[lir::switch_case(s, c)];
+                           out << separator;
+                           if (sc.key)
+                               constants(ir::ConstExprIndex { *sc.key }).to_literal(out, symbols, constants);
+                           else
+                               out << "default";
+                           out << ": region " << *sc.body;
+                           separator = ", ";
+                       }
+                   },
                    [&](const lir::Unimplemented& u) {
                        out << "Unimplemented " << ir::IRGraph::node_name(graph.payload(u.node));
                    },
                },
                instruction);
 }
-
 }

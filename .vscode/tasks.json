@@ -37,6 +37,32 @@
           "dependsOrder": "sequence",
           "dependsOn": ["Bench: Run sc_bench_inspect", "Bench: Serve Results"],
           "problemMatcher": []
+        },
+        {
+          "label": "Explorer: Build sc_explorer",
+          "type": "shell",
+          "command": "cmake --build build --target sc_explorer",
+          "problemMatcher": []
+        },
+        {
+          "label": "Explorer: Serve",
+          "type": "shell",
+          "command": "python3 langutils/sc_explorer/serve.py",
+          "isBackground": true,
+          "problemMatcher": {
+            "pattern": { "regexp": "^__never_matches__$" },
+            "background": {
+              "activeOnStart": true,
+              "beginsPattern": "^Serving on",
+              "endsPattern": "^Serving on"
+            }
+          }
+        },
+        {
+          "label": "Explorer: Build and Serve",
+          "dependsOrder": "sequence",
+          "dependsOn": ["Explorer: Build sc_explorer", "Explorer: Serve"],
+          "problemMatcher": []
         }
       ],
     "inputs": [
