@@ -103,8 +103,10 @@ struct SCMessage : priv::Node<SCMessage_I(SCAnyExpr_I receiver, //
                                           maybe<SCAnyExpr_I> adverb //
                                           )> {
     static constexpr auto type_name { "SCMessage" };
+    enum struct Form : std::uint8_t { Call, Binary, Setter };
     OptionallyLocatable<SymSCSelector> selector;
-    SCMessage(OptionallyLocatable<SymSCSelector> sel): selector(sel) {}
+    Form form;
+    SCMessage(OptionallyLocatable<SymSCSelector> sel, Form f): selector(sel), form(f) {}
 };
 
 // `var a = 1`, value is missing for `var a`, which is nil.

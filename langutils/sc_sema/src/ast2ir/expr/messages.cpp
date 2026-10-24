@@ -49,8 +49,8 @@ MessageArguments make_arguments(MessageContext& msg_ctx, ast::Index message_i, c
                                 bool first_positional_is_receiver = false) {
     const auto location = location_of(msg_ctx.ir, *msg_ctx.ast_graph, message_i);
     // The rewrite assumes what perform does, so it is skipped if any class implements it differently.
-    const bool is_perform =
-        *selector.name == msg_ctx.ctx.common_symbols.perform && msg_ctx.ctx.known_methods.perform_is_known();
+    const bool is_perform = rewrites_perform(msg_ctx.expr.version)
+        && *selector.name == msg_ctx.ctx.common_symbols.perform && msg_ctx.ctx.known_methods.perform_is_known();
     return { msg_ctx.ir.create(SCPositionalArgs {}, location),
              msg_ctx.ir.create(SCKwArgs {}, location),
              msg_ctx.ir.create(SCVariadicArgs {}, location),
@@ -225,15 +225,16 @@ std::optional<RangeConstants> append_range(MessageContext& msg_ctx, MessageArgum
 }
 
 Return<SCAnyExpr_I> create_message(MessageContext& msg_ctx, ast::Index message_i, SCAnyExpr_I receiver,
-                                   const Selector& selector, const MessageArguments& args) {
+                                   const Selector& selector, const MessageArguments& args,
+                                   SCMessage::Form form = SCMessage::Form::Call) {
     const auto location = location_of(msg_ctx.ir, *msg_ctx.ast_graph, message_i);
     const maybe<SCAnyExpr_I> adverb_i = selector.adverb
         ? maybe<SCAnyExpr_I> { *selector.adverb }
         : maybe<SCAnyExpr_I> { msg_ctx.ir.create(SCMissing {}, location) };
 
     const auto name = args.performed_selector.value_or(selector.name);
-    return { msg_ctx.ir.create(SCMessage { name }, location, receiver, args.positional, args.keyword, args.variadic,
-                               adverb_i) };
+    return { msg_ctx.ir.create(SCMessage { name, form }, location, receiver, args.positional, args.keyword,
+                               args.variadic, adverb_i) };
 }
 }
 
@@ -272,7 +273,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::BinaryMessageIndex i) {
     auto args = make_arguments(msg_ctx, { *i }, sel);
     const auto rhs_r = msg_ctx.expr(ast::AnyExprIndex { rhs });
     append_positional(msg_ctx, args, rhs_r);
-    const auto message = create_message(msg_ctx, { *i }, lhs_r.ir_node, sel, args);
+    const auto message = create_message(msg_ctx, { *i }, lhs_r.ir_node, sel, args, SCMessage::Form::Binary);
     // Arithmetic on constant numbers is folded, unless an adverb changes what it does.
     if (!can_fold_constants() || sel.adverb || !lhs_r.const_index || !rhs_r.const_index)
         return message;
@@ -394,12 +395,12 @@ Return<SCAnyExpr_I> Expr::operator()(ast::SetterIndex i) {
             return { ir.create(SCExprList {}, location({ *i })) };
         }
         append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { value }));
-        return create_message(msg_ctx, { *i }, *args.receiver, sel, args);
+        return create_message(msg_ctx, { *i }, *args.receiver, sel, args, SCMessage::Form::Setter);
     }
 
     const auto receiver_r = msg_ctx.expr(ast::AnyExprIndex { *thing });
     auto args = make_arguments(msg_ctx, { *i }, sel);
     append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { value }));
-    return create_message(msg_ctx, { *i }, receiver_r.ir_node, sel, args);
+    return create_message(msg_ctx, { *i }, receiver_r.ir_node, sel, args, SCMessage::Form::Setter);
 }
 }

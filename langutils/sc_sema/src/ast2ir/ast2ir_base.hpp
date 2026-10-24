@@ -6,6 +6,7 @@
 #include "sc_sema/const_expr_index.hpp"
 #include "sc_sema/source_location.hpp"
 #include "sc_sema/type_info.hpp"
+#include "sc_sema/versions.hpp"
 #include <algorithm>
 #include <memory>
 #include <vector>
@@ -40,19 +41,12 @@ struct Base {
     [[nodiscard]] SourceLocation location(ast::Index i) const { return location_of(ir, *ast_graph, i); }
 };
 
-// Old legacy behaviour.
-[[nodiscard]] constexpr bool can_fold_constants(ast::LanguageVersion v) { return v >= ast::LanguageVersion::V3_16; }
-
-[[nodiscard]] constexpr bool is_frame_scoped(ast::LanguageVersion v) { return v < ast::LanguageVersion::V3_16; }
-
-[[nodiscard]] constexpr bool requires_predeclared_variables(ast::LanguageVersion v) {
-    return v < ast::LanguageVersion::V3_16;
-}
-
-// The old compiler compiles `^` in a closed function, which fails when it runs, as there is no method to return from.
-[[nodiscard]] constexpr bool allows_closed_function_return(ast::LanguageVersion v) {
-    return v < ast::LanguageVersion::V3_16;
-}
+// See sc_sema/versions.hpp.
+using ir::allows_closed_function_return;
+using ir::can_fold_constants;
+using ir::is_frame_scoped;
+using ir::requires_predeclared_variables;
+using ir::rewrites_perform;
 
 // Collects the diagnostics of one unit of compilation, e.g., a method, so it knows whether it should be poisoned.
 // This is NOT thread safe.
