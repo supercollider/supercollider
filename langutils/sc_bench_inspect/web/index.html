@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC Bench Inspect</title>
+<link rel="stylesheet" href="bench.css">
+</head>
+<body>
+<header>
+  <h1>SC Bench Inspect</h1>
+  <nav id="views" class="tabs" role="tablist"></nav>
+  <span id="status" class="status"></span>
+  <button id="reload" title="Read the sessions again">Reload</button>
+</header>
+<div class="layout">
+  <aside>
+    <div class="aside-title">Sessions</div>
+    <p class="hint">Tick up to three to compare. The first ticked is the baseline; ★ makes another the baseline.</p>
+    <div id="sessions"></div>
+  </aside>
+  <main>
+    <div id="filters" class="filters">
+      <label>Input <select id="input"></select></label>
+      <label>Statistic
+        <select id="statistic">
+          <option value="median">Median</option>
+          <option value="min">Minimum</option>
+          <option value="mean">Mean</option>
+        </select>
+      </label>
+      <span class="group" id="threads"></span>
+      <span class="group view-option" data-views="distributions history">
+        <label><input type="checkbox" id="relative"> Relative to baseline</label>
+        <label><input type="checkbox" id="from-zero"> Y from zero</label>
+      </span>
+      <span class="group view-option" data-views="compare">
+        <label title="smaller changes aren't called faster or slower, even when the interval leaves out no change, as it only knows the noise within each session, not between them">Ignore changes under
+          <select id="threshold">
+            <option value="0">0%</option>
+            <option value="0.5">0.5%</option>
+            <option value="1">1%</option>
+            <option value="2">2%</option>
+            <option value="5">5%</option>
+          </select>
+        </label>
+      </span>
+      <span class="group view-option" data-views="breakdown">
+        <label><input type="checkbox" id="share"> Share of wall time</label>
+      </span>
+      <span class="group view-option" data-views="scaling">
+        <label><input type="checkbox" id="speedup" checked> Speedup</label>
+      </span>
+    </div>
+    <div id="metrics" class="filters metrics view-option" data-views="compare distributions scaling history"></div>
+    <div id="warnings"></div>
+    <div id="view"></div>
+  </main>
+</div>
+<div id="tooltip" class="tooltip" hidden></div>
+<script src="stats.js"></script>
+<script src="bench.js"></script>
+</body>
+</html>

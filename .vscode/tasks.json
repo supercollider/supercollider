@@ -11,6 +11,39 @@
           "type": "shell",
           "command" : "bison -v -Wcounterexamples --header=langutils/sc_parser/src/sc_grammar_parser.hpp --output=langutils/sc_parser/src/sc_grammar_parser.cpp langutils/sc_parser/src/sc_grammar.y ",
           "problemMatcher": []
-      }
+        },
+        {
+          "label": "Bench: Run sc_bench_inspect",
+          "type": "shell",
+          "command": "python3 langutils/sc_bench_inspect/run.py --label '${input:benchLabel}'",
+          "problemMatcher": []
+        },
+        {
+          "label": "Bench: Serve Results",
+          "type": "shell",
+          "command": "python3 langutils/sc_bench_inspect/serve.py",
+          "isBackground": true,
+          "problemMatcher": {
+            "pattern": { "regexp": "^__never_matches__$" },
+            "background": {
+              "activeOnStart": true,
+              "beginsPattern": "^Serving on",
+              "endsPattern": "^Serving on"
+            }
+          }
+        },
+        {
+          "label": "Bench: Run and Serve",
+          "dependsOrder": "sequence",
+          "dependsOn": ["Bench: Run sc_bench_inspect", "Bench: Serve Results"],
+          "problemMatcher": []
+        }
+      ],
+    "inputs": [
+        {
+          "id": "benchLabel",
+          "type": "promptString",
+          "description": "Session label, e.g., what changed"
+        }
     ]
 }

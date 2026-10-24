@@ -2,9 +2,11 @@
 #include <chrono>
 #include <filesystem>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <memory>
 #include <sstream>
+#include <string_view>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -160,6 +162,42 @@ std::shared_ptr<const sc::ast::ASTGraph> parse_interpreted(const std::filesystem
     return ast_graph;
 }
 
+// How long each stage took, in seconds, see --time. The backend's are summed over its graphs.
+struct StageTimes {
+    double find_files = 0;
+    double parse = 0;
+    double sema = 0;
+    double interpreted_parse = 0;
+    double interpreted_sema = 0;
+    double member_table = 0;
+    double frames = 0;
+    double lower = 0;
+    double emit = 0;
+};
+
+using Clock = std::chrono::steady_clock;
+
+double seconds_since(Clock::time_point start) { return std::chrono::duration<double>(Clock::now() - start).count(); }
+
+void write_times(std::ostream& out, const StageTimes& t, double total) {
+    const auto row = [&](const char* name, double seconds) {
+        out << "  " << name << std::string(20 - std::string_view { name }.size(), ' ') << std::fixed
+            << std::setprecision(6) << seconds << " s\n";
+    };
+    out << "Stage times:\n";
+    row("find files", t.find_files);
+    row("parse", t.parse);
+    row("sema", t.sema);
+    row("interpreted parse", t.interpreted_parse);
+    row("interpreted sema", t.interpreted_sema);
+    row("member table", t.member_table);
+    row("frames", t.frames);
+    row("lower", t.lower);
+    row("emit", t.emit);
+    row("total", total);
+    out << std::defaultfloat;
+}
+
 template <typename T> std::filesystem::path get_path(const T* c) {
 #ifdef _MSC_VER
     const std::string source_str = utf8_encode(std::wstring(c));
@@ -191,7 +229,7 @@ int main(int argc, char* argv[]) {
     if (argc <= 1) {
         std::cout << "ERROR: incorrect number of arguments to sc_inspect, expected "
                      "[--threads n] [--relative-to dir] [--interpreted-version x.y] [--no-dump] [--frames] [--lir] "
-                     "[--bytecode] [--prelude dir|.sc file]... [dir|.sc file]... "
+                     "[--bytecode] [--time] [--prelude dir|.sc file]... [dir|.sc file]... "
                   << std::endl;
         return EXIT_FAILURE;
     }
@@ -217,6 +255,8 @@ int main(int argc, char* argv[]) {
     // --bytecode adds the backend's bytecode after that, each function's tables and bytes.
     // With --no-dump, --frames, --lir or --bytecode run the backend up to that stage over every graph without printing
     // it, timing the backend on its own.
+    // --time prints how long each stage took, after everything else, see StageTimes. The total is from after the
+    // arguments are read until before the dump is written, so it leaves out printing.
     std::vector<std::filesystem::path> module_paths;
     std::vector<std::filesystem::path> prelude_paths;
     std::optional<std::filesystem::path> relative_to;
@@ -226,6 +266,7 @@ int main(int argc, char* argv[]) {
     bool show_frames = false;
     bool show_lir = false;
     bool show_bytecode = false;
+    bool show_times = false;
     for (int i { 1 }; i < argc; ++i) {
         const auto arg = get_path(argv[i]);
         if (arg == "--threads" && i + 1 < argc) {
@@ -252,6 +293,8 @@ int main(int argc, char* argv[]) {
             show_lir = true;
         } else if (arg == "--bytecode") {
             show_bytecode = true;
+        } else if (arg == "--time") {
+            show_times = true;
         } else if (arg == "--relative-to" && i + 1 < argc) {
             relative_to = get_path(argv[++i]);
         } else if (arg == "--prelude" && i + 1 < argc) {
@@ -264,6 +307,8 @@ int main(int argc, char* argv[]) {
     const size_t num_mods = module_paths.size();
 
     const auto start_time = std::chrono::high_resolution_clock::now();
+    const auto total_start = Clock::now();
+    StageTimes times;
 
     std::mutex entries_lock;
     std::vector<std::optional<sc::ir::SourceEntry>> entries { };
@@ -281,6 +326,7 @@ int main(int argc, char* argv[]) {
     {
         boost::asio::thread_pool pool { num_threads };
         const auto start_time = std::chrono::high_resolution_clock::now();
+        const auto find_start = Clock::now();
         for (size_t i { 0 }; i < num_mods; ++i) {
             const auto module_index = sc::ir::ModuleIndex::from(i);
 
@@ -309,6 +355,8 @@ int main(int argc, char* argv[]) {
         }
 #endif
 
+        times.find_files = seconds_since(find_start);
+        const auto parse_start = Clock::now();
         std::atomic<size_t> sc_file_i { 0 };
 
         entries.resize(sc_files.size());
@@ -335,6 +383,7 @@ int main(int argc, char* argv[]) {
         }
 
         pool.join();
+        times.parse = seconds_since(parse_start);
         for (const auto& log : parse_logs)
             std::cout << log.str();
 
@@ -391,16 +440,22 @@ int main(int argc, char* argv[]) {
 
     sc::ir::IRCompiler comp { ctx };
 
+    const auto sema_start = Clock::now();
     auto diags = comp.compile_class_library(constraints, num_threads);
+    times.sema = seconds_since(sema_start);
 
     // In path order, so the dump doesn't depend on how the directories are listed.
     std::sort(scd_files.begin(), scd_files.end());
     std::vector<std::shared_ptr<sc::ir::IRGraph>> interpreted_graphs;
     for (const auto& path : scd_files) {
+        const auto parse_start = Clock::now();
         const auto ast_graph = parse_interpreted(path, diags);
+        times.interpreted_parse += seconds_since(parse_start);
         if (!ast_graph)
             continue;
+        const auto sema_start = Clock::now();
         auto r = comp.compile_interpreted(ast_graph, interpreted_version);
+        times.interpreted_sema += seconds_since(sema_start);
         for (auto& d : r.diagnostics)
             diags.push_back(std::move(d));
         if (r.ir)
@@ -422,17 +477,23 @@ int main(int argc, char* argv[]) {
     const sc::backend::LoweringSymbols selectors { symbol_table };
     const sc::backend::SpecialSymbols special_symbols { symbol_table };
     std::optional<sc::backend::MemberTable> member_table;
-    if (show_backend)
+    if (show_backend) {
+        const auto member_table_start = Clock::now();
         member_table.emplace(comp, symbol_table);
+        times.member_table = seconds_since(member_table_start);
+    }
     const auto run_backend = [&](const sc::ir::IRGraph& g, BackendRoot root,
                                  std::vector<sc::diag::Diagnostic>& diagnostics) {
+        const auto frames_start = Clock::now();
         DumpFrames f { root, sc::backend::layout_frames(g, root) };
         for (auto& d : f.layout.diagnostics)
             diagnostics.push_back(std::move(d));
         for (std::uint32_t fi { 0 }; fi < f.layout.frames.size(); ++fi)
             f.by_owner.insert(
                 { *f.layout.frames[sc::backend::FrameIndex { fi }].owner, sc::backend::FrameIndex { fi } });
+        times.frames += seconds_since(frames_start);
         if (show_lir || show_bytecode) {
+            const auto lower_start = Clock::now();
             const sc::backend::LoweringContext lowering { g,
                                                           f.layout,
                                                           *member_table,
@@ -442,10 +503,13 @@ int main(int argc, char* argv[]) {
                                                           ctx.common_classes.array,
                                                           ctx.common_classes.event };
             f.lowered = sc::backend::lower(lowering, root);
+            times.lower += seconds_since(lower_start);
         }
         if (show_bytecode) {
+            const auto emit_start = Clock::now();
             const sc::backend::EmitContext emitting { g, f.layout, ctx.constant_table, special_symbols };
             f.emitted = sc::backend::emit(emitting, f.lowered);
+            times.emit += seconds_since(emit_start);
             for (auto& d : f.emitted.diagnostics)
                 diagnostics.push_back(std::move(d));
         }
@@ -458,7 +522,6 @@ int main(int argc, char* argv[]) {
             count += file.size();
         // Every graph, prelude and empty meta classes too, each dropped once run, so it only times the backend.
         if (show_backend) {
-            const auto backend_start = std::chrono::high_resolution_clock::now();
             std::vector<sc::diag::Diagnostic> backend_diagnostics;
             comp.depth_first_do([&](const sc::ir::IRGraph& g) {
                 if (const auto roots = g.root())
@@ -466,14 +529,14 @@ int main(int argc, char* argv[]) {
             });
             for (const auto& g : interpreted_graphs)
                 run_backend(*g, std::get<sc::ir::SCInterpreted_I>(*g->root()), backend_diagnostics);
-            const auto backend_time = std::chrono::duration_cast<std::chrono::milliseconds>(
-                std::chrono::high_resolution_clock::now() - backend_start);
             count += backend_diagnostics.size();
-            std::cout << "Backend took " << static_cast<double>(backend_time.count()) / 1000.0 << " s.\n";
         }
+        const auto total = seconds_since(total_start);
         std::cout << count << " diagnostics.\n";
         std::cout << "Successfully compiled " << ctx.class_declarations.num_not_poisoned() / 2 << " classes."
                   << std::endl;
+        if (show_times)
+            write_times(std::cout, times, total);
         return 0;
     }
 
@@ -562,6 +625,7 @@ int main(int argc, char* argv[]) {
             frames.insert({ dumped.graph, run_backend(g, root, all_diagnostics) });
         }
     }
+    const auto total = seconds_since(total_start);
 
     // `[frame: this, a, ...b | c]` for a frame's slots, its arguments, variadic arguments, then variables.
     // `[depth 1, slot 2]` for a local, `[instance slot 3]`, `[class variable 0 of Meta_Foo]` or `[constant]` for a
@@ -811,6 +875,10 @@ int main(int argc, char* argv[]) {
 #endif
 
     std::cout << "Successfully compiled " << ctx.class_declarations.num_not_poisoned() / 2 << " classes." << std::endl;
+#if DIAG_LOGGING
+    if (show_times)
+        write_times(std::cout, times, total);
+#endif
 #if TIME_LOGGING
 
     const auto finish_time = std::chrono::high_resolution_clock::now();
