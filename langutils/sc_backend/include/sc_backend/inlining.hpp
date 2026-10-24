@@ -31,7 +31,9 @@ struct InliningContext {
 };
 
 // The old compiler's rule: only functions without arguments or variables are inlined.
-[[nodiscard]] std::optional<Inlined> inlining(const InliningContext& ctx, const ir::IRGraph& g, ir::SCMessage_I m);
+// From 3.16 a function with variables that aren't can be inlined to, they are hoisted.
+[[nodiscard]] std::optional<Inlined> inlining(const InliningContext& ctx, const ir::IRGraph& g, ir::SCMessage_I m,
+                                              ast::LanguageVersion version);
 
 // `{ c }.while` inlines its receiver, `if (c)` evaluates it.
 [[nodiscard]] bool inlines_receiver(Inlined kind);
@@ -56,7 +58,7 @@ enum struct Inlined : std::uint8_t {
     Switch, // `switch (x, 1, { a }, { e })`
 };
 
-[[nodiscard]] bool is_inlineable(const ir::IRGraph& g, ir::SCAnyExpr_I i);
+[[nodiscard]] bool is_inlineable(const ir::IRGraph& g, ir::SCAnyExpr_I i, ast::LanguageVersion version);
 
 [[nodiscard]] std::vector<ir::SCAnyExpr_I> positional_arguments(const ir::IRGraph& g, ir::SCMessage_I m);
 
@@ -85,7 +87,7 @@ struct NilTest {
 // An integer, float, char, symbol or boolean literal, or a function returning one, though `{ 1 } == 1` is false when
 // sent. Not nil, which marks an empty slot of the table.
 [[nodiscard]] std::optional<ir::ConstExprIndex> switch_key(const InliningContext& ctx, const ir::IRGraph& g,
-                                                           ir::SCAnyExpr_I i);
+                                                           ir::SCAnyExpr_I i, ast::LanguageVersion version);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Special symbols

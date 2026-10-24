@@ -1,0 +1,283 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): LirHoisting : Object, version 3.16
+|  SCMemberList (5:1)
+|  SCMethodList (5:1)
+|  |  SCMethod (7:5): ifVar, version 3.16: ifVar { |a| ^if (a) { var c = a.foo; c } }
+|  |  |  SCArgumentDeclareList (7:14)
+|  |  |  |  SCArgumentDeclare (7:14): a (captured)
+|  |  |  SCBody (7:17)
+|  |  |  |  SCExplicitReturn (7:17)
+|  |  |  |  |  SCMessage (7:18): if
+|  |  |  |  |  |  SCRead (7:22): local a, declared (7:14): a
+|  |  |  |  |  |  SCPositionalArgs (7:18)
+|  |  |  |  |  |  |  SCFunction (7:25)
+|  |  |  |  |  |  |  |  SCBody (7:25)
+|  |  |  |  |  |  |  |  |  SCVariableDeclare (7:31): c, computed
+|  |  |  |  |  |  |  |  |  |  SCMessage (7:35): foo
+|  |  |  |  |  |  |  |  |  |  |  SCRead (7:35): local a, declared (7:14): a
+|  |  |  |  |  |  |  |  |  SCRead (7:42): local c, declared (7:31): c = a.foo
+|  |  SCMethod (9:5): literal, version 3.16: literal { |a| ^if (a) { var c = 1; c } }
+|  |  |  SCArgumentDeclareList (9:16)
+|  |  |  |  SCArgumentDeclare (9:16): a
+|  |  |  SCBody (9:19)
+|  |  |  |  SCExplicitReturn (9:19)
+|  |  |  |  |  SCMessage (9:20): if
+|  |  |  |  |  |  SCRead (9:24): local a, declared (9:16): a
+|  |  |  |  |  |  SCPositionalArgs (9:20)
+|  |  |  |  |  |  |  SCFunction (9:27) -> 1
+|  |  |  |  |  |  |  |  SCBody (9:27)
+|  |  |  |  |  |  |  |  |  SCVariableDeclare (9:33): c, prototype
+|  |  |  |  |  |  |  |  |  |  SCLiteral (9:37) = 1
+|  |  |  |  |  |  |  |  |  SCRead (9:40): local c = 1, declared (9:33): c = 1
+|  |  SCMethod (11:5): loop, version 3.16: loop { |a| while { var n = a.next; n.notNil } { var c; c = c ? 0 + 1 } }
+|  |  |  SCArgumentDeclareList (11:13)
+|  |  |  |  SCArgumentDeclare (11:13): a (captured)
+|  |  |  SCBody (11:16)
+|  |  |  |  SCMessage (11:16): while
+|  |  |  |  |  SCFunction (11:22)
+|  |  |  |  |  |  SCBody (11:22)
+|  |  |  |  |  |  |  SCVariableDeclare (11:28): n, computed
+|  |  |  |  |  |  |  |  SCMessage (11:32): next
+|  |  |  |  |  |  |  |  |  SCRead (11:32): local a, declared (11:13): a
+|  |  |  |  |  |  |  SCMessage (11:40): notNil
+|  |  |  |  |  |  |  |  SCRead (11:40): local n, declared (11:28): n = a.next
+|  |  |  |  |  SCPositionalArgs (11:16)
+|  |  |  |  |  |  SCFunction (11:51)
+|  |  |  |  |  |  |  SCBody (11:51)
+|  |  |  |  |  |  |  |  SCVariableDeclare (11:57): c (assigned)
+|  |  |  |  |  |  |  |  SCAssign (11:60): local c, declared (11:57): c
+|  |  |  |  |  |  |  |  |  SCMessage (11:64): +
+|  |  |  |  |  |  |  |  |  |  SCMessage (11:64): ?
+|  |  |  |  |  |  |  |  |  |  |  SCRead (11:64): local c, declared (11:57): c
+|  |  |  |  |  |  |  |  |  |  |  SCPositionalArgs (11:64)
+|  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (11:68) = 0
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (11:64)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (11:72) = 1
+|  |  SCMethod (13:5): pack, version 3.16: pack { |a| ^if (a) { var #c, d = a; c + d } }
+|  |  |  SCArgumentDeclareList (13:13)
+|  |  |  |  SCArgumentDeclare (13:13): a (captured)
+|  |  |  SCBody (13:16)
+|  |  |  |  SCExplicitReturn (13:16)
+|  |  |  |  |  SCMessage (13:17): if
+|  |  |  |  |  |  SCRead (13:21): local a, declared (13:13): a
+|  |  |  |  |  |  SCPositionalArgs (13:17)
+|  |  |  |  |  |  |  SCFunction (13:24)
+|  |  |  |  |  |  |  |  SCBody (13:24)
+|  |  |  |  |  |  |  |  |  SCPackDeclare (13:30)
+|  |  |  |  |  |  |  |  |  |  SCRead (13:38): local a, declared (13:13): a
+|  |  |  |  |  |  |  |  |  |  SCPackTargets (13:30)
+|  |  |  |  |  |  |  |  |  |  |  SCPackTarget (13:31): local c at 0
+|  |  |  |  |  |  |  |  |  |  |  SCPackTarget (13:34): local d at 1
+|  |  |  |  |  |  |  |  |  SCMessage (13:41): +
+|  |  |  |  |  |  |  |  |  |  SCRead (13:41): local c, declared (13:31): c
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (13:41)
+|  |  |  |  |  |  |  |  |  |  |  SCRead (13:45): local d, declared (13:34): d
+|  |  SCMethod (15:5): endsWithVar, version 3.16: endsWithVar { |a| ^if (a) { a.foo; var c = 2 } }
+|  |  |  SCArgumentDeclareList (15:20)
+|  |  |  |  SCArgumentDeclare (15:20): a (captured)
+|  |  |  SCBody (15:23)
+|  |  |  |  SCExplicitReturn (15:23)
+|  |  |  |  |  SCMessage (15:24): if
+|  |  |  |  |  |  SCRead (15:28): local a, declared (15:20): a
+|  |  |  |  |  |  SCPositionalArgs (15:24)
+|  |  |  |  |  |  |  SCFunction (15:31)
+|  |  |  |  |  |  |  |  SCBody (15:31)
+|  |  |  |  |  |  |  |  |  SCMessage (15:33): foo
+|  |  |  |  |  |  |  |  |  |  SCRead (15:33): local a, declared (15:20): a
+|  |  |  |  |  |  |  |  |  SCVariableDeclare (15:44): c, prototype
+|  |  |  |  |  |  |  |  |  |  SCLiteral (15:48) = 2
+|  |  SCMethod (17:5): switch, version 3.16: switch { |a| ^switch (a, 1, { var c = a.foo; c }, { var d; d }) }
+|  |  |  SCArgumentDeclareList (17:15)
+|  |  |  |  SCArgumentDeclare (17:15): a (captured)
+|  |  |  SCBody (17:18)
+|  |  |  |  SCExplicitReturn (17:18)
+|  |  |  |  |  SCMessage (17:19): switch
+|  |  |  |  |  |  SCRead (17:27): local a, declared (17:15): a
+|  |  |  |  |  |  SCPositionalArgs (17:19)
+|  |  |  |  |  |  |  SCLiteral (17:30) = 1
+|  |  |  |  |  |  |  SCFunction (17:33)
+|  |  |  |  |  |  |  |  SCBody (17:33)
+|  |  |  |  |  |  |  |  |  SCVariableDeclare (17:39): c, computed
+|  |  |  |  |  |  |  |  |  |  SCMessage (17:43): foo
+|  |  |  |  |  |  |  |  |  |  |  SCRead (17:43): local a, declared (17:15): a
+|  |  |  |  |  |  |  |  |  SCRead (17:50): local c, declared (17:39): c = a.foo
+|  |  |  |  |  |  |  SCFunction (17:55) -> nil
+|  |  |  |  |  |  |  |  SCBody (17:55)
+|  |  |  |  |  |  |  |  |  SCVariableDeclare (17:61): d
+|  |  |  |  |  |  |  |  |  SCRead (17:64): local d = nil, declared (17:61): d
+|  |  SCMethod (19:5): nonLocalReturn, version 3.16: nonLocalReturn { |a| if (a) { var c = a.foo; if (c) { ^1 }; ^c }; ^2 }
+|  |  |  SCArgumentDeclareList (19:23)
+|  |  |  |  SCArgumentDeclare (19:23): a (captured)
+|  |  |  SCBody (19:26)
+|  |  |  |  SCMessage (19:26): if
+|  |  |  |  |  SCRead (19:30): local a, declared (19:23): a
+|  |  |  |  |  SCPositionalArgs (19:26)
+|  |  |  |  |  |  SCFunction (19:33)
+|  |  |  |  |  |  |  SCBody (19:33)
+|  |  |  |  |  |  |  |  SCVariableDeclare (19:39): c, computed
+|  |  |  |  |  |  |  |  |  SCMessage (19:43): foo
+|  |  |  |  |  |  |  |  |  |  SCRead (19:43): local a, declared (19:23): a
+|  |  |  |  |  |  |  |  SCMessage (19:50): if
+|  |  |  |  |  |  |  |  |  SCRead (19:54): local c, declared (19:39): c = a.foo
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (19:50)
+|  |  |  |  |  |  |  |  |  |  SCFunction (19:57)
+|  |  |  |  |  |  |  |  |  |  |  SCBody (19:57)
+|  |  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (19:59)
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (19:60) = 1
+|  |  |  |  |  |  |  |  SCExplicitReturn (19:65)
+|  |  |  |  |  |  |  |  |  SCRead (19:66): local c, declared (19:39): c = a.foo
+|  |  |  |  SCExplicitReturn (19:71)
+|  |  |  |  |  SCLiteral (19:72) = 2
+|  |  SCMethod (21:5): captured, version 3.16: captured { |a| ^if (a) { var c = 1; { c } } }
+|  |  |  SCArgumentDeclareList (21:17)
+|  |  |  |  SCArgumentDeclare (21:17): a
+|  |  |  SCBody (21:20)
+|  |  |  |  SCExplicitReturn (21:20)
+|  |  |  |  |  SCMessage (21:21): if
+|  |  |  |  |  |  SCRead (21:25): local a, declared (21:17): a
+|  |  |  |  |  |  SCPositionalArgs (21:21)
+|  |  |  |  |  |  |  SCFunction (21:28)
+|  |  |  |  |  |  |  |  SCBody (21:28)
+|  |  |  |  |  |  |  |  |  SCVariableDeclare (21:34): c (captured), prototype
+|  |  |  |  |  |  |  |  |  |  SCLiteral (21:38) = 1
+|  |  |  |  |  |  |  |  |  SCFunction (21:41)
+|  |  |  |  |  |  |  |  |  |  SCBody (21:41)
+|  |  |  |  |  |  |  |  |  |  |  SCRead (21:43): local c, declared (21:34): c = 1
+
+
+
+LIR DUMP 
+
+
+LirHoisting
+|  function 0 (7:5): method ifVar
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  If then region 1
+|  |  |  Return
+|  |  region 1
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send foo (positional 0)
+|  |  |  StoreLocal depth 0, slot 2
+|  |  |  Drop
+|  |  |  PushLocal depth 0, slot 2
+|  function 1 (9:5): method literal
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  If then region 1
+|  |  |  Return
+|  |  region 1
+|  |  |  PushConstant 1
+|  |  |  StoreLocal depth 0, slot 2
+|  |  |  Drop
+|  |  |  PushConstant 1
+|  function 2 (11:5): method loop
+|  |  region 0
+|  |  |  While condition region 1, body region 2
+|  |  |  Drop
+|  |  |  ReturnSelf
+|  |  region 1
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send next (positional 0)
+|  |  |  StoreLocal depth 0, slot 2
+|  |  |  Drop
+|  |  |  PushLocal depth 0, slot 2
+|  |  |  Send notNil (positional 0)
+|  |  region 2
+|  |  |  PushSpecialValue nil
+|  |  |  StoreLocal depth 0, slot 3
+|  |  |  Drop
+|  |  |  PushLocal depth 0, slot 3
+|  |  |  PushConstant 0
+|  |  |  QuestionMark
+|  |  |  PushConstant 1
+|  |  |  Send + (positional 1, binary)
+|  |  |  StoreLocal depth 0, slot 3
+|  function 3 (13:5): method pack
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  If then region 1
+|  |  |  Return
+|  |  region 1
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Dup
+|  |  |  PushInteger 0
+|  |  |  Send at (positional 1, implicit)
+|  |  |  StoreLocal depth 0, slot 2
+|  |  |  Drop
+|  |  |  Dup
+|  |  |  PushInteger 1
+|  |  |  Send at (positional 1, implicit)
+|  |  |  StoreLocal depth 0, slot 3
+|  |  |  Drop
+|  |  |  Drop
+|  |  |  PushLocal depth 0, slot 2
+|  |  |  PushLocal depth 0, slot 3
+|  |  |  Send + (positional 1, binary, tail from method)
+|  function 4 (15:5): method endsWithVar
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  If then region 1
+|  |  |  Return
+|  |  region 1
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send foo (positional 0)
+|  |  |  Drop
+|  |  |  PushConstant 2
+|  |  |  StoreLocal depth 0, slot 2
+|  |  |  Drop
+|  |  |  PushSpecialValue nil
+|  function 5 (17:5): method switch
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Switch 1: region 1, default: region 2
+|  |  |  Return
+|  |  region 1
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send foo (positional 0)
+|  |  |  StoreLocal depth 0, slot 2
+|  |  |  Drop
+|  |  |  PushLocal depth 0, slot 2
+|  |  region 2
+|  |  |  PushSpecialValue nil
+|  |  |  StoreLocal depth 0, slot 3
+|  |  |  Drop
+|  |  |  PushConstant nil
+|  function 6 (19:5): method nonLocalReturn
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  If then region 2
+|  |  |  Drop
+|  |  |  PushConstant 2
+|  |  |  Return
+|  |  region 1
+|  |  |  PushConstant 1
+|  |  |  Return
+|  |  region 2
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send foo (positional 0)
+|  |  |  StoreLocal depth 0, slot 2
+|  |  |  Drop
+|  |  |  PushLocal depth 0, slot 2
+|  |  |  If then region 1
+|  |  |  Drop
+|  |  |  PushLocal depth 0, slot 2
+|  |  |  Return
+|  function 7 (21:5): method captured
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  PushFunction 8
+|  |  |  Send if (positional 1, tail from method)
+|  |  |  Return
+|  function 8 (21:28)
+|  |  region 0
+|  |  |  PushFunction 9
+|  function 9 (21:41)
+|  |  region 0
+|  |  |  PushLocal depth 1, slot 0
+Successfully compiled 16 classes.

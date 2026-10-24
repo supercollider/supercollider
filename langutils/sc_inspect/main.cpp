@@ -668,19 +668,21 @@ int main(int argc, char* argv[]) {
                 std::cout << separator << "this";
                 separator = ", ";
             }
-            for (std::size_t l { 0 }; l < frame.locals.size(); ++l) {
+            const std::uint32_t first { frame.has_this ? 1u : 0u };
+            for (std::uint32_t l { 0 }; l + first < frame.slots.size(); ++l) {
                 if (l == frame.num_positional + frame.num_variadic())
                     separator = l == 0 && !frame.has_this ? ": | " : " | ";
                 std::cout << separator;
                 if (l >= frame.num_positional && l < frame.num_positional + frame.num_variadic())
                     std::cout << "...";
-                std::cout << symbol_table(g.local(frame.locals[l]).name);
+                const auto local = frame.slots[sc::backend::FrameSlotIndex { l + first }];
+                std::cout << symbol_table(g.local(sc::ir::LocalIndex { *local }).name);
                 separator = ", ";
             }
             std::cout << "]";
         };
         const auto local = [&](sc::ir::OptionalLocalIndex l) {
-            const auto& slot = f.locals[sc::ir::LocalIndex { *l }];
+            const auto& slot = f.locations[sc::ir::LocalIndex { *l }];
             if (!current || !slot.frame)
                 return;
             std::cout << " [depth " << f.depth(*current, *slot.frame) << ", slot " << *slot.slot << "]";

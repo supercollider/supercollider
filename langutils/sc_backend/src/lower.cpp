@@ -116,7 +116,7 @@ struct Lowerer {
 
     [[nodiscard]] ir::SymSCSymbol symbol(ir::Symbol name) const { return ctx.symbols.get_symbol(ctx.symbols(name)); }
 
-    [[nodiscard]] lir::SlotIndex own_slot(ir::LocalIndex l) { return addressable(ctx.frames.locals[l].slot); }
+    [[nodiscard]] lir::SlotIndex own_slot(ir::LocalIndex l) { return addressable(ctx.frames.locations[l].slot); }
 
     [[nodiscard]] lir::SlotIndex addressable(FrameSlotIndex slot) {
         if (*slot > std::numeric_limits<std::uint8_t>::max()) {
@@ -127,7 +127,7 @@ struct Lowerer {
     }
 
     [[nodiscard]] lir::LocalRef local_ref(ir::LocalIndex l) {
-        const auto& slot = ctx.frames.locals[l];
+        const auto& slot = ctx.frames.locations[l];
         assert(slot.frame && cursor.current());
         const auto depth = ctx.frames.depth(*cursor.current(), FrameIndex { *slot.frame });
         assert(depth <= std::numeric_limits<std::uint16_t>::max());
@@ -377,7 +377,7 @@ struct Lowerer {
     // `r.sel(a, k: v)`. With a variadic argument, `r.sel(a, *v)` is `r.performList(\sel, a, v)`, and `super` is
     // `this.superPerformList(\sel, ...)`, as the old grammar did. Keyword arguments are kept either way.
     void message(ir::SCMessage_I m, const ir::SCMessage& payload, lir::Tail tail) {
-        if (const auto kind = inlining(ctx.inlining, ir_graph, m)) {
+        if (const auto kind = inlining(ctx.inlining, ir_graph, m, cursor.version())) {
             inlined(m, *kind, tail);
             return;
         }
@@ -447,7 +447,8 @@ struct Lowerer {
         return *f;
     }
 
-    // Leaves nothing for an empty body.
+    // Leaves nothing for an empty body. Its variables were hoisted into the frame, so they start again each time it
+    // runs, a body ending with one is nil.
     template <typename Last> void inline_body(ir::SCFunction_I f, const Last& last) {
         const ir::NodeIndex function { *f };
         // Starts no frame, it was inlined when the send was entered.
@@ -456,7 +457,10 @@ struct Lowerer {
         const auto last_item = ir_graph.last_child(ir::NodeIndex { *body });
         for (auto it = ir_graph.children(body).iter(); it; ++it) {
             const ir::NodeIndex item { **it };
-            if (*item == *last_item) {
+            if (declaration(item, true)) {
+                if (*item == *last_item)
+                    emit(lir::PushSpecialValue { lir::SpecialValue::Nil }, item);
+            } else if (*item == *last_item) {
                 last(item);
             } else {
                 lower(item);
@@ -543,7 +547,7 @@ struct Lowerer {
         std::vector<lir::SwitchCase> lowered;
         std::size_t k { 0 };
         for (; k + 1 < cases.size(); k += 2) {
-            const auto key = switch_key(ctx.inlining, ir_graph, cases[k]);
+            const auto key = switch_key(ctx.inlining, ir_graph, cases[k], cursor.version());
             cursor.skip_over_children(ir::NodeIndex { *cases[k] });
             const auto body = body_region(inlined_function(cases[k + 1]), tail);
             lowered.push_back({ ir::OptionalConstExprIndex { *key }, body });
@@ -753,18 +757,41 @@ struct Lowerer {
         body(body_i, is_method);
     }
 
-    // A literal initial value is in the frame's prototype.
-    void declare(ir::SCVariableDeclare_I d) {
+    // A literal initial value is in the frame's prototype, unless hoisted from an inlined function, which sets each
+    // variable, nil without an initial value.
+    void declare(ir::SCVariableDeclare_I d, bool hoisted) {
         const auto& declaration = ir_graph.payload(d);
         const auto [value] = ir_graph.children(d);
         const ir::NodeIndex value_i { *value };
-        if (declaration.prototype || missing(value_i)) {
+        const ir::NodeIndex at { *d };
+        if (missing(value_i)) {
+            cursor.skip_over_children(value_i);
+            if (!hoisted)
+                return;
+            emit(lir::PushSpecialValue { lir::SpecialValue::Nil }, at);
+        } else if (declaration.prototype && !hoisted) {
             cursor.skip_over_children(value_i);
             return;
+        } else {
+            lower(value_i);
         }
-        lower(value_i);
-        emit(lir::StoreLocal { lir::LocalRef { 0, own_slot(declaration.local) } }, ir::NodeIndex { *d });
-        emit(lir::Drop {}, ir::NodeIndex { *d });
+        emit(lir::StoreLocal { local_ref(declaration.local) }, at);
+        emit(lir::Drop {}, at);
+    }
+
+    // Returns whether the item was a declaration.
+    bool declaration(ir::NodeIndex item, bool hoisted) {
+        if (const auto d = ir_graph.as_a<ir::SCVariableDeclare_I>(item)) {
+            declare(*d, hoisted);
+            return true;
+        }
+        if (const auto p = ir_graph.as_a<ir::SCPackDeclare_I>(item)) {
+            const auto [value, targets] = ir_graph.children(*p);
+            pack(ir::NodeIndex { *value }, targets, item);
+            emit(lir::Drop {}, item);
+            return true;
+        }
+        return false;
     }
 
     // A method returns this unless it ends with `^`, as the old grammar added `^this`.
@@ -777,13 +804,9 @@ struct Lowerer {
             const ir::NodeIndex item { **it };
             const bool last = *item == *last_item;
             has_value = false;
-            if (const auto d = ir_graph.as_a<ir::SCVariableDeclare_I>(item)) {
-                declare(*d);
-            } else if (const auto p = ir_graph.as_a<ir::SCPackDeclare_I>(item)) {
-                const auto [value, targets] = ir_graph.children(*p);
-                pack(ir::NodeIndex { *value }, targets, item);
-                emit(lir::Drop {}, item);
-            } else if (ir_graph.is_a<ir::SCExplicitReturn_I>(item)) {
+            if (declaration(item, false))
+                continue;
+            if (ir_graph.is_a<ir::SCExplicitReturn_I>(item)) {
                 lower(item);
                 returns = last;
                 has_value = last;
@@ -833,16 +856,19 @@ struct Lowerer {
         if (ir_graph.payload(in).poisoned)
             return;
         fold_constants = ir::can_fold_constants(ir_graph.payload(in).version);
+        // Only sets the cursor's version.
+        (void)cursor.enter(ir::NodeIndex { *in });
         const auto [code] = ir_graph.children(in);
         if (const auto f = ir_graph.as_a<ir::SCFunction_I>(ir::NodeIndex { *code })) {
             root(*f, false);
-            return;
+        } else {
+            for (auto it = ir_graph.children(*ir_graph.as_a<ir::SCRegionList_I>(ir::NodeIndex { *code })).iter(); it;
+                 ++it) {
+                const auto [f] = ir_graph.children(*it);
+                root(f, false);
+            }
         }
-        for (auto it = ir_graph.children(*ir_graph.as_a<ir::SCRegionList_I>(ir::NodeIndex { *code })).iter(); it;
-             ++it) {
-            const auto [f] = ir_graph.children(*it);
-            root(f, false);
-        }
+        (void)cursor.exit(ir::NodeIndex { *in });
     }
 };
 

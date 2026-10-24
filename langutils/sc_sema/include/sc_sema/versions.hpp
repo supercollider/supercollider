@@ -13,10 +13,12 @@ namespace sc::ir {
     return v < ast::LanguageVersion::V3_16;
 }
 
-// `f.perform(\a, 1)` is sent as `f.a(1)`, the old compiler sent perform.
+[[nodiscard]] constexpr bool hoists_inlined_variables(ast::LanguageVersion v) {
+    return v >= ast::LanguageVersion::V3_16;
+}
+
 [[nodiscard]] constexpr bool rewrites_perform(ast::LanguageVersion v) { return v >= ast::LanguageVersion::V3_16; }
 
-// The old compiler compiles `^` in a closed function, which fails when it runs, as there is no method to return from.
 [[nodiscard]] constexpr bool allows_closed_function_return(ast::LanguageVersion v) {
     return v < ast::LanguageVersion::V3_16;
 }

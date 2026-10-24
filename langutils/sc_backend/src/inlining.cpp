@@ -2,6 +2,7 @@
 #include "sc_bytecode/SpecialNames.h"
 #include "sc_sema/const_expr.hpp"
 #include "sc_sema/symbol_table.hpp"
+#include "sc_sema/versions.hpp"
 
 #include <vector>
 
@@ -34,32 +35,33 @@ bool is_true(const InliningContext& ctx, const ir::IRGraph& g, ir::SCAnyExpr_I i
     return b && *b;
 }
 
-bool all_inlineable(const ir::IRGraph& g, const std::vector<ir::SCAnyExpr_I>& functions) {
+bool all_inlineable(const ir::IRGraph& g, const std::vector<ir::SCAnyExpr_I>& functions, ast::LanguageVersion version) {
     for (const auto f : functions)
-        if (!is_inlineable(g, f))
+        if (!is_inlineable(g, f, version))
             return false;
     return true;
 }
 
 // Keys and functions, then an optional default function.
-bool can_inline_switch(const InliningContext& ctx, const ir::IRGraph& g, const std::vector<ir::SCAnyExpr_I>& args) {
+bool can_inline_switch(const InliningContext& ctx, const ir::IRGraph& g, const std::vector<ir::SCAnyExpr_I>& args,
+                       ast::LanguageVersion version) {
     // The old compiler reported fewer as an error.
     if (args.size() < 2)
         return false;
     std::size_t k { 0 };
     for (; k + 1 < args.size(); k += 2)
-        if (!switch_key(ctx, g, args[k]) || !is_inlineable(g, args[k + 1]))
+        if (!switch_key(ctx, g, args[k], version) || !is_inlineable(g, args[k + 1], version))
             return false;
-    return k == args.size() || is_inlineable(g, args[k]);
+    return k == args.size() || is_inlineable(g, args[k], version);
 }
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // API
 ////////////////////////////////////////////////////////////////////////////////
 
-std::optional<Inlined> inlining(const InliningContext& ctx, const ir::IRGraph& g, ir::SCMessage_I m) {
+std::optional<Inlined> inlining(const InliningContext& ctx, const ir::IRGraph& g, ir::SCMessage_I m,
+                                ast::LanguageVersion version) {
     const auto& payload = g.payload(m);
     if (payload.form == ir::SCMessage::Form::Setter)
         return std::nullopt;
@@ -76,36 +78,39 @@ std::optional<Inlined> inlining(const InliningContext& ctx, const ir::IRGraph& g
 
     switch (*selector) {
     case OpSpecialSelectors::If:
-        if ((args.size() != 1 && args.size() != 2) || !all_inlineable(g, args))
+        if ((args.size() != 1 && args.size() != 2) || !all_inlineable(g, args, version))
             return std::nullopt;
         if (const auto test = nil_test(ctx, g, receiver))
             return test->kind();
         return Inlined::If;
     case OpSpecialSelectors::And:
-        return args.size() == 1 && is_inlineable(g, args[0]) ? std::optional { Inlined::And } : std::nullopt;
+        return args.size() == 1 && is_inlineable(g, args[0], version) ? std::optional { Inlined::And } : std::nullopt;
     case OpSpecialSelectors::Or:
-        return args.size() == 1 && is_inlineable(g, args[0]) ? std::optional { Inlined::Or } : std::nullopt;
+        return args.size() == 1 && is_inlineable(g, args[0], version) ? std::optional { Inlined::Or } : std::nullopt;
     case OpSpecialSelectors::DoubleQuestionMark:
-        return args.size() == 1 && is_inlineable(g, args[0]) ? std::optional { Inlined::OrIfNil } : std::nullopt;
+        return args.size() == 1 && is_inlineable(g, args[0], version) ? std::optional { Inlined::OrIfNil }
+                                                                      : std::nullopt;
     case OpSpecialSelectors::ExclamationQuestionMark:
-        return args.size() == 1 && is_inlineable(g, args[0]) ? std::optional { Inlined::AndIfNotNil } : std::nullopt;
+        return args.size() == 1 && is_inlineable(g, args[0], version) ? std::optional { Inlined::AndIfNotNil }
+                                                                      : std::nullopt;
     case OpSpecialSelectors::QuestionMark:
         return args.size() == 1 ? std::optional { Inlined::QuestionMark } : std::nullopt;
     case OpSpecialSelectors::While:
         if (args.empty())
-            return is_inlineable(g, receiver) ? std::optional { Inlined::While } : std::nullopt;
-        if (args.size() != 1 || !is_inlineable(g, args[0]))
+            return is_inlineable(g, receiver, version) ? std::optional { Inlined::While } : std::nullopt;
+        if (args.size() != 1 || !is_inlineable(g, args[0], version))
             return std::nullopt;
         // Only a literal `true`, the old compiler's test for `{ true }` never matched.
         if (is_true(ctx, g, receiver))
             return Inlined::WhileTrue;
-        return is_inlineable(g, receiver) ? std::optional { Inlined::While } : std::nullopt;
+        return is_inlineable(g, receiver, version) ? std::optional { Inlined::While } : std::nullopt;
     case OpSpecialSelectors::Loop:
-        return args.empty() && is_inlineable(g, receiver) ? std::optional { Inlined::Loop } : std::nullopt;
+        return args.empty() && is_inlineable(g, receiver, version) ? std::optional { Inlined::Loop } : std::nullopt;
     case OpSpecialSelectors::Case:
-        return is_inlineable(g, receiver) && all_inlineable(g, args) ? std::optional { Inlined::Case } : std::nullopt;
+        return is_inlineable(g, receiver, version) && all_inlineable(g, args, version) ? std::optional { Inlined::Case }
+                                                                                       : std::nullopt;
     case OpSpecialSelectors::Switch:
-        return can_inline_switch(ctx, g, args) ? std::optional { Inlined::Switch } : std::nullopt;
+        return can_inline_switch(ctx, g, args, version) ? std::optional { Inlined::Switch } : std::nullopt;
     default:
         return std::nullopt;
     }
@@ -117,7 +122,7 @@ bool inlines_receiver(Inlined kind) { return kind == Inlined::While || kind == I
 // Inlined sends
 ////////////////////////////////////////////////////////////////////////////////
 
-bool is_inlineable(const ir::IRGraph& g, ir::SCAnyExpr_I i) {
+bool is_inlineable(const ir::IRGraph& g, ir::SCAnyExpr_I i, ast::LanguageVersion version) {
     const auto f = g.as_a<ir::SCFunction_I>(ir::NodeIndex { *i });
     // A closed function's names are looked up in the Interpreter, which an inlined body can't do.
     if (!f || g.payload(*f).closed)
@@ -125,10 +130,21 @@ bool is_inlineable(const ir::IRGraph& g, ir::SCAnyExpr_I i) {
     const auto [positional, variadic, body] = g.children(*f);
     if (g.children(positional).iter() || g.children(variadic).iter())
         return false;
+    const bool hoists = ir::hoists_inlined_variables(version);
     for (auto it = g.children(body).iter(); it; ++it) {
         const ir::NodeIndex item { **it };
-        if (g.is_a<ir::SCVariableDeclare_I>(item) || g.is_a<ir::SCPackDeclare_I>(item))
-            return false;
+        if (const auto declare = g.as_a<ir::SCVariableDeclare_I>(item)) {
+            if (!hoists || g.local(g.payload(*declare).local).captured)
+                return false;
+        } else if (const auto pack = g.as_a<ir::SCPackDeclare_I>(item)) {
+            if (!hoists)
+                return false;
+            const auto [_, targets] = g.children(*pack);
+            for (auto t = g.children(targets).iter(); t; ++t)
+                if (const auto& target = g.payload(*t);
+                    target.declares && target.local && g.local(ir::LocalIndex { *target.local }).captured)
+                    return false;
+        }
     }
     return true;
 }
@@ -177,10 +193,11 @@ std::optional<NilTest> nil_test_body(const InliningContext& ctx, const ir::IRGra
 // Switch keys
 ////////////////////////////////////////////////////////////////////////////////
 
-std::optional<ir::ConstExprIndex> switch_key(const InliningContext& ctx, const ir::IRGraph& g, ir::SCAnyExpr_I i) {
+std::optional<ir::ConstExprIndex> switch_key(const InliningContext& ctx, const ir::IRGraph& g, ir::SCAnyExpr_I i,
+                                             ast::LanguageVersion version) {
     ir::NodeIndex key_node { *i };
     if (const auto f = g.as_a<ir::SCFunction_I>(key_node)) {
-        if (!is_inlineable(g, i))
+        if (!is_inlineable(g, i, version))
             return std::nullopt;
         const auto [p, v, body] = g.children(*f);
         const auto first = g.first_child(ir::NodeIndex { *body });

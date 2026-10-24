@@ -42,7 +42,10 @@ inline constexpr std::size_t max_frame_slots { 255 };
 
 enum struct Variadic : std::uint8_t { None, Args, ArgsAndKwargs };
 
-// Slots are `this`, then arguments, variadic arguments, and variables. All are optional.
+// Can exceed max_frame_slots, which is reported, so it is wider than lir::SlotIndex.
+using FrameSlotIndex = util::StrongIndex<std::uint32_t, struct FrameSlotIndex__>;
+
+// Slots are `this`, then arguments, variadic arguments, variables, and hoisted vars. All are optional.
 struct Frame {
     FrameOwner_I owner;
     OptionalFrameIndex parent {};
@@ -51,15 +54,13 @@ struct Frame {
     std::uint32_t num_positional { 0 };
     bool has_this { false };
     Variadic variadic { Variadic::None };
-    std::vector<ir::LocalIndex> locals {};
+    // Each slot's variable, none for `this`. The variables of enclosing frames it uses are in theirs.
+    util::IndexedVector<FrameSlotIndex, ir::OptionalLocalIndex> slots {};
 
     [[nodiscard]] std::uint32_t num_variadic() const { return static_cast<std::uint32_t>(variadic); }
-    [[nodiscard]] std::size_t num_slots() const { return locals.size() + (has_this ? 1 : 0); }
+    [[nodiscard]] std::size_t num_slots() const { return slots.size(); }
 };
 static_assert(sizeof(Frame) == 48);
-
-// Can exceed max_frame_slots, which is reported, so it is wider than lir::SlotIndex.
-using FrameSlotIndex = util::StrongIndex<std::uint32_t, struct FrameSlotIndex__>;
 
 struct LocalSlot {
     OptionalFrameIndex frame {};
@@ -69,7 +70,8 @@ static_assert(sizeof(LocalSlot) == 8);
 
 struct Frames {
     util::IndexedVector<FrameIndex, Frame> frames {};
-    util::IndexedVector<ir::LocalIndex, LocalSlot> locals {};
+    // Where each variable is.
+    util::IndexedVector<ir::LocalIndex, LocalSlot> locations {};
     std::vector<sc::diag::Diagnostic> diagnostics {};
 
     [[nodiscard]] std::uint32_t depth(FrameIndex from, FrameIndex to) const;
@@ -104,6 +106,9 @@ public:
         return m_stack.empty() ? OptionalFrameIndex {} : OptionalFrameIndex { m_stack.back() };
     }
 
+    // Inlining depends on version.
+    [[nodiscard]] ast::LanguageVersion version() const { return m_version; }
+
 private:
     FrameIndex start(ir::NodeIndex owner);
     [[nodiscard]] bool is_inlined(ir::SCFunction_I function) const;
@@ -113,6 +118,7 @@ private:
     const InliningContext* m_inlining;
     const Frames* m_frames {};
     std::uint32_t m_next { 0 };
+    ast::LanguageVersion m_version { ast::LanguageVersion::Legacy };
 
     std::vector<FrameIndex> m_stack {};
     // A generator's qualifiers' frames end when it exits.
