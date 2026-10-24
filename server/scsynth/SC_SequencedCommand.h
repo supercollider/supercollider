@@ -439,10 +439,9 @@ protected:
     void* space = World_Alloc(inWorld, sizeof(SendFailureCmd));                                                        \
     if (!space)                                                                                                        \
         return kSCErr_OutOfRealTimeMemory;                                                                             \
-    SendFailureCmd* cmd = new (space) SendFailureCmd(inWorld, inReply);                                                \
+    SendFailureCmd* cmd = new (space) SendFailureCmd(inWorld, inReply, inCmdName, inErrString);                        \
     if (!cmd)                                                                                                          \
         return kSCErr_Failed;                                                                                          \
-    cmd->InitSendFailureCmd(inCmdName, inErrString);                                                                   \
     if (inWorld->mRealTime)                                                                                            \
         cmd->CallNextStage();                                                                                          \
     else                                                                                                               \
@@ -452,10 +451,8 @@ protected:
  *  message from the RT thread. */
 class SendFailureCmd : public SC_SequencedCommand {
 public:
-    SendFailureCmd(World* inWorld, const ReplyAddress* inReplyAddress);
+    SendFailureCmd(World* inWorld, const ReplyAddress* inReplyAddress, const char* inCmdName, const char* inErrString);
     virtual ~SendFailureCmd();
-
-    void InitSendFailureCmd(const char* inCmdName, const char* inErrString);
 
     bool Stage2() override; // non real time
 

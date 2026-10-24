@@ -1220,18 +1220,11 @@ bool NotifyCmd::Stage2() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-SendFailureCmd::SendFailureCmd(World* inWorld, const ReplyAddress* inReplyAddress):
+SendFailureCmd::SendFailureCmd(World* inWorld, const ReplyAddress* inReplyAddress, const char* inCmdName,
+                               const char* inErrString):
     SC_SequencedCommand(inWorld, inReplyAddress),
     mCmdName(nullptr),
-    mErrString(nullptr) {}
-
-SendFailureCmd::~SendFailureCmd() {
-    World_Free(mWorld, mCmdName);
-    World_Free(mWorld, mErrString);
-}
-
-
-void SendFailureCmd::InitSendFailureCmd(const char* inCmdName, const char* inErrString) {
+    mErrString(nullptr) {
     mCmdName = (char*)World_Alloc(mWorld, strlen(inCmdName) + 1);
     ThrowIfNil(mCmdName);
     strcpy(mCmdName, inCmdName);
@@ -1239,6 +1232,11 @@ void SendFailureCmd::InitSendFailureCmd(const char* inCmdName, const char* inErr
     mErrString = (char*)World_Alloc(mWorld, strlen(inErrString) + 1);
     ThrowIfNil(mErrString);
     strcpy(mErrString, inErrString);
+}
+
+SendFailureCmd::~SendFailureCmd() {
+    World_Free(mWorld, mCmdName);
+    World_Free(mWorld, mErrString);
 }
 
 bool SendFailureCmd::Stage2() {
