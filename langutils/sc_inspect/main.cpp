@@ -189,11 +189,10 @@ int wmain(int argc, wchar_t* argv[]) {
 int main(int argc, char* argv[]) {
 #endif // _MSC_VER
     if (argc <= 1) {
-        std::cout
-            << "ERROR: incorrect number of arguments to sc_inspect, expected "
-               "[--threads n] [--relative-to dir] [--interpreted-version x.y] [--no-dump] [--prelude dir|.sc file]... "
-               "[dir|.sc file]... "
-            << std::endl;
+        std::cout << "ERROR: incorrect number of arguments to sc_inspect, expected "
+                     "[--threads n] [--relative-to dir] [--interpreted-version x.y] [--no-dump] [--frames] [--lir] "
+                     "[--bytecode] [--prelude dir|.sc file]... [dir|.sc file]... "
+                  << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -216,6 +215,8 @@ int main(int argc, char* argv[]) {
     // --frames adds the backend's frame layout, each frame's slots, and where each variable read or assigned is.
     // --lir adds the backend's lowered ir, after the dump, each class's functions and their instructions.
     // --bytecode adds the backend's bytecode after that, each function's tables and bytes.
+    // With --no-dump, --frames, --lir or --bytecode run the backend up to that stage over every graph without printing
+    // it, timing the backend on its own.
     std::vector<std::filesystem::path> module_paths;
     std::vector<std::filesystem::path> prelude_paths;
     std::optional<std::filesystem::path> relative_to;
@@ -406,10 +407,70 @@ int main(int argc, char* argv[]) {
             interpreted_graphs.push_back(std::move(r.ir));
     }
 
+    // The backend's frames, lowered ir and bytecode, by graph, and its diagnostics, printed with the others. Each
+    // frame's owner is written when the owner is, which for a qualifier is before its frame starts, so they are found
+    // by owner. Each stage only runs if it, or a later one, is shown.
+    using BackendRoot = sc::ir::join<sc::ir::SCClass_I, sc::ir::SCInterpreted_I>;
+    struct DumpFrames {
+        BackendRoot root;
+        sc::backend::Frames layout;
+        std::unordered_map<std::uint32_t, sc::backend::FrameIndex> by_owner;
+        sc::backend::lir::LoweredGraph lowered {};
+        sc::backend::EmittedGraph emitted {};
+    };
+    const bool show_backend = show_frames || show_lir || show_bytecode;
+    const sc::backend::LoweringSymbols selectors { symbol_table };
+    const sc::backend::SpecialSymbols special_symbols { symbol_table };
+    std::optional<sc::backend::MemberTable> member_table;
+    if (show_backend)
+        member_table.emplace(comp, symbol_table);
+    const auto run_backend = [&](const sc::ir::IRGraph& g, BackendRoot root,
+                                 std::vector<sc::diag::Diagnostic>& diagnostics) {
+        DumpFrames f { root, sc::backend::layout_frames(g, root) };
+        for (auto& d : f.layout.diagnostics)
+            diagnostics.push_back(std::move(d));
+        for (std::uint32_t fi { 0 }; fi < f.layout.frames.size(); ++fi)
+            f.by_owner.insert(
+                { *f.layout.frames[sc::backend::FrameIndex { fi }].owner, sc::backend::FrameIndex { fi } });
+        if (show_lir || show_bytecode) {
+            const sc::backend::LoweringContext lowering { g,
+                                                          f.layout,
+                                                          *member_table,
+                                                          ctx.constant_table,
+                                                          symbol_table,
+                                                          selectors,
+                                                          ctx.common_classes.array,
+                                                          ctx.common_classes.event };
+            f.lowered = sc::backend::lower(lowering, root);
+        }
+        if (show_bytecode) {
+            const sc::backend::EmitContext emitting { g, f.layout, ctx.constant_table, special_symbols };
+            f.emitted = sc::backend::emit(emitting, f.lowered);
+            for (auto& d : f.emitted.diagnostics)
+                diagnostics.push_back(std::move(d));
+        }
+        return f;
+    };
+
     if (!dump) {
         std::size_t count = diags.size();
         for (const auto& file : parse_diagnostics)
             count += file.size();
+        // Every graph, prelude and empty meta classes too, each dropped once run, so it only times the backend.
+        if (show_backend) {
+            const auto backend_start = std::chrono::high_resolution_clock::now();
+            std::vector<sc::diag::Diagnostic> backend_diagnostics;
+            comp.depth_first_do([&](const sc::ir::IRGraph& g) {
+                if (const auto roots = g.root())
+                    run_backend(g, std::get<sc::ir::SCClass_I>(*roots), backend_diagnostics);
+            });
+            for (const auto& g : interpreted_graphs)
+                run_backend(*g, std::get<sc::ir::SCInterpreted_I>(*g->root()), backend_diagnostics);
+            const auto backend_time = std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::high_resolution_clock::now() - backend_start);
+            count += backend_diagnostics.size();
+            std::cout << "Backend took " << static_cast<double>(backend_time.count()) / 1000.0 << " s.\n";
+        }
         std::cout << count << " diagnostics.\n";
         std::cout << "Successfully compiled " << ctx.class_declarations.num_not_poisoned() / 2 << " classes."
                   << std::endl;
@@ -489,54 +550,16 @@ int main(int argc, char* argv[]) {
         return std::tie(l.file, l.begin, l.is_meta) < std::tie(r.file, r.begin, r.is_meta);
     });
 
-    // The backend's frames, lowered ir and bytecode, by graph, and its diagnostics, printed with the others. Each
-    // frame's owner is written when the owner is, which for a qualifier is before its frame starts, so they are found
-    // by owner.
-    struct DumpFrames {
-        sc::ir::join<sc::ir::SCClass_I, sc::ir::SCInterpreted_I> root;
-        sc::backend::Frames layout;
-        std::unordered_map<std::uint32_t, sc::backend::FrameIndex> by_owner;
-        sc::backend::lir::LoweredGraph lowered {};
-        sc::backend::EmittedGraph emitted {};
-    };
-    std::optional<sc::backend::MemberTable> member_table;
     std::map<const sc::ir::IRGraph*, DumpFrames> frames;
-    const bool show_backend = show_frames || show_lir || show_bytecode;
     if (show_backend) {
-        const sc::backend::LoweringSymbols selectors { symbol_table };
-        const sc::backend::SpecialSymbols special_symbols { symbol_table };
-        member_table.emplace(comp, symbol_table);
         for (const auto& dumped : classes) {
             const auto& g = *dumped.graph;
-            const auto root = [&]() -> sc::ir::join<sc::ir::SCClass_I, sc::ir::SCInterpreted_I> {
+            const auto root = [&]() -> BackendRoot {
                 if (const auto c = g.as_a<sc::ir::SCClass_I>(dumped.index))
                     return *c;
                 return *g.as_a<sc::ir::SCInterpreted_I>(dumped.index);
             }();
-            DumpFrames f { root, sc::backend::layout_frames(g, root) };
-            for (auto& d : f.layout.diagnostics)
-                all_diagnostics.push_back(std::move(d));
-            for (std::uint32_t fi { 0 }; fi < f.layout.frames.size(); ++fi)
-                f.by_owner.insert(
-                    { *f.layout.frames[sc::backend::FrameIndex { fi }].owner, sc::backend::FrameIndex { fi } });
-            if (show_lir || show_bytecode) {
-                const sc::backend::LoweringContext lowering { g,
-                                                              f.layout,
-                                                              *member_table,
-                                                              ctx.constant_table,
-                                                              symbol_table,
-                                                              selectors,
-                                                              ctx.common_classes.array,
-                                                              ctx.common_classes.event };
-                f.lowered = sc::backend::lower(lowering, root);
-            }
-            if (show_bytecode) {
-                const sc::backend::EmitContext emitting { g, f.layout, ctx.constant_table, special_symbols };
-                f.emitted = sc::backend::emit(emitting, f.lowered);
-                for (auto& d : f.emitted.diagnostics)
-                    all_diagnostics.push_back(std::move(d));
-            }
-            frames.insert({ dumped.graph, std::move(f) });
+            frames.insert({ dumped.graph, run_backend(g, root, all_diagnostics) });
         }
     }
 
