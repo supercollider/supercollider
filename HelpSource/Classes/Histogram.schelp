@@ -1,0 +1,117 @@
+title:: Histogram
+summary:: Representation of a distribution on some data.
+categories:: Math, Random
+related:: Classes/Plotter
+
+The Histogram object is 1. a container for some data along with the distributions derived from it,
+and 2. implements a plot method that facilitates creation of plots representing histograms.
+The primary intended use is to call it via its link::-.plot:: instance method.
+For general information regarding histogram representations,
+see link::https://en.wikipedia.org/wiki/Histogram##wikipedia:: or the statistics textbook of your choice.
+
+code::
+a = {9.3.sum3rand}.dup(500); // make up some "data"
+Histogram(a).plot; // and plot a histogram
+// equivalent to:
+a.histo.plot;
+a.plotHisto;
+// it is possible to instantiate a Histogram object without plotting it:
+h = Histogram(a) // same as a.histo;
+// and to change a parameter on an existing histogram.
+h.n_bins = 15;
+// notice that the plot (if it exists already) is automatically redrawn;
+// no need to call h.plot again!
+
+// it is also possible to plot multiple histograms simultaneously:
+// (provided the input collections are of the same size)
+// make some more data
+b = { 9.3.bilinrand }.dup(500)
+[a, b].histo.plot
+// if they're not of the same size:
+c = { 9.3.rand2 }.dup(100)
+a.size > c.size // -> true
+[a, b, c].histo.plot
+// comparison still possible but more data points == more better
+::
+
+classmethods::
+method:: new
+	argument:: data
+	a Collection of quantitative data. (i.e., of Numbers, not symbols)
+	argument:: n_bins
+	number of bins in the histogram. Default is code::data.size.sqrt.asInteger::.
+	If data is an array of arrays, the size of the first subarray decides the number of bins.
+	argument:: min
+	lower limit of the histogram; data points below this value will be counted as outliers.
+	argument:: max
+	upper limit of the histogram; data points above this value will be counted as outliers.
+	argument:: x_warp
+	set whether the range is linearly or geometrically subdivided into bins.
+	Geometric aka exponential aka logarithmic scaling is another obvious option (code::\exp::),
+	Linear (code::\lin::) is default.
+	but any object that implements code::.asWarp:: is possible.
+
+	returns:: a Histogram object, on which you can call link::##-.plot##::
+
+
+
+
+instancemethods::
+private:: prUpdateHistogram, prMakeFreqsArray, prPrepareDomainSpec
+method:: plot
+	returns a link::Classes/Plotter:: with the relevant attributes (domain, domainSpec, y-spec, limits, labels, plotMode) preset for you by the histogram instance.
+	If the present histogram intance has already created a plotter instance through an earlier call to this method,
+	that plotter is updated, no new plotter is created, and the parent argument will be ignored.
+	argument:: name
+	name of the plotter window
+	argument:: bounds
+	bounds of the plotter
+	argument:: parent
+	parent window of the plotter
+
+examples::
+subsection:: Compare some random number generators
+code::
+// turn methods into lambda functions through partial application syntax:
+f = [_.rand2, _.sum3rand, _.bilinrand, _.rand, _.linrand, exprand(0.001,_)];
+
+// write a funtion that generates distributions from these functions:
+d = { | func, range, n  |
+	{ func.(range) }.dup(n)
+};
+
+// and now, make the histogram for each function in the array f:
+g = f.collect { |fu| d.(fu, 5.0, 5000) } ;
+g.histo.plot
+
+// note that these do not all have the same ranges! ([-5,5], [0, 5], [0.001, 5].
+// By default, the histo class will set its min and max according to the min and max in all of the data
+// (e.g., even for the plot of the geometric distribution exprand, the min will be around -5,
+// because one of the other functions such as .rand2 or will have returned it).
+
+// n_bins will be calculated according to the first set of data (i.e., g[0] here),
+// via the squareroot of the number of data points in this dataset.
+// This is a rough rule of thumb only, and you should experiment with different n_bins.
+::
+
+subsection:: Histograms on discrete distributions
+code::
+// The Poisson distribution is discrete, i.e., it will return only integers.
+// convert the Ppoisson pattern to a Routine via .asStream
+// and then create 10000 "data points" via .nextN:
+p = Ppoisson(mean: 21).asStream.nextN(10000)
+
+// check if they're really all integers
+p.every(_.isInteger) // -> true (told you so)
+
+h = p.histo(15, 1, 41)
+h.plot
+// If the data is all integers, Histogram might adjust your n_bins for you!
+// (Check the post window.)
+
+// if you don't like this, convert to floating point first:
+p.asFloat.histo(15, 1, 41).plot // do as thou wilt
+
+// or use an exponential warp (when the range doesn't include zero):
+p.histo(55, 10, 41, x_warp: \exp).plot
+::
