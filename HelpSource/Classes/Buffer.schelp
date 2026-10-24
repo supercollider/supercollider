@@ -546,7 +546,7 @@ x.free; b.free;
 subsection:: Other methods
 
 method:: read
-Read a soundfile into an already allocated buffer.
+Read a soundfile into an already allocated buffer. The soundfile and the buffer must have the same number of channels!
 argument:: argpath
 A String representing the path of the soundfile to be read.
 argument:: fileStartFrame
