@@ -637,30 +637,45 @@ void BufReadCmd::Stage4() { SendDoneWithIntValue("/b_read", mBufIndex); }
 
 ///////////////////////////////////////////////////////////////////////////
 
-SC_BufReadCommand::SC_BufReadCommand(World* inWorld, const ReplyAddress* inReplyAddress):
+BufChannelCommand::BufChannelCommand(World* inWorld, const ReplyAddress* inReplyAddress):
     SC_SequencedCommand(inWorld, inReplyAddress),
-    mNumChannels(0) {}
+    mNumChannels(0),
+    mChannelCapacity(0),
+    mChannels(nullptr) {}
 
-void SC_BufReadCommand::InitChannels(sc_msg_iter& msg) {
-    mNumChannels = 0;
+BufChannelCommand::~BufChannelCommand() { World_Free(mWorld, mChannels); }
+
+void BufChannelCommand::InitChannels(sc_msg_iter& msg) {
+    assert(mNumChannels == 0 && mChannelCapacity == 0);
+
     while (msg.nextTag(0) == 'i') {
         int c = msg.geti();
-        if (mNumChannels <= kMaxNumChannels) {
-            mChannels[mNumChannels++] = c;
+        if (mNumChannels >= mChannelCapacity) {
+            if (mChannelCapacity == 0) {
+                // first allocation
+                mChannelCapacity = 8; // initial capacity
+                mChannels = (int*)World_Alloc(mWorld, mChannelCapacity * sizeof(int));
+            } else {
+                // grow capacity and reallocate
+                mChannelCapacity *= 2;
+                mChannels = (int*)World_Realloc(mWorld, mChannels, mChannelCapacity * sizeof(int));
+            }
+            ThrowIfNil(mChannels);
         }
+        mChannels[mNumChannels++] = c;
     }
 }
 
-bool SC_BufReadCommand::CheckChannels(int inNumChannels) {
+bool BufChannelCommand::CheckChannels(int inNumChannels) const {
     for (int i = 0; i < mNumChannels; ++i) {
-        if (mChannels[i] >= inNumChannels) {
+        if (mChannels[i] < 0 || mChannels[i] >= inNumChannels) {
             return false;
         }
     }
     return true;
 }
 
-void SC_BufReadCommand::CopyChannels(float* dst, float* src, size_t srcChannels, size_t numFrames) {
+void BufChannelCommand::CopyChannels(const float* src, size_t srcChannels, float* dst, size_t numFrames) const {
     for (int ci = 0; ci < mNumChannels; ++ci) {
         int c = mChannels[ci];
         if (c >= 0 && c < srcChannels) {
@@ -678,7 +693,7 @@ void SC_BufReadCommand::CopyChannels(float* dst, float* src, size_t srcChannels,
 ///////////////////////////////////////////////////////////////////////////
 
 BufAllocReadChannelCmd::BufAllocReadChannelCmd(World* inWorld, const ReplyAddress* inReplyAddress):
-    SC_BufReadCommand(inWorld, inReplyAddress),
+    BufChannelCommand(inWorld, inReplyAddress),
     mFreeData(nullptr),
     mFilename(nullptr) {}
 
@@ -767,7 +782,7 @@ bool BufAllocReadChannelCmd::Stage2() {
         // read some channels
         sf_seek(sf, mFileOffset, SEEK_SET);
         sf_readf_float(sf, data, mNumFrames);
-        CopyChannels(buf->data, data, fileinfo.channels, mNumFrames);
+        CopyChannels(data, fileinfo.channels, buf->data, mNumFrames);
         // free temp buffer
         free(data);
     }
@@ -797,7 +812,7 @@ void BufAllocReadChannelCmd::Stage4() {
 ///////////////////////////////////////////////////////////////////////////
 
 BufReadChannelCmd::BufReadChannelCmd(World* inWorld, const ReplyAddress* inReplyAddress):
-    SC_BufReadCommand(inWorld, inReplyAddress),
+    BufChannelCommand(inWorld, inReplyAddress),
     mFilename(nullptr) {}
 
 int BufReadChannelCmd::Init(const char* inData, int inSize) {
@@ -836,13 +851,24 @@ bool BufReadChannelCmd::Stage2() {
     scprintf("scsynth compiled without libsndfile\n");
     return false;
 #else
-    SF_INFO fileinfo;
-    memset(&fileinfo, 0, sizeof(fileinfo));
-
     SndBuf* buf = World_GetNRTBuf(mWorld, mBufIndex);
     int framesToEnd = buf->frames - mBufOffset;
     if (framesToEnd <= 0)
         return true;
+
+    // the size of the channel array (if provided) must match the number of buffer channels!
+    if (mNumChannels > 0 && mNumChannels != buf->channels) {
+        char str[ERR_BUF_SIZE];
+        snprintf(str, ERR_BUF_SIZE, "Channel mismatch. %d channels provided. Buffer has %d channels.\n", mNumChannels,
+                 buf->channels);
+        SendFailureWithIntValue(&mReplyAddress, "/b_readChannel", str,
+                                mBufIndex); // SendFailure(&mReplyAddress, "/b_read", str);
+        scprintf(str);
+        return false;
+    }
+
+    SF_INFO fileinfo;
+    memset(&fileinfo, 0, sizeof(fileinfo));
 
     SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_READ, &fileinfo);
     if (!sf) {
@@ -856,8 +882,7 @@ bool BufReadChannelCmd::Stage2() {
 
     if (mNumChannels > 0) {
         // verify channel indexes
-        if (!(CheckChannels(fileinfo.channels))) { // nescivi:  && CheckChannels(buf->channels) (should not check here
-                                                   // for buf->channels)
+        if (!(CheckChannels(fileinfo.channels))) {
             const char* str = "Channel index out of range.\n";
             SendFailureWithIntValue(&mReplyAddress, "/b_readChannel", str,
                                     mBufIndex); // SendFailure(&mReplyAddress, "/b_allocRead", str);
@@ -865,15 +890,16 @@ bool BufReadChannelCmd::Stage2() {
             sf_close(sf);
             return false;
         }
-        // nescivi: this also seems out of place: we want to read from a file with more channels than are in the buffer
-        // 	} else if (fileinfo.channels != buf->channels) {
-        // 		char str[256];
-        // 		sf_close(sf);
-        // 		sprintf(str, "Channel mismatch. File '%s' has %d channels. Buffer has %d channels.\n",
-        // 				mFilename, fileinfo.channels, buf->channels);
-        // 		SendFailure(&mReplyAddress, "/b_read", str);
-        // 		scprintf(str);
-        // 		return false;
+    } else if (fileinfo.channels != buf->channels) {
+        // read all channels -> check for channel mismatch. Same as in BufReadCmd.
+        char str[ERR_BUF_SIZE];
+        sf_close(sf);
+        snprintf(str, ERR_BUF_SIZE, "Channel mismatch. File '%s' has %d channels. Buffer has %d channels.\n", mFilename,
+                 fileinfo.channels, buf->channels);
+        SendFailureWithIntValue(&mReplyAddress, "/b_readChannel", str,
+                                mBufIndex); // SendFailure(&mReplyAddress, "/b_read", str);
+        scprintf(str);
+        return false;
     }
 
     if (mFileOffset < 0)
@@ -898,7 +924,7 @@ bool BufReadChannelCmd::Stage2() {
             // read some channels
             sf_seek(sf, mFileOffset, SEEK_SET);
             sf_readf_float(sf, data, mNumFrames);
-            CopyChannels(buf->data + (mBufOffset * mNumChannels), data, fileinfo.channels, mNumFrames);
+            CopyChannels(data, fileinfo.channels, buf->data + (mBufOffset * mNumChannels), mNumFrames);
             // free temp buffer
             free(data);
         }

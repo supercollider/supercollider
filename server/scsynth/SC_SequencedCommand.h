@@ -317,25 +317,25 @@ protected:
 ///////////////////////////////////////////////////////////////////////////
 
 /** @brief common base clase for BufAllocReadChannelCmd and BufReadChannelCmd. */
-class SC_BufReadCommand : public SC_SequencedCommand {
+class BufChannelCommand : public SC_SequencedCommand {
 public:
-    enum { kMaxNumChannels = 32 };
-
-    SC_BufReadCommand(World* inWorld, const ReplyAddress* inReplyAddress);
+    BufChannelCommand(World* inWorld, const ReplyAddress* inReplyAddress);
+    virtual ~BufChannelCommand();
 
 protected:
     void InitChannels(sc_msg_iter& msg);
-    bool CheckChannels(int inNumChannels);
-    void CopyChannels(float* dst, float* src, size_t srcChannels, size_t numFrames);
+    bool CheckChannels(int inNumChannels) const;
+    void CopyChannels(const float* src, size_t srcChannels, float* dst, size_t numFrames) const;
 
     int mNumChannels;
-    int mChannels[kMaxNumChannels];
+    int mChannelCapacity;
+    int* mChannels;
 };
 
 ///////////////////////////////////////////////////////////////////////////
 
 /** @brief implements the \c /b_allocReadChannel command. */
-class BufAllocReadChannelCmd : public SC_BufReadCommand {
+class BufAllocReadChannelCmd : public BufChannelCommand {
 public:
     BufAllocReadChannelCmd(World* inWorld, const ReplyAddress* inReplyAddress);
     virtual ~BufAllocReadChannelCmd();
@@ -357,7 +357,7 @@ protected:
 ///////////////////////////////////////////////////////////////////////////
 
 /** @brief implements the \c /b_readChannel command. */
-class BufReadChannelCmd : public SC_BufReadCommand {
+class BufReadChannelCmd : public BufChannelCommand {
 public:
     BufReadChannelCmd(World* inWorld, const ReplyAddress* inReplyAddress);
     virtual ~BufReadChannelCmd();
