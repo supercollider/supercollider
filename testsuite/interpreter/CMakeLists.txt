@@ -1,4 +1,5 @@
 set(test_sources
+    gc_array.cpp
     slot.cpp
 )
 
@@ -37,6 +38,18 @@ foreach(test ${test_sources})
     add_test(interpreter__${test_name} ${test_name})
     set_property(TARGET ${test_name} PROPERTY FOLDER Test/Interpreter)
 endforeach(test)
+
+# gc_array must compile the real class library. Mirror the installed, Qt-less
+# class library layout when the corresponding features are disabled.
+target_compile_definitions(gc_array PRIVATE
+    "SC_CLASS_LIB_DIR=\"${CMAKE_SOURCE_DIR}/SCClassLibrary\""
+)
+if(NOT SC_QT)
+    target_compile_definitions(gc_array PRIVATE SC_CLASS_LIB_EXCLUDE_GUI=1)
+endif()
+if(NOT SC_ABLETON_LINK)
+    target_compile_definitions(gc_array PRIVATE SC_CLASS_LIB_EXCLUDE_ABLETON=1)
+endif()
 
 
 

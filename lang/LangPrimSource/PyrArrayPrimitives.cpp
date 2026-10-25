@@ -216,6 +216,17 @@ int basicRemoveAt(struct VMGlobals* g, int numArgsPushed) {
         if (obj->obj_format <= obj_slot) {
             // might be partial scan object
             g->gc->GCWrite(obj, obj->slots + index);
+            // The memmove above also shifts the first unscanned slot at the
+            // partial-scan cursor to cursor - 1, behind the already scanned
+            // prefix, where the collector would never look at it again.
+            // Barrier that slot so a white child in it is not swept while
+            // still referenced. index == cursor - 1 is already covered by the
+            // GCWrite above, which then targets exactly the shifted slot.
+            if (g->gc->IsPartialScanObject(obj)) {
+                const int32 partialScanIndex = g->gc->GetPartialScanIndex();
+                if (index + 1 < partialScanIndex)
+                    g->gc->GCWrite(obj, obj->slots + partialScanIndex - 1);
+            }
         }
     }
     obj->size--;
