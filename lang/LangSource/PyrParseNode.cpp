@@ -1277,19 +1277,19 @@ struct CompiledBytecodeInfoForBlock {
 
     // bytecodes
     auto byteArray = newPyrInt8Array(compileGC(cxt), length, flags, false);
-    memcpy(byteArray->b, data.codes.data(), length * sizeof(Byte));
+    memcpy(byteArray->b, data.codes.raw().data(), length * sizeof(Byte));
     byteArray->size = static_cast<int>(length);
 
-    // bytecode locations
-    const auto locLength = data.startAndEndLocations.size();
+    // bytecode locations, a begin and end each.
+    const auto locLength = 2 * data.locations.size();
     auto locArray = newPyrInt32Array(compileGC(cxt), locLength, flags, false);
-    memcpy(locArray->i, data.startAndEndLocations.data(), locLength * sizeof(uint32_t));
+    memcpy(locArray->i, data.locations.raw().data(), locLength * sizeof(uint32_t));
     locArray->size = static_cast<int>(locLength);
 
     // bytecode sizes --- almost no codes take up a single byte.
     const auto codeSizesLength = data.sizeOfCodes.size();
     auto szArray = newPyrInt8Array(compileGC(cxt), codeSizesLength, flags, false);
-    memcpy(szArray->b, data.sizeOfCodes.data(), codeSizesLength * sizeof(uint8_t));
+    memcpy(szArray->b, data.sizeOfCodes.raw().data(), codeSizesLength * sizeof(uint8_t));
     szArray->size = codeSizesLength;
     return { { byteArray, locArray, szArray } };
 }
@@ -3159,7 +3159,7 @@ void compileSwitchMsg(CompilerContext& cxt, PyrCallNode* node) {
         argnode = argnode->mNext; // skip first arg.
 
         PyrParseNode* nextargnode = nullptr;
-        const auto absoluteOffset = cxt.bytecodes.length();
+        const auto absoluteOffset = cxt.bytecodes.next_index();
         int offset = 0;
         int lastOffset = 0;
         for (; argnode; argnode = nextargnode) {
@@ -3218,8 +3218,8 @@ void compileSwitchMsg(CompilerContext& cxt, PyrCallNode* node) {
 
         {
             const auto jumplen = offset - lastOffset;
-            cxt.bytecodes.backSetByte(absoluteOffset + lastOffset - 2, (jumplen >> 8) & 255);
-            cxt.bytecodes.backSetByte(absoluteOffset + lastOffset - 1, jumplen & 255);
+            cxt.bytecodes.backSetByte(sc::util::advance(absoluteOffset, lastOffset - 2), (jumplen >> 8) & 255);
+            cxt.bytecodes.backSetByte(sc::util::advance(absoluteOffset, lastOffset - 1), jumplen & 255);
         }
 
         PyrSlot* slots = array->slots;
@@ -3232,8 +3232,9 @@ void compileSwitchMsg(CompilerContext& cxt, PyrCallNode* node) {
             } else {
                 if (const auto offsetToHere = value->getInt()) {
                     const auto jumplen = offset - offsetToHere;
-                    cxt.bytecodes.backSetByte(absoluteOffset + offsetToHere - 2, (jumplen >> 8) & 255);
-                    cxt.bytecodes.backSetByte(absoluteOffset + offsetToHere - 1, jumplen & 255);
+                    cxt.bytecodes.backSetByte(sc::util::advance(absoluteOffset, offsetToHere - 2),
+                                              (jumplen >> 8) & 255);
+                    cxt.bytecodes.backSetByte(sc::util::advance(absoluteOffset, offsetToHere - 1), jumplen & 255);
                 }
             }
         }

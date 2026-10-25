@@ -1814,8 +1814,8 @@ void write_emitted(std::ostream& out, const EmittedFunction& function, std::stri
     out << "\n";
     const auto& code = function.code;
     CodeOffset offset { 0 };
-    auto byte = code.codes.begin();
-    for (const auto size : code.sizeOfCodes) {
+    auto byte = code.codes.raw().begin();
+    for (const auto size : code.sizeOfCodes.raw()) {
         out << indent << std::setw(4) << std::left << *offset << std::right << ' ';
         const auto opcode = *byte;
         std::string bytes;

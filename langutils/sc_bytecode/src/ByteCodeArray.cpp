@@ -21,28 +21,33 @@
 #include "sc_bytecode/ByteCodeArray.h"
 
 void CompilingBytecodes::consume(CompilingBytecodes&& other) {
-    m_data.codes.insert(m_data.codes.end(), other.m_data.codes.begin(), other.m_data.codes.end());
-    m_data.startAndEndLocations.insert(m_data.startAndEndLocations.end(), other.m_data.startAndEndLocations.begin(),
-                                       other.m_data.startAndEndLocations.end());
-    m_data.sizeOfCodes.insert(m_data.sizeOfCodes.end(), other.m_data.sizeOfCodes.begin(),
-                              other.m_data.sizeOfCodes.end());
+    const auto append = [](auto& to, const auto& from) {
+        to.raw().insert(to.raw().end(), from.raw().begin(), from.raw().end());
+    };
+    append(m_data.codes, other.m_data.codes);
+    append(m_data.locations, other.m_data.locations);
+    append(m_data.sizeOfCodes, other.m_data.sizeOfCodes);
 }
 
 [[nodiscard]] size_t CompilingBytecodes::length() const noexcept { return m_data.codes.size(); }
 
+[[nodiscard]] CompilingBytecodes::ByteIndex CompilingBytecodes::next_index() const noexcept {
+    return m_data.codes.next_index();
+}
+
 [[nodiscard]] CompilingBytecodes::Data CompilingBytecodes::finish() && noexcept {
-    assert(m_data.startAndEndLocations.size() == m_data.sizeOfCodes.size() * 2); // twice as many.
+    assert(m_data.locations.size() == m_data.sizeOfCodes.size());
     Data out { std::move(m_data) }; // this empties this->data.
     return out;
 }
 
-void CompilingBytecodes::backSetByte(size_t index, Byte newValue) noexcept {
-    assert(index < m_data.codes.size());
+void CompilingBytecodes::backSetByte(ByteIndex index, Byte newValue) noexcept {
+    assert(m_data.codes.contains(index));
     m_data.codes[index] = newValue;
 }
 
 void CompilingBytecodes::assertEmpty() const noexcept {
     assert(m_data.codes.empty());
-    assert(m_data.startAndEndLocations.empty());
+    assert(m_data.locations.empty());
     assert(m_data.sizeOfCodes.empty());
 }

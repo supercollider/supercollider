@@ -20,6 +20,8 @@
 
 #pragma once
 #include "sc_lexer/text_location.hpp"
+#include "sc_util/indexed_vector.hpp"
+#include "sc_util/strong_index.hpp"
 #include <cassert>
 #include <cstdint>
 #include <limits>
@@ -41,15 +43,27 @@ public:
     CompilingBytecodes(CompilingBytecodes&&) = default;
     CompilingBytecodes& operator=(CompilingBytecodes&&) = default;
 
+    using ByteIndex = sc::util::StrongIndex<std::uint32_t, struct ByteIndex__>;
+    using OpcodeIndex = sc::util::StrongIndex<std::uint32_t, struct OpcodeIndex__>;
+
+    // sclang facing type, so raw int.
+    struct OpcodeSpan {
+        int begin;
+        int end;
+    };
+    static_assert(sizeof(OpcodeSpan) == 2 * sizeof(int), "copied to the VM as an int array");
+
     struct Data {
-        std::vector<Byte> codes;
-        std::vector<int> startAndEndLocations; // location in source text. Twice as large as the codes vector.
-        std::vector<std::uint8_t> sizeOfCodes; // codes can be variable width.
+        sc::util::IndexedVector<ByteIndex, Byte> codes;
+        sc::util::IndexedVector<OpcodeIndex, OpcodeSpan> locations;
+        sc::util::IndexedVector<OpcodeIndex, std::uint8_t> sizeOfCodes; // codes can be variable width.
     };
 
     void consume(CompilingBytecodes&& other);
 
     [[nodiscard]] size_t length() const noexcept;
+    // The index the next emitted byte gets.
+    [[nodiscard]] ByteIndex next_index() const noexcept;
 
     template <typename... BYTES> void emit(sc::lex::SourceCodeRange loc, BYTES... bytes) {
         static_assert(sizeof...(BYTES) > 0);
@@ -57,8 +71,7 @@ public:
         // SCLang only support int type.
         assert(loc.begin.absolute <= std::numeric_limits<int>::max());
         assert(loc.end.absolute <= std::numeric_limits<int>::max());
-        m_data.startAndEndLocations.push_back(loc.begin.absolute);
-        m_data.startAndEndLocations.push_back(loc.end.absolute);
+        m_data.locations.push_back({ static_cast<int>(loc.begin.absolute), static_cast<int>(loc.end.absolute) });
         (m_data.codes.push_back(static_cast<Byte>(bytes)), ...);
         m_data.sizeOfCodes.push_back(static_cast<std::uint8_t>(sizeof...(bytes)));
     }
@@ -67,7 +80,7 @@ public:
     // Note the r value qualifier.
     [[nodiscard]] Data finish() && noexcept;
 
-    void backSetByte(size_t index, Byte newValue) noexcept;
+    void backSetByte(ByteIndex index, Byte newValue) noexcept;
 
     void assertEmpty() const noexcept;
 

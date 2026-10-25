@@ -4,5 +4,5 @@ add_library(sc_bytecode STATIC
 )
 
 target_include_directories(sc_bytecode PUBLIC include)
-target_link_libraries(sc_bytecode PUBLIC sc_lexer)
+target_link_libraries(sc_bytecode PUBLIC sc_lexer sc_util)
 set_property(TARGET sc_bytecode PROPERTY FOLDER Libs)

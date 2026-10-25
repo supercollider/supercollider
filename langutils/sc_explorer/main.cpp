@@ -336,10 +336,11 @@ void add_backend(Tree& lir_tree, Tree& bytecode_tree, const Backend& b, const Ir
             constexpr std::size_t table_lines = 3;
             std::optional<sc::lex::SourceCodeRange> range;
             if (in_text && line_index >= table_lines) {
-                const auto op = line_index - table_lines;
-                assert(op < code.sizeOfCodes.size());
-                range = range_from_offsets(*text, static_cast<std::uint32_t>(code.startAndEndLocations[2 * op]),
-                                           static_cast<std::uint32_t>(code.startAndEndLocations[2 * op + 1]));
+                const auto op = CompilingBytecodes::OpcodeIndex::from(line_index - table_lines);
+                assert(code.locations.contains(op));
+                const auto location = code.locations[op];
+                range = range_from_offsets(*text, static_cast<std::uint32_t>(location.begin),
+                                           static_cast<std::uint32_t>(location.end));
             }
             bytecode_tree.add(2, { "", line, range, {} });
         }
