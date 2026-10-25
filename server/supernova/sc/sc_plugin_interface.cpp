@@ -598,6 +598,16 @@ SCBool send_message_to_RT(World* world, struct FifoMsg* msg) {
     return true;
 }
 
+// C API version that takes the SF_INFO by pointer
+SCErr sndfile_format_info_from_strings(SF_INFO* info, const char* header_format, const char* sample_format) {
+    assert(info != nullptr);
+#ifdef NO_LIBSNDFILE
+    return kSCErr_Failed;
+#else
+    return sndfileFormatInfoFromStrings(*info, header_format, sample_format);
+#endif
+}
+
 } /* extern "C" */
 
 namespace nova {
@@ -649,11 +659,7 @@ void sc_plugin_interface::initialize(server_arguments const& args, float* contro
     sc_interface.fSendMsgToRT = &send_message_to_RT;
 
     /* sndfile functions */
-#ifdef NO_LIBSNDFILE
-    sc_interface.fSndFileFormatInfoFromStrings = nullptr;
-#else
-    sc_interface.fSndFileFormatInfoFromStrings = &sndfileFormatInfoFromStrings;
-#endif
+    sc_interface.fSndFileFormatInfoFromStrings = &sndfile_format_info_from_strings;
 
     /* wave tables */
     sc_interface.mSine = gSine;

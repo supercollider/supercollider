@@ -21,9 +21,9 @@
 
 #pragma once
 
-#include "SC_Errors.h"
-
 #ifndef NO_LIBSNDFILE
+
+#    include "SC_Errors.h"
 
 // on Windows, enable Windows libsndfile prototypes in order to access sf_wchar_open.
 // See sndfile.h, lines 739-752. Note that order matters: this has to be the first include of sndfile.h
@@ -35,14 +35,19 @@
 #    include <sndfile.h>
 #    include <sndfile.hh>
 
-#    include "string.h"
+#    include <filesystem>
 
 #    include <boost/algorithm/string/predicate.hpp> // iequals
 
+namespace fs = std::filesystem;
 // case-insensitive string comparison
 using boost::iequals;
 
-static inline int headerFormatFromString(const char* name) {
+/** @brief takes a header format string and returns the corresponding SF_FORMAT constant.
+ *  @param name The header format name as a C-string.
+ *  @returns a SF_FORMAT constant on success, 0 if the format string is invalid.
+ */
+inline int headerFormatFromString(const char* name) {
     if (!name)
         return SF_FORMAT_AIFF;
     if (iequals(name, "AIFF"))
@@ -108,7 +113,11 @@ static inline int headerFormatFromString(const char* name) {
     return 0;
 }
 
-static inline int sampleFormatFromString(const char* name) {
+/** @brief takes a sample format string and returns the corresponding SF_FORMAT constant.
+ *  @param name The sample format name as a C-string.
+ *  @returns a SF_FORMAT constant on success, 0 if the format string is invalid.
+ */
+inline int sampleFormatFromString(const char* name) {
     if (!name)
         return SF_FORMAT_PCM_16;
 
@@ -157,8 +166,14 @@ static inline int sampleFormatFromString(const char* name) {
     return 0;
 }
 
-static inline SCErr sndfileFormatInfoFromStrings(struct SF_INFO* info, const char* headerFormatString,
-                                                 const char* sampleFormatString) {
+/** @brief initializes a SF_INFO struct with the given header and sample format.
+ *  @param info [out] the SF_INFO struct to be initialized. @note only sets the `format` member!
+ *  @param headerFormatString [in] the header format as a C-string
+ *  @param sampleFormatString [in] the sample format as a C-string
+ *  @returns a SCErr error code.
+ */
+inline SCErr sndfileFormatInfoFromStrings(SF_INFO& info, const char* headerFormatString,
+                                          const char* sampleFormatString) {
     int headerFormat = headerFormatFromString(headerFormatString);
     if (!headerFormat)
         return kSCErr_Failed;
@@ -167,51 +182,62 @@ static inline SCErr sndfileFormatInfoFromStrings(struct SF_INFO* info, const cha
     if (!sampleFormat)
         return kSCErr_Failed;
 
-    info->format = (unsigned int)(headerFormat | sampleFormat);
+    info.format = (unsigned int)(headerFormat | sampleFormat);
     return kSCErr_None;
 }
 
 // ------------------------------ platform-specific functions ------------------------------
 #    ifdef _WIN32
 
-inline SNDFILE* sndfileOpen(LPCWSTR wpath, int mode, SF_INFO* sfinfo) { return sf_wchar_open(wpath, mode, sfinfo); }
-
-// This safely opens a sound file using a raw cstring on any platform
-inline SNDFILE* sndfileOpenFromCStr(const char* path, int mode, SF_INFO* sfinfo) {
-    // convert to wchar first
-    const std::wstring path_w = SC_Codecvt::utf8_cstr_to_utf16_wstring(path);
-    return sndfileOpen(path_w.c_str(), mode, sfinfo);
+/** @brief Opens a soundfile from a native file path */
+inline SNDFILE* sndfileOpenFromNativeString(LPCWSTR wpath, int mode, SF_INFO* sfinfo) {
+    return sf_wchar_open(wpath, mode, sfinfo);
 }
 
-// Safely creates a handle using a raw cstring on any platform
-inline SndfileHandle makeSndfileHandle(const char* path, int mode = SFM_READ, int format = 0, int channels = 0,
+/** @brief Safely opens a sound file using a UTF-8 C-string on any platform */
+inline SNDFILE* sndfileOpenFromCStr(const char* utf8Path, int mode, SF_INFO* sfinfo) {
+    // convert to wchar first
+    const std::wstring wpath = SC_Codecvt::utf8_cstr_to_utf16_wstring(utf8Path);
+    return sndfileOpenFromNativeString(wpath.c_str(), mode, sfinfo);
+}
+
+/** @brief Safely creates a handle using a UTF-8 C-string on any platform */
+inline SndfileHandle makeSndfileHandle(const char* utf8Path, int mode = SFM_READ, int format = 0, int channels = 0,
                                        int samplerate = 0) {
-    const std::wstring path_w = SC_Codecvt::utf8_cstr_to_utf16_wstring(path);
-    return SndfileHandle(path_w.c_str(), mode, format, channels, samplerate);
+    // convert to wchar first
+    const std::wstring wpath = SC_Codecvt::utf8_cstr_to_utf16_wstring(utf8Path);
+    return SndfileHandle(wpath.c_str(), mode, format, channels, samplerate);
 }
 
 #    else // not _WIN32
 
-inline SNDFILE* sndfileOpen(const char* path, int mode, SF_INFO* sfinfo) { return sf_open(path, mode, sfinfo); }
-
-// simple forward
-inline SNDFILE* sndfileOpenFromCStr(const char* path, int mode, SF_INFO* sfinfo) {
-    return sndfileOpen(path, mode, sfinfo);
+/** @brief Opens a soundfile from a native file path */
+inline SNDFILE* sndfileOpenFromNativeString(const char* path, int mode, SF_INFO* sfinfo) {
+    return sf_open(path, mode, sfinfo);
 }
 
-// simple forward
-inline SndfileHandle makeSndfileHandle(const char* path, int mode = SFM_READ, int format = 0, int channels = 0,
+/** @brief Safely opens a sound file using a UTF-8 C-string on any platform */
+inline SNDFILE* sndfileOpenFromCStr(const char* utf8Path, int mode, SF_INFO* sfinfo) {
+    return sndfileOpenFromNativeString(utf8Path, mode, sfinfo); // just forward
+}
+
+/** @brief Safely creates a handle using a UTF-8 C-string on any platform */
+inline SndfileHandle makeSndfileHandle(const char* utf8Path, int mode = SFM_READ, int format = 0, int channels = 0,
                                        int samplerate = 0) {
-    return SndfileHandle(path, mode, format, channels, samplerate);
+    return SndfileHandle(utf8Path, mode, format, channels, samplerate); // just forward
 }
 
 #    endif // _WIN32
 
-#else // not NO_LIBSNDFILE
+/** @brief Safely opens a sound file using a std:filesystem::path on any platform */
+inline SNDFILE* sndfileOpenFromPath(const fs::path& path, int mode, SF_INFO* sfinfo) {
+    return sndfileOpenFromNativeString(path.native().c_str(), mode, sfinfo);
+}
 
-static inline int sndfileFormatInfoFromStrings(struct SF_INFO* info, const char* headerFormatString,
-                                               const char* sampleFormatString) {
-    return kSCErr_Failed;
+/** @brief Safely creates a sound file handle using a std:filesystem::path on any platform */
+inline SndfileHandle makeSndfileHandle(const fs::path& path, int mode = SFM_READ, int format = 0, int channels = 0,
+                                       int samplerate = 0) {
+    return SndfileHandle(path.native().c_str(), mode, format, channels, samplerate);
 }
 
 #endif /* NO_LIBSNDFILE */

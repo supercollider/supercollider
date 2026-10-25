@@ -1000,7 +1000,7 @@ int BufWriteCmd::Init(const char* inData, int inSize) {
     GET_COMPLETION_MSG(msg);
 
     memset(&mFileInfo, 0, sizeof(mFileInfo));
-    return sndfileFormatInfoFromStrings(&mFileInfo, headerFormatString, sampleFormatString);
+    return sndfileFormatInfoFromStrings(mFileInfo, headerFormatString, sampleFormatString);
 #endif
 }
 

@@ -90,7 +90,7 @@ extern HashTable<struct BufGen, Malloc>* gBufGenLib;
 extern HashTable<PlugInCmd, Malloc>* gPlugInCmds;
 
 #ifdef NO_LIBSNDFILE
-struct SF_INFO {};
+typedef struct SF_INFO SF_INFO;
 #endif
 
 SCBool SendMsgToEngine(World* inWorld, FifoMsg* inMsg);
@@ -189,6 +189,16 @@ static SCBool getScopeBuffer(World* inWorld, int index, int channels, int maxFra
 static void pushScopeBuffer(World* inWorld, ScopeBufferHnd* hnd, int frames);
 static void releaseScopeBuffer(World* inWorld, ScopeBufferHnd* hnd);
 
+// C API version that takes the SF_INFO by pointer
+SCErr sndfileFormatInfoFromStrings(SF_INFO* info, const char* headerFormat, const char* sampleFormat) {
+    assert(info != nullptr);
+#ifdef NO_LIBSNDFILE
+    return kSCErr_Failed;
+#else
+    return sndfileFormatInfoFromStrings(*info, headerFormat, sampleFormat);
+#endif
+}
+
 void InterfaceTable_Init() {
     InterfaceTable* ft = &gInterfaceTable;
 
@@ -226,11 +236,9 @@ void InterfaceTable_Init() {
 
     ft->fSendMsgFromRT = &SendMsgFromEngine;
     ft->fSendMsgToRT = &SendMsgToEngine;
-#ifdef NO_LIBSNDFILE
-    ft->fSndFileFormatInfoFromStrings = NULL;
-#else
+
     ft->fSndFileFormatInfoFromStrings = &sndfileFormatInfoFromStrings;
-#endif
+
     ft->fGetNode = &World_GetNode;
     ft->fGetGraph = &World_GetGraph;
 
@@ -592,7 +600,7 @@ void World_NonRealTimeSynthesis(World* world, WorldOptions* inOptions) {
         SF_INFO outputFileInfo {};
         outputFileInfo.channels = numOutputChannels;
         outputFileInfo.samplerate = inOptions->mPreferredSampleRate;
-        auto err = sndfileFormatInfoFromStrings(&outputFileInfo, inOptions->mNonRealTimeOutputHeaderFormat,
+        auto err = sndfileFormatInfoFromStrings(outputFileInfo, inOptions->mNonRealTimeOutputHeaderFormat,
                                                 inOptions->mNonRealTimeOutputSampleFormat);
         if (err != kSCErr_None) {
             throw std::runtime_error("Bad header or sample format\n");
