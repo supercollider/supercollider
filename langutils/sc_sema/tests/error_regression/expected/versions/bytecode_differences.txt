@@ -16,67 +16,56 @@ SCClass (5:1): BytecodeDifferences : Object
 |  |  |  |  |  SCExprList (9:35)
 |  |  |  |  |  |  SCRead (9:35): local a, declared (9:26): a
 |  |  |  |  |  |  SCLiteral (9:38) = nil
-|  |  SCMethod (12:5): unaryWrittenBinary: unaryWrittenBinary { |a, b| cv; ^a sqrt: b }
-|  |  |  SCArgumentDeclareList (12:27)
-|  |  |  |  SCArgumentDeclare (12:27): a
-|  |  |  |  SCArgumentDeclare (12:30): b
-|  |  |  SCBody (12:33)
-|  |  |  |  SCRead (12:33): class cv, declared (6:14): cv
-|  |  |  |  SCExplicitReturn (12:37)
-|  |  |  |  |  SCMessage (12:38): sqrt
-|  |  |  |  |  |  SCRead (12:38): local a, declared (12:27): a
-|  |  |  |  |  |  SCPositionalArgs (12:38)
-|  |  |  |  |  |  |  SCRead (12:46): local b, declared (12:30): b
-|  |  SCMethod (13:5): seriesDo: seriesDo { |a, f| cv; ^(a..10).do(f) }
-|  |  |  SCArgumentDeclareList (13:17)
-|  |  |  |  SCArgumentDeclare (13:17): a
-|  |  |  |  SCArgumentDeclare (13:20): f
-|  |  |  SCBody (13:23)
-|  |  |  |  SCRead (13:23): class cv, declared (6:14): cv
-|  |  |  |  SCExplicitReturn (13:27)
-|  |  |  |  |  SCMessage (13:28): do
-|  |  |  |  |  |  SCRange (13:28)
-|  |  |  |  |  |  |  SCRead (13:29): local a, declared (13:17): a
-|  |  |  |  |  |  |  SCMissing (13:28)
-|  |  |  |  |  |  |  SCLiteral (13:32) = 10
-|  |  |  |  |  |  SCPositionalArgs (13:28)
-|  |  |  |  |  |  |  SCRead (13:39): local f, declared (13:20): f
-|  |  SCMethod (14:5): superSeriesDo: superSeriesDo { |a, f| cv; ^super.series(a, 10).do(f) }
-|  |  |  SCArgumentDeclareList (14:22)
-|  |  |  |  SCArgumentDeclare (14:22): a
-|  |  |  |  SCArgumentDeclare (14:25): f
-|  |  |  SCBody (14:28)
-|  |  |  |  SCRead (14:28): class cv, declared (6:14): cv
-|  |  |  |  SCExplicitReturn (14:32)
-|  |  |  |  |  SCMessage (14:33): do
-|  |  |  |  |  |  SCMessage (14:33): series
-|  |  |  |  |  |  |  SCSpecial (14:33): super
-|  |  |  |  |  |  |  SCPositionalArgs (14:33)
-|  |  |  |  |  |  |  |  SCRead (14:46): local a, declared (14:22): a
-|  |  |  |  |  |  |  |  SCLiteral (14:49) = 10
-|  |  |  |  |  |  SCPositionalArgs (14:33)
-|  |  |  |  |  |  |  SCRead (14:56): local f, declared (14:25): f
-|  |  SCMethod (15:5): nestedNonLocalReturn: nestedNonLocalReturn { |a| cv; a.do { |x| if (x) { ^1 } }; ^2 }
-|  |  |  SCArgumentDeclareList (15:29)
-|  |  |  |  SCArgumentDeclare (15:29): a
-|  |  |  SCBody (15:32)
-|  |  |  |  SCRead (15:32): class cv, declared (6:14): cv
-|  |  |  |  SCMessage (15:36): do
-|  |  |  |  |  SCRead (15:36): local a, declared (15:29): a
-|  |  |  |  |  SCPositionalArgs (15:36)
-|  |  |  |  |  |  SCFunction (15:41)
-|  |  |  |  |  |  |  SCArgumentDeclareList (15:44)
-|  |  |  |  |  |  |  |  SCArgumentDeclare (15:44): x
-|  |  |  |  |  |  |  SCBody (15:41)
-|  |  |  |  |  |  |  |  SCMessage (15:47): if
-|  |  |  |  |  |  |  |  |  SCRead (15:51): local x, declared (15:44): x
-|  |  |  |  |  |  |  |  |  SCPositionalArgs (15:47)
-|  |  |  |  |  |  |  |  |  |  SCFunction (15:54)
-|  |  |  |  |  |  |  |  |  |  |  SCBody (15:54)
-|  |  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (15:56)
-|  |  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (15:57) = 1
-|  |  |  |  SCExplicitReturn (15:64)
-|  |  |  |  |  SCLiteral (15:65) = 2
+|  |  SCMethod (12:5): seriesDo: seriesDo { |a, f| cv; ^(a..10).do(f) }
+|  |  |  SCArgumentDeclareList (12:17)
+|  |  |  |  SCArgumentDeclare (12:17): a
+|  |  |  |  SCArgumentDeclare (12:20): f
+|  |  |  SCBody (12:23)
+|  |  |  |  SCRead (12:23): class cv, declared (6:14): cv
+|  |  |  |  SCExplicitReturn (12:27)
+|  |  |  |  |  SCMessage (12:28): do
+|  |  |  |  |  |  SCRange (12:28)
+|  |  |  |  |  |  |  SCRead (12:29): local a, declared (12:17): a
+|  |  |  |  |  |  |  SCMissing (12:28)
+|  |  |  |  |  |  |  SCLiteral (12:32) = 10
+|  |  |  |  |  |  SCPositionalArgs (12:28)
+|  |  |  |  |  |  |  SCRead (12:39): local f, declared (12:20): f
+|  |  SCMethod (13:5): superSeriesDo: superSeriesDo { |a, f| cv; ^super.series(a, 10).do(f) }
+|  |  |  SCArgumentDeclareList (13:22)
+|  |  |  |  SCArgumentDeclare (13:22): a
+|  |  |  |  SCArgumentDeclare (13:25): f
+|  |  |  SCBody (13:28)
+|  |  |  |  SCRead (13:28): class cv, declared (6:14): cv
+|  |  |  |  SCExplicitReturn (13:32)
+|  |  |  |  |  SCMessage (13:33): do
+|  |  |  |  |  |  SCMessage (13:33): series
+|  |  |  |  |  |  |  SCSpecial (13:33): super
+|  |  |  |  |  |  |  SCPositionalArgs (13:33)
+|  |  |  |  |  |  |  |  SCRead (13:46): local a, declared (13:22): a
+|  |  |  |  |  |  |  |  SCLiteral (13:49) = 10
+|  |  |  |  |  |  SCPositionalArgs (13:33)
+|  |  |  |  |  |  |  SCRead (13:56): local f, declared (13:25): f
+|  |  SCMethod (14:5): nestedNonLocalReturn: nestedNonLocalReturn { |a| cv; a.do { |x| if (x) { ^1 } }; ^2 }
+|  |  |  SCArgumentDeclareList (14:29)
+|  |  |  |  SCArgumentDeclare (14:29): a
+|  |  |  SCBody (14:32)
+|  |  |  |  SCRead (14:32): class cv, declared (6:14): cv
+|  |  |  |  SCMessage (14:36): do
+|  |  |  |  |  SCRead (14:36): local a, declared (14:29): a
+|  |  |  |  |  SCPositionalArgs (14:36)
+|  |  |  |  |  |  SCFunction (14:41)
+|  |  |  |  |  |  |  SCArgumentDeclareList (14:44)
+|  |  |  |  |  |  |  |  SCArgumentDeclare (14:44): x
+|  |  |  |  |  |  |  SCBody (14:41)
+|  |  |  |  |  |  |  |  SCMessage (14:47): if
+|  |  |  |  |  |  |  |  |  SCRead (14:51): local x, declared (14:44): x
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (14:47)
+|  |  |  |  |  |  |  |  |  |  SCFunction (14:54)
+|  |  |  |  |  |  |  |  |  |  |  SCBody (14:54)
+|  |  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (14:56)
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (14:57) = 1
+|  |  |  |  SCExplicitReturn (14:64)
+|  |  |  |  |  SCLiteral (14:65) = 2
 SCClass (5:1): Meta_BytecodeDifferences : Meta_Object
 |  SCMemberList (5:1)
 |  |  SCMember (6:14): cv
@@ -97,19 +86,7 @@ BytecodeDifferences
 |  |  3    31              PushTempZeroVar
 |  |  4    F0              Drop
 |  |  5    F7              ReturnNil
-|  function 1 (12:5): method unaryWrittenBinary
-|  |  properties:
-|  |  selectors:
-|  |  constants:
-|  |  0    50 00           PushClassVar 
-|  |  2    F0              Drop
-|  |  3    31              PushTempZeroVar
-|  |  4    32              PushTempZeroVar
-|  |  5    FF              TailCallReturnFromMethod
-|  |  6    F0              Drop
-|  |  7    DE              SendSpecialUnaryArithMsg
-|  |  8    F3              Return
-|  function 2 (13:5): method seriesDo
+|  function 1 (12:5): method seriesDo
 |  |  properties:
 |  |  selectors:
 |  |  constants:
@@ -122,7 +99,7 @@ BytecodeDifferences
 |  |  8    FF              TailCallReturnFromMethod
 |  |  9    C4 40           SendSpecialMsg
 |  |  11   F3              Return
-|  function 3 (14:5): method superSeriesDo
+|  function 2 (13:5): method superSeriesDo
 |  |  properties:
 |  |  selectors: series,
 |  |  constants:
@@ -136,9 +113,9 @@ BytecodeDifferences
 |  |  10   FF              TailCallReturnFromMethod
 |  |  11   C2 1D           SendSpecialMsg
 |  |  13   F3              Return
-|  function 4 (15:5): method nestedNonLocalReturn
+|  function 3 (14:5): method nestedNonLocalReturn
 |  |  properties: heap context,
-|  |  selectors: function 5,
+|  |  selectors: function 4,
 |  |  constants:
 |  |  0    50 00           PushClassVar 
 |  |  2    F0              Drop
@@ -148,7 +125,7 @@ BytecodeDifferences
 |  |  8    F0              Drop
 |  |  9    65              PushSpecialNumber
 |  |  10   F3              Return
-|  function 5 (15:41)
+|  function 4 (14:41)
 |  |  properties: context,
 |  |  selectors:
 |  |  constants:

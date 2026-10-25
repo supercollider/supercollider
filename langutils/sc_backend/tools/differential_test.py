@@ -20,8 +20,8 @@ import compare_bytecode
 TOOLS = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(TOOLS, '..', '..', '..'))
 TEST_CLASSES = os.path.join(REPO, 'langutils', 'sc_sema', 'tests', 'error_regression', 'input', 'versions')
-# bytecode_loops.sc redefines Integer and Float, old sclang can't compile bytecode_unary_overflow.sc.
-SKIPPED = {'bytecode_loops.sc', 'bytecode_unary_overflow.sc'}
+# bytecode_loops.sc redefines Integer and Float.
+SKIPPED = {'bytecode_loops.sc'}
 
 
 def skipped_directory(name):

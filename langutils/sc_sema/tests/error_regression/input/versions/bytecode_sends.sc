@@ -25,10 +25,12 @@ BytecodeSends {
     forSeries { |f| cv; ^(1..10).do(f) }
     seriesSelector { |f| cv; ^1.series(nil, 10).do(f) }
 
-    // Operators: unary, the unary with an argument as a message, a binary with an adverb, and `+ 1` and `- 1`.
+    // Operators: unary, the unary with an argument as a message, a binary with an adverb, and `+ 1` and `- 1`. A unary
+    // written as a binary has an argument, so it is a message too, whether or not the operator is past the first 16.
     unary { |a| cv; ^a.neg }
     unaryWithArgument { |a| cv; ^a.neg(1) }
     unaryWrittenBinary { |a| cv; ^a neg: 1 }
+    unaryPastNibbleWrittenBinary { |a, b| cv; ^a reciprocal: b }
     binary { |a| cv; ^a * 3 }
     binaryNotNibble { |a| cv; ^a pow: 3 }
     adverb { |a| cv; ^a +.x 3 }

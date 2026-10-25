@@ -9,7 +9,6 @@ BytecodeDifferences {
     returnSequenceNil { |a| cv; ^(a; nil) }
 
     // The same as old sclang.
-    unaryWrittenBinary { |a, b| cv; ^a sqrt: b }
     seriesDo { |a, f| cv; ^(a..10).do(f) }
     superSeriesDo { |a, f| cv; ^super.series(a, 10).do(f) }
     nestedNonLocalReturn { |a| cv; a.do { |x| if (x) { ^1 } }; ^2 }

@@ -129,7 +129,6 @@ enum struct SendOp : std::uint8_t {
     PushAllArgsSpecial,
     PushAllButFirstArgSpecial,
     UnaryX,
-    UnaryAfterDrops,
     Binary,
     BinaryWithAdverb,
     PushOneAndAddOne,
@@ -147,8 +146,6 @@ struct SendPlan {
     std::uint8_t num_args { 0 }; // include receiver, and 2x the keyword count
     std::uint8_t num_keyword { 0 }; // 1 per pair of key and value.
     SpecialSymbols::SpecialSelector special { OpSpecialSelectors::New };
-    // UnaryAfterDrops' extra arguments, dropped before the operator.
-    std::uint8_t drops { 0 };
     InstanceSlotIndex instance { 0 };
     SelectorIndex selector { 0 };
 };
@@ -386,15 +383,13 @@ struct Emitter {
             return p;
 
         case lir::SendForm::Binary:
-            if (super || !special) {
+            // A unary operator written as a binary has an argument, so it is sent, `a reciprocal: b` is
+            // `a.reciprocal(b)`.
+            if (super || !special || unary) {
                 p.add = AddSelector::AtReceiver;
                 p.op = super ? SendOp::Super : SendOp::Message;
             } else if (special_selector) {
                 p.op = SendOp::Special;
-            } else if (unary) {
-                // The extra arguments are dropped.
-                p.op = SendOp::UnaryAfterDrops;
-                p.drops = static_cast<std::uint8_t>(n - 1);
             } else if (n == 3) {
                 p.op = SendOp::BinaryWithAdverb;
             } else if (adds_or_subtracts_one()) {
@@ -888,15 +883,6 @@ struct Emitter {
             return;
         case SendOp::UnaryX:
             SendSpecialUnaryArithMsgX.emit(bc, loc, { unary() });
-            return;
-        case SendOp::UnaryAfterDrops:
-            for (std::uint8_t d { 0 }; d < p.drops; ++d)
-                Drop.emit(bc, loc);
-            // The old compiler always used the short form, which only has the first 16.
-            if (static_cast<Byte>(unary()) < static_cast<Byte>(OpUnaryMathNibble::COUNT))
-                SendSpecialUnaryArithMsg.emit(bc, loc, { static_cast<OpUnaryMathNibble>(unary()) });
-            else
-                SendSpecialUnaryArithMsgX.emit(bc, loc, { unary() });
             return;
         case SendOp::Binary:
             if (static_cast<Byte>(binary()) < static_cast<Byte>(OpBinaryMathNibble::COUNT))
