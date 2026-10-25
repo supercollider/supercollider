@@ -23,6 +23,7 @@
 #include "sc_sema/symbol_table.hpp"
 
 #include <algorithm>
+#include <cassert>
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
@@ -214,7 +215,7 @@ sc::lex::SourceCodeRange range_from_offsets(const sc::lex::TextInfo& text, std::
 
 // As sc_inspect --lir and --bytecode, the root's class, then each function. In the lir, each function's regions, the
 // body first, then their instructions, all functions, marking those of a method that can't be emitted. In the
-// bytecode, the lines write_emitted prints for each emitted function.
+// bytecode, the lines write_emitted prints for each emitted function, each opcode's at its source.
 void add_backend(Tree& lir_tree, Tree& bytecode_tree, const Backend& b, const IrRoot& r, const sc::lex::TextInfo* text,
                  std::vector<sc::diag::Diagnostic>& diagnostics) {
     const auto& g = *r.graph;
@@ -285,11 +286,24 @@ void add_backend(Tree& lir_tree, Tree& bytecode_tree, const Backend& b, const Ir
         if (!is_emitted)
             continue;
         bytecode_tree.add(1, { "function " + std::to_string(fi), detail, range_of(owner), {} });
+        // write_emitted's lines are the properties, selectors and constants, then one per opcode, in order.
+        const auto& emitted_function = emitted.functions[index];
+        const auto& code = emitted_function.code;
         std::ostringstream lines;
-        sc::backend::write_emitted(lines, emitted.functions[index], "", ctx.symbol_table, ctx.constant_table);
+        sc::backend::write_emitted(lines, emitted_function, "", ctx.symbol_table, ctx.constant_table);
         std::istringstream in { lines.str() };
-        for (std::string line; std::getline(in, line);)
-            bytecode_tree.add(2, { "", line, std::nullopt, {} });
+        std::size_t line_index { 0 };
+        for (std::string line; std::getline(in, line); ++line_index) {
+            constexpr std::size_t table_lines = 3;
+            std::optional<sc::lex::SourceCodeRange> range;
+            if (in_text && line_index >= table_lines) {
+                const auto op = line_index - table_lines;
+                assert(op < code.sizeOfCodes.size());
+                range = range_from_offsets(*text, static_cast<std::uint32_t>(code.startAndEndLocations[2 * op]),
+                                           static_cast<std::uint32_t>(code.startAndEndLocations[2 * op + 1]));
+            }
+            bytecode_tree.add(2, { "", line, range, {} });
+        }
     }
 }
 
