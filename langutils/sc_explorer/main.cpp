@@ -1,11 +1,15 @@
-// Reads source code from stdin and writes its ast, ir and diagnostics as json, for the explorer's web page, see
-// serve.py.
+// Reads source code from stdin and writes its ast, ir, bytecode and diagnostics as json, for the explorer's web page,
+// see serve.py.
 //   sc_explorer [--class] [--prelude file.sc]...
 // The source is interpreted code, or a class file with --class. The preludes are compiled first, as the class library,
 // but aren't written out.
 // A fresh process compiles each source, so an assertion on half typed code only loses that request.
 
 #include "describe/describe.hpp"
+#include "sc_backend/emit.hpp"
+#include "sc_backend/frames.hpp"
+#include "sc_backend/lower.hpp"
+#include "sc_backend/members.hpp"
 #include "sc_diagnostic/sc_diagnostic.hpp"
 #include "sc_lexer/normalise_source.hpp"
 #include "sc_lexer/text_info.hpp"
@@ -158,9 +162,11 @@ AstTrees ast_trees(const sc::ast::ASTGraph& g) {
     return out;
 }
 
+using BackendRoot = sc::ir::join<sc::ir::SCClass_I, sc::ir::SCInterpreted_I>;
+
 struct IrRoot {
     const sc::ir::IRGraph* graph;
-    sc::ir::NodeIndex index;
+    BackendRoot root;
     std::optional<sc::ir::SymSCClassName> class_name;
     sc::lex::SourceCodeLocation begin;
     bool is_meta;
@@ -170,7 +176,7 @@ void add_ir(Tree& tree, const sc::ir::Context& ctx, const IrRoot& r, const sc::l
     const auto& g = *r.graph;
     const sc::ir::describe::Describe describe { g, ctx };
     tree.close();
-    g.depth_first_traverse(r.index,
+    g.depth_first_traverse(sc::ir::NodeIndex { *r.root },
                            [&](const sc::ir::IRGraph::Edges& edges, const sc::ir::IRGraph::Variant& payload,
                                const sc::ir::SourceLocation& loc, sc::ir::NodeIndex i, size_t depth) {
                                if (sc::ir::describe::hidden(describe, edges, payload, r.class_name))
@@ -182,6 +188,63 @@ void add_ir(Tree& tree, const sc::ir::Context& ctx, const IrRoot& r, const sc::l
                                    : std::nullopt;
                                tree.add(depth, { sc::ir::IRGraph::node_name(payload), detail.str(), range, {} });
                            });
+}
+
+struct Backend {
+    const sc::ir::Context& ctx;
+    const sc::backend::MemberTable& members;
+    const sc::backend::LoweringSymbols& selectors;
+    const sc::backend::SpecialSymbols& special_symbols;
+    const sc::backend::InliningContext& inlining;
+};
+
+// As sc_inspect --bytecode, the root's class, then each emitted function, then the lines write_emitted prints for it.
+void add_bytecode(Tree& tree, const Backend& b, const IrRoot& r, const sc::lex::TextInfo* text,
+                  std::vector<sc::diag::Diagnostic>& diagnostics) {
+    const auto& g = *r.graph;
+    const auto& ctx = b.ctx;
+    const auto frames = sc::backend::layout_frames(g, b.inlining, r.root);
+    const auto lowered = sc::backend::lower({ g, frames, b.members, ctx.constant_table, ctx.symbol_table, b.selectors,
+                                              b.inlining, ctx.common_classes.array, ctx.common_classes.event },
+                                            r.root);
+    const auto class_node = g.as_a<sc::ir::SCClass_I>(sc::ir::NodeIndex { *r.root });
+    const bool interpreter_members = !class_node || g.payload(*class_node).name == ctx.common_symbols.interpreter;
+    const auto emitted =
+        sc::backend::emit({ g, frames, ctx.constant_table, b.special_symbols, interpreter_members }, lowered);
+    for (const auto& d : frames.diagnostics)
+        diagnostics.push_back(d);
+    for (const auto& d : emitted.diagnostics)
+        diagnostics.push_back(d);
+
+    const auto range_of = [&](sc::ir::NodeIndex i) {
+        const auto loc = g.location(i);
+        return g.text_info(loc.source).get() == text ? std::optional { sc::ir::IRGraph::range(loc) } : std::nullopt;
+    };
+    tree.close();
+    tree.add(0,
+             { r.class_name ? std::string { ctx.symbol_table(*r.class_name) } : "Interpreted",
+               "",
+               range_of(sc::ir::NodeIndex { *r.root }),
+               {} });
+    std::optional<sc::backend::lir::FunctionIndex> root;
+    for (std::uint32_t fi { 0 }; fi < lowered.functions.size(); ++fi) {
+        const sc::backend::lir::FunctionIndex index { fi };
+        const auto& frame = frames.frames[lowered.functions[index].frame];
+        if (!frame.parent)
+            root = index;
+        if (std::find(emitted.roots.begin(), emitted.roots.end(), *root) == emitted.roots.end())
+            continue;
+        const sc::ir::NodeIndex owner { *frame.owner };
+        std::string detail;
+        if (const auto method = g.as_a<sc::ir::SCMethod_I>(owner))
+            detail = "method " + std::string { ctx.symbol_table(*g.payload(*method).selector) };
+        tree.add(1, { "function " + std::to_string(fi), detail, range_of(owner), {} });
+        std::ostringstream lines;
+        sc::backend::write_emitted(lines, emitted.functions[index], "", ctx.symbol_table, ctx.constant_table);
+        std::istringstream in { lines.str() };
+        for (std::string line; std::getline(in, line);)
+            tree.add(2, { "", line, std::nullopt, {} });
+    }
 }
 
 void write_diagnostic(std::ostream& out, const sc::diag::Diagnostic& d, const sc::lex::TextInfo* text) {
@@ -287,8 +350,7 @@ int main(int argc, char* argv[]) {
             if (g.text_info(loc.source) != text || sc::ir::describe::repeats_class({ g, ctx }, class_i))
                 return;
             const auto name = g.payload(class_i).name;
-            ir_roots.push_back({ &g, sc::ir::NodeIndex { *class_i }, name, sc::ir::IRGraph::range(loc).begin,
-                                 symbol_table.is_meta(name) });
+            ir_roots.push_back({ &g, class_i, name, sc::ir::IRGraph::range(loc).begin, symbol_table.is_meta(name) });
         });
         std::sort(ir_roots.begin(), ir_roots.end(), [](const IrRoot& l, const IrRoot& r) {
             return std::tie(l.begin, l.is_meta) < std::tie(r.begin, r.is_meta);
@@ -309,13 +371,22 @@ int main(int argc, char* argv[]) {
         }
         if (interpreted) {
             const auto i = std::get<sc::ir::SCInterpreted_I>(*interpreted->root());
-            ir_roots.push_back({ interpreted.get(), sc::ir::NodeIndex { *i }, std::nullopt, {}, false });
+            ir_roots.push_back({ interpreted.get(), i, std::nullopt, {}, false });
         }
     }
 
     Tree ir_tree;
     for (const auto& r : ir_roots)
         add_ir(ir_tree, ctx, r, text.get());
+
+    const sc::backend::MemberTable members { comp, symbol_table };
+    const sc::backend::LoweringSymbols selectors { symbol_table };
+    const sc::backend::SpecialSymbols special_symbols { symbol_table };
+    const sc::backend::InliningContext inlining { special_symbols, ctx.constant_table };
+    const Backend backend { ctx, members, selectors, special_symbols, inlining };
+    Tree bytecode_tree;
+    for (const auto& r : ir_roots)
+        add_bytecode(bytecode_tree, backend, r, text.get(), diagnostics);
 
     std::ostream& out = std::cout;
     out << "{\"source\":" << json_string(text->source.as_string()) << ",\"ast\":{";
@@ -330,6 +401,8 @@ int main(int argc, char* argv[]) {
     }
     out << "},\"ir\":{\"roots\":";
     ir_tree.write_roots(out, ir_tree.roots);
+    out << "},\"bytecode\":{\"roots\":";
+    bytecode_tree.write_roots(out, bytecode_tree.roots);
     out << "},\"diagnostics\":[";
     for (size_t i { 0 }; i < diagnostics.size(); ++i) {
         if (i)

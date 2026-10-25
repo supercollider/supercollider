@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Serves the explorer's web page, which shows the ast and ir of the code typed into it.
+"""Serves the explorer's web page, which shows the ast, ir and bytecode of the code typed into it.
 
     python3 langutils/sc_explorer/serve.py [--port 8000] [--backend path] [--prelude file.sc]... [--no-prelude]
 

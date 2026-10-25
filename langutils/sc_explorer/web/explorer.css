@@ -68,7 +68,7 @@ main {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: repeat(var(--columns, 3), minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 .pane {
   display: flex;
@@ -78,7 +78,6 @@ main {
   border-right: 1px solid var(--border);
 }
 .pane:last-child { border-right: none; }
-.pane.hidden { display: none; }
 .pane-title {
   display: flex;
   align-items: center;
@@ -94,6 +93,23 @@ main {
 }
 .pane-title .tools { margin-left: auto; display: flex; gap: 4px; text-transform: none; letter-spacing: 0; }
 .count { font-weight: 400; }
+
+.tabs { padding-top: 0; padding-bottom: 0; align-items: stretch; }
+.tabs [role="tab"] {
+  font: inherit;
+  color: var(--muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  padding: 6px 4px 4px;
+  text-transform: inherit;
+  letter-spacing: inherit;
+}
+.tabs [role="tab"]:hover { color: var(--text); }
+.tabs [role="tab"][aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+.tabs .tools { align-items: center; }
+[role="tabpanel"][hidden] { display: none; }
 
 /* The textarea sits over a backdrop with the same text, which draws the highlights. */
 .editor {
@@ -178,6 +194,8 @@ main {
 .detail { color: var(--text); overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 1; }
 .where { color: var(--muted); flex: none; font-size: 11px; }
 .node.no-range > .row .name { font-style: italic; opacity: 0.7; }
+/* Bytecode lines are columns, so keep their spaces. */
+.tree.code .detail { white-space: pre; }
 
 @media (max-width: 800px) {
   main { grid-template-columns: minmax(0, 1fr); grid-auto-rows: minmax(300px, 1fr); overflow: auto; }

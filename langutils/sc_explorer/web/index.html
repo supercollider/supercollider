@@ -15,8 +15,6 @@
       <option value="class">Class library</option>
     </select>
   </label>
-  <label><input type="checkbox" id="show-ast" checked> AST</label>
-  <label><input type="checkbox" id="show-ir" checked> IR</label>
   <span id="status" class="status"></span>
 </header>
 <main id="panes">
@@ -29,17 +27,16 @@
     <div class="pane-title">Diagnostics <span id="diag-count" class="count"></span></div>
     <div id="diagnostics" class="diagnostics"></div>
   </section>
-  <section class="pane tree-pane" id="ast-pane">
-    <div class="pane-title">AST
-      <span class="tools"><button data-expand="ast">Expand</button><button data-collapse="ast">Collapse</button></span>
+  <section class="pane tree-pane">
+    <div class="pane-title tabs" role="tablist">
+      <button role="tab" data-tab="ast">AST</button>
+      <button role="tab" data-tab="ir">IR</button>
+      <button role="tab" data-tab="bytecode">Bytecode</button>
+      <span class="tools"><button id="expand">Expand</button><button id="collapse">Collapse</button></span>
     </div>
-    <div id="ast" class="tree"></div>
-  </section>
-  <section class="pane tree-pane" id="ir-pane">
-    <div class="pane-title">IR
-      <span class="tools"><button data-expand="ir">Expand</button><button data-collapse="ir">Collapse</button></span>
-    </div>
-    <div id="ir" class="tree"></div>
+    <div id="ast" class="tree" role="tabpanel"></div>
+    <div id="ir" class="tree" role="tabpanel"></div>
+    <div id="bytecode" class="tree code" role="tabpanel"></div>
   </section>
 </main>
 <script src="explorer.js"></script>

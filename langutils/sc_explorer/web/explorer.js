@@ -1,6 +1,6 @@
 'use strict';
 
-// Each edit is sent to serve.py, which replies with the ast, ir and diagnostics, see sc_explorer's main.cpp. Ranges
+// Each edit is sent to serve.py, which replies with the ast, ir, bytecode and diagnostics, see sc_explorer's main.cpp. Ranges
 // are byte offsets into the normalised source, so they are converted to string indices before they are drawn.
 
 const EXAMPLES = {
@@ -29,9 +29,8 @@ const backdropEl = $('backdrop');
 const modeEl = $('mode');
 const statusEl = $('status');
 const diagnosticsEl = $('diagnostics');
-const trees = { ast: $('ast'), ir: $('ir') };
-const toggles = { ast: $('show-ast'), ir: $('show-ir') };
-const panes = { ast: $('ast-pane'), ir: $('ir-pane') };
+const trees = { ast: $('ast'), ir: $('ir'), bytecode: $('bytecode') };
+const tabs = document.querySelectorAll('[data-tab]');
 
 const store = {
   get(key, fallback) {
@@ -59,6 +58,7 @@ const state = {
   selectedNodes: [],
   diagnosticRanges: [],
   hoverDiagnostic: null,
+  tab: 'ast',
   requestId: 0,
 };
 
@@ -200,7 +200,7 @@ function renderTree(key, sections) {
   if (!roots.length) {
     const note = document.createElement('div');
     note.className = 'empty-note';
-    note.textContent = key === 'ir' ? 'No IR, see the diagnostics.' : 'Nothing parsed.';
+    note.textContent = key === 'ast' ? 'Nothing parsed.' : `No ${key === 'ir' ? 'IR' : 'bytecode'}, see the diagnostics.`;
     el.append(note);
   }
   return roots;
@@ -237,7 +237,7 @@ function select(nodes, range) {
 function deepestAt(key, offset) {
   let best = null;
   for (const n of state.nodes) {
-    if (n.tree !== key || !n.range || !toggles[key].checked) continue;
+    if (n.tree !== key || !n.range) continue;
     const { begin, end } = n.range;
     if (begin <= offset && offset < end && (!best || end - begin <= best.range.end - best.range.begin)) best = n;
   }
@@ -271,21 +271,18 @@ for (const [key, el] of Object.entries(trees)) {
   });
 }
 
-document.querySelectorAll('[data-expand], [data-collapse]').forEach((b) =>
-  b.addEventListener('click', () => {
-    const key = b.dataset.expand || b.dataset.collapse;
-    const collapsed = !!b.dataset.collapse;
-    for (const n of state.nodes) if (n.tree === key) setCollapsed(n, collapsed && !!n.parent);
-  })
-);
+for (const [id, collapsed] of [['expand', false], ['collapse', true]])
+  $(id).addEventListener('click', () => {
+    for (const n of state.nodes) if (n.tree === state.tab) setCollapsed(n, collapsed && !!n.parent);
+  });
 
-// Clicking or moving the caret in the source selects the innermost node there, in each tree.
+// Clicking or moving the caret in the source selects the innermost node there, in each tree, shown when its tab is.
 function selectAtCaret() {
   if (!state.byteToIndex) return;
   const index = sourceEl.selectionStart;
   const offset = state.byteToIndex.indexOf(index);
   if (offset < 0) return;
-  const found = ['ast', 'ir'].map((k) => deepestAt(k, offset)).filter(Boolean);
+  const found = Object.keys(trees).map((k) => deepestAt(k, offset)).filter(Boolean);
   select(found, found.length ? found[0].range : null);
 }
 sourceEl.addEventListener('click', selectAtCaret);
@@ -360,6 +357,7 @@ function show(result) {
     ['Orphans', result.ast.orphans],
   ]);
   renderTree('ir', [['', result.ir.roots]]);
+  renderTree('bytecode', [['', result.bytecode.roots]]);
   renderDiagnostics(result);
   const errors = result.diagnostics.filter((d) => d.severity === 'error').length;
   statusEl.textContent = errors ? `${errors} error${errors > 1 ? 's' : ''}` : 'OK';
@@ -416,20 +414,20 @@ modeEl.addEventListener('change', () => {
   scheduleCompile();
 });
 
-function layoutPanes() {
-  let columns = 1;
-  for (const key of ['ast', 'ir']) {
-    panes[key].classList.toggle('hidden', !toggles[key].checked);
-    columns += toggles[key].checked ? 1 : 0;
-    store.set('show:' + key, toggles[key].checked);
-  }
-  document.getElementById('panes').style.setProperty('--columns', columns);
+function showTab(key) {
+  state.tab = key;
+  store.set('tab', key);
+  for (const t of tabs) t.setAttribute('aria-selected', t.dataset.tab === key);
+  for (const [k, el] of Object.entries(trees)) el.hidden = k !== key;
+  // The selection may have been made in another tab.
+  const selected = state.selectedNodes.find((n) => n.tree === key);
+  if (selected) selected.row.scrollIntoView({ block: 'nearest' });
 }
-for (const t of Object.values(toggles)) t.addEventListener('change', layoutPanes);
+for (const t of tabs) t.addEventListener('click', () => showTab(t.dataset.tab));
 
 modeEl.value = store.get('mode', 'interpreted') === 'class' ? 'class' : 'interpreted';
-for (const key of ['ast', 'ir']) toggles[key].checked = store.get('show:' + key, true);
 sourceEl.value = store.get('source:' + modeEl.value, EXAMPLES[modeEl.value]);
-layoutPanes();
+const savedTab = store.get('tab', 'ast');
+showTab(savedTab in trees ? savedTab : 'ast');
 renderBackdrop();
 compile();
