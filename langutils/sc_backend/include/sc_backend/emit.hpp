@@ -3,6 +3,7 @@
 #include "sc_backend/frames.hpp"
 #include "sc_backend/inlining.hpp"
 #include "sc_backend/lir.hpp"
+#include "sc_backend/members.hpp"
 #include "sc_bytecode/ByteCodeArray.h"
 #include "sc_diagnostic/sc_diagnostic.hpp"
 
@@ -85,8 +86,49 @@ struct FunctionProperties {
 };
 static_assert(sizeof(FunctionProperties) == 3);
 
+// The old compiler's methType shortcuts. The VM runs such a method without code, so it has none.
+namespace shortcut {
+struct ReturnSelf {};
+// Not a class name or a function.
+struct ReturnLiteral {
+    ir::ConstExprIndex value;
+};
+// Slot 0 is `this`.
+struct ReturnArgument {
+    lir::SlotIndex slot;
+};
+struct ReturnInstance {
+    InstanceSlotIndex slot;
+};
+// `x = a`, the method's first argument, from 3.16. The old compiler's check never matched its own parse tree.
+struct AssignInstance {
+    InstanceSlotIndex slot;
+};
+// `^this.sel(a, b)` or `^super.sel(a, b)`, passing all of the method's arguments in order.
+struct Redirect {
+    ir::SymSCSelector selector;
+    bool super;
+};
+// `^x.sel(a, b)`, as Redirect.
+struct ForwardInstance {
+    ir::SymSCSelector selector;
+    InstanceSlotIndex slot;
+};
+struct ForwardClassVariable {
+    ir::SymSCSelector selector;
+    ClassVariableIndex index;
+};
+}
+
+using OptionalMethodShortcut =
+    std::variant<std::monostate, shortcut::ReturnSelf, shortcut::ReturnLiteral, shortcut::ReturnArgument,
+                 shortcut::ReturnInstance, shortcut::AssignInstance, shortcut::Redirect, shortcut::ForwardInstance,
+                 shortcut::ForwardClassVariable>;
+static_assert(sizeof(OptionalMethodShortcut) == 12);
+
 struct EmittedFunction {
     FunctionProperties properties {};
+    OptionalMethodShortcut shortcut {};
     CompilingBytecodes::Data code {};
     util::IndexedVector<SelectorIndex, SelectorContent> selectors {};
     util::IndexedVector<ConstantIndex, ConstantContent> constants {};

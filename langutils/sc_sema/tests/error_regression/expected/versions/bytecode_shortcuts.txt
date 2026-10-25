@@ -1,0 +1,517 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): BytecodeShortcuts : Object
+|  SCMemberList (5:1)
+|  |  SCMember (7:9): inst
+|  |  SCMember (7:15): other
+|  SCMethodList (5:1)
+|  |  SCMethod (11:5): empty: empty {}
+|  |  |  SCBody (11:12)
+|  |  SCMethod (13:5): returnThis: returnThis { ^this }
+|  |  |  SCBody (13:18)
+|  |  |  |  SCExplicitReturn (13:18)
+|  |  |  |  |  SCSpecial (13:19): this
+|  |  SCMethod (15:5): returnInteger: returnInteger { ^1 } -> 1
+|  |  |  SCBody (15:21)
+|  |  |  |  SCExplicitReturn (15:21)
+|  |  |  |  |  SCLiteral (15:22) = 1
+|  |  SCMethod (17:5): returnNil: returnNil { ^nil } -> nil
+|  |  |  SCBody (17:17)
+|  |  |  |  SCExplicitReturn (17:17)
+|  |  |  |  |  SCLiteral (17:18) = nil
+|  |  SCMethod (19:5): returnString: returnString { ^"text" } -> "text"
+|  |  |  SCBody (19:20)
+|  |  |  |  SCExplicitReturn (19:20)
+|  |  |  |  |  SCLiteral (19:21) = "text"
+|  |  SCMethod (21:5): returnSymbol: returnSymbol { ^\name } -> \name
+|  |  |  SCBody (21:20)
+|  |  |  |  SCExplicitReturn (21:20)
+|  |  |  |  |  SCLiteral (21:21) = \name
+|  |  SCMethod (23:5): returnArray: returnArray { ^#[1, 2] } -> [1, 2]
+|  |  |  SCBody (23:19)
+|  |  |  |  SCExplicitReturn (23:19)
+|  |  |  |  |  SCCollection (23:20): Array, literal = [1, 2]
+|  |  |  |  |  |  SCLiteral (23:22) = 1
+|  |  |  |  |  |  SCLiteral (23:25) = 2
+|  |  SCMethod (25:5): returnArgument: returnArgument { |a, b| ^b }
+|  |  |  SCArgumentDeclareList (25:23)
+|  |  |  |  SCArgumentDeclare (25:23): a
+|  |  |  |  SCArgumentDeclare (25:26): b
+|  |  |  SCBody (25:29)
+|  |  |  |  SCExplicitReturn (25:29)
+|  |  |  |  |  SCRead (25:30): local b, declared (25:26): b
+|  |  SCMethod (27:5): returnLiteralArgument: returnLiteralArgument { |a = 1| ^a }
+|  |  |  SCArgumentDeclareList (27:30)
+|  |  |  |  SCArgumentDeclare (27:30): a, prototype
+|  |  |  |  |  SCLiteral (27:34) = 1
+|  |  |  SCBody (27:37)
+|  |  |  |  SCExplicitReturn (27:37)
+|  |  |  |  |  SCRead (27:38): local a, declared (27:30): a = 1
+|  |  SCMethod (29:5): returnInstance: returnInstance { ^other }
+|  |  |  SCBody (29:22)
+|  |  |  |  SCExplicitReturn (29:22)
+|  |  |  |  |  SCRead (29:23): instance other, declared (7:15): other
+|  |  SCMethod (31:5): redirect: redirect { |a, b| ^this.foo(a, b) }
+|  |  |  SCArgumentDeclareList (31:17)
+|  |  |  |  SCArgumentDeclare (31:17): a
+|  |  |  |  SCArgumentDeclare (31:20): b
+|  |  |  SCBody (31:23)
+|  |  |  |  SCExplicitReturn (31:23)
+|  |  |  |  |  SCMessage (31:24): foo
+|  |  |  |  |  |  SCSpecial (31:24): this
+|  |  |  |  |  |  SCPositionalArgs (31:24)
+|  |  |  |  |  |  |  SCRead (31:33): local a, declared (31:17): a
+|  |  |  |  |  |  |  SCRead (31:36): local b, declared (31:20): b
+|  |  SCMethod (33:5): redirectCall: redirectCall { |a| ^foo(this, a) }
+|  |  |  SCArgumentDeclareList (33:21)
+|  |  |  |  SCArgumentDeclare (33:21): a
+|  |  |  SCBody (33:24)
+|  |  |  |  SCExplicitReturn (33:24)
+|  |  |  |  |  SCMessage (33:25): foo
+|  |  |  |  |  |  SCSpecial (33:29): this
+|  |  |  |  |  |  SCPositionalArgs (33:25)
+|  |  |  |  |  |  |  SCRead (33:35): local a, declared (33:21): a
+|  |  SCMethod (35:5): redirectSuper: redirectSuper { ^super.foo }
+|  |  |  SCBody (35:21)
+|  |  |  |  SCExplicitReturn (35:21)
+|  |  |  |  |  SCMessage (35:22): foo
+|  |  |  |  |  |  SCSpecial (35:22): super
+|  |  SCMethod (37:5): forwardInstance: forwardInstance { |a| ^other.foo(a) }
+|  |  |  SCArgumentDeclareList (37:24)
+|  |  |  |  SCArgumentDeclare (37:24): a
+|  |  |  SCBody (37:27)
+|  |  |  |  SCExplicitReturn (37:27)
+|  |  |  |  |  SCMessage (37:28): foo
+|  |  |  |  |  |  SCRead (37:28): instance other, declared (7:15): other
+|  |  |  |  |  |  SCPositionalArgs (37:28)
+|  |  |  |  |  |  |  SCRead (37:38): local a, declared (37:24): a
+|  |  SCMethod (39:5): forwardClassVariable: forwardClassVariable { ^cv.foo }
+|  |  |  SCBody (39:28)
+|  |  |  |  SCExplicitReturn (39:28)
+|  |  |  |  |  SCMessage (39:29): foo
+|  |  |  |  |  |  SCRead (39:29): class cv, declared (8:14): cv
+|  |  SCMethod (43:5): assign: assign { |a| inst = a }
+|  |  |  SCArgumentDeclareList (43:15)
+|  |  |  |  SCArgumentDeclare (43:15): a
+|  |  |  SCBody (43:18)
+|  |  |  |  SCAssign (43:18): instance inst, declared (7:9): inst
+|  |  |  |  |  SCRead (43:25): local a, declared (43:15): a
+|  |  SCMethod (45:5): implicitReturn: implicitReturn { 1 }
+|  |  |  SCBody (45:22)
+|  |  |  |  SCLiteral (45:22) = 1
+|  |  SCMethod (47:5): returnClass: returnClass { ^Object }
+|  |  |  SCBody (47:19)
+|  |  |  |  SCExplicitReturn (47:19)
+|  |  |  |  |  SCLiteral (47:20)
+|  |  SCMethod (49:5): returnFunction: returnFunction { ^{ 1 } }
+|  |  |  SCBody (49:22)
+|  |  |  |  SCExplicitReturn (49:22)
+|  |  |  |  |  SCFunction (49:23) -> 1
+|  |  |  |  |  |  SCBody (49:23)
+|  |  |  |  |  |  |  SCLiteral (49:25) = 1
+|  |  SCMethod (51:5): returnConstant: returnConstant { ^kConst }
+|  |  |  SCBody (51:22)
+|  |  |  |  SCExplicitReturn (51:22)
+|  |  |  |  |  SCRead (51:23): class kConst, declared (6:11): kConst
+|  |  SCMethod (53:5): returnClassVariable: returnClassVariable { ^cv }
+|  |  |  SCBody (53:27)
+|  |  |  |  SCExplicitReturn (53:27)
+|  |  |  |  |  SCRead (53:28): class cv, declared (8:14): cv
+|  |  SCMethod (55:5): returnComputed: returnComputed { ^(1 + 2) }
+|  |  |  SCBody (55:22)
+|  |  |  |  SCExplicitReturn (55:22)
+|  |  |  |  |  SCMessage (55:24): +
+|  |  |  |  |  |  SCLiteral (55:24) = 1
+|  |  |  |  |  |  SCPositionalArgs (55:24)
+|  |  |  |  |  |  |  SCLiteral (55:28) = 2
+|  |  SCMethod (57:5): computedDefault: computedDefault { |a = (1)| ^a }
+|  |  |  SCArgumentDeclareList (57:24)
+|  |  |  |  SCArgumentDeclare (57:24): a, computed
+|  |  |  |  |  SCLiteral (57:29) = 1
+|  |  |  SCBody (57:33)
+|  |  |  |  SCExplicitReturn (57:33)
+|  |  |  |  |  SCRead (57:34): local a, declared (57:24): a = (1)
+|  |  SCMethod (59:5): computedVariable: computedVariable { var a = (1); ^1 } -> 1
+|  |  |  SCBody (59:24)
+|  |  |  |  SCVariableDeclare (59:28): a, computed
+|  |  |  |  |  SCLiteral (59:33) = 1
+|  |  |  |  SCExplicitReturn (59:37)
+|  |  |  |  |  SCLiteral (59:38) = 1
+|  |  SCMethod (61:5): variadic: variadic { |...a| ^1 }
+|  |  |  SCArgumentDeclareList (61:16)
+|  |  |  |  SCArgumentDeclare (61:20): a
+|  |  |  SCBody (61:23)
+|  |  |  |  SCExplicitReturn (61:23)
+|  |  |  |  |  SCLiteral (61:24) = 1
+|  |  SCMethod (63:5): primitive: primitive { _ObjectClass ^1 }
+|  |  |  SCBody (63:30)
+|  |  |  |  SCExplicitReturn (63:30)
+|  |  |  |  |  SCLiteral (63:31) = 1
+|  |  SCMethod (65:5): doesNotUnderstand: doesNotUnderstand { ^1 } -> 1
+|  |  |  SCBody (65:25)
+|  |  |  |  SCExplicitReturn (65:25)
+|  |  |  |  |  SCLiteral (65:26) = 1
+|  |  SCMethod (67:5): assignThenReturn: assignThenReturn { |a| inst = a; ^this }
+|  |  |  SCArgumentDeclareList (67:25)
+|  |  |  |  SCArgumentDeclare (67:25): a
+|  |  |  SCBody (67:28)
+|  |  |  |  SCAssign (67:28): instance inst, declared (7:9): inst
+|  |  |  |  |  SCRead (67:35): local a, declared (67:25): a
+|  |  |  |  SCExplicitReturn (67:38)
+|  |  |  |  |  SCSpecial (67:39): this
+|  |  SCMethod (69:5): redirectWrongOrder: redirectWrongOrder { |a, b| ^this.foo(b, a) }
+|  |  |  SCArgumentDeclareList (69:27)
+|  |  |  |  SCArgumentDeclare (69:27): a
+|  |  |  |  SCArgumentDeclare (69:30): b
+|  |  |  SCBody (69:33)
+|  |  |  |  SCExplicitReturn (69:33)
+|  |  |  |  |  SCMessage (69:34): foo
+|  |  |  |  |  |  SCSpecial (69:34): this
+|  |  |  |  |  |  SCPositionalArgs (69:34)
+|  |  |  |  |  |  |  SCRead (69:43): local b, declared (69:30): b
+|  |  |  |  |  |  |  SCRead (69:46): local a, declared (69:27): a
+|  |  SCMethod (71:5): redirectMissing: redirectMissing { |a, b| ^this.foo(a) }
+|  |  |  SCArgumentDeclareList (71:24)
+|  |  |  |  SCArgumentDeclare (71:24): a
+|  |  |  |  SCArgumentDeclare (71:27): b
+|  |  |  SCBody (71:30)
+|  |  |  |  SCExplicitReturn (71:30)
+|  |  |  |  |  SCMessage (71:31): foo
+|  |  |  |  |  |  SCSpecial (71:31): this
+|  |  |  |  |  |  SCPositionalArgs (71:31)
+|  |  |  |  |  |  |  SCRead (71:40): local a, declared (71:24): a
+|  |  SCMethod (73:5): redirectKeyword: redirectKeyword { |a| ^this.foo(a: a) }
+|  |  |  SCArgumentDeclareList (73:24)
+|  |  |  |  SCArgumentDeclare (73:24): a
+|  |  |  SCBody (73:27)
+|  |  |  |  SCExplicitReturn (73:27)
+|  |  |  |  |  SCMessage (73:28): foo
+|  |  |  |  |  |  SCSpecial (73:28): this
+|  |  |  |  |  |  SCKwArgs (73:28)
+|  |  |  |  |  |  |  SCKwArg (73:37): a
+|  |  |  |  |  |  |  |  SCRead (73:40): local a, declared (73:24): a
+|  |  SCMethod (75:5): redirectBinary: redirectBinary { |a| ^this + a }
+|  |  |  SCArgumentDeclareList (75:23)
+|  |  |  |  SCArgumentDeclare (75:23): a
+|  |  |  SCBody (75:26)
+|  |  |  |  SCExplicitReturn (75:26)
+|  |  |  |  |  SCMessage (75:27): +
+|  |  |  |  |  |  SCSpecial (75:27): this
+|  |  |  |  |  |  SCPositionalArgs (75:27)
+|  |  |  |  |  |  |  SCRead (75:34): local a, declared (75:23): a
+|  |  SCMethod (77:5): redirectSetter: redirectSetter { |a| ^this.foo = a }
+|  |  |  SCArgumentDeclareList (77:23)
+|  |  |  |  SCArgumentDeclare (77:23): a
+|  |  |  SCBody (77:26)
+|  |  |  |  SCExplicitReturn (77:26)
+|  |  |  |  |  SCMessage (77:27): foo_
+|  |  |  |  |  |  SCSpecial (77:27): this
+|  |  |  |  |  |  SCPositionalArgs (77:27)
+|  |  |  |  |  |  |  SCRead (77:38): local a, declared (77:23): a
+|  |  SCMethod (79:5): redirectVariadic: redirectVariadic { |a| ^this.foo(*a) }
+|  |  |  SCArgumentDeclareList (79:25)
+|  |  |  |  SCArgumentDeclare (79:25): a
+|  |  |  SCBody (79:28)
+|  |  |  |  SCExplicitReturn (79:28)
+|  |  |  |  |  SCMessage (79:29): foo
+|  |  |  |  |  |  SCSpecial (79:29): this
+|  |  |  |  |  |  SCVariadicArgs (79:29)
+|  |  |  |  |  |  |  SCRead (79:39): local a, declared (79:25): a
+|  |  SCMethod (81:5): forwardArgument: forwardArgument { |a| ^a.foo }
+|  |  |  SCArgumentDeclareList (81:24)
+|  |  |  |  SCArgumentDeclare (81:24): a
+|  |  |  SCBody (81:27)
+|  |  |  |  SCExplicitReturn (81:27)
+|  |  |  |  |  SCMessage (81:28): foo
+|  |  |  |  |  |  SCRead (81:28): local a, declared (81:24): a
+|  |  SCMethod (83:5): nonLocal: nonLocal { |a| if (a) { ^1 }; ^2 }
+|  |  |  SCArgumentDeclareList (83:17)
+|  |  |  |  SCArgumentDeclare (83:17): a
+|  |  |  SCBody (83:20)
+|  |  |  |  SCMessage (83:20): if
+|  |  |  |  |  SCRead (83:24): local a, declared (83:17): a
+|  |  |  |  |  SCPositionalArgs (83:20)
+|  |  |  |  |  |  SCFunction (83:27)
+|  |  |  |  |  |  |  SCBody (83:27)
+|  |  |  |  |  |  |  |  SCExplicitReturn (83:29)
+|  |  |  |  |  |  |  |  |  SCLiteral (83:30) = 1
+|  |  |  |  SCExplicitReturn (83:35)
+|  |  |  |  |  SCLiteral (83:36) = 2
+|  |  SCMethod (87:5): hiddenReturn: hiddenReturn { var other; ^other } -> nil
+|  |  |  SCBody (87:20)
+|  |  |  |  SCVariableDeclare (87:24): other
+|  |  |  |  SCExplicitReturn (87:31)
+|  |  |  |  |  SCRead (87:32): local other = nil, declared (87:24): other
+SCClass (5:1): Meta_BytecodeShortcuts : Meta_Object
+|  SCMemberList (5:1)
+|  |  SCMember (6:11): kConst = 1
+|  |  SCMember (8:14): cv
+|  SCMethodList (5:1)
+
+
+
+BYTECODE DUMP 
+
+
+BytecodeShortcuts
+|  function 0 (11:5): method empty
+|  |  properties:
+|  |  shortcut: return self
+|  |  selectors:
+|  |  constants:
+|  function 1 (13:5): method returnThis
+|  |  properties:
+|  |  shortcut: return self
+|  |  selectors:
+|  |  constants:
+|  function 2 (15:5): method returnInteger
+|  |  properties:
+|  |  shortcut: return literal 1
+|  |  selectors:
+|  |  constants:
+|  function 3 (17:5): method returnNil
+|  |  properties:
+|  |  shortcut: return literal nil
+|  |  selectors:
+|  |  constants:
+|  function 4 (19:5): method returnString
+|  |  properties:
+|  |  shortcut: return literal "text"
+|  |  selectors:
+|  |  constants:
+|  function 5 (21:5): method returnSymbol
+|  |  properties:
+|  |  shortcut: return literal \name
+|  |  selectors:
+|  |  constants:
+|  function 6 (23:5): method returnArray
+|  |  properties:
+|  |  shortcut: return literal [1, 2]
+|  |  selectors:
+|  |  constants:
+|  function 7 (25:5): method returnArgument
+|  |  properties:
+|  |  shortcut: return argument 2
+|  |  selectors:
+|  |  constants:
+|  function 8 (27:5): method returnLiteralArgument
+|  |  properties:
+|  |  shortcut: return argument 1
+|  |  selectors:
+|  |  constants:
+|  function 9 (29:5): method returnInstance
+|  |  properties:
+|  |  shortcut: return instance variable 1
+|  |  selectors:
+|  |  constants:
+|  function 10 (31:5): method redirect
+|  |  properties:
+|  |  shortcut: redirect foo
+|  |  selectors:
+|  |  constants:
+|  function 11 (33:5): method redirectCall
+|  |  properties:
+|  |  shortcut: redirect foo
+|  |  selectors:
+|  |  constants:
+|  function 12 (35:5): method redirectSuper
+|  |  properties:
+|  |  shortcut: redirect to super foo
+|  |  selectors:
+|  |  constants:
+|  function 13 (37:5): method forwardInstance
+|  |  properties:
+|  |  shortcut: forward foo to instance variable 1
+|  |  selectors:
+|  |  constants:
+|  function 14 (39:5): method forwardClassVariable
+|  |  properties:
+|  |  shortcut: forward foo to class variable 0
+|  |  selectors:
+|  |  constants:
+|  function 15 (43:5): method assign
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    70              StoreInstVar
+|  |  2    F4              ReturnSelf
+|  function 16 (45:5): method implicitReturn
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    64              PushSpecialNumber
+|  |  1    F0              Drop
+|  |  2    F4              ReturnSelf
+|  function 17 (47:5): method returnClass
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    06 00           PushSpecialClass
+|  |  2    F3              Return
+|  function 18 (49:5): method returnFunction
+|  |  properties:
+|  |  selectors: function 19,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F3              Return
+|  function 19 (49:23)
+|  |  properties: closed,
+|  |  selectors:
+|  |  constants:
+|  |  0    64              PushSpecialNumber
+|  |  1    F2              BlockReturn
+|  function 20 (51:5): method returnConstant
+|  |  properties:
+|  |  selectors:
+|  |  constants: 1,
+|  |  0    40              PushLiteral
+|  |  1    F3              Return
+|  function 21 (53:5): method returnClassVariable
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F3              Return
+|  function 22 (55:5): method returnComputed
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    64              PushSpecialNumber
+|  |  1    65              PushSpecialNumber
+|  |  2    FF              TailCallReturnFromMethod
+|  |  3    E0              SendSpecialBinaryArithMsg
+|  |  4    F3              Return
+|  function 23 (57:5): method computedDefault
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    8F 1A 00 04     ExtendedCodes
+|  |  5    64              PushSpecialNumber
+|  |  6    08 00 01        StoreTempVarX
+|  |  9    F0              Drop
+|  |  10   31              PushTempZeroVar
+|  |  11   F3              Return
+|  function 24 (59:5): method computedVariable
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    64              PushSpecialNumber
+|  |  1    80 01           StoreTempVar
+|  |  3    64              PushSpecialNumber
+|  |  4    F3              Return
+|  function 25 (61:5): method variadic
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    64              PushSpecialNumber
+|  |  1    F3              Return
+|  function 26 (63:5): method primitive
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    64              PushSpecialNumber
+|  |  1    F3              Return
+|  function 27 (65:5): method doesNotUnderstand
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    64              PushSpecialNumber
+|  |  1    F3              Return
+|  function 28 (67:5): method assignThenReturn
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    70              StoreInstVar
+|  |  2    60              PushSpecialValueThis
+|  |  3    F3              Return
+|  function 29 (69:5): method redirectWrongOrder
+|  |  properties:
+|  |  selectors: foo,
+|  |  constants:
+|  |  0    60              PushSpecialValueThis
+|  |  1    32              PushTempZeroVar
+|  |  2    31              PushTempZeroVar
+|  |  3    FF              TailCallReturnFromMethod
+|  |  4    A3 00           SendMsg
+|  |  6    F3              Return
+|  function 30 (71:5): method redirectMissing
+|  |  properties:
+|  |  selectors: foo,
+|  |  constants:
+|  |  0    60              PushSpecialValueThis
+|  |  1    31              PushTempZeroVar
+|  |  2    FF              TailCallReturnFromMethod
+|  |  3    A2 00           SendMsg
+|  |  5    F3              Return
+|  function 31 (73:5): method redirectKeyword
+|  |  properties:
+|  |  selectors: foo,
+|  |  constants: \a,
+|  |  0    60              PushSpecialValueThis
+|  |  1    40              PushLiteral
+|  |  2    31              PushTempZeroVar
+|  |  3    FF              TailCallReturnFromMethod
+|  |  4    0A 03 01 00     SendMsgX
+|  |  8    F3              Return
+|  function 32 (75:5): method redirectBinary
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    60              PushSpecialValueThis
+|  |  1    31              PushTempZeroVar
+|  |  2    FF              TailCallReturnFromMethod
+|  |  3    E0              SendSpecialBinaryArithMsg
+|  |  4    F3              Return
+|  function 33 (77:5): method redirectSetter
+|  |  properties:
+|  |  selectors: foo_,
+|  |  constants:
+|  |  0    60              PushSpecialValueThis
+|  |  1    31              PushTempZeroVar
+|  |  2    FF              TailCallReturnFromMethod
+|  |  3    A2 00           SendMsg
+|  |  5    F3              Return
+|  function 34 (79:5): method redirectVariadic
+|  |  properties:
+|  |  selectors:
+|  |  constants: \foo,
+|  |  0    60              PushSpecialValueThis
+|  |  1    40              PushLiteral
+|  |  2    31              PushTempZeroVar
+|  |  3    FF              TailCallReturnFromMethod
+|  |  4    C3 38           SendSpecialMsg
+|  |  6    F3              Return
+|  function 35 (81:5): method forwardArgument
+|  |  properties:
+|  |  selectors: foo,
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    FF              TailCallReturnFromMethod
+|  |  2    A1 00           SendMsg
+|  |  4    F3              Return
+|  function 36 (83:5): method nonLocal
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    F9 00 02        JumpIfFalsePushNil
+|  |  4    64              PushSpecialNumber
+|  |  5    F3              Return
+|  |  6    F0              Drop
+|  |  7    65              PushSpecialNumber
+|  |  8    F3              Return
+|  function 37 (87:5): method hiddenReturn
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    F3              Return
+Meta_BytecodeShortcuts
+Successfully compiled 16 classes.

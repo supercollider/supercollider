@@ -68,16 +68,14 @@ BYTECODE DUMP
 BytecodeFolding
 |  function 0 (7:5): method knownVariable
 |  |  properties:
+|  |  shortcut: return literal 1
 |  |  selectors:
 |  |  constants:
-|  |  0    64              PushSpecialNumber
-|  |  1    F3              Return
 |  function 1 (8:5): method folded
 |  |  properties:
+|  |  shortcut: return literal 3
 |  |  selectors:
 |  |  constants:
-|  |  0    2C 03           PushInteger8
-|  |  2    F3              Return
 |  function 2 (10:5): method mutable
 |  |  properties:
 |  |  selectors:
@@ -93,16 +91,14 @@ BytecodeFolding
 |  |  11   F3              Return
 |  function 3 (11:5): method literal
 |  |  properties:
-|  |  selectors:
-|  |  constants: [1, "a"],
-|  |  0    40              PushLiteral
-|  |  1    F3              Return
-|  function 4 (13:5): method classConstant
-|  |  properties:
+|  |  shortcut: return literal [1, "a"]
 |  |  selectors:
 |  |  constants:
-|  |  0    65              PushSpecialNumber
-|  |  1    F3              Return
+|  function 4 (13:5): method classConstant
+|  |  properties:
+|  |  shortcut: return literal 2
+|  |  selectors:
+|  |  constants:
 |  function 5 (14:5): method mutableClassConstant
 |  |  properties:
 |  |  selectors:
@@ -111,9 +107,9 @@ BytecodeFolding
 |  |  1    F3              Return
 |  function 6 (16:5): method returnKnownNil
 |  |  properties:
+|  |  shortcut: return literal nil
 |  |  selectors:
 |  |  constants:
-|  |  0    F7              ReturnNil
 |  function 7 (17:5): method tail
 |  |  properties:
 |  |  selectors: function 8,

@@ -101,6 +101,9 @@ struct SpecialSymbols {
     std::unordered_map<ir::Symbol, SpecialSelector, std::hash<ir::Symbol>> special_selectors;
     std::unordered_map<ir::Symbol, std::uint8_t, std::hash<ir::Symbol>> special_classes;
     ir::SymSCSelector series;
+    // Methods that never get a shortcut.
+    ir::SymSCSelector does_not_understand;
+    ir::SymSCSelector function_compile_context;
 
     [[nodiscard]] std::optional<SpecialSelector> find(ir::Symbol selector) const;
 };

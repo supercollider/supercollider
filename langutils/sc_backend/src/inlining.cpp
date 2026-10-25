@@ -220,7 +220,10 @@ std::optional<ir::ConstExprIndex> switch_key(const InliningContext& ctx, const i
 // Special symbols
 ////////////////////////////////////////////////////////////////////////////////
 
-SpecialSymbols::SpecialSymbols(ir::SymbolTable& symbols): series(symbols.get_selector("prSimpleNumberSeries")) {
+SpecialSymbols::SpecialSymbols(ir::SymbolTable& symbols):
+    series(symbols.get_selector("prSimpleNumberSeries")),
+    does_not_understand(symbols.get_selector("doesNotUnderstand")),
+    function_compile_context(symbols.get_selector("functionCompileContext")) {
     // The first table a name is in wins, as the old compiler looked in them in this order.
     const auto add = [&](const auto& names, auto table) {
         using Enum = decltype(table);

@@ -19,6 +19,9 @@ namespace sc::ir {
 
 [[nodiscard]] constexpr bool rewrites_perform(ast::LanguageVersion v) { return v >= ast::LanguageVersion::V3_16; }
 
+// Old code never emitted this, there is a bug in the VM so this was probably removed to avoid the bug.
+[[nodiscard]] constexpr bool has_assign_shortcut(ast::LanguageVersion v) { return v >= ast::LanguageVersion::V3_16; }
+
 [[nodiscard]] constexpr bool allows_closed_function_return(ast::LanguageVersion v) {
     return v < ast::LanguageVersion::V3_16;
 }

@@ -7,8 +7,9 @@
    platforms anywhere (windows, osx, iphone, wasm), sc_inspect doesn't, and sc_inspect doesn't follow symlinked
    directories, so copy the library (cp -rL) and delete those first:
        build/langutils/sc_inspect/sc_inspect --bytecode library_copy > new.txt
-3. Compare, every method by class and name, sorting differences into inlining (B4), hard coded methods and methods
-   without code (B5, methType shortcuts), and the rest, which are printed:
+3. Compare, every method by class and name, sorting differences into inlining (B4), hard coded methods (B5d), and the
+   rest, which are printed. methType isn't readable from sclang, so a shortcut is compared as a method without code
+   and what its selectors hold (the literal returned or the selector sent):
        compare_bytecode.py --all old.txt new.txt
    or the methods of some classes, in order:
        compare_bytecode.py old.txt new.txt Class ...
@@ -85,7 +86,8 @@ def parse_old(path):
         line = line.rstrip('\n')
         m = re.match(r'FUNC (.*)', line)
         if m:
-            cur = {'name': m.group(1).strip(), 'properties': '', 'code': [], 'selectors': [], 'constants': []}
+            cur = {'name': m.group(1).strip(), 'properties': '', 'shortcut': None, 'code': [], 'selectors': [],
+                   'constants': []}
             funcs.append(cur)
             continue
         if cur is None:
@@ -93,6 +95,10 @@ def parse_old(path):
         m = re.match(r'  properties:(.*)', line)
         if m:
             cur['properties'] = m.group(1).strip()
+            continue
+        m = re.match(r'  shortcut: (.*)', line)
+        if m:
+            cur['shortcut'] = norm_constant(m.group(1))
             continue
         m = re.match(r'  code: (.*)', line)
         if m:
@@ -147,13 +153,17 @@ def parse_new(path, classes):
             continue
         m = re.match(r'\|  function (\d+) (?:.*: method (\S+)$)?', line)
         if m:
-            cur = {'name': m.group(2) or '  nested', 'index': int(m.group(1)), 'properties': '', 'code': [],
-                   'selectors': [], 'constants': [], 'nested': []}
+            cur = {'name': m.group(2) or '  nested', 'index': int(m.group(1)), 'properties': '', 'shortcut': None,
+                   'code': [], 'selectors': [], 'constants': [], 'nested': []}
             funcs.setdefault(cls, []).append(cur)
             continue
         m = re.match(r'\|  \|  properties:(.*)', line)
         if m:
             cur['properties'] = m.group(1).strip()
+            continue
+        m = re.match(r'\|  \|  shortcut: (.*)', line)
+        if m:
+            cur['shortcut'] = shortcut_payload(m.group(1))
             continue
         m = re.match(r'\|  \|  selectors:(.*)', line)
         if m:
@@ -172,6 +182,30 @@ def parse_new(path, classes):
     return funcs
 
 
+def shortcut_payload(s):
+    """What old sclang stores in a shortcut's selectors: the literal returned, the selector sent, or nil."""
+    m = re.fullmatch(r'return literal (.*)', s)
+    if m:
+        return norm_constant(m.group(1))
+    m = re.fullmatch(r'(?:redirect(?: to super)?|forward) (\S+).*', s)
+    if m:
+        return '\\' + m.group(1)
+    return 'nil'
+
+
+def shortcut_problem(o, n):
+    """Old sclang's methType isn't readable, so a shortcut is a method without code, and its selectors."""
+    if o['shortcut'] is None and n['shortcut'] is None:
+        return None
+    if o['shortcut'] is None:
+        return 'shortcut old none new %s' % n['shortcut']
+    if n['shortcut'] is None:
+        return 'shortcut old %s new none' % o['shortcut']
+    if o['shortcut'] != n['shortcut']:
+        return 'shortcut old %s new %s' % (o['shortcut'], n['shortcut'])
+    return None
+
+
 def main():
     old = parse_old(sys.argv[1])
     new = parse_new(sys.argv[2], sys.argv[3:])
@@ -179,6 +213,8 @@ def main():
     same = 0
     for o, n in zip(old, news):
         problems = []
+        if p := shortcut_problem(o, n):
+            problems.append(p)
         if o['name'].strip() != n['name'].strip():
             problems.append('name %s vs %s' % (o['name'], n['name']))
         oi, ni = instructions(o['code']), instructions(n['code'])
@@ -290,7 +326,7 @@ def compare_all(old_path, new_path):
     old = group(parse_old_classes(old_path))
     new_funcs = parse_new(new_path, [])
     new = group([(c, f) for c, fs in new_funcs.items() for f in fs])
-    stats = {'match': 0, 'nil code': 0, 'hard coded': 0, 'inlining': 0, 'other': 0, 'missing': 0}
+    stats = {'match': 0, 'shortcut': 0, 'hard coded': 0, 'inlining': 0, 'other': 0, 'missing': 0}
     others = []
     for key, ofs in old.items():
         if key not in new:
@@ -299,10 +335,12 @@ def compare_all(old_path, new_path):
         nfs = in_selector_order(new[key])
         normalise_switches(ofs)
         normalise_switches(nfs)
-        if not ofs[0]['code']:
-            stats['nil code'] += 1
-            continue
         problems = []
+        if p := shortcut_problem(ofs[0], nfs[0]):
+            problems.append(p)
+        elif ofs[0]['shortcut'] is not None:
+            stats['shortcut'] += 1
+            continue
         if len(ofs) != len(nfs):
             problems.append('functions old %d new %d' % (len(ofs), len(nfs)))
         for o, n in zip(ofs, nfs):
@@ -320,7 +358,7 @@ def compare_all(old_path, new_path):
                 problems.append('properties old %s new %s' % (o['properties'] or '-', n['properties'] or '-'))
         if not problems:
             stats['match'] += 1
-        elif ofs[0]['code'][0] == 0x8F and len(ofs) == 1:
+        elif ofs[0]['code'] and ofs[0]['code'][0] == 0x8F and len(ofs) == 1:
             stats['hard coded'] += 1
         elif uses_inlining(ofs):
             stats['inlining'] += 1

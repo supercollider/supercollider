@@ -3,6 +3,7 @@
 #include "sc_sema/const_expr.hpp"
 #include "sc_sema/ir.hpp"
 #include "sc_sema/symbol_table.hpp"
+#include "sc_sema/versions.hpp"
 #include "sc_util/overload.hpp"
 
 #include <algorithm>
@@ -154,6 +155,12 @@ private:
 // Emitter
 ////////////////////////////////////////////////////////////////////////////////
 
+// A frame with more slots than the VM can address isn't lowered.
+[[nodiscard]] lir::SlotIndex argument_slot(std::uint32_t k) {
+    assert(k <= std::numeric_limits<std::uint8_t>::max());
+    return lir::SlotIndex { static_cast<std::uint8_t>(k) };
+}
+
 struct Emitter {
     const EmitContext& ctx;
     const lir::Function& function;
@@ -259,11 +266,6 @@ struct Emitter {
             return is_this(v);
         const auto* local = std::get_if<lir::PushLocal>(&instruction(v.producer));
         return local && local->local.depth == 0 && local->local.slot == k;
-    }
-
-    [[nodiscard]] static lir::SlotIndex argument_slot(std::uint32_t k) {
-        assert(k <= std::numeric_limits<std::uint8_t>::max());
-        return lir::SlotIndex { static_cast<std::uint8_t>(k) };
     }
 
     [[nodiscard]] bool is_integer_one(Value v) const {
@@ -1279,6 +1281,76 @@ function_properties(const EmitContext& ctx, const util::IndexedVector<lir::Funct
     }
     return out;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Method shortcuts
+////////////////////////////////////////////////////////////////////////////////
+
+// Whether the instruction pushes the method's argument k, slot 0 being `this`.
+bool pushes_argument(const lir::Instruction& i, lir::SlotIndex k) {
+    const auto* local = std::get_if<lir::PushLocal>(&i);
+    return local && local->local.depth == 0 && local->local.slot == k;
+}
+
+// Attempt to find a shortcut method.
+OptionalMethodShortcut method_shortcut(const EmitContext& ctx, const lir::Function& function, const Frame& frame) {
+    const auto method = ctx.graph.as_a<ir::SCMethod_I>(ir::NodeIndex { *frame.owner });
+    if (!method)
+        return {};
+    const auto& payload = ctx.graph.payload(*method);
+    const auto selector = *payload.selector;
+    if (payload.primitive || frame.variadic != Variadic::None || selector == ctx.special_symbols.does_not_understand
+        || (ctx.interpreter_members && selector == ctx.special_symbols.function_compile_context))
+        return {};
+
+    const auto& code = function.instructions.raw();
+    // Lowering ends every method with a return.
+    assert(!code.empty());
+    if (code.size() == 1 && std::holds_alternative<lir::ReturnSelf>(code[0]))
+        return shortcut::ReturnSelf {};
+    if (ir::has_assign_shortcut(payload.version) && code.size() == 4 && frame.num_positional > 0
+        && pushes_argument(code[0], lir::SlotIndex { 1 }) && std::holds_alternative<lir::Drop>(code[2])
+        && std::holds_alternative<lir::ReturnSelf>(code[3]))
+        if (const auto* store = std::get_if<lir::StoreInstance>(&code[1]))
+            return shortcut::AssignInstance { store->slot };
+    if (!std::holds_alternative<lir::Return>(code.back()))
+        return {};
+    if (code.size() == 2) {
+        const auto& value = code[0];
+        if (const auto* s = std::get_if<lir::PushSpecial>(&value); s && s->kind == ir::SCSpecial::Kind::This)
+            return shortcut::ReturnSelf {};
+        if (const auto* c = std::get_if<lir::PushConstant>(&value);
+            c && !ctx.constants(c->value).get_if<ir::SymSCClassName>())
+            return shortcut::ReturnLiteral { c->value };
+        if (const auto* l = std::get_if<lir::PushLocal>(&value);
+            l && l->local.depth == 0 && *l->local.slot >= 1 && *l->local.slot <= frame.num_positional)
+            return shortcut::ReturnArgument { l->local.slot };
+        if (const auto* p = std::get_if<lir::PushInstance>(&value))
+            return shortcut::ReturnInstance { p->slot };
+    }
+
+    // Shortcuts for message sends.
+    constexpr std::uint32_t receiver_send_and_return = 3;
+    if (code.size() != frame.num_positional + receiver_send_and_return)
+        return {};
+    const auto* send = std::get_if<lir::Send>(&code[code.size() - 2]);
+    if (!send || send->form != lir::SendForm::Call || send->kind == lir::SendKind::WithAdverb
+        || send->num_positional != frame.num_positional || send->num_keyword != 0)
+        return {};
+    for (std::uint32_t k { 1 }; k <= frame.num_positional; ++k)
+        if (!pushes_argument(code[k], argument_slot(k)))
+            return {};
+    const bool super = send->kind == lir::SendKind::Super;
+    if (const auto* s = std::get_if<lir::PushSpecial>(&code[0]); s && s->kind == ir::SCSpecial::Kind::This)
+        return shortcut::Redirect { send->selector, super };
+    if (super)
+        return {};
+    if (const auto* p = std::get_if<lir::PushInstance>(&code[0]))
+        return shortcut::ForwardInstance { send->selector, p->slot };
+    if (const auto* p = std::get_if<lir::PushClassVariable>(&code[0]))
+        return shortcut::ForwardClassVariable { send->selector, p->index };
+    return {};
+}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1306,6 +1378,13 @@ EmittedGraph emit(const EmitContext& ctx, const lir::LoweredGraph& lowered) {
         }
         if (root_failed) {
             out.functions.push_back({});
+            continue;
+        }
+        if (const auto found = method_shortcut(ctx, function, frame); !std::holds_alternative<std::monostate>(found)) {
+            EmittedFunction emitted {};
+            emitted.shortcut = found;
+            emitted.properties = properties[index];
+            out.functions.push_back(std::move(emitted));
             continue;
         }
         Emitter emitter { ctx, function, frame, {}, out.diagnostics };
@@ -1424,6 +1503,30 @@ void write_emitted(std::ostream& out, const EmittedFunction& function, std::stri
         out << " closed,";
     if (function.properties.needs_heap_context)
         out << " heap context,";
+    if (!std::holds_alternative<std::monostate>(function.shortcut)) {
+        out << "\n" << indent << "shortcut: ";
+        std::visit(util::overload {
+                       [](std::monostate) {},
+                       [&](shortcut::ReturnSelf) { out << "return self"; },
+                       [&](shortcut::ReturnLiteral s) {
+                           out << "return literal ";
+                           constants(s.value).to_literal(out, symbols, constants);
+                       },
+                       [&](shortcut::ReturnArgument s) { out << "return argument " << +*s.slot; },
+                       [&](shortcut::ReturnInstance s) { out << "return instance variable " << *s.slot; },
+                       [&](shortcut::AssignInstance s) { out << "assign instance variable " << *s.slot; },
+                       [&](shortcut::Redirect s) {
+                           out << (s.super ? "redirect to super " : "redirect ") << symbols(s.selector);
+                       },
+                       [&](shortcut::ForwardInstance s) {
+                           out << "forward " << symbols(s.selector) << " to instance variable " << *s.slot;
+                       },
+                       [&](shortcut::ForwardClassVariable s) {
+                           out << "forward " << symbols(s.selector) << " to class variable " << *s.index;
+                       },
+                   },
+                   function.shortcut);
+    }
     out << "\n" << indent << "selectors:";
     for (const auto& entry : function.selectors.raw()) {
         std::visit(util::overload {
