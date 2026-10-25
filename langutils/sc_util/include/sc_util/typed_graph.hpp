@@ -3,6 +3,7 @@
 #include "sc_util/typed_graph_iter.hpp"
 #include "type_set_index.hpp"
 #include <algorithm>
+#include <cassert>
 #include <functional>
 #include <tuple>
 #include <type_traits>
@@ -236,6 +237,12 @@ public: // This is meant to be privately inherited from.
         } else {
             return std::nullopt;
         }
+    }
+
+    // For a node the caller already knows the type of, e.g., a function argument of an inlined send.
+    template <typename TypedIndex> [[nodiscard]] constexpr TypedIndex assume_a(UntypedNodeIndex i) const {
+        assert(is_a<TypedIndex>(i) && "the node isn't of the assumed type");
+        return TypedIndex { *i };
     }
 
     ////////////////////////////////////////////////////////////////////////////////

@@ -283,7 +283,7 @@ std::optional<ConstExpression> ConstEval::fold_copy_series(const ConstExpression
     std::string chars;
     for (std::int64_t k = start; step > 0 ? k <= end : k >= end; k += step) {
         if (array)
-            elements.push_back((*array)[static_cast<std::size_t>(k)]);
+            (void)elements.push_back((*array)[ConstArrayElementIndex { static_cast<std::uint32_t>(k) }]);
         else
             chars.push_back(string[static_cast<std::size_t>(k)]);
     }
@@ -351,9 +351,9 @@ std::optional<ConstExprArray> ConstEval::fold_series(std::int32_t first, std::op
         return std::nullopt;
 
     ConstExprArray values;
-    values.reserve(static_cast<std::size_t>(count));
+    values.raw().reserve(static_cast<std::size_t>(count));
     for (std::int64_t k { 0 }; k < count; ++k)
-        values.push_back(constants.register_constexpr({ static_cast<std::int32_t>(first + k * step) }));
+        (void)values.push_back(constants.register_constexpr({ static_cast<std::int32_t>(first + k * step) }));
     return values;
 }
 
@@ -427,7 +427,7 @@ ConstEval::Result ConstEval::operator()(ast::ArrayIndex i) {
     for (auto it = ast_graph->children(i).iter(); it; ++it) {
         Result r = std::visit(*this, ast_graph->index_to_variant(*it));
         if (auto s = r.success()) {
-            out.push_back(s->first);
+            (void)out.push_back(s->first);
         } else {
             encountered_immutable_array = outer_immutable;
             return *std::move(r).diagnostic();

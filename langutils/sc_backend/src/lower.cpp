@@ -27,7 +27,14 @@ LoweringSymbols::LoweringSymbols(ir::SymbolTable& symbols):
     envir_put(symbols.get_selector("envirPut")),
     perform_list(symbols.get_selector("performList")),
     super_perform_list(symbols.get_selector("superPerformList")),
-    if_(symbols.get_selector("if")) {}
+    if_(symbols.get_selector("if")),
+    r(symbols.get_selector("r")),
+    do_(symbols.get_selector("do")),
+    for_series(symbols.get_selector("forSeries")),
+    value(symbols.get_selector("value")),
+    yield(symbols.get_selector("yield")),
+    always_yield(symbols.get_selector("alwaysYield")),
+    series_iter(symbols.get_selector("seriesIter")) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Lowerer
@@ -37,6 +44,13 @@ namespace {
 
 // Sub-regions nest, e.g., a default argument's value in a body, so each is collected on its own and appended to its
 // function when it ends, keeping each contiguous.
+// The functions of an inlined `case`, the receiver then the arguments.
+using CaseFunctionIndex = util::StrongIndex<std::uint32_t, struct CaseFunctionIndex__>;
+using CaseFunctions = util::IndexedVector<CaseFunctionIndex, ir::SCFunction_I>;
+
+// A generator's qualifiers, in the order they are written.
+using QualifierIndex = util::StrongIndex<std::uint32_t, struct QualifierIndex__>;
+
 struct SubRegionBuild {
     std::vector<lir::Instruction> instructions {};
     std::vector<lir::SourceSpan> spans {};
@@ -80,8 +94,7 @@ struct Lowerer {
         auto region = std::move(building.back().regions.back());
         building.back().regions.pop_back();
         auto& f = function();
-        const lir::FunctionSubRegion placed { lir::InstructionIndex {
-                                                  static_cast<std::uint32_t>(f.instructions.size()) },
+        const lir::FunctionSubRegion placed { f.instructions.next_index(),
                                               static_cast<std::uint32_t>(region.instructions.size()) };
         f.instructions.raw().insert(f.instructions.raw().end(), region.instructions.begin(), region.instructions.end());
         f.spans.raw().insert(f.spans.raw().end(), region.spans.begin(), region.spans.end());
@@ -91,6 +104,20 @@ struct Lowerer {
     lir::FunctionSubRegionIndex end_sub_region() {
         const auto placed = append_sub_region();
         return function().sub_regions.push_back(placed);
+    }
+
+    // Instructions lowered before they are placed, e.g., an operand pushed after a function lowered later. Any
+    // sub-regions they hold are already placed.
+    SubRegionBuild take_sub_region() {
+        auto region = std::move(building.back().regions.back());
+        building.back().regions.pop_back();
+        return region;
+    }
+
+    void place(const SubRegionBuild& taken) {
+        auto& region = building.back().regions.back();
+        region.instructions.insert(region.instructions.end(), taken.instructions.begin(), taken.instructions.end());
+        region.spans.insert(region.spans.end(), taken.spans.begin(), taken.spans.end());
     }
 
     // The body is sub-region 0, reserved first though it ends last.
@@ -196,7 +223,7 @@ struct Lowerer {
 
         // `(1; "a")` is its last expression's value, so is shared if that is a literal.
         if (const auto list = ir_graph.as_a<ir::SCExprList_I>(i)) {
-            if (const auto last = ir_graph.last_child(ir::NodeIndex { *list })) {
+            if (const auto last = ir_graph.last_child(*list)) {
                 push_constant(ir::NodeIndex { *last }, c);
                 return;
             }
@@ -228,9 +255,9 @@ struct Lowerer {
 
         const auto& value = ctx.constants(c);
         if (const auto* array = value.get_if<ir::ConstExprArray>()) {
-            for (std::size_t k { 0 }; k < array->size(); ++k)
+            for (const auto k : array->indices())
                 if (is_mutable((*array)[k]))
-                    place_element([&] { emit(lir::PushInteger { static_cast<std::int32_t>(k) }, at); }, (*array)[k]);
+                    place_element([&] { emit(lir::PushInteger { static_cast<std::int32_t>(*k) }, at); }, (*array)[k]);
         } else if (const auto* event = value.get_if<ir::ConstExprEvent>()) {
             for (const auto& [key, element] : *event)
                 if (is_mutable(key) || is_mutable(element))
@@ -261,9 +288,6 @@ struct Lowerer {
     }
 
     [[nodiscard]] bool lowered_yet(ir::NodeIndex i) const {
-        if (ir_graph.is_a<ir::SCRoutineGenerator_I>(i) || ir_graph.is_a<ir::SCImmediateGenerator_I>(i)
-            || ir_graph.is_a<ir::SCRangeGenerator_I>(i))
-            return false;
         if (const auto pack = ir_graph.as_a<ir::SCPackAssign_I>(i)) {
             const auto [_, targets] = ir_graph.children(*pack);
             return !has_environment_target(targets);
@@ -271,7 +295,7 @@ struct Lowerer {
         if (const auto message = ir_graph.as_a<ir::SCMessage_I>(i)) {
             // performList takes one array, the old grammar only allowed one.
             const auto [r, p, k, variadic, a] = ir_graph.children(*message);
-            if (num_variadic_args(ir::NodeIndex { *variadic }) > 1)
+            if (num_variadic_args(variadic) > 1)
                 return false;
         }
         return true;
@@ -297,30 +321,45 @@ struct Lowerer {
                        },
                        [&](const ir::SCLiteral& l) { emit(lir::PushConstant { l.index }, i); },
                        [&](const ir::SCRead& r) { read(i, r, tail); },
-                       [&](const ir::SCAssign&) { assign(*ir_graph.as_a<ir::SCAssign_I>(i), tail); },
+                       [&](const ir::SCAssign&) { assign(ir_graph.assume_a<ir::SCAssign_I>(i), tail); },
                        [&](const ir::SCSpecial& s) {
                            // `super` is `this`, only the send it receives differs.
                            const auto kind = s.kind == ir::SCSpecial::Kind::Super ? ir::SCSpecial::Kind::This : s.kind;
                            emit(lir::PushSpecial { kind }, i);
                        },
-                       [&](const ir::SCMessage& m) { message(*ir_graph.as_a<ir::SCMessage_I>(i), m, tail); },
-                       [&](const ir::SCExprList&) { expression_list(*ir_graph.as_a<ir::SCExprList_I>(i), tail); },
-                       [&](const ir::SCCollection& c) { collection(*ir_graph.as_a<ir::SCCollection_I>(i), c); },
-                       [&](const ir::SCRange&) { range(*ir_graph.as_a<ir::SCRange_I>(i), tail); },
+                       [&](const ir::SCMessage& m) { message(ir_graph.assume_a<ir::SCMessage_I>(i), m, tail); },
+                       [&](const ir::SCExprList&) { expression_list(ir_graph.assume_a<ir::SCExprList_I>(i), tail); },
+                       [&](const ir::SCCollection& c) { collection(ir_graph.assume_a<ir::SCCollection_I>(i), c); },
+                       [&](const ir::SCRange&) { range(ir_graph.assume_a<ir::SCRange_I>(i), tail); },
+                       [&](const ir::SCRangeGenerator&) {
+                           const auto r = ir_graph.assume_a<ir::SCRangeGenerator_I>(i);
+                           series_operands(r);
+                           emit(lir::Send { ctx.selectors.series_iter, 2, 0, lir::SendKind::Normal, lir::SendForm::Call,
+                                            tail },
+                                i);
+                       },
+                       [&](const ir::SCRoutineGenerator&) {
+                           routine(ir_graph.assume_a<ir::SCRoutineGenerator_I>(i), *started, tail);
+                       },
+                       [&](const ir::SCImmediateGenerator&) {
+                           const auto [qualifiers, value] =
+                               ir_graph.children(ir_graph.assume_a<ir::SCImmediateGenerator_I>(i));
+                           generator(qualifiers, value, false, tail);
+                       },
                        [&](const ir::SCPackAssign&) {
-                           const auto [value, targets] = ir_graph.children(*ir_graph.as_a<ir::SCPackAssign_I>(i));
-                           pack(ir::NodeIndex { *value }, targets, i);
+                           const auto [value, targets] = ir_graph.children(ir_graph.assume_a<ir::SCPackAssign_I>(i));
+                           pack(value, targets, i);
                        },
                        [&](const ir::SCExplicitReturn&) {
-                           const auto [value] = ir_graph.children(*ir_graph.as_a<ir::SCExplicitReturn_I>(i));
-                           lower(ir::NodeIndex { *value }, lir::Tail::ReturnFromMethod);
+                           const auto [value] = ir_graph.children(ir_graph.assume_a<ir::SCExplicitReturn_I>(i));
+                           lower(value, lir::Tail::ReturnFromMethod);
                            if (building.back().is_method)
                                emit(lir::Return {}, i);
                            else
                                emit(lir::NonLocalReturn {}, i);
                        },
                        [&](const ir::SCFunction&) {
-                           const auto f = *ir_graph.as_a<ir::SCFunction_I>(i);
+                           const auto f = ir_graph.assume_a<ir::SCFunction_I>(i);
                            const auto index = begin_function(*started, i);
                            contents(f, false);
                            end_function();
@@ -355,11 +394,11 @@ struct Lowerer {
         // `~x = v` is `\x.envirPut(v)`.
         if (payload.kind == ir::SCAssign::Kind::Environment) {
             emit(lir::PushSymbol { symbol(*payload.name) }, i);
-            lower(ir::NodeIndex { *value });
+            lower(value);
             emit(lir::Send { ctx.selectors.envir_put, 1, 0, lir::SendKind::Normal, lir::SendForm::Call, tail }, i);
             return;
         }
-        lower(ir::NodeIndex { *value });
+        lower(value);
         if (payload.kind == ir::SCAssign::Kind::Local)
             emit(lir::StoreLocal { local_ref(ir::LocalIndex { *payload.local }) }, i);
         else
@@ -386,8 +425,8 @@ struct Lowerer {
         const ir::NodeIndex receiver_i { *receiver };
         const auto special = ir_graph.as_a<ir::SCSpecial_I>(receiver_i);
         const bool super = special && ir_graph.payload(*special).kind == ir::SCSpecial::Kind::Super;
-        const bool has_variadic = num_variadic_args(ir::NodeIndex { *variadic }) > 0;
-        const bool has_adverb = !missing(ir::NodeIndex { *adverb });
+        const bool has_variadic = num_variadic_args(variadic) > 0;
+        const bool has_adverb = !missing(adverb);
 
         lower(receiver_i);
         std::uint32_t num_positional { 0 };
@@ -395,23 +434,23 @@ struct Lowerer {
             emit(lir::PushSymbol { symbol(*payload.selector) }, i);
             ++num_positional;
         }
-        if (const auto list = ir_graph.as_a<ir::SCPosArgList_I>(ir::NodeIndex { *positional }))
+        if (const auto list = ir_graph.as_a<ir::SCPosArgList_I>(positional))
             for (auto it = ir_graph.children(*list).iter(); it; ++it, ++num_positional)
-                lower(ir::NodeIndex { **it });
-        if (const auto list = ir_graph.as_a<ir::SCVariadicArgList_I>(ir::NodeIndex { *variadic }))
+                lower(*it);
+        if (const auto list = ir_graph.as_a<ir::SCVariadicArgList_I>(variadic))
             for (auto it = ir_graph.children(*list).iter(); it; ++it, ++num_positional)
-                lower(ir::NodeIndex { **it });
+                lower(*it);
         // An adverb is passed as the last argument, `a foo.x: b` is `a.foo(b, \x)`, as the old compiler did.
         if (has_adverb) {
-            lower(ir::NodeIndex { *adverb });
+            lower(adverb);
             ++num_positional;
         }
         std::uint32_t num_keyword { 0 };
-        if (const auto list = ir_graph.as_a<ir::SCKwArgList_I>(ir::NodeIndex { *keyword }))
+        if (const auto list = ir_graph.as_a<ir::SCKwArgList_I>(keyword))
             for (auto it = ir_graph.children(*list).iter(); it; ++it, ++num_keyword) {
                 const auto [value] = ir_graph.children(*it);
-                emit(lir::PushSymbol { symbol(*ir_graph.payload(*it).name) }, ir::NodeIndex { **it });
-                lower(ir::NodeIndex { *value });
+                emit(lir::PushSymbol { symbol(*ir_graph.payload(*it).name) }, *it);
+                lower(value);
             }
 
         auto selector = *payload.selector;
@@ -441,12 +480,6 @@ struct Lowerer {
     // Inlined sends
     ////////////////////////////////////////////////////////////////////////////////
 
-    [[nodiscard]] ir::SCFunction_I inlined_function(ir::SCAnyExpr_I argument) const {
-        const auto f = ir_graph.as_a<ir::SCFunction_I>(ir::NodeIndex { *argument });
-        assert(f);
-        return *f;
-    }
-
     // Leaves nothing for an empty body. Its variables were hoisted into the frame, so they start again each time it
     // runs, a body ending with one is nil.
     template <typename Last> void inline_body(ir::SCFunction_I f, const Last& last) {
@@ -454,7 +487,7 @@ struct Lowerer {
         // Starts no frame, it was inlined when the send was entered.
         (void)cursor.enter(function);
         const auto [positional, variadic, body] = ir_graph.children(f);
-        const auto last_item = ir_graph.last_child(ir::NodeIndex { *body });
+        const auto last_item = ir_graph.last_child(body);
         for (auto it = ir_graph.children(body).iter(); it; ++it) {
             const ir::NodeIndex item { **it };
             if (declaration(item, true)) {
@@ -485,17 +518,30 @@ struct Lowerer {
         const ir::NodeIndex i { *test };
         (void)cursor.enter(i);
         const auto [receiver, positional, keyword, variadic, adverb] = ir_graph.children(test);
-        lower(ir::NodeIndex { *receiver });
-        for (const ir::NodeIndex rest : { ir::NodeIndex { *positional }, ir::NodeIndex { *keyword },
-                                          ir::NodeIndex { *variadic }, ir::NodeIndex { *adverb } })
+        lower(receiver);
+        for (const ir::NodeIndex rest : std::initializer_list<ir::NodeIndex> { positional, keyword, variadic, adverb })
             cursor.skip_over_children(rest);
         (void)cursor.exit(i);
+    }
+
+    // The tested value of an inlined `if (c)`, but x of `x.isNil` or `x.notNil`.
+    Inlined condition(ir::SCAnyExpr_I c) {
+        if (const auto test = nil_test(ctx.inlining, ir_graph, c)) {
+            nil_tested(test->message);
+            return test->kind();
+        }
+        lower(c);
+        return Inlined::If;
     }
 
     template <typename Else>
     void branch(Inlined kind, ir::SCFunction_I then_body, const Else& else_body, lir::Tail tail, ir::NodeIndex at) {
         const auto then_region = body_region(then_body, tail);
-        const lir::OptionalFunctionSubRegionIndex else_region = else_body();
+        emit_branch(kind, then_region, else_body(), at);
+    }
+
+    void emit_branch(Inlined kind, lir::FunctionSubRegionIndex then_region,
+                     lir::OptionalFunctionSubRegionIndex else_region, ir::NodeIndex at) {
         switch (kind) {
         case Inlined::IfNil:
             emit(lir::IfNil { then_region, else_region }, at);
@@ -511,7 +557,7 @@ struct Lowerer {
 
     // `case { c } { a } { d } { b } { e }` is `if (c) { a } { if (d) { b } { e } }`, as the old compiler rewrote it.
     // An empty condition is nil.
-    void case_(const std::vector<ir::SCFunction_I>& functions, std::size_t k, lir::Tail tail, ir::NodeIndex at) {
+    void case_(const CaseFunctions& functions, CaseFunctionIndex k, lir::Tail tail, ir::NodeIndex at) {
         const auto condition = functions[k];
         // A condition of only `x.isNil` is tested as an inlined `if` would.
         const auto test = nil_test_body(ctx.inlining, ir_graph, condition);
@@ -520,44 +566,45 @@ struct Lowerer {
         else
             inline_body(condition, lir::Tail::None);
         const auto [p, v, body] = ir_graph.children(condition);
-        if (!ir_graph.first_child(ir::NodeIndex { *body }))
-            emit(lir::PushSpecialValue { lir::SpecialValue::Nil }, ir::NodeIndex { *condition });
+        if (!ir_graph.first_child(body))
+            emit(lir::PushSpecialValue { lir::SpecialValue::Nil }, condition);
 
-        const auto remaining = functions.size() - k;
+        const auto remaining = functions.size() - *k;
         if (remaining == 1) {
             // `case { c }` is `c.if`.
             emit(lir::Send { ctx.selectors.if_, 0, 0, lir::SendKind::Normal, lir::SendForm::Call, tail }, at);
             return;
         }
         branch(
-            test ? test->kind() : Inlined::If, functions[k + 1],
+            test ? test->kind() : Inlined::If, functions[util::advance(k)],
             [&]() -> lir::OptionalFunctionSubRegionIndex {
                 if (remaining == 2)
                     return {};
                 if (remaining == 3)
-                    return body_region(functions[k + 2], tail);
+                    return body_region(functions[util::advance(k, 2)], tail);
                 begin_sub_region();
-                case_(functions, k + 2, tail, at);
+                case_(functions, util::advance(k, 2), tail, at);
                 return end_sub_region();
             },
             tail, at);
     }
 
-    void switch_(const std::vector<ir::SCAnyExpr_I>& cases, lir::Tail tail, ir::NodeIndex at) {
+    // A nested switch adds its cases while these are lowered, so they are collected first, to be consecutive.
+    void switch_(const Arguments& cases, lir::Tail tail, ir::NodeIndex at) {
         std::vector<lir::SwitchCase> lowered;
-        std::size_t k { 0 };
-        for (; k + 1 < cases.size(); k += 2) {
-            const auto key = switch_key(ctx.inlining, ir_graph, cases[k], cursor.version());
-            cursor.skip_over_children(ir::NodeIndex { *cases[k] });
-            const auto body = body_region(inlined_function(cases[k + 1]), tail);
+        ArgumentIndex key_i { 0 };
+        for (; cases.contains(util::advance(key_i)); key_i = util::advance(key_i, 2)) {
+            const auto key = switch_key(ctx.inlining, ir_graph, cases[key_i], cursor.version());
+            cursor.skip_over_children(cases[key_i]);
+            const auto body = body_region(ir_graph.assume_a<ir::SCFunction_I>(cases[util::advance(key_i)]), tail);
             lowered.push_back({ ir::OptionalConstExprIndex { *key }, body });
         }
-        if (k < cases.size())
-            lowered.push_back({ {}, body_region(inlined_function(cases[k]), tail) });
+        if (cases.contains(key_i))
+            lowered.push_back({ {}, body_region(ir_graph.assume_a<ir::SCFunction_I>(cases[key_i]), tail) });
         auto& switch_cases = function().switch_cases;
-        const auto first = switch_cases.push_back(lowered.front());
-        for (std::size_t c { 1 }; c < lowered.size(); ++c)
-            (void)switch_cases.push_back(lowered[c]);
+        const auto first = switch_cases.next_index();
+        for (const auto& c : lowered)
+            (void)switch_cases.push_back(c);
         emit(lir::Switch { first, static_cast<std::uint32_t>(lowered.size()) }, at);
     }
 
@@ -569,7 +616,7 @@ struct Lowerer {
 
         switch (kind) {
         case Inlined::If:
-            lower(ir::NodeIndex { *receiver });
+            lower(receiver);
             break;
         case Inlined::IfNil:
         case Inlined::IfNotNil:
@@ -584,60 +631,62 @@ struct Lowerer {
         case Inlined::IfNil:
         case Inlined::IfNotNil:
             branch(
-                kind, inlined_function(args[0]),
+                kind, ir_graph.assume_a<ir::SCFunction_I>(args[{ 0 }]),
                 [&]() {
-                    return args.size() > 1
-                        ? lir::OptionalFunctionSubRegionIndex { body_region(inlined_function(args[1]), tail) }
-                        : lir::OptionalFunctionSubRegionIndex {};
+                    if (!args.contains({ 1 }))
+                        return lir::OptionalFunctionSubRegionIndex {};
+                    return lir::OptionalFunctionSubRegionIndex { body_region(
+                        ir_graph.assume_a<ir::SCFunction_I>(args[{ 1 }]), tail) };
                 },
                 tail, i);
             return;
         case Inlined::And:
-            lower(ir::NodeIndex { *receiver });
-            emit(lir::And { body_region(inlined_function(args[0]), tail) }, i);
+            lower(receiver);
+            emit(lir::And { body_region(ir_graph.assume_a<ir::SCFunction_I>(args[{ 0 }]), tail) }, i);
             return;
         case Inlined::Or:
-            lower(ir::NodeIndex { *receiver });
-            emit(lir::Or { body_region(inlined_function(args[0]), tail) }, i);
+            lower(receiver);
+            emit(lir::Or { body_region(ir_graph.assume_a<ir::SCFunction_I>(args[{ 0 }]), tail) }, i);
             return;
         case Inlined::OrIfNil:
-            lower(ir::NodeIndex { *receiver });
-            emit(lir::OrIfNil { body_region(inlined_function(args[0]), tail) }, i);
+            lower(receiver);
+            emit(lir::OrIfNil { body_region(ir_graph.assume_a<ir::SCFunction_I>(args[{ 0 }]), tail) }, i);
             return;
         case Inlined::AndIfNotNil:
-            lower(ir::NodeIndex { *receiver });
-            emit(lir::AndIfNotNil { body_region(inlined_function(args[0]), tail) }, i);
+            lower(receiver);
+            emit(lir::AndIfNotNil { body_region(ir_graph.assume_a<ir::SCFunction_I>(args[{ 0 }]), tail) }, i);
             return;
         case Inlined::QuestionMark:
-            lower(ir::NodeIndex { *receiver });
-            lower(ir::NodeIndex { *args[0] });
+            lower(receiver);
+            lower(args[{ 0 }]);
             emit(lir::QuestionMark {}, i);
             return;
         case Inlined::While: {
-            const auto condition = body_region(inlined_function(receiver), lir::Tail::None);
+            const auto condition = body_region(ir_graph.assume_a<ir::SCFunction_I>(receiver), lir::Tail::None);
             lir::OptionalFunctionSubRegionIndex body {};
-            if (!args.empty())
-                body = body_region(inlined_function(args[0]), lir::Tail::None);
+            if (args.contains({ 0 }))
+                body = body_region(ir_graph.assume_a<ir::SCFunction_I>(args[{ 0 }]), lir::Tail::None);
             emit(lir::While { condition, body }, i);
             return;
         }
         case Inlined::WhileTrue:
             // `true` isn't evaluated.
-            cursor.skip_over_children(ir::NodeIndex { *receiver });
-            emit(lir::Loop { body_region(inlined_function(args[0]), lir::Tail::None) }, i);
+            cursor.skip_over_children(receiver);
+            emit(lir::Loop { body_region(ir_graph.assume_a<ir::SCFunction_I>(args[{ 0 }]), lir::Tail::None) }, i);
             return;
         case Inlined::Loop:
-            emit(lir::Loop { body_region(inlined_function(receiver), lir::Tail::None) }, i);
+            emit(lir::Loop { body_region(ir_graph.assume_a<ir::SCFunction_I>(receiver), lir::Tail::None) }, i);
             return;
         case Inlined::Case: {
-            std::vector<ir::SCFunction_I> functions { inlined_function(receiver) };
-            for (const auto argument : args)
-                functions.push_back(inlined_function(argument));
-            case_(functions, 0, tail, i);
+            CaseFunctions functions;
+            (void)functions.push_back(ir_graph.assume_a<ir::SCFunction_I>(receiver));
+            for (const auto argument : args.raw())
+                (void)functions.push_back(ir_graph.assume_a<ir::SCFunction_I>(argument));
+            case_(functions, CaseFunctionIndex { 0 }, tail, i);
             return;
         }
         case Inlined::Switch:
-            lower(ir::NodeIndex { *receiver });
+            lower(receiver);
             switch_(args, tail, i);
             return;
         }
@@ -678,7 +727,7 @@ struct Lowerer {
                 i);
             std::uint32_t k { 0 };
             for (auto it = ir_graph.children(c).iter(); it; ++it, ++k) {
-                lower(ir::NodeIndex { **it });
+                lower(*it);
                 if (k % 2 == 1)
                     emit(lir::Send { ctx.selectors.put, 2, 0, lir::SendKind::Normal, lir::SendForm::Implicit,
                                      lir::Tail::None },
@@ -690,25 +739,150 @@ struct Lowerer {
         emit(lir::Send { ctx.selectors.new_, 1, 0, lir::SendKind::Normal, lir::SendForm::Implicit, lir::Tail::None },
              i);
         for (auto it = ir_graph.children(c).iter(); it; ++it) {
-            lower(ir::NodeIndex { **it });
+            lower(*it);
             emit(lir::Send { ctx.selectors.add, 1, 0, lir::SendKind::Normal, lir::SendForm::Implicit, lir::Tail::None },
                  i);
         }
     }
 
-    // `(first, second..last)` is `first.prSimpleNumberSeries(second, last)`, a missing part is nil, as the old grammar
-    // did.
-    void range(ir::SCRange_I r, lir::Tail tail) {
+    // first, second and last, a missing part is nil.
+    template <typename Range> void series_operands(Range r) {
         const ir::NodeIndex i { *r };
         const auto [first, second, last] = ir_graph.children(r);
-        lower(ir::NodeIndex { *first });
-        for (const ir::NodeIndex part : { ir::NodeIndex { *second }, ir::NodeIndex { *last } }) {
+        lower(first);
+        for (const ir::NodeIndex part : { second, last }) {
             if (missing(part))
                 emit(lir::PushSpecialValue { lir::SpecialValue::Nil }, i);
             else
                 lower(part);
         }
-        emit(lir::Send { ctx.selectors.series, 2, 0, lir::SendKind::Normal, lir::SendForm::Call, tail }, i);
+    }
+
+    // `(first, second..last)` is `first.prSimpleNumberSeries(second, last)`, as the old grammar did.
+    void range(ir::SCRange_I r, lir::Tail tail) {
+        series_operands(r);
+        emit(lir::Send { ctx.selectors.series, 2, 0, lir::SendKind::Normal, lir::SendForm::Call, tail }, r);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // Generators
+    ////////////////////////////////////////////////////////////////////////////////
+
+    // Rewritten as the old grammar did, each qualifier nesting the ones after it, and the value innermost, in a
+    // function or an inlined `if`.
+    struct Generator {
+        ir::SCGenQualList_I list;
+        util::IndexedVector<QualifierIndex, ir::NodeIndex> qualifiers;
+        ir::NodeIndex value;
+        bool routine;
+    };
+
+    void send(ir::SymSCSelector selector, std::uint8_t num_positional, lir::Tail tail, ir::NodeIndex at) {
+        emit(lir::Send { selector, num_positional, 0, lir::SendKind::Normal, lir::SendForm::Call, tail }, at);
+    }
+
+    // `{: value, qualifiers }` is `{ qualifiers }.r`, with `value.yield` innermost.
+    void routine(ir::SCRoutineGenerator_I g, FrameIndex started, lir::Tail tail) {
+        const ir::NodeIndex i { *g };
+        const auto [qualifiers, value] = ir_graph.children(g);
+        const auto index = begin_function(started, i);
+        generator(qualifiers, value, true, lir::Tail::ReturnFromFunction);
+        end_function();
+        emit(lir::PushFunction { index }, i);
+        send(ctx.selectors.r, 0, tail, i);
+    }
+
+    // `{; value, qualifiers }` is the qualifiers, with value innermost.
+    void generator(ir::SCGenQualList_I list, ir::SCAnyExpr_I value, bool routine, lir::Tail tail) {
+        Generator g { list, {}, value, routine };
+        for (auto it = ir_graph.children(list).iter(); it; ++it)
+            (void)g.qualifiers.push_back(*it);
+        (void)cursor.enter(list);
+        nest(g, QualifierIndex { 0 }, tail);
+    }
+
+    // Qualifier k nesting the rest.
+    void nest(const Generator& g, QualifierIndex k, lir::Tail tail) {
+        if (!g.qualifiers.contains(k)) {
+            (void)cursor.exit(g.list);
+            if (!g.routine) {
+                lower(g.value, tail);
+                return;
+            }
+            lower(g.value);
+            send(ctx.selectors.yield, 0, tail, g.value);
+            return;
+        }
+
+        const auto q = g.qualifiers[k];
+        (void)cursor.enter(q);
+        if (const auto iterate = ir_graph.as_a<ir::SCGenQualIterate_I>(q)) {
+            // `x <- source` is `source.do { |x| ... }`, `x <- (first, second..last)` is
+            // `first.forSeries(second, last) { |x| ... }`, so the range isn't made.
+            const auto [source] = ir_graph.children(*iterate);
+            const ir::NodeIndex source_i { *source };
+            const auto range = ir_graph.as_a<ir::SCRange_I>(source_i);
+            if (range) {
+                (void)cursor.enter(source_i);
+                series_operands(*range);
+                (void)cursor.exit(source_i);
+            } else {
+                lower(source_i);
+            }
+            qualifier_function(g, k);
+            if (range)
+                send(ctx.selectors.for_series, 3, tail, q);
+            else
+                send(ctx.selectors.do_, 1, tail, q);
+        } else if (const auto declare = ir_graph.as_a<ir::SCGenQualDeclare_I>(q)) {
+            // `var x = value` is `{ |x| ... }.value(value)`, the function is pushed first.
+            const auto [value] = ir_graph.children(*declare);
+            begin_sub_region();
+            lower(value);
+            const auto taken = take_sub_region();
+            qualifier_function(g, k);
+            place(taken);
+            send(ctx.selectors.value, 1, tail, q);
+        } else if (const auto test = ir_graph.as_a<ir::SCGenQualIf_I>(q)) {
+            // `if (condition) { ... }`, inlined.
+            const auto [expr] = ir_graph.children(*test);
+            const auto kind = condition(expr);
+            (void)cursor.exit(q);
+            begin_sub_region();
+            nest(g, util::advance(k), tail);
+            emit_branch(kind, end_sub_region(), {}, q);
+        } else if (const auto effect = ir_graph.as_a<ir::SCGenQualSideEffect_I>(q)) {
+            const auto [expr] = ir_graph.children(*effect);
+            lower(expr);
+            emit(lir::Drop {}, q);
+            (void)cursor.exit(q);
+            nest(g, util::advance(k), tail);
+        } else if (const auto guard = ir_graph.as_a<ir::SCGenQualWhile_I>(q)) {
+            // `if (condition) { ... } { nil.alwaysYield }`, inlined.
+            const auto [expr] = ir_graph.children(*guard);
+            const auto kind = condition(expr);
+            (void)cursor.exit(q);
+            begin_sub_region();
+            nest(g, util::advance(k), tail);
+            const auto then_body = end_sub_region();
+            begin_sub_region();
+            emit(lir::PushSpecialValue { lir::SpecialValue::Nil }, q);
+            send(ctx.selectors.always_yield, 0, tail, q);
+            emit_branch(kind, then_body, end_sub_region(), q);
+        } else {
+            assert(false && "unhandled generator qualifier");
+        }
+    }
+
+    // The qualifier's frame starts as it exits, its function's arguments are what it declares.
+    void qualifier_function(const Generator& g, QualifierIndex k) {
+        const auto q = g.qualifiers[k];
+        const auto started = cursor.exit(q);
+        assert(started);
+        const auto index = begin_function(*started, q);
+        nest(g, util::advance(k), lir::Tail::ReturnFromFunction);
+        end_function();
+        emit(lir::PushFunction { index }, q);
     }
 
     // `#a, b ...c = value` keeps value on the stack, and assigns each target value.at(index), or value.copyToEnd(index)
@@ -750,10 +924,10 @@ struct Lowerer {
             begin_sub_region();
             lower(value_i);
             const auto region = end_sub_region();
-            emit(lir::DefaultArgument { own_slot(argument.local), region }, ir::NodeIndex { **it });
+            emit(lir::DefaultArgument { own_slot(argument.local), region }, *it);
         }
         for (auto it = ir_graph.children(variadic).iter(); it; ++it)
-            cursor.skip_over_children(ir::NodeIndex { **it });
+            cursor.skip_over_children(*it);
         body(body_i, is_method);
     }
 
@@ -787,7 +961,7 @@ struct Lowerer {
         }
         if (const auto p = ir_graph.as_a<ir::SCPackDeclare_I>(item)) {
             const auto [value, targets] = ir_graph.children(*p);
-            pack(ir::NodeIndex { *value }, targets, item);
+            pack(value, targets, item);
             emit(lir::Drop {}, item);
             return true;
         }
@@ -843,7 +1017,7 @@ struct Lowerer {
         for (auto it = ir_graph.children(methods).iter(); it; ++it) {
             const auto m = *it;
             if (ir_graph.payload(m).poisoned) {
-                cursor.skip_over_children(ir::NodeIndex { *m });
+                cursor.skip_over_children(m);
                 continue;
             }
             fold_constants = ir::can_fold_constants(ir_graph.payload(m).version);
@@ -856,18 +1030,17 @@ struct Lowerer {
             return;
         fold_constants = ir::can_fold_constants(ir_graph.payload(in).version);
         // Only sets the cursor's version.
-        (void)cursor.enter(ir::NodeIndex { *in });
+        (void)cursor.enter(in);
         const auto [code] = ir_graph.children(in);
-        if (const auto f = ir_graph.as_a<ir::SCFunction_I>(ir::NodeIndex { *code })) {
+        if (const auto f = ir_graph.as_a<ir::SCFunction_I>(code)) {
             root(*f, false);
         } else {
-            for (auto it = ir_graph.children(*ir_graph.as_a<ir::SCRegionList_I>(ir::NodeIndex { *code })).iter(); it;
-                 ++it) {
+            for (auto it = ir_graph.children(ir_graph.assume_a<ir::SCRegionList_I>(code)).iter(); it; ++it) {
                 const auto [f] = ir_graph.children(*it);
                 root(f, false);
             }
         }
-        (void)cursor.exit(ir::NodeIndex { *in });
+        (void)cursor.exit(in);
     }
 };
 
@@ -903,10 +1076,10 @@ const char* special_name(ir::SCSpecial::Kind k) {
 
 lir::LoweredGraph lower(const LoweringContext& ctx, ir::join<ir::SCClass_I, ir::SCInterpreted_I> root) {
     Lowerer lowerer { ctx, ctx.graph, FrameCursor { ctx.graph, ctx.inlining, ctx.frames } };
-    if (const auto c = ctx.graph.as_a<ir::SCClass_I>(ir::NodeIndex { *root }))
+    if (const auto c = ctx.graph.as_a<ir::SCClass_I>(root))
         lowerer.lower_class(*c);
     else
-        lowerer.lower_interpreted(*ctx.graph.as_a<ir::SCInterpreted_I>(ir::NodeIndex { *root }));
+        lowerer.lower_interpreted(ctx.graph.assume_a<ir::SCInterpreted_I>(root));
     assert(lowerer.building.empty());
     return std::move(lowerer.out);
 }
@@ -997,8 +1170,8 @@ void write_instruction(std::ostream& out, const lir::Function& function, const l
                    [&](const lir::Switch& s) {
                        out << "Switch";
                        const char* separator = " ";
-                       for (std::uint32_t c { 0 }; c < s.count; ++c) {
-                           const auto& sc = function.switch_cases[lir::switch_case(s, c)];
+                       for (const auto c : lir::cases(s)) {
+                           const auto& sc = function.switch_cases[c];
                            out << separator;
                            if (sc.key)
                                constants(ir::ConstExprIndex { *sc.key }).to_literal(out, symbols, constants);

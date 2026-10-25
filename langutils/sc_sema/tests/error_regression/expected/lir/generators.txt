@@ -1,0 +1,270 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): LirGenerators : Object, version 3.16
+|  SCMemberList (5:1)
+|  SCMethodList (5:1)
+|  |  SCMethod (7:5): iterate, version 3.16: iterate { |a| ^{: x, x <- a } }
+|  |  |  SCArgumentDeclareList (7:16)
+|  |  |  |  SCArgumentDeclare (7:16): a (captured)
+|  |  |  SCBody (7:19)
+|  |  |  |  SCExplicitReturn (7:19)
+|  |  |  |  |  SCRoutineGenerator (7:20)
+|  |  |  |  |  |  SCGenQualList (7:26)
+|  |  |  |  |  |  |  SCGenQualIterate (7:26): x
+|  |  |  |  |  |  |  |  SCRead (7:31): local a, declared (7:16): a
+|  |  |  |  |  |  SCRead (7:23): local x, declared (7:26): x <- a
+|  |  SCMethod (9:5): range, version 3.16: range { |n| ^{: [x, i], x i <- (1, 3..n) } }
+|  |  |  SCArgumentDeclareList (9:14)
+|  |  |  |  SCArgumentDeclare (9:14): n (captured)
+|  |  |  SCBody (9:17)
+|  |  |  |  SCExplicitReturn (9:17)
+|  |  |  |  |  SCRoutineGenerator (9:18)
+|  |  |  |  |  |  SCGenQualList (9:29)
+|  |  |  |  |  |  |  SCGenQualIterate (9:29): x, i
+|  |  |  |  |  |  |  |  SCRange (9:36)
+|  |  |  |  |  |  |  |  |  SCLiteral (9:37) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (9:40) = 3
+|  |  |  |  |  |  |  |  |  SCRead (9:43): local n, declared (9:14): n
+|  |  |  |  |  |  SCCollection (9:21): Array
+|  |  |  |  |  |  |  SCRead (9:22): local x, declared (9:29): x i <- (1, 3..n)
+|  |  |  |  |  |  |  SCRead (9:25): local i, declared (9:29): x i <- (1, 3..n)
+|  |  SCMethod (11:5): declare, version 3.16: declare { |a| ^{: y, x <- a, var y = x + 1 } }
+|  |  |  SCArgumentDeclareList (11:16)
+|  |  |  |  SCArgumentDeclare (11:16): a (captured)
+|  |  |  SCBody (11:19)
+|  |  |  |  SCExplicitReturn (11:19)
+|  |  |  |  |  SCRoutineGenerator (11:20)
+|  |  |  |  |  |  SCGenQualList (11:26)
+|  |  |  |  |  |  |  SCGenQualIterate (11:26): x
+|  |  |  |  |  |  |  |  SCRead (11:31): local a, declared (11:16): a
+|  |  |  |  |  |  |  SCGenQualDeclare (11:34): y
+|  |  |  |  |  |  |  |  SCMessage (11:42): +
+|  |  |  |  |  |  |  |  |  SCRead (11:42): local x, declared (11:26): x <- a
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (11:42)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (11:46) = 1
+|  |  |  |  |  |  SCRead (11:23): local y, declared (11:34): var y = x + 1
+|  |  SCMethod (13:5): condition, version 3.16: condition { |a| ^{: x, x <- a, x.odd, x.notNil } }
+|  |  |  SCArgumentDeclareList (13:18)
+|  |  |  |  SCArgumentDeclare (13:18): a (captured)
+|  |  |  SCBody (13:21)
+|  |  |  |  SCExplicitReturn (13:21)
+|  |  |  |  |  SCRoutineGenerator (13:22)
+|  |  |  |  |  |  SCGenQualList (13:28)
+|  |  |  |  |  |  |  SCGenQualIterate (13:28): x
+|  |  |  |  |  |  |  |  SCRead (13:33): local a, declared (13:18): a
+|  |  |  |  |  |  |  SCGenQualIf (13:36)
+|  |  |  |  |  |  |  |  SCMessage (13:36): odd
+|  |  |  |  |  |  |  |  |  SCRead (13:36): local x, declared (13:28): x <- a
+|  |  |  |  |  |  |  SCGenQualIf (13:43)
+|  |  |  |  |  |  |  |  SCMessage (13:43): notNil
+|  |  |  |  |  |  |  |  |  SCRead (13:43): local x, declared (13:28): x <- a
+|  |  |  |  |  |  SCRead (13:25): local x, declared (13:28): x <- a
+|  |  SCMethod (15:5): effect_and_while, version 3.16: effect_and_while { |a| ^{: x, x <- a, :: x.postln, :while x < 10 } }
+|  |  |  SCArgumentDeclareList (15:25)
+|  |  |  |  SCArgumentDeclare (15:25): a (captured)
+|  |  |  SCBody (15:28)
+|  |  |  |  SCExplicitReturn (15:28)
+|  |  |  |  |  SCRoutineGenerator (15:29)
+|  |  |  |  |  |  SCGenQualList (15:35)
+|  |  |  |  |  |  |  SCGenQualIterate (15:35): x
+|  |  |  |  |  |  |  |  SCRead (15:40): local a, declared (15:25): a
+|  |  |  |  |  |  |  SCGenQualSideEffect (15:43)
+|  |  |  |  |  |  |  |  SCMessage (15:46): postln
+|  |  |  |  |  |  |  |  |  SCRead (15:46): local x, declared (15:35): x <- a
+|  |  |  |  |  |  |  SCGenQualWhile (15:56)
+|  |  |  |  |  |  |  |  SCMessage (15:63): <
+|  |  |  |  |  |  |  |  |  SCRead (15:63): local x, declared (15:35): x <- a
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (15:63)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (15:67) = 10
+|  |  |  |  |  |  SCRead (15:32): local x, declared (15:35): x <- a
+|  |  SCMethod (17:5): immediate, version 3.16: immediate { |a| ^{; x.postln, x <- a } }
+|  |  |  SCArgumentDeclareList (17:18)
+|  |  |  |  SCArgumentDeclare (17:18): a
+|  |  |  SCBody (17:21)
+|  |  |  |  SCExplicitReturn (17:21)
+|  |  |  |  |  SCImmediateGenerator (17:22)
+|  |  |  |  |  |  SCGenQualList (17:35)
+|  |  |  |  |  |  |  SCGenQualIterate (17:35): x
+|  |  |  |  |  |  |  |  SCRead (17:40): local a, declared (17:18): a
+|  |  |  |  |  |  SCMessage (17:25): postln
+|  |  |  |  |  |  |  SCRead (17:25): local x, declared (17:35): x <- a
+|  |  SCMethod (19:5): range_generator, version 3.16: range_generator { |n| ^(: 1, 3..n) }
+|  |  |  SCArgumentDeclareList (19:24)
+|  |  |  |  SCArgumentDeclare (19:24): n
+|  |  |  SCBody (19:27)
+|  |  |  |  SCExplicitReturn (19:27)
+|  |  |  |  |  SCRangeGenerator (19:28)
+|  |  |  |  |  |  SCLiteral (19:31) = 1
+|  |  |  |  |  |  SCLiteral (19:34) = 3
+|  |  |  |  |  |  SCRead (19:37): local n, declared (19:24): n
+|  |  SCMethod (21:5): non_local_return, version 3.16: non_local_return { |a| ^{: if (x) { ^1 } { 2 }, x <- a } }
+|  |  |  SCArgumentDeclareList (21:25)
+|  |  |  |  SCArgumentDeclare (21:25): a (captured)
+|  |  |  SCBody (21:28)
+|  |  |  |  SCExplicitReturn (21:28)
+|  |  |  |  |  SCRoutineGenerator (21:29)
+|  |  |  |  |  |  SCGenQualList (21:53)
+|  |  |  |  |  |  |  SCGenQualIterate (21:53): x
+|  |  |  |  |  |  |  |  SCRead (21:58): local a, declared (21:25): a
+|  |  |  |  |  |  SCMessage (21:32): if
+|  |  |  |  |  |  |  SCRead (21:36): local x, declared (21:53): x <- a
+|  |  |  |  |  |  |  SCPositionalArgs (21:32)
+|  |  |  |  |  |  |  |  SCFunction (21:39)
+|  |  |  |  |  |  |  |  |  SCBody (21:39)
+|  |  |  |  |  |  |  |  |  |  SCExplicitReturn (21:41)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (21:42) = 1
+|  |  |  |  |  |  |  |  SCFunction (21:46) -> 2
+|  |  |  |  |  |  |  |  |  SCBody (21:46)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (21:48) = 2
+
+
+
+LIR DUMP 
+
+
+LirGenerators
+|  function 0 (7:5): method iterate
+|  |  region 0
+|  |  |  PushFunction 1
+|  |  |  Send r (positional 0, tail from method)
+|  |  |  Return
+|  function 1 (7:20)
+|  |  region 0
+|  |  |  PushLocal depth 1, slot 1
+|  |  |  PushFunction 2
+|  |  |  Send do (positional 1, tail from function)
+|  function 2 (7:26)
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 0
+|  |  |  Send yield (positional 0, tail from function)
+|  function 3 (9:5): method range
+|  |  region 0
+|  |  |  PushFunction 4
+|  |  |  Send r (positional 0, tail from method)
+|  |  |  Return
+|  function 4 (9:18)
+|  |  region 0
+|  |  |  PushConstant 1
+|  |  |  PushConstant 3
+|  |  |  PushLocal depth 1, slot 1
+|  |  |  PushFunction 5
+|  |  |  Send forSeries (positional 3, tail from function)
+|  function 5 (9:29)
+|  |  region 0
+|  |  |  PushClass Array
+|  |  |  PushInteger 2
+|  |  |  Send new (positional 1, implicit)
+|  |  |  PushLocal depth 0, slot 0
+|  |  |  Send add (positional 1, implicit)
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send add (positional 1, implicit)
+|  |  |  Send yield (positional 0, tail from function)
+|  function 6 (11:5): method declare
+|  |  region 0
+|  |  |  PushFunction 7
+|  |  |  Send r (positional 0, tail from method)
+|  |  |  Return
+|  function 7 (11:20)
+|  |  region 0
+|  |  |  PushLocal depth 1, slot 1
+|  |  |  PushFunction 8
+|  |  |  Send do (positional 1, tail from function)
+|  function 8 (11:26)
+|  |  region 0
+|  |  |  PushFunction 9
+|  |  |  PushLocal depth 0, slot 0
+|  |  |  PushConstant 1
+|  |  |  Send + (positional 1, binary)
+|  |  |  Send value (positional 1, tail from function)
+|  function 9 (11:34)
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 0
+|  |  |  Send yield (positional 0, tail from function)
+|  function 10 (13:5): method condition
+|  |  region 0
+|  |  |  PushFunction 11
+|  |  |  Send r (positional 0, tail from method)
+|  |  |  Return
+|  function 11 (13:22)
+|  |  region 0
+|  |  |  PushLocal depth 1, slot 1
+|  |  |  PushFunction 12
+|  |  |  Send do (positional 1, tail from function)
+|  function 12 (13:28)
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 0
+|  |  |  Send odd (positional 0)
+|  |  |  If then region 2
+|  |  region 1
+|  |  |  PushLocal depth 0, slot 0
+|  |  |  Send yield (positional 0, tail from function)
+|  |  region 2
+|  |  |  PushLocal depth 0, slot 0
+|  |  |  IfNotNil then region 1
+|  function 13 (15:5): method effect_and_while
+|  |  region 0
+|  |  |  PushFunction 14
+|  |  |  Send r (positional 0, tail from method)
+|  |  |  Return
+|  function 14 (15:29)
+|  |  region 0
+|  |  |  PushLocal depth 1, slot 1
+|  |  |  PushFunction 15
+|  |  |  Send do (positional 1, tail from function)
+|  function 15 (15:35)
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 0
+|  |  |  Send postln (positional 0)
+|  |  |  Drop
+|  |  |  PushLocal depth 0, slot 0
+|  |  |  PushConstant 10
+|  |  |  Send < (positional 1, binary)
+|  |  |  If then region 1, else region 2
+|  |  region 1
+|  |  |  PushLocal depth 0, slot 0
+|  |  |  Send yield (positional 0, tail from function)
+|  |  region 2
+|  |  |  PushSpecialValue nil
+|  |  |  Send alwaysYield (positional 0, tail from function)
+|  function 16 (17:5): method immediate
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  PushFunction 17
+|  |  |  Send do (positional 1, tail from method)
+|  |  |  Return
+|  function 17 (17:35)
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 0
+|  |  |  Send postln (positional 0, tail from function)
+|  function 18 (19:5): method range_generator
+|  |  region 0
+|  |  |  PushConstant 1
+|  |  |  PushConstant 3
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send seriesIter (positional 2, tail from method)
+|  |  |  Return
+|  function 19 (21:5): method non_local_return
+|  |  region 0
+|  |  |  PushFunction 20
+|  |  |  Send r (positional 0, tail from method)
+|  |  |  Return
+|  function 20 (21:29)
+|  |  region 0
+|  |  |  PushLocal depth 1, slot 1
+|  |  |  PushFunction 21
+|  |  |  Send do (positional 1, tail from function)
+|  function 21 (21:53)
+|  |  region 0
+|  |  |  PushLocal depth 0, slot 0
+|  |  |  If then region 1, else region 2
+|  |  |  Send yield (positional 0, tail from function)
+|  |  region 1
+|  |  |  PushConstant 1
+|  |  |  NonLocalReturn
+|  |  region 2
+|  |  |  PushConstant 2
+Successfully compiled 16 classes.

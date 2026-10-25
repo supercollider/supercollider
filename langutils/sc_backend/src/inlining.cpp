@@ -5,6 +5,8 @@
 #include "sc_sema/versions.hpp"
 
 #include <string_view>
+#include <tuple>
+#include <type_traits>
 #include <vector>
 
 // This file is AI made with little human supervision.
@@ -16,44 +18,50 @@ namespace sc::backend {
 
 namespace {
 
+// The tables in SpecialNames.h are in the order of their enum, so a name's position is its value.
+template <typename Enum, typename Names, typename F> void for_each_name(const Names& names, const F& f) {
+    static_assert(std::tuple_size_v<Names> == static_cast<std::size_t>(Enum::COUNT));
+    for (std::underlying_type_t<Enum> e { 0 }; e < static_cast<std::underlying_type_t<Enum>>(Enum::COUNT); ++e)
+        f(static_cast<Enum>(e), names[e]);
+}
+
 // The old compiler sent anything with keyword arguments without looking at its selector. A variadic argument is a
 // performList, and an adverb isn't inlined.
 bool only_positional(const ir::IRGraph& g, ir::SCMessage_I m) {
     const auto [receiver, p, keyword, variadic, adverb] = g.children(m);
     const auto empty = [&](ir::NodeIndex i) { return g.is_a<ir::SCMissing_I>(i) || !g.first_child(i); };
-    if (const auto special = g.as_a<ir::SCSpecial_I>(ir::NodeIndex { *receiver });
+    if (const auto special = g.as_a<ir::SCSpecial_I>(receiver);
         special && g.payload(*special).kind == ir::SCSpecial::Kind::Super)
         return false;
-    return empty(ir::NodeIndex { *keyword }) && empty(ir::NodeIndex { *variadic })
-        && g.is_a<ir::SCMissing_I>(ir::NodeIndex { *adverb });
+    return empty(keyword) && empty(variadic) && g.is_a<ir::SCMissing_I>(adverb);
 }
 
 bool is_true(const InliningContext& ctx, const ir::IRGraph& g, ir::SCAnyExpr_I i) {
-    const auto literal = g.as_a<ir::SCLiteral_I>(ir::NodeIndex { *i });
+    const auto literal = g.as_a<ir::SCLiteral_I>(i);
     if (!literal)
         return false;
     const auto* b = ctx.constants(g.payload(*literal).index).get_if<bool>();
     return b && *b;
 }
 
-bool all_inlineable(const ir::IRGraph& g, const std::vector<ir::SCAnyExpr_I>& functions, ast::LanguageVersion version) {
-    for (const auto f : functions)
+bool all_inlineable(const ir::IRGraph& g, const Arguments& functions, ast::LanguageVersion version) {
+    for (const auto f : functions.raw())
         if (!is_inlineable(g, f, version))
             return false;
     return true;
 }
 
 // Keys and functions, then an optional default function.
-bool can_inline_switch(const InliningContext& ctx, const ir::IRGraph& g, const std::vector<ir::SCAnyExpr_I>& args,
+bool can_inline_switch(const InliningContext& ctx, const ir::IRGraph& g, const Arguments& args,
                        ast::LanguageVersion version) {
     // The old compiler reported fewer as an error.
     if (args.size() < 2)
         return false;
-    std::size_t k { 0 };
-    for (; k + 1 < args.size(); k += 2)
-        if (!switch_key(ctx, g, args[k], version) || !is_inlineable(g, args[k + 1], version))
+    ArgumentIndex key { 0 };
+    for (; args.contains(util::advance(key)); key = util::advance(key, 2))
+        if (!switch_key(ctx, g, args[key], version) || !is_inlineable(g, args[util::advance(key)], version))
             return false;
-    return k == args.size() || is_inlineable(g, args[k], version);
+    return !args.contains(key) || is_inlineable(g, args[key], version);
 }
 }
 
@@ -85,28 +93,30 @@ std::optional<Inlined> inlining(const InliningContext& ctx, const ir::IRGraph& g
             return test->kind();
         return Inlined::If;
     case OpSpecialSelectors::And:
-        return args.size() == 1 && is_inlineable(g, args[0], version) ? std::optional { Inlined::And } : std::nullopt;
+        return args.size() == 1 && is_inlineable(g, args[{ 0 }], version) ? std::optional { Inlined::And }
+                                                                          : std::nullopt;
     case OpSpecialSelectors::Or:
-        return args.size() == 1 && is_inlineable(g, args[0], version) ? std::optional { Inlined::Or } : std::nullopt;
+        return args.size() == 1 && is_inlineable(g, args[{ 0 }], version) ? std::optional { Inlined::Or }
+                                                                          : std::nullopt;
     case OpSpecialSelectors::DoubleQuestionMark:
-        return args.size() == 1 && is_inlineable(g, args[0], version) ? std::optional { Inlined::OrIfNil }
-                                                                      : std::nullopt;
+        return args.size() == 1 && is_inlineable(g, args[{ 0 }], version) ? std::optional { Inlined::OrIfNil }
+                                                                          : std::nullopt;
     case OpSpecialSelectors::ExclamationQuestionMark:
-        return args.size() == 1 && is_inlineable(g, args[0], version) ? std::optional { Inlined::AndIfNotNil }
-                                                                      : std::nullopt;
+        return args.size() == 1 && is_inlineable(g, args[{ 0 }], version) ? std::optional { Inlined::AndIfNotNil }
+                                                                          : std::nullopt;
     case OpSpecialSelectors::QuestionMark:
         return args.size() == 1 ? std::optional { Inlined::QuestionMark } : std::nullopt;
     case OpSpecialSelectors::While:
-        if (args.empty())
+        if (args.size() == 0)
             return is_inlineable(g, receiver, version) ? std::optional { Inlined::While } : std::nullopt;
-        if (args.size() != 1 || !is_inlineable(g, args[0], version))
+        if (args.size() != 1 || !is_inlineable(g, args[{ 0 }], version))
             return std::nullopt;
         // Only a literal `true`, the old compiler's test for `{ true }` never matched.
         if (is_true(ctx, g, receiver))
             return Inlined::WhileTrue;
         return is_inlineable(g, receiver, version) ? std::optional { Inlined::While } : std::nullopt;
     case OpSpecialSelectors::Loop:
-        return args.empty() && is_inlineable(g, receiver, version) ? std::optional { Inlined::Loop } : std::nullopt;
+        return args.size() == 0 && is_inlineable(g, receiver, version) ? std::optional { Inlined::Loop } : std::nullopt;
     case OpSpecialSelectors::Case:
         return is_inlineable(g, receiver, version) && all_inlineable(g, args, version) ? std::optional { Inlined::Case }
                                                                                        : std::nullopt;
@@ -124,7 +134,7 @@ bool inlines_receiver(Inlined kind) { return kind == Inlined::While || kind == I
 ////////////////////////////////////////////////////////////////////////////////
 
 bool is_inlineable(const ir::IRGraph& g, ir::SCAnyExpr_I i, ast::LanguageVersion version) {
-    const auto f = g.as_a<ir::SCFunction_I>(ir::NodeIndex { *i });
+    const auto f = g.as_a<ir::SCFunction_I>(i);
     // A closed function's names are looked up in the Interpreter, which an inlined body can't do.
     if (!f || g.payload(*f).closed)
         return false;
@@ -150,12 +160,12 @@ bool is_inlineable(const ir::IRGraph& g, ir::SCAnyExpr_I i, ast::LanguageVersion
     return true;
 }
 
-std::vector<ir::SCAnyExpr_I> positional_arguments(const ir::IRGraph& g, ir::SCMessage_I m) {
-    std::vector<ir::SCAnyExpr_I> out;
+Arguments positional_arguments(const ir::IRGraph& g, ir::SCMessage_I m) {
+    Arguments out;
     const auto [r, positional, k, v, a] = g.children(m);
-    if (const auto list = g.as_a<ir::SCPosArgList_I>(ir::NodeIndex { *positional }))
+    if (const auto list = g.as_a<ir::SCPosArgList_I>(positional))
         for (auto it = g.children(*list).iter(); it; ++it)
-            out.push_back(*it);
+            (void)out.push_back(*it);
     return out;
 }
 
@@ -164,9 +174,9 @@ std::vector<ir::SCAnyExpr_I> positional_arguments(const ir::IRGraph& g, ir::SCMe
 ////////////////////////////////////////////////////////////////////////////////
 
 std::optional<NilTest> nil_test(const InliningContext& ctx, const ir::IRGraph& g, ir::SCAnyExpr_I i) {
-    const auto m = g.as_a<ir::SCMessage_I>(ir::NodeIndex { *i });
+    const auto m = g.as_a<ir::SCMessage_I>(i);
     if (!m || g.payload(*m).form != ir::SCMessage::Form::Call || !only_positional(g, *m)
-        || !positional_arguments(g, *m).empty())
+        || positional_arguments(g, *m).size() != 0)
         return std::nullopt;
     const auto special = ctx.symbols.find(ir::Symbol { *g.payload(*m).selector });
     const auto* unary = special ? std::get_if<OpUnaryMath>(&*special) : nullptr;
@@ -183,7 +193,7 @@ std::optional<NilTest> nil_test_body(const InliningContext& ctx, const ir::IRGra
     if (!it)
         return std::nullopt;
     const ir::NodeIndex item { **it };
-    if (*g.last_child(ir::NodeIndex { *body }) != *item)
+    if (*g.last_child(body) != *item)
         return std::nullopt;
     if (const auto m = g.as_a<ir::SCMessage_I>(item))
         return nil_test(ctx, g, *m);
@@ -201,8 +211,8 @@ std::optional<ir::ConstExprIndex> switch_key(const InliningContext& ctx, const i
         if (!is_inlineable(g, i, version))
             return std::nullopt;
         const auto [p, v, body] = g.children(*f);
-        const auto first = g.first_child(ir::NodeIndex { *body });
-        if (!first || *g.last_child(ir::NodeIndex { *body }) != *first)
+        const auto first = g.first_child(body);
+        if (!first || *g.last_child(body) != *first)
             return std::nullopt;
         key_node = ir::NodeIndex { *first };
     }
@@ -226,16 +236,15 @@ SpecialSymbols::SpecialSymbols(ir::SymbolTable& symbols):
     does_not_understand(symbols.get_selector("doesNotUnderstand")),
     function_compile_context(symbols.get_selector("functionCompileContext")) {
     // The first table a name is in wins, as the old compiler looked in them in this order.
-    const auto add = [&](const auto& names, auto table) {
-        using Enum = decltype(table);
-        for (std::size_t i { 0 }; i < names.size(); ++i)
-            special_selectors.insert({ symbols.get(names[i]), SpecialSelector { static_cast<Enum>(i) } });
+    const auto add = [&](auto selector, std::string_view name) {
+        special_selectors.insert({ symbols.get(name), SpecialSelector { selector } });
     };
-    add(Opcode::names::special_selectors, OpSpecialSelectors {});
-    add(Opcode::names::unary_math, OpUnaryMath {});
-    add(Opcode::names::binary_math, OpBinaryMath {});
-    for (std::size_t i { 0 }; i < Opcode::names::special_classes.size(); ++i)
-        special_classes.insert({ symbols.get(Opcode::names::special_classes[i]), static_cast<std::uint8_t>(i) });
+    for_each_name<OpSpecialSelectors>(Opcode::names::special_selectors, add);
+    for_each_name<OpUnaryMath>(Opcode::names::unary_math, add);
+    for_each_name<OpBinaryMath>(Opcode::names::binary_math, add);
+    for_each_name<OpSpecialClassEnum>(Opcode::names::special_classes, [&](OpSpecialClassEnum c, std::string_view name) {
+        special_classes.insert({ symbols.get(name), c });
+    });
 
     const auto loop = [&](std::string_view owner, std::string_view selector, HardCodedLoop l) {
         hard_coded_loops.push_back({ symbols.get_class_name(owner), symbols.get_selector(selector), l });

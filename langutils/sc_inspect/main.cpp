@@ -528,7 +528,7 @@ int main(int argc, char* argv[]) {
         }
         if (show_bytecode) {
             const auto emit_start = Clock::now();
-            const auto class_node = g.as_a<sc::ir::SCClass_I>(sc::ir::NodeIndex { *root });
+            const auto class_node = g.as_a<sc::ir::SCClass_I>(root);
             const bool interpreter_members =
                 !class_node || g.payload(*class_node).name == ctx.common_symbols.interpreter;
             const sc::backend::EmitContext emitting {
@@ -625,15 +625,15 @@ int main(int argc, char* argv[]) {
         const auto& c = g.payload(*class_i);
         if (sc::ir::describe::repeats_class({ g, ctx }, *class_i))
             return;
-        classes.push_back({ &g, sc::ir::NodeIndex { **class_i }, c.name, file ? file->string() : std::string {},
+        classes.push_back({ &g, *class_i, c.name, file ? file->string() : std::string {},
                             sc::ir::IRGraph::range(loc).begin, symbol_table.is_meta(c.name) });
     });
     for (const auto& g : interpreted_graphs) {
         const auto interpreted_i = std::get<sc::ir::SCInterpreted_I>(*g->root());
-        const auto loc = g->location(sc::ir::NodeIndex { *interpreted_i });
+        const auto loc = g->location(interpreted_i);
         const auto& file = g->text_info(loc.source)->file_path;
-        classes.push_back({ g.get(), sc::ir::NodeIndex { *interpreted_i }, std::nullopt,
-                            file ? file->string() : std::string {}, sc::ir::IRGraph::range(loc).begin, false });
+        classes.push_back({ g.get(), interpreted_i, std::nullopt, file ? file->string() : std::string {},
+                            sc::ir::IRGraph::range(loc).begin, false });
     }
     std::sort(classes.begin(), classes.end(), [](const DumpedClass& l, const DumpedClass& r) {
         return std::tie(l.file, l.begin, l.is_meta) < std::tie(r.file, r.begin, r.is_meta);
@@ -757,7 +757,7 @@ int main(int argc, char* argv[]) {
         class_owners.push_back(owner(dumped.index));
         const auto [members, methods] = g.children(*g.as_a<sc::ir::SCClass_I>(dumped.index));
         for (auto it = g.children(methods).iter(); it; ++it)
-            method_owners.push_back(owner(sc::ir::NodeIndex { **it }));
+            method_owners.push_back(owner(*it));
     }
     std::map<std::pair<const sc::ir::IRGraph*, std::uint32_t>, std::vector<const sc::diag::Diagnostic*>> owned;
     std::vector<const sc::diag::Diagnostic*> unowned;

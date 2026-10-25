@@ -68,7 +68,7 @@ std::optional<ConstExprArray> append_elements(CollectionContext& c, SCCollection
         c.ir.append(collection, r.ir_node);
         ++c.ir.payload(collection).size;
         if (all_constant && r.const_index)
-            values.push_back(*r.const_index);
+            (void)values.push_back(*r.const_index);
         else
             all_constant = false;
     }
@@ -126,7 +126,7 @@ template <typename T>
 std::optional<ConstExpression> typed_array(const ConstantTable& constants, const ConstExprArray& values) {
     std::vector<T> elements;
     elements.reserve(values.size());
-    for (const auto value : values) {
+    for (const auto value : values.raw()) {
         const auto element = typed_element<T>(constants(value));
         if (!element)
             return std::nullopt;
@@ -152,8 +152,8 @@ std::optional<ConstExpression> collection_constant(const Context& ctx, SymSCClas
             return std::nullopt;
         ConstExprEvent pairs;
         pairs.reserve(values.size() / 2);
-        for (std::size_t k { 0 }; k < values.size(); k += 2)
-            pairs.push_back({ std::move(values[k]), std::move(values[k + 1]) });
+        for (ConstArrayElementIndex key { 0 }; values.contains(key); key = util::advance(key, 2))
+            pairs.push_back({ values[key], values[util::advance(key)] });
         return ConstExpression { std::move(pairs) };
     }
 

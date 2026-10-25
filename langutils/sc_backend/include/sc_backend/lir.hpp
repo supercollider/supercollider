@@ -188,9 +188,8 @@ struct Switch {
     std::uint32_t count;
 };
 
-[[nodiscard]] inline SwitchCaseIndex switch_case(const Switch& s, std::size_t k) {
-    assert(k < s.count);
-    return SwitchCaseIndex { *s.first + static_cast<std::uint32_t>(k) };
+[[nodiscard]] inline util::IndexRange<SwitchCaseIndex> cases(const Switch& s) {
+    return { s.first, util::advance(s.first, s.count) };
 }
 
 // Also used for malformed instructions.
@@ -220,6 +219,10 @@ struct FunctionSubRegion {
     std::uint32_t size;
 };
 static_assert(sizeof(FunctionSubRegion) == 8);
+
+[[nodiscard]] inline util::IndexRange<InstructionIndex> instructions(const FunctionSubRegion& r) {
+    return { r.begin, util::advance(r.begin, r.size) };
+}
 
 struct Function {
     FrameIndex frame;

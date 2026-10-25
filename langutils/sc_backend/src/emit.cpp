@@ -84,6 +84,33 @@ struct Value {
 };
 static_assert(sizeof(Value) == 8);
 
+// A send's operand, the receiver first.
+using OperandIndex = util::StrongIndex<std::uint32_t, struct OperandIndex__>;
+inline constexpr OperandIndex receiver_operand { 0 };
+
+// One send's operands, a part of its sub-region's, see RegionPlan.
+class SendOperands {
+public:
+    SendOperands(const Value* first, std::uint32_t count): m_first(first), m_count(count) {}
+
+    [[nodiscard]] Value operator[](OperandIndex k) const {
+        assert(*k < m_count);
+        return m_first[*k];
+    }
+
+private:
+    const Value* m_first;
+    std::uint32_t m_count;
+};
+
+// Operands first to n, not including n, e.g., the receiver and positional arguments, before any keyword arguments.
+[[nodiscard]] util::IndexRange<OperandIndex> operands(OperandIndex first, std::uint32_t n) {
+    return { first, OperandIndex { n } };
+}
+
+// Each send of a sub-region, in order.
+using SendIndex = util::StrongIndex<std::uint32_t, struct SendIndex__>;
+
 enum struct SendOp : std::uint8_t {
     None, // Not encoded, e.g., a send absorbed by another, `(a..b).do(f)` is one forSeries.
     Message,
@@ -132,11 +159,11 @@ struct RegionPlan {
     explicit RegionPlan(lir::FunctionSubRegion r): region(r), m_left_out(r.size, false) {}
 
     lir::FunctionSubRegion region;
-    std::vector<SendPlan> sends {};
-    std::vector<lir::InstructionIndex> send_instructions {};
+    util::IndexedVector<SendIndex, SendPlan> sends {};
+    util::IndexedVector<SendIndex, lir::InstructionIndex> send_instructions {};
     // The instruction each send's selector is added at, and the send, sorted by instruction. Sends added at the same
     // instruction are in the order the old compiler added them, the outer first.
-    std::vector<std::pair<lir::InstructionIndex, std::size_t>> additions {};
+    std::vector<std::pair<lir::InstructionIndex, SendIndex>> additions {};
 
     [[nodiscard]] bool contains(lir::InstructionIndex i) const {
         return *i >= *region.begin && *i < *region.begin + region.size;
@@ -145,6 +172,7 @@ struct RegionPlan {
     void leave_out(lir::InstructionIndex i) { m_left_out[offset(i)] = true; }
 
 private:
+    // A vector<bool> by position in the region, packed, so not an IndexedVector.
     [[nodiscard]] std::size_t offset(lir::InstructionIndex i) const {
         assert(contains(i));
         return *i - *region.begin;
@@ -156,10 +184,11 @@ private:
 // Emitter
 ////////////////////////////////////////////////////////////////////////////////
 
-// A frame with more slots than the VM can address isn't lowered.
-[[nodiscard]] lir::SlotIndex argument_slot(std::uint32_t k) {
-    assert(k <= std::numeric_limits<std::uint8_t>::max());
-    return lir::SlotIndex { static_cast<std::uint8_t>(k) };
+// Operand k pushes the function's argument k, the first being `this` in a method. A frame with more slots than the VM
+// can address isn't lowered.
+[[nodiscard]] lir::SlotIndex argument_slot(OperandIndex k) {
+    assert(*k <= std::numeric_limits<std::uint8_t>::max());
+    return lir::SlotIndex { static_cast<std::uint8_t>(*k) };
 }
 
 struct Emitter {
@@ -180,9 +209,7 @@ struct Emitter {
         return { { span.begin, 0, 0 }, { span.end, 0, 0 } };
     }
 
-    [[nodiscard]] ir::SourceLocation owner_location() const {
-        return ctx.graph.location(ir::NodeIndex { *frame.owner });
-    }
+    [[nodiscard]] ir::SourceLocation owner_location() const { return ctx.graph.location(frame.owner); }
 
     void report(sc::diag::Diagnostic d) {
         diagnostics.push_back(std::move(d));
@@ -203,8 +230,7 @@ struct Emitter {
     // Symbols are shared, as the old compiler compared slots, every function is its own entry.
     SelectorIndex add_selector(SelectorContent entry) {
         if (!std::holds_alternative<lir::FunctionIndex>(entry))
-            for (std::size_t i { 0 }; i < out.selectors.size(); ++i) {
-                const SelectorIndex index { static_cast<std::uint8_t>(i) };
+            for (const auto index : out.selectors.indices()) {
                 if (!std::holds_alternative<lir::FunctionIndex>(out.selectors[index])
                     && symbol_of(out.selectors[index]) == symbol_of(entry))
                     return index;
@@ -223,9 +249,9 @@ struct Emitter {
 
     ConstantIndex add_constant(ConstantContent entry) {
         const auto identity = identity_of(ctx.constants, entry);
-        for (std::uint32_t i { 0 }; i < out.constants.size(); ++i)
-            if (identity == identity_of(ctx.constants, out.constants[ConstantIndex { i }]))
-                return ConstantIndex { i };
+        for (const auto i : out.constants.indices())
+            if (identity == identity_of(ctx.constants, out.constants[i]))
+                return i;
         return out.constants.push_back(std::move(entry));
     }
 
@@ -284,33 +310,33 @@ struct Emitter {
     enum struct PushAll : std::uint8_t { No, All, AllButFirst };
 
     // checkPushAllArgs.
-    [[nodiscard]] PushAll push_all_args(const Value* args, std::uint32_t n) const {
-        if (!is_name(args[0])) {
+    [[nodiscard]] PushAll push_all_args(SendOperands args, std::uint32_t n) const {
+        if (!is_name(args[receiver_operand])) {
             if (n < 3)
                 return PushAll::No;
-            for (std::uint32_t k { 1 }; k < n; ++k)
+            for (const auto k : operands(util::advance(receiver_operand), n))
                 if (!is_argument(args[k], argument_slot(k)))
                     return PushAll::No;
             return PushAll::AllButFirst;
         }
-        for (std::uint32_t k { 0 }; k < n; ++k)
+        for (const auto k : operands(receiver_operand, n))
             if (!is_argument(args[k], argument_slot(k)))
                 return PushAll::No;
         return PushAll::All;
     }
 
     // checkPushAllButFirstTwoArgs, the arguments after the first two are the function's after its first.
-    [[nodiscard]] bool push_all_but_first_two_args(const Value* args, std::uint32_t num_block) const {
+    [[nodiscard]] bool push_all_but_first_two_args(SendOperands args, std::uint32_t num_block) const {
         if (num_block < 2)
             return false;
-        for (std::uint32_t k { 1 }; k < num_block; ++k)
-            if (!is_argument(args[k + 1], argument_slot(k)))
+        for (const auto k : operands(util::advance(receiver_operand), num_block))
+            if (!is_argument(args[util::advance(k)], argument_slot(k)))
                 return false;
         return true;
     }
 
     // Decides one send, see PyrCallNode::compileCall, PyrBinopCallNode::compileCall and PyrSetterNode::compileCall.
-    SendPlan decide(RegionPlan& plan, const lir::Send& s, const Value* args) {
+    SendPlan decide(RegionPlan& plan, const lir::Send& s, SendOperands args) {
         SendPlan p;
         const std::uint32_t n = 1u + s.num_positional;
         const std::uint32_t k = s.num_keyword;
@@ -338,9 +364,10 @@ struct Emitter {
         const auto* unary = special ? std::get_if<OpUnaryMath>(&*special) : nullptr;
         const auto* binary = special ? std::get_if<OpBinaryMath>(&*special) : nullptr;
         const auto adds_or_subtracts_one = [&]() {
-            return binary && (*binary == OpBinaryMath::Add || *binary == OpBinaryMath::Sub) && is_integer_one(args[1]);
+            return binary && (*binary == OpBinaryMath::Add || *binary == OpBinaryMath::Sub)
+                && is_integer_one(args[util::advance(receiver_operand)]);
         };
-        const auto leave_out_arg = [&](std::uint32_t a) { plan.leave_out(args[a].producer); };
+        const auto leave_out_arg = [&](OperandIndex a) { plan.leave_out(args[a].producer); };
 
         switch (s.form) {
         case lir::SendForm::Implicit:
@@ -375,7 +402,7 @@ struct Emitter {
                 const bool add = *binary == OpBinaryMath::Add;
                 p.op = add ? SendOp::PushOneAndAddOne : SendOp::PushOneAndSubtract;
                 p.tail = p.tail && !add;
-                leave_out_arg(1);
+                leave_out_arg(util::advance(receiver_operand));
             } else {
                 p.op = SendOp::Binary;
             }
@@ -405,7 +432,7 @@ struct Emitter {
             p.add = AddSelector::AtReceiver;
             if (n == 1) {
                 p.op = SendOp::SuperThisOpt;
-                leave_out_arg(0);
+                leave_out_arg(receiver_operand);
             } else {
                 p.op = SendOp::Super;
             }
@@ -415,9 +442,9 @@ struct Emitter {
         // A message, also an operator sent with the wrong number of arguments.
         const auto message = [&]() {
             p.add = AddSelector::AtReceiver;
-            if (n == 1 && is_this(args[0])) {
+            if (n == 1 && is_this(args[receiver_operand])) {
                 p.op = SendOp::MessageThisOpt;
-                leave_out_arg(0);
+                leave_out_arg(receiver_operand);
             } else {
                 p.op = SendOp::Message;
             }
@@ -429,12 +456,13 @@ struct Emitter {
                 const auto all = push_all_args(args, n);
                 if (all != PushAll::No) {
                     p.op = all == PushAll::All ? SendOp::PushAllArgs : SendOp::PushAllButFirstArg;
-                    for (std::uint32_t a { all == PushAll::All ? 0u : 1u }; a < n; ++a)
+                    for (const auto a :
+                         operands(all == PushAll::All ? receiver_operand : util::advance(receiver_operand), n))
                         leave_out_arg(a);
                 }
             } else if (n > 2 && n == num_block_args() + 1 && push_all_but_first_two_args(args, num_block_args())) {
                 p.op = SendOp::PushAllButFirstTwoArgs;
-                for (std::uint32_t a { 2 }; a < n; ++a)
+                for (const auto a : operands(util::advance(receiver_operand, 2), n))
                     leave_out_arg(a);
             }
             return p;
@@ -446,23 +474,24 @@ struct Emitter {
             if (sent_plainly(*special_selector))
                 return p;
             if (n == 1) {
-                if (is_this(args[0])) {
+                if (is_this(args[receiver_operand])) {
                     p.op = SendOp::SpecialThisOpt;
-                    leave_out_arg(0);
-                } else if (args[0].pushed_by_one_instruction()) {
-                    if (const auto* instance = std::get_if<lir::PushInstance>(&instruction(args[0].producer));
+                    leave_out_arg(receiver_operand);
+                } else if (args[receiver_operand].pushed_by_one_instruction()) {
+                    if (const auto* instance =
+                            std::get_if<lir::PushInstance>(&instruction(args[receiver_operand].producer));
                         instance && *instance->slot <= std::numeric_limits<std::uint8_t>::max()) {
                         p.op = SendOp::PushInstVarAndSpecial;
                         p.instance = instance->slot;
-                        leave_out_arg(0);
+                        leave_out_arg(receiver_operand);
                     }
                 }
             } else if (*special_selector == OpSpecialSelectors::Do) {
                 // `(a..b).do(f)` is `a.forSeries(nil, b, f)`, the range's arguments are the first.
-                const auto* series = std::get_if<lir::Send>(&instruction(args[0].producer));
+                const auto* series = std::get_if<lir::Send>(&instruction(args[receiver_operand].producer));
                 if (series && series->selector == ctx.special_symbols.series && series->form == lir::SendForm::Call
                     && series->kind == lir::SendKind::Normal && series->num_keyword == 0) {
-                    plan.leave_out(args[0].producer);
+                    plan.leave_out(args[receiver_operand].producer);
                     p.special = OpSpecialSelectors::ForSeries;
                     p.num_args = static_cast<std::uint8_t>(1 + series->num_positional + n - 1);
                 } else if (n == num_block_args()) {
@@ -490,7 +519,7 @@ struct Emitter {
             // Written as a call, the old compiler didn't emit a tail call before either.
             p.op = *binary == OpBinaryMath::Add ? SendOp::PushOneAndAddOne : SendOp::PushOneAndSubtract;
             p.tail = false;
-            leave_out_arg(1);
+            leave_out_arg(util::advance(receiver_operand));
         } else {
             p.op = SendOp::Binary;
         }
@@ -517,14 +546,14 @@ struct Emitter {
     }
 
     template <typename LeaveOut>
-    void special_push_all(SendPlan& p, const Value* args, std::uint32_t n, const LeaveOut& leave_out_arg) const {
+    void special_push_all(SendPlan& p, SendOperands args, std::uint32_t n, const LeaveOut& leave_out_arg) const {
         if (n <= 1)
             return;
         const auto all = push_all_args(args, n);
         if (all == PushAll::No)
             return;
         p.op = all == PushAll::All ? SendOp::PushAllArgsSpecial : SendOp::PushAllButFirstArgSpecial;
-        for (std::uint32_t a { all == PushAll::All ? 0u : 1u }; a < n; ++a)
+        for (const auto a : operands(all == PushAll::All ? receiver_operand : util::advance(receiver_operand), n))
             leave_out_arg(a);
     }
 
@@ -533,14 +562,16 @@ struct Emitter {
     // adds it first.
     RegionPlan plan_region(lir::FunctionSubRegion region) {
         RegionPlan plan { region };
-        const std::uint32_t begin { *region.begin };
         std::vector<Value> stack;
+        // Every send's operands, one after another.
+        using RegionOperandIndex = util::StrongIndex<std::uint32_t, struct RegionOperandIndex__>;
+        util::IndexedVector<RegionOperandIndex, Value> operands;
         struct SendArgs {
             lir::InstructionIndex instruction;
-            std::size_t first;
+            RegionOperandIndex first;
+            std::uint32_t count;
         };
-        std::vector<SendArgs> sends;
-        std::vector<Value> args;
+        util::IndexedVector<SendIndex, SendArgs> sends;
         const auto pop = [&]() {
             assert(!stack.empty());
             const auto v = stack.back();
@@ -553,14 +584,14 @@ struct Emitter {
             stack.erase(stack.end() - static_cast<std::ptrdiff_t>(count), stack.end());
             stack.push_back({ start, i });
         };
-        for (std::uint32_t k { begin }; k < begin + region.size; ++k) {
-            const lir::InstructionIndex i { k };
+        for (const auto i : lir::instructions(region)) {
             std::visit(util::overload {
                            [&](const lir::Send& s) {
-                               const std::size_t count = 1u + s.num_positional + 2u * s.num_keyword;
+                               const std::uint32_t count = 1u + s.num_positional + 2u * s.num_keyword;
                                assert(stack.size() >= count);
-                               sends.push_back({ i, args.size() });
-                               args.insert(args.end(), stack.end() - static_cast<std::ptrdiff_t>(count), stack.end());
+                               (void)sends.push_back({ i, operands.next_index(), count });
+                               operands.raw().insert(operands.raw().end(),
+                                                     stack.end() - static_cast<std::ptrdiff_t>(count), stack.end());
                                const auto receiver = stack[stack.size() - count];
                                stack.erase(stack.end() - static_cast<std::ptrdiff_t>(count), stack.end());
                                stack.push_back({ receiver.start, i });
@@ -597,9 +628,9 @@ struct Emitter {
         }
 
         plan.sends.resize(sends.size());
-        for (const auto& s : sends)
-            plan.send_instructions.push_back(s.instruction);
-        for (std::size_t s { sends.size() }; s-- > 0;) {
+        for (const auto& s : sends.raw())
+            (void)plan.send_instructions.push_back(s.instruction);
+        for (const auto s : sends.indices().reversed()) {
             const auto i = sends[s].instruction;
             // Absorbed by a later send, which encodes it.
             if (plan.left_out(i)) {
@@ -607,9 +638,10 @@ struct Emitter {
                 continue;
             }
             const auto& send = std::get<lir::Send>(instruction(i));
-            plan.sends[s] = decide(plan, send, args.data() + sends[s].first);
+            const SendOperands args { &operands[sends[s].first], sends[s].count };
+            plan.sends[s] = decide(plan, send, args);
             if (plan.sends[s].add == AddSelector::AtReceiver)
-                plan.additions.push_back({ args[sends[s].first].start, s });
+                plan.additions.push_back({ args[receiver_operand].start, s });
             else if (plan.sends[s].add == AddSelector::AtSend)
                 plan.additions.push_back({ i, s });
         }
@@ -685,7 +717,7 @@ struct Emitter {
     void push_class(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, ir::SymSCClassName name) {
         if (const auto fnd = ctx.special_symbols.special_classes.find(ir::Symbol { *name });
             fnd != ctx.special_symbols.special_classes.end())
-            PushSpecialClass.emit(bc, loc, Operands::SpecialClass::fromRaw(fnd->second));
+            PushSpecialClass.emit(bc, loc, Operands::SpecialClass { fnd->second });
         else
             PushClassX.emit(bc, loc, Operands::Class::fromRaw(*add_selector(name)));
     }
@@ -931,26 +963,23 @@ struct Emitter {
     CompilingBytecodes encode(lir::FunctionSubRegion region) {
         auto plan = plan_region(region);
         CompilingBytecodes bc;
-        const std::uint32_t begin { *region.begin };
-        const std::uint32_t end { begin + region.size };
-        std::size_t next_send { 0 };
-        std::size_t next_addition { 0 };
+        SendIndex next_send { 0 };
+        auto next_addition = plan.additions.begin();
         bool popped_by_store { false };
-        for (std::uint32_t k { begin }; k < end; ++k) {
-            const lir::InstructionIndex i { k };
-            while (next_addition < plan.additions.size() && plan.additions[next_addition].first == i) {
-                const auto s = plan.additions[next_addition].second;
+        for (const auto i : lir::instructions(region)) {
+            for (; next_addition != plan.additions.end() && next_addition->first == i; ++next_addition) {
+                const auto s = next_addition->second;
                 // Added at the send, after its arguments, it is added when it is encoded.
                 if (plan.sends[s].add == AddSelector::AtReceiver)
                     plan.sends[s].selector =
                         add_selector(std::get<lir::Send>(instruction(plan.send_instructions[s])).selector);
-                ++next_addition;
             }
             const auto& in = instruction(i);
             const auto loc = location(i);
             const bool left_out = plan.left_out(i);
             if (const auto* s = std::get_if<lir::Send>(&in)) {
-                auto& p = plan.sends[next_send++];
+                auto& p = plan.sends[next_send];
+                next_send = util::advance(next_send);
                 if (!left_out) {
                     if (p.add == AddSelector::AtSend)
                         p.selector = add_selector(s->selector);
@@ -1126,22 +1155,28 @@ struct Emitter {
         push_constant_entry(bc, loc, table_index);
         Extended::Switch.emit(bc, loc);
 
-        std::vector<CompilingBytecodes> bodies;
-        bool has_default { false };
-        for (std::uint32_t c { 0 }; c < s.count; ++c) {
-            const auto& sc = function.switch_cases[lir::switch_case(s, c)];
-            bodies.push_back(encode_value(sc.body, loc));
-            has_default = !sc.key;
+        // Each key's body, then the default, the last without a key.
+        struct Body {
+            ir::OptionalConstExprIndex key;
+            CompilingBytecodes code;
+        };
+        std::vector<Body> bodies;
+        for (const auto c : lir::cases(s)) {
+            const auto& sc = function.switch_cases[c];
+            bodies.push_back({ sc.key, encode_value(sc.body, loc) });
         }
+        const bool has_default = !bodies.back().key;
         if (!has_default) {
-            bodies.emplace_back();
-            PushSpecialValue.emit(bodies.back(), loc, { OpSpecialValue::Nil_ });
+            bodies.push_back({ {}, {} });
+            PushSpecialValue.emit(bodies.back().code, loc, { OpSpecialValue::Nil_ });
         }
+        const auto keyed_end = std::prev(bodies.end());
         const std::size_t num_keys = bodies.size() - 1;
+        // Each keyed body jumps to the end.
         constexpr std::size_t jump_size { 3 };
-        std::size_t end { 0 };
-        for (std::size_t b { 0 }; b < bodies.size(); ++b)
-            end += bodies[b].length() + (b < num_keys ? jump_size : 0);
+        std::size_t end { num_keys * jump_size };
+        for (const auto& body : bodies)
+            end += body.code.length();
 
         // The receiver, then a key and a body each, then the default, as the old compiler sized it.
         const std::size_t num_args = 1 + 2 * num_keys + (has_default ? 1 : 0);
@@ -1149,32 +1184,32 @@ struct Emitter {
         table.capacity = 1;
         while (table.capacity < 2 * num_args)
             table.capacity *= 2;
-        std::size_t offset { 0 };
-        for (std::size_t b { 0 }; b < num_keys; ++b) {
-            const ir::ConstExprIndex key { *function.switch_cases[lir::switch_case(s, b)].key };
+        // Where each body starts, counted from after the Switch bytecode.
+        CodeOffset offset { 0 };
+        for (auto body = bodies.begin(); body != keyed_end; ++body) {
+            const ir::ConstExprIndex key { *body->key };
             // The first of equal keys is kept, as Object:switch tests them in order. The old compiler kept the last.
             const auto identity = identity_of(ctx.constants, key);
             if (std::none_of(table.offsets.begin(), table.offsets.end(),
                              [&](const auto& o) { return identity_of(ctx.constants, o.first) == identity; }))
-                table.offsets.push_back({ key, CodeOffset::from(offset) });
-            offset += bodies[b].length() + jump_size;
-            jump(bodies[b], loc, JumpFwd, end - offset);
+                table.offsets.push_back({ key, offset });
+            offset = util::advance(offset, static_cast<std::uint32_t>(body->code.length() + jump_size));
+            jump(body->code, loc, JumpFwd, end - *offset);
         }
-        table.default_offset = CodeOffset::from(offset);
+        table.default_offset = offset;
         for (auto& body : bodies)
-            bc.consume(std::move(body));
+            bc.consume(std::move(body.code));
     }
 
     [[nodiscard]] bool drop_follows(const RegionPlan& plan, lir::InstructionIndex i) const {
-        const lir::InstructionIndex next { *i + 1 };
+        const auto next = util::advance(i);
         return plan.contains(next) && !plan.left_out(next) && std::holds_alternative<lir::Drop>(instruction(next));
     }
 
     void emit_return(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, const RegionPlan& plan,
                      lir::InstructionIndex i) {
-        const lir::InstructionIndex previous { *i - 1 };
-        if (*i > 0 && plan.contains(previous) && plan.left_out(previous))
-            if (const auto value = special_value(previous)) {
+        if (i != plan.region.begin && plan.left_out(util::retreat(i)))
+            if (const auto value = special_value(util::retreat(i))) {
                 switch (*value) {
                 case lir::SpecialValue::Nil:
                     ReturnNil.emit(bc, loc);
@@ -1214,7 +1249,7 @@ struct Uses {
 };
 
 bool explicitly_closed(const EmitContext& ctx, const Frame& frame) {
-    if (const auto f = ctx.graph.as_a<ir::SCFunction_I>(ir::NodeIndex { *frame.owner }))
+    if (const auto f = ctx.graph.as_a<ir::SCFunction_I>(frame.owner))
         return ctx.graph.payload(*f).closed || !frame.parent;
     return false;
 }
@@ -1238,8 +1273,7 @@ function_properties(const EmitContext& ctx, const util::IndexedVector<lir::Funct
     uses.resize(functions.size());
 
     // A nested function is numbered after the function it is in, so is done first.
-    for (auto fi = static_cast<std::uint32_t>(functions.size()); fi-- > 0;) {
-        const lir::FunctionIndex index { fi };
+    for (const auto index : functions.indices().reversed()) {
         const auto& function = functions[index];
         const auto& frame = ctx.frames.frames[function.frame];
         const bool members_allowed = members_close(ctx, frame);
@@ -1275,7 +1309,7 @@ function_properties(const EmitContext& ctx, const util::IndexedVector<lir::Funct
                        },
                        instruction);
 
-        if (ctx.graph.is_a<ir::SCMethod_I>(ir::NodeIndex { *frame.owner }))
+        if (ctx.graph.is_a<ir::SCMethod_I>(frame.owner))
             continue;
         properties.is_closed = !used.cant_be_closed && used.outer_depth == 0;
         properties.has_context = !properties.is_closed && !explicitly_closed(ctx, frame);
@@ -1295,7 +1329,7 @@ bool pushes_argument(const lir::Instruction& i, lir::SlotIndex k) {
 
 // Attempt to find a shortcut method.
 OptionalMethodShortcut method_shortcut(const EmitContext& ctx, const lir::Function& function, const Frame& frame) {
-    const auto method = ctx.graph.as_a<ir::SCMethod_I>(ir::NodeIndex { *frame.owner });
+    const auto method = ctx.graph.as_a<ir::SCMethod_I>(frame.owner);
     if (!method)
         return {};
     const auto& payload = ctx.graph.payload(*method);
@@ -1304,24 +1338,30 @@ OptionalMethodShortcut method_shortcut(const EmitContext& ctx, const lir::Functi
         || (ctx.interpreter_members && selector == ctx.special_symbols.function_compile_context))
         return {};
 
-    const auto& code = function.instructions.raw();
+    const auto& code = function.instructions;
+    // The method's code is short, so named by position.
+    constexpr lir::InstructionIndex first { 0 };
+    const auto second = util::advance(first);
+    const auto third = util::advance(first, 2);
+    const auto fourth = util::advance(first, 3);
     // Lowering ends every method with a return.
-    assert(!code.empty());
-    if (code.size() == 1 && std::holds_alternative<lir::ReturnSelf>(code[0]))
+    assert(code.size() != 0);
+    const auto last = util::retreat(code.next_index());
+    if (code.size() == 1 && std::holds_alternative<lir::ReturnSelf>(code[first]))
         return shortcut::ReturnSelf {};
     if (ir::has_assign_shortcut(payload.version) && code.size() == 4 && frame.num_positional > 0
-        && pushes_argument(code[0], lir::SlotIndex { 1 }) && std::holds_alternative<lir::Drop>(code[2])
-        && std::holds_alternative<lir::ReturnSelf>(code[3])) {
-        if (const auto* store = std::get_if<lir::StoreInstance>(&code[1]))
+        && pushes_argument(code[first], lir::SlotIndex { 1 }) && std::holds_alternative<lir::Drop>(code[third])
+        && std::holds_alternative<lir::ReturnSelf>(code[fourth])) {
+        if (const auto* store = std::get_if<lir::StoreInstance>(&code[second]))
             return shortcut::AssignInstance { store->slot };
-        if (const auto* store = std::get_if<lir::StoreClassVariable>(&code[1]);
+        if (const auto* store = std::get_if<lir::StoreClassVariable>(&code[second]);
             store && ir::has_class_variable_shortcuts(payload.version))
             return shortcut::AssignClassVariable { store->index };
     }
-    if (!std::holds_alternative<lir::Return>(code.back()))
+    if (!std::holds_alternative<lir::Return>(code[last]))
         return {};
     if (code.size() == 2) {
-        const auto& value = code[0];
+        const auto& value = code[first];
         if (const auto* s = std::get_if<lir::PushSpecial>(&value); s && s->kind == ir::SCSpecial::Kind::This)
             return shortcut::ReturnSelf {};
         if (const auto* c = std::get_if<lir::PushConstant>(&value);
@@ -1341,21 +1381,22 @@ OptionalMethodShortcut method_shortcut(const EmitContext& ctx, const lir::Functi
     constexpr std::uint32_t receiver_send_and_return = 3;
     if (code.size() != frame.num_positional + receiver_send_and_return)
         return {};
-    const auto* send = std::get_if<lir::Send>(&code[code.size() - 2]);
+    const auto* send = std::get_if<lir::Send>(&code[util::retreat(last)]);
     if (!send || send->form != lir::SendForm::Call || send->kind == lir::SendKind::WithAdverb
         || send->num_positional != frame.num_positional || send->num_keyword != 0)
         return {};
-    for (std::uint32_t k { 1 }; k <= frame.num_positional; ++k)
-        if (!pushes_argument(code[k], argument_slot(k)))
+    // The send's operands are the instructions before it, the receiver first.
+    for (const auto k : operands(util::advance(receiver_operand), 1 + frame.num_positional))
+        if (!pushes_argument(code[lir::InstructionIndex { *k }], argument_slot(k)))
             return {};
     const bool super = send->kind == lir::SendKind::Super;
-    if (const auto* s = std::get_if<lir::PushSpecial>(&code[0]); s && s->kind == ir::SCSpecial::Kind::This)
+    if (const auto* s = std::get_if<lir::PushSpecial>(&code[first]); s && s->kind == ir::SCSpecial::Kind::This)
         return shortcut::Redirect { send->selector, super };
     if (super)
         return {};
-    if (const auto* p = std::get_if<lir::PushInstance>(&code[0]))
+    if (const auto* p = std::get_if<lir::PushInstance>(&code[first]))
         return shortcut::ForwardInstance { send->selector, p->slot };
-    if (const auto* p = std::get_if<lir::PushClassVariable>(&code[0]))
+    if (const auto* p = std::get_if<lir::PushClassVariable>(&code[first]))
         return shortcut::ForwardClassVariable { send->selector, p->index };
     return {};
 }
@@ -1429,15 +1470,15 @@ bool check_loop_frame(const EmitContext& ctx, ir::SCMethod_I method, const Frame
     const auto [positional, _, body] = ctx.graph.children(method);
     for (auto it = ctx.graph.children(positional).iter(); it; ++it) {
         const auto [value] = ctx.graph.children(*it);
-        if (!ctx.graph.payload(*it).prototype && !ctx.graph.is_a<ir::SCMissing_I>(ir::NodeIndex { *value }))
-            computed_error(ir::NodeIndex { *value });
+        if (!ctx.graph.payload(*it).prototype && !ctx.graph.is_a<ir::SCMissing_I>(value))
+            computed_error(value);
     }
     for (auto it = ctx.graph.children(body).iter(); it; ++it) {
         const ir::NodeIndex i { **it };
         if (const auto declare = ctx.graph.as_a<ir::SCVariableDeclare_I>(i)) {
             const auto [value] = ctx.graph.children(*declare);
-            if (!ctx.graph.payload(*declare).prototype && !ctx.graph.is_a<ir::SCMissing_I>(ir::NodeIndex { *value }))
-                computed_error(ir::NodeIndex { *value });
+            if (!ctx.graph.payload(*declare).prototype && !ctx.graph.is_a<ir::SCMissing_I>(value))
+                computed_error(value);
         } else if (ctx.graph.is_a<ir::SCPackDeclare_I>(i)) {
             computed_error(i);
         }
@@ -1536,7 +1577,7 @@ bool emit_root(const EmitContext& ctx, const lir::LoweredGraph& lowered,
     if (const auto found = method_shortcut(ctx, lowered.functions[root], root_frame);
         !std::holds_alternative<std::monostate>(found)) {
         // Its code is a single return, so creates no functions.
-        assert(*end == *root + 1);
+        assert(end == util::advance(root));
         EmittedFunction emitted {};
         emitted.shortcut = found;
         emitted.properties = properties[root];
@@ -1544,15 +1585,15 @@ bool emit_root(const EmitContext& ctx, const lir::LoweredGraph& lowered,
         return true;
     }
     // Some methods are hard coded so have a shorter exit path.
-    if (const auto method = ctx.graph.as_a<ir::SCMethod_I>(ir::NodeIndex { *root_frame.owner })) {
+    if (const auto method = ctx.graph.as_a<ir::SCMethod_I>(root_frame.owner)) {
         if (const auto loop = hard_coded_loop(ctx, *method)) {
             if (!check_loop_frame(ctx, *method, root_frame, *loop, out.diagnostics))
                 return false;
             // The body is thrown away, with the functions in it, and anything it would have made the method.
             EmittedFunction emitted {};
-            emitted.code = loop_code(*loop, ir::IRGraph::range(ctx.graph.location(ir::NodeIndex { **method })));
+            emitted.code = loop_code(*loop, ir::IRGraph::range(ctx.graph.location(*method)));
             out.functions.push_back(std::move(emitted));
-            for (std::uint32_t fi { *root + 1 }; fi < *end; ++fi) {
+            while (out.functions.next_index() != end) {
                 EmittedFunction thrown_away {};
                 thrown_away.thrown_away = true;
                 out.functions.push_back(std::move(thrown_away));
@@ -1560,12 +1601,11 @@ bool emit_root(const EmitContext& ctx, const lir::LoweredGraph& lowered,
             return true;
         }
     }
-    for (std::uint32_t fi { *root }; fi < *end; ++fi) {
-        const lir::FunctionIndex index { fi };
+    for (const auto index : util::range(root, end)) {
         const auto& function = lowered.functions[index];
         const auto& frame = ctx.frames.frames[function.frame];
         Emitter emitter { ctx, function, frame, {}, out.diagnostics };
-        emitter.run(ctx.graph.is_a<ir::SCMethod_I>(ir::NodeIndex { *frame.owner }));
+        emitter.run(ctx.graph.is_a<ir::SCMethod_I>(frame.owner));
         emitter.out.properties = properties[index];
         out.functions.push_back(std::move(emitter.out));
         if (emitter.failed)
@@ -1584,19 +1624,16 @@ EmittedGraph emit(const EmitContext& ctx, const lir::LoweredGraph& lowered) {
     out.accessors = accessors(ctx);
     const auto properties = function_properties(ctx, lowered.functions);
     // Nested functions follow their root, a function whose frame has no parent. A root that fails leaves out the rest.
-    const auto size = static_cast<std::uint32_t>(lowered.functions.size());
-    for (std::uint32_t begin { 0 }; begin < size;) {
-        // begin to end should span over the function and its nested functions.
-        std::uint32_t end { begin + 1 };
-        while (end < size && ctx.frames.frames[lowered.functions[lir::FunctionIndex { end }].frame].parent)
-            ++end;
-        const lir::FunctionIndex root { begin };
-        if (lowered.functions[root].complete
-            && emit_root(ctx, lowered, properties, root, lir::FunctionIndex { end }, out))
+    for (lir::FunctionIndex root { 0 }; lowered.functions.contains(root);) {
+        // root to end spans the function and its nested functions.
+        auto end = util::advance(root);
+        while (lowered.functions.contains(end) && ctx.frames.frames[lowered.functions[end].frame].parent)
+            end = util::advance(end);
+        if (lowered.functions[root].complete && emit_root(ctx, lowered, properties, root, end, out))
             out.roots.push_back(root);
 
-        out.functions.resize(end);
-        begin = end;
+        out.functions.resize(*end);
+        root = end;
     }
     return out;
 }
@@ -1776,19 +1813,20 @@ void write_emitted(std::ostream& out, const EmittedFunction& function, std::stri
     }
     out << "\n";
     const auto& code = function.code;
-    std::size_t offset { 0 };
+    CodeOffset offset { 0 };
+    auto byte = code.codes.begin();
     for (const auto size : code.sizeOfCodes) {
-        out << indent << std::setw(4) << std::left << offset << std::right << ' ';
+        out << indent << std::setw(4) << std::left << *offset << std::right << ' ';
+        const auto opcode = *byte;
         std::string bytes;
-        for (std::size_t b { 0 }; b < size; ++b) {
+        for (const auto end = byte + size; byte != end; ++byte) {
             static constexpr char digits[] = "0123456789ABCDEF";
-            const auto byte = code.codes[offset + b];
-            bytes += digits[byte >> 4];
-            bytes += digits[byte & 15];
+            bytes += digits[*byte >> 4];
+            bytes += digits[*byte & 15];
             bytes += ' ';
         }
-        out << std::setw(16) << std::left << bytes << std::right << opcode_name(code.codes[offset]) << "\n";
-        offset += size;
+        out << std::setw(16) << std::left << bytes << std::right << opcode_name(opcode) << "\n";
+        offset = util::advance(offset, static_cast<std::uint32_t>(size));
     }
 }
 

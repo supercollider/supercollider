@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <cstddef>
 #include <functional>
 #include <limits>
@@ -37,6 +38,69 @@ template <typename UNDERLYING, typename TAG>//
 private:
     Underlying m_value {};
 };
+
+// The index n after i.
+template <typename UNDERLYING, typename TAG>
+[[nodiscard]] constexpr StrongIndex<UNDERLYING, TAG> advance(StrongIndex<UNDERLYING, TAG> i,
+                                                             typename StrongIndex<UNDERLYING, TAG>::Underlying n = 1) {
+    if constexpr (std::is_signed_v<UNDERLYING>)
+        assert(*i >= 0 && n >= 0 && "a negative index or step");
+    assert(n <= std::numeric_limits<UNDERLYING>::max() - *i && "the index overflows");
+    return StrongIndex<UNDERLYING, TAG> { static_cast<UNDERLYING>(*i + n) };
+}
+
+// The index n before i.
+template <typename UNDERLYING, typename TAG>
+[[nodiscard]] constexpr StrongIndex<UNDERLYING, TAG> retreat(StrongIndex<UNDERLYING, TAG> i,
+                                                             typename StrongIndex<UNDERLYING, TAG>::Underlying n = 1) {
+    if constexpr (std::is_signed_v<UNDERLYING>)
+        assert(*i >= 0 && n >= 0 && "a negative index or step");
+    assert(n <= *i && "the index underflows");
+    return StrongIndex<UNDERLYING, TAG> { static_cast<UNDERLYING>(*i - n) };
+}
+
+// The indexes from first up to, not including, last, for a range-for, or counting down from last when reversed.
+template <typename Index, bool Reverse = false> class IndexRange {
+    using Underlying = typename Index::Underlying;
+
+public:
+    class Iterator {
+    public:
+        explicit constexpr Iterator(Underlying v): m_value(v) {}
+        [[nodiscard]] constexpr Index operator*() const {
+            return Index { static_cast<Underlying>(Reverse ? m_value - 1 : m_value) };
+        }
+        constexpr Iterator& operator++() {
+            if constexpr (Reverse)
+                --m_value;
+            else
+                ++m_value;
+            return *this;
+        }
+        [[nodiscard]] constexpr bool operator!=(Iterator other) const { return m_value != other.m_value; }
+
+    private:
+        Underlying m_value;
+    };
+
+    constexpr IndexRange(Index first, Index last): m_first(*first), m_last(*last) {}
+
+    [[nodiscard]] constexpr Iterator begin() const { return Iterator { Reverse ? m_last : m_first }; }
+    [[nodiscard]] constexpr Iterator end() const { return Iterator { Reverse ? m_first : m_last }; }
+    [[nodiscard]] constexpr IndexRange<Index, !Reverse> reversed() const {
+        return { Index { m_first }, Index { m_last } };
+    }
+
+private:
+    Underlying m_first;
+    Underlying m_last;
+};
+
+template <typename UNDERLYING, typename TAG>
+[[nodiscard]] constexpr IndexRange<StrongIndex<UNDERLYING, TAG>> range(StrongIndex<UNDERLYING, TAG> first,
+                                                                       StrongIndex<UNDERLYING, TAG> last) {
+    return { first, last };
+}
 
 template<typename T>
 [[nodiscard]] static constexpr T default_invalid() {

@@ -1,6 +1,8 @@
 #pragma once
 
+#include "sc_util/indexed_vector.hpp"
 #include "sc_util/overload.hpp"
+#include "sc_util/strong_index.hpp"
 #include "const_expr_index.hpp"
 #include "symbols.hpp"
 
@@ -21,7 +23,8 @@ struct SymbolTable;
 
 // The elements are constants in the same ConstantTable, so nesting costs an index per element rather than a copy, and
 // as every constant is only in the table once, two arrays are equal exactly when their elements' indexes are.
-using ConstExprArray = std::vector<ConstExprIndex>;
+using ConstArrayElementIndex = util::StrongIndex<std::uint32_t, struct ConstArrayElementIndex__>;
+using ConstExprArray = util::IndexedVector<ConstArrayElementIndex, ConstExprIndex>;
 using ConstExprEvent = std::vector<std::pair<ConstExprIndex, ConstExprIndex>>;
 // The arrays whose elements are stored unboxed, like PyrDoubleArray and friends, e.g., `FloatArray[1, 2]`.
 // The integers are signed, as that is how sclang reads their elements.
@@ -147,7 +150,7 @@ template <> struct hash<sc::ir::ConstExpression> {
                     }
                     return seed;
                 },
-                [](const sc::ir::ConstExprArray& vec) -> size_t { return sc::ir::detail::hash_elements(vec); },
+                [](const sc::ir::ConstExprArray& vec) -> size_t { return sc::ir::detail::hash_elements(vec.raw()); },
                 [](const sc::ir::ConstExprDoubleArray& vec) -> size_t { return sc::ir::detail::hash_elements(vec); },
                 [](const sc::ir::ConstExprFloatArray& vec) -> size_t { return sc::ir::detail::hash_elements(vec); },
                 [](const sc::ir::ConstExprInt32Array& vec) -> size_t { return sc::ir::detail::hash_elements(vec); },

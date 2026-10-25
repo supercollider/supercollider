@@ -177,7 +177,7 @@ void add_ir(Tree& tree, const sc::ir::Context& ctx, const IrRoot& r, const sc::l
     const auto& g = *r.graph;
     const sc::ir::describe::Describe describe { g, ctx };
     tree.close();
-    g.depth_first_traverse(sc::ir::NodeIndex { *r.root },
+    g.depth_first_traverse(r.root,
                            [&](const sc::ir::IRGraph::Edges& edges, const sc::ir::IRGraph::Variant& payload,
                                const sc::ir::SourceLocation& loc, sc::ir::NodeIndex i, size_t depth) {
                                if (sc::ir::describe::hidden(describe, edges, payload, r.class_name))
@@ -224,7 +224,7 @@ void add_backend(Tree& lir_tree, Tree& bytecode_tree, const Backend& b, const Ir
     const auto lowered = sc::backend::lower({ g, frames, b.members, ctx.constant_table, ctx.symbol_table, b.selectors,
                                               b.inlining, ctx.common_classes.array, ctx.common_classes.event },
                                             r.root);
-    const auto class_node = g.as_a<sc::ir::SCClass_I>(sc::ir::NodeIndex { *r.root });
+    const auto class_node = g.as_a<sc::ir::SCClass_I>(r.root);
     const bool interpreter_members = !class_node || g.payload(*class_node).name == ctx.common_symbols.interpreter;
     const auto emitted = sc::backend::emit(
         { g, frames, b.members, ctx.constant_table, b.special_symbols, interpreter_members }, lowered);
@@ -262,7 +262,7 @@ void add_backend(Tree& lir_tree, Tree& bytecode_tree, const Backend& b, const Ir
                 detail = "argument ";
             else if (l < frame.num_positional + frame.num_variadic())
                 detail = "variadic argument ...";
-            else if (g.is_a<sc::ir::SCFunction_I>(local_owner) && local_owner != sc::ir::NodeIndex { *frame.owner })
+            else if (g.is_a<sc::ir::SCFunction_I>(local_owner) && local_owner != frame.owner)
                 detail = "hoisted var ";
             else
                 detail = "var ";
@@ -277,10 +277,9 @@ void add_backend(Tree& lir_tree, Tree& bytecode_tree, const Backend& b, const Ir
             tree.add(3, { name, detail, range, {} });
         }
     };
-    const Tree::Node class_row { r.class_name ? std::string { ctx.symbol_table(*r.class_name) } : "Interpreted",
-                                 "",
-                                 range_of(sc::ir::NodeIndex { *r.root }),
-                                 {} };
+    const Tree::Node class_row {
+        r.class_name ? std::string { ctx.symbol_table(*r.class_name) } : "Interpreted", "", range_of(r.root), {}
+    };
     for (auto* tree : { &lir_tree, &bytecode_tree }) {
         tree->close();
         tree->add(0, class_row);

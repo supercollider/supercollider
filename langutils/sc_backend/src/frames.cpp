@@ -46,10 +46,11 @@ std::optional<FrameIndex> FrameCursor::enter(ir::NodeIndex i) {
         if (const auto kind = inlining(*m_inlining, g, *m, m_version); kind && *kind != Inlined::QuestionMark) {
             const auto [receiver, p, k, v, a] = g.children(*m);
             if (inlines_receiver(*kind))
-                m_inlined.push_back(*g.as_a<ir::SCFunction_I>(ir::NodeIndex { *receiver }));
+                m_inlined.push_back(g.assume_a<ir::SCFunction_I>(receiver));
             // Every function argument, a switch's `{ 1 }` keys too, though only their value is used.
-            for (const auto argument : positional_arguments(g, *m))
-                if (const auto f = g.as_a<ir::SCFunction_I>(ir::NodeIndex { *argument }))
+            const auto arguments = positional_arguments(g, *m);
+            for (const auto argument : arguments.raw())
+                if (const auto f = g.as_a<ir::SCFunction_I>(argument))
                     m_inlined.push_back(*f);
         }
         return std::nullopt;
@@ -240,17 +241,17 @@ struct FrameCreator {
                        [&](const ir::SCMethod& m) {
                            poisoned = m.poisoned;
                            any_poisoned = any_poisoned || poisoned;
-                           function(*started, parent, *g.as_a<ir::SCMethod_I>(i), true);
+                           function(*started, parent, g.assume_a<ir::SCMethod_I>(i), true);
                        },
                        [&](const ir::SCFunction&) {
                            // An inlined function has no frame.
                            if (started)
-                               function(*started, parent, *g.as_a<ir::SCFunction_I>(i), false);
+                               function(*started, parent, g.assume_a<ir::SCFunction_I>(i), false);
                            else
-                               hoist(FrameIndex { *parent }, *g.as_a<ir::SCFunction_I>(i));
+                               hoist(FrameIndex { *parent }, g.assume_a<ir::SCFunction_I>(i));
                        },
                        [&](const ir::SCRoutineGenerator&) {
-                           create(*started, parent, *g.as_a<ir::SCRoutineGenerator_I>(i), false);
+                           create(*started, parent, g.assume_a<ir::SCRoutineGenerator_I>(i), false);
                        },
                    },
                    payload);
@@ -262,11 +263,11 @@ struct FrameCreator {
         std::visit(util::overload {
                        [](const auto&) {},
                        [&](const ir::SCGenQualIterate& q) {
-                           qualifier(*started, parent, *g.as_a<ir::SCGenQualIterate_I>(i),
+                           qualifier(*started, parent, g.assume_a<ir::SCGenQualIterate_I>(i),
                                      { ir::OptionalLocalIndex { q.element_local }, q.index_local });
                        },
                        [&](const ir::SCGenQualDeclare& q) {
-                           qualifier(*started, parent, *g.as_a<ir::SCGenQualDeclare_I>(i),
+                           qualifier(*started, parent, g.assume_a<ir::SCGenQualDeclare_I>(i),
                                      { ir::OptionalLocalIndex { q.local } });
                        },
                    },
@@ -291,7 +292,7 @@ Frames layout_frames(const ir::IRGraph& g, const InliningContext& inlining,
         creator.exit(payload, i); //
     };
 
-    g.depth_first_traverse(ir::NodeIndex { *root }, //
+    g.depth_first_traverse(root, //
                            on_enter, //
                            ir::IRGraph::Default {}, //
                            ir::IRGraph::Default {}, //

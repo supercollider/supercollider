@@ -1,5 +1,7 @@
 #pragma once
 
+#include "sc_util/strong_index.hpp"
+
 #include <cstddef>
 #include <type_traits>
 #include <utility>
@@ -18,7 +20,7 @@ public:
     // Returns the new value's index.
     Index push_back(T value) {
         m_values.push_back(std::move(value));
-        return Index { static_cast<decltype(*std::declval<Index>())>(m_values.size() - 1) };
+        return Index { static_cast<typename Index::Underlying>(m_values.size() - 1) };
     }
 
     // Grows up to i, so we can assign a value for i.
@@ -34,6 +36,18 @@ public:
     }
 
     [[nodiscard]] std::size_t size() const { return m_values.size(); }
+
+    // The index the next push_back returns.
+    [[nodiscard]] Index next_index() const {
+        return Index { static_cast<typename Index::Underlying>(m_values.size()) };
+    }
+    // Every index, in order.
+    [[nodiscard]] IndexRange<Index> indices() const { return { Index { 0 }, next_index() }; }
+
+    [[nodiscard]] friend bool operator==(const IndexedVector& l, const IndexedVector& r) {
+        return l.m_values == r.m_values;
+    }
+    [[nodiscard]] friend bool operator!=(const IndexedVector& l, const IndexedVector& r) { return !(l == r); }
 
     // Only type check insertion, I don't want a full iterator interface here.
     [[nodiscard]] std::vector<T>& raw() { return m_values; }

@@ -4,6 +4,8 @@
 #include "sc_sema/const_expr_index.hpp"
 #include "sc_sema/ir.hpp"
 #include "sc_sema/symbols.hpp"
+#include "sc_util/indexed_vector.hpp"
+#include "sc_util/strong_index.hpp"
 
 #include <cstdint>
 #include <optional>
@@ -60,7 +62,10 @@ enum struct Inlined : std::uint8_t {
 
 [[nodiscard]] bool is_inlineable(const ir::IRGraph& g, ir::SCAnyExpr_I i, ast::LanguageVersion version);
 
-[[nodiscard]] std::vector<ir::SCAnyExpr_I> positional_arguments(const ir::IRGraph& g, ir::SCMessage_I m);
+using ArgumentIndex = util::StrongIndex<std::uint32_t, struct ArgumentIndex__>;
+using Arguments = util::IndexedVector<ArgumentIndex, ir::SCAnyExpr_I>;
+
+[[nodiscard]] Arguments positional_arguments(const ir::IRGraph& g, ir::SCMessage_I m);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Nil tests
@@ -120,7 +125,7 @@ struct SpecialSymbols {
     using SpecialSelector = std::variant<OpSpecialSelectors, OpUnaryMath, OpBinaryMath>;
 
     std::unordered_map<ir::Symbol, SpecialSelector, std::hash<ir::Symbol>> special_selectors;
-    std::unordered_map<ir::Symbol, std::uint8_t, std::hash<ir::Symbol>> special_classes;
+    std::unordered_map<ir::Symbol, OpSpecialClassEnum, std::hash<ir::Symbol>> special_classes;
     ir::SymSCSelector series;
     // Methods that never get a shortcut.
     ir::SymSCSelector does_not_understand;

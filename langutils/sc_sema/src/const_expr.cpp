@@ -198,11 +198,11 @@ void ConstExpression::to_json(std::ostream& o, const SymbolTable& t, const Const
         },
         [&](const sc::ir::ConstExprArray& vec) {
             o << "{\"array\": [";
-            for (size_t i { 0 }; i < vec.size(); ++i) {
-                c(vec[i]).to_json(o, t, c);
-
-                if (i + 1 != vec.size())
-                    o << ", ";
+            const char* separator = "";
+            for (const auto element : vec.raw()) {
+                o << separator;
+                c(element).to_json(o, t, c);
+                separator = ", ";
             }
             o << "]}";
         },
@@ -268,10 +268,11 @@ void ConstExpression::to_literal(std::ostream& o, const SymbolTable& t, const Co
         },
         [&](const sc::ir::ConstExprArray& vec) {
             o << '[';
-            for (size_t i { 0 }; i < vec.size(); ++i) {
-                c(vec[i]).to_literal(o, t, c);
-                if (i + 1 != vec.size())
-                    o << ", ";
+            const char* separator = "";
+            for (const auto element : vec.raw()) {
+                o << separator;
+                c(element).to_literal(o, t, c);
+                separator = ", ";
             }
             o << ']';
         },

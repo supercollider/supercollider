@@ -61,5 +61,13 @@ struct LoweringSymbols {
     ir::SymSCSelector super_perform_list;
     // `case { c }` is sent as `c.if`.
     ir::SymSCSelector if_;
+    // Generators, as the old grammar rewrote them.
+    ir::SymSCSelector r;
+    ir::SymSCSelector do_;
+    ir::SymSCSelector for_series;
+    ir::SymSCSelector value;
+    ir::SymSCSelector yield;
+    ir::SymSCSelector always_yield;
+    ir::SymSCSelector series_iter;
 };
 }
