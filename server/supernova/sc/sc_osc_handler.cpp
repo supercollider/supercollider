@@ -2644,7 +2644,8 @@ void handle_b_fill(ReceivedMessage const& msg) {
 }
 
 template <bool realtime> void handle_b_query(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
-    const size_t elem_size = 3 * sizeof(int) * sizeof(float);
+    // <buffer number> (int32), <frames> (int32), <channels> (int32), <samplerate> (float32)
+    const size_t elem_size = 3 * sizeof(int) + sizeof(float);
 
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
     size_t arg_count = msg.ArgumentCount();
@@ -2690,7 +2691,8 @@ template <bool realtime> void handle_b_close(ReceivedMessage const& msg, endpoin
 template <bool realtime> void handle_b_get(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    const size_t elem_size = sizeof(int) * sizeof(float);
+    // <index> (int32), <value> (float32)
+    const size_t elem_size = sizeof(int) + sizeof(float);
     const size_t index_count = msg.ArgumentCount() - 1;
     const size_t alloc_size = index_count * elem_size + 128; /* hopefully enough */
 
@@ -2885,8 +2887,9 @@ void handle_c_fill(ReceivedMessage const& msg) {
 }
 
 template <bool realtime> void handle_c_get(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
-    const size_t elem_size = sizeof(int) + sizeof(float);
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+    // <index> (int32), <value> (float32)
+    const size_t elem_size = sizeof(int) + sizeof(float);
     const size_t index_count = msg.ArgumentCount();
     const size_t alloc_size = index_count * elem_size + 128; /* hopefully enough */
 
