@@ -1,8 +1,8 @@
 #include "sc_parser/ast.hpp"
 #include "sc_parser/nodes.hpp"
-#include "sc_lexer/normalise_source.hpp"
+#include "sc_source/normalise_source.hpp"
 #include "sc_parser/sc_parser.hpp"
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/text_location.hpp"
 #include <memory>
 #define BOOST_TEST_MODULE sc_parser_tests
 #include <boost/test/included/unit_test.hpp>
@@ -13,9 +13,9 @@ const auto tester_base = [](const char* src, bool is_class_file, bool no_diags) 
     std::cout << "\n--------------------------------\n src: ";
     std::cout << src << "\n";
 
-    auto text_info = std::shared_ptr<sc::lex::TextInfo>(new sc::lex::TextInfo {
-        sc::lex::NormalisedSource(src),
-        sc::lex::FileCodeLocation {},
+    auto text_info = std::shared_ptr<sc::src::TextInfo>(new sc::src::TextInfo {
+        sc::src::NormalisedSource(src),
+        sc::src::FileCodeLocation {},
         "test_file",
         is_class_file,
     });
@@ -24,7 +24,7 @@ const auto tester_base = [](const char* src, bool is_class_file, bool no_diags) 
     BOOST_TEST(accepted);
 
     // graph.flat_walk(
-    //     [&](const Graph::Edges& e, const Graph::Variant& payload, const sc::lex::SourceCodeRange& loc, size_t i) {
+    //     [&](const Graph::Edges& e, const Graph::Variant& payload, const sc::src::SourceCodeRange& loc, size_t i) {
     //         std::cout << i << " " << Graph::node_name(payload);
     //         std::cout << " ";
     //         std::cout << "parent: " << *e.parent << " first_child " << *e.first_child << " next " << *e.next_sibling
@@ -415,10 +415,10 @@ Foo {
 
 // A file in another encoding, here Mac Roman non-breaking spaces, is reported once at its first invalid byte.
 BOOST_AUTO_TEST_CASE(invalid_utf8_reported_once) {
-    auto text_info = std::make_shared<sc::lex::TextInfo>(sc::lex::NormalisedSource("a = 1;\n\xca\xca"
+    auto text_info = std::make_shared<sc::src::TextInfo>(sc::src::NormalisedSource("a = 1;\n\xca\xca"
                                                                                    "b = 2;\nc = \xca"
                                                                                    "3;\n"),
-                                                         sc::lex::FileCodeLocation {}, "test_file", false);
+                                                         sc::src::FileCodeLocation {}, "test_file", false);
     auto [graph, result] = P::parse(text_info);
     BOOST_TEST_REQUIRE(graph->diagnostics().size() == 1);
     const auto& d = graph->diagnostics()[0];
@@ -433,7 +433,7 @@ using V = P::LanguageVersion;
 // The version of each class and extension, in order, and the names of the diagnostics.
 void check_versions(const char* src, const std::vector<V>& versions, const std::vector<std::string>& diagnostics,
                     bool is_class_file = true) {
-    auto text_info = std::make_shared<sc::lex::TextInfo>(sc::lex::NormalisedSource(src), sc::lex::FileCodeLocation {},
+    auto text_info = std::make_shared<sc::src::TextInfo>(sc::src::NormalisedSource(src), sc::src::FileCodeLocation {},
                                                          "test_file", is_class_file);
     auto [graph, result] = P::parse(text_info);
 
@@ -513,14 +513,14 @@ BOOST_AUTO_TEST_CASE(versions_interpreted) {
 // Each block's closed flag, in source order, `#{ }` is closed, `{ }` isn't.
 BOOST_AUTO_TEST_CASE(closed_blocks) {
     auto text_info =
-        std::make_shared<sc::lex::TextInfo>(sc::lex::NormalisedSource("#{ |a| { a } }; { #{ } }; f(#{ 1 }) { 2 }"),
-                                            sc::lex::FileCodeLocation {}, "test_file", false);
+        std::make_shared<sc::src::TextInfo>(sc::src::NormalisedSource("#{ |a| { a } }; { #{ } }; f(#{ 1 }) { 2 }"),
+                                            sc::src::FileCodeLocation {}, "test_file", false);
     auto [graph, result] = P::parse(text_info);
     BOOST_TEST(result);
     BOOST_TEST(graph->diagnostics().empty());
 
     std::vector<std::pair<std::size_t, bool>> blocks;
-    graph->flat_walk([&](const auto&, const auto& payload, const sc::lex::SourceCodeRange& loc, size_t) {
+    graph->flat_walk([&](const auto&, const auto& payload, const sc::src::SourceCodeRange& loc, size_t) {
         if (const auto block = std::get_if<P::BlockNode>(&payload))
             blocks.emplace_back(loc.begin.absolute, block->closed);
     });

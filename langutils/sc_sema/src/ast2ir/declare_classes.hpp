@@ -13,10 +13,9 @@ struct IRGraph;
 namespace sc::ir::ast2ir {
 
 struct DeclareClass {
-    DeclareClass(Context& cx, std::shared_ptr<const ast::ASTGraph> ast, ASTGraphIndex ast_i, ModuleIndex mod):
+    DeclareClass(Context& cx, std::shared_ptr<const ast::ASTGraph> ast, ModuleIndex mod):
         cxt(cx),
         ast_graph(ast),
-        ast_index(ast_i),
         module(mod) {}
     struct Result {
         ClassDeclaration class_;
@@ -36,9 +35,6 @@ private:
 
     Context& cxt;
     std::shared_ptr<const ast::ASTGraph> ast_graph;
-    ASTGraphIndex ast_index;
     ModuleIndex module;
 };
-
-void declare_class(const ast::ASTGraph&, ASTGraphIndex, Context&, const CommonClasses&, ast::ClassIndex);
 }

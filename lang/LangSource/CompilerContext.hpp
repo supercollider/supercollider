@@ -4,8 +4,8 @@
 #include "PyrSymbol.h"
 #include "SC_Version.hpp"
 #include "SimpleStack.h"
-#include "sc_lexer/normalise_source.hpp"
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/normalise_source.hpp"
+#include "sc_source/text_location.hpp"
 #include "sc_bytecode/ByteCodeArray.h"
 #include <cassert>
 #include <cstdint>
@@ -24,7 +24,7 @@ struct DiagnosticHighlight {
     const char* filepath;
     const char* txt;
     size_t txt_len;
-    sc::lex::SourceCodeRange range_in_source;
+    sc::src::SourceCodeRange range_in_source;
     size_t source_loc_lin, source_loc_column;
     std::string description;
 };
@@ -39,8 +39,8 @@ std::string diagnosticToCompilerError(ErrorType type, const char* generalDescrip
 
 // Used to represent a bit fo text to compile, this can be a classlibrary file, a runtime file or a snippet thereof.
 struct TextInfo {
-    TextInfo(sc::lex::NormalisedSource normalisedSource, struct PyrString& normalisedSourceAsPyr,
-             PyrSymbol& filePathDescription, sc::lex::FileCodeLocation offsetInFile = {}, bool isClassFile = false):
+    TextInfo(sc::src::NormalisedSource normalisedSource, struct PyrString& normalisedSourceAsPyr,
+             PyrSymbol& filePathDescription, sc::src::FileCodeLocation offsetInFile = {}, bool isClassFile = false):
         normalisedSource(std::move(normalisedSource)),
         normalisedSourceAsPyr(normalisedSourceAsPyr),
         filePathDescription(filePathDescription),
@@ -49,27 +49,27 @@ struct TextInfo {
     TextInfo(TextInfo&&) noexcept = default;
     TextInfo(const TextInfo&) = default;
 
-    sc::lex::NormalisedSource normalisedSource;
+    sc::src::NormalisedSource normalisedSource;
     struct PyrString& normalisedSourceAsPyr;
     // Might not be a valid file path (e.g. when file is unsaved).
     PyrSymbol& filePathDescription;
     // Used to describe when a code snippet (CMD Mode) is in the middle of a file.
     // Zero init when in class library.
-    sc::lex::FileCodeLocation offsetInFile {};
+    sc::src::FileCodeLocation offsetInFile {};
     bool isClassFile { false };
-    [[nodiscard]] std::tuple<const char*, std::size_t> indexIntoSource(sc::lex::SourceCodeRange range) const;
-    [[nodiscard]] DiagnosticHighlight createDiagnosticHighlight(sc::lex::SourceCodeRange range,
+    [[nodiscard]] std::tuple<const char*, std::size_t> indexIntoSource(sc::src::SourceCodeRange range) const;
+    [[nodiscard]] DiagnosticHighlight createDiagnosticHighlight(sc::src::SourceCodeRange range,
                                                                 std::string description) const;
 };
 
 // Per file
 struct CompilerContext {
     // from a location until the end of the text
-    CompilerContext(std::shared_ptr<TextInfo> textInfo, sc::lex::FileCodeLocation fileLoc,
-                    sc::lex::SourceCodeLocation loc = {}, struct VMGlobals* vm = nullptr);
+    CompilerContext(std::shared_ptr<TextInfo> textInfo, sc::src::FileCodeLocation fileLoc,
+                    sc::src::SourceCodeLocation loc = {}, struct VMGlobals* vm = nullptr);
     // a range within a text
-    CompilerContext(std::shared_ptr<TextInfo> textInfo, sc::lex::FileCodeLocation fileLoc,
-                    sc::lex::SourceCodeRange range, struct VMGlobals* vm = nullptr);
+    CompilerContext(std::shared_ptr<TextInfo> textInfo, sc::src::FileCodeLocation fileLoc,
+                    sc::src::SourceCodeRange range, struct VMGlobals* vm = nullptr);
 
     // the whole text
     CompilerContext(std::shared_ptr<TextInfo> textInfo, struct VMGlobals* vm = nullptr);
@@ -84,15 +84,15 @@ struct CompilerContext {
     void postError(const std::string& str, std::optional<SemanticVersion> versionOfError = {});
     void postWarning(const std::string& str, std::optional<SemanticVersion> versionOfError = {});
 
-    void postErrorInCurrentFile(sc::lex::SourceCodeRange range, const char* generalDescription, std::string description,
+    void postErrorInCurrentFile(sc::src::SourceCodeRange range, const char* generalDescription, std::string description,
                                 std::optional<SemanticVersion> versionOfError = {});
 
-    void postWarningInCurrentFile(sc::lex::SourceCodeRange range, const char* generalDescription,
+    void postWarningInCurrentFile(sc::src::SourceCodeRange range, const char* generalDescription,
                                   std::string description, std::optional<SemanticVersion> versionOfError = {});
 
     void assignRoot(struct PyrRootNode& ptr);
 
-    void logErrorInCurFile(sc::lex::SourceCodeRange loc, const char* msg,
+    void logErrorInCurFile(sc::src::SourceCodeRange loc, const char* msg,
                            std::optional<SemanticVersion> versionOfError = {});
 
     void pushToGenerator(struct PyrParseNode* node, intptr_t type);
@@ -101,12 +101,12 @@ struct CompilerContext {
 
     // This has to be defined over in PyrParseNode.hpp
     template <typename T, typename... ARGS>
-    [[nodiscard]] T* allocParseNode(sc::lex::SourceCodeRange location, ARGS&&... args);
+    [[nodiscard]] T* allocParseNode(sc::src::SourceCodeRange location, ARGS&&... args);
 
     std::shared_ptr<TextInfo> textInfo;
 
     struct ParseErrorInCurFile {
-        sc::lex::SourceCodeRange location;
+        sc::src::SourceCodeRange location;
         std::string msg;
         std::optional<SemanticVersion> versionOfError;
     };

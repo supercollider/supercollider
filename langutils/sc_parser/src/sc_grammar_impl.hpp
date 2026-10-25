@@ -9,7 +9,7 @@
 #include "parser_context.hpp"
 #include "sc_grammar_parser.hpp"
 #include "sc_parser/sc_grammar_shared.hpp"
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/text_location.hpp"
 
 inline sc::ast::parser::parser::token_kind_type to_parser_token(sc::lex::TokenType t) {
     using T = sc::ast::parser::parser::token_kind_type;
@@ -145,12 +145,12 @@ namespace sc::ast::parser::error_recovery {
 // Reports the error the parser recorded, if it hasn't been, see report_syntax_error.
 void report(ParserContext&);
 // Reports a missing semicolon at the end of last_valid, see yylex.
-void region_separator(ParserContext&, sc ::lex::SourceCodeRange last_valid);
+void region_separator(ParserContext&, sc ::src::SourceCodeRange last_valid);
 void expr(ParserContext&);
 // Reports the error and skips past the curly bracket closing the method, matching open_bracket, returning where it is.
-sc::lex::SourceCodeRange method(ParserContext&, sc::lex::SourceCodeRange open_bracket);
+sc::src::SourceCodeRange method(ParserContext&, sc::src::SourceCodeRange open_bracket);
 // Reports the error and skips past the bracket matching open_bracket, returning where it is.
-sc::lex::SourceCodeRange bracket(ParserContext&, sc::lex::SourceCodeRange open_bracket);
+sc::src::SourceCodeRange bracket(ParserContext&, sc::src::SourceCodeRange open_bracket);
 }
 
 // Whether the parser can take token next. It uses lookahead correction, so is exact.
@@ -163,7 +163,7 @@ inline bool parser_accepts(const sc::ast::parser::parser& p, sc::ast::parser::pa
     return std::find(expected.begin(), expected.begin() + count, kind) != expected.begin() + count;
 }
 
-inline int yylex(sc::ast::parser::parser::value_type* v, sc::lex::SourceCodeRange* loc,
+inline int yylex(sc::ast::parser::parser::value_type* v, sc::src::SourceCodeRange* loc,
                  sc::ast::parser::ParserContext& cxt) {
     using T = sc::ast::parser::parser::token_kind_type;
     v->emplace<sc::ast::LexerToken>();

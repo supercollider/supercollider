@@ -8,14 +8,14 @@
 
 #include "sc_grammar_impl.hpp"
 #include "sc_grammar_parser.hpp"
-#include "sc_lexer/text_info.hpp"
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/text_info.hpp"
+#include "sc_source/text_location.hpp"
 #include "sc_parser/ast.hpp"
 
 namespace sc::ast {
 
-[[nodiscard]] std::tuple<std::shared_ptr<ASTGraph>, bool> parse(std::shared_ptr<const lex::TextInfo> text_info,
-                                                       ::sc::lex::CodePointStream cps) {
+[[nodiscard]] std::tuple<std::shared_ptr<ASTGraph>, bool> parse(std::shared_ptr<const src::TextInfo> text_info,
+                                                                ::sc::lex::CodePointStream cps) {
     parser::ParserContext ctx {
         text_info,
         text_info->is_class_file ? parser::ParserContext::Mode::ClassLibrary
@@ -37,15 +37,17 @@ namespace sc::ast {
 }
 
 
-std::tuple<std::shared_ptr<ASTGraph>, bool> parse(std::shared_ptr<const lex::TextInfo> text_info, sc::lex::SourceCodeRange r) {
+std::tuple<std::shared_ptr<ASTGraph>, bool> parse(std::shared_ptr<const src::TextInfo> text_info,
+                                                  sc::src::SourceCodeRange r) {
     return parse(text_info, sc::lex::CodePointStream { text_info->source, text_info->source_start_in_file, r });
 };
 
-std::tuple<std::shared_ptr<ASTGraph>, bool> parse(std::shared_ptr<const lex::TextInfo> text_info, sc::lex::SourceCodeLocation r) {
+std::tuple<std::shared_ptr<ASTGraph>, bool> parse(std::shared_ptr<const src::TextInfo> text_info,
+                                                  sc::src::SourceCodeLocation r) {
     return parse(text_info, { text_info->source, text_info->source_start_in_file, r });
 };
 
-std::tuple<std::shared_ptr<ASTGraph>, bool> parse(std::shared_ptr<const sc::lex::TextInfo> text_info) {
+std::tuple<std::shared_ptr<ASTGraph>, bool> parse(std::shared_ptr<const sc::src::TextInfo> text_info) {
     return parse(text_info, { text_info->source, text_info->source_start_in_file });
 }
 }

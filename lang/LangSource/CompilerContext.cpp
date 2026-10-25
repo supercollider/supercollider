@@ -1,21 +1,21 @@
 #include "CompilerContext.hpp"
 #include "PyrSymbol.h"
 #include "SC_LanguageClient.h"
-#include "sc_lexer/codepoint.hpp"
-#include "sc_lexer/source_utils.hpp"
+#include "sc_source/codepoint.hpp"
+#include "sc_source/source_utils.hpp"
 #include "SCBase.h"
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/text_location.hpp"
 #include <cstring>
 #include <iomanip>
 #include <sstream>
 
 
-[[nodiscard]] std::tuple<const char*, std::size_t> TextInfo::indexIntoSource(sc::lex::SourceCodeRange range) const {
+[[nodiscard]] std::tuple<const char*, std::size_t> TextInfo::indexIntoSource(sc::src::SourceCodeRange range) const {
     const std::string& str { normalisedSource.as_string() };
     return { str.c_str() + range.begin.absolute, range.size() };
 }
 
-[[nodiscard]] DiagnosticHighlight TextInfo::createDiagnosticHighlight(sc::lex::SourceCodeRange range,
+[[nodiscard]] DiagnosticHighlight TextInfo::createDiagnosticHighlight(sc::src::SourceCodeRange range,
                                                                       std::string description) const {
     const std::string& str { normalisedSource.as_string() };
     // clang-format off
@@ -85,7 +85,7 @@ std::ostream& streamSourceCodeWithHighlight(std::ostream& ss, const DiagnosticHi
     const auto selection_start = txt + range.begin.absolute;
     const auto selection_end = txt + range.end.absolute;
 
-    auto maybe_iter = sc::lex::utils::LineIter::make(txt, txt + txt_len, range.begin);
+    auto maybe_iter = sc::src::utils::LineIter::make(txt, txt + txt_len, range.begin);
     if (!maybe_iter.has_value())
         return ss;
 
@@ -126,13 +126,13 @@ std::ostream& streamSourceCodeWithHighlight(std::ostream& ss, const DiagnosticHi
 
             ss.write(newlinePrefixPtr, newlinePrefixSz);
             ss << std::setfill(' ') << std::setw(5) << ' ' << " ┆ ";
-            auto cp_iter = sc::lex::utils::CodePointIterator::make(ptr, ptr + sz, ptr).value();
+            auto cp_iter = sc::src::utils::CodePointIterator::make(ptr, ptr + sz, ptr).value();
 
             for (auto cp = cp_iter.forwards(); cp; cp = cp_iter.forwards()) {
                 if (cp_iter.current_location() <= selection_start) {
-                    ss << sc::lex::codepoint_as_whitespace(*cp);
+                    ss << sc::src::codepoint_as_whitespace(*cp);
                 } else if (cp_iter.current_location() <= selection_end) {
-                    const auto w { sc::lex::codepoint_width(*cp) };
+                    const auto w { sc::src::codepoint_width(*cp) };
                     for (size_t i { 0 }; i < w; ++i)
                         ss << '^';
                 } else
@@ -193,7 +193,7 @@ void CompilerContext::postWarning(const std::string& str, std::optional<Semantic
 }
 
 
-void CompilerContext::logErrorInCurFile(sc::lex::SourceCodeRange loc, const char* msg,
+void CompilerContext::logErrorInCurFile(sc::src::SourceCodeRange loc, const char* msg,
                                         std::optional<SemanticVersion> versionOfError) {
     errorsInCurFile.push_back({ loc, std::string { msg }, versionOfError });
 }
@@ -213,14 +213,14 @@ std::tuple<struct PyrParseNode*, intptr_t> CompilerContext::popFromGenerator() {
     auto n = (struct PyrParseNode*)popls(&generatorStack);
     return { n, t };
 }
-void CompilerContext::postErrorInCurrentFile(sc::lex::SourceCodeRange range, const char* generalDescription,
+void CompilerContext::postErrorInCurrentFile(sc::src::SourceCodeRange range, const char* generalDescription,
                                              std::string description, std::optional<SemanticVersion> versionOfError) {
     const auto h = textInfo->createDiagnosticHighlight(range, std::move(description));
     const auto str = diagnosticToCompilerError(ErrorType::Error, generalDescription, &h, 1);
     postError(str, versionOfError);
 }
 
-void CompilerContext::postWarningInCurrentFile(sc::lex::SourceCodeRange range, const char* generalDescription,
+void CompilerContext::postWarningInCurrentFile(sc::src::SourceCodeRange range, const char* generalDescription,
                                                std::string description, std::optional<SemanticVersion> versionOfError) {
     const auto h = textInfo->createDiagnosticHighlight(range, std::move(description));
     const auto str = diagnosticToCompilerError(ErrorType::Error, generalDescription, &h, 1);

@@ -18,9 +18,9 @@ namespace sc::ast {
 AnyExprIndex::Variant to_variant(const ASTGraph& g, AnyExprIndex i) { return g.index_to_variant(i); }
 BlockItemIndex::Variant to_variant(const ASTGraph& g, BlockItemIndex i) { return g.index_to_variant(i); }
 
-std::shared_ptr<const lex::TextInfo> get_text_info(const ASTGraph& graph) { return graph.text_info(); }
+std::shared_ptr<const src::TextInfo> get_text_info(const ASTGraph& graph) { return graph.text_info(); }
 
-sc::lex::SourceCodeRange get_location(const ASTGraph& graph, OptionalIndex i) { return graph.location(i); }
+sc::src::SourceCodeRange get_location(const ASTGraph& graph, OptionalIndex i) { return graph.location(i); }
 
 std::string_view get_string_view(const ASTGraph& graph, OptionalIndex i) { return graph.string_view(i); }
 std::string get_string(const ASTGraph& graph, OptionalIndex i) { return std::string { graph.string_view(i) }; }
@@ -95,7 +95,7 @@ void ASTGraph::debug_df_print(std::ostream& stream) const {
     const Index i = std::visit(overload { [](auto i) { return Index { *i }; } }, *r);
 
     depth_first_traverse(
-        i, [&](const Edges& e, const Variant& payload, const sc::lex::SourceCodeRange& loc, Index i, size_t depth) {
+        i, [&](const Edges& e, const Variant& payload, const sc::src::SourceCodeRange& loc, Index i, size_t depth) {
             for (size_t di { 0 }; di < depth; ++di)
                 stream << "|  ";
 
@@ -114,7 +114,7 @@ void ASTGraph::debug_df_print(std::ostream& stream) const {
 }
 
 void ASTGraph::debug_flat_print(std::ostream& stream) const {
-    flat_walk([&](const Edges& e, const Variant& payload, const lex::SourceCodeRange&, Index i) {
+    flat_walk([&](const Edges& e, const Variant& payload, const src::SourceCodeRange&, Index i) {
         stream << *i << " " << node_name(payload) << ": "
                << "parent: " << *e.parent << " first_child: " << *e.first_child << " next_sib: " << *e.next_sibling
                << " prev_sib: " << *e.prev_sibling
@@ -123,9 +123,9 @@ void ASTGraph::debug_flat_print(std::ostream& stream) const {
     });
 }
 
-const sc::lex::SourceCodeRange& ASTGraph::location(UntypedNodeIndex i) const { return m_node_locations[*i]; }
-sc::lex::SourceCodeRange& ASTGraph::location(UntypedNodeIndex i) { return m_node_locations[*i]; }
-std::shared_ptr<const lex::TextInfo> ASTGraph::text_info() const { return m_text_info; }
+const sc::src::SourceCodeRange& ASTGraph::location(UntypedNodeIndex i) const { return m_node_locations[*i]; }
+sc::src::SourceCodeRange& ASTGraph::location(UntypedNodeIndex i) { return m_node_locations[*i]; }
+std::shared_ptr<const src::TextInfo> ASTGraph::text_info() const { return m_text_info; }
 std::string_view ASTGraph::string_view(UntypedNodeIndex i) const { return m_text_info->read(location(i)); }
 std::string ASTGraph::string(UntypedNodeIndex i) const { return std::string { m_text_info->read(location(i)) }; }
 void ASTGraph::register_bracketed_expr(UntypedNodeIndex i) { m_bracketed_exprs.insert(i); }

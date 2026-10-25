@@ -4,9 +4,9 @@
 #include <cstdint>
 #include <array>
 
-#include "sc_lexer/text_location.hpp"
-#include "sc_lexer/codepoint.hpp"
-#include "sc_lexer/normalise_source.hpp"
+#include "sc_source/text_location.hpp"
+#include "sc_source/codepoint.hpp"
+#include "sc_source/normalise_source.hpp"
 
 namespace sc::lex {
 
@@ -16,14 +16,14 @@ namespace sc::lex {
 template <std::size_t N> struct Peek {
     template <std::size_t M> [[nodiscard]] constexpr Peek<M> shrink_to() const noexcept {
         static_assert(M <= N);
-        std::array<CodePoint, M> out;
+        std::array<src::CodePoint, M> out;
         std::copy(characters.data(), characters.data() + characters.size(), out.data());
         return { out };
     }
 
-    [[nodiscard]] constexpr CodePoint operator[](std::size_t i) const { return characters[i]; }
+    [[nodiscard]] constexpr src::CodePoint operator[](std::size_t i) const { return characters[i]; }
 
-    template <std::size_t I> [[nodiscard]] constexpr CodePoint at() const noexcept {
+    template <std::size_t I> [[nodiscard]] constexpr src::CodePoint at() const noexcept {
         static_assert(I < N);
         return characters[I];
     }
@@ -37,7 +37,7 @@ template <std::size_t N> struct Peek {
         return true;
     }
 
-    std::array<CodePoint, N> characters;
+    std::array<src::CodePoint, N> characters;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52,28 +52,28 @@ class CodePointStream {
         // Byte offset in line, not visual column.
         std::uint32_t current_column_count { 0 };
         bool prev_was_newline { false };
-        void update(CodePoint next, std::uint8_t sz) noexcept;
+        void update(src::CodePoint next, std::uint8_t sz) noexcept;
     } state {};
 
 public:
     // NOTE: NormalisedSource src must outlive this object.
 
     // Used to stream through a whole piece of text from beginning to end.
-    CodePointStream(const NormalisedSource& src, FileCodeLocation src_start_in_file) noexcept:
+    CodePointStream(const src::NormalisedSource& src, src::FileCodeLocation src_start_in_file) noexcept:
         source_start_in_file(src_start_in_file),
         source(static_cast<const std::string&>(src).c_str()),
         snippet(source),
         snippet_len(static_cast<const std::string&>(src).size()) {}
 
-    CodePointStream(const NormalisedSource& src) noexcept:
+    CodePointStream(const src::NormalisedSource& src) noexcept:
         source_start_in_file(),
         source(static_cast<const std::string&>(src).c_str()),
         snippet(source),
         snippet_len(static_cast<const std::string&>(src).size()) {}
 
     // Used to stream through a snippet from a larger source.
-    CodePointStream(const NormalisedSource& src, FileCodeLocation src_start_in_file,
-                    SourceCodeRange snippet_in_src) noexcept:
+    CodePointStream(const src::NormalisedSource& src, src::FileCodeLocation src_start_in_file,
+                    src::SourceCodeRange snippet_in_src) noexcept:
         state({ snippet_in_src.begin.absolute, snippet_in_src.begin.line_number, snippet_in_src.begin.column }),
         source_start_in_file(src_start_in_file),
         source(static_cast<const std::string&>(src).c_str()),
@@ -81,8 +81,8 @@ public:
         snippet_len(snippet_in_src.size()) {}
 
     // Used to stream through a snippet from a larger source, from a starting point until the end of the file.
-    CodePointStream(const NormalisedSource& src, FileCodeLocation src_start_in_file,
-                    SourceCodeLocation snippet_start_in_src) noexcept:
+    CodePointStream(const src::NormalisedSource& src, src::FileCodeLocation src_start_in_file,
+                    src::SourceCodeLocation snippet_start_in_src) noexcept:
         state({ snippet_start_in_src.absolute, snippet_start_in_src.line_number, snippet_start_in_src.column }),
         source_start_in_file(src_start_in_file),
         source(static_cast<const std::string&>(src).c_str()),
@@ -95,7 +95,7 @@ public:
     CodePointStream& operator=(const CodePointStream&) = default;
 
     // Allows us to get the location in the file that the source came from.
-    FileCodeLocation source_start_in_file;
+    src::FileCodeLocation source_start_in_file;
 
     // Text, could be code snippet, or whole file, may not be null terminated.
     // This is used to resolve SourceCodeRanges
@@ -107,31 +107,32 @@ public:
 
 
     // SourceCodeRange manipulation
-    [[nodiscard]] FileCodeRange source_to_file(const SourceCodeRange& source) const;
-    [[nodiscard]] FileCodeLocation source_to_file(const SourceCodeLocation& source) const;
+    [[nodiscard]] src::FileCodeRange source_to_file(const src::SourceCodeRange& source) const;
+    [[nodiscard]] src::FileCodeLocation source_to_file(const src::SourceCodeLocation& source) const;
 
     // returns begin and size
-    [[nodiscard]] std::tuple<const char*, std::size_t> source_code_range_to_text(const SourceCodeRange& range) const;
+    [[nodiscard]] std::tuple<const char*, std::size_t>
+    source_code_range_to_text(const src::SourceCodeRange& range) const;
 
     // Advances the stream, returns start location and codepoint.
-    [[nodiscard]] std::tuple<SourceCodeLocation, CodePoint> start_token();
+    [[nodiscard]] std::tuple<src::SourceCodeLocation, src::CodePoint> start_token();
 
     // Does not advance the stream, returns the end of the token
-    [[nodiscard]] SourceCodeLocation end_token() const;
+    [[nodiscard]] src::SourceCodeLocation end_token() const;
 
 
     // Peeking returns the next N CodePoints, but does not advance the state.
     template <std::size_t N> [[nodiscard]] Peek<N> peek_n() const {
         static_assert(N > 0);
-        std::array<CodePoint, N> out;
+        std::array<src::CodePoint, N> out;
 
         // Copy state, don't update the main stream's state.
         State rolling_state { state };
         const auto get_next = [&]() {
             const auto remaining =
                 std::max<ptrdiff_t>(0, (snippet + snippet_len) - (source + rolling_state.next_byte_offest));
-            const auto [cp, cp_size] = utf8_sequence_to_codepoint(source + rolling_state.next_byte_offest,
-                                                                  static_cast<std::size_t>(remaining));
+            const auto [cp, cp_size] = src::utf8_sequence_to_codepoint(source + rolling_state.next_byte_offest,
+                                                                       static_cast<std::size_t>(remaining));
             rolling_state.update(cp, cp_size);
             return cp;
         };
@@ -142,19 +143,19 @@ public:
         return { out };
     }
 
-    [[nodiscard]] CodePoint peek() const;
+    [[nodiscard]] src::CodePoint peek() const;
 
 
     // Returns next character, advancing the stream.
-    CodePoint advance();
+    src::CodePoint advance();
 
     // Advance followed by peek
-    [[nodiscard]] CodePoint advance_and_peek();
+    [[nodiscard]] src::CodePoint advance_and_peek();
 
     // Commits peek to the current token, advancing it.
-    template <std::size_t N> SourceCodeLocation advance_by_peek(Peek<N> peek) {
+    template <std::size_t N> src::SourceCodeLocation advance_by_peek(Peek<N> peek) {
         for (std::size_t i { 0 }; i < N; ++i)
-            state.update(peek[i], codepoint_size(peek[i]));
+            state.update(peek[i], src::codepoint_size(peek[i]));
         return end_token();
     }
 
@@ -196,7 +197,7 @@ public:
         return i;
     }
 
-    template <typename Predicate> SourceCodeLocation advance_while(Predicate&& predicate) {
+    template <typename Predicate> src::SourceCodeLocation advance_while(Predicate&& predicate) {
         advance_while_count(std::forward<Predicate>(predicate));
         return end_token();
     }

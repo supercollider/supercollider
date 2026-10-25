@@ -8,7 +8,7 @@
 // Locations in source code snippets or files
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-namespace sc::lex {
+namespace sc::src {
 
 // Positions are 32 bit to keep locations small, so a source can't be larger than this, see TextInfo.
 inline constexpr std::size_t max_source_size = std::numeric_limits<std::uint32_t>::max();

@@ -7,5 +7,5 @@ add_library(sc_diagnostic STATIC
 # todo: enable warnings
 
 target_include_directories(sc_diagnostic PUBLIC include)
-target_link_libraries(sc_diagnostic PRIVATE sc_lexer)
+target_link_libraries(sc_diagnostic PUBLIC sc_source PRIVATE sc_lexer)
 set_property(TARGET sc_diagnostic PROPERTY FOLDER Libs)

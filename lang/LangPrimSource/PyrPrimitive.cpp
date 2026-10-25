@@ -44,8 +44,8 @@
 #include "SC_LanguageConfig.hpp"
 #include "SC_Filesystem.hpp"
 #include "VMGlobals.h"
-#include "sc_lexer/normalise_source.hpp"
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/normalise_source.hpp"
+#include "sc_source/text_location.hpp"
 
 #include <cstddef>
 #include <iterator>
@@ -1989,7 +1989,7 @@ int debugFrame_AsErrorString(VMGlobals* g, int) {
             const auto strSize = src.size;
 
             // Loop to build location data.
-            sc::lex::SourceCodeRange loc;
+            sc::src::SourceCodeRange loc;
             const uint32_t start = block->codeLocations.getPyrObjType<PyrInt32Array>()->i[ipIndex * 2];
             const uint32_t end = block->codeLocations.getPyrObjType<PyrInt32Array>()->i[(ipIndex * 2) + 1];
 
@@ -2561,13 +2561,13 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
     auto string = stringSlot.getPyrObjType<PyrString>();
 
 
-    sc::lex::NormalisedSource src { string->s, static_cast<size_t>(string->size) };
+    sc::src::NormalisedSource src { string->s, static_cast<size_t>(string->size) };
     const auto& srcStr = src.as_string();
     auto* strPyr = newPyrString(g->gc, srcStr.c_str(), 0, false);
 
     auto fileSym = fileName.isSymbol() ? fileName.getSymbol() : getsym("interpreted_text");
 
-    const auto offset = sc::lex::FileCodeLocation {
+    const auto offset = sc::src::FileCodeLocation {
         0,
         static_cast<std::uint32_t>(lineNumber.isInt() ? lineNumber.getInt() : 0),
         static_cast<std::uint32_t>(column.isInt() ? column.getInt() : 0),

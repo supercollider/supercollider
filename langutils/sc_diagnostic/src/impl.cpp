@@ -1,5 +1,6 @@
 #include "sc_diagnostic/sc_diagnostic.hpp"
-#include "sc_lexer/source_utils.hpp"
+#include "sc_lexer/tokens.hpp"
+#include "sc_source/source_utils.hpp"
 #include <filesystem>
 #include <sstream>
 
@@ -58,7 +59,7 @@ std::string diagnosticToString(Severity type, const char* generalDescription,
         const auto selection_start = txt + range.begin.absolute;
         const auto selection_end = txt + range.end.absolute;
 
-        auto maybe_iter = sc::lex::utils::LineIter::make(txt, txt + txt_len, range.begin);
+        auto maybe_iter = sc::src::utils::LineIter::make(txt, txt + txt_len, range.begin);
         if (!maybe_iter.has_value())
             continue;
 
@@ -96,13 +97,13 @@ std::string diagnosticToString(Severity type, const char* generalDescription,
                     ss << '\n';
 
                 ss << "      ┆ ";
-                auto cp_iter = sc::lex::utils::CodePointIterator::make(ptr, ptr + sz, ptr).value();
+                auto cp_iter = sc::src::utils::CodePointIterator::make(ptr, ptr + sz, ptr).value();
 
                 for (auto cp = cp_iter.forwards(); cp; cp = cp_iter.forwards()) {
                     if (cp_iter.current_location() <= selection_start) {
-                        ss << sc::lex::codepoint_as_whitespace(*cp);
+                        ss << sc::src::codepoint_as_whitespace(*cp);
                     } else if (cp_iter.current_location() <= selection_end) {
-                        const auto w { sc::lex::codepoint_width(*cp) };
+                        const auto w { sc::src::codepoint_width(*cp) };
                         for (size_t i { 0 }; i < w; ++i)
                             ss << '^';
                     } else
@@ -151,7 +152,7 @@ Severity Diagnostic::severity() const { return m_severity; }
 
 bool Diagnostic::fatal() const { return m_severity == Severity::Error; }
 
-bool Diagnostic::within(const TextInfoPtr& text, sc::lex::SourceCodeRange range) const {
+bool Diagnostic::within(const TextInfoPtr& text, sc::src::SourceCodeRange range) const {
     if (m_locations.empty())
         return false;
     const auto& l = m_locations.back();
@@ -169,7 +170,7 @@ std::string Diagnostic::to_string(const std::filesystem::path& relative_to) cons
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Diagnostic Diagnostic::unexpectedToken(std::shared_ptr<const sc::lex::TextInfo> text_info, sc::lex::SourceCodeRange loc,
+Diagnostic Diagnostic::unexpectedToken(std::shared_ptr<const sc::src::TextInfo> text_info, sc::src::SourceCodeRange loc,
                                        std::string_view expected, std::string_view found) {
     return { "Unexpected Token.", //
              Severity::Error, //
@@ -182,7 +183,7 @@ Diagnostic Diagnostic::unexpectedToken(std::shared_ptr<const sc::lex::TextInfo> 
 
 namespace {
 // The first count bytes of the range, e.g., the opening quote of an unclosed string, rather than the rest of the file.
-sc::lex::SourceCodeRange opening(sc::lex::SourceCodeRange loc, std::uint32_t count) {
+sc::src::SourceCodeRange opening(sc::src::SourceCodeRange loc, std::uint32_t count) {
     auto end = loc.begin;
     end.absolute += count;
     end.column += count;
@@ -190,10 +191,10 @@ sc::lex::SourceCodeRange opening(sc::lex::SourceCodeRange loc, std::uint32_t cou
 }
 }
 
-Diagnostic Diagnostic::lexer_error(std::shared_ptr<const sc::lex::TextInfo> text_info, sc::lex::TokenType token,
-                                   sc::lex::SourceCodeRange loc) {
+Diagnostic Diagnostic::lexer_error(std::shared_ptr<const sc::src::TextInfo> text_info, sc::lex::TokenType token,
+                                   sc::src::SourceCodeRange loc) {
     using T = sc::lex::TokenType;
-    const auto make = [&](const char* title, std::string msg, sc::lex::SourceCodeRange range) -> Diagnostic {
+    const auto make = [&](const char* title, std::string msg, sc::src::SourceCodeRange range) -> Diagnostic {
         return { title, Severity::Error, std::vector<Location> { { std::move(text_info), range, std::move(msg) } } };
     };
     switch (token) {
@@ -241,7 +242,7 @@ std::string_view closing(std::string_view open) {
 std::string quoted(std::string_view s) { return "`" + std::string { s } + "`"; }
 }
 
-Diagnostic Diagnostic::invalid_utf8(std::shared_ptr<const sc::lex::TextInfo> text_info, sc::lex::SourceCodeRange first,
+Diagnostic Diagnostic::invalid_utf8(std::shared_ptr<const sc::src::TextInfo> text_info, sc::src::SourceCodeRange first,
                                     std::size_t others) {
     auto msg = others == 0 ? std::string { "This isn't valid UTF-8." }
                            : "This isn't valid UTF-8, nor are " + std::to_string(others)
@@ -249,14 +250,14 @@ Diagnostic Diagnostic::invalid_utf8(std::shared_ptr<const sc::lex::TextInfo> tex
     return { "Invalid UTF-8.", Severity::Error, std::vector<Location> { { std::move(text_info), first, msg } } };
 }
 
-Diagnostic Diagnostic::unmatched_bracket(std::shared_ptr<const sc::lex::TextInfo> text_info,
-                                         sc::lex::SourceCodeRange close) {
+Diagnostic Diagnostic::unmatched_bracket(std::shared_ptr<const sc::src::TextInfo> text_info,
+                                         sc::src::SourceCodeRange close) {
     auto msg = "This " + quoted(text_info->read(close)) + " has no opening bracket.";
     return { "Unmatched Bracket.", Severity::Error, std::vector<Location> { { std::move(text_info), close, msg } } };
 }
 
-Diagnostic Diagnostic::mismatched_bracket(std::shared_ptr<const sc::lex::TextInfo> text_info,
-                                          sc::lex::SourceCodeRange open, sc::lex::SourceCodeRange close) {
+Diagnostic Diagnostic::mismatched_bracket(std::shared_ptr<const sc::src::TextInfo> text_info,
+                                          sc::src::SourceCodeRange open, sc::src::SourceCodeRange close) {
     const auto open_text = text_info->read(open);
     return { "Mismatched Bracket.", //
              Severity::Error, //
@@ -268,9 +269,9 @@ Diagnostic Diagnostic::mismatched_bracket(std::shared_ptr<const sc::lex::TextInf
              } };
 }
 
-Diagnostic Diagnostic::unclosed_bracket(std::shared_ptr<const sc::lex::TextInfo> text_info,
-                                        sc::lex::SourceCodeRange open,
-                                        std::optional<sc::lex::SourceCodeRange> outer_close) {
+Diagnostic Diagnostic::unclosed_bracket(std::shared_ptr<const sc::src::TextInfo> text_info,
+                                        sc::src::SourceCodeRange open,
+                                        std::optional<sc::src::SourceCodeRange> outer_close) {
     const auto open_text = text_info->read(open);
     if (!outer_close)
         return { "Unclosed Bracket.", //
@@ -288,8 +289,8 @@ Diagnostic Diagnostic::unclosed_bracket(std::shared_ptr<const sc::lex::TextInfo>
              } };
 }
 
-Diagnostic Diagnostic::unclosed_bracket_by_indentation(std::shared_ptr<const sc::lex::TextInfo> text_info,
-                                                       sc::lex::SourceCodeRange open, sc::lex::SourceCodeRange end) {
+Diagnostic Diagnostic::unclosed_bracket_by_indentation(std::shared_ptr<const sc::src::TextInfo> text_info,
+                                                       sc::src::SourceCodeRange open, sc::src::SourceCodeRange end) {
     const auto open_text = text_info->read(open);
     return { "Unclosed Bracket.", //
              Severity::Error, //
@@ -302,8 +303,8 @@ Diagnostic Diagnostic::unclosed_bracket_by_indentation(std::shared_ptr<const sc:
              } };
 }
 
-Diagnostic Diagnostic::missing_operator(std::shared_ptr<const sc::lex::TextInfo> text_info,
-                                        sc::lex::SourceCodeRange before, sc::lex::SourceCodeRange found,
+Diagnostic Diagnostic::missing_operator(std::shared_ptr<const sc::src::TextInfo> text_info,
+                                        sc::src::SourceCodeRange before, sc::src::SourceCodeRange found,
                                         std::string_view found_text, std::optional<std::string_view> separator) {
     auto fix = std::string { "Put an operator between them, e.g., `+`" };
     fix += separator ? ", or separate them with " + quoted(*separator) + "." : ".";
@@ -315,8 +316,8 @@ Diagnostic Diagnostic::missing_operator(std::shared_ptr<const sc::lex::TextInfo>
              } };
 }
 
-Diagnostic Diagnostic::missing_expression_after(std::shared_ptr<const sc::lex::TextInfo> text_info,
-                                                sc::lex::SourceCodeRange op, sc::lex::SourceCodeRange found,
+Diagnostic Diagnostic::missing_expression_after(std::shared_ptr<const sc::src::TextInfo> text_info,
+                                                sc::src::SourceCodeRange op, sc::src::SourceCodeRange found,
                                                 std::string_view found_text) {
     return { "Missing Expression.", //
              Severity::Error, //
@@ -326,8 +327,8 @@ Diagnostic Diagnostic::missing_expression_after(std::shared_ptr<const sc::lex::T
              } };
 }
 
-Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::TextInfo> text_info,
-                                                sc::lex::SourceCodeRange loc) {
+Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::src::TextInfo> text_info,
+                                                sc::src::SourceCodeRange loc) {
     return { "Region missing semi-colon.", //
              Severity::Warning, //
              std::vector<Location> { { std::move(text_info), //
@@ -335,10 +336,10 @@ Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::T
                                        "Add a semi-colon after this." } } };
 }
 
-[[nodiscard]] Diagnostic Diagnostic::duplicate_class(std::shared_ptr<const sc::lex::TextInfo> first_text_info,
-                                                     sc::lex::SourceCodeRange first_loc,
-                                                     std::shared_ptr<const sc::lex::TextInfo> second_text_info,
-                                                     sc::lex::SourceCodeRange second_loc) {
+[[nodiscard]] Diagnostic Diagnostic::duplicate_class(std::shared_ptr<const sc::src::TextInfo> first_text_info,
+                                                     sc::src::SourceCodeRange first_loc,
+                                                     std::shared_ptr<const sc::src::TextInfo> second_text_info,
+                                                     sc::src::SourceCodeRange second_loc) {
     return { "Duplicate Class definition.", //
              Severity::Error, //
              std::vector<Location> {
@@ -347,7 +348,7 @@ Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::T
              } };
 }
 
-[[nodiscard]] Diagnostic Diagnostic::todo(std::shared_ptr<const sc::lex::TextInfo> info, sc::lex::SourceCodeRange loc) {
+[[nodiscard]] Diagnostic Diagnostic::todo(std::shared_ptr<const sc::src::TextInfo> info, sc::src::SourceCodeRange loc) {
     return {
         "TODO NOT IMPLEMENTED", //
         Severity::Error, //
@@ -358,7 +359,7 @@ Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::T
 }
 
 [[nodiscard]] Diagnostic Diagnostic::super_class_not_defined(
-    std::string name, std::vector<std::pair<std::shared_ptr<const sc::lex::TextInfo>, sc::lex::SourceCodeRange>> v) {
+    std::string name, std::vector<std::pair<std::shared_ptr<const sc::src::TextInfo>, sc::src::SourceCodeRange>> v) {
     std::vector<Location> locs;
     for (auto& [ptr, range] : v) {
         locs.push_back({ ptr, range, "super class not defined." });
@@ -378,8 +379,8 @@ Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::T
     return { "Missing common class", Severity::Error, { }, std::move(extra) };
 }
 
-[[nodiscard]] Diagnostic Diagnostic::intrinsic_class_wrong_member_name(std::shared_ptr<const sc::lex::TextInfo> t,
-                                                                       sc::lex::SourceCodeRange loc,
+[[nodiscard]] Diagnostic Diagnostic::intrinsic_class_wrong_member_name(std::shared_ptr<const sc::src::TextInfo> t,
+                                                                       sc::src::SourceCodeRange loc,
                                                                        std::string_view expected) {
     std::stringstream ss;
     ss << "rename to \"" << expected << "\"";
@@ -390,7 +391,7 @@ Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::T
 
 
 [[nodiscard]] Diagnostic Diagnostic::inheritance_cycle(
-    std::vector<std::pair<std::shared_ptr<const sc::lex::TextInfo>, sc::lex::SourceCodeRange>> m) {
+    std::vector<std::pair<std::shared_ptr<const sc::src::TextInfo>, sc::src::SourceCodeRange>> m) {
     std::vector<Location> locs { };
 
     for (auto& [t, r] : m) {
@@ -404,8 +405,8 @@ Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::T
 }
 
 
-[[nodiscard]] Diagnostic Diagnostic::self_inheritance(std::shared_ptr<const sc::lex::TextInfo> t,
-                                                      sc::lex::SourceCodeRange loc) {
+[[nodiscard]] Diagnostic Diagnostic::self_inheritance(std::shared_ptr<const sc::src::TextInfo> t,
+                                                      sc::src::SourceCodeRange loc) {
     return {
         "Self inheritance",
         Severity::Error,
@@ -416,8 +417,8 @@ Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::T
 }
 
 
-[[nodiscard]] Diagnostic Diagnostic::duplicate_method_name(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
-                                                           TextInfoPtr second_t, sc::lex::SourceCodeRange second_l) {
+[[nodiscard]] Diagnostic Diagnostic::duplicate_method_name(TextInfoPtr first_t, sc::src::SourceCodeRange first_l,
+                                                           TextInfoPtr second_t, sc::src::SourceCodeRange second_l) {
     return { "Duplicate method name.",
              Severity::Error,
              {
@@ -427,8 +428,8 @@ Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::T
 }
 
 
-[[nodiscard]] Diagnostic Diagnostic::duplicate_extention(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
-                                                         TextInfoPtr second_t, sc::lex::SourceCodeRange second_l) {
+[[nodiscard]] Diagnostic Diagnostic::duplicate_extention(TextInfoPtr first_t, sc::src::SourceCodeRange first_l,
+                                                         TextInfoPtr second_t, sc::src::SourceCodeRange second_l) {
     return { "Duplicate extension",
              Severity::Error,
              {
@@ -439,8 +440,8 @@ Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::T
              "used. Delete one." };
 }
 
-[[nodiscard]] Diagnostic Diagnostic::extension_conflict(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
-                                                        TextInfoPtr second_t, sc::lex::SourceCodeRange second_l) {
+[[nodiscard]] Diagnostic Diagnostic::extension_conflict(TextInfoPtr first_t, sc::src::SourceCodeRange first_l,
+                                                        TextInfoPtr second_t, sc::src::SourceCodeRange second_l) {
     return { "Extensions conflict",
              Severity::Error,
              {
@@ -451,8 +452,8 @@ Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::T
              "on the order the modules are given, so the method can't be used. Delete or rename one." };
 }
 
-[[nodiscard]] Diagnostic Diagnostic::extension_overwritten(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
-                                                           TextInfoPtr second_t, sc::lex::SourceCodeRange second_l) {
+[[nodiscard]] Diagnostic Diagnostic::extension_overwritten(TextInfoPtr first_t, sc::src::SourceCodeRange first_l,
+                                                           TextInfoPtr second_t, sc::src::SourceCodeRange second_l) {
     return { "Extension overwritten",
              Severity::Warning,
              {
@@ -463,7 +464,7 @@ Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::T
              "3.16 this is an error, as which is used depends on the order the modules are given." };
 }
 [[nodiscard]] Diagnostic Diagnostic::default_inheritor_must_have_super(TextInfoPtr first_t,
-                                                                       sc::lex::SourceCodeRange first_l) {
+                                                                       sc::src::SourceCodeRange first_l) {
     return { "Default inheritor must inherit from a class.",
              Severity::Error,
              {
@@ -474,7 +475,7 @@ Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::T
 
 
 [[nodiscard]] Diagnostic Diagnostic::root_object_must_not_inherit(TextInfoPtr first_t,
-                                                                  sc::lex::SourceCodeRange first_l) {
+                                                                  sc::src::SourceCodeRange first_l) {
     return { "Root object must not inherit from something.",
              Severity::Error,
              {
@@ -484,7 +485,7 @@ Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::lex::T
              "there will be a cycle." };
 }
 
-Diagnostic Diagnostic::unexpected_slot_def(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+Diagnostic Diagnostic::unexpected_slot_def(TextInfoPtr first_t, sc::src::SourceCodeRange first_l) {
     return { "Invalid slot def",
              Severity::Error,
              {
@@ -497,7 +498,7 @@ Diagnostic Diagnostic::unexpected_slot_def(TextInfoPtr first_t, sc::lex::SourceC
 }
 
 
-Diagnostic Diagnostic::incorrect_super_class(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+Diagnostic Diagnostic::incorrect_super_class(TextInfoPtr first_t, sc::src::SourceCodeRange first_l,
                                              std::string_view expected) {
     std::string msg;
     msg += "Should be '";
@@ -511,7 +512,7 @@ Diagnostic Diagnostic::incorrect_super_class(TextInfoPtr first_t, sc::lex::Sourc
              "Intrinsic classes are a part of the compiler and cannot be changed." };
 }
 
-Diagnostic Diagnostic::incorrect_super_class(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+Diagnostic Diagnostic::incorrect_super_class(TextInfoPtr first_t, sc::src::SourceCodeRange first_l) {
     return { "Intrinsic has unexpected super class",
              Severity::Error,
              {
@@ -520,7 +521,7 @@ Diagnostic Diagnostic::incorrect_super_class(TextInfoPtr first_t, sc::lex::Sourc
              "Intrinsic classes are a part of the compiler and cannot be changed." };
 }
 
-Diagnostic Diagnostic::incorrect_slot_def(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+Diagnostic Diagnostic::incorrect_slot_def(TextInfoPtr first_t, sc::src::SourceCodeRange first_l,
                                           std::string_view expected) {
     std::string msg;
     msg += "Should be '";
@@ -533,7 +534,7 @@ Diagnostic Diagnostic::incorrect_slot_def(TextInfoPtr first_t, sc::lex::SourceCo
              },
              "Intrinsic classes are a part of the compiler and cannot be changed." };
 }
-Diagnostic Diagnostic::incorrect_slot_def(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+Diagnostic Diagnostic::incorrect_slot_def(TextInfoPtr first_t, sc::src::SourceCodeRange first_l) {
     return { "Intrinsic has slot def when shouldn't",
              Severity::Error,
              {
@@ -543,8 +544,8 @@ Diagnostic Diagnostic::incorrect_slot_def(TextInfoPtr first_t, sc::lex::SourceCo
 }
 
 
-Diagnostic Diagnostic::duplicate_member(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l, TextInfoPtr second_t,
-                                        sc::lex::SourceCodeRange second_l) {
+Diagnostic Diagnostic::duplicate_member(TextInfoPtr first_t, sc::src::SourceCodeRange first_l, TextInfoPtr second_t,
+                                        sc::src::SourceCodeRange second_l) {
     return { "Duplicate member in class",
              Severity::Error,
              {
@@ -555,8 +556,8 @@ Diagnostic Diagnostic::duplicate_member(TextInfoPtr first_t, sc::lex::SourceCode
 }
 
 
-Diagnostic Diagnostic::duplicate_member_in_base(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
-                                                TextInfoPtr second_t, sc::lex::SourceCodeRange second_l) {
+Diagnostic Diagnostic::duplicate_member_in_base(TextInfoPtr first_t, sc::src::SourceCodeRange first_l,
+                                                TextInfoPtr second_t, sc::src::SourceCodeRange second_l) {
     return { "Duplicate member with base class.",
              Severity::Error,
              {
@@ -566,7 +567,7 @@ Diagnostic Diagnostic::duplicate_member_in_base(TextInfoPtr first_t, sc::lex::So
              "Duplicate members are not allowed within a class hierarchy. Please delete one." };
 }
 
-Diagnostic Diagnostic::non_terminating_return(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+Diagnostic Diagnostic::non_terminating_return(TextInfoPtr first_t, sc::src::SourceCodeRange first_l) {
     return { "Return is not final expression",
              Severity::Error,
              { {
@@ -576,7 +577,7 @@ Diagnostic Diagnostic::non_terminating_return(TextInfoPtr first_t, sc::lex::Sour
              "Returns should be the final expression in a function." };
 }
 
-Diagnostic Diagnostic::undefined_variable(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+Diagnostic Diagnostic::undefined_variable(TextInfoPtr first_t, sc::src::SourceCodeRange first_l,
                                           std::string_view name) {
     return { "Variable not defined",
              Severity::Error,
@@ -584,7 +585,7 @@ Diagnostic Diagnostic::undefined_variable(TextInfoPtr first_t, sc::lex::SourceCo
              "Declare it with 'var', or use '~" + std::string { name } + "' to refer to an environment variable." };
 }
 
-Diagnostic Diagnostic::message_without_receiver(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+Diagnostic Diagnostic::message_without_receiver(TextInfoPtr first_t, sc::src::SourceCodeRange first_l) {
     return { "Message has no receiver",
              Severity::Error,
              { { std::move(first_t), first_l, "there is nothing to send this message to." } },
@@ -594,7 +595,7 @@ Diagnostic Diagnostic::message_without_receiver(TextInfoPtr first_t, sc::lex::So
              "`a.foo`." };
 }
 
-Diagnostic Diagnostic::perform_selector_not_symbol(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+Diagnostic Diagnostic::perform_selector_not_symbol(TextInfoPtr first_t, sc::src::SourceCodeRange first_l) {
     return { "Perform selector is not a symbol",
              Severity::Error,
              { { std::move(first_t), first_l, "this is a constant, but not a symbol." } },
@@ -603,7 +604,7 @@ Diagnostic Diagnostic::perform_selector_not_symbol(TextInfoPtr first_t, sc::lex:
              "Use a symbol, e.g., `\\foo` or `'foo'`." };
 }
 
-Diagnostic Diagnostic::perform_selector_not_symbol(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l,
+Diagnostic Diagnostic::perform_selector_not_symbol(TextInfoPtr first_t, sc::src::SourceCodeRange first_l,
                                                    std::string_view string) {
     // Written as a quoted symbol, so it can contain anything
     // the string can.
@@ -625,7 +626,7 @@ Diagnostic Diagnostic::perform_selector_not_symbol(TextInfoPtr first_t, sc::lex:
              "argument, e.g., `a.perform(\\foo)` is `a.foo`." };
 }
 
-Diagnostic Diagnostic::not_constant(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+Diagnostic Diagnostic::not_constant(TextInfoPtr first_t, sc::src::SourceCodeRange first_l) {
     return { "Not a constant",
              Severity::Error,
              { { std::move(first_t), first_l, "this can't be evaluated when compiling." } },
@@ -633,7 +634,7 @@ Diagnostic Diagnostic::not_constant(TextInfoPtr first_t, sc::lex::SourceCodeRang
              "of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used." };
 }
 
-Diagnostic Diagnostic::nested_too_deeply(TextInfoPtr t, sc::lex::SourceCodeRange l, std::size_t limit) {
+Diagnostic Diagnostic::nested_too_deeply(TextInfoPtr t, sc::src::SourceCodeRange l, std::size_t limit) {
     return { "Nested too deeply",
              Severity::Error,
              { { std::move(t), l, "this is nested more than " + std::to_string(limit) + " deep." } },
@@ -641,7 +642,7 @@ Diagnostic Diagnostic::nested_too_deeply(TextInfoPtr t, sc::lex::SourceCodeRange
              "binary operators, `a + b + c ...`, which is as deep as it is long. Split it up, e.g., into variables." };
 }
 
-Diagnostic Diagnostic::too_many_variables(TextInfoPtr t, sc::lex::SourceCodeRange l, std::size_t count,
+Diagnostic Diagnostic::too_many_variables(TextInfoPtr t, sc::src::SourceCodeRange l, std::size_t count,
                                           std::size_t limit) {
     return { "Too many variables",
              Severity::Error,
@@ -653,7 +654,7 @@ Diagnostic Diagnostic::too_many_variables(TextInfoPtr t, sc::lex::SourceCodeRang
                    "Event, or split the code into smaller functions." };
 }
 
-Diagnostic Diagnostic::selector_table_full(TextInfoPtr t, sc::lex::SourceCodeRange l, std::size_t limit) {
+Diagnostic Diagnostic::selector_table_full(TextInfoPtr t, sc::src::SourceCodeRange l, std::size_t limit) {
     return { "Too many selectors",
              Severity::Error,
              { { std::move(t), l,
@@ -664,7 +665,7 @@ Diagnostic Diagnostic::selector_table_full(TextInfoPtr t, sc::lex::SourceCodeRan
                  + std::to_string(limit) + " entries. Split the code into smaller methods or functions." };
 }
 
-Diagnostic Diagnostic::jump_too_long(TextInfoPtr t, sc::lex::SourceCodeRange l, std::size_t length, std::size_t limit) {
+Diagnostic Diagnostic::jump_too_long(TextInfoPtr t, sc::src::SourceCodeRange l, std::size_t length, std::size_t limit) {
     return { "Code too long",
              Severity::Error,
              { { std::move(t), l,
@@ -675,7 +676,7 @@ Diagnostic Diagnostic::jump_too_long(TextInfoPtr t, sc::lex::SourceCodeRange l, 
                    "method or function." };
 }
 
-Diagnostic Diagnostic::too_many_arguments(TextInfoPtr t, sc::lex::SourceCodeRange l, std::size_t count,
+Diagnostic Diagnostic::too_many_arguments(TextInfoPtr t, sc::src::SourceCodeRange l, std::size_t count,
                                           std::size_t limit) {
     return { "Too many arguments",
              Severity::Error,
@@ -687,7 +688,7 @@ Diagnostic Diagnostic::too_many_arguments(TextInfoPtr t, sc::lex::SourceCodeRang
                    "Event, or use performList." };
 }
 
-Diagnostic Diagnostic::hard_coded_loop_signature(TextInfoPtr t, sc::lex::SourceCodeRange l, std::size_t arguments,
+Diagnostic Diagnostic::hard_coded_loop_signature(TextInfoPtr t, sc::src::SourceCodeRange l, std::size_t arguments,
                                                  std::size_t variables) {
     return { "Hard coded method has the wrong arguments or variables",
              Severity::Error,
@@ -700,7 +701,7 @@ Diagnostic Diagnostic::hard_coded_loop_signature(TextInfoPtr t, sc::lex::SourceC
              "in the class library." };
 }
 
-Diagnostic Diagnostic::hard_coded_loop_extension_ignored(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+Diagnostic Diagnostic::hard_coded_loop_extension_ignored(TextInfoPtr t, sc::src::SourceCodeRange l) {
     return { "Extension of a hard coded method is ignored",
              Severity::Warning,
              { { std::move(t), l, "this extension's code is replaced by a loop, as the method it replaces is." } },
@@ -709,7 +710,7 @@ Diagnostic Diagnostic::hard_coded_loop_extension_ignored(TextInfoPtr t, sc::lex:
              "extension's code never runs. Add `//# VERSION 3.16` to the extension to compile its own code." };
 }
 
-Diagnostic Diagnostic::hard_coded_loop_computed_value(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+Diagnostic Diagnostic::hard_coded_loop_computed_value(TextInfoPtr t, sc::src::SourceCodeRange l) {
     return { "Hard coded method with a computed value",
              Severity::Error,
              { { std::move(t), l, "this would never be computed, as the method's code is replaced by a loop." } },
@@ -717,7 +718,7 @@ Diagnostic Diagnostic::hard_coded_loop_computed_value(TextInfoPtr t, sc::lex::So
              "special bytecode, so their arguments' defaults and variables' initial values can only be literals." };
 }
 
-Diagnostic Diagnostic::literal_out_of_range(TextInfoPtr t, sc::lex::SourceCodeRange l, bool is_float) {
+Diagnostic Diagnostic::literal_out_of_range(TextInfoPtr t, sc::src::SourceCodeRange l, bool is_float) {
     if (is_float)
         return { "Literal out of range",
                  Severity::Error,
@@ -732,8 +733,8 @@ Diagnostic Diagnostic::literal_out_of_range(TextInfoPtr t, sc::lex::SourceCodeRa
              "`2147483648.0`." };
 }
 
-Diagnostic Diagnostic::variadic_argument_not_last(TextInfoPtr variadic_t, sc::lex::SourceCodeRange variadic_l,
-                                                  TextInfoPtr positional_t, sc::lex::SourceCodeRange positional_l) {
+Diagnostic Diagnostic::variadic_argument_not_last(TextInfoPtr variadic_t, sc::src::SourceCodeRange variadic_l,
+                                                  TextInfoPtr positional_t, sc::src::SourceCodeRange positional_l) {
     return { "Variadic argument is not last",
              Severity::Error,
              {
@@ -744,7 +745,7 @@ Diagnostic Diagnostic::variadic_argument_not_last(TextInfoPtr variadic_t, sc::le
              "This includes the value of `a[*i] = v`, which is passed last." };
 }
 
-Diagnostic Diagnostic::event_key_without_value(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+Diagnostic Diagnostic::event_key_without_value(TextInfoPtr first_t, sc::src::SourceCodeRange first_l) {
     return { "Event key without a value",
              Severity::Warning,
              { { std::move(first_t), first_l, "this key has no value." } },
@@ -752,7 +753,7 @@ Diagnostic Diagnostic::event_key_without_value(TextInfoPtr first_t, sc::lex::Sou
              "remove the key." };
 }
 
-Diagnostic Diagnostic::unbounded_range(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+Diagnostic Diagnostic::unbounded_range(TextInfoPtr first_t, sc::src::SourceCodeRange first_l) {
     return { "Range has no end",
              Severity::Error,
              { { std::move(first_t), first_l, "this would create an infinite array." } },
@@ -760,22 +761,22 @@ Diagnostic Diagnostic::unbounded_range(TextInfoPtr first_t, sc::lex::SourceCodeR
              "`(1..10)`." };
 }
 
-Diagnostic Diagnostic::range_too_many_arguments(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+Diagnostic Diagnostic::range_too_many_arguments(TextInfoPtr first_t, sc::src::SourceCodeRange first_l) {
     return { "Too many arguments in range",
              Severity::Error,
              { { std::move(first_t), first_l, "only the first, and optionally the second, can come before `..`." } },
              "A range is `first..last`, or `first, second..last` where second sets the step, e.g., `x[1, 3..9]`." };
 }
 
-Diagnostic Diagnostic::range_argument_not_value(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l) {
+Diagnostic Diagnostic::range_argument_not_value(TextInfoPtr first_t, sc::src::SourceCodeRange first_l) {
     return { "Range argument is not a value",
              Severity::Error,
              { { std::move(first_t), first_l, "keyword and variadic arguments can't be used in a range." } },
              "A range is `first..last`, or `first, second..last` where second sets the step, e.g., `x[1, 3..9]`." };
 }
 
-Diagnostic Diagnostic::duplicate_variable(TextInfoPtr first_t, sc::lex::SourceCodeRange first_l, TextInfoPtr second_t,
-                                          sc::lex::SourceCodeRange second_l) {
+Diagnostic Diagnostic::duplicate_variable(TextInfoPtr first_t, sc::src::SourceCodeRange first_l, TextInfoPtr second_t,
+                                          sc::src::SourceCodeRange second_l) {
     return { "Variable already declared",
              Severity::Error,
              {
@@ -785,7 +786,7 @@ Diagnostic Diagnostic::duplicate_variable(TextInfoPtr first_t, sc::lex::SourceCo
              "Arguments and variables in the same function or method must have different names. Rename one." };
 }
 
-Diagnostic Diagnostic::declared_environment_variable(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+Diagnostic Diagnostic::declared_environment_variable(TextInfoPtr t, sc::src::SourceCodeRange l) {
     return { "Environment variable declared",
              Severity::Error,
              { { std::move(t), l, "this can't be declared." } },
@@ -793,7 +794,7 @@ Diagnostic Diagnostic::declared_environment_variable(TextInfoPtr t, sc::lex::Sou
              "environment variable after the declaration." };
 }
 
-Diagnostic Diagnostic::missing_interpreter_context(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+Diagnostic Diagnostic::missing_interpreter_context(TextInfoPtr t, sc::src::SourceCodeRange l) {
     return {
         "Interpreter context missing",
         Severity::Error,
@@ -804,7 +805,7 @@ Diagnostic Diagnostic::missing_interpreter_context(TextInfoPtr t, sc::lex::Sourc
     };
 }
 
-Diagnostic Diagnostic::missing_interpreter_class(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+Diagnostic Diagnostic::missing_interpreter_class(TextInfoPtr t, sc::src::SourceCodeRange l) {
     return {
         "Interpreter missing",
         Severity::Error,
@@ -815,7 +816,7 @@ Diagnostic Diagnostic::missing_interpreter_class(TextInfoPtr t, sc::lex::SourceC
     };
 }
 
-Diagnostic Diagnostic::declaration_after_expression(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+Diagnostic Diagnostic::declaration_after_expression(TextInfoPtr t, sc::src::SourceCodeRange l) {
     return { "Variable declared after an expression",
              Severity::Error,
              { { std::move(t), l, "this isn't at the start of the body." } },
@@ -824,7 +825,7 @@ Diagnostic Diagnostic::declaration_after_expression(TextInfoPtr t, sc::lex::Sour
              "declaration to the start, or add `//# VERSION 3.16`." };
 }
 
-Diagnostic Diagnostic::return_in_closed_function(TextInfoPtr t, sc::lex::SourceCodeRange l, bool legacy) {
+Diagnostic Diagnostic::return_in_closed_function(TextInfoPtr t, sc::src::SourceCodeRange l, bool legacy) {
     const std::string why = "`^` returns from the method the code is written in, but a closed function, `#{ }`, isn't "
                             "in one, even when it is written in a method";
     const std::string fix =
@@ -835,8 +836,8 @@ Diagnostic Diagnostic::return_in_closed_function(TextInfoPtr t, sc::lex::SourceC
              legacy ? why + ", so this fails when it runs. From 3.16 it is an error. " + fix : why + ". " + fix };
 }
 
-Diagnostic Diagnostic::outside_closed_function(TextInfoPtr declaration_t, sc::lex::SourceCodeRange declaration,
-                                               TextInfoPtr use_t, sc::lex::SourceCodeRange use) {
+Diagnostic Diagnostic::outside_closed_function(TextInfoPtr declaration_t, sc::src::SourceCodeRange declaration,
+                                               TextInfoPtr use_t, sc::src::SourceCodeRange use) {
     return { "Variable outside closed function",
              Severity::Error,
              { { std::move(declaration_t), declaration, "This is declared outside the closed function..." },
@@ -846,7 +847,7 @@ Diagnostic Diagnostic::outside_closed_function(TextInfoPtr declaration_t, sc::le
              "an argument, or use `{ }` instead of `#{ }`." };
 }
 
-Diagnostic Diagnostic::return_in_interpreted_code(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+Diagnostic Diagnostic::return_in_interpreted_code(TextInfoPtr t, sc::src::SourceCodeRange l) {
     return {
         "Return in interpreted code",
         Severity::Error,
@@ -856,8 +857,8 @@ Diagnostic Diagnostic::return_in_interpreted_code(TextInfoPtr t, sc::lex::Source
     };
 }
 
-Diagnostic Diagnostic::used_before_declaration(TextInfoPtr declaration_t, sc::lex::SourceCodeRange declaration,
-                                               TextInfoPtr use_t, sc::lex::SourceCodeRange use) {
+Diagnostic Diagnostic::used_before_declaration(TextInfoPtr declaration_t, sc::src::SourceCodeRange declaration,
+                                               TextInfoPtr use_t, sc::src::SourceCodeRange use) {
     return { "Variable used before its declaration",
              Severity::Warning,
              { { std::move(declaration_t), declaration, "This is declared here..." },
@@ -868,8 +869,8 @@ Diagnostic Diagnostic::used_before_declaration(TextInfoPtr declaration_t, sc::le
              "`//# VERSION 3.16` once it is." };
 }
 
-Diagnostic Diagnostic::qualifier_hidden_from_value(TextInfoPtr declaration_t, sc::lex::SourceCodeRange declaration,
-                                                   TextInfoPtr use_t, sc::lex::SourceCodeRange use) {
+Diagnostic Diagnostic::qualifier_hidden_from_value(TextInfoPtr declaration_t, sc::src::SourceCodeRange declaration,
+                                                   TextInfoPtr use_t, sc::src::SourceCodeRange use) {
     return { "Qualifier's variable used in its own value",
              Severity::Warning,
              { { std::move(declaration_t), declaration, "This qualifier declares it..." },
@@ -879,14 +880,14 @@ Diagnostic Diagnostic::qualifier_hidden_from_value(TextInfoPtr declaration_t, sc
              "variable. Rename one of them to keep this meaning." };
 }
 
-Diagnostic Diagnostic::malformed_version(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+Diagnostic Diagnostic::malformed_version(TextInfoPtr t, sc::src::SourceCodeRange l) {
     return { "Malformed version",
              Severity::Error,
              { { std::move(t), l, "expected a version, e.g., `//# VERSION 3.16`." } },
              "The classes it applies to are compiled as the legacy version." };
 }
 
-Diagnostic Diagnostic::unknown_version(TextInfoPtr t, sc::lex::SourceCodeRange l, std::string_view latest) {
+Diagnostic Diagnostic::unknown_version(TextInfoPtr t, sc::src::SourceCodeRange l, std::string_view latest) {
     return { "Unknown version",
              Severity::Error,
              { { std::move(t), l, "this version is newer than the compiler." } },
@@ -894,14 +895,14 @@ Diagnostic Diagnostic::unknown_version(TextInfoPtr t, sc::lex::SourceCodeRange l
                  + ". The classes it applies to are compiled as the legacy version." };
 }
 
-Diagnostic Diagnostic::duplicate_version(TextInfoPtr t, sc::lex::SourceCodeRange first,
-                                         sc::lex::SourceCodeRange second) {
+Diagnostic Diagnostic::duplicate_version(TextInfoPtr t, sc::src::SourceCodeRange first,
+                                         sc::src::SourceCodeRange second) {
     return { "Duplicate version",
              Severity::Warning,
              { { t, first, "This version is ignored..." }, { t, second, "...as this one is used." } } };
 }
 
-Diagnostic Diagnostic::misplaced_version(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+Diagnostic Diagnostic::misplaced_version(TextInfoPtr t, sc::src::SourceCodeRange l) {
     return { "Misplaced version",
              Severity::Warning,
              { { std::move(t), l, "this version applies to nothing." } },
@@ -909,14 +910,14 @@ Diagnostic Diagnostic::misplaced_version(TextInfoPtr t, sc::lex::SourceCodeRange
              "body, for that class." };
 }
 
-Diagnostic Diagnostic::version_in_interpreted_code(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+Diagnostic Diagnostic::version_in_interpreted_code(TextInfoPtr t, sc::src::SourceCodeRange l) {
     return { "Version in interpreted code",
              Severity::Warning,
              { { std::move(t), l, "this version is ignored." } },
              "Interpreted code is given its version when it is compiled." };
 }
 
-Diagnostic Diagnostic::curry_outside_call(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+Diagnostic Diagnostic::curry_outside_call(TextInfoPtr t, sc::src::SourceCodeRange l) {
     return {
         "Partial application outside of a call",
         Severity::Error,
@@ -932,15 +933,15 @@ constexpr auto special_variables =
     "language";
 }
 
-Diagnostic Diagnostic::assigned_special_variable(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+Diagnostic Diagnostic::assigned_special_variable(TextInfoPtr t, sc::src::SourceCodeRange l) {
     return { "Special variable assigned",
              Severity::Error,
              { { std::move(t), l, "this can't be assigned." } },
              std::string { special_variables } + ", so can't be assigned." };
 }
 
-Diagnostic Diagnostic::assigned_constant(TextInfoPtr const_t, sc::lex::SourceCodeRange const_l, TextInfoPtr assign_t,
-                                         sc::lex::SourceCodeRange assign_l) {
+Diagnostic Diagnostic::assigned_constant(TextInfoPtr const_t, sc::src::SourceCodeRange const_l, TextInfoPtr assign_t,
+                                         sc::src::SourceCodeRange assign_l) {
     return { "Assigning to a constant",
              Severity::Error,
              {
@@ -950,14 +951,14 @@ Diagnostic Diagnostic::assigned_constant(TextInfoPtr const_t, sc::lex::SourceCod
              "A constant's value can't change. Declare it with `classvar` if it needs to be assigned." };
 }
 
-Diagnostic Diagnostic::constant_setter(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+Diagnostic Diagnostic::constant_setter(TextInfoPtr t, sc::src::SourceCodeRange l) {
     return { "Constant with a setter",
              Severity::Error,
              { { std::move(t), l, "this makes a setter." } },
              "A constant can't be assigned, so it can only have a getter, `<`. The setter is left out." };
 }
 
-Diagnostic Diagnostic::declared_special_variable(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+Diagnostic Diagnostic::declared_special_variable(TextInfoPtr t, sc::src::SourceCodeRange l) {
     return { "Special variable declared",
              Severity::Error,
              { { std::move(t), l, "this name is reserved." } },

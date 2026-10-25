@@ -650,7 +650,7 @@ namespace sc { namespace ast { namespace parser {
     typedef value_type semantic_type;
 
     /// Symbol locations.
-    typedef  sc::lex::SourceCodeRange  location_type;
+    typedef  sc::src::SourceCodeRange  location_type;
 
     /// Syntax errors thrown from user actions.
     struct syntax_error : std::runtime_error

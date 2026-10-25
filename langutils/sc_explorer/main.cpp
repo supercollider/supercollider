@@ -9,16 +9,15 @@
 #include "sc_backend/emit.hpp"
 #include "sc_backend/frames.hpp"
 #include "sc_backend/lower.hpp"
-#include "sc_backend/members.hpp"
+#include "sc_compiler/sc_compiler.hpp"
 #include "sc_diagnostic/sc_diagnostic.hpp"
-#include "sc_lexer/normalise_source.hpp"
-#include "sc_lexer/text_info.hpp"
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/normalise_source.hpp"
+#include "sc_source/text_info.hpp"
+#include "sc_source/text_location.hpp"
 #include "sc_parser/ast.hpp"
 #include "sc_parser/sc_parser.hpp"
 #include "sc_sema/compiler.hpp"
 #include "sc_sema/context.hpp"
-#include "sc_sema/intrinsic_constraint.hpp"
 #include "sc_sema/ir.hpp"
 #include "sc_sema/symbol_table.hpp"
 
@@ -39,7 +38,7 @@
 
 namespace {
 
-using TextInfoPtr = std::shared_ptr<const sc::lex::TextInfo>;
+using TextInfoPtr = std::shared_ptr<const sc::src::TextInfo>;
 
 std::string json_string(std::string_view s) {
     std::string out { "\"" };
@@ -71,7 +70,7 @@ std::string json_string(std::string_view s) {
 }
 
 // Offsets are bytes into the normalised source, lines and columns count from one, as in the diagnostics.
-std::string json_range(sc::lex::SourceCodeRange r) {
+std::string json_range(sc::src::SourceCodeRange r) {
     std::ostringstream out;
     out << "{\"begin\":" << r.begin.absolute << ",\"end\":" << r.end.absolute << ",\"line\":" << r.begin.line_number + 1
         << ",\"column\":" << r.begin.column + 1 << "}";
@@ -84,7 +83,7 @@ struct Tree {
         std::string name;
         std::string detail;
         // Only nodes from the source being explored, not the prelude's.
-        std::optional<sc::lex::SourceCodeRange> range;
+        std::optional<sc::src::SourceCodeRange> range;
         std::vector<size_t> children;
     };
     std::vector<Node> nodes;
@@ -148,7 +147,7 @@ AstTrees ast_trees(const sc::ast::ASTGraph& g) {
         g.depth_first_traverse(
             root,
             [&](const sc::ast::ASTGraph::Edges&, const sc::ast::ASTGraph::Variant& payload,
-                const sc::lex::SourceCodeRange& loc, sc::ast::Index, size_t depth) {
+                const sc::src::SourceCodeRange& loc, sc::ast::Index, size_t depth) {
                 out.tree.add(depth,
                              { sc::ast::ASTGraph::node_name(payload), one_line(g.text_info()->read(loc)), loc, {} });
             });
@@ -163,17 +162,17 @@ AstTrees ast_trees(const sc::ast::ASTGraph& g) {
     return out;
 }
 
-using BackendRoot = sc::ir::join<sc::ir::SCClass_I, sc::ir::SCInterpreted_I>;
+using CompilationUnit = sc::compiler::CompilationUnit;
 
 struct IrRoot {
     const sc::ir::IRGraph* graph;
-    BackendRoot root;
+    CompilationUnit root;
     std::optional<sc::ir::SymSCClassName> class_name;
-    sc::lex::SourceCodeLocation begin;
+    sc::src::SourceCodeLocation begin;
     bool is_meta;
 };
 
-void add_ir(Tree& tree, const sc::ir::Context& ctx, const IrRoot& r, const sc::lex::TextInfo* text) {
+void add_ir(Tree& tree, const sc::ir::Context& ctx, const IrRoot& r, const sc::src::TextInfo* text) {
     const auto& g = *r.graph;
     const sc::ir::describe::Describe describe { g, ctx };
     tree.close();
@@ -191,21 +190,13 @@ void add_ir(Tree& tree, const sc::ir::Context& ctx, const IrRoot& r, const sc::l
                            });
 }
 
-struct Backend {
-    const sc::ir::Context& ctx;
-    const sc::backend::MemberTable& members;
-    const sc::backend::LoweringSymbols& selectors;
-    const sc::backend::SpecialSymbols& special_symbols;
-    const sc::backend::InliningContext& inlining;
-};
-
 // A range from byte offsets into the text, as the lowered ir's spans only hold those.
-sc::lex::SourceCodeRange range_from_offsets(const sc::lex::TextInfo& text, std::uint32_t begin, std::uint32_t end) {
+sc::src::SourceCodeRange range_from_offsets(const sc::src::TextInfo& text, std::uint32_t begin, std::uint32_t end) {
     const auto source = std::string_view { text.source.as_string() };
     const auto at = [&](std::uint32_t offset) {
         const auto before = source.substr(0, offset);
         const auto line_start = before.rfind('\n');
-        return sc::lex::SourceCodeLocation {
+        return sc::src::SourceCodeLocation {
             offset, static_cast<std::uint32_t>(std::count(before.begin(), before.end(), '\n')),
             static_cast<std::uint32_t>(line_start == std::string_view::npos ? offset : offset - line_start - 1)
         };
@@ -216,22 +207,19 @@ sc::lex::SourceCodeRange range_from_offsets(const sc::lex::TextInfo& text, std::
 // As sc_inspect --lir and --bytecode, the root's class, then each function, starting with its frame. In the lir, each
 // function's regions, the body first, then their instructions, all functions, marking those of a method that can't be
 // emitted. In the bytecode, the lines write_emitted prints for each emitted function, each opcode's at its source.
-void add_backend(Tree& lir_tree, Tree& bytecode_tree, const Backend& b, const IrRoot& r, const sc::lex::TextInfo* text,
-                 std::vector<sc::diag::Diagnostic>& diagnostics) {
+void add_backend(Tree& lir_tree, Tree& bytecode_tree, sc::compiler::ClassLibrary& library, const IrRoot& r,
+                 const sc::src::TextInfo* text, std::vector<sc::diag::Diagnostic>& diagnostics) {
     const auto& g = *r.graph;
-    const auto& ctx = b.ctx;
-    const auto frames = sc::backend::layout_frames(g, b.inlining, r.root);
-    const auto lowered = sc::backend::lower({ g, frames, b.members, ctx.constant_table, ctx.symbol_table, b.selectors,
-                                              b.inlining, ctx.common_classes.array, ctx.common_classes.event },
-                                            r.root);
-    const auto class_node = g.as_a<sc::ir::SCClass_I>(r.root);
-    const bool interpreter_members = !class_node || g.payload(*class_node).name == ctx.common_symbols.interpreter;
-    const auto emitted = sc::backend::emit(
-        { g, frames, b.members, ctx.constant_table, b.special_symbols, interpreter_members }, lowered);
-    for (const auto& d : frames.diagnostics)
+    const auto& ctx = library.ctx;
+    const auto compiled =
+        sc::compiler::emit(library, sc::compiler::lower(library, sc::compiler::layout_frames(library, g, r.root)));
+    for (const auto& d : compiled.frames.diagnostics)
         diagnostics.push_back(d);
-    for (const auto& d : emitted.diagnostics)
+    for (const auto& d : compiled.emitted.diagnostics)
         diagnostics.push_back(d);
+    const auto& frames = compiled.frames;
+    const auto& lowered = compiled.lowered;
+    const auto& emitted = compiled.emitted;
 
     const auto range_of = [&](sc::ir::NodeIndex i) {
         const auto loc = g.location(i);
@@ -334,7 +322,7 @@ void add_backend(Tree& lir_tree, Tree& bytecode_tree, const Backend& b, const Ir
         std::size_t line_index { 0 };
         for (std::string line; std::getline(in, line); ++line_index) {
             constexpr std::size_t table_lines = 3;
-            std::optional<sc::lex::SourceCodeRange> range;
+            std::optional<sc::src::SourceCodeRange> range;
             if (in_text && line_index >= table_lines) {
                 const auto op = CompilingBytecodes::OpcodeIndex::from(line_index - table_lines);
                 assert(code.locations.contains(op));
@@ -347,7 +335,7 @@ void add_backend(Tree& lir_tree, Tree& bytecode_tree, const Backend& b, const Ir
     }
 }
 
-void write_diagnostic(std::ostream& out, const sc::diag::Diagnostic& d, const sc::lex::TextInfo* text) {
+void write_diagnostic(std::ostream& out, const sc::diag::Diagnostic& d, const sc::src::TextInfo* text) {
     out << "{\"name\":" << json_string(d.name())
         << ",\"severity\":" << (d.severity() == sc::diag::Severity::Error ? "\"error\"" : "\"warning\"")
         << ",\"text\":" << json_string(d.to_string()) << ",\"locations\":[";
@@ -364,7 +352,7 @@ void write_diagnostic(std::ostream& out, const sc::diag::Diagnostic& d, const sc
 }
 
 TextInfoPtr make_text(std::string source, std::optional<std::filesystem::path> path, bool class_file) {
-    return std::make_shared<const sc::lex::TextInfo>(sc::lex::NormalisedSource { source }, sc::lex::FileCodeLocation {},
+    return std::make_shared<const sc::src::TextInfo>(sc::src::NormalisedSource { source }, sc::src::FileCodeLocation {},
                                                      std::move(path), class_file);
 }
 
@@ -372,13 +360,14 @@ TextInfoPtr make_text(std::string source, std::optional<std::filesystem::path> p
 
 int main(int argc, char* argv[]) {
     bool class_mode = false;
-    std::vector<std::filesystem::path> preludes;
+    // Each is a module.
+    sc::util::IndexedVector<sc::ir::ModuleIndex, std::filesystem::path> preludes;
     for (int i { 1 }; i < argc; ++i) {
         const std::string_view arg { argv[i] };
         if (arg == "--class") {
             class_mode = true;
         } else if (arg == "--prelude" && i + 1 < argc) {
-            preludes.emplace_back(argv[++i]);
+            (void)preludes.push_back(argv[++i]);
         } else {
             std::cerr << "usage: sc_explorer [--class] [--prelude file.sc]... < source\n";
             return EXIT_FAILURE;
@@ -389,53 +378,40 @@ int main(int argc, char* argv[]) {
         make_text(std::string { std::istreambuf_iterator<char> { std::cin }, {} }, std::nullopt, class_mode);
 
     std::vector<sc::diag::Diagnostic> diagnostics;
-    sc::ir::ClassLibrarySources entries;
-    std::shared_ptr<const sc::ast::ASTGraph> source_ast;
 
     // Each prelude is a module, and a class file the last.
-    const auto add_class_file = [&](TextInfoPtr t, size_t module) {
-        auto [ast, _] = sc::ast::parse(t);
-        if (!ast)
-            return std::shared_ptr<const sc::ast::ASTGraph> {};
-        for (const auto& d : ast->diagnostics())
-            diagnostics.push_back(d);
-        const auto root = ast->root();
-        if (root && std::holds_alternative<sc::ast::ClassOrExtensionListIndex>(*root))
-            (void)entries.push_back(sc::ir::SourceEntry { ast, std::get<sc::ast::ClassOrExtensionListIndex>(*root),
-                                                          sc::ir::ModuleIndex::from(module) });
-        return std::shared_ptr<const sc::ast::ASTGraph> { ast };
-    };
-    for (size_t i { 0 }; i < preludes.size(); ++i) {
-        std::ifstream file { preludes[i] };
+    sc::util::IndexedVector<sc::ir::SourceEntryIndex, sc::compiler::ClassFileSource> class_files;
+    for (const auto module : preludes.indices()) {
+        std::ifstream file { preludes[module] };
         if (!file.is_open()) {
-            std::cerr << "Could not open prelude " << preludes[i] << "\n";
+            std::cerr << "Could not open prelude " << preludes[module] << "\n";
             return EXIT_FAILURE;
         }
         std::stringstream ss;
         ss << file.rdbuf();
-        add_class_file(make_text(std::move(ss).str(), preludes[i], true), i);
+        (void)class_files.push_back({ make_text(std::move(ss).str(), preludes[module], true), module });
     }
+    std::optional<sc::ir::SourceEntryIndex> source_file;
     if (class_mode)
-        source_ast = add_class_file(text, preludes.size());
+        source_file = class_files.push_back({ text, preludes.next_index() });
 
-    // As sc_inspect, these are only what the compiler needs, not the class library's constraints.
-    sc::ir::SymbolTable symbol_table;
-    sc::ir::ModuleTable module_table {};
-    sc::ir::IntrinsicConstraints constraints {};
-    const auto abstract_object = symbol_table.get_class_name("AbstractObjectExperimental");
-    constraints.insert({ abstract_object, sc::ir::IntrinsicConstraint { abstract_object, {}, {}, {} } });
-    const auto object = symbol_table.get_class_name("Object");
-    constraints.insert({ object, sc::ir::IntrinsicConstraint { object, { abstract_object }, {}, {} } });
-    const auto meta_object = symbol_table.get_meta_class_name(object);
-    constraints.insert(
-        { meta_object,
-          sc::ir::IntrinsicConstraint { meta_object, { symbol_table.get_meta_class_name(abstract_object) }, {}, {} } });
-
-    auto common_classes = sc::ir::symbol_table_and_common_classes(symbol_table, abstract_object);
-    sc::ir::Context ctx { symbol_table, common_classes, module_table, entries };
-    sc::ir::IRCompiler comp { ctx };
-    for (auto& d : comp.compile_class_library(constraints, 1))
+    sc::compiler::ClassLibraryTimes times;
+    const auto library = sc::compiler::compile_class_library(class_files, 1, times);
+    for (auto& d : library->parse_diagnostics)
         diagnostics.push_back(std::move(d));
+    for (auto& d : library->diagnostics)
+        diagnostics.push_back(std::move(d));
+    // The class file's ast, shown even when it isn't a class file, so parsed again.
+    std::shared_ptr<const sc::ast::ASTGraph> source_ast;
+    if (source_file) {
+        if (const auto& entry = library->sources[*source_file])
+            source_ast = entry->graph;
+        else
+            source_ast = std::get<0>(sc::ast::parse(text));
+    }
+    auto& ctx = library->ctx;
+    auto& comp = library->compiler;
+    auto& symbol_table = library->symbols;
 
     std::vector<IrRoot> ir_roots;
     std::shared_ptr<sc::ir::IRGraph> interpreted;
@@ -479,15 +455,10 @@ int main(int argc, char* argv[]) {
     for (const auto& r : ir_roots)
         add_ir(ir_tree, ctx, r, text.get());
 
-    const sc::backend::MemberTable members { comp, symbol_table };
-    const sc::backend::LoweringSymbols selectors { symbol_table };
-    const sc::backend::SpecialSymbols special_symbols { symbol_table };
-    const sc::backend::InliningContext inlining { special_symbols, ctx.constant_table };
-    const Backend backend { ctx, members, selectors, special_symbols, inlining };
     Tree lir_tree;
     Tree bytecode_tree;
     for (const auto& r : ir_roots)
-        add_backend(lir_tree, bytecode_tree, backend, r, text.get(), diagnostics);
+        add_backend(lir_tree, bytecode_tree, *library, r, text.get(), diagnostics);
 
     std::ostream& out = std::cout;
     out << "{\"source\":" << json_string(text->source.as_string()) << ",\"ast\":{";

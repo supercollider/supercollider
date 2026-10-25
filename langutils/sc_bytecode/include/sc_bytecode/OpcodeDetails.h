@@ -1,5 +1,5 @@
 #pragma once
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/text_location.hpp"
 #include "sc_bytecode/ByteCodeArray.h"
 #include <cassert>
 #include <tuple>
@@ -27,13 +27,13 @@ template <Byte CODE, typename... OPERANDS> struct SimpleOpSpec {
 
     Tuple pullOperandsFromInstructions(unsigned char*& ip) const { return { OPERANDS::fromRaw(*(++ip))... }; }
 
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, OPERANDS... operands) const {
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, OPERANDS... operands) const {
         bc.emit(loc, code, static_cast<Byte>(operands)...);
     }
 
     // Emits the code with a prefix, used in the extended opcodes.
 protected:
-    void emitPrefix(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, Byte prefix, OPERANDS... operands) const {
+    void emitPrefix(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, Byte prefix, OPERANDS... operands) const {
         bc.emit(loc, prefix, code, static_cast<Byte>(operands)...);
     }
 };
@@ -44,7 +44,7 @@ template <Byte PREFIX, typename OPSPEC> struct WithPrefix : public OPSPEC {
     unsigned int byteSize = 1U + OPSPEC::byteSize;
 
     template <typename... OPERANDS>
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, OPERANDS... operands) const {
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, OPERANDS... operands) const {
         OPSPEC::emitPrefix(bc, loc, PREFIX, operands...);
     }
 };
@@ -68,7 +68,7 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
     const char* secondNibbleDescription = "";
     unsigned int byteSize = sizeof...(OPERANDS) + 1U;
 
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, unsigned int nibble, OPERANDS... operands) const {
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, unsigned int nibble, OPERANDS... operands) const {
         const Byte bytecode = startCode + nibble;
         assert(bytecode < endCode);
         bc.emit(loc, bytecode, static_cast<Byte>(operands)...);
@@ -80,7 +80,7 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
     }
 
 protected:
-    void emitPrefix(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, Byte prefix, unsigned int nibble,
+    void emitPrefix(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, Byte prefix, unsigned int nibble,
                     OPERANDS... operands) const {
         const Byte bytecode = startCode + nibble;
         assert(bytecode < endCode);
@@ -104,7 +104,7 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
 
     bool validNibble(unsigned int nibble) const { return startCode + (nibble - 1) < endCode; }
 
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, unsigned int nibble, OPERANDS... operands) const {
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, unsigned int nibble, OPERANDS... operands) const {
         assert(nibble != 0);
         const Byte bytecode = startCode + (nibble - 1);
         assert(bytecode < endCode);
@@ -135,7 +135,7 @@ template <Byte STARTCODE, Byte ENDCODE, typename... OPERANDS> struct SecondNibbl
         return startCode + highBits < endCode;
     }
 
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, unsigned int fullValue,
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, unsigned int fullValue,
               OPERANDS... operands) const {
         assert(fullValue < (1 << 12));
         const Byte code = startCode + ((fullValue >> 8) & 15);
@@ -168,7 +168,7 @@ template <Byte STARTCODE, Byte ENDCODE, typename ENUM_T, typename... OPERANDS> s
     }
 
 
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, ENUM_T e, OPERANDS... operands) const {
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, ENUM_T e, OPERANDS... operands) const {
         const Byte nibble = static_cast<Byte>(e);
         assert(nibble < 16);
         const Byte bytecode = startCode + nibble;

@@ -4,7 +4,7 @@
 #include <limits>
 #include <tuple>
 
-namespace sc::lex {
+namespace sc::src {
 
 using CodePoint = std::int32_t;
 inline constexpr CodePoint invalid_utf8_flag { std::numeric_limits<CodePoint>::max() };

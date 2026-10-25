@@ -264,7 +264,7 @@ inline bool checkArraySubrangeSyntax(PyrParseNode* args, const size_t argLen) {
 		} else 
 			break;
 	}
-	const auto range = sc::lex::SourceCodeRange::range(first->location, last->location);
+	const auto range = sc::src::SourceCodeRange::range(first->location, last->location);
 	bison_cxt->postErrorInCurrentFile(range, "Invalid subrange", "expected 2 or less arguments, delete these.");
 	return false;
 }

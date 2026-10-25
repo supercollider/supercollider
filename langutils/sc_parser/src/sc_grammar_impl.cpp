@@ -2,7 +2,7 @@
 
 #include "parser_context.hpp"
 #include "sc_diagnostic/sc_diagnostic.hpp"
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/text_location.hpp"
 #include "sc_lexer/tokens.hpp"
 
 // Only records the error, so error recovery can decide how to report it, e.g., as a missing semicolon, see
@@ -34,7 +34,7 @@ void sc::ast::parser::parser::report_syntax_error(const context& symbol_cxt) con
                           static_cast<int>(symbol_cxt.lookahead().kind_), at_inserted, before };
 }
 
-void sc::ast::parser::parser::error(const sc::lex::SourceCodeRange&, const std::string&) {
+void sc::ast::parser::parser::error(const sc::src::SourceCodeRange&, const std::string&) {
     // TODO: temporary code.
     ////////////////	cxt.error_handler->operator()(cxt.text_info, loc, message);
 }
@@ -68,7 +68,7 @@ void ParserContext::claim_file_version() {
         file_version = use_versions(*this, directives.begin(), end);
 }
 
-LanguageVersion ParserContext::take_version(sc::lex::SourceCodeRange open_curly) {
+LanguageVersion ParserContext::take_version(sc::src::SourceCodeRange open_curly) {
     const auto begin = std::lower_bound(directives.begin(), directives.end(), open_curly.end,
                                         [](const auto& d, const auto& l) { return d.range.begin < l; });
     const auto end = std::find_if(begin, directives.end(), [&](const auto& d) { return d.after != open_curly; });
@@ -88,7 +88,7 @@ void ParserContext::report_misplaced_versions() {
 
 namespace sc::ast::parser::error_recovery {
 
-void region_separator(ParserContext& cxt, sc ::lex::SourceCodeRange last_valid) {
+void region_separator(ParserContext& cxt, sc ::src::SourceCodeRange last_valid) {
     cxt.graph->add_diagnostic(diag::Diagnostic::region_missing_semicolon(cxt.text_info, last_valid));
 }
 
@@ -318,7 +318,7 @@ std::string expected_list(std::vector<Symbol> expected) {
 }
 
 // The token as written, on one line and shortened, e.g., a multiline string.
-std::string found_text(const ParserContext& cxt, Symbol got, sc::lex::SourceCodeRange location) {
+std::string found_text(const ParserContext& cxt, Symbol got, sc::src::SourceCodeRange location) {
     if (got == S::S_YYEOF)
         return "the end of the file";
     constexpr size_t max_size = 20;
@@ -377,7 +377,7 @@ void expr(ParserContext& cxt) { report(cxt); }
 
 
 namespace {
-std::uint32_t matching_bracket(const ParserContext& cxt, sc::lex::SourceCodeRange open_bracket) {
+std::uint32_t matching_bracket(const ParserContext& cxt, sc::src::SourceCodeRange open_bracket) {
     auto i = cxt.lookahead.value_or(cxt.next);
     while (i > 0 && !(cxt.tokens[i].range == open_bracket && sc::lex::is_open_bracket(cxt.tokens[i].token)))
         --i;
@@ -386,7 +386,7 @@ std::uint32_t matching_bracket(const ParserContext& cxt, sc::lex::SourceCodeRang
 }
 
 // Skips past the bracket matching the opening one, which the lookahead might be.
-sc::lex::SourceCodeRange skip_to_match(ParserContext& cxt, sc::lex::SourceCodeRange open_bracket) {
+sc::src::SourceCodeRange skip_to_match(ParserContext& cxt, sc::src::SourceCodeRange open_bracket) {
     const auto close = matching_bracket(cxt, open_bracket);
     cxt.next = close + 1;
     cxt.separator_inserted = false;
@@ -394,12 +394,12 @@ sc::lex::SourceCodeRange skip_to_match(ParserContext& cxt, sc::lex::SourceCodeRa
 }
 }
 
-sc::lex::SourceCodeRange bracket(ParserContext& cxt, sc::lex::SourceCodeRange open_bracket) {
+sc::src::SourceCodeRange bracket(ParserContext& cxt, sc::src::SourceCodeRange open_bracket) {
     report(cxt);
     return skip_to_match(cxt, open_bracket);
 }
 
-sc::lex::SourceCodeRange method(ParserContext& cxt, sc::lex::SourceCodeRange open_bracket) {
+sc::src::SourceCodeRange method(ParserContext& cxt, sc::src::SourceCodeRange open_bracket) {
     report(cxt);
     return skip_to_match(cxt, open_bracket);
 }

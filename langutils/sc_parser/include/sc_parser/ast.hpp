@@ -2,8 +2,8 @@
 #pragma once
 
 #include "indexes_typed.hpp"
-#include "sc_lexer/text_info.hpp"
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/text_info.hpp"
+#include "sc_source/text_location.hpp"
 #include "nodes.hpp"
 
 #include "sc_diagnostic/sc_diagnostic.hpp"
@@ -144,7 +144,7 @@ struct ASTGraph : private sc::util::typed_graph::GraphImplementation<OptionalInd
     using Helper = Base::Helper;
 
 public:
-    ASTGraph(std::shared_ptr<const lex::TextInfo> text_info): m_text_info(std::move(text_info)) {}
+    ASTGraph(std::shared_ptr<const src::TextInfo> text_info): m_text_info(std::move(text_info)) {}
     ASTGraph(const ASTGraph&) = default;
     ASTGraph(ASTGraph&&) noexcept = default;
     ASTGraph& operator=(const ASTGraph&) = delete;
@@ -159,7 +159,7 @@ public:
     // Create
     ////////////////////////////////////////////////////////////////////////////////
     template <typename Node, typename... ChildrenIndexes>
-    [[nodiscard]] typename Node::Index create(Node&& node, lex::SourceCodeRange location,
+    [[nodiscard]] typename Node::Index create(Node&& node, src::SourceCodeRange location,
                                               ChildrenIndexes&&... child_indexes);
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -171,7 +171,7 @@ public:
     using Base::prepend;
 
     template <typename I, typename... Children> //
-    auto append(I p, lex::SourceCodeRange range, Children... children);
+    auto append(I p, src::SourceCodeRange range, Children... children);
 
     ////////////////////////////////////////////////////////////////////////////////
     // node type operations
@@ -201,10 +201,10 @@ public:
     using Base::orphans;
     using Base::payload;
 
-    const sc::lex::SourceCodeRange& location(UntypedNodeIndex i) const;
-    sc::lex::SourceCodeRange& location(UntypedNodeIndex i);
+    const sc::src::SourceCodeRange& location(UntypedNodeIndex i) const;
+    sc::src::SourceCodeRange& location(UntypedNodeIndex i);
 
-    [[nodiscard]] std::shared_ptr<const lex::TextInfo> text_info() const;
+    [[nodiscard]] std::shared_ptr<const src::TextInfo> text_info() const;
 
     [[nodiscard]] std::string_view string_view(UntypedNodeIndex i) const;
     [[nodiscard]] std::string string(UntypedNodeIndex i) const;
@@ -257,13 +257,13 @@ public:
     void traverse_only_children(F& f, Index i);
 
     struct Default {
-        void operator()(const Edges&, const Variant&, const lex::SourceCodeRange&, Index, size_t /*depth*/) { }
+        void operator()(const Edges&, const Variant&, const src::SourceCodeRange&, Index, size_t /*depth*/) {}
     };
 
 
     /**
     @brief Expects functions of the signature:
-        (const Edges& e, const Variant& v, const lex::SourceCodeRange&, Index i, size_t depth)
+        (const Edges& e, const Variant& v, const src::SourceCodeRange&, Index i, size_t depth)
     */
     template <typename EnterNode, typename BeforeChildren = Default, typename AfterChildren = Default,
               typename ExitNode = Default>
@@ -277,8 +277,8 @@ public:
 
 
 private:
-    std::shared_ptr<const lex::TextInfo> m_text_info;
-    std::vector<lex::SourceCodeRange> m_node_locations {};
+    std::shared_ptr<const src::TextInfo> m_text_info;
+    std::vector<src::SourceCodeRange> m_node_locations {};
 
     std::vector<sc::diag::Diagnostic> m_diagnostics { };
 
@@ -326,7 +326,7 @@ constexpr const char* ASTGraph::node_name(const Variant& variant) {
 }
 
 template <typename I, typename... Children>
-inline auto ASTGraph::append(I p, lex::SourceCodeRange range, Children... children) {
+inline auto ASTGraph::append(I p, src::SourceCodeRange range, Children... children) {
     (Base::append(p, children), ...);
     // At this point we know this is valid because the base does the checks
     m_node_locations[*p] = std::move(range);
@@ -346,7 +346,7 @@ inline void ASTGraph::depth_first_traverse(Index i, EnterNode enter_node, Before
 
 
 template <typename Node, typename... ChildrenIndexes>
-typename Node::Index ASTGraph::create(Node&& node, lex::SourceCodeRange location, ChildrenIndexes&&... child_indexes) {
+typename Node::Index ASTGraph::create(Node&& node, src::SourceCodeRange location, ChildrenIndexes&&... child_indexes) {
     const auto index = Base::create(std::forward<Node>(node), std::forward<ChildrenIndexes>(child_indexes)...);
 
     if (*index < m_node_locations.size()) {

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "codepoint.hpp"
-#include "text_location.hpp"
+#include "sc_source/codepoint.hpp"
+#include "sc_source/text_location.hpp"
 #include <optional>
 
-namespace sc::lex::utils {
+namespace sc::src::utils {
 
 // Iterate through utf8 text.
 // Unlike CodePointStream, this is very simple and lightweight, only providing forwards and backwards methods.

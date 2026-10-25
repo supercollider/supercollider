@@ -1,8 +1,8 @@
-#include "sc_lexer/codepoint.hpp"
+#include "sc_source/codepoint.hpp"
 #include "utf8proc.h"
 #include <array>
 
-namespace sc::lex {
+namespace sc::src {
 
 [[nodiscard]] std::tuple<CodePoint, std::uint8_t> utf8_sequence_to_codepoint(const char* utf8,
                                                                              std::size_t len) noexcept {

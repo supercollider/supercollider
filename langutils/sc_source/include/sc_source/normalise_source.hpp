@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace sc::lex {
+namespace sc::src {
 
 // Removes platform specific features (such as newline encoding).
 struct NormalisedSource {

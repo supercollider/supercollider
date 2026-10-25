@@ -41,7 +41,7 @@
 #include "SC_LanguageConfig.hpp"
 #include "SpecialSelectorsOperatorsAndClasses.h"
 #include "sc_defer.hpp"
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/text_location.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -125,19 +125,19 @@ PyrVarListNode* joinVarLists(PyrVarListNode* varlist) {
     return varlist;
 }
 
-PyrParseNode::PyrParseNode(Tag, PyrParseNodeType classno, sc::lex::SourceCodeRange loc):
+PyrParseNode::PyrParseNode(Tag, PyrParseNodeType classno, sc::src::SourceCodeRange loc):
     mNext(nullptr),
     mTail(this),
     location(loc),
     mClassno(classno) {}
 
-PyrRootNode::PyrRootNode(Tag t, sc::lex::SourceCodeRange loc, PyrParseNode* children):
+PyrRootNode::PyrRootNode(Tag t, sc::src::SourceCodeRange loc, PyrParseNode* children):
     PyrParseNode(t, PyrParseNodeType::RootNode, loc),
     children(reParent(*this, children)) {}
 
 void PyrRootNode::compile(CompilerContext& cxt, PyrSlot* result) { compileNodeList(cxt, children, false); }
 
-PyrSlotNode::PyrSlotNode(Tag t, sc::lex::SourceCodeRange loc, PyrSlot s, PyrParseNodeType subtype):
+PyrSlotNode::PyrSlotNode(Tag t, sc::src::SourceCodeRange loc, PyrSlot s, PyrParseNodeType subtype):
     PyrParseNode(t, subtype, loc),
     mSlot(s) {
     if (mSlot.isPtr()) {
@@ -147,16 +147,16 @@ PyrSlotNode::PyrSlotNode(Tag t, sc::lex::SourceCodeRange loc, PyrSlot s, PyrPars
     assert(subtype == types[0] || subtype == types[1] || subtype == types[2] || subtype == types[3]);
 }
 
-PyrCurryArgNode::PyrCurryArgNode(Tag t, sc::lex::SourceCodeRange loc):
+PyrCurryArgNode::PyrCurryArgNode(Tag t, sc::src::SourceCodeRange loc):
     PyrParseNode(t, PyrParseNodeType::CurryArgNode, loc) {}
 
-PyrClassExtNode::PyrClassExtNode(Tag t, sc::lex::SourceCodeRange l, PyrSlotNode* classname,
+PyrClassExtNode::PyrClassExtNode(Tag t, sc::src::SourceCodeRange l, PyrSlotNode* classname,
                                  struct PyrMethodNode* methods):
     PyrParseNode(t, PyrParseNodeType::ClassExtNode, l),
     mClassName(reParent(*this, classname)),
     mMethods(reParent(*this, methods)) {}
 
-PyrClassNode::PyrClassNode(Tag t, sc::lex::SourceCodeRange l, struct PyrSlotNode* mClassName,
+PyrClassNode::PyrClassNode(Tag t, sc::src::SourceCodeRange l, struct PyrSlotNode* mClassName,
                            struct PyrSlotNode* mSuperClassName, struct PyrSlotNode* mIndexType,
                            struct PyrVarListNode* mVarlists, struct PyrMethodNode* mMethods):
     PyrParseNode(t, PyrParseNodeType::ClassNode, l),
@@ -166,7 +166,7 @@ PyrClassNode::PyrClassNode(Tag t, sc::lex::SourceCodeRange l, struct PyrSlotNode
     mVarlists(reParent(*this, mVarlists)),
     mMethods(reParent(*this, mMethods)) {}
 
-PyrMethodNode::PyrMethodNode(Tag t, sc::lex::SourceCodeRange l, PyrSlotNode* mMethodName, PyrSlotNode* mPrimitiveName,
+PyrMethodNode::PyrMethodNode(Tag t, sc::src::SourceCodeRange l, PyrSlotNode* mMethodName, PyrSlotNode* mPrimitiveName,
                              struct PyrArgListNode* mArglist, struct PyrVarListNode* mVarlist_in, PyrParseNode* mBody,
                              bool mIsClassMethod, bool mExtension):
     PyrParseNode(t, PyrParseNodeType::MethodNode, l),
@@ -181,87 +181,87 @@ PyrMethodNode::PyrMethodNode(Tag t, sc::lex::SourceCodeRange l, PyrSlotNode* mMe
     mVarlist = reParent(*this, mVarlist);
 }
 
-PyrVarListNode::PyrVarListNode(Tag t, sc::lex::SourceCodeRange l, struct PyrVarDefNode* mVarDefs, int mFlags):
+PyrVarListNode::PyrVarListNode(Tag t, sc::src::SourceCodeRange l, struct PyrVarDefNode* mVarDefs, int mFlags):
     PyrParseNode(t, PyrParseNodeType::VarListNode, l),
     mVarDefs(reParent(*this, mVarDefs)),
     mFlags(mFlags) {}
 
-PyrVarDefNode::PyrVarDefNode(Tag t, sc::lex::SourceCodeRange l, PyrSlotNode* mVarName, PyrParseNode* mDefVal,
+PyrVarDefNode::PyrVarDefNode(Tag t, sc::src::SourceCodeRange l, PyrSlotNode* mVarName, PyrParseNode* mDefVal,
                              ReadWriteAccessor accessor):
     PyrParseNode(t, PyrParseNodeType::VarDefNode, l),
     mVarName(reParent(*this, mVarName)),
     mDefVal(reParent(*this, mDefVal)),
     accessor(accessor) {}
 
-PyrCallNodeBase::PyrCallNodeBase(Tag t, sc::lex::SourceCodeRange l, PyrParseNodeType classno):
+PyrCallNodeBase::PyrCallNodeBase(Tag t, sc::src::SourceCodeRange l, PyrParseNodeType classno):
     PyrParseNode(t, classno, l) {}
 
-PyrCallNodeBase2::PyrCallNodeBase2(Tag tg, sc::lex::SourceCodeRange l, PyrParseNodeType t, PyrSlotNode* mSelector,
+PyrCallNodeBase2::PyrCallNodeBase2(Tag tg, sc::src::SourceCodeRange l, PyrParseNodeType t, PyrSlotNode* mSelector,
                                    PyrParseNode* mArglist, PyrParseNode* mKeyarglist):
     PyrCallNodeBase(tg, l, t),
     mSelector(reParent(*this, mSelector)),
     mArglist(reParent(*this, mArglist)),
     mKeyarglist(reParent(*this, mKeyarglist)) {}
 
-PyrCallNode::PyrCallNode(Tag t, sc::lex::SourceCodeRange l, PyrSlotNode* mSelector, PyrParseNode* mArglist,
+PyrCallNode::PyrCallNode(Tag t, sc::src::SourceCodeRange l, PyrSlotNode* mSelector, PyrParseNode* mArglist,
                          PyrParseNode* mKeyarglist):
     PyrCallNodeBase2(t, l, PyrParseNodeType::CallNode, mSelector, mArglist, mKeyarglist) {}
 
-PyrBinopCallNode::PyrBinopCallNode(Tag t, sc::lex::SourceCodeRange l, PyrSlotNode* mSelector, PyrParseNode* arglist):
+PyrBinopCallNode::PyrBinopCallNode(Tag t, sc::src::SourceCodeRange l, PyrSlotNode* mSelector, PyrParseNode* arglist):
     PyrCallNodeBase2(t, l, PyrParseNodeType::BinopCallNode, mSelector, arglist, nullptr) {}
 
-PyrSetterNode::PyrSetterNode(Tag t, sc::lex::SourceCodeRange l, PyrSlotNode* mSelector, PyrParseNode* mExpr1,
+PyrSetterNode::PyrSetterNode(Tag t, sc::src::SourceCodeRange l, PyrSlotNode* mSelector, PyrParseNode* mExpr1,
                              PyrParseNode* mExpr2):
     PyrCallNodeBase(t, l, PyrParseNodeType::SetterNode),
     mSelector(reParent(*this, mSelector)),
     mExpr1(reParent(*this, mExpr1)),
     mExpr2(reParent(*this, mExpr2)) {}
 
-PyrDynListNode::PyrDynListNode(Tag t, sc::lex::SourceCodeRange l, PyrParseNode* mClassname, PyrParseNode* mElems):
+PyrDynListNode::PyrDynListNode(Tag t, sc::src::SourceCodeRange l, PyrParseNode* mClassname, PyrParseNode* mElems):
     PyrCallNodeBase(t, l, PyrParseNodeType::DynListNode),
     mClassname(reParent(*this, mClassname)),
     mElems(reParent(*this, mElems)) {}
 
-PyrDynDictNode::PyrDynDictNode(Tag t, sc::lex::SourceCodeRange l, PyrParseNode* mElems):
+PyrDynDictNode::PyrDynDictNode(Tag t, sc::src::SourceCodeRange l, PyrParseNode* mElems):
     PyrCallNodeBase(t, l, PyrParseNodeType::DynDictNode),
     mElems(reParent(*this, mElems)) {}
 
-PyrDropNode::PyrDropNode(Tag t, sc::lex::SourceCodeRange l, PyrParseNode* e1, PyrParseNode* e2):
+PyrDropNode::PyrDropNode(Tag t, sc::src::SourceCodeRange l, PyrParseNode* e1, PyrParseNode* e2):
     PyrParseNode(t, PyrParseNodeType::DropNode, l),
     mExpr1(reParent(*this, e1)),
     mExpr2(reParent(*this, e2)) {}
 
-PyrPushKeyArgNode::PyrPushKeyArgNode(Tag t, sc::lex::SourceCodeRange l, PyrSlotNode* mSelector, PyrParseNode* mExpr):
+PyrPushKeyArgNode::PyrPushKeyArgNode(Tag t, sc::src::SourceCodeRange l, PyrSlotNode* mSelector, PyrParseNode* mExpr):
     PyrParseNode(t, PyrParseNodeType::PushKeyArgNode, l),
     mSelector(reParent(*this, mSelector)),
     mExpr(reParent(*this, mExpr)) {}
 
-PyrReturnNode::PyrReturnNode(Tag t, sc::lex::SourceCodeRange l, PyrParseNode* mExpr):
+PyrReturnNode::PyrReturnNode(Tag t, sc::src::SourceCodeRange l, PyrParseNode* mExpr):
     PyrParseNode(t, PyrParseNodeType::ReturnNode, l),
     mExpr(reParent(*this, mExpr)) {}
 
-PyrBlockReturnNode::PyrBlockReturnNode(Tag t, sc::lex::SourceCodeRange l, PyrParseNode* mExpr):
+PyrBlockReturnNode::PyrBlockReturnNode(Tag t, sc::src::SourceCodeRange l, PyrParseNode* mExpr):
     PyrParseNode(t, PyrParseNodeType::BlockReturnNode, l),
     mExpr(reParent(*this, mExpr)) {}
 
-PyrAssignNode::PyrAssignNode(Tag t, sc::lex::SourceCodeRange l, PyrSlotNode* mVarName, PyrParseNode* mExpr):
+PyrAssignNode::PyrAssignNode(Tag t, sc::src::SourceCodeRange l, PyrSlotNode* mVarName, PyrParseNode* mExpr):
     PyrParseNode(t, PyrParseNodeType::AssignNode, l),
     mVarName(reParent(*this, mVarName)),
     mExpr(reParent(*this, mExpr)) {}
 
-PyrMultiAssignNode::PyrMultiAssignNode(Tag t, sc::lex::SourceCodeRange l, struct PyrMultiAssignVarListNode* mVarList,
+PyrMultiAssignNode::PyrMultiAssignNode(Tag t, sc::src::SourceCodeRange l, struct PyrMultiAssignVarListNode* mVarList,
                                        PyrParseNode* mExpr):
     PyrParseNode(t, PyrParseNodeType::MultiAssignNode, l),
     mVarList(reParent(*this, mVarList)),
     mExpr(reParent(*this, mExpr)) {}
 
-PyrMultiAssignVarListNode::PyrMultiAssignVarListNode(Tag t, sc::lex::SourceCodeRange l, PyrSlotNode* mVarNames,
+PyrMultiAssignVarListNode::PyrMultiAssignVarListNode(Tag t, sc::src::SourceCodeRange l, PyrSlotNode* mVarNames,
                                                      PyrSlotNode* mRest):
     PyrParseNode(t, PyrParseNodeType::MultiAssignVarListNode, l),
     mVarNames(reParent(*this, mVarNames)),
     mRest(reParent(*this, mRest)) {}
 
-PyrBlockNode::PyrBlockNode(Tag t, sc::lex::SourceCodeRange l, struct PyrArgListNode* mArglist,
+PyrBlockNode::PyrBlockNode(Tag t, sc::src::SourceCodeRange l, struct PyrArgListNode* mArglist,
                            struct PyrVarListNode* mVarlist_in, PyrParseNode* mBody, bool mIsExplicitlyClosed):
     PyrParseNode(t, PyrParseNodeType::BlockNode, l),
     mArglist(reParent(*this, mArglist)),
@@ -272,14 +272,14 @@ PyrBlockNode::PyrBlockNode(Tag t, sc::lex::SourceCodeRange l, struct PyrArgListN
     mVarlist = reParent(*this, mVarlist);
 }
 
-PyrArgListNode::PyrArgListNode(Tag t, sc::lex::SourceCodeRange l, struct PyrVarDefNode* mVarDefs, PyrSlotNode* mRest,
+PyrArgListNode::PyrArgListNode(Tag t, sc::src::SourceCodeRange l, struct PyrVarDefNode* mVarDefs, PyrSlotNode* mRest,
                                PyrSlotNode* mKeywordArgs):
     PyrParseNode(t, PyrParseNodeType::ArgListNode, l),
     mVarDefs(reParent(*this, mVarDefs)),
     mRest(reParent(*this, mRest)),
     mKeywordArgs(reParent(*this, mKeywordArgs)) {}
 
-PyrLitListNode::PyrLitListNode(Tag t, sc::lex::SourceCodeRange l, PyrParseNode* mClassname, PyrParseNode* mElems):
+PyrLitListNode::PyrLitListNode(Tag t, sc::src::SourceCodeRange l, PyrParseNode* mClassname, PyrParseNode* mElems):
     PyrParseNode(t, PyrParseNodeType::LitListNode, l),
     mClassname(reParent(*this, mClassname)),
     mElems(reParent(*this, mElems)) {}
@@ -394,7 +394,7 @@ public:
     ~SetTailIsMethodReturn() { cxt.tailIsMethodReturn = mSave; }
 };
 
-void emitTailCall(CompilerContext& cxt, sc::lex::SourceCodeRange loc) {
+void emitTailCall(CompilerContext& cxt, sc::src::SourceCodeRange loc) {
     if (cxt.generateTailCallByteCodes && cxt.isTailCodeBranch) {
         if (cxt.tailIsMethodReturn)
             TailCallReturnFromMethod.emit(cxt.bytecodes, loc);
@@ -730,7 +730,7 @@ void fillClassPrototypes(CompilerContext& cxt, PyrClassNode* node, PyrClass* cla
     // sets up method correctly
     const auto create_getter_or_setter_method =
         [&](unsigned char num_args, MethodType method_type, unsigned short special_index, PyrClass* owner_class,
-            PyrSlot method_name, sc::lex::SourceCodeRange loc, std::optional<PyrSlot> selector = std::nullopt) {
+            PyrSlot method_name, sc::src::SourceCodeRange loc, std::optional<PyrSlot> selector = std::nullopt) {
             assert(num_args > 0);
             auto* method = newPyrMethod();
             *METHRAW(method) = { 0,
@@ -1299,8 +1299,8 @@ PyrMethod* initPyrMethod(PyrMethod* method);
 
 void compilePyrMethodNode(CompilerContext& cxt, PyrMethodNode* node, PyrSlot* result) { node->compile(cxt, result); }
 
-void postDuplicateIdentifierError(CompilerContext& cxt, sc::lex::SourceCodeRange first,
-                                  sc::lex::SourceCodeRange second) {
+void postDuplicateIdentifierError(CompilerContext& cxt, sc::src::SourceCodeRange first,
+                                  sc::src::SourceCodeRange second) {
     const DiagnosticHighlight hg[2] {
         cxt.textInfo->createDiagnosticHighlight(first, "This identifier is duplicated..."),
         cxt.textInfo->createDiagnosticHighlight(second, "...here. Names must be unique, rename one of these."),
@@ -1309,7 +1309,7 @@ void postDuplicateIdentifierError(CompilerContext& cxt, sc::lex::SourceCodeRange
     cxt.postError(str);
 }
 
-void checkRedefiningPseudo(CompilerContext& cxt, sc::lex::SourceCodeRange loc, PyrSymbol* name) {
+void checkRedefiningPseudo(CompilerContext& cxt, sc::src::SourceCodeRange loc, PyrSymbol* name) {
     const std::array reserved { s_this, s_curProcess, s_curMethod, s_curBlock, s_curClosure, s_curThread, s_super };
     if (auto fnd = std::find(reserved.begin(), reserved.end(), name); fnd != reserved.end()) {
         cxt.postErrorInCurrentFile(loc, "Redefining a special identifier.",
@@ -1319,7 +1319,7 @@ void checkRedefiningPseudo(CompilerContext& cxt, sc::lex::SourceCodeRange loc, P
 }
 
 PyrSlot createArgNames(CompilerContext& cxt, std::size_t size, bool hasThis, PyrArgListNode* arglist,
-                       std::unordered_map<PyrSymbol*, sc::lex::SourceCodeRange>& identifiers) {
+                       std::unordered_map<PyrSymbol*, sc::src::SourceCodeRange>& identifiers) {
     if (hasThis && size == 1) {
         return o_argnamethis;
     }
@@ -1338,7 +1338,7 @@ PyrSlot createArgNames(CompilerContext& cxt, std::size_t size, bool hasThis, Pyr
         counter += 1;
     }
 
-    const auto insertAndCheck = [&](PyrSymbol* name, sc::lex::SourceCodeRange loc) {
+    const auto insertAndCheck = [&](PyrSymbol* name, sc::src::SourceCodeRange loc) {
         checkRedefiningPseudo(cxt, loc, name);
         if (auto fnd = identifiers.find(name); fnd != identifiers.end())
             postDuplicateIdentifierError(cxt, fnd->second, loc);
@@ -1365,7 +1365,7 @@ PyrSlot createArgNames(CompilerContext& cxt, std::size_t size, bool hasThis, Pyr
 }
 
 PyrSlot createVarNames(CompilerContext& cxt, std::size_t size, PyrVarListNode* varlist,
-                       std::unordered_map<PyrSymbol*, sc::lex::SourceCodeRange>& identifiers) {
+                       std::unordered_map<PyrSymbol*, sc::src::SourceCodeRange>& identifiers) {
     if (size == 0 || !varlist)
         return PyrSlot {};
 
@@ -1375,7 +1375,7 @@ PyrSlot createVarNames(CompilerContext& cxt, std::size_t size, PyrVarListNode* v
 
     std::size_t counter { 0 };
 
-    const auto insertAndCheck = [&](PyrSymbol* name, sc::lex::SourceCodeRange loc) {
+    const auto insertAndCheck = [&](PyrSymbol* name, sc::src::SourceCodeRange loc) {
         checkRedefiningPseudo(cxt, loc, name);
         if (auto fnd = identifiers.find(name); fnd != identifiers.end())
             postDuplicateIdentifierError(cxt, fnd->second, loc);
@@ -1562,7 +1562,7 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
     auto methraw = METHRAW(method);
 
     // All the argument and variable names, they must be unique
-    std::unordered_map<PyrSymbol*, sc::lex::SourceCodeRange> namedIdentifiers {};
+    std::unordered_map<PyrSymbol*, sc::src::SourceCodeRange> namedIdentifiers {};
 
     // } MUTABLE VARIABLES
 
@@ -3584,7 +3584,7 @@ void compilePushConstant(CompilerContext& cxt, PyrParseNode* node, PyrSlot* slot
                             Operands::UnsignedInt<32, 0>::fromFull(index));
 }
 
-void emitPushInt(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, int value) {
+void emitPushInt(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, int value) {
     if (value == -1)
         PushSpecialNumber.emit(bc, loc, { OpSpecialNumbers::MinusOne });
 
@@ -4029,7 +4029,7 @@ void PyrBlockNode::compile(CompilerContext& cxt, PyrSlot* slotResult) {
     auto block = newPyrBlock(!cxt.textInfo->isClassFile, flags);
 
     // All the argument and variable names, they must be unique
-    std::unordered_map<PyrSymbol*, sc::lex::SourceCodeRange> namedIdentifiers {};
+    std::unordered_map<PyrSymbol*, sc::src::SourceCodeRange> namedIdentifiers {};
 
     // Addtionally, the cxt is mutated, e.g. the bytecodes.
 

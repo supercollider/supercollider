@@ -3,8 +3,8 @@
 // The lexer finds the comments, so `//` in a string, symbol or char isn't one, and nor is anything in a block comment.
 #include "sc_lexer/codepoint_stream.hpp"
 #include "sc_lexer/lexer.hpp"
-#include "sc_lexer/normalise_source.hpp"
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/normalise_source.hpp"
+#include "sc_source/text_location.hpp"
 #include "sc_lexer/tokens.hpp"
 
 #include <fstream>
@@ -20,9 +20,9 @@ namespace {
 struct CommentAction {
     struct Output {
         sc::lex::TokenType type;
-        sc::lex::SourceCodeRange range;
+        sc::src::SourceCodeRange range;
     };
-    template <sc::lex::TokenType type> std::optional<Output> process(sc::lex::SourceCodeRange range) {
+    template <sc::lex::TokenType type> std::optional<Output> process(sc::src::SourceCodeRange range) {
         if constexpr (type == sc::lex::TokenType::Comment || type == sc::lex::TokenType::EndOfFile)
             return Output { type, range };
         else
@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
     std::stringstream ss;
     ss << file.rdbuf();
     // Normalised as the compiler does, so the positions match sc_inspect's.
-    const sc::lex::NormalisedSource source { std::move(ss).str() };
+    const sc::src::NormalisedSource source { std::move(ss).str() };
     const auto& text = static_cast<const std::string&>(source);
 
     sc::lex::CodePointStream stream { source };

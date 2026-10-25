@@ -13,7 +13,7 @@ namespace {
 // The graph index is only needed when evaluating class members, not literals.
 Return<SCAnyExpr_I> literal(Context& ctx, IRGraph& ir, const std::shared_ptr<const ast::ASTGraph>& ast_graph,
                             ast::LanguageVersion version, DiagnosticSink& sink, ast::AnyDefiniteConstantIndex i) {
-    return ConstEval { ctx, ast_graph, ASTGraphIndex { 0 }, version }.eval(i).visit(
+    return ConstEval { ctx, ast_graph, version }.eval(i).visit(
         [&](ConstEval::Success s) -> Return<SCAnyExpr_I> {
             const auto [expr_index, info] = s;
             const auto lit = ir.create(SCLiteral { expr_index }, location_of(ir, *ast_graph, { *i }));
@@ -43,7 +43,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::SymbolSlashIndex i) { return literal(c
 Return<SCAnyExpr_I> Expr::operator()(ast::ClassNameIdentifierIndex i) {
     if (can_fold_constants())
         return literal(ctx, ir, ast_graph, version, sink, i);
-    const auto r = ConstEval { ctx, ast_graph, ASTGraphIndex { 0 }, version }(i).success();
+    const auto r = ConstEval { ctx, ast_graph, version }(i).success();
     assert(r);
     return { ir.create(SCLiteral { r->first }, location({ *i })), r->second };
 }

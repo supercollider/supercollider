@@ -62,7 +62,7 @@ const state = {
   requestId: 0,
 };
 
-// As sc::lex::NormalisedSource.
+// As sc::src::NormalisedSource.
 const normalise = (s) => s.replace(/\r\n?|[\v\f]/g, '\n');
 
 function makeByteToIndex(text) {

@@ -5,9 +5,9 @@
 #include "sc_parser/ast.hpp"
 #include "sc_parser/sc_grammar_shared.hpp"
 
-#include "sc_lexer/normalise_source.hpp"
-#include "sc_lexer/text_info.hpp"
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/normalise_source.hpp"
+#include "sc_source/text_info.hpp"
+#include "sc_source/text_location.hpp"
 #include "sc_lexer/tokens.hpp"
 
 #include <algorithm>
@@ -32,10 +32,10 @@ struct Token {
     // Since we have a file size limit of 2^32, this seems unlikely to ever be hit.
     static constexpr std::uint32_t max_tokens = no_match;
 
-    Token(sc::lex::TokenType t, sc::lex::SourceCodeRange r): token(t), range(r) {}
+    Token(sc::lex::TokenType t, sc::src::SourceCodeRange r): token(t), range(r) {}
 
     sc::lex::TokenType token;
-    sc::lex::SourceCodeRange range;
+    sc::src::SourceCodeRange range;
 
     // When brackets, matching return the other one in a pair.
     [[nodiscard]] std::optional<std::uint32_t> matching() const {
@@ -58,11 +58,11 @@ static_assert(sizeof(Token) == 32);
 
 // A `//# VERSION 3.16` comment, which the parser doesn't see, see ParserContext::take_version.
 struct VersionDirective {
-    sc::lex::SourceCodeRange range;
+    sc::src::SourceCodeRange range;
     // Nothing if it is malformed or unknown, which has been reported.
     std::optional<LanguageVersion> version;
     // The token before it, nothing at the start of the file.
-    std::optional<sc::lex::SourceCodeRange> after;
+    std::optional<sc::src::SourceCodeRange> after;
     bool used { false };
 };
 
@@ -73,7 +73,7 @@ struct ParserContext;
 void tokenise(ParserContext& cxt, sc::lex::CodePointStream cps);
 
 struct UnexpectedToken {
-    sc::lex::SourceCodeRange location;
+    sc::src::SourceCodeRange location;
     // These are type erased. To figure out what they are, you need the parser.
     // This is implemented in the file sc_grammar_impl.
     std::vector<int> expected;
@@ -92,7 +92,7 @@ class parser;
 
 struct ParserContext {
     enum struct Mode { ClassLibrary, CommandInitial, CommandContinue };
-    std::shared_ptr<const sc::lex::TextInfo> text_info;
+    std::shared_ptr<const sc::src::TextInfo> text_info;
     // Used to emit the specical interpret token.
     Mode mode;
 
@@ -112,7 +112,7 @@ struct ParserContext {
 
     // The version of the class or extension whose body opens with open_curly: the directive directly after it, else the
     // file's, else Legacy.
-    [[nodiscard]] LanguageVersion take_version(sc::lex::SourceCodeRange open_curly);
+    [[nodiscard]] LanguageVersion take_version(sc::src::SourceCodeRange open_curly);
 
     // Those not taken don't apply to anything.
     void report_misplaced_versions();
@@ -147,7 +147,7 @@ struct ParserContext {
     // Assumes that there is a non-empty rule before it.
     // The error rule's own value can still end inside it, e.g., a region that is only an error at the same token, so
     // the rule passes it as kept.
-    [[nodiscard]] std::vector<Index> discarded(sc::lex::SourceCodeRange error, std::optional<Index> kept = {}) const {
+    [[nodiscard]] std::vector<Index> discarded(sc::src::SourceCodeRange error, std::optional<Index> kept = {}) const {
         std::vector<Index> nodes;
         for (const auto i : graph->orphans()) {
             const auto& l = graph->location(i);
@@ -164,7 +164,7 @@ struct ParserContext {
     }
 
     // An error node that adopts what error recovery discarded, so it isn't left as orphans, see discarded.
-    ErrorIndex create_error(sc::lex::SourceCodeRange location, sc::lex::SourceCodeRange error,
+    ErrorIndex create_error(sc::src::SourceCodeRange location, sc::src::SourceCodeRange error,
                             std::optional<Index> kept = {}) {
         const auto nodes = discarded(error, kept);
         const auto e = graph->create(Error {}, location);

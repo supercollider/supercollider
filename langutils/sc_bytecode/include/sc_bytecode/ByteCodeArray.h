@@ -19,7 +19,7 @@
 */
 
 #pragma once
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/text_location.hpp"
 #include "sc_util/indexed_vector.hpp"
 #include "sc_util/strong_index.hpp"
 #include <cassert>
@@ -31,7 +31,7 @@
 using Byte = unsigned char;
 class CompilingBytecodes {
 public:
-    using Location = sc::lex::SourceCodeRange;
+    using Location = sc::src::SourceCodeRange;
     CompilingBytecodes() = default;
     ~CompilingBytecodes() = default;
 
@@ -65,7 +65,7 @@ public:
     // The index the next emitted byte gets.
     [[nodiscard]] ByteIndex next_index() const noexcept;
 
-    template <typename... BYTES> void emit(sc::lex::SourceCodeRange loc, BYTES... bytes) {
+    template <typename... BYTES> void emit(sc::src::SourceCodeRange loc, BYTES... bytes) {
         static_assert(sizeof...(BYTES) > 0);
         static_assert(sizeof...(BYTES) <= std::numeric_limits<std::uint8_t>::max());
         // SCLang only support int type.

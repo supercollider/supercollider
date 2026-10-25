@@ -141,7 +141,7 @@ typedef union YYSTYPE YYSTYPE;
 #endif
 
 /* Location type.  */
-typedef sc::lex::SourceCodeRange YYLTYPE;
+typedef sc::src::SourceCodeRange YYLTYPE;
 
 
 extern YYSTYPE yylval;

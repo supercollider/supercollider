@@ -1,7 +1,7 @@
 #include "sc_lexer/codepoint_stream.hpp"
 #include "sc_lexer/lexer.hpp"
-#include "sc_lexer/normalise_source.hpp"
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/normalise_source.hpp"
+#include "sc_source/text_location.hpp"
 #include "sc_lexer/tokens.hpp"
 #include <cstdio>
 #include <cstdlib>
@@ -15,6 +15,7 @@
 #endif // _MSC_VER
 
 using namespace sc::lex;
+using namespace sc::src;
 
 template <typename Stream> void print(Stream& s, SourceCodeRange r) {
     s << "{ \"Start\": [" << r.begin.line_number << ", " << r.begin.column << "], \"End\": [" << r.end.line_number
@@ -75,7 +76,7 @@ int main(int argc, char* argv[]) {
 #endif // _MSC_VER
 
     const auto source_len = strlen(source);
-    sc::lex::NormalisedSource src { source, source_len };
+    sc::src::NormalisedSource src { source, source_len };
 
     CodePointStream stream { std::move(src), {} };
     actions::TypeAndLocationAction action {};

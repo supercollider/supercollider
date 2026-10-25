@@ -368,7 +368,7 @@ static constexpr struct IntegerDo {
     /// Jump from the drop instruction to the loop
     unsigned int jumpSize() const { return LoopOrReturn.byteSize + DropAndJumpBackToLoop.byteSize; }
 
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc) const {
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc) const {
         LoopOrReturn.emit(bc, loc);
         DropAndJumpBackToLoop.emit(bc, loc);
     }
@@ -389,7 +389,7 @@ static constexpr struct IntegerReverseDo {
     /// Jump from the drop instruction to the loop, don't jump back to the init instruction.
     unsigned int jumpSize() const { return LoopOrReturn.byteSize + DropAndJumpBackToLoop.byteSize; }
 
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc) const {
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc) const {
         Init.emit(bc, loc);
         LoopOrReturn.emit(bc, loc);
         DropAndJumpBackToLoop.emit(bc, loc);
@@ -419,7 +419,7 @@ static constexpr struct IntegerFor {
     /// Jump from the drop instruction to the loop, don't jump back to the init instruction.
     unsigned int jumpSize() const { return LoopOrReturn.byteSize + DropAndJumpBackToLoop.byteSize; }
 
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc) const {
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc) const {
         Init.emit(bc, loc);
         LoopOrReturn.emit(bc, loc);
         DropAndJumpBackToLoop.emit(bc, loc);
@@ -434,7 +434,7 @@ static constexpr struct IntegerForBy {
     /// Jump from the drop instruction to the loop, don't jump back to the init instruction.
     unsigned int jumpSize() const { return LoopOrReturn.byteSize + DropAndJumpBackToLoop.byteSize; }
 
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc) const {
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc) const {
         Init.emit(bc, loc);
         LoopOrReturn.emit(bc, loc);
         DropAndJumpBackToLoop.emit(bc, loc);
@@ -459,7 +459,7 @@ static constexpr struct ArrayedCollectionDo {
     /// Jump from the drop instruction to the loop, don't jump back to the init instruction.
     unsigned int jumpSize() const { return LoopOrReturn.byteSize + DropAndJumpBackToLoop.byteSize; }
 
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc) const {
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc) const {
         LoopOrReturn.emit(bc, loc);
         DropAndJumpBackToLoop.emit(bc, loc);
     }
@@ -487,7 +487,7 @@ static constexpr struct ArrayedCollectionReversedDo {
     /// Jump from the drop instruction to the loop, don't jump back to the init instruction.
     unsigned int jumpSize() const { return LoopOrReturn.byteSize + DropAndJumpBackToLoop.byteSize; }
 
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc) const {
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc) const {
         Init.emit(bc, loc);
         LoopOrReturn.emit(bc, loc);
         DropAndJumpBackToLoop.emit(bc, loc);
@@ -509,7 +509,7 @@ static constexpr struct DictionaryKeyValuesArrayDo {
         "DictionaryKeyValuesArrayDo-DropAndJumpBackToLoop"
     };
     unsigned int jumpSize() const { return LoopOrReturn.byteSize + DropAndJumpBackToLoop.byteSize; }
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc) const {
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc) const {
         LoopOrReturn.emit(bc, loc);
         DropAndJumpBackToLoop.emit(bc, loc);
     }
@@ -519,7 +519,7 @@ static constexpr struct FloatDo {
     ExtendedPrefix<details::SimpleOpSpec<0x11>> LoopOrReturn { "FloatDo-LoopOrReturn" };
     ExtendedPrefix<details::SimpleOpSpec<0x12>> DropAndJumpBackToLoop { "FloatDo-DropAndJumpBackToLoop" };
     unsigned int jumpSize() const { return LoopOrReturn.byteSize + DropAndJumpBackToLoop.byteSize; }
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc) const {
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc) const {
         LoopOrReturn.emit(bc, loc);
         DropAndJumpBackToLoop.emit(bc, loc);
     }
@@ -527,14 +527,14 @@ static constexpr struct FloatDo {
 
 static constexpr struct QuestionMark {
     ExtendedPrefix<details::SimpleOpSpec<0x16>> IsNil { "?-IsNil" };
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc) const { IsNil.emit(bc, loc); }
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc) const { IsNil.emit(bc, loc); }
 } QuestionMark;
 
 static constexpr struct DoubleQuestionMark {
     ExtendedPrefix<details::SimpleOpSpec<0x17, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>>> Jump {
         "DoubleQuestion-Jump"
     };
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, decltype(Jump)::Tuple&& tup) const {
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, decltype(Jump)::Tuple&& tup) const {
         std::apply([&](auto&&... ts) { Jump.emit(bc, loc, ts...); }, std::forward<decltype(Jump)::Tuple>(tup));
     }
 } DoubleQuestionMark;
@@ -544,7 +544,7 @@ static constexpr struct IfNotNilJump {
     ExtendedPrefix<details::SimpleOpSpec<0x18, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>>> Jump {
         "IFNotNil-Jump"
     };
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, decltype(Jump)::Tuple&& tup) const {
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, decltype(Jump)::Tuple&& tup) const {
         std::apply([&](auto&&... ts) { Jump.emit(bc, loc, ts...); }, std::forward<decltype(Jump)::Tuple>(tup));
     }
 } IfNotNilJump;
@@ -554,7 +554,7 @@ static constexpr struct IfNilJump {
     ExtendedPrefix<details::SimpleOpSpec<0x19, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>>> Jump {
         "IfNil-Jump"
     };
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, decltype(Jump)::Tuple&& tup) const {
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, decltype(Jump)::Tuple&& tup) const {
         std::apply([&](auto&&... ts) { Jump.emit(bc, loc, ts...); }, std::forward<decltype(Jump)::Tuple>(tup));
     }
 } IfNilJump;
@@ -564,7 +564,7 @@ static constexpr struct IfNotNilJumpPushNilElsePop {
     ExtendedPrefix<details::SimpleOpSpec<0x1A, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>>> Jump {
         "IfNotNil-JumpPushNil"
     };
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, decltype(Jump)::Tuple&& tup) const {
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, decltype(Jump)::Tuple&& tup) const {
         std::apply([&](auto&&... ts) { Jump.emit(bc, loc, ts...); }, std::forward<decltype(Jump)::Tuple>(tup));
     }
 } IfNotNilJumpPushNilElsePop;
@@ -574,14 +574,14 @@ static constexpr struct IfNilThenJumpElsePopNil {
     ExtendedPrefix<details::SimpleOpSpec<0x1B, Operands::UnsignedInt<16, 1>, Operands::UnsignedInt<16, 0>>> Jump {
         "IfNil-JumpElsePopNil"
     };
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, decltype(Jump)::Tuple tup) const {
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, decltype(Jump)::Tuple tup) const {
         std::apply([&](auto... ts) { Jump.emit(bc, loc, ts...); }, tup);
     }
 } IfNilThenJumpElsePopNil;
 
 static constexpr struct Switch {
     ExtendedPrefix<details::SimpleOpSpec<0x1C>> LookupAndJump { "Switch-LookupAndJump" };
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc) const { LookupAndJump.emit(bc, loc); }
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc) const { LookupAndJump.emit(bc, loc); }
 } Switch;
 
 static constexpr struct FloatDoReverse {
@@ -589,7 +589,7 @@ static constexpr struct FloatDoReverse {
     ExtendedPrefix<details::SimpleOpSpec<0x14>> LoopOrReturn { "FloatDoReverse-LoopOrReturn" };
     ExtendedPrefix<details::SimpleOpSpec<0x15>> DropAndJumpBackToLoop { "FloatDoReverse-DropAndJumpBackToLoop" };
     unsigned int jumpSize() const { return LoopOrReturn.byteSize + DropAndJumpBackToLoop.byteSize; }
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc) const {
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc) const {
         Init.emit(bc, loc);
         LoopOrReturn.emit(bc, loc);
         DropAndJumpBackToLoop.emit(bc, loc);
@@ -621,7 +621,7 @@ static constexpr struct NumberForSeries {
 
     unsigned int jumpSize() const { return LoopOrReturn.byteSize + DropAndJumpBackToLoop.byteSize; }
 
-    void emit(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc) const {
+    void emit(CompilingBytecodes& bc, sc::src::SourceCodeRange loc) const {
         Init.emit(bc, loc);
         LoopOrReturn.emit(bc, loc);
         DropAndJumpBackToLoop.emit(bc, loc);

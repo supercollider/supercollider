@@ -103,7 +103,7 @@ struct SourceEntry {
 };
 
 // Each file of the class library, empty when it didn't parse.
-using ClassLibrarySources = util::IndexedVector<ASTGraphIndex, std::optional<SourceEntry>>;
+using ClassLibrarySources = util::IndexedVector<SourceEntryIndex, std::optional<SourceEntry>>;
 
 
 struct Context {

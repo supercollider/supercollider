@@ -1,7 +1,7 @@
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/text_location.hpp"
 #include <cassert>
 
-using namespace sc::lex;
+using namespace sc::src;
 
 // assuming the line number and column are correct and that the source text is the same means we only need to comare
 // the absolute byte offset.
@@ -58,51 +58,51 @@ using namespace sc::lex;
     return { left.begin, right.end };
 }
 
-[[nodiscard]] std::size_t sc::lex::SourceCodeRange::size() const {
+[[nodiscard]] std::size_t sc::src::SourceCodeRange::size() const {
     assert(end.absolute >= begin.absolute);
     return end.absolute - begin.absolute;
 }
 
-[[nodiscard]] std::size_t sc::lex::SourceCodeRange::line_count() const {
+[[nodiscard]] std::size_t sc::src::SourceCodeRange::line_count() const {
     assert(end.absolute >= begin.absolute);
     return (end.line_number - begin.line_number) + 1;
 }
 
-[[nodiscard]] bool sc::lex::SourceCodeRange::operator==(const SourceCodeRange& o) const noexcept {
+[[nodiscard]] bool sc::src::SourceCodeRange::operator==(const SourceCodeRange& o) const noexcept {
     return begin == o.begin && end == o.end;
 }
-[[nodiscard]] bool sc::lex::SourceCodeRange::operator!=(const SourceCodeRange& o) const noexcept {
+[[nodiscard]] bool sc::src::SourceCodeRange::operator!=(const SourceCodeRange& o) const noexcept {
     return !(*this == o);
 }
-[[nodiscard]] bool sc::lex::SourceCodeRange::operator<(const SourceCodeRange& o) const noexcept {
+[[nodiscard]] bool sc::src::SourceCodeRange::operator<(const SourceCodeRange& o) const noexcept {
     return begin < o.begin && end < o.begin;
 }
-[[nodiscard]] bool sc::lex::SourceCodeRange::operator>(const SourceCodeRange& o) const noexcept {
+[[nodiscard]] bool sc::src::SourceCodeRange::operator>(const SourceCodeRange& o) const noexcept {
     return begin < o.end && end > o.end;
 }
 
 
-[[nodiscard]] sc::lex::FileCodeRange sc::lex::FileCodeRange::range(FileCodeRange left, FileCodeRange right) {
+[[nodiscard]] sc::src::FileCodeRange sc::src::FileCodeRange::range(FileCodeRange left, FileCodeRange right) {
     return { left.begin, right.end };
 }
 
-[[nodiscard]] std::size_t sc::lex::FileCodeRange::size() const {
+[[nodiscard]] std::size_t sc::src::FileCodeRange::size() const {
     assert(end.absolute >= begin.absolute);
     return end.absolute - begin.absolute;
 }
 
 
-[[nodiscard]] bool sc::lex::FileCodeRange::operator==(const FileCodeRange& o) const noexcept {
+[[nodiscard]] bool sc::src::FileCodeRange::operator==(const FileCodeRange& o) const noexcept {
     return begin == o.begin && end == o.end;
 }
-[[nodiscard]] bool sc::lex::FileCodeRange::operator!=(const FileCodeRange& o) const noexcept { return !(*this == o); }
-[[nodiscard]] bool sc::lex::FileCodeRange::operator<(const FileCodeRange& o) const noexcept {
+[[nodiscard]] bool sc::src::FileCodeRange::operator!=(const FileCodeRange& o) const noexcept { return !(*this == o); }
+[[nodiscard]] bool sc::src::FileCodeRange::operator<(const FileCodeRange& o) const noexcept {
     return begin < o.begin && end < o.begin;
 }
-[[nodiscard]] bool sc::lex::FileCodeRange::operator>(const FileCodeRange& o) const noexcept {
+[[nodiscard]] bool sc::src::FileCodeRange::operator>(const FileCodeRange& o) const noexcept {
     return begin < o.end && end > o.end;
 }
-[[nodiscard]] std::size_t sc::lex::FileCodeRange::line_count() const {
+[[nodiscard]] std::size_t sc::src::FileCodeRange::line_count() const {
     assert(end.absolute >= begin.absolute);
     return (end.line_number - begin.line_number) + 1;
 }

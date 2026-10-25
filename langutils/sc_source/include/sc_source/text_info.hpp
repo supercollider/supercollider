@@ -1,14 +1,15 @@
 // Copyright Jordan Henderson 2026
 #pragma once
 
-#include "normalise_source.hpp"
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/normalise_source.hpp"
+#include "sc_source/text_location.hpp"
+#include <cassert>
 #include <filesystem>
 #include <optional>
 #include <stdexcept>
 #include <string>
 
-namespace sc::lex {
+namespace sc::src {
 
 struct TextInfo {
     // Throws std::length_error if the source is larger than max_source_size, as positions are 32 bit.

@@ -69,7 +69,7 @@ void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ClassDeclaratio
     auto result = !can_fold_constants(decl.version()) && !ast2ir::ConstEval::is_legacy_literal(*ast_graph, expr_i)
         ? ast2ir::ConstEval::Result { diag::Diagnostic::not_constant(get_text_info(*ast_graph),
                                                                      get_location(*ast_graph, expr_i)) }
-        : ast2ir::ConstEval { cxt, ast_graph, ast_index, decl.version(), &constants }.eval(expr_i);
+        : ast2ir::ConstEval { cxt, ast_graph, decl.version(), &constants }.eval(expr_i);
     std::move(result).visit(
         [&](std::pair<ConstExprIndex, TypeInfo> p) {
             const auto [const_expr_index, type_info] = p;

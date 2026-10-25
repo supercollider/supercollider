@@ -201,7 +201,7 @@ struct Emitter {
         return function.instructions[i];
     }
 
-    [[nodiscard]] sc::lex::SourceCodeRange location(lir::InstructionIndex i) const {
+    [[nodiscard]] sc::src::SourceCodeRange location(lir::InstructionIndex i) const {
         const auto span = function.spans[i];
         return { { span.begin, 0, 0 }, { span.end, 0, 0 } };
     }
@@ -669,7 +669,7 @@ struct Emitter {
     // Encoding
     ////////////////////////////////////////////////////////////////////////////////
 
-    static void push_integer(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, std::int32_t value) {
+    static void push_integer(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, std::int32_t value) {
         if (value == -1)
             PushSpecialNumber.emit(bc, loc, { OpSpecialNumbers::MinusOne });
         else if (value == 0)
@@ -690,7 +690,7 @@ struct Emitter {
                                Operands::Int<32, 1>::fromFull(value), Operands::Int<32, 0>::fromFull(value));
     }
 
-    void push_constant_entry(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, ConstantContent entry) {
+    void push_constant_entry(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, ConstantContent entry) {
         const std::uint32_t index { *add_constant(std::move(entry)) };
         if (index < (1u << 4))
             PushLiteral.emit(bc, loc, index);
@@ -709,7 +709,7 @@ struct Emitter {
                 Operands::UnsignedInt<32, 1>::fromFull(index), Operands::UnsignedInt<32, 0>::fromFull(index));
     }
 
-    void push_class(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, ir::SymSCClassName name) {
+    void push_class(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, ir::SymSCClassName name) {
         if (const auto fnd = ctx.special_symbols.special_classes.find(ir::Symbol { *name });
             fnd != ctx.special_symbols.special_classes.end())
             PushSpecialClass.emit(bc, loc, Operands::SpecialClass { fnd->second });
@@ -718,7 +718,7 @@ struct Emitter {
     }
 
     // As PyrSlotNode::compilePushLit, the values with their own bytecodes first.
-    void push_constant(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, ir::ConstExprIndex c) {
+    void push_constant(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, ir::ConstExprIndex c) {
         const auto& value = ctx.constants(c);
         if (const auto* i = value.get_if<std::int32_t>()) {
             push_integer(bc, loc, *i);
@@ -749,7 +749,7 @@ struct Emitter {
         }
     }
 
-    void push_local(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, lir::LocalRef l) {
+    void push_local(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, lir::LocalRef l) {
         if (l.depth == 0) {
             if (PushTempZeroVar.validNibble(*l.slot))
                 PushTempZeroVar.emit(bc, loc, *l.slot);
@@ -766,7 +766,7 @@ struct Emitter {
     }
 
     // Whether it popped the value, which only the short bytecodes can.
-    bool store(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, const lir::Instruction& i, bool drop) {
+    bool store(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, const lir::Instruction& i, bool drop) {
         return std::visit(util::overload {
                               [&](const lir::StoreLocal& s) {
                                   const auto [depth, slot] = s.local;
@@ -806,7 +806,7 @@ struct Emitter {
                           i);
     }
 
-    void send(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, const lir::Send& s, const SendPlan& p) {
+    void send(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, const lir::Send& s, const SendPlan& p) {
         if (p.tail) {
             if (s.tail == lir::Tail::ReturnFromMethod)
                 TailCallReturnFromMethod.emit(bc, loc);
@@ -903,7 +903,7 @@ struct Emitter {
         }
     }
 
-    void special(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, ir::SCSpecial::Kind kind) {
+    void special(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, ir::SCSpecial::Kind kind) {
         switch (kind) {
         case ir::SCSpecial::Kind::This:
         case ir::SCSpecial::Kind::Super:
@@ -928,7 +928,7 @@ struct Emitter {
     }
 
     // As PyrVarDefNode::compileArg: if the argument isn't nil, jump over the code computing its default.
-    void default_argument(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, const lir::DefaultArgument& d) {
+    void default_argument(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, const lir::DefaultArgument& d) {
         push_local(bc, loc, { 0, d.slot });
         auto value = encode(function.sub_regions[d.value]);
         StoreTempVarX.emit(value, loc, Operands::FrameOffset::fromRaw(0), Operands::Index::fromRaw(*d.slot));
@@ -1065,7 +1065,7 @@ struct Emitter {
     ////////////////////////////////////////////////////////////////////////////////
 
     template <typename Op>
-    void jump(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, const Op& op, std::size_t length) {
+    void jump(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, const Op& op, std::size_t length) {
         if (length > max_jump) {
             const auto owner = owner_location();
             report(sc::diag::Diagnostic::jump_too_long(ctx.graph.text_info(owner.source), ir::IRGraph::range(owner),
@@ -1078,7 +1078,7 @@ struct Emitter {
     }
 
     // An empty body is nil. The old compiler left the stack without a value for some, `a and: { }`.
-    CompilingBytecodes encode_value(lir::FunctionSubRegionIndex r, sc::lex::SourceCodeRange loc) {
+    CompilingBytecodes encode_value(lir::FunctionSubRegionIndex r, sc::src::SourceCodeRange loc) {
         auto bc = encode(function.sub_regions[r]);
         if (bc.length() == 0)
             PushSpecialValue.emit(bc, loc, { OpSpecialValue::Nil_ });
@@ -1088,7 +1088,7 @@ struct Emitter {
     // short_jump skips the then body leaving nil, long_jump goes to the else body. The else body is encoded first, as
     // the old compiler did, which orders the tables.
     template <typename Short, typename Long>
-    void branch(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, lir::FunctionSubRegionIndex then_body,
+    void branch(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, lir::FunctionSubRegionIndex then_body,
                 lir::OptionalFunctionSubRegionIndex else_body, const Short& short_jump, const Long& long_jump) {
         std::optional<CompilingBytecodes> else_bc;
         if (else_body)
@@ -1111,7 +1111,7 @@ struct Emitter {
     }
 
     template <typename Op>
-    void jump_over(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, const Op& op,
+    void jump_over(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, const Op& op,
                    lir::FunctionSubRegionIndex rhs) {
         auto rhs_bc = encode_value(rhs, loc);
         jump(bc, loc, op, rhs_bc.length());
@@ -1119,7 +1119,7 @@ struct Emitter {
     }
 
     // The jump back drops the body's value. The lengths are the old compiler's.
-    void while_(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, const lir::While& w) {
+    void while_(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, const lir::While& w) {
         auto condition = encode_value(w.condition, loc);
         CompilingBytecodes body;
         if (w.body)
@@ -1136,7 +1136,7 @@ struct Emitter {
 
     // Nil is the default if there isn't one. The table is numbered before the bodies' constants, as the old compiler
     // added it first.
-    void switch_(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, const lir::Switch& s) {
+    void switch_(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, const lir::Switch& s) {
         const auto table_index = out.switch_tables.push_back({});
         push_constant_entry(bc, loc, table_index);
         Extended::Switch.emit(bc, loc);
@@ -1192,7 +1192,7 @@ struct Emitter {
         return plan.contains(next) && !plan.left_out(next) && std::holds_alternative<lir::Drop>(instruction(next));
     }
 
-    void emit_return(CompilingBytecodes& bc, sc::lex::SourceCodeRange loc, const RegionPlan& plan,
+    void emit_return(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, const RegionPlan& plan,
                      lir::InstructionIndex i) {
         if (i != plan.region.begin && plan.left_out(util::retreat(i)))
             if (const auto value = special_value(util::retreat(i))) {
@@ -1473,7 +1473,7 @@ bool check_loop_frame(const EmitContext& ctx, ir::SCMethod_I method, const Frame
     return diagnostics.size() == num_diags_before;
 }
 
-CompilingBytecodes::Data loop_code(HardCodedLoop loop, sc::lex::SourceCodeRange loc) {
+CompilingBytecodes::Data loop_code(HardCodedLoop loop, sc::src::SourceCodeRange loc) {
     CompilingBytecodes bc;
     switch (loop) {
     case HardCodedLoop::IntegerDo:

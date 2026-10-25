@@ -10,5 +10,5 @@ add_library(sc_backend STATIC
 )
 
 target_include_directories(sc_backend PUBLIC include)
-target_link_libraries(sc_backend PUBLIC sc_sema sc_diagnostic sc_bytecode sc_util PRIVATE sc_parser sc_lexer)
+target_link_libraries(sc_backend PUBLIC sc_sema sc_diagnostic sc_bytecode sc_util PRIVATE sc_parser)
 set_property(TARGET sc_backend PROPERTY FOLDER Libs)

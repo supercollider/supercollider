@@ -87,7 +87,7 @@ You don't have to worry about memory here in this file, but when using the parse
 
 // Enable yyloc and the use of @N to access the source code location struct.
 %locations
-%define api.location.type {sc::lex::SourceCodeRange}
+%define api.location.type {sc::src::SourceCodeRange}
 
 %token <empty> OPENCURLY CLOSECURLY OPENSQUARE CLOSESQUARE OPENPAREN CLOSEPAREN 
 %token <empty> SEMICOLON NONLOCALRETURN COMMA HASH TILDE
@@ -156,7 +156,7 @@ inline bool checkArraySubrangeSyntax(PyrParseNode* args, const size_t argLen) {
 		} else 
 			break;
 	}
-	const auto range = sc::lex::SourceCodeRange::range(first->location, last->location);
+	const auto range = sc::src::SourceCodeRange::range(first->location, last->location);
 	bison_cxt->postErrorInCurrentFile(range, "Invalid subrange", "expected 2 or less arguments, delete these.");
 	return false;
 }

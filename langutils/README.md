@@ -34,8 +34,8 @@ flowchart TB
 
     src 
     ---> |const char*|normalize 
-    ---> |sc::lex::NormalisedSource|lexer
-    ---> |sc::lex::Token and sc::lex::SourceCodeRange|parser
+    ---> |sc::src::NormalisedSource|lexer
+    ---> |sc::lex::Token and sc::src::SourceCodeRange|parser
     ---> |sc::parser::nodes::NodeGraph, aka. AST|sema
 
     ;

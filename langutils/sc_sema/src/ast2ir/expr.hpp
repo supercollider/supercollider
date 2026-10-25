@@ -31,8 +31,8 @@ struct ScopeEntry {
     State state;
     // Where the declaration is, when it is in another graph, read when the scope is made, as that graph can be changing
     // on another thread while this one compiles. See declaration_location.
-    std::shared_ptr<const lex::TextInfo> declaration_text {};
-    lex::SourceCodeRange declaration_range {};
+    std::shared_ptr<const src::TextInfo> declaration_text {};
+    src::SourceCodeRange declaration_range {};
     OptionalLocalIndex local {};
     std::optional<SymSCClassName> owning_class {};
     // A member declared `const`, which can't be assigned.

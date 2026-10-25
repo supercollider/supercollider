@@ -1,9 +1,9 @@
 #pragma once
 #include "CompilerContext.hpp"
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/text_location.hpp"
 
 namespace {
-using SourceCodeRange = sc::lex::SourceCodeRange;
+using SourceCodeRange = sc::src::SourceCodeRange;
 }
 
 enum struct ReadWriteAccessor {
@@ -32,6 +32,6 @@ extern struct CompilerContext* bison_cxt;
         if ((N) == 0) {                                                                                                \
             (Current) = YYRHSLOC(Rhs, 0);                                                                              \
         } else {                                                                                                       \
-            (Current) = sc::lex::SourceCodeRange::range(YYRHSLOC(Rhs, 1), YYRHSLOC(Rhs, N));                           \
+            (Current) = sc::src::SourceCodeRange::range(YYRHSLOC(Rhs, 1), YYRHSLOC(Rhs, N));                           \
         }                                                                                                              \
     while (0)

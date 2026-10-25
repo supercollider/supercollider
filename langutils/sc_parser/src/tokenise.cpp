@@ -11,8 +11,8 @@
 namespace sc::ast::parser {
 
 namespace {
-using sc::lex::SourceCodeRange;
 using sc::lex::TokenType;
+using sc::src::SourceCodeRange;
 
 // Drops the whitespace and comments, which the parser never sees, other than version comments, see tokenise.
 struct Action {
@@ -30,7 +30,7 @@ struct Action {
 };
 
 // The version in a version comment, `//# VERSION 3.16`, reporting it if it isn't `major.minor` or is unknown.
-std::optional<LanguageVersion> parse_version(const std::shared_ptr<const sc::lex::TextInfo>& text_info, ASTGraph& graph,
+std::optional<LanguageVersion> parse_version(const std::shared_ptr<const sc::src::TextInfo>& text_info, ASTGraph& graph,
                                              SourceCodeRange r) {
     auto text = text_info->read(r);
     text.remove_prefix(std::string_view { "//# VERSION" }.size());
@@ -69,7 +69,7 @@ bool closes(TokenType open, TokenType close) { return sc::lex::get_closing_brack
 
 // Lexes all of the input, reporting the lexer's errors, as the brackets may be paired more than once, see tokenise.
 struct Lexed {
-    std::shared_ptr<const sc::lex::TextInfo> text_info;
+    std::shared_ptr<const sc::src::TextInfo> text_info;
     ASTGraph& graph;
     sc::lex::CodePointStream cps;
     Action action {};
@@ -111,7 +111,7 @@ std::optional<TokenType> next_close(const std::vector<Action::Output>& input, si
 
 // Pairs brackets.
 struct BracketPairer {
-    std::shared_ptr<const sc::lex::TextInfo> text_info;
+    std::shared_ptr<const sc::src::TextInfo> text_info;
     const std::vector<Action::Output>& input;
     bool use_indentation; // a different algorythm.
 
@@ -189,7 +189,7 @@ struct PairedBrackets {
     bool unclosed_at_end;
 };
 
-PairedBrackets pair_brackets(std::shared_ptr<const sc::lex::TextInfo> text_info,
+PairedBrackets pair_brackets(std::shared_ptr<const sc::src::TextInfo> text_info,
                              const std::vector<Action::Output>& input, bool use_indentation) {
     BracketPairer p { std::move(text_info), input, use_indentation };
     bool unclosed_at_end { false };

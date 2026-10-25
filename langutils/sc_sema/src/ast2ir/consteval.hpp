@@ -15,11 +15,10 @@ struct SymbolTable;
 namespace sc::ir::ast2ir {
 
 struct ConstEval {
-    ConstEval(Context& ct, std::shared_ptr<const ast::ASTGraph> ast, ASTGraphIndex ast_i, ast::LanguageVersion v,
+    ConstEval(Context& ct, std::shared_ptr<const ast::ASTGraph> ast, ast::LanguageVersion v,
               ClassDeclaration* optional_class = nullptr):
         cxt(ct),
         ast_graph(std::move(ast)),
-        ast_index(ast_i),
         version(v),
         class_decl(optional_class) {}
 
@@ -135,7 +134,6 @@ struct ConstEval {
 
     Context& cxt;
     std::shared_ptr<const ast::ASTGraph> ast_graph;
-    ASTGraphIndex ast_index;
     // Of the code being evaluated, as for Base::version.
     ast::LanguageVersion version;
     ClassDeclaration* class_decl; // optional

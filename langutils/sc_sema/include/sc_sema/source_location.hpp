@@ -1,12 +1,13 @@
 #pragma once
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/text_location.hpp"
 #include "sc_util/strong_index.hpp"
 #include <cstdint>
 #include <optional>
 
 namespace sc::ir {
 
-using ASTGraphIndex = util::StrongIndex<std::uint32_t, struct ASTGraphIndex__>;
+// An index into ClassLibrarySources, one per class file.
+using SourceEntryIndex = util::StrongIndex<std::uint32_t, struct SourceEntryIndex__>;
 
 // An index into an IRGraph's table of sources.
 using SourceIndex = util::StrongIndex<std::uint32_t, struct SourceIndex__>;
@@ -18,7 +19,7 @@ using SourceIndex = util::StrongIndex<std::uint32_t, struct SourceIndex__>;
 // The line and column are stored rather than recomputed, as the lexer's counting is subtle and would be duplicated.
 struct SourceLocation {
     SourceIndex source;
-    lex::SourceCodeRange range;
+    src::SourceCodeRange range;
 };
 
 template <typename T> struct Locatable {

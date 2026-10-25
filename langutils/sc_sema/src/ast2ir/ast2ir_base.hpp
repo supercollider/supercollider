@@ -70,7 +70,7 @@ inline constexpr std::size_t max_nesting_depth { 4096 };
 
 // Whether the parser reported an error inside the range, e.g., a bracket it repaired, so what was parsed isn't what was
 // written, even without an error node.
-[[nodiscard]] inline bool parse_error_inside(const ast::ASTGraph& ast, sc::lex::SourceCodeRange r) {
+[[nodiscard]] inline bool parse_error_inside(const ast::ASTGraph& ast, sc::src::SourceCodeRange r) {
     return std::any_of(ast.diagnostics().begin(), ast.diagnostics().end(),
                        [&](const sc::diag::Diagnostic& d) { return d.fatal() && d.within(ast.text_info(), r); });
 }

@@ -40,7 +40,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
         const SourceEntry* entry;
         ast::Index index;
         std::string path;
-        sc::lex::SourceCodeLocation begin;
+        sc::src::SourceCodeLocation begin;
     };
     std::vector<Defined> classes;
     std::vector<Defined> extensions;
@@ -81,16 +81,11 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
         }
         m_compile_has_been_called = true;
 
-        std::atomic<ASTGraphIndex::Underlying> ast_it { 0 };
-        const auto process_graph = [&]() {
-            while (true) {
-                const ASTGraphIndex index { ast_it.fetch_add(1, std::memory_order_relaxed) };
-                if (!ctx.class_library_ast.contains(index))
-                    return;
-
+        for (const auto index : ctx.class_library_ast.indices())
+            boost::asio::post(pool, [&, index] {
                 const auto& opt = ctx.class_library_ast[index];
                 if (!opt)
-                    continue;
+                    return;
                 const auto& graph_and_index = *opt;
 
                 const auto& graph = graph_and_index.graph;
@@ -99,7 +94,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
 
                 for (auto child { classes_or_extensions.iter() }; child; ++child) {
                     if (const auto class_i = graph->as_a<ast::ClassIndex>(*child)) {
-                        auto result = ast2ir::DeclareClass { ctx, graph, index, graph_and_index.module }(*class_i);
+                        auto result = ast2ir::DeclareClass { ctx, graph, graph_and_index.module }(*class_i);
                         if (result) {
                             auto& c = result->class_;
                             auto& m = result->meta_class_;
@@ -109,10 +104,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                         }
                     }
                 }
-            }
-        };
-        for (size_t n { 0 }; n < num_threads; ++n)
-            boost::asio::post(pool, process_graph);
+            });
         pool.join();
     }
 
@@ -237,7 +229,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                 if (missing) {
                     if (!ctx.symbol_table.is_meta(*missing)) {
                         // super class does not exist.
-                        std::vector<std::pair<std::shared_ptr<const sc::lex::TextInfo>, sc::lex::SourceCodeRange>> a;
+                        std::vector<std::pair<std::shared_ptr<const sc::src::TextInfo>, sc::src::SourceCodeRange>> a;
 
                         for (SymSCClassName child : ctx.inheritance_edges.get_unsafe(*missing)) {
                             if (auto child_ptr = ctx.class_declarations.get_unsafe(child)) {
@@ -264,7 +256,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                     }
                 } else if (!ctx.symbol_table.is_meta(chain.front())) {
                     // A loop. The meta classes form the same loop, which isn't reported again.
-                    std::vector<std::pair<std::shared_ptr<const sc::lex::TextInfo>, sc::lex::SourceCodeRange>> a;
+                    std::vector<std::pair<std::shared_ptr<const sc::src::TextInfo>, sc::src::SourceCodeRange>> a;
 
                     for (const auto c : chain) {
                         auto child_ptr = ctx.class_declarations.get_unsafe(c);

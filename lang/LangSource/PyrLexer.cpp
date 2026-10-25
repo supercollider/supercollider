@@ -42,10 +42,10 @@
 
 #include "BisonHeaderInclude.hpp"
 #include "sc_lexer/codepoint_stream.hpp"
-#include "sc_lexer/normalise_source.hpp"
+#include "sc_source/normalise_source.hpp"
 #include "lang11d_tab.h"
 
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/text_location.hpp"
 #include "sc_lexer/tokens.hpp"
 
 #include <algorithm>
@@ -144,6 +144,7 @@ double sc_strtof(const char* str, int n, int base) {
 
 
 namespace lex = sc::lex;
+namespace src = sc::src;
 
 using TokenType = lex::TokenType;
 using UnderlyingTokenType = std::underlying_type_t<TokenType>;
@@ -297,23 +298,23 @@ enum struct ExtendedErrors : std::underlying_type_t<TokenType> {
 };
 
 struct BisonSemActionOutput {
-    BisonSemActionOutput(ExtendedErrors e, lex::SourceCodeRange range):
+    BisonSemActionOutput(ExtendedErrors e, src::SourceCodeRange range):
         type(static_cast<TokenType>(e)),
         range(range),
         slot({}) {};
 
-    BisonSemActionOutput(ExtendedErrors e, lex::SourceCodeRange range, lex::SourceCodeRange extra_range):
+    BisonSemActionOutput(ExtendedErrors e, src::SourceCodeRange range, src::SourceCodeRange extra_range):
         type(static_cast<TokenType>(e)),
         range(range),
         slot({}),
         extra_range_of_error(extra_range) {};
 
-    BisonSemActionOutput(TokenType t, lex::SourceCodeRange range, std::optional<PyrSlot> slot = {}):
+    BisonSemActionOutput(TokenType t, src::SourceCodeRange range, std::optional<PyrSlot> slot = {}):
         type(t),
         range(range),
         slot(slot) {};
 
-    BisonSemActionOutput(TokenType t, lex::SourceCodeRange range, PyrSlot slot): type(t), range(range), slot(slot) {};
+    BisonSemActionOutput(TokenType t, src::SourceCodeRange range, PyrSlot slot): type(t), range(range), slot(slot) {};
 
     BisonSemActionOutput() = default;
     BisonSemActionOutput(BisonSemActionOutput&&) noexcept = default;
@@ -326,9 +327,9 @@ struct BisonSemActionOutput {
     [[nodiscard]] bool is(ExtendedErrors t) const { return static_cast<int>(type) == static_cast<int>(t); }
 
     TokenType type {}; // can also include the ExtendedErrors set. There is no nice way to extend an enum in c++.
-    lex::SourceCodeRange range {};
+    src::SourceCodeRange range {};
     std::optional<PyrSlot> slot {};
-    std::optional<lex::SourceCodeRange> extra_range_of_error {};
+    std::optional<src::SourceCodeRange> extra_range_of_error {};
 };
 struct BisonLexerAction {
 public:
@@ -340,12 +341,12 @@ public:
     BisonLexerAction& operator=(const BisonLexerAction&) = default;
 
     std::shared_ptr<TextInfo> textInfo;
-    std::vector<std::pair<TokenType, lex::SourceCodeRange>> closing_bracket_stack {};
+    std::vector<std::pair<TokenType, src::SourceCodeRange>> closing_bracket_stack {};
 
 
     using Output = BisonSemActionOutput;
 
-    template <TokenType T> std::optional<Output> process(lex::SourceCodeRange loc) {
+    template <TokenType T> std::optional<Output> process(src::SourceCodeRange loc) {
         // Discard
         if constexpr (sc::lex::is_whitespace(T) || sc::lex::is_comment(T))
             return std::nullopt;
@@ -532,7 +533,7 @@ private:
             return PyrSlot::make(false);
     }
 
-    const char* fill_temp_buf(lex::SourceCodeRange loc) {
+    const char* fill_temp_buf(src::SourceCodeRange loc) {
         const auto& str = textInfo->normalisedSource.as_string();
         const char* c_str = str.c_str();
         temp_buffer.clear();
@@ -540,7 +541,7 @@ private:
         return temp_buffer.c_str();
     }
 
-    PyrSymbol* text_to_symbol(lex::SourceCodeRange loc, size_t drop_from_start = 0, size_t drop_from_end = 0,
+    PyrSymbol* text_to_symbol(src::SourceCodeRange loc, size_t drop_from_start = 0, size_t drop_from_end = 0,
                               bool needs_escaping = false) {
         temp_buffer.clear();
 
@@ -762,7 +763,7 @@ int yylex() {
     if (out.type != TokenType::StringLine)
         return prepForOutput(out);
 
-    sc::lex::SourceCodeLocation start { out.range.begin };
+    sc::src::SourceCodeLocation start { out.range.begin };
     std::string str {};
     str.reserve(128);
 
@@ -890,7 +891,7 @@ struct ParseClassException {
 
 struct ParseClassExceptionSimple : ParseClassException {
     ParseClassExceptionSimple() = delete;
-    ParseClassExceptionSimple(std::shared_ptr<TextInfo> textInfo, sc::lex::SourceCodeRange range, const char* desc):
+    ParseClassExceptionSimple(std::shared_ptr<TextInfo> textInfo, sc::src::SourceCodeRange range, const char* desc):
         textInfo(std::move(textInfo)),
         range(range),
         desc(desc) {}
@@ -899,7 +900,7 @@ struct ParseClassExceptionSimple : ParseClassException {
     ParseClassExceptionSimple(const ParseClassExceptionSimple&) noexcept = default;
 
     std::shared_ptr<TextInfo> textInfo;
-    sc::lex::SourceCodeRange range;
+    sc::src::SourceCodeRange range;
     const char* desc;
 
     [[nodiscard]] std::string getError() & override {
@@ -913,7 +914,7 @@ struct ParseClassExceptionSimple : ParseClassException {
 };
 struct ParseClassExceptionBracket : ParseClassException {
     ParseClassExceptionBracket() = delete;
-    ParseClassExceptionBracket(TextInfo f_info, sc::lex::SourceCodeRange start, sc::lex::SourceCodeRange end,
+    ParseClassExceptionBracket(TextInfo f_info, sc::src::SourceCodeRange start, sc::src::SourceCodeRange end,
                                std::string startDesc, std::string endDesc):
         f_info(f_info),
         start(start),
@@ -926,7 +927,7 @@ struct ParseClassExceptionBracket : ParseClassException {
 
     TextInfo f_info;
 
-    sc::lex::SourceCodeRange start, end;
+    sc::src::SourceCodeRange start, end;
     std::string startDesc, endDesc;
 
     [[nodiscard]] std::string getError() & override {
@@ -970,8 +971,8 @@ private:
 };
 struct ClassDependency {
     ClassDependency(PyrSymbol* name, PyrSymbol* superClassName, std::shared_ptr<TextInfo>& textInfo,
-                    sc::lex::SourceCodeRange range, sc::lex::SourceCodeRange rangeOfClassname,
-                    std::optional<sc::lex::SourceCodeRange> rangeOfSuperClass):
+                    sc::src::SourceCodeRange range, sc::src::SourceCodeRange rangeOfClassname,
+                    std::optional<sc::src::SourceCodeRange> rangeOfSuperClass):
         className(name),
         superClassName(superClassName),
         textInfo(textInfo),
@@ -987,9 +988,9 @@ struct ClassDependency {
     PyrSymbol* className;
     PyrSymbol* superClassName; // can be nullptr
     std::shared_ptr<TextInfo> textInfo;
-    sc::lex::SourceCodeRange range;
-    sc::lex::SourceCodeRange rangeOfClassName;
-    std::optional<sc::lex::SourceCodeRange> rangeOfSuperClass;
+    sc::src::SourceCodeRange range;
+    sc::src::SourceCodeRange rangeOfClassName;
+    std::optional<sc::src::SourceCodeRange> rangeOfSuperClass;
     // Set in a second pass
     OptionalIndex parent {}, firstChild {}, lastChild {}, nextSibling {};
 };
@@ -1135,7 +1136,7 @@ private:
 
 struct ClassExtentionFile {
     std::shared_ptr<TextInfo> textInfo;
-    sc::lex::SourceCodeLocation start;
+    sc::src::SourceCodeLocation start;
 };
 
 bool compile(CompilerContext& cxt) {
@@ -1177,9 +1178,9 @@ void findDiscrepancy();
 struct ActionSkipWhitespace {
     struct Output {
         sc::lex::TokenType type;
-        sc::lex::SourceCodeRange range;
+        sc::src::SourceCodeRange range;
     };
-    template <sc::lex::TokenType type> std::optional<Output> process(sc::lex::SourceCodeRange loc) {
+    template <sc::lex::TokenType type> std::optional<Output> process(sc::src::SourceCodeRange loc) {
         if constexpr (sc::lex::is_whitespace(type) || sc::lex::is_comment(type))
             return std::nullopt;
         else
@@ -1200,7 +1201,7 @@ ActionSkipWhitespace::Output match(std::shared_ptr<TextInfo>& f_info, sc::lex::C
 
 // Must have *just* consumed the opening bracket.
 ActionSkipWhitespace::Output matchClosingBracket(std::shared_ptr<TextInfo>& f_info, sc::lex::CodePointStream& cps,
-                                                 ActionSkipWhitespace& action, sc::lex::SourceCodeRange loc_of_open,
+                                                 ActionSkipWhitespace& action, sc::src::SourceCodeRange loc_of_open,
                                                  sc::lex::TokenType opening) {
     assert(sc::lex::is_open_bracket(opening));
     const auto closing = sc::lex::get_closing_bracket(opening);
@@ -1286,7 +1287,7 @@ bool initializeClassDependencyListAndRegisterExtensions(std::shared_ptr<TextInfo
         next = lex::lexer(cps, action);
     }
 
-    std::optional<sc::lex::SourceCodeRange> superloc {};
+    std::optional<sc::src::SourceCodeRange> superloc {};
     PyrSymbol* superName { nullptr };
     if (next.type != TokenType::Colon) {
         if (className != s_abstract_object) {
@@ -1539,11 +1540,11 @@ bool passOne_ProcessOneFile(const fs::path& path, ClassLibraryFileMap& files, cl
 
     ss << file.rdbuf();
 
-    sc::lex::NormalisedSource norm { ss.str() };
+    sc::src::NormalisedSource norm { ss.str() };
     auto pyrString =
         newPyrString(gc, static_cast<const std::string&>(norm).c_str(), obj_immutable | obj_permanent, false);
 
-    auto textInfo = std::make_shared<TextInfo>(norm, *pyrString, *fileSym, sc::lex::FileCodeLocation {}, true);
+    auto textInfo = std::make_shared<TextInfo>(norm, *pyrString, *fileSym, sc::src::FileCodeLocation {}, true);
     files.emplace(fileSym, textInfo);
 
     sc::lex::CodePointStream cps { textInfo->normalisedSource, textInfo->offsetInFile };
@@ -1897,8 +1898,8 @@ SCLANG_DLLEXPORT_C void setCommandLine(const char* txt, size_t txtSize, const ch
     g->gc->GCWriteNew(interpreter, strobj);
 }
 
-CompilerContext::CompilerContext(std::shared_ptr<TextInfo> t, sc::lex::FileCodeLocation fileLoc,
-                                 sc::lex::SourceCodeLocation loc, struct VMGlobals* vm):
+CompilerContext::CompilerContext(std::shared_ptr<TextInfo> t, sc::src::FileCodeLocation fileLoc,
+                                 sc::src::SourceCodeLocation loc, struct VMGlobals* vm):
     textInfo(std::move(t)),
     vm_globals(vm) {
     parseNodePool.Init(pyr_pool_compile, 32000, 32000, 2000);
@@ -1918,8 +1919,8 @@ constexpr size_t compPoolInitSize { 32000 };
 constexpr size_t compPoolGrowSize { 32000 };
 constexpr size_t compPoolTooBigSize { 2000 };
 
-CompilerContext::CompilerContext(std::shared_ptr<TextInfo> t, sc::lex::FileCodeLocation fileLoc,
-                                 sc::lex::SourceCodeRange range, struct VMGlobals* vm):
+CompilerContext::CompilerContext(std::shared_ptr<TextInfo> t, sc::src::FileCodeLocation fileLoc,
+                                 sc::src::SourceCodeRange range, struct VMGlobals* vm):
     textInfo(std::move(t)),
     vm_globals(vm) {
     parseNodePool.Init(pyr_pool_compile, compPoolInitSize, compPoolGrowSize, compPoolTooBigSize);

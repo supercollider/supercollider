@@ -1,7 +1,7 @@
 #pragma once
 
-#include "codepoint.hpp"
-#include "text_location.hpp"
+#include "sc_source/codepoint.hpp"
+#include "sc_source/text_location.hpp"
 #include "codepoint_stream.hpp"
 #include "tokens.hpp"
 #include <optional>
@@ -29,14 +29,14 @@ namespace actions {
 struct TypeAndLocationAction {
     struct Output {
         TokenType type;
-        SourceCodeRange range;
+        src::SourceCodeRange range;
     };
-    template <TokenType type> std::optional<Output> process(SourceCodeRange loc) { return { { type, loc } }; }
+    template <TokenType type> std::optional<Output> process(src::SourceCodeRange loc) { return { { type, loc } }; }
 };
 
 struct TypeOnlyAction {
     using Output = TokenType;
-    template <TokenType type> std::optional<Output> process(SourceCodeRange) { return { type }; }
+    template <TokenType type> std::optional<Output> process(src::SourceCodeRange) { return { type }; }
 };
 
 }
@@ -68,8 +68,8 @@ constexpr inline int str_to_int_for_radix(const char* str, std::size_t n, int ba
 
 
 template <typename Action>
-decltype(auto) lexer_binary_operator(CodePointStream& stream, Action& action, SourceCodeLocation token_start) {
-    const auto end = stream.advance_while(is_binary_operator_character);
+decltype(auto) lexer_binary_operator(CodePointStream& stream, Action& action, src::SourceCodeLocation token_start) {
+    const auto end = stream.advance_while(src::is_binary_operator_character);
     const auto [str_b, sz] = stream.source_code_range_to_text({ token_start, end });
     assert(sz > 0);
     if (sz == 1) {
@@ -115,8 +115,8 @@ struct StringMatcher {
 
 template <typename Action>
 decltype(auto) lexer_identifier_keybinop_curry_kw_etc(CodePointStream& stream, Action& action,
-                                                      SourceCodeLocation token_start) {
-    const auto end = stream.advance_while([](auto c) { return is_continuing_identifier(c); });
+                                                      src::SourceCodeLocation token_start) {
+    const auto end = stream.advance_while([](auto c) { return src::is_continuing_identifier(c); });
 
     // Note: this logic is a little odd, as it mean '_:' and '_asdf:' are keybinops, as is 'Foo:'.
     // This explains why you need a space between child and parent class in class definitions.
@@ -126,7 +126,7 @@ decltype(auto) lexer_identifier_keybinop_curry_kw_etc(CodePointStream& stream, A
     if (stream.peek_advance_if(':'))
         return action.template process<TokenType::KeywordBinaryOperator>({ token_start, stream.end_token() });
 
-    const SourceCodeRange range { token_start, end };
+    const src::SourceCodeRange range { token_start, end };
     const auto [t_b, sz] = stream.source_code_range_to_text(range);
 
     if (t_b[0] == '_' && range.size() == 1)
@@ -135,7 +135,7 @@ decltype(auto) lexer_identifier_keybinop_curry_kw_etc(CodePointStream& stream, A
     if (t_b[0] == '_')
         return action.template process<TokenType::PrimitiveName>(range);
 
-    if (is_start_of_class(*t_b))
+    if (src::is_start_of_class(*t_b))
         return action.template process<TokenType::ClassName>(range);
 
     const auto txt = StringMatcher { t_b };
@@ -169,8 +169,8 @@ decltype(auto) lexer_identifier_keybinop_curry_kw_etc(CodePointStream& stream, A
 }
 
 template <typename Action>
-decltype(auto) lexer_digits(CodePointStream& stream, Action& action, SourceCodeLocation token_start) {
-    const auto end_of_pre = stream.advance_while([](auto c) { return is_numeric(c); });
+decltype(auto) lexer_digits(CodePointStream& stream, Action& action, src::SourceCodeLocation token_start) {
+    const auto end_of_pre = stream.advance_while([](auto c) { return src::is_numeric(c); });
 
     const auto peek = stream.peek_n<2>();
 
@@ -210,7 +210,7 @@ decltype(auto) lexer_digits(CodePointStream& stream, Action& action, SourceCodeL
     case 'E': {
         stream.advance(); // drop e
         stream.peek_advance_if('+', '-');
-        const auto count = stream.advance_while_count([](auto c) { return is_numeric(c); });
+        const auto count = stream.advance_while_count([](auto c) { return src::is_numeric(c); });
         if (count == 0)
             return action.template process<TokenType::ErMissingExponent>({ token_start, stream.end_token() });
 
@@ -218,14 +218,14 @@ decltype(auto) lexer_digits(CodePointStream& stream, Action& action, SourceCodeL
     }
 
     case '.': {
-        if (!is_numeric(peek[1]))
+        if (!src::is_numeric(peek[1]))
             return action.template process<TokenType::Integer>({ token_start, stream.end_token() });
         stream.advance(); // drop '.'
-        stream.advance_while(is_numeric);
+        stream.advance_while(src::is_numeric);
         if (const auto e = stream.peek(); e == 'e' || e == 'E') {
             stream.advance(); // drop e
             stream.peek_advance_if('+', '-');
-            const auto count = stream.advance_while_count([](auto c) { return is_numeric(c); });
+            const auto count = stream.advance_while_count([](auto c) { return src::is_numeric(c); });
             if (count == 0)
                 return action.template process<TokenType::ErMissingExponent>({ token_start, stream.end_token() });
 
@@ -243,7 +243,7 @@ decltype(auto) lexer_digits(CodePointStream& stream, Action& action, SourceCodeL
         if (num_acc == 1) {
             // Lets you specify a cent value after a *single* accidental.
             // 123s40
-            const auto num_cent_chars = stream.advance_while_count(is_numeric);
+            const auto num_cent_chars = stream.advance_while_count(src::is_numeric);
             if (num_cent_chars == 0)
                 return action.template process<TokenType::AccidentalSteps>({ token_start, stream.end_token() });
             else
@@ -257,7 +257,7 @@ decltype(auto) lexer_digits(CodePointStream& stream, Action& action, SourceCodeL
         // Ignores the preceding digits and the 'x'.
         // BUG: this means 89702347890234589xAA == 0xAA. Probably not intended.
         const auto end = stream.advance_while(
-            [](auto c) { return is_numeric(c) || ('a' <= c && c <= 'f') || ('A' <= c && c <= 'F'); });
+            [](auto c) { return src::is_numeric(c) || ('a' <= c && c <= 'f') || ('A' <= c && c <= 'F'); });
         return action.template process<TokenType::Hexadecimal>({ token_start, end });
     }
 
@@ -265,7 +265,6 @@ decltype(auto) lexer_digits(CodePointStream& stream, Action& action, SourceCodeL
         return action.template process<TokenType::Integer>({ token_start, stream.end_token() });
     }
 }
-
 }
 
 template <typename Action> auto lexer(CodePointStream& stream, Action& action) noexcept -> typename Action::Output {
@@ -296,19 +295,19 @@ next_token : {
         return *r;
     }
 
-    if (is_newline(code_point)) {
-        stream.advance_while(is_newline);
+    if (src::is_newline(code_point)) {
+        stream.advance_while(src::is_newline);
         return_orelse_next_token(action.template process<TokenType::NewLine>({ token_start, stream.end_token() }));
     }
 
 
     if (code_point == '\t') {
-        stream.advance_while(is_tab);
+        stream.advance_while(src::is_tab);
         return_orelse_next_token(action.template process<TokenType::Tab>({ token_start, stream.end_token() }));
     }
 
-    if (is_space(code_point)) {
-        stream.advance_while(is_space);
+    if (src::is_space(code_point)) {
+        stream.advance_while(src::is_space);
         return_orelse_next_token(action.template process<TokenType::Space>({ token_start, stream.end_token() }));
     }
 
@@ -358,7 +357,7 @@ next_token : {
         // '/*'
         if (p == '*') {
             stream.advance();
-            CodePoint it_1 = 0, it = 0;
+            src::CodePoint it_1 = 0, it = 0;
             size_t level = 1;
             stream.advance_while([&](auto c) {
                 it_1 = it;
@@ -389,7 +388,7 @@ next_token : {
             // Exactly `//# VERSION ` (or a tab), so other comments starting with `//#` aren't mistaken for one.
             const auto v = stream.peek_n<11>();
             const bool is_version = v.starts_with("/# VERSION") && (v[10] == ' ' || v[10] == '\t');
-            stream.advance_while([](auto c) { return !is_newline(c); });
+            stream.advance_while([](auto c) { return !src::is_newline(c); });
             if (is_version)
                 return_orelse_next_token(
                     action.template process<TokenType::VersionComment>({ token_start, stream.end_token() }));
@@ -417,7 +416,7 @@ next_token : {
         const auto p = stream.peek();
         // When you have `$ ` or `$\ ` it is important the whitespace is unambiguous.
         // Here we enforce that the only whitespace character allowed is the ascii space.
-        if (is_whitespace(p) && p != ' ') {
+        if (src::is_whitespace(p) && p != ' ') {
             return_orelse_next_token(
                 action.template process<TokenType::ErASCIIInvalidWhitespace>({ token_start, stream.end_token() }));
         } else if (p == 0) { // end of file
@@ -431,15 +430,15 @@ next_token : {
         }
     }
 
-    if (is_starting_identifier(code_point) || code_point == '_')
+    if (src::is_starting_identifier(code_point) || code_point == '_')
         return_orelse_next_token(lexer_identifier_keybinop_curry_kw_etc(stream, action, token_start));
 
 
-    if (is_binary_operator_character(code_point))
+    if (src::is_binary_operator_character(code_point))
         return_orelse_next_token(lexer_binary_operator(stream, action, token_start));
 
 
-    if (is_numeric(code_point))
+    if (src::is_numeric(code_point))
         return_orelse_next_token(lexer_digits(stream, action, token_start));
 
     // Strings
@@ -464,14 +463,14 @@ next_token : {
     // Symbol that begin with a '\'. Note: first character is used to alter what is acceptable in the following.
     if (code_point == '\\') {
         const auto first = stream.peek();
-        const SourceCodeLocation end = [&]() {
-            if (is_lower(first) || is_upper(first) || first == '_')
+        const src::SourceCodeLocation end = [&]() {
+            if (src::is_lower(first) || src::is_upper(first) || first == '_')
                 // Symbol began with alpha or underscore, therefore, can contain alpha, underscore, and numbers
                 return stream.advance_while(
-                    [](auto c) { return is_lower(c) || is_upper(c) || is_numeric(c) || c == '_'; });
-            if (is_numeric(first))
+                    [](auto c) { return src::is_lower(c) || src::is_upper(c) || src::is_numeric(c) || c == '_'; });
+            if (src::is_numeric(first))
                 // Symbol began with a digit, therefore can only contain digits... why??
-                return stream.advance_while(is_numeric);
+                return stream.advance_while(src::is_numeric);
 
             // It isn't either of the above, emit an empty symbol.
             return stream.end_token();
@@ -482,7 +481,7 @@ next_token : {
     // Symbol quotes 'asdf'
     if (code_point == '\'') {
         const auto content_end = stream.advance_while([escape = false](auto c) mutable {
-            if (is_newline(c) && !escape) // you can escape the new line characters
+            if (src::is_newline(c) && !escape) // you can escape the new line characters
                 return false;
             if (c == '\'' && !escape)
                 return false;
@@ -503,12 +502,12 @@ next_token : {
 
     // These are the control codes, throw them away!
     // We might consider generating an error here, as this really ought not to occur.
-    if (is_control_code(code_point)) {
-        stream.advance_while(is_control_code);
+    if (src::is_control_code(code_point)) {
+        stream.advance_while(src::is_control_code);
         goto next_token;
     }
 
-    if (code_point == sc::lex::invalid_utf8_flag)
+    if (code_point == sc::src::invalid_utf8_flag)
         return_orelse_next_token(
             action.template process<TokenType::ErInvalidUTF8>({ token_start, stream.end_token() }));
 

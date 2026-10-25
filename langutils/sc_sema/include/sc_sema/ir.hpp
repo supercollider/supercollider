@@ -14,7 +14,7 @@
 #include <utility>
 #include <vector>
 
-namespace sc::lex {
+namespace sc::src {
 struct TextInfo;
 }
 
@@ -181,10 +181,10 @@ public:
     // The text the locations refer to. Holding the text keeps it alive, the ast isn't needed once it is lowered.
     ////////////////////////////////////////////////////////////////////////////////
     // Adds the source to the table if it isn't already there.
-    [[nodiscard]] SourceIndex register_source(std::shared_ptr<const lex::TextInfo> text);
-    [[nodiscard]] SourceLocation make_location(std::shared_ptr<const lex::TextInfo> text, lex::SourceCodeRange range);
-    [[nodiscard]] const std::shared_ptr<const lex::TextInfo>& text_info(SourceIndex i) const;
-    [[nodiscard]] static lex::SourceCodeRange range(SourceLocation l);
+    [[nodiscard]] SourceIndex register_source(std::shared_ptr<const src::TextInfo> text);
+    [[nodiscard]] SourceLocation make_location(std::shared_ptr<const src::TextInfo> text, src::SourceCodeRange range);
+    [[nodiscard]] const std::shared_ptr<const src::TextInfo>& text_info(SourceIndex i) const;
+    [[nodiscard]] static src::SourceCodeRange range(SourceLocation l);
     [[nodiscard]] std::string_view read(SourceLocation l) const;
 
 
@@ -258,7 +258,7 @@ public:
 
 private:
     util::IndexedVector<NodeIndex, SourceLocation> m_node_locations {};
-    util::IndexedVector<SourceIndex, std::shared_ptr<const lex::TextInfo>> m_sources {};
+    util::IndexedVector<SourceIndex, std::shared_ptr<const src::TextInfo>> m_sources {};
     util::IndexedVector<LocalIndex, LocalVariable> m_locals {};
     util::IndexedVector<MemberIndex, MemberVariable> m_members {};
 

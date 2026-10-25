@@ -6,9 +6,9 @@
 #include <string>
 
 #include "sc_diagnostic/sc_diagnostic.hpp"
-#include "sc_lexer/normalise_source.hpp"
-#include "sc_lexer/text_info.hpp"
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/normalise_source.hpp"
+#include "sc_source/text_info.hpp"
+#include "sc_source/text_location.hpp"
 #include "sc_parser/ast.hpp"
 #include "sc_parser/sc_parser.hpp"
 
@@ -51,8 +51,8 @@ int main(int argc, char* argv[]) {
 #else
     const auto* const source = argv[argc - 1];
 #endif // _MSC_VER
-    const auto text_info = std::make_shared<sc::lex::TextInfo>(sc::lex::NormalisedSource { std::string { source } },
-                                                               sc::lex::FileCodeLocation {}, "source", class_file);
+    const auto text_info = std::make_shared<sc::src::TextInfo>(sc::src::NormalisedSource { std::string { source } },
+                                                               sc::src::FileCodeLocation {}, "source", class_file);
 
     const auto [graph, _] = sc::ast::parse(text_info);
     bool has_error = false;
@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
     if (const auto root = graph->root_any()) {
         graph->depth_first_traverse(*root,
                                     [&](const sc::ast::ASTGraph::Edges&, const sc::ast::ASTGraph::Variant& payload,
-                                        const sc::lex::SourceCodeRange& loc, sc::ast::Index, size_t depth) {
+                                        const sc::src::SourceCodeRange& loc, sc::ast::Index, size_t depth) {
                                         for (size_t di { 0 }; di < depth; ++di)
                                             std::cout << '\t';
                                         std::string text { text_info->read(loc) };

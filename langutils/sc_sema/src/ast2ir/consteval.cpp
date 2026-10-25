@@ -301,7 +301,7 @@ ConstEval::RangeParts range_parts_of(const ast::ASTGraph& ast_graph, ast::Argume
         parts.last = ast::AnyExprIndex { *maybe_last };
 
     std::size_t count = 0;
-    std::optional<sc::lex::SourceCodeRange> extra;
+    std::optional<sc::src::SourceCodeRange> extra;
     for (auto it = ast_graph.children(args).iter(); it; ++it) {
         const ast::ArgumentEntryIndex entry = *it;
         // e.g., `x[a: 1..3]` or `x[*a..3]`, they are skipped so the rest can still be compiled.
@@ -319,7 +319,7 @@ ConstEval::RangeParts range_parts_of(const ast::ASTGraph& ast_graph, ast::Argume
         else {
             // Underlines from the first extra argument to the last.
             const auto loc = get_location(ast_graph, entry);
-            extra = extra ? sc::lex::range(*extra, loc) : loc;
+            extra = extra ? sc::src::range(*extra, loc) : loc;
         }
         ++count;
     }

@@ -1,7 +1,7 @@
 #include "sc_diagnostic/sc_diagnostic.hpp"
-#include "sc_lexer/normalise_source.hpp"
-#include "sc_lexer/text_info.hpp"
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/normalise_source.hpp"
+#include "sc_source/text_info.hpp"
+#include "sc_source/text_location.hpp"
 #include "sc_parser/ast.hpp"
 #include "sc_parser/indexes_typed.hpp"
 #include "sc_parser/sc_parser.hpp"
@@ -49,8 +49,8 @@ Interpreter {
 
 std::shared_ptr<const sc::ast::ASTGraph> parse(std::string source, const char* path, bool class_file,
                                                std::vector<sc::diag::Diagnostic>& diagnostics) {
-    auto text_info = std::make_shared<sc::lex::TextInfo>(sc::lex::NormalisedSource { std::move(source) },
-                                                         sc::lex::FileCodeLocation {}, path, class_file);
+    auto text_info = std::make_shared<sc::src::TextInfo>(sc::src::NormalisedSource { std::move(source) },
+                                                         sc::src::FileCodeLocation {}, path, class_file);
     auto [ast_graph, _] = sc::ast::parse(text_info);
     if (ast_graph)
         for (const auto& d : ast_graph->diagnostics())

@@ -1,8 +1,8 @@
-#include "sc_lexer/source_utils.hpp"
-#include "sc_lexer/codepoint.hpp"
-#include "sc_lexer/text_location.hpp"
+#include "sc_source/source_utils.hpp"
+#include "sc_source/codepoint.hpp"
+#include "sc_source/text_location.hpp"
 #include <optional>
-namespace sc::lex::utils {
+namespace sc::src::utils {
 
 CodePointIterator::CodePointIterator(const char* text_start, const char* text_end, const char* cur_location) noexcept:
     txt_start(text_start),

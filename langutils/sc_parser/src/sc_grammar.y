@@ -11,7 +11,7 @@
 %define parse.lac full
 
 %locations
-%define api.location.type { sc::lex::SourceCodeRange }
+%define api.location.type { sc::src::SourceCodeRange }
 
 
 // This goes in the header
