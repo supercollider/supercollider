@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Compares old sclang's bytecode with the backend's, the ground truth for legacy parity, see B7 in the plan.
+"""Compares old sclang's bytecode with the backend's, the ground truth for legacy parity. differential_test.py runs
+these steps over the class library and sc_sema's Legacy bytecode tests, with an allowlist. By hand:
 
 1. Dump old sclang's bytes and tables, with a config from sclang_conf.yaml.in:
        build/lang/sclang -l conf.yaml langutils/sc_backend/tools/dump_old_bytecode.scd old.txt
@@ -9,7 +10,8 @@
        build/langutils/sc_inspect/sc_inspect --bytecode library_copy > new.txt
 3. Compare, every method by class and name, sorting differences into inlining (B4), hard coded methods (B5d), and the
    rest, which are printed. methType isn't readable from sclang, so a shortcut is compared as a method without code
-   and what its selectors hold (the literal returned or the selector sent):
+   and what its selectors hold (the literal returned or the selector sent). Methods only one compiler compiled are
+   printed as MISSING (old only) and EXTRA (backend only):
        compare_bytecode.py --all old.txt new.txt
    or the methods of some classes, in order:
        compare_bytecode.py old.txt new.txt Class ...
@@ -333,14 +335,17 @@ def uses_inlining(fs):
 
 
 def compare_all(old_path, new_path):
+    """Returns the counts, the differences as [((class, method), problems)], the methods only old sclang compiled
+    and those only the backend did."""
     old = group(parse_old_classes(old_path))
     new_funcs = parse_new(new_path, [])
     new = group([(c, f) for c, fs in new_funcs.items() for f in fs])
     stats = {'match': 0, 'shortcut': 0, 'hard coded': 0, 'inlining': 0, 'other': 0, 'missing': 0}
-    others = []
+    others, missing = [], []
     for key, ofs in old.items():
         if key not in new:
             stats['missing'] += 1
+            missing.append(key)
             continue
         nfs = in_selector_order(new[key])
         normalise_switches(ofs)
@@ -376,15 +381,28 @@ def compare_all(old_path, new_path):
         else:
             stats['other'] += 1
             others.append((key, problems))
-    for key, problems in others:
-        print('DIFF %s:%s\n    %s' % (key[0], key[1], '\n    '.join(problems)))
-    print(stats)
+    extra = [key for key in new if key not in old]
+    return stats, others, missing, extra
 
+
+def print_difference(key, problems):
+    print('DIFF %s:%s\n    %s' % (key[0], key[1], '\n    '.join(problems)))
+
+
+def print_all(old_path, new_path):
+    stats, others, missing, extra = compare_all(old_path, new_path)
+    for key, problems in others:
+        print_difference(key, problems)
+    for key in missing:
+        print('MISSING %s:%s' % key)
+    for key in extra:
+        print('EXTRA %s:%s' % key)
+    print(stats)
 
 
 if __name__ == '__main__':
     if len(sys.argv) == 4 and sys.argv[1] == '--all':
-        compare_all(sys.argv[2], sys.argv[3])
+        print_all(sys.argv[2], sys.argv[3])
     elif len(sys.argv) >= 3 and sys.argv[1] != '--all':
         main()
     else:

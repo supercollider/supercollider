@@ -24,6 +24,8 @@ try {
 		file.write("CLASS %\n".format(c.name));
 		c.methods.do { |m| try { dumpFn.(m.name, m) } { |e| file.write("ERROR %\n".format(e.errorString)) } };
 	};
+	// Only a complete dump ends with this, see differential_test.py.
+	file.write("END\n");
 } { |e| e.reportError };
 file.close;
 0.exit;
