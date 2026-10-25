@@ -28,14 +28,17 @@
 #include "scsynthsend.h"
 #include "SC_Prototypes.h"
 #include "SC_HiddenWorld.h"
-#include "SC_Filesystem.hpp"
-#include "SC_StringParser.h"
-#include "../../common/SC_SndFileHelpers.hpp"
+#include "SC_Codecvt.hpp"
+#include "SC_SndFileHelpers.hpp"
+#include "sc_msg_iter.h"
 #include "SC_WorldOptions.h"
 
+#include <cstring>
 #include <filesystem>
 
-const size_t ERR_BUF_SIZE(512);
+namespace fs = std::filesystem;
+
+constexpr size_t ERR_BUF_SIZE = 512;
 
 #define ReturnSCErrIfNil(ptr)                                                                                          \
     if (!ptr)                                                                                                          \
@@ -81,48 +84,46 @@ void SndBuf_Init(SndBuf* buf) {
     buf->sndfile = nullptr;
 }
 
-char* allocAndRestrictPath(World* mWorld, const char* inPath, const char* restrictBase) {
-    char strbuf[PATH_MAX];
-    int offset = 0;
-    int remain = PATH_MAX;
+/** @brief converts a path name to a std::filesystem::path,
+ *  optionally restricting it to the given base directory.
+ *  @param pathName The file path as a UTF-8 encoded C-string
+ *  @param restrictBase (optional) base directory as UTF-8 encoded C-string
+ *  @return a std::filesystem::path
+ *  @throw std::runtime_error if the path is not inside the given base directory.
+ */
+fs::path createRestrictedPathFromCStr(const char* pathName, const char* restrictBase = nullptr) {
+    assert(pathName != nullptr);
+    auto path = SC_Codecvt::utf8_str_to_path(pathName);
 
-    // Ensure begins with the base
-    if (strncmp(inPath, restrictBase, strlen(restrictBase)) != 0) {
-        strcpy(strbuf, restrictBase);
-        offset = strlen(restrictBase);
-        remain -= offset;
-        if (inPath[0] != '/' && strbuf[strlen(strbuf) - 1] != '/') {
-            strbuf[offset] = '/';
-            ++offset;
-            --remain;
-        }
+    if (restrictBase != nullptr) {
+        auto base = SC_Codecvt::utf8_str_to_path(restrictBase);
+        auto relPath = fs::relative(path, base);
+        if (!relPath.empty() && *relPath.begin() == "..")
+            throw std::runtime_error(path.u8string() + " is outside of " + base.u8string() + "\n");
     }
 
-    // Now copy string, but discard any ".." (which could be benign, but easy to abuse)
-    SC_StringParser sp(inPath, '/');
-    size_t tokenlen;
-    while (!sp.AtEnd()) {
-        const char* token = const_cast<char*>(sp.NextToken());
-        tokenlen = strlen(token);
-        // now add the new token, then a slash, as long as token is neither dodgy nor overflows
-        if (strcmp(token, "..") != 0 && remain > tokenlen) {
-            strcpy(strbuf + offset, token);
-            offset += tokenlen;
-            remain -= tokenlen;
-            if (!sp.AtEnd()) {
-                strbuf[offset] = '/';
-                ++offset;
-                --remain;
-            }
-        }
-    }
-
-    // Now we can make a long-term home for the string and return it
-    char* saferPath = (char*)World_Alloc(mWorld, strlen(strbuf) + 1);
-    ThrowIfNil(saferPath);
-    strcpy(saferPath, strbuf);
-    return saferPath;
+    return path;
 }
+
+#ifndef NO_LIBSNDFILE
+
+/** @brief try to open a sound file from an (optionally restricted) path.
+ *  @throw std::runtime_error if the sound file could not be opened.
+ */
+SNDFILE* tryOpenSndfile(const char* pathName, int mode, SF_INFO* sfinfo, const char* restrictBase = nullptr) {
+    auto path = createRestrictedPathFromCStr(pathName, restrictBase);
+    SNDFILE* sf = sndfileOpenFromPath(path, mode, sfinfo);
+    if (!sf) {
+        char str[ERR_BUF_SIZE];
+        snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opend: %s\n", pathName, sf_strerror(nullptr));
+        throw std::runtime_error(str);
+    }
+    return sf;
+}
+
+#endif // NO_LIBSNDFILE
+
+///////////////////////////////////////////////////////////////////////////
 
 SC_SequencedCommand::SC_SequencedCommand(World* inWorld, const ReplyAddress* inReplyAddress):
     mNextStage(1),
@@ -246,9 +247,6 @@ void SC_SequencedCommand::Stage4() {}
 
 ///////////////////////////////////////////////////////////////////////////
 
-#include "sc_msg_iter.h"
-#include <string.h>
-
 SyncCmd::SyncCmd(World* inWorld, const ReplyAddress* inReplyAddress): SC_SequencedCommand(inWorld, inReplyAddress) {}
 
 int SyncCmd::Init(const char* inData, int inSize) {
@@ -318,9 +316,6 @@ void BufAllocCmd::Stage4() {
 }
 
 ///////////////////////////////////////////////////////////////////////////
-
-#include "sc_msg_iter.h"
-#include <string.h>
 
 BufGenCmd::BufGenCmd(World* inWorld, const ReplyAddress* inReplyAddress):
     SC_SequencedCommand(inWorld, inReplyAddress),
@@ -430,7 +425,7 @@ int BufZeroCmd::Init(const char* inData, int inSize) {
 
 bool BufZeroCmd::Stage2() {
     SndBuf* buf = World_GetNRTBuf(mWorld, mBufIndex);
-    memset(buf->data, 0, buf->samples * sizeof(float));
+    std::fill_n(buf->data, buf->samples, 0);
     return true;
 }
 
@@ -457,13 +452,10 @@ int BufAllocReadCmd::Init(const char* inData, int inSize) {
     if (!filename)
         return kSCErr_WrongArgType;
 
-    if (mWorld->mRestrictedPath) {
-        mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
-    } else {
-        mFilename = (char*)World_Alloc(mWorld, strlen(filename) + 1);
-        ReturnSCErrIfNil(mFilename);
-        strcpy(mFilename, filename);
-    }
+    auto size = strlen(filename) + 1; // include null-terminator
+    mFilename = (char*)World_Alloc(mWorld, size);
+    ReturnSCErrIfNil(mFilename);
+    memcpy(mFilename, filename, size);
 
     mFileOffset = msg.geti();
     mNumFrames = msg.geti();
@@ -482,16 +474,17 @@ bool BufAllocReadCmd::Stage2() {
     return false;
 #else
     SndBuf* buf = World_GetNRTBuf(mWorld, mBufIndex);
-    SF_INFO fileinfo;
-    memset(&fileinfo, 0, sizeof(fileinfo));
-    SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_READ, &fileinfo);
-    if (!sf) {
-        char str[ERR_BUF_SIZE];
-        snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(nullptr));
-        SendFailureWithIntValue("/b_allocRead", str, mBufIndex);
-        scprintf(str);
+    SNDFILE* sf = nullptr;
+    SF_INFO fileinfo {}; // zero-initialize
+
+    try {
+        sf = tryOpenSndfile(mFilename, SFM_READ, &fileinfo, mWorld->mRestrictedPath);
+    } catch (const std::exception& e) {
+        SendFailureWithIntValue("/b_allocRead", e.what(), mBufIndex);
+        scprintf(e.what());
         return false;
     }
+
     if (mFileOffset < 0)
         mFileOffset = 0;
     else if (mFileOffset > fileinfo.frames)
@@ -544,13 +537,10 @@ int BufReadCmd::Init(const char* inData, int inSize) {
     if (!filename)
         return kSCErr_WrongArgType;
 
-    if (mWorld->mRestrictedPath) {
-        mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
-    } else {
-        mFilename = (char*)World_Alloc(mWorld, strlen(filename) + 1);
-        ReturnSCErrIfNil(mFilename);
-        strcpy(mFilename, filename);
-    }
+    auto size = strlen(filename) + 1; // include null-terminator
+    mFilename = (char*)World_Alloc(mWorld, size);
+    ReturnSCErrIfNil(mFilename);
+    memcpy(mFilename, filename, size);
 
     mFileOffset = msg.geti();
     mNumFrames = msg.geti(-1);
@@ -570,22 +560,22 @@ bool BufReadCmd::Stage2() {
     scprintf("scsynth compiled without libsndfile\n");
     return false;
 #else
-    SF_INFO fileinfo;
-    memset(&fileinfo, 0, sizeof(fileinfo));
+    SNDFILE* sf = nullptr;
+    SF_INFO fileinfo {}; // zero-initialize
 
     SndBuf* buf = World_GetNRTBuf(mWorld, mBufIndex);
     int framesToEnd = buf->frames - mBufOffset;
     if (framesToEnd <= 0)
         return true;
 
-    SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_READ, &fileinfo);
-    if (!sf) {
-        char str[ERR_BUF_SIZE];
-        snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(nullptr));
-        SendFailureWithIntValue("/b_read", str, mBufIndex);
-        scprintf(str);
+    try {
+        sf = tryOpenSndfile(mFilename, SFM_READ, &fileinfo, mWorld->mRestrictedPath);
+    } catch (const std::exception& e) {
+        SendFailureWithIntValue("/b_read", e.what(), mBufIndex);
+        scprintf(e.what());
         return false;
     }
+
     if (fileinfo.channels != buf->channels) {
         char str[ERR_BUF_SIZE];
         sf_close(sf);
@@ -710,13 +700,10 @@ int BufAllocReadChannelCmd::Init(const char* inData, int inSize) {
     if (!filename)
         return kSCErr_WrongArgType;
 
-    if (mWorld->mRestrictedPath) {
-        mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
-    } else {
-        mFilename = (char*)World_Alloc(mWorld, strlen(filename) + 1);
-        ReturnSCErrIfNil(mFilename);
-        strcpy(mFilename, filename);
-    }
+    auto size = strlen(filename) + 1; // include null-terminator
+    mFilename = (char*)World_Alloc(mWorld, size);
+    ReturnSCErrIfNil(mFilename);
+    memcpy(mFilename, filename, size);
 
     mFileOffset = msg.geti();
     mNumFrames = msg.geti();
@@ -737,17 +724,17 @@ bool BufAllocReadChannelCmd::Stage2() {
     return false;
 #else
     SndBuf* buf = World_GetNRTBuf(mWorld, mBufIndex);
+    SNDFILE* sf = nullptr;
+    SF_INFO fileinfo {}; // zero-initialize
 
-    SF_INFO fileinfo;
-    memset(&fileinfo, 0, sizeof(fileinfo));
-    SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_READ, &fileinfo);
-    if (!sf) {
-        char str[ERR_BUF_SIZE];
-        snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(nullptr));
-        SendFailureWithIntValue("/b_allocReadChannel", str, mBufIndex);
-        scprintf(str);
+    try {
+        sf = tryOpenSndfile(mFilename, SFM_READ, &fileinfo, mWorld->mRestrictedPath);
+    } catch (const std::exception& e) {
+        SendFailureWithIntValue("/b_allocReadChannel", e.what(), mBufIndex);
+        scprintf(e.what());
         return false;
     }
+
     if (mFileOffset < 0)
         mFileOffset = 0;
     else if (mFileOffset > fileinfo.frames)
@@ -767,7 +754,7 @@ bool BufAllocReadChannelCmd::Stage2() {
     } else {
         // verify channel indexes
         if (!CheckChannels(fileinfo.channels)) {
-            const char* str = "Channel index out of range.\n";
+            const char* str = "Channel index(es) out of range.\n";
             SendFailureWithIntValue("/b_allocReadChannel", str, mBufIndex);
             scprintf(str);
             sf_close(sf);
@@ -826,13 +813,10 @@ int BufReadChannelCmd::Init(const char* inData, int inSize) {
     if (!filename)
         return kSCErr_WrongArgType;
 
-    if (mWorld->mRestrictedPath) {
-        mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
-    } else {
-        mFilename = (char*)World_Alloc(mWorld, strlen(filename) + 1);
-        ReturnSCErrIfNil(mFilename);
-        strcpy(mFilename, filename);
-    }
+    auto size = strlen(filename) + 1; // include null-terminator
+    mFilename = (char*)World_Alloc(mWorld, size);
+    ReturnSCErrIfNil(mFilename);
+    memcpy(mFilename, filename, size);
 
     mFileOffset = msg.geti();
     mNumFrames = msg.geti(-1);
@@ -869,15 +853,14 @@ bool BufReadChannelCmd::Stage2() {
         return false;
     }
 
-    SF_INFO fileinfo;
-    memset(&fileinfo, 0, sizeof(fileinfo));
+    SNDFILE* sf = nullptr;
+    SF_INFO fileinfo {}; // zero-initialize
 
-    SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_READ, &fileinfo);
-    if (!sf) {
-        char str[ERR_BUF_SIZE];
-        snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(nullptr));
-        SendFailureWithIntValue("/b_readChannel", str, mBufIndex);
-        scprintf(str);
+    try {
+        sf = tryOpenSndfile(mFilename, SFM_READ, &fileinfo, mWorld->mRestrictedPath);
+    } catch (const std::exception& e) {
+        SendFailureWithIntValue("/b_readChannel", e.what(), mBufIndex);
+        scprintf(e.what());
         return false;
     }
 
@@ -982,13 +965,10 @@ int BufWriteCmd::Init(const char* inData, int inSize) {
     if (!filename)
         return kSCErr_WrongArgType;
 
-    if (mWorld->mRestrictedPath) {
-        mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
-    } else {
-        mFilename = (char*)World_Alloc(mWorld, strlen(filename) + 1);
-        ReturnSCErrIfNil(mFilename);
-        strcpy(mFilename, filename);
-    }
+    auto size = strlen(filename) + 1; // include null-terminator
+    mFilename = (char*)World_Alloc(mWorld, size);
+    ReturnSCErrIfNil(mFilename);
+    memcpy(mFilename, filename, size);
 
     const char* headerFormatString = msg.gets("aiff");
     const char* sampleFormatString = msg.gets("int16");
@@ -1017,12 +997,12 @@ bool BufWriteCmd::Stage2() {
     mFileInfo.samplerate = (int)buf->samplerate;
     mFileInfo.channels = buf->channels;
 
-    SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_WRITE, &mFileInfo);
-    if (!sf) {
-        char str[ERR_BUF_SIZE];
-        snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(nullptr));
-        SendFailureWithIntValue("/b_write", str, mBufIndex);
-        scprintf(str);
+    SNDFILE* sf = nullptr;
+    try {
+        sf = tryOpenSndfile(mFilename, SFM_WRITE, &mFileInfo, mWorld->mRestrictedPath);
+    } catch (const std::exception& e) {
+        SendFailureWithIntValue("/b_write", e.what(), mBufIndex);
+        scprintf(e.what());
         return false;
     }
 
@@ -1297,13 +1277,10 @@ int LoadSynthDefCmd::Init(const char* inData, int inSize) {
     if (!filename)
         return kSCErr_WrongArgType;
 
-    if (mWorld->mRestrictedPath) {
-        mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
-    } else {
-        mFilename = (char*)World_Alloc(mWorld, strlen(filename) + 1);
-        ReturnSCErrIfNil(mFilename);
-        strcpy(mFilename, filename);
-    }
+    auto size = strlen(filename) + 1; // include null-terminator
+    mFilename = (char*)World_Alloc(mWorld, size);
+    ReturnSCErrIfNil(mFilename);
+    memcpy(mFilename, filename, size);
 
     GET_COMPLETION_MSG(msg);
 
@@ -1314,18 +1291,21 @@ int LoadSynthDefCmd::Init(const char* inData, int inSize) {
 LoadSynthDefCmd::~LoadSynthDefCmd() { World_Free(mWorld, mFilename); }
 
 bool LoadSynthDefCmd::Stage2() {
-    char* fname = mFilename;
-    mDefs = GraphDef_LoadGlob(mWorld, fname, mDefs);
-    if (mDefs) {
-        return true;
-    }
-    {
-        char str[ERR_BUF_SIZE];
-        snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened\n", mFilename);
-        SendFailure("/d_load", mFilename);
-        scprintf(str);
+    try {
+        auto path = createRestrictedPathFromCStr(mFilename, mWorld->mRestrictedPath);
+        mDefs = GraphDef_LoadGlob(mWorld, path.u8string().c_str(), mDefs);
+        if (!mDefs) {
+            char str[ERR_BUF_SIZE];
+            snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened\n", mFilename);
+            throw std::runtime_error(str);
+        }
+    } catch (const std::exception& e) {
+        SendFailure("/d_load", e.what());
+        scprintf(e.what());
         return false;
     }
+
+    return true;
 }
 
 bool LoadSynthDefCmd::Stage3() {
@@ -1349,13 +1329,10 @@ int LoadSynthDefDirCmd::Init(const char* inData, int inSize) {
     if (!filename)
         return kSCErr_WrongArgType;
 
-    if (mWorld->mRestrictedPath) {
-        mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
-    } else {
-        mFilename = (char*)World_Alloc(mWorld, strlen(filename) + 1);
-        ReturnSCErrIfNil(mFilename);
-        strcpy(mFilename, filename);
-    }
+    auto size = strlen(filename) + 1; // include null-terminator
+    mFilename = (char*)World_Alloc(mWorld, size);
+    ReturnSCErrIfNil(mFilename);
+    memcpy(mFilename, filename, size);
 
     GET_COMPLETION_MSG(msg);
 
@@ -1366,24 +1343,28 @@ int LoadSynthDefDirCmd::Init(const char* inData, int inSize) {
 LoadSynthDefDirCmd::~LoadSynthDefDirCmd() { World_Free(mWorld, mFilename); }
 
 bool LoadSynthDefDirCmd::Stage2() {
-    if (!std::filesystem::exists(mFilename)) {
-        char str[ERR_BUF_SIZE];
-        snprintf(str, ERR_BUF_SIZE, "Could not load synthdefs. Directory '%s' does not exist\n", mFilename);
-        SendFailure("/d_loadDir", mFilename);
-        scprintf(str);
+    try {
+        if (!std::filesystem::exists(mFilename)) {
+            char str[ERR_BUF_SIZE];
+            snprintf(str, ERR_BUF_SIZE, "Could not load synthdefs. Directory '%s' does not exist\n", mFilename);
+            throw std::runtime_error(str);
+        }
+
+        auto path = createRestrictedPathFromCStr(mFilename, mWorld->mRestrictedPath);
+        mDefs = GraphDef_LoadDir(mWorld, path, mDefs);
+        if (!mDefs) {
+            // QUESTION: should this really be an error or could this be a warning?
+            char str[ERR_BUF_SIZE];
+            snprintf(str, ERR_BUF_SIZE, "No synthdefs found in directory: '%s'\n", mFilename);
+            throw std::runtime_error(str);
+        }
+    } catch (const std::exception& e) {
+        SendFailure("/d_loadDir", e.what());
+        scprintf(e.what());
         return false;
     }
-    mDefs = GraphDef_LoadDir(mWorld, mFilename, mDefs);
-    if (mDefs) {
-        return true;
-    }
-    {
-        char str[ERR_BUF_SIZE];
-        snprintf(str, ERR_BUF_SIZE, "No synthdefs found in directory: '%s'\n", mFilename);
-        SendFailure("/d_loadDir", mFilename);
-        scprintf(str);
-        return false;
-    }
+
+    return true;
 }
 
 bool LoadSynthDefDirCmd::Stage3() {
