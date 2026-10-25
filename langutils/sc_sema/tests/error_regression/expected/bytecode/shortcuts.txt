@@ -4,97 +4,108 @@
 IR GRAPH DUMP 
 
 
-SCClass (5:1): BytecodeShortcuts316 : Object, version 3.16
-|  SCMemberList (5:1)
-|  |  SCMember (7:9): inst
-|  |  SCMember (7:15): other
-|  SCMethodList (5:1)
-|  |  SCMethod (11:5): assign, version 3.16: assign { |a| inst = a }
-|  |  |  SCArgumentDeclareList (11:15)
-|  |  |  |  SCArgumentDeclare (11:15): a
-|  |  |  SCBody (11:18)
-|  |  |  |  SCAssign (11:18): instance inst, declared (7:9): inst
-|  |  |  |  |  SCRead (11:25): local a, declared (11:15): a
-|  |  SCMethod (13:5): assignTwo, version 3.16: assignTwo { |a, b| other = a }
-|  |  |  SCArgumentDeclareList (13:18)
-|  |  |  |  SCArgumentDeclare (13:18): a
-|  |  |  |  SCArgumentDeclare (13:21): b
-|  |  |  SCBody (13:24)
-|  |  |  |  SCAssign (13:24): instance other, declared (7:15): other
-|  |  |  |  |  SCRead (13:32): local a, declared (13:18): a
-|  |  SCMethod (15:5): returnConstant, version 3.16: returnConstant { ^kConst }
-|  |  |  SCBody (15:22)
-|  |  |  |  SCExplicitReturn (15:22)
-|  |  |  |  |  SCRead (15:23): class kConst, declared (6:11): kConst
-|  |  SCMethod (17:5): returnArgument, version 3.16: returnArgument { |a| ^a }
-|  |  |  SCArgumentDeclareList (17:23)
-|  |  |  |  SCArgumentDeclare (17:23): a
-|  |  |  SCBody (17:26)
-|  |  |  |  SCExplicitReturn (17:26)
-|  |  |  |  |  SCRead (17:27): local a, declared (17:23): a
-|  |  SCMethod (19:5): redirect, version 3.16: redirect { |a| ^this.foo(a) }
-|  |  |  SCArgumentDeclareList (19:17)
-|  |  |  |  SCArgumentDeclare (19:17): a
-|  |  |  SCBody (19:20)
-|  |  |  |  SCExplicitReturn (19:20)
-|  |  |  |  |  SCMessage (19:21): foo
-|  |  |  |  |  |  SCSpecial (19:21): this
-|  |  |  |  |  |  SCPositionalArgs (19:21)
-|  |  |  |  |  |  |  SCRead (19:30): local a, declared (19:17): a
-|  |  SCMethod (22:5): hiddenReturn, version 3.16: hiddenReturn { var other; ^other } -> nil
-|  |  |  SCBody (22:20)
-|  |  |  |  SCVariableDeclare (22:24): other
-|  |  |  |  SCExplicitReturn (22:31)
-|  |  |  |  |  SCRead (22:32): local other = nil, declared (22:24): other
-|  |  SCMethod (26:5): assignLiteral, version 3.16: assignLiteral { inst = 5 }
-|  |  |  SCBody (26:21)
-|  |  |  |  SCAssign (26:21): instance inst, declared (7:9): inst
-|  |  |  |  |  SCLiteral (26:28) = 5
-|  |  SCMethod (28:5): assignSecond, version 3.16: assignSecond { |a, b| inst = b }
-|  |  |  SCArgumentDeclareList (28:21)
-|  |  |  |  SCArgumentDeclare (28:21): a
-|  |  |  |  SCArgumentDeclare (28:24): b
-|  |  |  SCBody (28:27)
-|  |  |  |  SCAssign (28:27): instance inst, declared (7:9): inst
-|  |  |  |  |  SCRead (28:34): local b, declared (28:24): b
-|  |  SCMethod (30:5): assignReturned, version 3.16: assignReturned { |a| ^inst = a }
-|  |  |  SCArgumentDeclareList (30:23)
-|  |  |  |  SCArgumentDeclare (30:23): a
-|  |  |  SCBody (30:26)
-|  |  |  |  SCExplicitReturn (30:26)
-|  |  |  |  |  SCAssign (30:27): instance inst, declared (7:9): inst
-|  |  |  |  |  |  SCRead (30:34): local a, declared (30:23): a
-|  |  SCMethod (32:5): assignClassVariable, version 3.16: assignClassVariable { |a| cv = a }
-|  |  |  SCArgumentDeclareList (32:28)
-|  |  |  |  SCArgumentDeclare (32:28): a
-|  |  |  SCBody (32:31)
-|  |  |  |  SCAssign (32:31): class cv, declared (8:14): cv
-|  |  |  |  |  SCRead (32:36): local a, declared (32:28): a
-|  |  SCMethod (34:5): hiddenAssign, version 3.16: hiddenAssign { |a| var inst; inst = a }
-|  |  |  SCArgumentDeclareList (34:21)
-|  |  |  |  SCArgumentDeclare (34:21): a
-|  |  |  SCBody (34:24)
-|  |  |  |  SCVariableDeclare (34:28): inst (assigned)
-|  |  |  |  SCAssign (34:34): local inst, declared (34:28): inst
-|  |  |  |  |  SCRead (34:41): local a, declared (34:21): a
-|  |  SCMethod (36:5): nonLocal, version 3.16: nonLocal { |a| if (a) { ^1 }; ^2 }
-|  |  |  SCArgumentDeclareList (36:17)
-|  |  |  |  SCArgumentDeclare (36:17): a
-|  |  |  SCBody (36:20)
-|  |  |  |  SCMessage (36:20): if
-|  |  |  |  |  SCRead (36:24): local a, declared (36:17): a
-|  |  |  |  |  SCPositionalArgs (36:20)
-|  |  |  |  |  |  SCFunction (36:27)
-|  |  |  |  |  |  |  SCBody (36:27)
-|  |  |  |  |  |  |  |  SCExplicitReturn (36:29)
-|  |  |  |  |  |  |  |  |  SCLiteral (36:30) = 1
-|  |  |  |  SCExplicitReturn (36:35)
-|  |  |  |  |  SCLiteral (36:36) = 2
-SCClass (5:1): Meta_BytecodeShortcuts316 : Meta_Object, version 3.16
-|  SCMemberList (5:1)
-|  |  SCMember (6:11): kConst = 1
-|  |  SCMember (8:14): cv
-|  SCMethodList (5:1)
+SCClass (6:1): BytecodeShortcuts316 : Object, version 3.16
+|  SCMemberList (6:1)
+|  |  SCMember (8:9): inst
+|  |  SCMember (8:15): other
+|  SCMethodList (6:1)
+|  |  SCMethod (12:5): assign, version 3.16: assign { |a| inst = a }
+|  |  |  SCArgumentDeclareList (12:15)
+|  |  |  |  SCArgumentDeclare (12:15): a
+|  |  |  SCBody (12:18)
+|  |  |  |  SCAssign (12:18): instance inst, declared (8:9): inst
+|  |  |  |  |  SCRead (12:25): local a, declared (12:15): a
+|  |  SCMethod (14:5): assignTwo, version 3.16: assignTwo { |a, b| other = a }
+|  |  |  SCArgumentDeclareList (14:18)
+|  |  |  |  SCArgumentDeclare (14:18): a
+|  |  |  |  SCArgumentDeclare (14:21): b
+|  |  |  SCBody (14:24)
+|  |  |  |  SCAssign (14:24): instance other, declared (8:15): other
+|  |  |  |  |  SCRead (14:32): local a, declared (14:18): a
+|  |  SCMethod (16:5): returnConstant, version 3.16: returnConstant { ^kConst }
+|  |  |  SCBody (16:22)
+|  |  |  |  SCExplicitReturn (16:22)
+|  |  |  |  |  SCRead (16:23): class kConst, declared (7:11): kConst
+|  |  SCMethod (18:5): returnArgument, version 3.16: returnArgument { |a| ^a }
+|  |  |  SCArgumentDeclareList (18:23)
+|  |  |  |  SCArgumentDeclare (18:23): a
+|  |  |  SCBody (18:26)
+|  |  |  |  SCExplicitReturn (18:26)
+|  |  |  |  |  SCRead (18:27): local a, declared (18:23): a
+|  |  SCMethod (20:5): redirect, version 3.16: redirect { |a| ^this.foo(a) }
+|  |  |  SCArgumentDeclareList (20:17)
+|  |  |  |  SCArgumentDeclare (20:17): a
+|  |  |  SCBody (20:20)
+|  |  |  |  SCExplicitReturn (20:20)
+|  |  |  |  |  SCMessage (20:21): foo
+|  |  |  |  |  |  SCSpecial (20:21): this
+|  |  |  |  |  |  SCPositionalArgs (20:21)
+|  |  |  |  |  |  |  SCRead (20:30): local a, declared (20:17): a
+|  |  SCMethod (23:5): hiddenReturn, version 3.16: hiddenReturn { var other; ^other } -> nil
+|  |  |  SCBody (23:20)
+|  |  |  |  SCVariableDeclare (23:24): other
+|  |  |  |  SCExplicitReturn (23:31)
+|  |  |  |  |  SCRead (23:32): local other = nil, declared (23:24): other
+|  |  SCMethod (25:5): returnClassVariable, version 3.16: returnClassVariable { ^cv }
+|  |  |  SCBody (25:27)
+|  |  |  |  SCExplicitReturn (25:27)
+|  |  |  |  |  SCRead (25:28): class cv, declared (9:14): cv
+|  |  SCMethod (27:5): assignClassVariable, version 3.16: assignClassVariable { |a| cv = a }
+|  |  |  SCArgumentDeclareList (27:28)
+|  |  |  |  SCArgumentDeclare (27:28): a
+|  |  |  SCBody (27:31)
+|  |  |  |  SCAssign (27:31): class cv, declared (9:14): cv
+|  |  |  |  |  SCRead (27:36): local a, declared (27:28): a
+|  |  SCMethod (31:5): assignLiteral, version 3.16: assignLiteral { inst = 5 }
+|  |  |  SCBody (31:21)
+|  |  |  |  SCAssign (31:21): instance inst, declared (8:9): inst
+|  |  |  |  |  SCLiteral (31:28) = 5
+|  |  SCMethod (33:5): assignSecond, version 3.16: assignSecond { |a, b| inst = b }
+|  |  |  SCArgumentDeclareList (33:21)
+|  |  |  |  SCArgumentDeclare (33:21): a
+|  |  |  |  SCArgumentDeclare (33:24): b
+|  |  |  SCBody (33:27)
+|  |  |  |  SCAssign (33:27): instance inst, declared (8:9): inst
+|  |  |  |  |  SCRead (33:34): local b, declared (33:24): b
+|  |  SCMethod (35:5): assignReturned, version 3.16: assignReturned { |a| ^inst = a }
+|  |  |  SCArgumentDeclareList (35:23)
+|  |  |  |  SCArgumentDeclare (35:23): a
+|  |  |  SCBody (35:26)
+|  |  |  |  SCExplicitReturn (35:26)
+|  |  |  |  |  SCAssign (35:27): instance inst, declared (8:9): inst
+|  |  |  |  |  |  SCRead (35:34): local a, declared (35:23): a
+|  |  SCMethod (37:5): assignClassVariableSecond, version 3.16: assignClassVariableSecond { |a, b| cv = b }
+|  |  |  SCArgumentDeclareList (37:34)
+|  |  |  |  SCArgumentDeclare (37:34): a
+|  |  |  |  SCArgumentDeclare (37:37): b
+|  |  |  SCBody (37:40)
+|  |  |  |  SCAssign (37:40): class cv, declared (9:14): cv
+|  |  |  |  |  SCRead (37:45): local b, declared (37:37): b
+|  |  SCMethod (39:5): hiddenAssign, version 3.16: hiddenAssign { |a| var inst; inst = a }
+|  |  |  SCArgumentDeclareList (39:21)
+|  |  |  |  SCArgumentDeclare (39:21): a
+|  |  |  SCBody (39:24)
+|  |  |  |  SCVariableDeclare (39:28): inst (assigned)
+|  |  |  |  SCAssign (39:34): local inst, declared (39:28): inst
+|  |  |  |  |  SCRead (39:41): local a, declared (39:21): a
+|  |  SCMethod (41:5): nonLocal, version 3.16: nonLocal { |a| if (a) { ^1 }; ^2 }
+|  |  |  SCArgumentDeclareList (41:17)
+|  |  |  |  SCArgumentDeclare (41:17): a
+|  |  |  SCBody (41:20)
+|  |  |  |  SCMessage (41:20): if
+|  |  |  |  |  SCRead (41:24): local a, declared (41:17): a
+|  |  |  |  |  SCPositionalArgs (41:20)
+|  |  |  |  |  |  SCFunction (41:27)
+|  |  |  |  |  |  |  SCBody (41:27)
+|  |  |  |  |  |  |  |  SCExplicitReturn (41:29)
+|  |  |  |  |  |  |  |  |  SCLiteral (41:30) = 1
+|  |  |  |  SCExplicitReturn (41:35)
+|  |  |  |  |  SCLiteral (41:36) = 2
+SCClass (6:1): Meta_BytecodeShortcuts316 : Meta_Object, version 3.16
+|  SCMemberList (6:1)
+|  |  SCMember (7:11): kConst = 1
+|  |  SCMember (9:14): cv
+|  SCMethodList (6:1)
 
 
 
@@ -102,72 +113,82 @@ BYTECODE DUMP
 
 
 BytecodeShortcuts316
-|  function 0 (11:5): method assign
+|  function 0 (12:5): method assign
 |  |  properties:
 |  |  shortcut: assign instance variable 0
 |  |  selectors:
 |  |  constants:
-|  function 1 (13:5): method assignTwo
+|  function 1 (14:5): method assignTwo
 |  |  properties:
 |  |  shortcut: assign instance variable 1
 |  |  selectors:
 |  |  constants:
-|  function 2 (15:5): method returnConstant
+|  function 2 (16:5): method returnConstant
 |  |  properties:
 |  |  shortcut: return literal 1
 |  |  selectors:
 |  |  constants:
-|  function 3 (17:5): method returnArgument
+|  function 3 (18:5): method returnArgument
 |  |  properties:
 |  |  shortcut: return argument 1
 |  |  selectors:
 |  |  constants:
-|  function 4 (19:5): method redirect
+|  function 4 (20:5): method redirect
 |  |  properties:
 |  |  shortcut: redirect foo
 |  |  selectors:
 |  |  constants:
-|  function 5 (22:5): method hiddenReturn
+|  function 5 (23:5): method hiddenReturn
 |  |  properties:
 |  |  shortcut: return literal nil
 |  |  selectors:
 |  |  constants:
-|  function 6 (26:5): method assignLiteral
+|  function 6 (25:5): method returnClassVariable
+|  |  properties:
+|  |  shortcut: return class variable 0
+|  |  selectors:
+|  |  constants:
+|  function 7 (27:5): method assignClassVariable
+|  |  properties:
+|  |  shortcut: assign class variable 0
+|  |  selectors:
+|  |  constants:
+|  function 8 (31:5): method assignLiteral
 |  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    2C 05           PushInteger8
 |  |  2    70              StoreInstVar
 |  |  3    F4              ReturnSelf
-|  function 7 (28:5): method assignSecond
+|  function 9 (33:5): method assignSecond
 |  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    32              PushTempZeroVar
 |  |  1    70              StoreInstVar
 |  |  2    F4              ReturnSelf
-|  function 8 (30:5): method assignReturned
+|  function 10 (35:5): method assignReturned
 |  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    31              PushTempZeroVar
 |  |  1    07 00           StoreInstVarX
 |  |  3    F3              Return
-|  function 9 (32:5): method assignClassVariable
+|  function 11 (37:5): method assignClassVariableSecond
 |  |  properties:
 |  |  selectors:
 |  |  constants:
-|  |  0    31              PushTempZeroVar
+|  |  0    32              PushTempZeroVar
 |  |  1    90 00           StoreClassVar
 |  |  3    F4              ReturnSelf
-|  function 10 (34:5): method hiddenAssign
+|  function 12 (39:5): method hiddenAssign
 |  |  properties:
 |  |  selectors:
 |  |  constants:
 |  |  0    31              PushTempZeroVar
 |  |  1    80 02           StoreTempVar
 |  |  3    F4              ReturnSelf
-|  function 11 (36:5): method nonLocal
+|  function 13 (41:5): method nonLocal
 |  |  properties:
 |  |  selectors:
 |  |  constants:

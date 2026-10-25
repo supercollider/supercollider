@@ -1310,9 +1310,13 @@ OptionalMethodShortcut method_shortcut(const EmitContext& ctx, const lir::Functi
         return shortcut::ReturnSelf {};
     if (ir::has_assign_shortcut(payload.version) && code.size() == 4 && frame.num_positional > 0
         && pushes_argument(code[0], lir::SlotIndex { 1 }) && std::holds_alternative<lir::Drop>(code[2])
-        && std::holds_alternative<lir::ReturnSelf>(code[3]))
+        && std::holds_alternative<lir::ReturnSelf>(code[3])) {
         if (const auto* store = std::get_if<lir::StoreInstance>(&code[1]))
             return shortcut::AssignInstance { store->slot };
+        if (const auto* store = std::get_if<lir::StoreClassVariable>(&code[1]);
+            store && ir::has_class_variable_shortcuts(payload.version))
+            return shortcut::AssignClassVariable { store->index };
+    }
     if (!std::holds_alternative<lir::Return>(code.back()))
         return {};
     if (code.size() == 2) {
@@ -1327,6 +1331,9 @@ OptionalMethodShortcut method_shortcut(const EmitContext& ctx, const lir::Functi
             return shortcut::ReturnArgument { l->local.slot };
         if (const auto* p = std::get_if<lir::PushInstance>(&value))
             return shortcut::ReturnInstance { p->slot };
+        if (const auto* p = std::get_if<lir::PushClassVariable>(&value);
+            p && ir::has_class_variable_shortcuts(payload.version))
+            return shortcut::ReturnClassVariable { p->index };
     }
 
     // Shortcuts for message sends.
@@ -1351,6 +1358,45 @@ OptionalMethodShortcut method_shortcut(const EmitContext& ctx, const lir::Functi
         return shortcut::ForwardClassVariable { send->selector, p->index };
     return {};
 }
+
+// In the order the old compiler added them, by member, getter then setter.
+std::vector<Accessor> accessors(const EmitContext& ctx) {
+    std::vector<Accessor> out;
+    const auto root = ctx.graph.root();
+    const auto* class_i = root ? std::get_if<ir::SCClass_I>(&*root) : nullptr;
+    if (!class_i)
+        return out;
+    const auto owner = ctx.graph.payload(*class_i).name;
+    const auto [members, _] = ctx.graph.children(*class_i);
+    for (auto it = ctx.graph.children(members).iter(); it; ++it) {
+        const auto& member = ctx.graph.payload(*it);
+        if (member.owning_class != owner || (!member.getter && !member.setter))
+            continue;
+        const auto location = ctx.members.find(owner, member.name);
+        assert(location);
+        const auto* slot = std::get_if<InstanceSlotIndex>(&*location);
+        const auto* index = std::get_if<ClassVariableIndex>(&*location);
+        const auto* value = std::get_if<ir::OptionalConstExprIndex>(&*location);
+        if (member.getter) {
+            OptionalMethodShortcut getter;
+            if (slot)
+                getter = shortcut::ReturnInstance { *slot };
+            else if (index)
+                getter = shortcut::ReturnClassVariable { *index };
+            else
+                getter = shortcut::ReturnLiteral { ir::ConstExprIndex { **value } };
+            out.push_back({ *it, ir::SymSCSelector { *member.getter }, getter });
+        }
+        if (member.setter) {
+            // A constant has no setter.
+            assert(!value);
+            out.push_back({ *it, ir::SymSCSelector { *member.setter },
+                            slot ? OptionalMethodShortcut { shortcut::AssignInstance { *slot } }
+                                 : shortcut::AssignClassVariable { *index } });
+        }
+    }
+    return out;
+}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1359,6 +1405,7 @@ OptionalMethodShortcut method_shortcut(const EmitContext& ctx, const lir::Functi
 
 EmittedGraph emit(const EmitContext& ctx, const lir::LoweredGraph& lowered) {
     EmittedGraph out;
+    out.accessors = accessors(ctx);
     const auto properties = function_properties(ctx, lowered.functions);
     // Nested functions follow their root, a function whose frame has no parent.
     std::optional<lir::FunctionIndex> root;
@@ -1402,6 +1449,33 @@ EmittedGraph emit(const EmitContext& ctx, const lir::LoweredGraph& lowered) {
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace {
+
+void write_shortcut(std::ostream& out, const OptionalMethodShortcut& shortcut, const ir::SymbolTable& symbols,
+                    const ir::ConstantTable& constants) {
+    out << "shortcut: ";
+    std::visit(
+        util::overload {
+            [](std::monostate) {},
+            [&](shortcut::ReturnSelf) { out << "return self"; },
+            [&](shortcut::ReturnLiteral s) {
+                out << "return literal ";
+                constants(s.value).to_literal(out, symbols, constants);
+            },
+            [&](shortcut::ReturnArgument s) { out << "return argument " << +*s.slot; },
+            [&](shortcut::ReturnInstance s) { out << "return instance variable " << *s.slot; },
+            [&](shortcut::AssignInstance s) { out << "assign instance variable " << *s.slot; },
+            [&](shortcut::Redirect s) { out << (s.super ? "redirect to super " : "redirect ") << symbols(s.selector); },
+            [&](shortcut::ForwardInstance s) {
+                out << "forward " << symbols(s.selector) << " to instance variable " << *s.slot;
+            },
+            [&](shortcut::ForwardClassVariable s) {
+                out << "forward " << symbols(s.selector) << " to class variable " << *s.index;
+            },
+            [&](shortcut::ReturnClassVariable s) { out << "return class variable " << *s.index; },
+            [&](shortcut::AssignClassVariable s) { out << "assign class variable " << *s.index; },
+        },
+        shortcut);
+}
 
 const char* opcode_name(Byte b) {
     // Inclusive, as ints, `endCode - 1` isn't a Byte.
@@ -1504,28 +1578,8 @@ void write_emitted(std::ostream& out, const EmittedFunction& function, std::stri
     if (function.properties.needs_heap_context)
         out << " heap context,";
     if (!std::holds_alternative<std::monostate>(function.shortcut)) {
-        out << "\n" << indent << "shortcut: ";
-        std::visit(util::overload {
-                       [](std::monostate) {},
-                       [&](shortcut::ReturnSelf) { out << "return self"; },
-                       [&](shortcut::ReturnLiteral s) {
-                           out << "return literal ";
-                           constants(s.value).to_literal(out, symbols, constants);
-                       },
-                       [&](shortcut::ReturnArgument s) { out << "return argument " << +*s.slot; },
-                       [&](shortcut::ReturnInstance s) { out << "return instance variable " << *s.slot; },
-                       [&](shortcut::AssignInstance s) { out << "assign instance variable " << *s.slot; },
-                       [&](shortcut::Redirect s) {
-                           out << (s.super ? "redirect to super " : "redirect ") << symbols(s.selector);
-                       },
-                       [&](shortcut::ForwardInstance s) {
-                           out << "forward " << symbols(s.selector) << " to instance variable " << *s.slot;
-                       },
-                       [&](shortcut::ForwardClassVariable s) {
-                           out << "forward " << symbols(s.selector) << " to class variable " << *s.index;
-                       },
-                   },
-                   function.shortcut);
+        out << "\n" << indent;
+        write_shortcut(out, function.shortcut, symbols, constants);
     }
     out << "\n" << indent << "selectors:";
     for (const auto& entry : function.selectors.raw()) {
@@ -1581,4 +1635,10 @@ void write_emitted(std::ostream& out, const EmittedFunction& function, std::stri
     }
 }
 
+void write_accessor(std::ostream& out, const Accessor& accessor, std::string_view indent,
+                    const ir::SymbolTable& symbols, const ir::ConstantTable& constants) {
+    out << indent;
+    write_shortcut(out, accessor.shortcut, symbols, constants);
+    out << "\n";
+}
 }

@@ -26,10 +26,12 @@ namespace sc::backend {
 
 struct EmittedGraph;
 struct EmittedFunction;
+struct Accessor;
 
 struct EmitContext {
     const ir::IRGraph& graph;
     const Frames& frames;
+    const MemberTable& members;
     const ir::ConstantTable& constants;
     const SpecialSymbols& special_symbols;
     // Interpreted code or the Interpreter class, whose members don't stop a function being closed, as the old compiler
@@ -41,6 +43,8 @@ struct EmitContext {
 
 void write_emitted(std::ostream& out, const EmittedFunction& function, std::string_view indent,
                    const ir::SymbolTable& symbols, const ir::ConstantTable& constants);
+void write_accessor(std::ostream& out, const Accessor& accessor, std::string_view indent,
+                    const ir::SymbolTable& symbols, const ir::ConstantTable& constants);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -118,12 +122,19 @@ struct ForwardClassVariable {
     ir::SymSCSelector selector;
     ClassVariableIndex index;
 };
+// Legacy only makes these for accessors.
+struct ReturnClassVariable {
+    ClassVariableIndex index;
+};
+struct AssignClassVariable {
+    ClassVariableIndex index;
+};
 }
 
 using OptionalMethodShortcut =
     std::variant<std::monostate, shortcut::ReturnSelf, shortcut::ReturnLiteral, shortcut::ReturnArgument,
                  shortcut::ReturnInstance, shortcut::AssignInstance, shortcut::Redirect, shortcut::ForwardInstance,
-                 shortcut::ForwardClassVariable>;
+                 shortcut::ForwardClassVariable, shortcut::ReturnClassVariable, shortcut::AssignClassVariable>;
 static_assert(sizeof(OptionalMethodShortcut) == 12);
 
 struct EmittedFunction {
@@ -136,6 +147,19 @@ struct EmittedFunction {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+// Accessor
+////////////////////////////////////////////////////////////////////////////////
+
+// A getter or setter of one of the class's own members, a method that is only a shortcut. Its source is the member's
+// name, it takes `this` and, for a setter, the value.
+struct Accessor {
+    ir::SCMember_I member;
+    ir::SymSCSelector selector;
+    OptionalMethodShortcut shortcut;
+};
+static_assert(sizeof(Accessor) == 20);
+
+////////////////////////////////////////////////////////////////////////////////
 // Emitted graph
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -143,6 +167,7 @@ struct EmittedFunction {
 struct EmittedGraph {
     util::IndexedVector<lir::FunctionIndex, EmittedFunction> functions {};
     std::vector<lir::FunctionIndex> roots {};
+    std::vector<Accessor> accessors {};
     std::vector<sc::diag::Diagnostic> diagnostics {};
 };
 }

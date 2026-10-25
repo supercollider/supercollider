@@ -26,6 +26,7 @@ using OptionalSymSCClassName = SymbolDef::OptionalTypedIndex<SymbolTypes::SCClas
 using SymSCIdentifier = SymbolDef::TypedIndex<SymbolTypes::SCNamedIdentifier>;
 using OptionalSymSCIdentifier = SymbolDef::OptionalTypedIndex<SymbolTypes::SCNamedIdentifier>;
 using SymSCSelector = SymbolDef::TypedIndex<SymbolTypes::SCSelector>;
+using OptionalSymSCSelector = SymbolDef::OptionalTypedIndex<SymbolTypes::SCSelector>;
 using SymSCPrimitive = SymbolDef::TypedIndex<SymbolTypes::SCPrimitive>;
 
 }

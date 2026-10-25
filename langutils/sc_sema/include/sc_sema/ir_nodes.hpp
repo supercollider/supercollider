@@ -333,6 +333,9 @@ struct SCMember : priv::Node<SCMember_I()> {
 
     ast::ReadWriteAccessor accessor {};
     bool is_const {};
+    // Can be replaced by extentions.
+    OptionalSymSCSelector getter {};
+    OptionalSymSCSelector setter {};
 };
 
 struct SCMemberList : priv::List<SCMemberList_I, SCMember_I> {

@@ -226,8 +226,8 @@ void add_backend(Tree& lir_tree, Tree& bytecode_tree, const Backend& b, const Ir
                                             r.root);
     const auto class_node = g.as_a<sc::ir::SCClass_I>(sc::ir::NodeIndex { *r.root });
     const bool interpreter_members = !class_node || g.payload(*class_node).name == ctx.common_symbols.interpreter;
-    const auto emitted =
-        sc::backend::emit({ g, frames, ctx.constant_table, b.special_symbols, interpreter_members }, lowered);
+    const auto emitted = sc::backend::emit(
+        { g, frames, b.members, ctx.constant_table, b.special_symbols, interpreter_members }, lowered);
     for (const auto& d : frames.diagnostics)
         diagnostics.push_back(d);
     for (const auto& d : emitted.diagnostics)

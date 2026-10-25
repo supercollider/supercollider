@@ -33,6 +33,8 @@ public:
         std::optional<TypeInfo> type_info;
         // Declared with `const`, these are always in the meta class.
         bool is_const { false };
+        // `name_`, when it has a setter.
+        OptionalSymSCSelector setter {};
     };
 
     struct Method {
@@ -80,6 +82,9 @@ public:
     [[nodiscard]] const Method* find_method(Symbol i) const;
     [[nodiscard]] Method* find_method(Symbol i);
 
+    // The member whose getter or setter has this name.
+    [[nodiscard]] const Member* find_accessor(SymSCSelector selector) const;
+
     // What inserting an extension method did, when it clashes with another extension. Overriding the class's own
     // method, or an accessor, is fine, as it was in the old compiler.
     // A module is a directory given to the compiler, which isn't an official SuperCollider idea yet.
@@ -106,7 +111,7 @@ public:
     enum struct DuplicateLocation {
         None,
         Method,
-        Member,
+        Accessor,
     };
     [[nodiscard]] DuplicateLocation insert_no_ext(Method m);
 
@@ -142,8 +147,9 @@ private:
     std::unordered_map<Symbol, Method, std::hash<Symbol>> m_methods { };
     std::unordered_map<Symbol, Method, std::hash<Symbol>> m_overriden_methods { };
 
-    enum struct NameLoc { Method, MethodAccessor, Member };
-    std::unordered_map<Symbol, std::pair<Symbol, NameLoc>> m_names_in_scope;
+    // Selector is the method name (a or a_) and the identifier refers to the member.
+    // For reads, these are identical.
+    std::unordered_map<SymSCSelector, SymSCIdentifier, std::hash<Symbol>> m_accessors {};
 
     bool m_poisoned { false };
 

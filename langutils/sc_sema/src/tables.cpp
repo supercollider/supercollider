@@ -157,6 +157,12 @@ using Member = ClassDeclaration::Member;
 }
 
 
+[[nodiscard]] const Member* ClassDeclaration::find_accessor(SymSCSelector selector) const {
+    if (const auto fnd = m_accessors.find(selector); fnd != m_accessors.end())
+        return find_member(fnd->second);
+    return nullptr;
+}
+
 ClassDeclaration::MethodInsert ClassDeclaration::insert(Method m) {
     assert(m.is_extention);
     const auto name = m.name;
@@ -188,14 +194,10 @@ ClassDeclaration::MethodInsert ClassDeclaration::insert(Method m) {
 
 ClassDeclaration::DuplicateLocation ClassDeclaration::insert_no_ext(Method m) {
     const auto name = m.name;
-
-    if (m_names_in_scope.count(name) == 1) {
-        if (m_members_map.count(name) == 1) {
-            return DuplicateLocation::Member;
-        } else
-            return DuplicateLocation::Method;
-    }
-
+    if (m_methods.count(name) == 1)
+        return DuplicateLocation::Method;
+    if (m_accessors.count(name) == 1)
+        return DuplicateLocation::Accessor;
     m_methods.insert({ name, std::move(m) });
     return DuplicateLocation::None;
 }
@@ -205,6 +207,10 @@ bool ClassDeclaration::insert(Member m) {
     if (auto fnd = m_members_map.find(name); fnd != m_members_map.end()) {
         return false;
     }
+    if (has(m.accessor, ast::ReadWriteAccessor::ExternallyReadable))
+        m_accessors.insert({ SymSCSelector::from(name), name });
+    if (m.setter)
+        m_accessors.insert({ SymSCSelector { *m.setter }, name });
     m_members_map.insert({ name, std::move(m) });
     m_members_order.push_back(name);
     return true;

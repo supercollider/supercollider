@@ -1,7 +1,8 @@
 // bytecode
 //# VERSION 3.16
 // As Legacy's (versions/bytecode_shortcuts), and a method that only assigns its first argument to an instance variable
-// is a shortcut too. An immutable constant is pushed as a literal, so it is returned as one.
+// is a shortcut too, as are returning a class variable and assigning the first argument to one. An immutable constant
+// is pushed as a literal, so it is returned as one.
 BytecodeShortcuts316 {
     const kConst = 1;
     var inst, other;
@@ -20,6 +21,10 @@ BytecodeShortcuts316 {
     // The local is never assigned, so is known to be nil.
     // expect: no diagnostics
     hiddenReturn { var other; ^other }
+    // expect: no diagnostics
+    returnClassVariable { ^cv }
+    // expect: no diagnostics
+    assignClassVariable { |a| cv = a }
 
     // Not shortcuts.
     // expect: no diagnostics
@@ -29,7 +34,7 @@ BytecodeShortcuts316 {
     // expect: no diagnostics
     assignReturned { |a| ^inst = a }
     // expect: no diagnostics
-    assignClassVariable { |a| cv = a }
+    assignClassVariableSecond { |a, b| cv = b }
     // expect: no diagnostics
     hiddenAssign { |a| var inst; inst = a }
     // expect: no diagnostics

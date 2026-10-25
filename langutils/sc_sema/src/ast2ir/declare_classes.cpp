@@ -16,6 +16,14 @@
 
 namespace sc::ir::ast2ir {
 
+namespace {
+OptionalSymSCSelector setter_of(SymbolTable& symbols, SymSCIdentifier name, ast::ReadWriteAccessor accessor) {
+    if (!has(accessor, ast::ReadWriteAccessor::ExternallyWriteable))
+        return {};
+    return symbols.get_selector(std::string { symbols(name) } + "_");
+}
+}
+
 void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ClassDeclaration&, bool is_const,
                                          ast::Index total_index, ast::Index accessor_i, ast::ReadWriteAccessor accessor,
                                          ast::NamedIdentifierIndex name_i) {
@@ -25,8 +33,9 @@ void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ClassDeclaratio
             diag::Diagnostic::declared_special_variable(get_text_info(*ast_graph), get_location(*ast_graph, name_i)));
         return;
     }
+    const auto setter = setter_of(cxt.symbol_table, name, accessor);
     const auto r = decl.insert(
-        ClassDeclaration::Member { total_index, name, { *name_i }, accessor, accessor_i, {}, {}, is_const });
+        ClassDeclaration::Member { total_index, name, { *name_i }, accessor, accessor_i, {}, {}, is_const, setter });
     if (!r) {
         const auto* mem = decl.find_member(name);
         assert(mem);
@@ -72,7 +81,8 @@ void DeclareClass::append_member_to_decl(ClassDeclaration& decl, ClassDeclaratio
                                                                   accessor_i,
                                                                   { { const_expr_index, expr_i } },
                                                                   { type_info },
-                                                                  is_const });
+                                                                  is_const,
+                                                                  setter_of(cxt.symbol_table, name, accessor) });
             if (!r) {
                 const auto* mem = decl.find_member(name);
                 assert(mem);
@@ -276,8 +286,8 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
                                    get_text_info(*ast_graph), get_location(*ast_graph, other->name_index)));
                                break;
                            };
-                           case ClassDeclaration::DuplicateLocation::Member: {
-                               const auto* other = class_decl.find_member(name);
+                           case ClassDeclaration::DuplicateLocation::Accessor: {
+                               const auto* other = class_decl.find_accessor(name);
                                assert(other);
 
                                cxt.diagnostics(diag::Diagnostic::duplicate_method_name(
@@ -305,8 +315,8 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
                                    get_text_info(*ast_graph), get_location(*ast_graph, other->name_index)));
                                break;
                            };
-                           case ClassDeclaration::DuplicateLocation::Member: {
-                               const auto* other = meta_class_decl.find_member(name);
+                           case ClassDeclaration::DuplicateLocation::Accessor: {
+                               const auto* other = meta_class_decl.find_accessor(name);
                                assert(other);
 
                                cxt.diagnostics(diag::Diagnostic::duplicate_method_name(

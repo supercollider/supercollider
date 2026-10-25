@@ -17,6 +17,7 @@
 Each function's properties (context, closed, heap context) are compared too; the old dump derives heap context from
 its nested functions' contexts, as needsHeapContext isn't readable from sclang.
 
+Accessors are shortcut methods too, printed before the class's functions, as old sclang added them first.
 Class variable operands are masked, as the backend numbers class variables differently, the loader sets them (B8).
 One line methods get methType shortcuts and no code, so a test method should start with a dummy statement, e.g. `cv;`.
 """
@@ -157,13 +158,19 @@ def parse_new(path, classes):
                    'code': [], 'selectors': [], 'constants': [], 'nested': []}
             funcs.setdefault(cls, []).append(cur)
             continue
+        m = re.match(r'\|  accessor .*: method (\S+)$', line)
+        if m:
+            cur = {'name': m.group(1), 'properties': '', 'shortcut': None, 'code': [], 'selectors': [],
+                   'constants': [], 'nested': []}
+            funcs.setdefault(cls, []).append(cur)
+            continue
         m = re.match(r'\|  \|  properties:(.*)', line)
         if m:
             cur['properties'] = m.group(1).strip()
             continue
         m = re.match(r'\|  \|  shortcut: (.*)', line)
         if m:
-            cur['shortcut'] = shortcut_payload(m.group(1))
+            cur['shortcut'] = shortcut_payload(m.group(1), cls)
             continue
         m = re.match(r'\|  \|  selectors:(.*)', line)
         if m:
@@ -182,8 +189,11 @@ def parse_new(path, classes):
     return funcs
 
 
-def shortcut_payload(s):
-    """What old sclang stores in a shortcut's selectors: the literal returned, the selector sent, or nil."""
+def shortcut_payload(s, cls):
+    """What old sclang stores in a shortcut's selectors: the literal returned, the selector sent, a class variable
+    accessor's class name, or nil."""
+    if re.fullmatch(r'(?:return|assign) class variable \d+', s):
+        return '\\' + re.sub(r'^Meta_', '', cls)
     m = re.fullmatch(r'return literal (.*)', s)
     if m:
         return norm_constant(m.group(1))

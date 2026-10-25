@@ -531,8 +531,9 @@ int main(int argc, char* argv[]) {
             const auto class_node = g.as_a<sc::ir::SCClass_I>(sc::ir::NodeIndex { *root });
             const bool interpreter_members =
                 !class_node || g.payload(*class_node).name == ctx.common_symbols.interpreter;
-            const sc::backend::EmitContext emitting { g, f.layout, ctx.constant_table, special_symbols,
-                                                      interpreter_members };
+            const sc::backend::EmitContext emitting {
+                g, f.layout, *member_table, ctx.constant_table, special_symbols, interpreter_members
+            };
             f.emitted = sc::backend::emit(emitting, f.lowered);
             times.emit += seconds_since(emit_start);
             for (auto& d : f.emitted.diagnostics)
@@ -871,14 +872,20 @@ int main(int argc, char* argv[]) {
             }
         }
     }
-    // Each emitted function's tables and bytecode, see write_emitted. Functions of a method or interpreted function
-    // that can't be emitted are left out.
+    // Each class's accessors, then each emitted function's tables and bytecode, see write_emitted. Functions of a
+    // method or interpreted function that can't be emitted are left out.
     if (show_bytecode) {
         std::cout << "\n\n\nBYTECODE DUMP \n\n\n";
         for (const auto& dumped : classes) {
             const auto& g = *dumped.graph;
             const auto& f = frames.at(&g);
             std::cout << (dumped.class_name ? std::string { symbol_table(*dumped.class_name) } : "Interpreted") << "\n";
+            for (const auto& accessor : f.emitted.accessors) {
+                std::cout << "|  accessor ";
+                sc::ir::describe::write_location(std::cout, g.location(accessor.member));
+                std::cout << ": method " << symbol_table(accessor.selector) << "\n";
+                sc::backend::write_accessor(std::cout, accessor, "|  |  ", symbol_table, ctx.constant_table);
+            }
             std::optional<sc::backend::lir::FunctionIndex> root;
             for (std::uint32_t fi { 0 }; fi < f.lowered.functions.size(); ++fi) {
                 const sc::backend::lir::FunctionIndex index { fi };

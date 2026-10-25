@@ -324,29 +324,38 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
 
 
         for (auto s : decl.member_order()) {
-            const auto& mem = decl.find_member(s);
-            if (names.count(mem->name)) {
+            const auto& mem_decl = decl.find_member(s);
+            if (names.count(mem_decl->name)) {
                 // Duplicate with base.
-                const auto fnd = std::find_if(members.begin(), members.end(), [n = mem->name](const MemberEntry& m) {
-                    return n == std::get<0>(m).name;
-                });
+                const auto fnd =
+                    std::find_if(members.begin(), members.end(),
+                                 [n = mem_decl->name](const MemberEntry& m) { return n == std::get<0>(m).name; });
                 assert(fnd != members.end());
 
                 ctx.diagnostics(diag::Diagnostic::duplicate_member_in_base(
                     std::get<1>(*fnd)->text_info(), std::get<1>(*fnd)->location(std::get<2>(*fnd)),
-                    decl.ast_graph()->text_info(), decl.ast_graph()->location(mem->name_index)));
+                    decl.ast_graph()->text_info(), decl.ast_graph()->location(mem_decl->name_index)));
 
                 // This avoids pushing the variable and the code should revert to the old behaviour.
                 continue;
             }
-            SCMember ref { mem->name, decl.name() };
-            if (mem->expr_index) {
-                ref.expr = mem->expr_index->first;
-                ref.expr_type_info = *mem->type_info;
+            SCMember ir_mem { mem_decl->name, decl.name() };
+            if (mem_decl->expr_index) {
+                ir_mem.expr = mem_decl->expr_index->first;
+                ir_mem.expr_type_info = *mem_decl->type_info;
+            } else if (mem_decl->is_const) {
+                ir_mem.expr = ctx.constant_table.register_constexpr(Nil {});
             }
-            ref.accessor = mem->accessor;
-            ref.is_const = mem->is_const;
-            members.push_back({ std::move(ref), decl.ast_graph(), mem->name_index });
+            ir_mem.accessor = mem_decl->accessor;
+            ir_mem.is_const = mem_decl->is_const;
+            if (has(mem_decl->accessor, ast::ReadWriteAccessor::ExternallyReadable)) {
+                const auto getter = ctx.symbol_table.get_selector(ctx.symbol_table(mem_decl->name));
+                if (!decl.find_method(getter))
+                    ir_mem.getter = getter;
+            }
+            if (mem_decl->setter && !decl.find_method(Symbol { *mem_decl->setter }))
+                ir_mem.setter = mem_decl->setter;
+            members.push_back({ std::move(ir_mem), decl.ast_graph(), mem_decl->name_index });
         }
         class_member_layout.insert({ decl.name(), std::move(members) });
     }
