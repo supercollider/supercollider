@@ -194,7 +194,7 @@ main {
 .detail { color: var(--text); overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 1; }
 .where { color: var(--muted); flex: none; font-size: 11px; }
 .node.no-range > .row .name { font-style: italic; opacity: 0.7; }
-/* Bytecode lines are columns, so keep their spaces. */
+/* Bytecode lines are columns, and lir instructions are indented, so keep their spaces. */
 .tree.code .detail { white-space: pre; }
 
 @media (max-width: 800px) {

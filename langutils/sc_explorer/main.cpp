@@ -1,5 +1,5 @@
-// Reads source code from stdin and writes its ast, ir, bytecode and diagnostics as json, for the explorer's web page,
-// see serve.py.
+// Reads source code from stdin and writes its ast, ir, lir, bytecode and diagnostics as json, for the explorer's web
+// page, see serve.py.
 //   sc_explorer [--class] [--prelude file.sc]...
 // The source is interpreted code, or a class file with --class. The preludes are compiled first, as the class library,
 // but aren't written out.
@@ -198,9 +198,25 @@ struct Backend {
     const sc::backend::InliningContext& inlining;
 };
 
-// As sc_inspect --bytecode, the root's class, then each emitted function, then the lines write_emitted prints for it.
-void add_bytecode(Tree& tree, const Backend& b, const IrRoot& r, const sc::lex::TextInfo* text,
-                  std::vector<sc::diag::Diagnostic>& diagnostics) {
+// A range from byte offsets into the text, as the lowered ir's spans only hold those.
+sc::lex::SourceCodeRange range_from_offsets(const sc::lex::TextInfo& text, std::uint32_t begin, std::uint32_t end) {
+    const auto source = std::string_view { text.source.as_string() };
+    const auto at = [&](std::uint32_t offset) {
+        const auto before = source.substr(0, offset);
+        const auto line_start = before.rfind('\n');
+        return sc::lex::SourceCodeLocation {
+            offset, static_cast<std::uint32_t>(std::count(before.begin(), before.end(), '\n')),
+            static_cast<std::uint32_t>(line_start == std::string_view::npos ? offset : offset - line_start - 1)
+        };
+    };
+    return { at(begin), at(end) };
+}
+
+// As sc_inspect --lir and --bytecode, the root's class, then each function. In the lir, each function's regions, the
+// body first, then their instructions, all functions, marking those of a method that can't be emitted. In the
+// bytecode, the lines write_emitted prints for each emitted function.
+void add_backend(Tree& lir_tree, Tree& bytecode_tree, const Backend& b, const IrRoot& r, const sc::lex::TextInfo* text,
+                 std::vector<sc::diag::Diagnostic>& diagnostics) {
     const auto& g = *r.graph;
     const auto& ctx = b.ctx;
     const auto frames = sc::backend::layout_frames(g, b.inlining, r.root);
@@ -220,30 +236,60 @@ void add_bytecode(Tree& tree, const Backend& b, const IrRoot& r, const sc::lex::
         const auto loc = g.location(i);
         return g.text_info(loc.source).get() == text ? std::optional { sc::ir::IRGraph::range(loc) } : std::nullopt;
     };
-    tree.close();
-    tree.add(0,
-             { r.class_name ? std::string { ctx.symbol_table(*r.class_name) } : "Interpreted",
-               "",
-               range_of(sc::ir::NodeIndex { *r.root }),
-               {} });
+    const Tree::Node class_row { r.class_name ? std::string { ctx.symbol_table(*r.class_name) } : "Interpreted",
+                                 "",
+                                 range_of(sc::ir::NodeIndex { *r.root }),
+                                 {} };
+    for (auto* tree : { &lir_tree, &bytecode_tree }) {
+        tree->close();
+        tree->add(0, class_row);
+    }
     std::optional<sc::backend::lir::FunctionIndex> root;
     for (std::uint32_t fi { 0 }; fi < lowered.functions.size(); ++fi) {
         const sc::backend::lir::FunctionIndex index { fi };
-        const auto& frame = frames.frames[lowered.functions[index].frame];
+        const auto& function = lowered.functions[index];
+        const auto& frame = frames.frames[function.frame];
         if (!frame.parent)
             root = index;
-        if (std::find(emitted.roots.begin(), emitted.roots.end(), *root) == emitted.roots.end())
-            continue;
         const sc::ir::NodeIndex owner { *frame.owner };
         std::string detail;
         if (const auto method = g.as_a<sc::ir::SCMethod_I>(owner))
             detail = "method " + std::string { ctx.symbol_table(*g.payload(*method).selector) };
-        tree.add(1, { "function " + std::to_string(fi), detail, range_of(owner), {} });
+        const bool is_emitted = std::find(emitted.roots.begin(), emitted.roots.end(), *root) != emitted.roots.end();
+        const auto& lowered_roots = lowered.roots;
+        const bool not_lowered =
+            !frame.parent && std::find(lowered_roots.begin(), lowered_roots.end(), index) == lowered_roots.end();
+
+        lir_tree.add(
+            1,
+            { "function " + std::to_string(fi), detail + (not_lowered ? " (not emitted)" : ""), range_of(owner), {} });
+        const bool in_text = g.text_info(function.source).get() == text;
+        for (std::uint32_t ri { 0 }; ri < function.sub_regions.size(); ++ri) {
+            const auto& region = function.sub_regions[sc::backend::lir::FunctionSubRegionIndex { ri }];
+            lir_tree.add(2, { "region " + std::to_string(ri), "", std::nullopt, {} });
+            for (std::uint32_t k { *region.begin }; k < *region.begin + region.size; ++k) {
+                const sc::backend::lir::InstructionIndex i { k };
+                std::ostringstream line;
+                sc::backend::write_instruction(line, function, function.instructions[i], g, ctx.symbol_table,
+                                               ctx.constant_table);
+                const auto span = function.spans[i];
+                lir_tree.add(
+                    3,
+                    { "",
+                      line.str(),
+                      in_text ? std::optional { range_from_offsets(*text, span.begin, span.end) } : std::nullopt,
+                      {} });
+            }
+        }
+
+        if (!is_emitted)
+            continue;
+        bytecode_tree.add(1, { "function " + std::to_string(fi), detail, range_of(owner), {} });
         std::ostringstream lines;
         sc::backend::write_emitted(lines, emitted.functions[index], "", ctx.symbol_table, ctx.constant_table);
         std::istringstream in { lines.str() };
         for (std::string line; std::getline(in, line);)
-            tree.add(2, { "", line, std::nullopt, {} });
+            bytecode_tree.add(2, { "", line, std::nullopt, {} });
     }
 }
 
@@ -384,9 +430,10 @@ int main(int argc, char* argv[]) {
     const sc::backend::SpecialSymbols special_symbols { symbol_table };
     const sc::backend::InliningContext inlining { special_symbols, ctx.constant_table };
     const Backend backend { ctx, members, selectors, special_symbols, inlining };
+    Tree lir_tree;
     Tree bytecode_tree;
     for (const auto& r : ir_roots)
-        add_bytecode(bytecode_tree, backend, r, text.get(), diagnostics);
+        add_backend(lir_tree, bytecode_tree, backend, r, text.get(), diagnostics);
 
     std::ostream& out = std::cout;
     out << "{\"source\":" << json_string(text->source.as_string()) << ",\"ast\":{";
@@ -401,6 +448,8 @@ int main(int argc, char* argv[]) {
     }
     out << "},\"ir\":{\"roots\":";
     ir_tree.write_roots(out, ir_tree.roots);
+    out << "},\"lir\":{\"roots\":";
+    lir_tree.write_roots(out, lir_tree.roots);
     out << "},\"bytecode\":{\"roots\":";
     bytecode_tree.write_roots(out, bytecode_tree.roots);
     out << "},\"diagnostics\":[";

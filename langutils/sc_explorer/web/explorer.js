@@ -1,6 +1,6 @@
 'use strict';
 
-// Each edit is sent to serve.py, which replies with the ast, ir, bytecode and diagnostics, see sc_explorer's main.cpp. Ranges
+// Each edit is sent to serve.py, which replies with the ast, ir, lir, bytecode and diagnostics, see sc_explorer's main.cpp. Ranges
 // are byte offsets into the normalised source, so they are converted to string indices before they are drawn.
 
 const EXAMPLES = {
@@ -29,7 +29,7 @@ const backdropEl = $('backdrop');
 const modeEl = $('mode');
 const statusEl = $('status');
 const diagnosticsEl = $('diagnostics');
-const trees = { ast: $('ast'), ir: $('ir'), bytecode: $('bytecode') };
+const trees = { ast: $('ast'), ir: $('ir'), lir: $('lir'), bytecode: $('bytecode') };
 const tabs = document.querySelectorAll('[data-tab]');
 
 const store = {
@@ -200,7 +200,7 @@ function renderTree(key, sections) {
   if (!roots.length) {
     const note = document.createElement('div');
     note.className = 'empty-note';
-    note.textContent = key === 'ast' ? 'Nothing parsed.' : `No ${key === 'ir' ? 'IR' : 'bytecode'}, see the diagnostics.`;
+    note.textContent = key === 'ast' ? 'Nothing parsed.' : `No ${key === 'bytecode' ? key : key.toUpperCase()}, see the diagnostics.`;
     el.append(note);
   }
   return roots;
@@ -357,6 +357,7 @@ function show(result) {
     ['Orphans', result.ast.orphans],
   ]);
   renderTree('ir', [['', result.ir.roots]]);
+  renderTree('lir', [['', result.lir.roots]]);
   renderTree('bytecode', [['', result.bytecode.roots]]);
   renderDiagnostics(result);
   const errors = result.diagnostics.filter((d) => d.severity === 'error').length;
