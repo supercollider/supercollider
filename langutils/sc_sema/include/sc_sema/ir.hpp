@@ -3,6 +3,7 @@
 
 #include "sc_sema/ir_index.hpp"
 #include "sc_sema/ir_nodes.hpp"
+#include "sc_util/indexed_vector.hpp"
 #include "sc_util/overload.hpp"
 #include "sc_util/typed_graph_helper.hpp"
 #include "sc_util/typed_graph.hpp"
@@ -173,7 +174,7 @@ public:
     // To walk one node's children without its siblings, depth_first_traverse continues along the siblings.
     [[nodiscard]] OptNodeIndex first_child(NodeIndex i) const { return Base::edges(i).first_child; }
     using Base::last_child;
-    [[nodiscard]] SourceLocation location(NodeIndex i) const { return m_node_locations[*i]; }
+    [[nodiscard]] SourceLocation location(NodeIndex i) const { return m_node_locations[i]; }
 
     ////////////////////////////////////////////////////////////////////////////////
     // Sources
@@ -202,9 +203,6 @@ public:
         return std::is_invocable_v<F, const Edges&, const Variant&, const SourceLocation&, NodeIndex>;
     }
 
-    template <typename F, typename = std::enable_if<signature_check<F>()>> //
-    void flat_walk(F f);
-
     struct Default {
         void operator()(const Edges&, const Variant&, const SourceLocation&, NodeIndex, size_t /**depth*/) {}
     };
@@ -227,27 +225,22 @@ public:
     ////////////////////////////////////////////////////////////////////////////////
     // Local variables
     ////////////////////////////////////////////////////////////////////////////////
-    [[nodiscard]] LocalIndex add_local(LocalVariable v) {
-        m_locals.push_back(v);
-        return LocalIndex { static_cast<std::uint32_t>(m_locals.size() - 1) };
-    }
-    [[nodiscard]] const LocalVariable& local(LocalIndex i) const { return m_locals[*i]; }
-    [[nodiscard]] LocalVariable& local(LocalIndex i) { return m_locals[*i]; }
-    [[nodiscard]] const std::vector<LocalVariable>& locals() const { return m_locals; }
+    [[nodiscard]] LocalIndex add_local(LocalVariable v) { return m_locals.push_back(v); }
+    [[nodiscard]] const LocalVariable& local(LocalIndex i) const { return m_locals[i]; }
+    [[nodiscard]] LocalVariable& local(LocalIndex i) { return m_locals[i]; }
+    [[nodiscard]] const util::IndexedVector<LocalIndex, LocalVariable>& locals() const { return m_locals; }
 
     ////////////////////////////////////////////////////////////////////////////////
     // Member variables
     ////////////////////////////////////////////////////////////////////////////////
     [[nodiscard]] MemberIndex member_index(MemberVariable v) {
-        const auto fnd = std::find_if(m_members.begin(), m_members.end(),
-                                      [&](const MemberVariable& m) { return m.owner == v.owner && m.name == v.name; });
-        if (fnd != m_members.end())
-            return MemberIndex { static_cast<std::uint32_t>(fnd - m_members.begin()) };
-        m_members.push_back(v);
-        return MemberIndex { static_cast<std::uint32_t>(m_members.size() - 1) };
+        for (const auto i : m_members.indices())
+            if (m_members[i].owner == v.owner && m_members[i].name == v.name)
+                return i;
+        return m_members.push_back(v);
     }
-    [[nodiscard]] const MemberVariable& member(MemberIndex i) const { return m_members[*i]; }
-    [[nodiscard]] const std::vector<MemberVariable>& members() const { return m_members; }
+    [[nodiscard]] const MemberVariable& member(MemberIndex i) const { return m_members[i]; }
+    [[nodiscard]] const util::IndexedVector<MemberIndex, MemberVariable>& members() const { return m_members; }
 
     ////////////////////////////////////////////////////////////////////////////////
     // Constexprs
@@ -264,10 +257,10 @@ public:
 
 
 private:
-    std::vector<SourceLocation> m_node_locations {};
-    std::vector<std::shared_ptr<const lex::TextInfo>> m_sources {};
-    std::vector<LocalVariable> m_locals {};
-    std::vector<MemberVariable> m_members {};
+    util::IndexedVector<NodeIndex, SourceLocation> m_node_locations {};
+    util::IndexedVector<SourceIndex, std::shared_ptr<const lex::TextInfo>> m_sources {};
+    util::IndexedVector<LocalIndex, LocalVariable> m_locals {};
+    util::IndexedVector<MemberIndex, MemberVariable> m_members {};
 
     std::unordered_map<NodeIndex, ConstExprIndex> nodes_to_constants { };
     std::variant<std::monostate, SCClass_I, SCAnyExpr_I, SCInterpreted_I> m_roots;
@@ -286,11 +279,11 @@ template <typename Node, typename... ChildrenIndexes>
 [[nodiscard]] typename Node::Index IRGraph::create(Node&& node, SourceLocation location,
                                                    ChildrenIndexes&&... child_indexes) {
     const auto index = Base::create(std::forward<Node>(node), std::forward<ChildrenIndexes>(child_indexes)...);
-    if (*index < m_node_locations.size()) {
-        m_node_locations[*index] = std::move(location);
+    if (m_node_locations.contains(index)) {
+        m_node_locations[index] = std::move(location);
     } else {
-        assert(*index == m_node_locations.size());
-        m_node_locations.push_back(std::move(location));
+        assert(index == m_node_locations.next_index());
+        (void)m_node_locations.push_back(std::move(location));
     }
 
     return index;
@@ -302,15 +295,9 @@ void IRGraph::depth_first_traverse(NodeIndex i, EnterNode enter_node, BeforeChil
                                    AfterChildren after_children, ExitNode exit_node) const {
     const auto wrap = [&](auto& f) {
         return [&](const Edges& e, const Variant& v, NodeIndex index, size_t d) {
-            f(e, v, m_node_locations[*index], index, d);
+            f(e, v, m_node_locations[index], index, d);
         };
     };
     Base::depth_first_traverse(i, wrap(enter_node), wrap(before_children), wrap(after_children), wrap(exit_node));
 };
-
-template <typename F, typename> void IRGraph::flat_walk(F f) {
-    Base::flat_walk([&](const Edges& e, const Variant& v, size_t i) { std::invoke(f, e, v, m_node_locations[i], i); });
-};
-
-
 }

@@ -174,16 +174,16 @@ struct FrameCreator {
 
         // Every local the function owns has been found, unless its ir is incomplete. Any that weren't still get a slot.
         std::size_t owned { has_this ? 1u : 0u };
-        for (const auto& local : g.locals())
+        for (const auto& local : g.locals().raw())
             if (*local.owner == *f_i)
                 ++owned;
         assert(owned == f.slots.size() || poisoned);
         if (owned != f.slots.size()) {
             const auto& found = f.slots.raw();
-            for (std::uint32_t l { 0 }; l < g.locals().size(); ++l)
+            for (const auto l : g.locals().indices())
                 if (*g.locals()[l].owner == *f_i
                     && std::find(found.begin(), found.end(), ir::OptionalLocalIndex { l }) == found.end())
-                    (void)f.slots.push_back(ir::LocalIndex { l });
+                    (void)f.slots.push_back(l);
         }
         record_locations(index, FrameSlotIndex { 0 });
     }

@@ -50,7 +50,7 @@ Return<SCInterpreted_I> Interpreted::operator()(ast::RegionListIndex i) {
         if (sink.fatal)
             ir.payload(function).constant_result = {};
         sink.fatal = sink.fatal || earlier_fatal;
-        ir.append(list, ir.create(SCRegion {}, ir.location(NodeIndex { *function }), function));
+        ir.append(list, ir.create(SCRegion {}, ir.location(function), function));
         result = ir.payload(function).constant_result;
     }
     if (!sink.fatal)
@@ -74,7 +74,7 @@ Return<SCInterpreted_I> Interpreted::operator()(ast::FileAsFunctionIndex i) {
         return finish(function);
     }
 
-    expr.scope.emplace_back();
+    (void)expr.scope.push_back({});
     expr.scope.back().starts_function = true;
     // Only does something in legacy code.
     expr.predeclare_legacy_frame(function, arg_list, contents);
@@ -99,7 +99,7 @@ SCFunction_I Interpreted::expression(ast::AnyExprIndex i) {
     const auto body = ir.create(SCBody {}, here);
     const auto function = ir.create(SCFunction {}, here, positional, variadic, body);
 
-    expr.scope.emplace_back();
+    (void)expr.scope.push_back({});
     expr.scope.back().starts_function = true;
     const auto r = expr(i);
     expr.scope.pop_back();
@@ -114,11 +114,11 @@ SCFunction_I Interpreted::expression(ast::AnyExprIndex i) {
 SCFunction_I Interpreted::immediately_evaluated(ast::ImmediatelyEvaluatedBlockIndex i) {
     const auto [arg_list, contents] = ast_graph->children(i);
     const auto function = compile_function(expr, ir, ast_graph, ctx, { *i }, arg_list, contents);
-    return *ir.as_a<SCFunction_I>(NodeIndex { *function.ir_node });
+    return ir.assume_a<SCFunction_I>(function.ir_node);
 }
 
 Return<SCInterpreted_I> Interpreted::finish(join<SCFunction_I, SCRegionList_I> code) {
-    const auto interpreted = ir.create(SCInterpreted { version }, ir.location(NodeIndex { *code }), code);
+    const auto interpreted = ir.create(SCInterpreted { version }, ir.location(code), code);
     ir.payload(interpreted).poisoned = sink.fatal;
     diagnostics = std::move(sink.diagnostics);
     sink = {};

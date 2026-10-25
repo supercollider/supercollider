@@ -155,7 +155,7 @@ void write_details(const Describe& d, std::ostream& out, const IRGraph::Variant&
 
     const auto write_initial = [&](auto declare, OptionalConstExprIndex prototype) {
         const auto [value] = g.children(declare);
-        if (g.as_a<SCMissing_I>(NodeIndex { *value }))
+        if (g.is_a<SCMissing_I>(value))
             return;
         out << (prototype ? ", prototype" : ", computed");
     };
@@ -202,12 +202,12 @@ void write_details(const Describe& d, std::ostream& out, const IRGraph::Variant&
                    [&](const SCVariableDeclare& v) {
                        out << ": " << symbol_table(*v.name);
                        write_uses(v.local);
-                       write_initial(*g.as_a<SCVariableDeclare_I>(i), v.prototype);
+                       write_initial(g.assume_a<SCVariableDeclare_I>(i), v.prototype);
                    },
                    [&](const SCArgumentDeclare& a) {
                        out << ": " << symbol_table(a.name);
                        write_uses(a.local);
-                       write_initial(*g.as_a<SCArgumentDeclare_I>(i), a.prototype);
+                       write_initial(g.assume_a<SCArgumentDeclare_I>(i), a.prototype);
                    },
                    [&](const SCMember& m) { out << ": " << symbol_table(m.name); },
                    [&](const SCSpecial& special) { out << ": " << special_name(special.kind); },

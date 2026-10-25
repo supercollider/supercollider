@@ -8,7 +8,9 @@
 #include "sc_sema/const_expr.hpp"
 #include "sc_sema/decls.hpp"
 #include "sc_sema/module.hpp"
+#include "sc_sema/source_location.hpp"
 #include "sc_sema/symbols.hpp"
+#include "sc_util/indexed_vector.hpp"
 
 #include <mutex>
 
@@ -100,10 +102,12 @@ struct SourceEntry {
     ModuleIndex module;
 };
 
+// Each file of the class library, empty when it didn't parse.
+using ClassLibrarySources = util::IndexedVector<ASTGraphIndex, std::optional<SourceEntry>>;
+
 
 struct Context {
-    Context(SymbolTable& sym_table, CommonClasses com, ModuleTable& mod_t,
-            std::vector<std::optional<SourceEntry>>& class_library):
+    Context(SymbolTable& sym_table, CommonClasses com, ModuleTable& mod_t, ClassLibrarySources& class_library):
         symbol_table(sym_table),
         common_classes(com),
         common_symbols(sym_table),
@@ -115,7 +119,7 @@ struct Context {
     CommonSymbols common_symbols;
     ModuleTable& modules;
     ClassDeclarations class_declarations { };
-    std::vector<std::optional<SourceEntry>>& class_library_ast;
+    ClassLibrarySources& class_library_ast;
     ConstantTable constant_table { };
     CurrentDiagnostics diagnostics { };
     InheritanceEdges inheritance_edges { };

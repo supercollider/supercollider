@@ -34,7 +34,7 @@ Return<SCAnyExpr_I> compile_function(Expr& expr, IRGraph& ir, const std::shared_
             push_member_scopes(expr, expr.interpreter->meta_class_members, expr.interpreter->class_members);
     }
 
-    expr.scope.emplace_back();
+    (void)expr.scope.push_back({});
     expr.scope.back().starts_function = true;
     // This only does something if the version is legacy.
     // Legacy code uses something call 'frame' scope, rather than the modern lexical scope.

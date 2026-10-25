@@ -311,7 +311,7 @@ int main(int argc, char* argv[]) {
     StageTimes times;
 
     std::mutex entries_lock;
-    std::vector<std::optional<sc::ir::SourceEntry>> entries { };
+    sc::ir::ClassLibrarySources entries {};
 
     sc::ir::ModuleTable module_table { };
     // Per file, so each thread only writes its own.
@@ -371,8 +371,10 @@ int main(int argc, char* argv[]) {
                     return;
                 const auto& [path, module_index] = sc_files[file_index];
                 if (auto r = parse_file(path, parse_diagnostics[file_index], parse_logs[file_index])) {
-                    assert(!entries[file_index].has_value());
-                    entries[file_index] = sc::ir::SourceEntry { std::move(r->first), r->second, module_index };
+                    // A file's entry is at its position in sc_files.
+                    const sc::ir::ASTGraphIndex entry { static_cast<sc::ir::ASTGraphIndex::Underlying>(file_index) };
+                    assert(!entries[entry].has_value());
+                    entries[entry] = sc::ir::SourceEntry { std::move(r->first), r->second, module_index };
                 }
             }
         };

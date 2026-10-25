@@ -51,9 +51,9 @@ void push_member_scopes(Expr& expr, const Scope* meta_class_members, const Scope
         Scope class_vars = *meta_class_members;
         for (auto& [_, entry] : class_vars)
             entry.kind = ScopeEntry::Kind::Class;
-        expr.scope.push_back(std::move(class_vars));
+        (void)expr.scope.push_back(std::move(class_vars));
     }
-    expr.scope.push_back(class_members);
+    (void)expr.scope.push_back(class_members);
 }
 
 Method::Method(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, ast::LanguageVersion version,
@@ -97,7 +97,7 @@ Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i, SymSCSelector 
     }
 
     // Methods have their own scope, holding the arguments and variables, inside the member scopes.
-    expr.scope.emplace_back();
+    (void)expr.scope.push_back({});
     expr.predeclare_legacy_frame(method, arg_list, body);
     declare_arguments(expr, ir, ast_graph, ctx, argument_list, variadic_args, arg_list, method);
     const auto result = compile_body(expr, ir, ast_graph, ctx, method, body_i, body);

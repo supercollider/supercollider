@@ -100,13 +100,13 @@ int main(int argc, char* argv[]) {
             std::cerr << d;
     };
 
-    std::vector<std::optional<sc::ir::SourceEntry>> entries;
+    sc::ir::ClassLibrarySources entries;
     {
         const auto ast_graph = parse(prelude, "prelude.sc", true, diagnostics);
         const auto root = ast_graph ? ast_graph->root() : std::nullopt;
         assert(root && std::holds_alternative<sc::ast::ClassOrExtensionListIndex>(*root));
-        entries.push_back(sc::ir::SourceEntry { ast_graph, std::get<sc::ast::ClassOrExtensionListIndex>(*root),
-                                                sc::ir::ModuleIndex::from(0) });
+        (void)entries.push_back(sc::ir::SourceEntry { ast_graph, std::get<sc::ast::ClassOrExtensionListIndex>(*root),
+                                                      sc::ir::ModuleIndex::from(0) });
     }
 
     // As in sc_inspect, just what the compiler needs, not the class library's constraints.

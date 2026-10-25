@@ -74,7 +74,7 @@ private:
 
     std::atomic<bool> m_compile_has_been_called { false };
 
-    std::vector<SymSCClassName> m_topological_ordering{};
+    util::IndexedVector<TopologicalPosition, SymSCClassName> m_topological_ordering {};
     // This will be a nullptr if the class is poisoned.
     util::IndexedVector<TopologicalPosition, std::shared_ptr<IRGraph>> m_classes {};
     std::unordered_map<SymSCClassName, TopologicalPosition, std::hash<Symbol>> m_class_positions {};

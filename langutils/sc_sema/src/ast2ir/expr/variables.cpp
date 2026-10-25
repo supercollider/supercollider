@@ -13,7 +13,7 @@ namespace sc::ir::ast2ir {
 void Expr::add_symbol(Symbol n, ScopeEntry e) { scope.back().insert({ n, e }); }
 
 bool Expr::declared(Symbol name) {
-    const auto k = scope.size() - 1;
+    const auto k = current_scope();
     const auto fnd = std::find_if(initialising.begin(), initialising.end(),
                                   [&](const auto& v) { return v.later && v.scope == k && v.name == name; });
     if (fnd == initialising.end())
@@ -33,7 +33,7 @@ void Expr::predeclare_legacy_frame(join<SCFunction_I, SCMethod_I> owner, ast::De
     const auto later = [&](ast::NamedIdentifierIndex name, ast::Index whole) {
         const auto sym = ctx.symbol_table.get_identifier(std::string { get_string_view(g, name) });
         const auto loc = location_of(ir, g, whole);
-        Initialising variable { sym, scope.size() - 1, loc, create_local(sym, loc, owner) };
+        Initialising variable { sym, current_scope(), loc, create_local(sym, loc, owner) };
         variable.in_frame = true;
         variable.later = true;
         initialising.push_back(variable);
@@ -83,7 +83,7 @@ LocalIndex Expr::create_local(SymSCIdentifier name, SourceLocation declaration, 
 }
 
 LocalIndex Expr::local_for_declaration(SymSCIdentifier name, SourceLocation declaration, SCLocalOwner_I owner) {
-    const auto k = scope.size() - 1;
+    const auto k = current_scope();
     const auto fnd = std::find_if(initialising.begin(), initialising.end(),
                                   [&](const auto& v) { return v.later && v.scope == k && v.name == name; });
     if (fnd != initialising.end())
@@ -92,7 +92,7 @@ LocalIndex Expr::local_for_declaration(SymSCIdentifier name, SourceLocation decl
 }
 
 void Expr::close_legacy_frame() {
-    const auto k = scope.size() - 1;
+    const auto k = current_scope();
     initialising.erase(std::remove_if(initialising.begin(), initialising.end(),
                                       [&](const auto& v) { return v.later && v.scope == k; }),
                        initialising.end());
@@ -107,7 +107,7 @@ SourceLocation declaration_location(IRGraph& ir, const ScopeEntry& entry) {
 }
 
 std::optional<ScopeEntry> Expr::resolve_symbol(Symbol i, bool get_uninitalised) const {
-    for (auto it = scope.rbegin(); it != scope.rend(); ++it) {
+    for (auto it = scope.raw().rbegin(); it != scope.raw().rend(); ++it) {
         if (auto fnd = it->find(i); fnd != it->end()) {
             if (fnd->second.state == ScopeEntry::State::Initalised || get_uninitalised) {
                 return { fnd->second };
@@ -120,7 +120,7 @@ std::optional<ScopeEntry> Expr::resolve_symbol(Symbol i, bool get_uninitalised) 
 void Expr::record_local_use(Symbol name, LocalIndex local, bool assigns) {
     // Found the same way as resolve_symbol, it is captured if a function starts inside the scope declaring it.
     bool in_function = false;
-    for (std::size_t k = scope.size(); k-- > 0;) {
+    for (const auto k : scope.indices().reversed()) {
         if (const auto fnd = scope[k].find(name);
             fnd != scope[k].end() && fnd->second.state == ScopeEntry::State::Initalised)
             break;
@@ -215,7 +215,7 @@ bool visible(const Expr::Initialising& variable, bool in_function, ast::Language
 // function, which 3.16 would refer to, so that use, at, warns.
 std::optional<InitialisingUse> find_initialising(Expr& expr, Symbol name, const ast::ASTGraph& g, ast::Index at) {
     bool in_function = false;
-    for (std::size_t k = expr.scope.size(); k-- > 0;) {
+    for (const auto k : expr.scope.indices().reversed()) {
         for (auto variable = expr.initialising.rbegin(); variable != expr.initialising.rend(); ++variable) {
             if (variable->scope != k || variable->name != name || !visible(*variable, in_function, expr.version))
                 continue;
@@ -266,7 +266,7 @@ void report_undefined(Expr& expr, IRGraph& ir, Symbol name, const ast::ASTGraph&
             for (auto v = outside->initialising.rbegin(); v != outside->initialising.rend(); ++v)
                 if (v->name == name)
                     return v->declaration;
-            for (auto s = outside->scope.rbegin(); s != outside->scope.rend(); ++s)
+            for (auto s = outside->scope.raw().rbegin(); s != outside->scope.raw().rend(); ++s)
                 if (const auto fnd = s->find(name); fnd != s->end())
                     return declaration_location(ir, fnd->second);
         }

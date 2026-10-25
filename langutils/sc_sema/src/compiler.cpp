@@ -44,7 +44,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
     };
     std::vector<Defined> classes;
     std::vector<Defined> extensions;
-    for (const auto& opt : ctx.class_library_ast) {
+    for (const auto& opt : ctx.class_library_ast.raw()) {
         if (!opt)
             continue;
         const auto& g = *opt->graph;
@@ -68,7 +68,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
     for (const auto& defined : classes) {
         const auto& g = defined.entry->graph;
         const auto [class_name_i, backing_slot, super_name_i, members, methods] =
-            g->children(*g->as_a<ast::ClassIndex>(defined.index));
+            g->children(g->assume_a<ast::ClassIndex>(defined.index));
         ctx.class_names.define(ctx.symbol_table.get_class_name(g->string(class_name_i)), g, class_name_i);
     }
 
@@ -81,11 +81,11 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
         }
         m_compile_has_been_called = true;
 
-        std::atomic<size_t> ast_it { 0 };
-        const auto process_graph = [&, max = ctx.class_library_ast.size()]() {
+        std::atomic<ASTGraphIndex::Underlying> ast_it { 0 };
+        const auto process_graph = [&]() {
             while (true) {
-                const auto index = ast_it.fetch_add(1, std::memory_order_relaxed);
-                if (index >= max)
+                const ASTGraphIndex index { ast_it.fetch_add(1, std::memory_order_relaxed) };
+                if (!ctx.class_library_ast.contains(index))
                     return;
 
                 const auto& opt = ctx.class_library_ast[index];
@@ -99,8 +99,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
 
                 for (auto child { classes_or_extensions.iter() }; child; ++child) {
                     if (const auto class_i = graph->as_a<ast::ClassIndex>(*child)) {
-                        auto result = ast2ir::DeclareClass { ctx, graph, ASTGraphIndex::from(index),
-                                                             graph_and_index.module }(*class_i);
+                        auto result = ast2ir::DeclareClass { ctx, graph, index, graph_and_index.module }(*class_i);
                         if (result) {
                             auto& c = result->class_;
                             auto& m = result->meta_class_;
@@ -123,7 +122,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
     {
         for (const auto& extension : extensions) {
             const auto& ast_graph = extension.entry->graph;
-            const auto extension_i = *ast_graph->as_a<ast::ClassExtensionIndex>(extension.index);
+            const auto extension_i = ast_graph->assume_a<ast::ClassExtensionIndex>(extension.index);
             const auto [class_name_i, method_list_i] = ast_graph->children(extension_i);
             const auto version = ast_graph->payload(extension_i).version;
             const auto class_name = ctx.symbol_table.get_class_name(ast_graph->string(class_name_i));
@@ -220,7 +219,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
     // Reported in order, rather than threaded, so the diagnostics are too, there are only ever a few.
     {
         const auto cycles = ctx.inheritance_edges.cycle_check({ *ctx.common_classes.root_object },
-                                                              m_topological_ordering, ctx.symbol_table);
+                                                              m_topological_ordering.raw(), ctx.symbol_table);
         for (const auto& chain : cycles) {
             {
                 std::optional<SymSCClassName> missing { };
@@ -254,8 +253,8 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                     }
                 } else if (chain.size() == 1) {
                     // Class inherits from itself.
-                    if (!ctx.symbol_table.is_meta(chain[0])) {
-                        auto ptr = ctx.class_declarations.get_unsafe(chain[0]);
+                    if (!ctx.symbol_table.is_meta(chain.front())) {
+                        auto ptr = ctx.class_declarations.get_unsafe(chain.front());
                         assert(ptr);
                         assert(ptr->super());
                         const auto super_loc = ptr->super()->second;
@@ -263,7 +262,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                         ctx.diagnostics(
                             sc::diag::Diagnostic::self_inheritance(graph.text_info(), graph.location(super_loc)));
                     }
-                } else if (!ctx.symbol_table.is_meta(chain[0])) {
+                } else if (!ctx.symbol_table.is_meta(chain.front())) {
                     // A loop. The meta classes form the same loop, which isn't reported again.
                     std::vector<std::pair<std::shared_ptr<const sc::lex::TextInfo>, sc::lex::SourceCodeRange>> a;
 
@@ -288,7 +287,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
             if (const auto meta = it->second.meta_class())
                 if (auto* meta_decl = ctx.class_declarations.get_unsafe(*meta))
                     meta_decl->poison();
-    for (const auto c : m_topological_ordering) {
+    for (const auto c : m_topological_ordering.raw()) {
         const auto* decl = ctx.class_declarations.get_unsafe(c);
         if (!decl || !decl->poisoned())
             continue;
@@ -301,15 +300,15 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
     ctx.known_methods.check(ctx.class_declarations, ctx.common_classes, ctx.common_symbols);
 
     m_classes.resize(m_topological_ordering.size());
-    for (std::uint32_t i { 0 }; i < m_topological_ordering.size(); ++i)
-        m_class_positions.insert({ m_topological_ordering[i], TopologicalPosition { i } });
+    for (const auto i : m_topological_ordering.indices())
+        m_class_positions.insert({ m_topological_ordering[i], i });
 
     // Step 3: build class member layout
     // Must be done in order, cannot multithread.
     using MemberEntry = std::tuple<SCMember, std::shared_ptr<const ast::ASTGraph>, ast::Index>;
     std::unordered_map<SymSCClassName, std::vector<MemberEntry>, std::hash<Symbol>> class_member_layout;
 
-    for (SymSCClassName c : m_topological_ordering) {
+    for (SymSCClassName c : m_topological_ordering.raw()) {
         const auto& decl = *ctx.class_declarations.get_unsafe(c);
         std::vector<MemberEntry> members;
         if (decl.super()) {

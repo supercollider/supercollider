@@ -107,7 +107,7 @@ std::optional<Inlined> inlining(const InliningContext& ctx, const ir::IRGraph& g
     case OpSpecialSelectors::QuestionMark:
         return args.size() == 1 ? std::optional { Inlined::QuestionMark } : std::nullopt;
     case OpSpecialSelectors::While:
-        if (args.size() == 0)
+        if (args.empty())
             return is_inlineable(g, receiver, version) ? std::optional { Inlined::While } : std::nullopt;
         if (args.size() != 1 || !is_inlineable(g, args[{ 0 }], version))
             return std::nullopt;
@@ -116,7 +116,7 @@ std::optional<Inlined> inlining(const InliningContext& ctx, const ir::IRGraph& g
             return Inlined::WhileTrue;
         return is_inlineable(g, receiver, version) ? std::optional { Inlined::While } : std::nullopt;
     case OpSpecialSelectors::Loop:
-        return args.size() == 0 && is_inlineable(g, receiver, version) ? std::optional { Inlined::Loop } : std::nullopt;
+        return args.empty() && is_inlineable(g, receiver, version) ? std::optional { Inlined::Loop } : std::nullopt;
     case OpSpecialSelectors::Case:
         return is_inlineable(g, receiver, version) && all_inlineable(g, args, version) ? std::optional { Inlined::Case }
                                                                                        : std::nullopt;
@@ -176,7 +176,7 @@ Arguments positional_arguments(const ir::IRGraph& g, ir::SCMessage_I m) {
 std::optional<NilTest> nil_test(const InliningContext& ctx, const ir::IRGraph& g, ir::SCAnyExpr_I i) {
     const auto m = g.as_a<ir::SCMessage_I>(i);
     if (!m || g.payload(*m).form != ir::SCMessage::Form::Call || !only_positional(g, *m)
-        || positional_arguments(g, *m).size() != 0)
+        || !positional_arguments(g, *m).empty())
         return std::nullopt;
     const auto special = ctx.symbols.find(ir::Symbol { *g.payload(*m).selector });
     const auto* unary = special ? std::get_if<OpUnaryMath>(&*special) : nullptr;

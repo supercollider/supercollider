@@ -388,7 +388,7 @@ int main(int argc, char* argv[]) {
         make_text(std::string { std::istreambuf_iterator<char> { std::cin }, {} }, std::nullopt, class_mode);
 
     std::vector<sc::diag::Diagnostic> diagnostics;
-    std::vector<std::optional<sc::ir::SourceEntry>> entries;
+    sc::ir::ClassLibrarySources entries;
     std::shared_ptr<const sc::ast::ASTGraph> source_ast;
 
     // Each prelude is a module, and a class file the last.
@@ -400,8 +400,8 @@ int main(int argc, char* argv[]) {
             diagnostics.push_back(d);
         const auto root = ast->root();
         if (root && std::holds_alternative<sc::ast::ClassOrExtensionListIndex>(*root))
-            entries.push_back(sc::ir::SourceEntry { ast, std::get<sc::ast::ClassOrExtensionListIndex>(*root),
-                                                    sc::ir::ModuleIndex::from(module) });
+            (void)entries.push_back(sc::ir::SourceEntry { ast, std::get<sc::ast::ClassOrExtensionListIndex>(*root),
+                                                          sc::ir::ModuleIndex::from(module) });
         return std::shared_ptr<const sc::ast::ASTGraph> { ast };
     };
     for (size_t i { 0 }; i < preludes.size(); ++i) {

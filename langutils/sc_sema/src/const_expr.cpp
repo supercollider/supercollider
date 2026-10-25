@@ -121,10 +121,11 @@ ConstExpression element(SymSCSymbol s) { return s; }
 template <typename Vec>
 void typed_array_to_json(std::ostream& o, const Vec& vec, const SymbolTable& t, const ConstantTable& c) {
     o << "{\"" << typed_array_name(vec).json << "\": [";
-    for (size_t i { 0 }; i < vec.size(); ++i) {
-        element(vec[i]).to_json(o, t, c);
-        if (i + 1 != vec.size())
-            o << ", ";
+    const char* separator = "";
+    for (const auto e : vec) {
+        o << separator;
+        element(e).to_json(o, t, c);
+        separator = ", ";
     }
     o << "]}";
 }
@@ -132,10 +133,11 @@ void typed_array_to_json(std::ostream& o, const Vec& vec, const SymbolTable& t, 
 template <typename Vec>
 void typed_array_to_literal(std::ostream& o, const Vec& vec, const SymbolTable& t, const ConstantTable& c) {
     o << typed_array_name(vec).class_name << '[';
-    for (size_t i { 0 }; i < vec.size(); ++i) {
-        element(vec[i]).to_literal(o, t, c);
-        if (i + 1 != vec.size())
-            o << ", ";
+    const char* separator = "";
+    for (const auto e : vec) {
+        o << separator;
+        element(e).to_literal(o, t, c);
+        separator = ", ";
     }
     o << ']';
 }
@@ -181,18 +183,15 @@ void ConstExpression::to_json(std::ostream& o, const SymbolTable& t, const Const
         },
         [&](const sc::ir::ConstExprEvent& vec) {
             o << "{\"event\": [";
-            for (size_t i { 0 }; i < vec.size(); ++i) {
-                const auto [key, value] = vec[i];
-
-                o << "{\"key\": ";
+            const char* separator = "";
+            for (const auto& [key, value] : vec) {
+                o << separator << "{\"key\": ";
                 c(key).to_json(o, t, c);
                 o << ", ";
                 o << "\"value\": ";
                 c(value).to_json(o, t, c);
                 o << "}";
-
-                if (i + 1 != vec.size())
-                    o << ", ";
+                separator = ", ";
             }
             o << "]}";
         },
@@ -252,17 +251,18 @@ void ConstExpression::to_literal(std::ostream& o, const SymbolTable& t, const Co
         [&](sc::ir::SymSCClassName i) { o << t(i); }, [&](sc::ir::SymSCString i) { write_sc_quoted(o, t(i), '"'); },
         [&](const sc::ir::ConstExprEvent& vec) {
             o << '(';
-            for (size_t i { 0 }; i < vec.size(); ++i) {
-                const auto& key = c(vec[i].first);
+            const char* separator = "";
+            for (const auto& [key_i, value] : vec) {
+                o << separator;
+                const auto& key = c(key_i);
                 const auto* symbol = key.get_if<SymSCSymbol>();
                 if (symbol && is_identifier(t(*symbol)))
                     o << t(*symbol);
                 else
                     key.to_literal(o, t, c);
                 o << ": ";
-                c(vec[i].second).to_literal(o, t, c);
-                if (i + 1 != vec.size())
-                    o << ", ";
+                c(value).to_literal(o, t, c);
+                separator = ", ";
             }
             o << ')';
         },

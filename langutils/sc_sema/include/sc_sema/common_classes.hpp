@@ -21,9 +21,10 @@ struct CommonClasses {
 
     template <typename F> void for_each(F f) const {
         // Probably undefined behaviour, but should be okay?
-        const auto* ptr = reinterpret_cast<const SymSCClassName*>(this);
-        for (size_t i { 0 }; i < (sizeof(CommonClasses) / sizeof(SymSCClassName)); ++i)
-            f(ptr[i]);
+        const auto* first = reinterpret_cast<const SymSCClassName*>(this);
+        const auto* last = first + sizeof(CommonClasses) / sizeof(SymSCClassName);
+        for (const auto* c = first; c != last; ++c)
+            f(*c);
     }
 };
 

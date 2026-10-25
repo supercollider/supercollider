@@ -12,11 +12,11 @@
 
 namespace sc::ir::ast2ir {
 
-std::vector<ast::CurryIndex> curry_arguments(const ast::ASTGraph& g, ast::Index node) {
-    std::vector<ast::CurryIndex> curries;
+Curries curry_arguments(const ast::ASTGraph& g, ast::Index node) {
+    Curries curries;
     const auto add = [&](ast::Index i) {
         if (const auto curry = g.as_a<ast::CurryIndex>(i))
-            curries.push_back(*curry);
+            (void)curries.push_back(*curry);
     };
     const auto add_arguments = [&](ast::ArgumentListIndex list) {
         for (auto it = g.children(list).iter(); it; ++it) {
@@ -105,18 +105,18 @@ std::vector<ast::CurryIndex> curry_arguments(const ast::ASTGraph& g, ast::Index 
     }
 
     // In the order they are written, which is the order of the function's arguments.
-    std::sort(curries.begin(), curries.end(), [&](ast::CurryIndex l, ast::CurryIndex r) {
+    std::sort(curries.raw().begin(), curries.raw().end(), [&](ast::CurryIndex l, ast::CurryIndex r) {
         return get_location(g, l).begin.absolute < get_location(g, r).begin.absolute;
     });
     return curries;
 }
 
-SymSCIdentifier curry_argument_name(Context& ctx, std::size_t n, std::size_t count) {
-    return ctx.symbol_table.get_identifier(count == 1 ? "_" : "_" + std::to_string(n + 1));
+SymSCIdentifier curry_argument_name(Context& ctx, CurryArgumentIndex n, std::size_t count) {
+    return ctx.symbol_table.get_identifier(count == 1 ? "_" : "_" + std::to_string(*n + 1));
 }
 
 Return<SCAnyExpr_I> partially_apply(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast::ASTGraph>& ast_graph,
-                                    Context& ctx, ast::AnyExprIndex node, const std::vector<ast::CurryIndex>& curries) {
+                                    Context& ctx, ast::AnyExprIndex node, const Curries& curries) {
     const auto here = location_of(ir, *ast_graph, { *node });
     // Created first, so its arguments can refer to it as their scope, like a block.
     const auto positional = ir.create(SCArgumentDeclareList {}, here);
@@ -124,9 +124,9 @@ Return<SCAnyExpr_I> partially_apply(Expr& expr, IRGraph& ir, const std::shared_p
     const auto body = ir.create(SCBody {}, here);
     const auto function = ir.create(SCFunction {}, here, positional, variadic, body);
 
-    expr.scope.emplace_back();
+    (void)expr.scope.push_back({});
     expr.scope.back().starts_function = true;
-    for (std::size_t n { 0 }; n < curries.size(); ++n) {
+    for (const auto n : curries.indices()) {
         const auto name = curry_argument_name(ctx, n, curries.size());
         const auto curry_location = location_of(ir, *ast_graph, { *curries[n] });
         const auto missing_default = ir.create(SCMissing {}, curry_location);
@@ -151,10 +151,10 @@ Return<SCAnyExpr_I> partially_apply(Expr& expr, IRGraph& ir, const std::shared_p
 
 // A `_` being partially applied reads its argument, any other isn't in a call.
 Return<SCAnyExpr_I> Expr::operator()(ast::CurryIndex i) {
-    const auto is_i = [&](ast::CurryIndex c) { return *c == *i; };
-    if (const auto fnd = std::find_if(applied_curries.begin(), applied_curries.end(), is_i);
-        fnd != applied_curries.end()) {
-        const auto name = curry_argument_name(ctx, fnd - applied_curries.begin(), applied_curries.size());
+    for (const auto n : applied_curries.indices()) {
+        if (*applied_curries[n] != *i)
+            continue;
+        const auto name = curry_argument_name(ctx, n, applied_curries.size());
         const auto entry = resolve_symbol(name);
         assert(entry);
         record_local_use(name, LocalIndex { *entry->local }, false);

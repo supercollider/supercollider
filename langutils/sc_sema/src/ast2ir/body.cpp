@@ -299,7 +299,7 @@ bool declare_variable(BodyContext& b, ast::NamedIdentifierIndex name_i, std::opt
         return true;
     }
     // Compiled before the variable is declared, a function in it can still refer to it, see Expr::initialising.
-    Expr::Initialising variable { name, b.expr.scope.size() - 1, location_of(b.ir, g, whole), local };
+    Expr::Initialising variable { name, b.expr.current_scope(), location_of(b.ir, g, whole), local };
     variable.in_frame = true;
     b.expr.initialising.push_back(variable);
     const auto value_r = b.expr(*value);
@@ -331,7 +331,7 @@ bool declare_pack(BodyContext& b, ast::VariablePackAssignIndex pack) {
         const auto sym = b.ctx.symbol_table.get_identifier(std::string { get_string_view(g, *name) });
         const auto loc = location_of(b.ir, g, { **name });
         locals.push_back(b.expr.local_for_declaration(sym, loc, b.owner));
-        Expr::Initialising variable { sym, b.expr.scope.size() - 1, loc, locals.back() };
+        Expr::Initialising variable { sym, b.expr.current_scope(), loc, locals.back() };
         variable.in_frame = true;
         b.expr.initialising.push_back(variable);
     };

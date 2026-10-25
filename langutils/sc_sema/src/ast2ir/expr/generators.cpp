@@ -25,7 +25,7 @@ public:
     }
 
     void open() {
-        expr.scope.emplace_back();
+        (void)expr.scope.push_back({});
         ++count;
     }
 
@@ -126,7 +126,7 @@ void declare_variable(GeneratorContext& c, ast::GeneratorQualDeclareIndex q) {
     open_scope(c);
     const auto here = location_of(c.ir, *c.ast_graph, { *q });
     const auto local = c.expr.create_local(*name, here, c.qualifiers);
-    Expr::Initialising variable { *name, c.expr.scope.size() - 1, here, local };
+    Expr::Initialising variable { *name, c.expr.current_scope(), here, local };
     variable.outside_value = is_frame_scoped(c.expr.version);
     c.expr.initialising.push_back(variable);
     const auto value_r = c.expr(value);

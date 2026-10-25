@@ -178,6 +178,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////
 
     using Base::as_a;
+    using Base::assume_a;
     using Base::cast;
     using Base::is_a;
 

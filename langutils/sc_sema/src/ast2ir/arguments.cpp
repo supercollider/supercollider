@@ -47,7 +47,7 @@ void declare_arguments(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast:
                     // Compiled before this argument is declared, a function in it can still refer to it, see
                     // Expr::initialising.
                     const auto variable_local = local(sym, { *i });
-                    Expr::Initialising variable { sym, expr.scope.size() - 1, location_of(ir, *ast_graph, { *i }),
+                    Expr::Initialising variable { sym, expr.current_scope(), location_of(ir, *ast_graph, { *i }),
                                                   variable_local };
                     variable.in_frame = true;
                     expr.initialising.push_back(variable);

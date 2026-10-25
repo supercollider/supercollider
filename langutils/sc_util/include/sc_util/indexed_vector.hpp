@@ -36,6 +36,12 @@ public:
     }
 
     [[nodiscard]] std::size_t size() const { return m_values.size(); }
+    [[nodiscard]] bool empty() const { return m_values.empty(); }
+
+    // As a stack.
+    [[nodiscard]] T& back() { return m_values.back(); }
+    [[nodiscard]] const T& back() const { return m_values.back(); }
+    void pop_back() { m_values.pop_back(); }
 
     // The index the next push_back returns.
     [[nodiscard]] Index next_index() const {

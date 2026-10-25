@@ -5,6 +5,9 @@
 #include "sc_sema/intrinsic_constraint.hpp"
 #include "sc_sema/symbol_table.hpp"
 
+#include <cstddef>
+#include <iterator>
+
 namespace sc::ir {
 
 // Checks the constraint.
@@ -109,8 +112,9 @@ namespace sc::ir {
             out.push_back(sc::diag::Diagnostic::todo(g->text_info(), g->location(fnd.name_index)));
             return;
         } else if (decl.member_order().size() > c.member_names->size()) {
-            // Too many
-            const auto final_name = decl.member_order()[c.member_names->size()];
+            // Too many, the first extra member is reported.
+            const auto final_name =
+                *std::next(decl.member_order().begin(), static_cast<std::ptrdiff_t>(c.member_names->size()));
             const auto& fnd = *decl.find_member(final_name);
             const auto g = decl.ast_graph();
             out.push_back(sc::diag::Diagnostic::todo(g->text_info(), g->location(fnd.name_index)));
@@ -120,16 +124,11 @@ namespace sc::ir {
 
         assert(c.member_names->size() == decl.member_order().size()); // checked above.
 
-        size_t i { 0 };
-        for (auto m : decl.member_order()) {}
-
-        for (size_t i { 0 };; ++i) {
-            if (i >= c.member_names->size())
-                return;
-
-            const auto& got_name = decl.member_order()[i];
+        // The members are in the same order as the expected names.
+        auto next_expected = c.member_names->begin();
+        for (const auto& got_name : decl.member_order()) {
             const auto& got = *decl.find_member(got_name);
-            const auto& expected = (*c.member_names)[i];
+            const auto& expected = *next_expected++;
 
             if (got.expr_index) {
                 //  Intrinsic classes shouldn't have defaults.

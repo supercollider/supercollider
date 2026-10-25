@@ -1345,7 +1345,7 @@ OptionalMethodShortcut method_shortcut(const EmitContext& ctx, const lir::Functi
     const auto third = util::advance(first, 2);
     const auto fourth = util::advance(first, 3);
     // Lowering ends every method with a return.
-    assert(code.size() != 0);
+    assert(!code.empty());
     const auto last = util::retreat(code.next_index());
     if (code.size() == 1 && std::holds_alternative<lir::ReturnSelf>(code[first]))
         return shortcut::ReturnSelf {};

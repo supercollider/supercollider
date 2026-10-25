@@ -1,8 +1,11 @@
 #pragma once
 
 #include "ast2ir_base.hpp"
+#include "ast2ir/partial_application.hpp"
 #include "sc_parser/indexes_typed.hpp"
 #include "sc_sema/ir_index.hpp"
+#include "sc_util/indexed_vector.hpp"
+#include "sc_util/strong_index.hpp"
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -44,6 +47,10 @@ struct Scope : std::unordered_map<Symbol, ScopeEntry> {
     // variable whose initial value it is in, see Expr::initialising.
     bool starts_function { false };
 };
+
+// A scope on the stack, the outermost first.
+using ScopeIndex = util::StrongIndex<std::uint32_t, struct ScopeIndex__>;
+using Scopes = util::IndexedVector<ScopeIndex, Scope>;
 
 // Used when entering a closed function.
 struct InterpreterScopes {
@@ -106,8 +113,10 @@ struct Expr : private Base {
 
     Return<SCAnyExpr_I> operator()(ast::AnyExprIndex);
 
-    std::vector<Scope> scope;
+    Scopes scope;
     DiagnosticSink& sink;
+
+    [[nodiscard]] ScopeIndex current_scope() const { return util::retreat(scope.next_index()); }
 
     // A variable or argument whose initial value is being compiled, it is only added to its scope afterwards. A
     // function in the initial value can refer to it, as the function is called after the variable is assigned, e.g.,
@@ -117,7 +126,7 @@ struct Expr : private Base {
     // can be used before their declarations, see predeclare_legacy_frame.
     struct Initialising {
         Symbol name;
-        std::size_t scope;
+        ScopeIndex scope;
         SourceLocation declaration;
         LocalIndex local;
         // Assigned, or used in a function, before it is declared, so it can't be constant.
@@ -135,7 +144,7 @@ struct Expr : private Base {
     };
 
     std::vector<Initialising> initialising;
-    std::vector<ast::CurryIndex> applied_curries;
+    Curries applied_curries;
 
     // Interpreted code should not use the '^'.
     bool returns_allowed { true };
@@ -146,7 +155,7 @@ struct Expr : private Base {
     // What surrounds a closed function.
     // This is needed only for diagnostics.
     struct OutsideClosed {
-        std::vector<Scope> scope;
+        Scopes scope;
         std::vector<Initialising> initialising;
     };
     // This is a vector because nested closed functions can't see up into each other.
