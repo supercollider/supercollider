@@ -75,7 +75,7 @@ SCClass (3:1): ArgumentDefaultFolding : Object, version 3.16
 |  |  SCMethod (12:5): unbracketed_function, version 3.16: unbracketed_function { arg f = { |b = (1 + 1)| var c = 2 + 2; c }; ^f }
 |  |  |  SCArgumentDeclareList (12:32)
 |  |  |  |  SCArgumentDeclare (12:32): f, computed
-|  |  |  |  |  SCFunction (12:36)
+|  |  |  |  |  SCFunction (12:36): f
 |  |  |  |  |  |  SCArgumentDeclareList (12:39)
 |  |  |  |  |  |  |  SCArgumentDeclare (12:39): b, computed
 |  |  |  |  |  |  |  |  SCMessage (12:44): +
@@ -95,7 +95,7 @@ SCClass (3:1): ArgumentDefaultFolding : Object, version 3.16
 |  |  SCMethod (13:5): bracketed_function, version 3.16: bracketed_function { arg f = ({ |b = (1 + 1)| var c = 2 + 2; c }); ^f }
 |  |  |  SCArgumentDeclareList (13:30)
 |  |  |  |  SCArgumentDeclare (13:30): f, computed
-|  |  |  |  |  SCFunction (13:35)
+|  |  |  |  |  SCFunction (13:35): f
 |  |  |  |  |  |  SCArgumentDeclareList (13:38)
 |  |  |  |  |  |  |  SCArgumentDeclare (13:38): b, computed
 |  |  |  |  |  |  |  |  SCMessage (13:43): + = 2

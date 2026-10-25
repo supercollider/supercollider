@@ -51,7 +51,7 @@ SCClass (2:1): LegacyInitialValues : Object
 |  |  |  |  |  |  SCLiteral (6:69) = \c
 |  |  |  |  |  |  SCLiteral (6:72) = 3
 |  |  |  |  SCArgumentDeclare (6:76): f, computed
-|  |  |  |  |  SCFunction (6:80) -> 1
+|  |  |  |  |  SCFunction (6:80): f -> 1
 |  |  |  |  |  |  SCBody (6:80)
 |  |  |  |  |  |  |  SCLiteral (6:82) = 1
 |  |  |  |  SCArgumentDeclare (6:87): g, computed

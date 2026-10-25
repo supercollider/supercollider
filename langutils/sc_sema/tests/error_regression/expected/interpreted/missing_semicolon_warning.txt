@@ -60,7 +60,7 @@ SCInterpreted (1:1): version 3.16: interpreted/missing_semicolon_warning.scd
 |  |  |  SCFunction (6:1)
 |  |  |  |  SCBody (6:1)
 |  |  |  |  |  SCAssign (6:1): instance f, declared (37:36): f
-|  |  |  |  |  |  SCFunction (6:5)
+|  |  |  |  |  |  SCFunction (6:5): f
 |  |  |  |  |  |  |  SCArgumentDeclareList (6:8)
 |  |  |  |  |  |  |  |  SCArgumentDeclare (6:8): x
 |  |  |  |  |  |  |  SCBody (6:5)

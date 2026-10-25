@@ -137,6 +137,9 @@ using OptionalMethodShortcut =
                  shortcut::ForwardClassVariable, shortcut::ReturnClassVariable, shortcut::AssignClassVariable>;
 static_assert(sizeof(OptionalMethodShortcut) == 12);
 
+void write_shortcut(std::ostream& out, const OptionalMethodShortcut& shortcut, const ir::SymbolTable& symbols,
+                    const ir::ConstantTable& constants);
+
 struct EmittedFunction {
     // In the body of a method whose code is a hard coded loop, so never made.
     bool thrown_away { false };

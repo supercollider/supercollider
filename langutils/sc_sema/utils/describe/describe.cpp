@@ -194,6 +194,8 @@ void write_details(const Describe& d, std::ostream& out, const IRGraph::Variant&
                            out << (d.relative_to ? path->lexically_relative(*d.relative_to) : *path).string();
                    },
                    [&](const SCFunction& f) {
+                       if (f.name)
+                           out << ": " << symbol_table(*f.name);
                        if (f.closed)
                            out << ": closed";
                    },

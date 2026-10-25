@@ -4,6 +4,7 @@
 #include "sc_parser/indexes_untyped.hpp"
 #include "sc_parser/sc_grammar_shared.hpp"
 #include "sc_sema/const_expr_index.hpp"
+#include "sc_sema/ir_index.hpp"
 #include "sc_sema/source_location.hpp"
 #include "sc_sema/type_info.hpp"
 #include "sc_sema/versions.hpp"
@@ -24,6 +25,9 @@ namespace sc::ir::ast2ir {
 
 // Where an ast node came from, in the IRGraph's own sources.
 [[nodiscard]] SourceLocation location_of(IRGraph& ir, const ast::ASTGraph& ast_graph, ast::Index i);
+
+// Tries to name the expression, only works if it is a function.
+void try_name_expr(IRGraph& ir, SCAnyExpr_I value, Symbol name);
 
 struct Base {
     Base(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& cxt, ast::LanguageVersion v):

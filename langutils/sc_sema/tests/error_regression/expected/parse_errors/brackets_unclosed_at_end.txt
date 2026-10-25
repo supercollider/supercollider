@@ -47,7 +47,7 @@ SCInterpreted (1:1): poisoned: version 3.16: parse_errors/brackets_unclosed_at_e
 |  |  |  SCFunction (4:1)
 |  |  |  |  SCBody (4:1)
 |  |  |  |  |  SCAssign (4:1): instance f, declared (37:36): f
-|  |  |  |  |  |  SCFunction (4:5)
+|  |  |  |  |  |  SCFunction (4:5): f
 |  |  |  |  |  |  |  SCArgumentDeclareList (4:8)
 |  |  |  |  |  |  |  |  SCArgumentDeclare (4:8): x
 |  |  |  |  |  |  |  SCBody (4:5)

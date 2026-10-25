@@ -329,6 +329,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
                                  OptionalMemberIndex member) -> Return<SCAnyExpr_I> {
         // Assignment returns the assigned value, but is never a const expression as it has a side effect.
         const auto index = ir.create(SCAssign { located_name, kind, local, member }, location({ *i }), expr_r.ir_node);
+        try_name_expr(ir, expr_r.ir_node, name_sym);
         if (expr_r.type)
             return { index, *expr_r.type };
         return { index };

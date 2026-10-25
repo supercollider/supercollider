@@ -37,8 +37,8 @@ comment, e.g.,
 The first lines can also be `// no-prelude`, to compile it without the shared prelude.sc, and any number of
 `// module: NAME`, which compiles modules/NAME.sc as its own module, before the test, e.g., to test extensions in
 different modules. A module is a path given to the compiler. `// frames` adds the backend's frame layout to the
-output, see sc_inspect's --frames, `// lir` adds the backend's lowered ir after the dump, see --lir, and `// bytecode`
-adds its bytecode after that, see --bytecode.
+output, see sc_inspect's --frames, `// lir` adds the backend's lowered ir after the dump, see --lir, `// bytecode`
+adds its bytecode after that, see --bytecode, and `// compiled` what the VM's objects are made from, see --compiled.
 A test fails when an assertion doesn't hold, even when its output is overridden, so overriding can't hide a change
 the test was written to catch.
 
@@ -81,8 +81,10 @@ FRAMES = '// frames'
 LIR = '// lir'
 # Adds the backend's bytecode after the dump, see sc_inspect's --bytecode.
 BYTECODE = '// bytecode'
-# Where the lowered ir and the bytecode start, assertions are only about the dump before them.
-BACKEND_HEADERS = ['LIR DUMP', 'BYTECODE DUMP']
+# Adds what the VM's objects are made from after the dump, see sc_inspect's --compiled.
+COMPILED = '// compiled'
+# Where the lowered ir, the bytecode and the compiled output start, assertions are only about the dump before them.
+BACKEND_HEADERS = ['LIR DUMP', 'BYTECODE DUMP', 'COMPILED DUMP']
 # Another module compiled before the test, e.g., `// module: other` is modules/other.sc.
 MODULE = re.compile(r'^// module: (?P<name>\S+)$')
 # Outside input, so the modules aren't tests themselves.
@@ -262,13 +264,14 @@ def test_name(sc_file):
 
 def headers(sc_file):
     """Whether the test uses the prelude, the release its interpreted code is compiled as, the modules compiled before
-    it, and whether it shows the frames, the lowered ir and the bytecode, from its first lines."""
+    it, and whether it shows the frames, the lowered ir, the bytecode and the compiled output, from its first lines."""
     uses_prelude = True
     release = None
     modules = []
     frames = False
     lir = False
     bytecode = False
+    compiled = False
     with open(sc_file) as f:
         for line in f:
             line = line.strip()
@@ -280,17 +283,19 @@ def headers(sc_file):
                 lir = True
             elif line == BYTECODE:
                 bytecode = True
+            elif line == COMPILED:
+                compiled = True
             elif version := INTERPRETED_VERSION.match(line):
                 release = version['release']
             elif module := MODULE.match(line):
                 modules.append(MODULES_DIR / f"{module['name']}.sc")
             else:
                 break
-    return uses_prelude, release, modules, frames, lir, bytecode
+    return uses_prelude, release, modules, frames, lir, bytecode, compiled
 
 
 def run_sc_inspect(cmd, sc_file):
-    uses_prelude, release, modules, frames, lir, bytecode = headers(sc_file)
+    uses_prelude, release, modules, frames, lir, bytecode, compiled = headers(sc_file)
     # Paths in diagnostics are relative to the input directory, so the output doesn't depend on where it is run.
     # The output is the same however many threads compile it, two checks that, while leaving cpus for other tests.
     args = [cmd, '--threads', '2', '--relative-to', INPUT_DIR]
@@ -302,6 +307,8 @@ def run_sc_inspect(cmd, sc_file):
         args += ['--lir']
     if bytecode:
         args += ['--bytecode']
+    if compiled:
+        args += ['--compiled']
     if uses_prelude:
         args += ['--prelude', PRELUDE]
     # Each path is its own module, in order, so the test is the last.

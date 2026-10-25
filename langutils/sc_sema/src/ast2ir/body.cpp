@@ -308,6 +308,7 @@ bool declare_variable(BodyContext& b, ast::NamedIdentifierIndex name_i, std::opt
     const auto constant =
         b.expr.can_fold_constants() || ConstEval::is_legacy_literal(g, *value) ? value_r.const_index : std::nullopt;
     const auto prototype = can_be_prototyped(g, *value, value_r.const_index);
+    try_name_expr(b.ir, value_r.ir_node, name);
     (void)add_variable(b, name_i, name, declare_node(value_r.ir_node, prototype), local, constant, value_r.type);
     return value_r.const_index.has_value();
 }

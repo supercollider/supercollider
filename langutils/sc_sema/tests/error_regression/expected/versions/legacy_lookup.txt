@@ -112,7 +112,7 @@ SCClass (5:1): LegacyLookup : Object
 |  |  SCMethod (42:5): self_reference_in_function: self_reference_in_function { var f = { f }; ^f }
 |  |  |  SCBody (42:34)
 |  |  |  |  SCVariableDeclare (42:38): f (captured), computed
-|  |  |  |  |  SCFunction (42:42)
+|  |  |  |  |  SCFunction (42:42): f
 |  |  |  |  |  |  SCBody (42:42)
 |  |  |  |  |  |  |  SCRead (42:44): local f, declared (42:38): f = { f }
 |  |  |  |  SCExplicitReturn (42:49)
@@ -240,12 +240,12 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (56:34)
 |  |  |  |  SCVariableDeclare (56:38): f, computed
-|  |  |  |  |  SCFunction (56:42)
+|  |  |  |  |  SCFunction (56:42): f
 |  |  |  |  |  |  SCBody (56:42)
 |  |  |  |  |  |  |  SCMessage (56:44): value
 |  |  |  |  |  |  |  |  SCRead (56:44): local g, declared (56:52): g = { 1 }
 |  |  |  |  SCVariableDeclare (56:52): g (captured), computed
-|  |  |  |  |  SCFunction (56:56) -> 1
+|  |  |  |  |  SCFunction (56:56): g -> 1
 |  |  |  |  |  |  SCBody (56:56)
 |  |  |  |  |  |  |  SCLiteral (56:58) = 1
 |  |  |  |  SCExplicitReturn (56:63)
@@ -341,7 +341,7 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (67:35)
 |  |  |  |  SCArgumentDeclare (67:35): a, computed
-|  |  |  |  |  SCFunction (67:39)
+|  |  |  |  |  SCFunction (67:39): a
 |  |  |  |  |  |  SCBody (67:39)
 |  |  |  |  |  |  |  SCRead (67:41): local x, declared (67:50): x = 1
 |  |  |  SCBody (67:46)
@@ -586,7 +586,7 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |  |  SCArgumentDeclare (93:22): x (captured)
 |  |  |  SCBody (93:25)
 |  |  |  |  SCVariableDeclare (93:29): a, computed
-|  |  |  |  |  SCFunction (93:33)
+|  |  |  |  |  SCFunction (93:33): a
 |  |  |  |  |  |  SCBody (93:33)
 |  |  |  |  |  |  |  SCMessage (93:35): if
 |  |  |  |  |  |  |  |  SCRead (93:39): local x, declared (93:22): x

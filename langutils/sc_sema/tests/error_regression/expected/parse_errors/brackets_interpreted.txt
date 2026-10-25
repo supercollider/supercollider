@@ -90,7 +90,7 @@ SCInterpreted (1:1): poisoned: version 3.16: parse_errors/brackets_interpreted.s
 |  |  |  SCFunction (5:1)
 |  |  |  |  SCBody (5:1)
 |  |  |  |  |  SCAssign (5:1): instance c, declared (37:21): c
-|  |  |  |  |  |  SCFunction (5:5) -> 5
+|  |  |  |  |  |  SCFunction (5:5): c -> 5
 |  |  |  |  |  |  |  SCBody (5:5)
 |  |  |  |  |  |  |  |  SCLiteral (5:8) = 5
 |  |  SCRegion (6:1)

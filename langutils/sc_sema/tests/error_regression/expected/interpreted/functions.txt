@@ -10,7 +10,7 @@ SCInterpreted (1:1): version 3.16: interpreted/functions.scd
 |  |  |  SCFunction (4:1)
 |  |  |  |  SCBody (4:1)
 |  |  |  |  |  SCAssign (4:1): instance a, declared (37:11): a
-|  |  |  |  |  |  SCFunction (4:5)
+|  |  |  |  |  |  SCFunction (4:5): a
 |  |  |  |  |  |  |  SCArgumentDeclareList (4:5)
 |  |  |  |  |  |  |  |  SCArgumentDeclare (4:5): _
 |  |  |  |  |  |  |  SCBody (4:5)
@@ -33,7 +33,7 @@ SCInterpreted (1:1): version 3.16: interpreted/functions.scd
 |  |  |  SCFunction (4:37)
 |  |  |  |  SCBody (4:37)
 |  |  |  |  |  SCAssign (4:37): instance c, declared (37:21): c
-|  |  |  |  |  |  SCFunction (4:41)
+|  |  |  |  |  |  SCFunction (4:41): c
 |  |  |  |  |  |  |  SCArgumentDeclareList (4:44)
 |  |  |  |  |  |  |  |  SCArgumentDeclare (4:44): n
 |  |  |  |  |  |  |  SCBody (4:41)

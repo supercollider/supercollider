@@ -119,7 +119,7 @@ SCClass (3:1): LocalUses : Object, version 3.16
 |  |  SCMethod (19:5): self_reference, version 3.16: self_reference { var f = { f }; ^f }
 |  |  |  SCBody (19:22)
 |  |  |  |  SCVariableDeclare (19:26): f (captured), computed
-|  |  |  |  |  SCFunction (19:30)
+|  |  |  |  |  SCFunction (19:30): f
 |  |  |  |  |  |  SCBody (19:30)
 |  |  |  |  |  |  |  SCRead (19:32): local f, declared (19:26): f = { f }
 |  |  |  |  SCExplicitReturn (19:37)

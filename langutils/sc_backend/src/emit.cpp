@@ -1628,8 +1628,6 @@ EmittedGraph emit(const EmitContext& ctx, const lir::LoweredGraph& lowered) {
 // Dump
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace {
-
 void write_shortcut(std::ostream& out, const OptionalMethodShortcut& shortcut, const ir::SymbolTable& symbols,
                     const ir::ConstantTable& constants) {
     out << "shortcut: ";
@@ -1656,6 +1654,8 @@ void write_shortcut(std::ostream& out, const OptionalMethodShortcut& shortcut, c
         },
         shortcut);
 }
+
+namespace {
 
 const char* opcode_name(Byte b) {
     // Inclusive, as ints, `endCode - 1` isn't a Byte.

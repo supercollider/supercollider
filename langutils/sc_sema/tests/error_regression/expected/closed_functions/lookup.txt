@@ -361,7 +361,7 @@ SCClass (3:1): ClosedLookup : Object, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (45:25)
 |  |  |  |  SCVariableDeclare (45:29): foo, computed
-|  |  |  |  |  SCFunction (45:35): closed
+|  |  |  |  |  SCFunction (45:35): foo: closed
 |  |  |  |  |  |  SCBody (45:35)
 |  |  |  |  |  |  |  SCExprList (45:38)
 |  |  |  |  SCExplicitReturn (45:45)
@@ -369,7 +369,7 @@ SCClass (3:1): ClosedLookup : Object, version 3.16
 |  |  SCMethod (48:5): own_initial_value_interpreter_name, version 3.16: own_initial_value_interpreter_name { var f = #{ f }; ^f }
 |  |  |  SCBody (48:42)
 |  |  |  |  SCVariableDeclare (48:46): f, computed
-|  |  |  |  |  SCFunction (48:50): closed
+|  |  |  |  |  SCFunction (48:50): f: closed
 |  |  |  |  |  |  SCBody (48:50)
 |  |  |  |  |  |  |  SCRead (48:53): instance f, declared (37:36): f
 |  |  |  |  SCExplicitReturn (48:58)

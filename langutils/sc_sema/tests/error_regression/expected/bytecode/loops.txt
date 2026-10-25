@@ -345,7 +345,7 @@ SCClass (96:1): Dictionary : Object, version 3.16
 |  |  |  SCArgumentDeclareList (98:29)
 |  |  |  |  SCArgumentDeclare (98:29): argArray
 |  |  |  |  SCArgumentDeclare (98:39): function, computed
-|  |  |  |  |  SCFunction (98:50) -> 1
+|  |  |  |  |  SCFunction (98:50): function -> 1
 |  |  |  |  |  |  SCBody (98:50)
 |  |  |  |  |  |  |  SCLiteral (98:52) = 1
 |  |  |  SCBody (99:9)

@@ -10,6 +10,12 @@ SourceLocation location_of(IRGraph& ir, const ast::ASTGraph& ast_graph, ast::Ind
     return ir.make_location(get_text_info(ast_graph), get_location(ast_graph, i));
 }
 
+void try_name_expr(IRGraph& ir, SCAnyExpr_I value, Symbol name) {
+    // A string has the same id whatever kind of symbol it is, see SymbolTable::get.
+    if (const auto function = ir.as_a<SCFunction_I>(value))
+        ir.payload(*function).name = SymSCSymbol::from(name);
+}
+
 std::optional<ast::Index> nested_too_deeply(const ast::ASTGraph& ast, ast::Index i) {
     // The nodes still to visit and their depth, an explicit stack, as recursing is what this guards against. Kept
     // between calls, one per thread, as every method is checked, so it is only allocated once.

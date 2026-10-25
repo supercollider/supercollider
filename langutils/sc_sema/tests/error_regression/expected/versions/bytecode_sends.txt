@@ -334,7 +334,7 @@ SCClass (5:1): BytecodeSends : Object
 |  |  |  |  SCMessage (54:32): foo_
 |  |  |  |  |  SCRead (54:32): local a, declared (54:25): a
 |  |  |  |  |  SCPositionalArgs (54:32)
-|  |  |  |  |  |  SCFunction (54:40) -> 1
+|  |  |  |  |  |  SCFunction (54:40): foo -> 1
 |  |  |  |  |  |  |  SCBody (54:40)
 |  |  |  |  |  |  |  |  SCLiteral (54:42) = 1
 |  |  SCMethod (56:5): environment: environment { cv; ^~x }

@@ -58,6 +58,7 @@ void declare_arguments(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast:
                     expr.in_unbracketed_argument_default = outer;
                     expr.initialising.pop_back();
                     const auto prototype = can_be_prototyped(*ast_graph, i, default_r.const_index);
+                    try_name_expr(ir, default_r.ir_node, sym);
                     const auto arg = ir.create(SCArgumentDeclare { sym, variable_local, prototype },
                                                location_of(ir, *ast_graph, { *i }), default_r.ir_node);
                     ir.append(args, arg);

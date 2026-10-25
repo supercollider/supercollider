@@ -25,6 +25,8 @@ namespace sc::backend::lir {
 
 // Within one lowered graph.
 using FunctionIndex = util::StrongIndex<std::uint32_t, struct FunctionIndex__>;
+using OptionalFunctionIndex =
+    util::StrongOptionalIndex<std::uint32_t, struct FunctionIndex__, std::numeric_limits<std::uint32_t>::max()>;
 // The rest are within one function.
 using InstructionIndex = util::StrongIndex<std::uint32_t, struct InstructionIndex__>;
 using FunctionSubRegionIndex = util::StrongIndex<std::uint32_t, struct FunctionSubRegionIndex__>;

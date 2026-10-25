@@ -233,6 +233,14 @@ Return<SCAnyExpr_I> create_message(MessageContext& msg_ctx, ast::Index message_i
         : maybe<SCAnyExpr_I> { msg_ctx.ir.create(SCMissing {}, location) };
 
     const auto name = args.performed_selector.value_or(selector.name);
+    // A setter names its positional arguments, `a.meow = { }` and `a.meow_({ })` are both `meow`. The old compiler also
+    // named the receiver, `{ }.meow_(a)`, which was a bug.
+    const auto selector_text = msg_ctx.ctx.symbol_table(name.value);
+    if (form != SCMessage::Form::Binary && selector_text.size() > 1 && selector_text.back() == '_') {
+        const auto getter = msg_ctx.ctx.symbol_table.get_symbol(selector_text.substr(0, selector_text.size() - 1));
+        for (auto it = msg_ctx.ir.children(args.positional).iter(); it; ++it)
+            try_name_expr(msg_ctx.ir, *it, getter);
+    }
     return { msg_ctx.ir.create(SCMessage { name, form }, location, receiver, args.positional, args.keyword,
                                args.variadic, adverb_i) };
 }

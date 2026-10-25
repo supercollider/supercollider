@@ -100,7 +100,7 @@ SCClass (3:1): LegacyClosedFunctions : Object
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (14:22)
 |  |  |  |  SCVariableDeclare (14:26): f, computed
-|  |  |  |  |  SCFunction (14:30): closed
+|  |  |  |  |  SCFunction (14:30): f: closed
 |  |  |  |  |  |  SCBody (14:30)
 |  |  |  |  |  |  |  SCExprList (14:33)
 |  |  |  |  SCVariableDeclare (14:42): later, prototype

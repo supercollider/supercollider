@@ -66,6 +66,7 @@ struct StageTimes {
     double frames = 0;
     double lower = 0;
     double emit = 0;
+    double finish = 0;
 };
 
 using Clock = std::chrono::steady_clock;
@@ -114,6 +115,7 @@ void write_times(std::ostream& out, const StageTimes& t, double total) {
     row("frames", t.frames);
     row("lower", t.lower);
     row("emit", t.emit);
+    row("finish", t.finish);
     row("total", total);
     out << std::defaultfloat;
 }
@@ -149,7 +151,7 @@ int main(int argc, char* argv[]) {
     if (argc <= 1) {
         std::cout << "ERROR: incorrect number of arguments to sc_inspect, expected "
                      "[--threads n] [--relative-to dir] [--interpreted-version x.y] [--no-dump] [--frames] [--lir] "
-                     "[--bytecode] [--time] [--prelude dir|.sc file]... [dir|.sc file]... "
+                     "[--bytecode] [--compiled] [--time] [--prelude dir|.sc file]... [dir|.sc file]... "
                   << std::endl;
         return EXIT_FAILURE;
     }
@@ -173,8 +175,9 @@ int main(int argc, char* argv[]) {
     // --frames adds the backend's frame layout, each frame's slots, and where each variable read or assigned is.
     // --lir adds the backend's lowered ir, after the dump, each class's functions and their instructions.
     // --bytecode adds the backend's bytecode after that, each function's tables and bytes.
-    // With --no-dump, --frames, --lir or --bytecode run the backend up to that stage over every graph without printing
-    // it, timing the backend on its own.
+    // --compiled adds what the VM's objects are made from after that, each class's layout and its functions' frames.
+    // With --no-dump, --frames, --lir, --bytecode or --compiled run the backend up to that stage over every graph
+    // without printing it, timing the backend on its own.
     // --time prints how long each stage took, after everything else, see StageTimes. The total is from after the
     // arguments are read until before the dump is written, so it leaves out printing.
     sc::util::IndexedVector<sc::ir::ModuleIndex, std::filesystem::path> module_paths;
@@ -188,6 +191,7 @@ int main(int argc, char* argv[]) {
     bool show_frames = false;
     bool show_lir = false;
     bool show_bytecode = false;
+    bool show_compiled = false;
     bool show_times = false;
     for (int i { 1 }; i < argc; ++i) {
         const auto arg = get_path(argv[i]);
@@ -215,6 +219,8 @@ int main(int argc, char* argv[]) {
             show_lir = true;
         } else if (arg == "--bytecode") {
             show_bytecode = true;
+        } else if (arg == "--compiled") {
+            show_compiled = true;
         } else if (arg == "--time") {
             show_times = true;
         } else if (arg == "--relative-to" && i + 1 < argc) {
@@ -291,8 +297,10 @@ int main(int argc, char* argv[]) {
         std::unordered_map<sc::ir::NodeIndex, sc::backend::FrameIndex> by_owner {};
         sc::backend::lir::LoweredGraph lowered {};
         sc::backend::EmittedGraph emitted {};
+        std::optional<sc::compiler::CompiledGraph> compiled {};
     };
-    const bool show_backend = show_frames || show_lir || show_bytecode;
+    const bool show_backend = show_frames || show_lir || show_bytecode || show_compiled;
+    const bool emits = show_bytecode || show_compiled;
     const auto& backend = library->backend;
     const auto run_backend = [&](const sc::ir::IRGraph& g, CompilationUnit root,
                                  std::vector<sc::diag::Diagnostic>& diagnostics) {
@@ -307,13 +315,13 @@ int main(int argc, char* argv[]) {
                 f.by_owner.insert({ sc::ir::NodeIndex { *f.layout.frames[fi].owner }, fi });
             return f;
         };
-        if (!show_lir && !show_bytecode)
+        if (!show_lir && !emits)
             return finish({ root, std::move(framed.frames) });
 
         const auto lower_start = Clock::now();
         auto lowered = sc::compiler::lower(*library, std::move(framed));
         times.lower += seconds_since(lower_start);
-        if (!show_bytecode)
+        if (!emits)
             return finish({ root, std::move(lowered.frames), {}, std::move(lowered.lowered) });
 
         const auto emit_start = Clock::now();
@@ -322,7 +330,21 @@ int main(int argc, char* argv[]) {
         for (auto& d : emitted.emitted.diagnostics)
             diagnostics.push_back(std::move(d));
         emitted.emitted.diagnostics.clear();
-        return finish({ root, std::move(emitted.frames), {}, std::move(emitted.lowered), std::move(emitted.emitted) });
+        if (!show_compiled)
+            return finish(
+                { root, std::move(emitted.frames), {}, std::move(emitted.lowered), std::move(emitted.emitted) });
+
+        // The other dumps still need the earlier stages, so only --no-dump moves them.
+        const auto finish_start = Clock::now();
+        auto compiled =
+            sc::compiler::finish(*library, dump ? sc::compiler::EmittedGraph { emitted } : std::move(emitted));
+        times.finish += seconds_since(finish_start);
+        return finish({ root,
+                        std::move(emitted.frames),
+                        {},
+                        std::move(emitted.lowered),
+                        std::move(emitted.emitted),
+                        std::move(compiled) });
     };
 
     if (!dump) {
@@ -683,6 +705,12 @@ int main(int argc, char* argv[]) {
                                            ctx.constant_table);
             }
         }
+    }
+    // Each class's layout, accessors and methods, then every function's frame, see write_compiled.
+    if (show_compiled) {
+        std::cout << "\n\n\nCOMPILED DUMP \n\n\n";
+        for (const auto& dumped : classes)
+            sc::compiler::write_compiled(std::cout, *frames.at(dumped.graph).compiled, *library);
     }
 #endif
 

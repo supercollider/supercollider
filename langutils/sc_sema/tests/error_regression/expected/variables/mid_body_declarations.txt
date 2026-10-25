@@ -196,7 +196,7 @@ SCClass (4:1): MidBodyDeclarations : Object, version 3.16
 |  |  |  |  SCVariableDeclare (49:41): g (captured), prototype
 |  |  |  |  |  SCLiteral (49:45) = 1
 |  |  |  |  SCVariableDeclare (49:52): f, computed
-|  |  |  |  |  SCFunction (49:56)
+|  |  |  |  |  SCFunction (49:56): f
 |  |  |  |  |  |  SCBody (49:56)
 |  |  |  |  |  |  |  SCRead (49:58): local g, declared (49:41): g = 1
 |  |  |  |  SCExplicitReturn (49:63)

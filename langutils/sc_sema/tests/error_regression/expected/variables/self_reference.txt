@@ -74,7 +74,7 @@ SCClass (6:1): SelfReference : Object, version 3.16
 |  |  SCMethod (19:5): in_function, version 3.16: in_function { var f = { f }; ^f }
 |  |  |  SCBody (19:19)
 |  |  |  |  SCVariableDeclare (19:23): f (captured), computed
-|  |  |  |  |  SCFunction (19:27)
+|  |  |  |  |  SCFunction (19:27): f
 |  |  |  |  |  |  SCBody (19:27)
 |  |  |  |  |  |  |  SCRead (19:29): local f, declared (19:23): f = { f }
 |  |  |  |  SCExplicitReturn (19:34)
@@ -82,7 +82,7 @@ SCClass (6:1): SelfReference : Object, version 3.16
 |  |  SCMethod (22:5): in_nested_function, version 3.16: in_nested_function { var f = { { f } }; ^f }
 |  |  |  SCBody (22:26)
 |  |  |  |  SCVariableDeclare (22:30): f (captured), computed
-|  |  |  |  |  SCFunction (22:34)
+|  |  |  |  |  SCFunction (22:34): f
 |  |  |  |  |  |  SCBody (22:34)
 |  |  |  |  |  |  |  SCFunction (22:36)
 |  |  |  |  |  |  |  |  SCBody (22:36)
@@ -92,7 +92,7 @@ SCClass (6:1): SelfReference : Object, version 3.16
 |  |  SCMethod (25:5): recursion, version 3.16: recursion { var fact = { |n| if (n <= 1) { 1 } { n * fact.(n - 1) } }; ^fact.(5) }
 |  |  |  SCBody (25:17)
 |  |  |  |  SCVariableDeclare (25:21): fact (captured), computed
-|  |  |  |  |  SCFunction (25:28)
+|  |  |  |  |  SCFunction (25:28): fact
 |  |  |  |  |  |  SCArgumentDeclareList (25:31)
 |  |  |  |  |  |  |  SCArgumentDeclare (25:31): n (captured)
 |  |  |  |  |  |  SCBody (25:28)
@@ -125,7 +125,7 @@ SCClass (6:1): SelfReference : Object, version 3.16
 |  |  SCMethod (27:5): assigned_in_function, version 3.16: assigned_in_function { var f = { f = nil }; ^f }
 |  |  |  SCBody (27:28)
 |  |  |  |  SCVariableDeclare (27:32): f (assigned, captured), computed
-|  |  |  |  |  SCFunction (27:36)
+|  |  |  |  |  SCFunction (27:36): f
 |  |  |  |  |  |  SCBody (27:36)
 |  |  |  |  |  |  |  SCAssign (27:38): local f, declared (27:32): f = { f = nil }
 |  |  |  |  |  |  |  |  SCLiteral (27:42) = nil
@@ -134,7 +134,7 @@ SCClass (6:1): SelfReference : Object, version 3.16
 |  |  SCMethod (29:5): not_constant, version 3.16: not_constant { var f = { f }; ^f }
 |  |  |  SCBody (29:20)
 |  |  |  |  SCVariableDeclare (29:24): f (captured), computed
-|  |  |  |  |  SCFunction (29:28)
+|  |  |  |  |  SCFunction (29:28): f
 |  |  |  |  |  |  SCBody (29:28)
 |  |  |  |  |  |  |  SCRead (29:30): local f, declared (29:24): f = { f }
 |  |  |  |  SCExplicitReturn (29:35)
@@ -145,7 +145,7 @@ SCClass (6:1): SelfReference : Object, version 3.16
 |  |  |  |  SCMessage (33:28): postln
 |  |  |  |  |  SCRead (33:28): instance member, declared (7:9): member
 |  |  |  |  SCVariableDeclare (33:47): f (captured), computed
-|  |  |  |  |  SCFunction (33:51)
+|  |  |  |  |  SCFunction (33:51): f
 |  |  |  |  |  |  SCBody (33:51)
 |  |  |  |  |  |  |  SCRead (33:53): local f, declared (33:47): f = { f }
 |  |  |  |  SCExplicitReturn (33:58)
@@ -178,7 +178,7 @@ SCClass (6:1): SelfReference : Object, version 3.16
 |  |  |  |  |  |  SCBody (38:32)
 |  |  |  |  |  |  |  SCLiteral (38:34) = 1
 |  |  |  |  |  |  |  SCVariableDeclare (38:41): g (captured), computed
-|  |  |  |  |  |  |  |  SCFunction (38:45)
+|  |  |  |  |  |  |  |  SCFunction (38:45): g
 |  |  |  |  |  |  |  |  |  SCBody (38:45)
 |  |  |  |  |  |  |  |  |  |  SCRead (38:47): local g, declared (38:41): g = { g }
 |  |  |  |  |  |  |  SCRead (38:52): local g, declared (38:41): g = { g }
@@ -213,7 +213,7 @@ SCClass (6:1): SelfReference : Object, version 3.16
 |  |  |  |  |  |  |  SCFunction (43:24)
 |  |  |  |  |  |  |  |  SCBody (43:24)
 |  |  |  |  |  |  |  |  |  SCVariableDeclare (43:30): g (captured), computed
-|  |  |  |  |  |  |  |  |  |  SCFunction (43:34)
+|  |  |  |  |  |  |  |  |  |  SCFunction (43:34): g
 |  |  |  |  |  |  |  |  |  |  |  SCBody (43:34)
 |  |  |  |  |  |  |  |  |  |  |  |  SCFunction (43:36)
 |  |  |  |  |  |  |  |  |  |  |  |  |  SCBody (43:36)
@@ -236,7 +236,7 @@ SCClass (6:1): SelfReference : Object, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (46:25)
 |  |  |  |  SCVariableDeclare (46:29): a, computed
-|  |  |  |  |  SCFunction (46:33)
+|  |  |  |  |  SCFunction (46:33): a
 |  |  |  |  |  |  SCBody (46:33)
 |  |  |  |  |  |  |  SCExprList (46:35)
 |  |  |  |  SCVariableDeclare (46:44): b, prototype
@@ -260,7 +260,7 @@ SCClass (6:1): SelfReference : Object, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (48:35)
 |  |  |  |  SCVariableDeclare (48:39): a, computed
-|  |  |  |  |  SCFunction (48:43)
+|  |  |  |  |  SCFunction (48:43): a
 |  |  |  |  |  |  SCBody (48:43)
 |  |  |  |  |  |  |  SCExprList (48:45)
 |  |  |  |  SCVariableDeclare (48:50): b, prototype
@@ -297,7 +297,7 @@ SCClass (6:1): SelfReference : Object, version 3.16
 |  |  |  |  |  SCFunction (55:33)
 |  |  |  |  |  |  SCBody (55:33)
 |  |  |  |  |  |  |  SCVariableDeclare (55:39): f (captured), computed
-|  |  |  |  |  |  |  |  SCFunction (55:43)
+|  |  |  |  |  |  |  |  SCFunction (55:43): f
 |  |  |  |  |  |  |  |  |  SCBody (55:43)
 |  |  |  |  |  |  |  |  |  |  SCRead (55:45): local f, declared (55:39): f = { f }
 |  |  |  |  |  |  |  SCRead (55:50): local f, declared (55:39): f = { f }
@@ -336,7 +336,7 @@ SCClass (6:1): SelfReference : Object, version 3.16
 |  |  SCMethod (68:5): argument, version 3.16: argument { |f = { f }| ^f }
 |  |  |  SCArgumentDeclareList (68:17)
 |  |  |  |  SCArgumentDeclare (68:17): f (captured), computed
-|  |  |  |  |  SCFunction (68:21)
+|  |  |  |  |  SCFunction (68:21): f
 |  |  |  |  |  |  SCBody (68:21)
 |  |  |  |  |  |  |  SCRead (68:23): local f, declared (68:17): f = { f }
 |  |  |  SCBody (68:28)
@@ -380,7 +380,7 @@ SCClass (6:1): SelfReference : Object, version 3.16
 |  |  |  |  |  SCFunction (76:23)
 |  |  |  |  |  |  SCArgumentDeclareList (76:26)
 |  |  |  |  |  |  |  SCArgumentDeclare (76:26): f (captured), computed
-|  |  |  |  |  |  |  |  SCFunction (76:30)
+|  |  |  |  |  |  |  |  SCFunction (76:30): f
 |  |  |  |  |  |  |  |  |  SCBody (76:30)
 |  |  |  |  |  |  |  |  |  |  SCRead (76:32): local f, declared (76:26): f = { f }
 |  |  |  |  |  |  SCBody (76:23)
@@ -510,7 +510,7 @@ SCClass (6:1): SelfReference : Object, version 3.16
 |  |  SCMethod (102:5): partial_application, version 3.16: partial_application { var f = f.foo(_); ^f }
 |  |  |  SCBody (102:27)
 |  |  |  |  SCVariableDeclare (102:31): f (captured), computed
-|  |  |  |  |  SCFunction (102:35)
+|  |  |  |  |  SCFunction (102:35): f
 |  |  |  |  |  |  SCArgumentDeclareList (102:35)
 |  |  |  |  |  |  |  SCArgumentDeclare (102:41): _
 |  |  |  |  |  |  SCBody (102:35)

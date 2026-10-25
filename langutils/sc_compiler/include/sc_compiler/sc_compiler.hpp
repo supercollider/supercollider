@@ -21,6 +21,7 @@
 #include <filesystem>
 #include <memory>
 #include <optional>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -38,6 +39,7 @@ struct Backend;
 struct FramedGraph;
 struct LoweredGraph;
 struct EmittedGraph;
+struct CompiledGraph;
 
 using ClassFiles = util::IndexedVector<ir::SourceEntryIndex, ClassFile>;
 
@@ -54,10 +56,13 @@ compile_class_library(const util::IndexedVector<ir::SourceEntryIndex, ClassFileS
 
 using CompilationUnit = ir::join<ir::SCClass_I, ir::SCInterpreted_I>;
 
-// The backend's stages, each moving the last's result into its own. Lowering adds symbols, so the library isn't const.
+// The backend's stages, each moving the last's result into its own.
 [[nodiscard]] FramedGraph layout_frames(const ClassLibrary& library, const ir::IRGraph& g, CompilationUnit root);
 [[nodiscard]] LoweredGraph lower(ClassLibrary& library, FramedGraph&& framed);
 [[nodiscard]] EmittedGraph emit(const ClassLibrary& library, LoweredGraph&& lowered);
+[[nodiscard]] CompiledGraph finish(ClassLibrary& library, EmittedGraph&& emitted);
+
+void write_compiled(std::ostream& out, const CompiledGraph& compiled, const ClassLibrary& library);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Class files
@@ -150,5 +155,79 @@ struct EmittedGraph {
     backend::Frames frames;
     backend::lir::LoweredGraph lowered;
     backend::EmittedGraph emitted;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Compiled graph
+////////////////////////////////////////////////////////////////////////////////
+
+// Plain data: names are the library's symbols and values its constants, read through the library.
+
+// Nil without a value.
+struct CompiledMember {
+    ir::SymSCIdentifier name;
+    ir::OptionalConstExprIndex value;
+};
+static_assert(sizeof(CompiledMember) == 8);
+
+struct CompiledClass {
+    ir::SymSCClassName name;
+    ir::OptionalSymSCClassName superclass;
+    ir::SCClass::MemoryLayout memory_layout;
+    // Begins at the class's name.
+    ir::SourceLocation location;
+    // A class's, the inherited ones first. A meta class's are Class's, which the VM gives it.
+    std::vector<CompiledMember> instance_variables;
+    // A meta class's own, which the VM keeps in its class, numbered from first_class_variable.
+    std::optional<backend::ClassVariableIndex> first_class_variable;
+    std::vector<CompiledMember> class_variables;
+    std::vector<CompiledMember> constants;
+};
+
+// The prototype frame's value is nil unless the argument's default or the variable's initial value is a literal.
+struct CompiledSlot {
+    ir::SymSCIdentifier name;
+    ir::OptionalConstExprIndex prototype;
+};
+static_assert(sizeof(CompiledSlot) == 8);
+
+struct CompiledFunction {
+    ir::SourceLocation location;
+    ir::OptionalSymSCSymbol name;
+    backend::lir::OptionalFunctionIndex parent;
+    bool has_this;
+    std::uint32_t num_positional;
+    backend::Variadic variadic; // none, args, kwargs
+    // As backend::Frame's.
+    util::IndexedVector<backend::FrameSlotIndex, CompiledSlot> slots;
+    backend::EmittedFunction emitted;
+};
+
+struct CompiledMethod {
+    ir::SymSCSelector selector;
+    backend::lir::FunctionIndex function;
+    ir::OptionalSymSCPrimitive primitive;
+};
+static_assert(sizeof(CompiledMethod) == 12);
+
+// Its location is the member's name.
+struct CompiledAccessor {
+    ir::SymSCSelector selector;
+    ir::SourceLocation location;
+    backend::OptionalMethodShortcut shortcut;
+};
+static_assert(sizeof(CompiledAccessor) == 44);
+
+struct CompiledGraph {
+    // Not for interpreted code.
+    std::optional<CompiledClass> layout;
+    util::IndexedVector<ir::SourceIndex, std::shared_ptr<const src::TextInfo>> sources;
+    util::IndexedVector<backend::lir::FunctionIndex, CompiledFunction> functions;
+    std::vector<CompiledMethod> methods;
+    std::vector<CompiledAccessor> accessors;
+    // Interpreted code's functions, a region's each, in order.
+    std::vector<backend::lir::FunctionIndex> interpreted;
+    // The frames', then the emitter's.
+    std::vector<diag::Diagnostic> diagnostics;
 };
 }

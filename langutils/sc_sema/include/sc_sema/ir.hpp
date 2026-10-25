@@ -184,6 +184,9 @@ public:
     [[nodiscard]] SourceIndex register_source(std::shared_ptr<const src::TextInfo> text);
     [[nodiscard]] SourceLocation make_location(std::shared_ptr<const src::TextInfo> text, src::SourceCodeRange range);
     [[nodiscard]] const std::shared_ptr<const src::TextInfo>& text_info(SourceIndex i) const;
+    [[nodiscard]] const util::IndexedVector<SourceIndex, std::shared_ptr<const src::TextInfo>>& sources() const {
+        return m_sources;
+    }
     [[nodiscard]] static src::SourceCodeRange range(SourceLocation l);
     [[nodiscard]] std::string_view read(SourceLocation l) const;
 
