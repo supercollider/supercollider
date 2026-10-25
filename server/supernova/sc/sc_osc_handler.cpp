@@ -2042,43 +2042,54 @@ void handle_completion_message(completion_message&& message, endpoint_ptr const&
 
 
 template <bool realtime> void handle_b_alloc(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
-    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+    osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
+    osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
 
-    osc::int32 bufferIndex, frames, channels;
-    float sampleRate;
+    /* required args */
+    osc::int32 bufnum = it->AsInt32();
+    ++it;
+    osc::int32 frames = it->AsInt32();
+    ++it;
 
-    args >> bufferIndex >> frames;
+    /* optional args */
+    osc::int32 channels = 1;
+    if (it != end) {
+        channels = it->AsInt32();
+        ++it;
+    }
 
-    if (!args.Eos())
-        args >> channels;
-    else
-        channels = 1;
+    completion_message message;
+    if (it != end)
+        message = extract_completion_message(it);
 
-    completion_message message = extract_completion_message(args);
-
-    if (!args.Eos()) {
-        args >> sampleRate;
-        if (sampleRate <= 0.0)
-            sampleRate = sc_factory->world.mSampleRate;
+    float samplerate;
+    if (it != end) {
+        samplerate = extract_float_argument(it);
+        if (samplerate <= 0.0)
+            samplerate = sc_factory->world.mSampleRate;
     } else
-        sampleRate = sc_factory->world.mSampleRate;
+        samplerate = sc_factory->world.mSampleRate;
 
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message)]() mutable {
         try {
-            sample* free_buf = sc_factory->get_nrt_mirror_buffer(bufferIndex);
-            sc_factory->allocate_buffer(bufferIndex, frames, channels, sampleRate);
+            SndBuf* nrt_buf = sc_factory->get_nrt_buffer(bufnum);
+            assert(nrt_buf != nullptr);
+            sample* free_buf = nrt_buf->data; // cache old data!
+
+            sc_factory->allocate_buffer(bufnum, frames, channels, samplerate);
 
             cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
-                sc_factory->buffer_sync(bufferIndex);
+                sc_factory->buffer_sync(bufnum);
+
                 handle_completion_message(std::move(message), endpoint);
 
                 cmd_dispatcher<realtime>::fire_io_callback([=] {
                     free_aligned(free_buf);
-                    send_done_message(endpoint, "/b_alloc", bufferIndex);
+                    send_done_message(endpoint, "/b_alloc", bufnum);
                 });
             });
         } catch (std::exception const& error) {
-            report_failure(endpoint, error, "/b_alloc", bufferIndex);
+            report_failure(endpoint, error, "/b_alloc", bufnum);
             cmd_dispatcher<realtime>::free_in_rt_thread(std::move(message));
         }
     });
@@ -2088,23 +2099,24 @@ template <bool realtime> void handle_b_alloc(ReceivedMessage const& msg, endpoin
 template <bool realtime> void handle_b_free(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    osc::int32 index;
-    args >> index;
+    osc::int32 bufnum;
+    args >> bufnum;
 
     completion_message message = extract_completion_message(args);
 
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message)]() mutable {
-        sample* free_buf = sc_factory->get_nrt_mirror_buffer(index);
-        sc_factory->free_buffer(index);
+        sample* free_buf = sc_factory->get_nrt_buffer(bufnum)->data;
+
+        sc_factory->buffer_free(bufnum);
 
         cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
-            sc_factory->buffer_sync(index);
+            sc_factory->buffer_sync(bufnum);
 
             handle_completion_message(std::move(message), endpoint);
 
             cmd_dispatcher<realtime>::fire_io_callback([=] {
                 free_aligned(free_buf);
-                send_done_message(endpoint, "/b_free", index);
+                send_done_message(endpoint, "/b_free", bufnum);
             });
         });
     });
@@ -2114,13 +2126,15 @@ template <bool realtime> void handle_b_free(ReceivedMessage const& msg, endpoint
 template <bool realtime> void handle_b_allocRead(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    osc::int32 bufferIndex;
-    const char* filenameString;
+    /* required args */
+    osc::int32 bufnum;
+    const char* filename_str;
 
+    args >> bufnum >> filename_str;
+
+    /* optional args */
     osc::int32 start = 0;
-    osc::int32 frames = 0;
-
-    args >> bufferIndex >> filenameString;
+    osc::int32 frames = 0; // read until the end
 
     if (!args.Eos())
         args >> start;
@@ -2129,30 +2143,32 @@ template <bool realtime> void handle_b_allocRead(ReceivedMessage const& msg, end
         args >> frames;
 
     completion_message message = extract_completion_message(args);
-    movable_string filename(filenameString);
+    movable_string filename(filename_str);
 
     cmd_dispatcher<realtime>::fire_system_callback(
         [=, filename = std::move(filename), message = std::move(message)]() mutable {
-            sample* free_buf = sc_factory->get_nrt_mirror_buffer(bufferIndex);
+            sample* free_buf = sc_factory->get_nrt_buffer(bufnum)->data;
+
             try {
-                sc_factory->buffer_read_alloc(bufferIndex, filename.c_str(), start, frames);
+                sc_factory->buffer_alloc_read(bufnum, filename.c_str(), start, frames);
 
                 cmd_dispatcher<realtime>::fire_rt_callback(
                     [=, filename = std::move(filename), message = std::move(message)]() mutable {
-                        sc_factory->buffer_sync(bufferIndex);
+                        sc_factory->buffer_sync(bufnum);
 
                         handle_completion_message(std::move(message), endpoint);
+
                         consume(std::move(filename));
 
                         cmd_dispatcher<realtime>::fire_io_callback([=] {
                             free_aligned(free_buf);
-                            send_done_message(endpoint, "/b_allocRead", bufferIndex);
+                            send_done_message(endpoint, "/b_allocRead", bufnum);
                         });
                     });
 
             } catch (std::exception const& error) {
                 cmd_dispatcher<realtime>::free_in_rt_thread(std::move(message), std::move(filename));
-                report_failure(endpoint, error, "/b_allocRead", bufferIndex);
+                report_failure(endpoint, error, "/b_allocRead", bufnum);
             }
         });
 }
@@ -2160,23 +2176,35 @@ template <bool realtime> void handle_b_allocRead(ReceivedMessage const& msg, end
 
 template <bool realtime> void handle_b_allocReadChannel(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
+    osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
 
+    /* required args */
     osc::int32 bufnum = arg->AsInt32();
     arg++;
-    const char* filenameString = arg->AsString();
+    const char* filename_str = arg->AsString();
     arg++;
 
-    osc::int32 start = arg->AsInt32();
-    arg++;
-    size_t frames = arg->AsInt32();
-    arg++;
+    /* optional args */
+    osc::int32 start = 0;
+    if (arg != end) {
+        start = arg->AsInt32();
+        arg++;
+    }
+    osc::int32 frames = 0; // read until the end
+    if (arg != end) {
+        frames = arg->AsInt32();
+        arg++;
+    }
 
-    size_t channel_args = msg.ArgumentCount() - 4; /* we already consumed 4 elements */
+    size_t channel_args = 0;
+    if (arg != end) {
+        channel_args = msg.ArgumentCount() - 4; /* we already consumed 4 elements */
+    }
 
     size_t channel_count = 0;
     sized_array<uint, rt_pool_allocator<uint>> channels(channel_args);
 
-    // Any remaining Int arguments are channels, followed by an optional
+    // Any remaining int arguments are channels, followed by an optional
     // completion message.
     for (uint i = 0; i < channel_args; ++i) {
         if (arg->IsInt32()) {
@@ -2190,12 +2218,12 @@ template <bool realtime> void handle_b_allocReadChannel(ReceivedMessage const& m
     completion_message message = extract_completion_message(arg);
 
     movable_array<uint32_t> channel_mapping(channels.data(), channel_count);
-    movable_string filename(filenameString);
+    movable_string filename(filename_str);
 
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message),
                                                     channel_mapping = std::move(channel_mapping),
                                                     filename = std::move(filename)]() mutable {
-        sample* free_buf = sc_factory->get_nrt_mirror_buffer(bufnum);
+        sample* free_buf = sc_factory->get_nrt_buffer(bufnum)->data;
 
         try {
             sc_factory->buffer_alloc_read_channels(bufnum, filename.c_str(), start, frames, channel_mapping.size(),
@@ -2205,9 +2233,11 @@ template <bool realtime> void handle_b_allocReadChannel(ReceivedMessage const& m
                                                         channel_mapping = std::move(channel_mapping),
                                                         filename = std::move(filename)]() mutable {
                 sc_factory->buffer_sync(bufnum);
+
+                handle_completion_message(std::move(message), endpoint);
+
                 consume(std::move(channel_mapping));
                 consume(std::move(filename));
-                handle_completion_message(std::move(message), endpoint);
 
                 cmd_dispatcher<realtime>::fire_io_callback([=] {
                     free_aligned(free_buf);
@@ -2231,11 +2261,11 @@ template <bool realtime> void handle_b_write(ReceivedMessage const& msg, endpoin
     /* required args */
     osc::int32 bufnum = arg->AsInt32();
     arg++;
-    const char* filename = arg->AsString();
+    const char* filename_str = arg->AsString();
     arg++;
-    const char* header_format = arg->AsString();
+    const char* header_format_str = arg->AsString();
     arg++;
-    const char* sample_format = arg->AsString();
+    const char* sample_format_str = arg->AsString();
     arg++;
 
     /* optional args */
@@ -2273,34 +2303,34 @@ template <bool realtime> void handle_b_write(ReceivedMessage const& msg, endpoin
         message = extract_completion_message(arg);
 
 fire_callback:
-    movable_string filenameString(filename);
-    movable_string headerString(header_format);
-    movable_string sampleString(sample_format);
+    movable_string filename(filename_str);
+    movable_string header_format(header_format_str);
+    movable_string sample_format(sample_format_str);
 
-    cmd_dispatcher<realtime>::fire_system_callback(
-        [=, message = std::move(message), filenameString = std::move(filenameString),
-         headerString = std::move(headerString), sampleString = std::move(sampleString)]() mutable {
-            try {
-                sc_factory->buffer_write(bufnum, filenameString.c_str(), headerString.c_str(), sampleString.c_str(),
-                                         start, frames, leave_open);
+    cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message), filename = std::move(filename),
+                                                    header_format = std::move(header_format),
+                                                    sample_format = std::move(sample_format)]() mutable {
+        try {
+            sc_factory->buffer_write(bufnum, filename.c_str(), header_format.c_str(), sample_format.c_str(), start,
+                                     frames, leave_open);
 
-                cmd_dispatcher<realtime>::fire_rt_callback(
-                    [=, message = std::move(message), filenameString = std::move(filenameString),
-                     headerString = std::move(headerString), sampleString = std::move(sampleString)]() mutable {
-                        handle_completion_message(std::move(message), endpoint);
+            cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message), filename = std::move(filename),
+                                                        header_format = std::move(header_format),
+                                                        sample_format = std::move(sample_format)]() mutable {
+                handle_completion_message(std::move(message), endpoint);
 
-                        consume(std::move(filenameString));
-                        consume(std::move(headerString));
-                        consume(std::move(sampleString));
+                consume(std::move(filename));
+                consume(std::move(header_format));
+                consume(std::move(sample_format));
 
-                        cmd_dispatcher<realtime>::fire_done_message(endpoint, cmd_name, bufnum);
-                    });
-            } catch (std::exception const& error) {
-                report_failure(endpoint, error, cmd_name, bufnum);
-                cmd_dispatcher<realtime>::free_in_rt_thread(std::move(message), std::move(filenameString),
-                                                            std::move(headerString), std::move(sampleString));
-            }
-        });
+                cmd_dispatcher<realtime>::fire_done_message(endpoint, cmd_name, bufnum);
+            });
+        } catch (std::exception const& error) {
+            report_failure(endpoint, error, cmd_name, bufnum);
+            cmd_dispatcher<realtime>::free_in_rt_thread(std::move(message), std::move(filename),
+                                                        std::move(header_format), std::move(sample_format));
+        }
+    });
 }
 
 template <bool realtime> void handle_b_read(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
@@ -2312,7 +2342,7 @@ template <bool realtime> void handle_b_read(ReceivedMessage const& msg, endpoint
     /* required args */
     osc::int32 bufnum = arg->AsInt32();
     arg++;
-    const char* filename = arg->AsString();
+    const char* filename_str = arg->AsString();
     arg++;
 
     /* optional args */
@@ -2359,10 +2389,10 @@ template <bool realtime> void handle_b_read(ReceivedMessage const& msg, endpoint
         message = extract_completion_message(arg);
 
 fire_callback:
-    movable_string fname(filename);
+    movable_string filename(filename_str);
 
     cmd_dispatcher<realtime>::fire_system_callback(
-        [=, filename = std::move(fname), message = std::move(message)]() mutable {
+        [=, filename = std::move(filename), message = std::move(message)]() mutable {
             try {
                 sc_factory->buffer_read(bufnum, filename.c_str(), start_file, frames, start_buffer, leave_open);
 
@@ -2371,6 +2401,7 @@ fire_callback:
                         sc_factory->buffer_sync(bufnum);
 
                         handle_completion_message(std::move(message), endpoint);
+
                         consume(std::move(filename));
 
                         cmd_dispatcher<realtime>::fire_done_message(endpoint, cmd_name, bufnum);
@@ -2391,7 +2422,7 @@ template <bool realtime> void handle_b_readChannel(ReceivedMessage const& msg, e
     /* required args */
     osc::int32 bufnum = arg->AsInt32();
     arg++;
-    const char* filename = arg->AsString();
+    const char* filename_str = arg->AsString();
     arg++;
 
     /* optional args */
@@ -2449,11 +2480,11 @@ template <bool realtime> void handle_b_readChannel(ReceivedMessage const& msg, e
     }
 
 fire_callback:
-    movable_string fname(filename);
+    movable_string filename(filename_str);
 
     movable_array<uint32_t> channel_map(channel_mapping.data(), channel_count);
 
-    cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message), filename = std::move(fname),
+    cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message), filename = std::move(filename),
                                                     channel_map = std::move(channel_map)]() mutable {
         try {
             sc_factory->buffer_read_channel(bufnum, filename.c_str(), start_file, frames, start_buffer, leave_open,
@@ -2462,7 +2493,9 @@ fire_callback:
             cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message), filename = std::move(filename),
                                                         channel_map = std::move(channel_map)]() mutable {
                 sc_factory->buffer_sync(bufnum);
+
                 handle_completion_message(std::move(message), endpoint);
+
                 consume(std::move(filename));
                 consume(std::move(channel_map));
 
@@ -2479,16 +2512,16 @@ fire_callback:
 template <bool realtime> void handle_b_zero(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    osc::int32 index;
-    args >> index;
+    osc::int32 bufnum;
+    args >> bufnum;
     completion_message message = extract_completion_message(args);
 
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message)]() mutable {
-        sc_factory->buffer_zero(index);
+        sc_factory->buffer_zero(bufnum);
         cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
-            sc_factory->increment_write_updates(index);
+            sc_factory->increment_write_updates(bufnum);
             handle_completion_message(std::move(message), endpoint);
-            cmd_dispatcher<realtime>::fire_done_message(endpoint, "/b_zero", index);
+            cmd_dispatcher<realtime>::fire_done_message(endpoint, "/b_zero", bufnum);
         });
     });
 }
@@ -2497,21 +2530,24 @@ void handle_b_set(ReceivedMessage const& msg) {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
     verify_argument(it, end);
-    osc::int32 buffer_index = it->AsInt32();
+    osc::int32 bufnum = it->AsInt32();
     ++it;
 
-    buffer_wrapper::sample_t* data = sc_factory->get_buffer(buffer_index);
-    if (!data) {
+    SndBuf* buf = sc_factory->get_buffer(bufnum);
+    sample* data = buf->data;
+    if (data == nullptr) {
         log_printf("/b_set called on unallocated buffer\n");
         return;
     }
 
+    const uint32_t buf_samples = buf->samples;
+
     while (it != end) {
-        osc::int32 index = it->AsInt32();
+        uint32_t index = it->AsInt32();
         ++it;
         float value = extract_float_argument(it++);
-
-        data[index] = value;
+        if (index < buf_samples)
+            data[index] = value;
     }
 }
 
@@ -2519,26 +2555,34 @@ void handle_b_setn(ReceivedMessage const& msg) {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
     verify_argument(it, end);
-    osc::int32 buffer_index = it->AsInt32();
+    osc::int32 bufnum = it->AsInt32();
     ++it;
 
-    buffer_wrapper::sample_t* data = sc_factory->get_buffer(buffer_index);
-    if (!data) {
+    SndBuf* buf = sc_factory->get_buffer(bufnum);
+    sample* data = buf->data;
+    if (data == nullptr) {
         log_printf("/b_setn called on unallocated buffer\n");
         return;
     }
 
+    const uint32_t buf_samples = buf->samples;
+
     while (it != end) {
-        osc::int32 index = it->AsInt32();
+        uint32_t start = it->AsInt32();
         ++it;
         verify_argument(it, end);
-        osc::int32 samples = it->AsInt32();
+        int32_t count = it->AsInt32();
+        if (count < 0) {
+            log_printf("/b_setn: bad count argument (%d)\n", count);
+        }
         ++it;
 
-        for (int i = 0; i != samples; ++i) {
+        for (uint32_t i = 0; i < (uint32_t)count; ++i) {
             verify_argument(it, end);
             float value = extract_float_argument(it++);
-            data[index + i] = value;
+            uint32_t index = start + i;
+            if (index < buf_samples)
+                data[index] = value;
         }
     }
 }
@@ -2547,58 +2591,61 @@ void handle_b_setSampleRate(ReceivedMessage const& msg) {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
     verify_argument(it, end);
-    osc::int32 buffer_index = it->AsInt32();
+    osc::int32 bufnum = it->AsInt32();
     ++it;
 
-    SndBuf* buf = sc_factory->get_buffer_struct(buffer_index);
-    SndBuf* nrtBuf = World_GetNRTBuf(&sc_factory->world, buffer_index);
-    if (!buf || !nrtBuf) {
+    SndBuf* buf = sc_factory->get_buffer(bufnum);
+    SndBuf* nrt_buf = sc_factory->get_nrt_buffer(bufnum);
+    if (buf->data == nullptr) {
         log_printf("/b_setSampleRate called on unallocated buffer\n");
         return;
     }
 
-    auto proposedSampleRate = it->AsFloat();
-    buf->samplerate = nrtBuf->samplerate =
-        proposedSampleRate > 0.0 ? proposedSampleRate : sc_factory->world.mSampleRate;
-    buf->sampledur = nrtBuf->sampledur = 1.0 / buf->samplerate;
+    auto samplerate = extract_float_argument(it);
+    buf->samplerate = samplerate > 0.0 ? samplerate : sc_factory->world.mSampleRate;
+    buf->sampledur = 1.0 / buf->samplerate;
+    // NOTE: this is not really thread-safe! The only alternative would be not
+    // updating the NRT mirror. Currently, we don't really *use* the sample rate
+    // in NRT code, so this should be fine. On the other hand, it doesn't feel
+    // right not to keep the two structures in sync...
+    nrt_buf->samplerate = buf->samplerate;
+    nrt_buf->sampledur = buf->sampledur;
 }
 
 void handle_b_fill(ReceivedMessage const& msg) {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
     verify_argument(it, end);
-    osc::int32 buffer_index = it->AsInt32();
+    osc::int32 bufnum = it->AsInt32();
     ++it;
 
-    buffer_wrapper::sample_t* data = sc_factory->get_buffer(buffer_index);
-    if (!data) {
+    SndBuf* buf = sc_factory->get_buffer(bufnum);
+    sample* data = buf->data;
+    if (data == nullptr) {
         log_printf("/b_fill called on unallocated buffer\n");
         return;
     }
 
-    int bufSamples = sc_factory->get_buffer_struct(buffer_index)->samples;
+    const int32_t buf_samples = buf->samples; // signed int, see below!
 
     while (it != end) {
         osc::int32 index = it->AsInt32();
         ++it;
         verify_argument(it, end);
-        osc::int32 samples = it->AsInt32();
+        osc::int32 count = it->AsInt32();
         ++it;
         verify_argument(it, end);
         float value = extract_float_argument(it++);
 
-        for (int i = 0; i != samples; ++i) {
-            data[index] = value;
-            ++index;
-            if (index >= bufSamples) {
-                break;
-            }
-        }
+        count = std::min(count, buf_samples - index);
+        if (count > 0)
+            std::fill(data, data + count, value);
     }
 }
 
 template <bool realtime> void handle_b_query(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
-    const size_t elem_size = 3 * sizeof(int) * sizeof(float);
+    // <buffer number> (int32), <frames> (int32), <channels> (int32), <samplerate> (float32)
+    const size_t elem_size = 3 * sizeof(int) + sizeof(float);
 
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
     size_t arg_count = msg.ArgumentCount();
@@ -2610,12 +2657,12 @@ template <bool realtime> void handle_b_query(ReceivedMessage const& msg, endpoin
     p << osc::BeginMessage("/b_info");
 
     while (!args.Eos()) {
-        osc::int32 buffer_index;
-        args >> buffer_index;
+        osc::int32 bufnum;
+        args >> bufnum;
 
-        SndBuf* buf = sc_factory->get_buffer_struct(buffer_index);
+        SndBuf* buf = sc_factory->get_buffer(bufnum);
 
-        p << buffer_index << osc::int32(buf->frames) << osc::int32(buf->channels) << float(buf->samplerate);
+        p << bufnum << osc::int32(buf->frames) << osc::int32(buf->channels) << float(buf->samplerate);
     }
 
     p << osc::EndMessage;
@@ -2627,49 +2674,52 @@ template <bool realtime> void handle_b_query(ReceivedMessage const& msg, endpoin
 
 template <bool realtime> void handle_b_close(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
-    osc::int32 index;
-    args >> index;
+    osc::int32 bufnum;
+    args >> bufnum;
 
     completion_message message = extract_completion_message(args);
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message)]() mutable {
-        sc_factory->buffer_close(index);
+        sc_factory->buffer_close(bufnum);
 
         cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
             handle_completion_message(std::move(message), endpoint);
-            cmd_dispatcher<realtime>::fire_done_message(endpoint, "/b_close", index);
+            cmd_dispatcher<realtime>::fire_done_message(endpoint, "/b_close", bufnum);
         });
     });
 }
 
 template <bool realtime> void handle_b_get(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
-    const size_t elem_size = sizeof(int) * sizeof(float);
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    // <index> (int32), <value> (float32)
+    const size_t elem_size = sizeof(int) + sizeof(float);
     const size_t index_count = msg.ArgumentCount() - 1;
     const size_t alloc_size = index_count * elem_size + 128; /* hopefully enough */
 
     sized_array<char, rt_pool_allocator<char>> buffer(alloc_size);
 
-    osc::int32 buffer_index;
-    args >> buffer_index;
+    osc::int32 bufnum;
+    args >> bufnum;
 
-    const SndBuf* buf = sc_factory->get_buffer_struct(buffer_index);
+    const SndBuf* buf = sc_factory->get_buffer(bufnum);
     const sample* data = buf->data;
-    if (!data) {
+    if (data == nullptr) {
         log_printf("/b_get called on unallocated buffer\n");
         return;
     }
 
-    const int max_sample = buf->frames * buf->channels;
+    const int32_t buf_samples = buf->samples; // signed int, see below!
 
     osc::OutboundPacketStream p(buffer.data(), buffer.size());
-    p << osc::BeginMessage("/b_set") << buffer_index;
+    p << osc::BeginMessage("/b_set") << bufnum;
 
     while (!args.Eos()) {
+        // use original (signed) value because we pass it to the reply
         osc::int32 index;
         args >> index;
         p << index;
 
-        if (index < max_sample)
+        if (index >= 0 && index < buf_samples)
             p << data[index];
         else
             p << 0.f;
@@ -2681,56 +2731,69 @@ template <bool realtime> void handle_b_get(ReceivedMessage const& msg, endpoint_
     cmd_dispatcher<realtime>::fire_message(endpoint, std::move(message));
 }
 
-template <typename Alloc> struct getn_data {
-    getn_data(int start, int count, const float* data): start_index_(start), data_(count) {
-        data_.reserve(count);
-        for (int i = 0; i != count; ++i)
-            data_[i] = data[i];
-    }
-
-    int start_index_;
-    std::vector<float, Alloc> data_;
-};
-
 template <bool realtime> void handle_b_getn(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    typedef getn_data<rt_pool_allocator<float>> getn_data;
-    std::vector<getn_data, rt_pool_allocator<getn_data>> return_data;
+    osc::int32 bufnum;
+    args >> bufnum;
 
-    osc::int32 buffer_index;
-    args >> buffer_index;
-
-    const SndBuf* buf = sc_factory->get_buffer_struct(buffer_index);
+    const SndBuf* buf = sc_factory->get_buffer(bufnum);
     const sample* data = buf->data;
-    if (!data) {
+    if (data == nullptr) {
         log_printf("/b_getn called on unallocated buffer\n");
         return;
     }
-    const int max_sample = buf->frames * buf->channels;
+
+    const uint32_t buf_samples = buf->samples;
+
+    using getn_pair = std::pair<osc::int32, osc::int32>;
+    std::vector<getn_pair, rt_pool_allocator<getn_pair>> return_args;
+    return_args.reserve(4);
+    std::vector<float, rt_pool_allocator<sample>> return_samples;
+    return_samples.reserve(16);
 
     while (!args.Eos()) {
-        osc::int32 index, sample_count;
-        args >> index >> sample_count;
+        // use original (signed) value because we pass it to the reply
+        osc::int32 start, count;
+        args >> start >> count;
+        if (count < 0) {
+            log_printf("/b_getn: bad count argument (%d)\n", count);
+            return;
+        }
+        return_args.emplace_back(start, count);
 
-        if (index + sample_count <= max_sample)
-            return_data.push_back(getn_data(index, sample_count, data + index));
+        for (int32_t i = 0; i < count; ++i) {
+            uint32_t index = start + i;
+            if (index < buf_samples)
+                return_samples.push_back(data[index]);
+            else
+                return_samples.push_back(0.f);
+        }
     }
 
-    size_t alloc_size = 128;
-    for (size_t i = 0; i != return_data.size(); ++i)
-        alloc_size += return_data[i].data_.size() * (sizeof(float) + sizeof(int)) + 2 * sizeof(int);
+    size_t alloc_size = 128; // includes padding for typetag string
+    for (auto& [start, count] : return_args) {
+        assert(count >= 0);
+        // start (int32), count (int32), data (float)... + typetags
+        alloc_size += 2 * (sizeof(int) + 1) + count * (sizeof(float) + 1);
+    }
 
     sized_array<char, rt_pool_allocator<char>> buffer(alloc_size);
 
     osc::OutboundPacketStream p(buffer.data(), buffer.size());
-    p << osc::BeginMessage("/b_setn") << buffer_index;
+    p << osc::BeginMessage("/b_setn") << bufnum;
 
-    for (size_t i = 0; i != return_data.size(); ++i) {
-        p << osc::int32(return_data[i].start_index_) << osc::int32(return_data[i].data_.size());
+    const float* samples = return_samples.data();
+    for (auto& [start, count] : return_args) {
+        assert(count >= 0);
+        assert((samples + count - return_samples.data()) <= return_samples.size());
 
-        for (size_t j = 0; j != return_data[i].data_.size(); ++j)
-            p << return_data[i].data_[j];
+        p << osc::int32(start) << osc::int32(count);
+
+        for (int32_t i = 0; i < count; ++i)
+            p << samples[i];
+
+        samples += count;
     }
 
     p << osc::EndMessage;
@@ -2752,9 +2815,9 @@ template <bool realtime> void handle_b_gen(ReceivedMessage const& msg, size_t ms
             printf("/b_gen handler: invalid buffer index type %c\n", nextTag);
             return;
         }
-        osc::int32 index = msg.geti();
+        osc::int32 bufnum = msg.geti();
 
-        const char* generator = (const char*)msg.gets4();
+        const char* generator = (const char*)msg.gets();
         if (!generator) {
             if (nextTag += 'i') {
                 printf("/b_gen handler: invalid bufgen name\n");
@@ -2762,15 +2825,15 @@ template <bool realtime> void handle_b_gen(ReceivedMessage const& msg, size_t ms
             }
         }
 
-        sample* free_buf = sc_factory->buffer_generate(index, generator, msg);
+        sample* free_buf = sc_factory->buffer_generate(bufnum, generator, msg);
 
         cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)]() mutable {
             consume(std::move(message));
-            sc_factory->buffer_sync(index);
+            sc_factory->buffer_sync(bufnum);
 
             cmd_dispatcher<realtime>::fire_io_callback([=] {
                 free_aligned(free_buf);
-                send_done_message(endpoint, "/b_gen", index);
+                send_done_message(endpoint, "/b_gen", bufnum);
             });
         });
     });
@@ -2824,8 +2887,9 @@ void handle_c_fill(ReceivedMessage const& msg) {
 }
 
 template <bool realtime> void handle_c_get(ReceivedMessage const& msg, endpoint_ptr const& endpoint) {
-    const size_t elem_size = sizeof(int) + sizeof(float);
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+    // <index> (int32), <value> (float32)
+    const size_t elem_size = sizeof(int) + sizeof(float);
     const size_t index_count = msg.ArgumentCount();
     const size_t alloc_size = index_count * elem_size + 128; /* hopefully enough */
 

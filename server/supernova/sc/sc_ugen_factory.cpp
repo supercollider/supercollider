@@ -147,6 +147,8 @@ void sc_ugen_def::run_unit_command(const char* cmd_name, Unit* unit, sc_msg_iter
 
 sample* sc_bufgen_def::run(World* world, uint32_t buffer_index, sc_msg_iter* args) {
     SndBuf* buf = World_GetNRTBuf(world, buffer_index);
+    assert(buf != nullptr);
+
     sample* data = buf->data;
 
     (func)(world, buf, args);
