@@ -3426,21 +3426,18 @@ void PyrBinopCallNode::compileCall(CompilerContext& cxt, PyrSlot* result) {
             SendSpecialMsg.emit(cxt.bytecodes, location, numArgs, Operands::SpecialSelectors::fromRaw(index));
             break;
 
-        case selUnary:
+        case selUnary: {
+            // A unary operator with arguments is a normal message send, e.g. a reciprocal: b is a.reciprocal(b).
+            const int literalIndex =
+                conjureLiteralSlotIndex(cxt, (PyrParseNode*)mSelector, cxt.compilingBlock, &mSelector->mSlot);
             compileNode(cxt, arg1, &dummy, false);
             compileNode(cxt, arg2, &dummy, false);
             if (arg3)
                 compileNode(cxt, arg3, &dummy, false);
 
             emitTailCall(cxt, location);
-
-            // Drop extra arguments
-            if (arg3)
-                Drop.emit(cxt.bytecodes, location);
-            Drop.emit(cxt.bytecodes, location);
-
-            SendSpecialUnaryArithMsg.emit(cxt.bytecodes, location, { static_cast<OpUnaryMathNibble>((Byte)index) });
-            break;
+            SendMsg.emit(cxt.bytecodes, location, numArgs, Operands::SelectorIndex::fromRaw(literalIndex));
+        } break;
 
         case selBinary:
             if (arg3) {

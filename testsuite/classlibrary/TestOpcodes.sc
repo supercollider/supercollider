@@ -1,5 +1,6 @@
 TestOpcodeReciever {
 	meow { |...args| ^args }
+	reciprocal { |...args| ^args }
 }
 
 TestOpcodes : UnitTest {
@@ -44,6 +45,17 @@ TestOpcodes : UnitTest {
 		var f = TestOpcodeReciever();
 		this.assertEquals([], f.meow());
 		this.assertEquals([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], f.meow(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13));
+	}
+
+	// A unary operator written as a binary operator is a normal message send.
+	test_unary_op_as_binary_op {
+		this.assertFloatEquals({ |a, b| a exp: b }.value(0, 7), 1);
+		this.assertFloatEquals({ |a, b| a reciprocal: b }.value(4, 0), 0.25);
+		this.assertFloatEquals({ |a, b| a midicps: b }.value(69, 1), 440);
+		this.assertFloatEquals({ |a, b| a cosh: b; 2 }.value(0, 1), 2);
+		this.assertFloatEquals({ |a, b| a cosh: b }.value(0, 1), 1);
+		this.assertEquals(TestOpcodeReciever() reciprocal: 5, [5]);
+		this.assertEquals(TestOpcodeReciever() reciprocal:.x 5, [5, \x]);
 	}
 
 }
