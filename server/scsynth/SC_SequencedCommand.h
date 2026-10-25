@@ -147,13 +147,13 @@ protected:
     void SendFailure(const char* inCommandName, const char* errString);
     void SendFailureWithIntValue(const char* inCommandName, const char* errString, int value);
 
-    int mNextStage;
+    int mNextStage = 1;
     ReplyAddress mReplyAddress;
     World* mWorld;
 
     // optional completion message data (allocated from the RT memory pool)
-    int mMsgSize;
-    char* mMsgData;
+    int mMsgSize = 0;
+    char* mMsgData = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -170,7 +170,7 @@ public:
     void Stage4() override; // non real time
 
 protected:
-    int mID;
+    int mID = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -188,13 +188,13 @@ public:
     void Stage4() override; // non real time
 
 protected:
-    int mBufIndex;
-    BufGen* mBufGen;
+    int mBufIndex = 0;
+    BufGen* mBufGen = nullptr;
     sc_msg_iter mMsg;
-    char* mData;
-    int mSize;
-    SndBuf mSndBuf;
-    float* mFreeData;
+    char* mData = nullptr;
+    int mSize = 0;
+    SndBuf mSndBuf {};
+    float* mFreeData = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -211,11 +211,12 @@ public:
     void Stage4() override; // non real time
 
 protected:
-    int mBufIndex;
-    SndBuf mSndBuf;
-    int mNumChannels, mNumFrames;
-    float mSampleRate;
-    float* mFreeData;
+    int mBufIndex = 0;
+    SndBuf mSndBuf {};
+    int mNumChannels = 0;
+    int mNumFrames = 0;
+    float mSampleRate = 0.f;
+    float* mFreeData = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -232,8 +233,8 @@ public:
     void Stage4() override; // non real time
 
 protected:
-    int mBufIndex;
-    float* mFreeData;
+    int mBufIndex = 0;
+    float* mFreeData = nullptr;
 };
 
 
@@ -251,7 +252,7 @@ public:
     void Stage4() override; // non real time
 
 protected:
-    int mBufIndex;
+    int mBufIndex = 0;
 };
 
 
@@ -269,7 +270,7 @@ public:
     void Stage4() override; // non real time
 
 protected:
-    int mBufIndex;
+    int mBufIndex = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -287,11 +288,12 @@ public:
     void Stage4() override; // non real time
 
 protected:
-    int mBufIndex;
-    float* mFreeData;
-    SndBuf mSndBuf;
-    char* mFilename;
-    int mFileOffset, mNumFrames;
+    char* mFilename = nullptr;
+    float* mFreeData = nullptr;
+    SndBuf mSndBuf {};
+    int mBufIndex = 0;
+    int mFileOffset = 0;
+    int mNumFrames = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -309,11 +311,13 @@ public:
     void Stage4() override; // non real time
 
 protected:
-    int mBufIndex;
-    char* mFilename;
-    int mFileOffset, mNumFrames, mBufOffset;
-    bool mLeaveFileOpen;
-    double mSampleRate;
+    char* mFilename = nullptr;
+    int mBufIndex = 0;
+    int mFileOffset = 0;
+    int mNumFrames = 0;
+    int mBufOffset = 0;
+    double mSampleRate = 0.0;
+    bool mLeaveFileOpen = false;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -329,9 +333,9 @@ protected:
     bool CheckChannels(int inNumChannels) const;
     void CopyChannels(const float* src, size_t srcChannels, float* dst, size_t numFrames) const;
 
-    int mNumChannels;
-    int mChannelCapacity;
-    int* mChannels;
+    int mNumChannels = 0;
+    int mChannelCapacity = 0;
+    int* mChannels = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -349,11 +353,12 @@ public:
     void Stage4() override; // non real time
 
 protected:
-    int mBufIndex;
-    float* mFreeData;
-    SndBuf mSndBuf;
-    char* mFilename;
-    int mFileOffset, mNumFrames;
+    float* mFreeData = nullptr;
+    char* mFilename = nullptr;
+    SndBuf mSndBuf {};
+    int mBufIndex = 0;
+    int mFileOffset = 0;
+    int mNumFrames = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -371,11 +376,13 @@ public:
     void Stage4() override; // non real time
 
 protected:
-    int mBufIndex;
-    char* mFilename;
-    int mFileOffset, mNumFrames, mBufOffset;
-    bool mLeaveFileOpen;
-    double mSampleRate;
+    char* mFilename = nullptr;
+    int mBufIndex = 0;
+    int mFileOffset = 0;
+    int mNumFrames = 0;
+    int mBufOffset = 0;
+    double mSampleRate = 0.0;
+    bool mLeaveFileOpen = false;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -393,13 +400,14 @@ public:
     void Stage4() override; // non real time
 
 protected:
-    int mBufIndex;
     char* mFilename;
 #ifndef NO_LIBSNDFILE
-    SF_INFO mFileInfo;
+    SF_INFO mFileInfo {}; // zero-initialize
 #endif
-    int mNumFrames, mBufOffset;
-    bool mLeaveFileOpen;
+    int mBufIndex = 0;
+    int mNumFrames = 0;
+    int mBufOffset = 0;
+    bool mLeaveFileOpen = false;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -429,8 +437,8 @@ public:
     bool Stage2() override; // non real time
 
 protected:
-    int mOnOff;
-    int mID;
+    int mOnOff = 0;
+    int mID = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -457,7 +465,8 @@ public:
     bool Stage2() override; // non real time
 
 protected:
-    char *mCmdName, *mErrString;
+    char* mCmdName = nullptr;
+    char* mErrString = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -475,8 +484,8 @@ public:
     void Stage4() override; // non real time
 
 protected:
-    char* mFilename;
-    GraphDef* mDefs;
+    char* mFilename = nullptr;
+    GraphDef* mDefs = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -494,9 +503,9 @@ public:
     void Stage4() override; // non real time
 
 protected:
-    char* mBuffer;
-    size_t mSize;
-    GraphDef* mDefs;
+    char* mBuffer = nullptr;
+    size_t mSize = 0;
+    GraphDef* mDefs = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -514,8 +523,8 @@ public:
     void Stage4() override; // non real time
 
 protected:
-    char* mFilename;
-    GraphDef* mDefs;
+    char* mFilename = nullptr;
+    GraphDef* mDefs = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -644,5 +653,5 @@ protected:
     void* mCmdData;
     AsyncUnitStageFn mStage2, mStage3, mStage4;
     AsyncFreeFn mCleanup;
-    bool mAlive;
+    bool mAlive = true;
 };
