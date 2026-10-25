@@ -213,9 +213,9 @@ sc::lex::SourceCodeRange range_from_offsets(const sc::lex::TextInfo& text, std::
     return { at(begin), at(end) };
 }
 
-// As sc_inspect --lir and --bytecode, the root's class, then each function. In the lir, each function's regions, the
-// body first, then their instructions, all functions, marking those of a method that can't be emitted. In the
-// bytecode, the lines write_emitted prints for each emitted function, each opcode's at its source.
+// As sc_inspect --lir and --bytecode, the root's class, then each function, starting with its frame. In the lir, each
+// function's regions, the body first, then their instructions, all functions, marking those of a method that can't be
+// emitted. In the bytecode, the lines write_emitted prints for each emitted function, each opcode's at its source.
 void add_backend(Tree& lir_tree, Tree& bytecode_tree, const Backend& b, const IrRoot& r, const sc::lex::TextInfo* text,
                  std::vector<sc::diag::Diagnostic>& diagnostics) {
     const auto& g = *r.graph;
@@ -236,6 +236,46 @@ void add_backend(Tree& lir_tree, Tree& bytecode_tree, const Backend& b, const Ir
     const auto range_of = [&](sc::ir::NodeIndex i) {
         const auto loc = g.location(i);
         return g.text_info(loc.source).get() == text ? std::optional { sc::ir::IRGraph::range(loc) } : std::nullopt;
+    };
+    // The frame's slots, as `this`, arguments, variadic arguments, then variables, an inlined function's last. Slot
+    // numbers are as the code addresses them, from this frame or, at a depth, an enclosing one.
+    const auto add_frame = [&](Tree& tree, const sc::backend::Frame& frame) {
+        tree.add(2,
+                 { "frame",
+                   "depth " + std::to_string(frame.depth) + ", " + std::to_string(frame.num_slots())
+                       + (frame.num_slots() == 1 ? " slot" : " slots"),
+                   std::nullopt,
+                   {} });
+        const std::uint32_t first { frame.has_this ? 1u : 0u };
+        for (std::uint32_t si { 0 }; si < frame.slots.size(); ++si) {
+            const auto slot = frame.slots[sc::backend::FrameSlotIndex { si }];
+            const auto name = "slot " + std::to_string(si);
+            if (!slot) {
+                tree.add(3, { name, "this", std::nullopt, {} });
+                continue;
+            }
+            const auto& local = g.local(sc::ir::LocalIndex { *slot });
+            const sc::ir::NodeIndex local_owner { *local.owner };
+            const auto l = si - first;
+            std::string detail;
+            if (l < frame.num_positional)
+                detail = "argument ";
+            else if (l < frame.num_positional + frame.num_variadic())
+                detail = "variadic argument ...";
+            else if (g.is_a<sc::ir::SCFunction_I>(local_owner) && local_owner != sc::ir::NodeIndex { *frame.owner })
+                detail = "hoisted var ";
+            else
+                detail = "var ";
+            detail += ctx.symbol_table(local.name);
+            if (local.captured)
+                detail += ", captured";
+            if (local.assigned_to)
+                detail += ", assigned";
+            const auto range = g.text_info(local.declaration.source).get() == text
+                ? std::optional { sc::ir::IRGraph::range(local.declaration) }
+                : std::nullopt;
+            tree.add(3, { name, detail, range, {} });
+        }
     };
     const Tree::Node class_row { r.class_name ? std::string { ctx.symbol_table(*r.class_name) } : "Interpreted",
                                  "",
@@ -264,6 +304,7 @@ void add_backend(Tree& lir_tree, Tree& bytecode_tree, const Backend& b, const Ir
         lir_tree.add(
             1,
             { "function " + std::to_string(fi), detail + (not_lowered ? " (not emitted)" : ""), range_of(owner), {} });
+        add_frame(lir_tree, frame);
         const bool in_text = g.text_info(function.source).get() == text;
         for (std::uint32_t ri { 0 }; ri < function.sub_regions.size(); ++ri) {
             const auto& region = function.sub_regions[sc::backend::lir::FunctionSubRegionIndex { ri }];
@@ -286,6 +327,7 @@ void add_backend(Tree& lir_tree, Tree& bytecode_tree, const Backend& b, const Ir
         if (!is_emitted)
             continue;
         bytecode_tree.add(1, { "function " + std::to_string(fi), detail, range_of(owner), {} });
+        add_frame(bytecode_tree, frame);
         // write_emitted's lines are the properties, selectors and constants, then one per opcode, in order.
         const auto& emitted_function = emitted.functions[index];
         const auto& code = emitted_function.code;
