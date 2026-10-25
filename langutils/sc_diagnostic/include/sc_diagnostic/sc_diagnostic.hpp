@@ -147,6 +147,17 @@ public:
     [[nodiscard]] static Diagnostic too_many_arguments(TextInfoPtr t, sc::lex::SourceCodeRange l, std::size_t count,
                                                        std::size_t limit);
 
+    // A method whose code the compiler replaces with a loop using its frame, e.g., `Integer:do`, declared with other
+    // arguments or variables than the loop expects, counting `this`.
+    [[nodiscard]] static Diagnostic hard_coded_loop_signature(TextInfoPtr t, sc::lex::SourceCodeRange l,
+                                                              std::size_t arguments, std::size_t variables);
+
+    // A warning, an extension replacing such a method in legacy code, whose code is replaced by the loop too.
+    [[nodiscard]] static Diagnostic hard_coded_loop_extension_ignored(TextInfoPtr t, sc::lex::SourceCodeRange l);
+
+    // An argument default or variable initial value of such a method that isn't a literal, which would never run.
+    [[nodiscard]] static Diagnostic hard_coded_loop_computed_value(TextInfoPtr t, sc::lex::SourceCodeRange l);
+
     // A number literal whose value can't be represented, e.g., `2147483648`, or `1e400`, a Float when is_float.
     [[nodiscard]] static Diagnostic literal_out_of_range(TextInfoPtr t, sc::lex::SourceCodeRange l, bool is_float);
 

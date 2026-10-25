@@ -1,0 +1,529 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (7:1): AbstractObjectExperimental, version 3.16
+|  SCMemberList (7:1)
+|  SCMethodList (7:1)
+SCClass (9:1): Object : AbstractObjectExperimental, version 3.16
+|  SCMemberList (9:1)
+|  SCMethodList (9:1)
+SCClass (9:1): Meta_Object : Meta_AbstractObjectExperimental, version 3.16
+|  SCMemberList (9:1)
+|  |  SCMember (10:14): dependantsDictionary
+|  |  SCMember (10:36): currentEnvironment
+|  |  SCMember (10:56): topEnvironment
+|  |  SCMember (10:72): uniqueMethods
+|  SCMethodList (9:1)
+SCClass (13:1): Class : Object, version 3.16
+|  SCMemberList (13:1)
+|  SCMethodList (13:1)
+SCClass (15:1): String : Object, version 3.16
+|  SCMemberList (15:1)
+|  SCMethodList (15:1)
+SCClass (17:1): True : Object, version 3.16
+|  SCMemberList (17:1)
+|  SCMethodList (17:1)
+SCClass (19:1): False : Object, version 3.16
+|  SCMemberList (19:1)
+|  SCMethodList (19:1)
+SCClass (21:1): Nil : Object, version 3.16
+|  SCMemberList (21:1)
+|  SCMethodList (21:1)
+SCClass (23:1): Float : Object, version 3.16
+|  SCMemberList (23:1)
+|  SCMethodList (23:1)
+|  |  SCMethod (25:5): do, version 3.16: do { arg function;'\n'        var i = 0.0;'\n'        { |x| if (x) { ^1 }; ^2 }.value(function);'\n'    }
+|  |  |  SCArgumentDeclareList (25:14)
+|  |  |  |  SCArgumentDeclare (25:14): function
+|  |  |  SCBody (26:9)
+|  |  |  |  SCVariableDeclare (26:13): i, prototype
+|  |  |  |  |  SCLiteral (26:17) = 0.0
+|  |  |  |  SCMessage (27:9): value
+|  |  |  |  |  SCFunction (27:9)
+|  |  |  |  |  |  SCArgumentDeclareList (27:12)
+|  |  |  |  |  |  |  SCArgumentDeclare (27:12): x
+|  |  |  |  |  |  SCBody (27:9)
+|  |  |  |  |  |  |  SCMessage (27:15): if
+|  |  |  |  |  |  |  |  SCRead (27:19): local x, declared (27:12): x
+|  |  |  |  |  |  |  |  SCPositionalArgs (27:15)
+|  |  |  |  |  |  |  |  |  SCFunction (27:22)
+|  |  |  |  |  |  |  |  |  |  SCBody (27:22)
+|  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (27:24)
+|  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (27:25) = 1
+|  |  |  |  |  |  |  SCExplicitReturn (27:30)
+|  |  |  |  |  |  |  |  SCLiteral (27:31) = 2
+|  |  |  |  |  SCPositionalArgs (27:9)
+|  |  |  |  |  |  SCRead (27:41): local function, declared (25:14): function
+|  |  SCMethod (107:5): reverseDo, version 3.16: reverseDo { arg function, extra;'\n'        var i = this.size;'\n'        function.value(i, extra);'\n'    }
+|  |  |  SCArgumentDeclareList (107:21)
+|  |  |  |  SCArgumentDeclare (107:21): function
+|  |  |  |  SCArgumentDeclare (107:31): extra
+|  |  |  SCBody (108:9)
+|  |  |  |  SCVariableDeclare (108:13): i, computed
+|  |  |  |  |  SCMessage (108:17): size
+|  |  |  |  |  |  SCSpecial (108:17): this
+|  |  |  |  SCMessage (109:9): value
+|  |  |  |  |  SCRead (109:9): local function, declared (107:21): function
+|  |  |  |  |  SCPositionalArgs (109:9)
+|  |  |  |  |  |  SCRead (109:24): local i, declared (108:13): i = this.size
+|  |  |  |  |  |  SCRead (109:27): local extra, declared (107:31): extra
+SCClass (36:1): Integer : Object, version 3.16
+|  SCMemberList (36:1)
+|  SCMethodList (36:1)
+|  |  SCMethod (38:5): do, version 3.16: do { arg function;'\n'        var i = 0;'\n'        while { i < this } { function.value(i, i); i = i + 1 };'\n'    }
+|  |  |  SCArgumentDeclareList (38:14)
+|  |  |  |  SCArgumentDeclare (38:14): function (captured)
+|  |  |  SCBody (39:9)
+|  |  |  |  SCVariableDeclare (39:13): i (assigned, captured), prototype
+|  |  |  |  |  SCLiteral (39:17) = 0
+|  |  |  |  SCMessage (40:9): while
+|  |  |  |  |  SCFunction (40:15)
+|  |  |  |  |  |  SCBody (40:15)
+|  |  |  |  |  |  |  SCMessage (40:17): <
+|  |  |  |  |  |  |  |  SCRead (40:17): local i, declared (39:13): i = 0
+|  |  |  |  |  |  |  |  SCPositionalArgs (40:17)
+|  |  |  |  |  |  |  |  |  SCSpecial (40:21): this
+|  |  |  |  |  SCPositionalArgs (40:9)
+|  |  |  |  |  |  SCFunction (40:28)
+|  |  |  |  |  |  |  SCBody (40:28)
+|  |  |  |  |  |  |  |  SCMessage (40:30): value
+|  |  |  |  |  |  |  |  |  SCRead (40:30): local function, declared (38:14): function
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (40:30)
+|  |  |  |  |  |  |  |  |  |  SCRead (40:45): local i, declared (39:13): i = 0
+|  |  |  |  |  |  |  |  |  |  SCRead (40:48): local i, declared (39:13): i = 0
+|  |  |  |  |  |  |  |  SCAssign (40:52): local i, declared (39:13): i = 0
+|  |  |  |  |  |  |  |  |  SCMessage (40:56): +
+|  |  |  |  |  |  |  |  |  |  SCRead (40:56): local i, declared (39:13): i = 0
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (40:56)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (40:60) = 1
+|  |  SCMethod (43:5): reverseDo, version 3.16: reverseDo { arg function;'\n'        var i = 0, j = (0);'\n'    }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Hard coded method with a computed value
+|  |  |  bytecode/loops.sc:44:25
+|  |  |     42 │     // expect-error: Hard coded method with a computed value
+|  |  |     43 │     reverseDo { arg function;
+|  |  |     44 │         var i = 0, j = (0);
+|  |  |        ┆                         ^ this would never be computed, as the method's code is replaced by a loop.
+|  |  |     45 │     }
+|  |  |     46 │     // expect-error: Hard coded method with a computed value
+|  |  |     47 │     for { arg endval, function;
+|  |  |
+|  |  |  The compiler replaces the code of some loop methods, e.g., `Integer:do` and `ArrayedCollection:do`, with special bytecode, so their arguments' defaults and variables' initial values can only be literals.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (43:21)
+|  |  |  |  SCArgumentDeclare (43:21): function
+|  |  |  SCBody (44:9)
+|  |  |  |  SCVariableDeclare (44:13): i, prototype
+|  |  |  |  |  SCLiteral (44:17) = 0
+|  |  |  |  SCVariableDeclare (44:20): j, computed
+|  |  |  |  |  SCLiteral (44:25) = 0
+|  |  SCMethod (47:5): for, version 3.16: for { arg endval, function;'\n'        var #i, j = [0, 0], stepval=1;'\n'    }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Hard coded method with a computed value
+|  |  |  bytecode/loops.sc:48:13
+|  |  |     46 │     // expect-error: Hard coded method with a computed value
+|  |  |     47 │     for { arg endval, function;
+|  |  |     48 │         var #i, j = [0, 0], stepval=1;
+|  |  |        ┆             ^^^^^^^^^^^^^^ this would never be computed, as the method's code is replaced by a loop.
+|  |  |     49 │     }
+|  |  |     50 │     // expect-error: Hard coded method has the wrong arguments or variables
+|  |  |     51 │     forBy { arg endval, stepval, function; function.value }
+|  |  |
+|  |  |  The compiler replaces the code of some loop methods, e.g., `Integer:do` and `ArrayedCollection:do`, with special bytecode, so their arguments' defaults and variables' initial values can only be literals.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (47:15)
+|  |  |  |  SCArgumentDeclare (47:15): endval
+|  |  |  |  SCArgumentDeclare (47:23): function
+|  |  |  SCBody (48:9)
+|  |  |  |  SCPackDeclare (48:13)
+|  |  |  |  |  SCCollection (48:21): Array = [0, 0]
+|  |  |  |  |  |  SCLiteral (48:22) = 0
+|  |  |  |  |  |  SCLiteral (48:25) = 0
+|  |  |  |  |  SCPackTargets (48:13)
+|  |  |  |  |  |  SCPackTarget (48:14): local i at 0
+|  |  |  |  |  |  SCPackTarget (48:17): local j at 1
+|  |  |  |  SCVariableDeclare (48:29): stepval, prototype
+|  |  |  |  |  SCLiteral (48:37) = 1
+|  |  SCMethod (51:5): forBy, version 3.16: forBy { arg endval, stepval, function; function.value }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Hard coded method has the wrong arguments or variables
+|  |  |  bytecode/loops.sc:51:5
+|  |  |     49 │     }
+|  |  |     50 │     // expect-error: Hard coded method has the wrong arguments or variables
+|  |  |     51 │     forBy { arg endval, stepval, function; function.value }
+|  |  |        ┆     ^^^^^ this method's code is replaced by a loop that expects 4 arguments, counting `this`, and 2 variables, and no variadic arguments.
+|  |  |     52 │ }
+|  |  |     53 │ 
+|  |  |     54 │ Char {}
+|  |  |
+|  |  |  The compiler replaces the code of some loop methods, e.g., `Integer:do` and `ArrayedCollection:do`, with special bytecode that uses the method's arguments and variables directly, so they must be declared as in the class library.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (51:17)
+|  |  |  |  SCArgumentDeclare (51:17): endval
+|  |  |  |  SCArgumentDeclare (51:25): stepval
+|  |  |  |  SCArgumentDeclare (51:34): function
+|  |  |  SCBody (51:44)
+|  |  |  |  SCMessage (51:44): value
+|  |  |  |  |  SCRead (51:44): local function, declared (51:34): function
+SCClass (54:1): Char : Object, version 3.16
+|  SCMemberList (54:1)
+|  SCMethodList (54:1)
+SCClass (56:1): Symbol : Object, version 3.16
+|  SCMemberList (56:1)
+|  SCMethodList (56:1)
+SCClass (58:1): Ref : Object, version 3.16
+|  SCMemberList (58:1)
+|  SCMethodList (58:1)
+SCClass (60:1): Array : Object, version 3.16
+|  SCMemberList (60:1)
+|  SCMethodList (60:1)
+SCClass (62:1): Event : Object, version 3.16
+|  SCMemberList (62:1)
+|  SCMethodList (62:1)
+SCClass (65:1): Interpreter : Object, version 3.16
+|  SCMemberList (65:1)
+|  |  SCMember (66:10): cmdLine
+|  |  SCMember (66:19): filePath
+|  |  SCMember (66:29): lineNumber
+|  |  SCMember (66:41): column
+|  |  SCMember (66:49): context
+|  |  SCMember (67:11): a
+|  |  SCMember (67:16): b
+|  |  SCMember (67:21): c
+|  |  SCMember (67:26): d
+|  |  SCMember (67:31): e
+|  |  SCMember (67:36): f
+|  |  SCMember (67:41): g
+|  |  SCMember (67:46): h
+|  |  SCMember (67:51): i
+|  |  SCMember (67:56): j
+|  |  SCMember (68:11): k
+|  |  SCMember (68:16): l
+|  |  SCMember (68:21): m
+|  |  SCMember (68:26): n
+|  |  SCMember (68:31): o
+|  |  SCMember (68:36): p
+|  |  SCMember (68:41): q
+|  |  SCMember (68:46): r
+|  |  SCMember (68:51): s
+|  |  SCMember (68:56): t
+|  |  SCMember (69:11): u
+|  |  SCMember (69:16): v
+|  |  SCMember (69:21): w
+|  |  SCMember (69:26): x
+|  |  SCMember (69:31): y
+|  |  SCMember (69:36): z
+|  |  SCMember (70:11): codeDump
+|  |  SCMember (70:23): preProcessor
+|  SCMethodList (65:1)
+|  |  SCMethod (72:5): functionCompileContext, version 3.16: functionCompileContext {}
+|  |  |  SCBody (72:29)
+SCClass (75:1): Number : Object, version 3.16
+|  SCMemberList (75:1)
+|  SCMethodList (75:1)
+|  |  SCMethod (78:5): forSeries, version 3.16: forSeries { arg second, last, function;'\n'        var step, j=0;'\n'        if (second.isNil) { var extra = 1; step = extra };'\n'    }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Hard coded method has the wrong arguments or variables
+|  |  |  bytecode/loops.sc:78:5
+|  |  |     76 │     // Variables hoisted from an inlined function are in the frame too.
+|  |  |     77 │     // expect-error: Hard coded method has the wrong arguments or variables
+|  |  |     78 │     forSeries { arg second, last, function;
+|  |  |        ┆     ^^^^^^^^^ this method's code is replaced by a loop that expects 4 arguments, counting `this`, and 2 variables, and no variadic arguments.
+|  |  |     79 │         var step, j=0;
+|  |  |     80 │         if (second.isNil) { var extra = 1; step = extra };
+|  |  |     81 │     }
+|  |  |
+|  |  |  The compiler replaces the code of some loop methods, e.g., `Integer:do` and `ArrayedCollection:do`, with special bytecode that uses the method's arguments and variables directly, so they must be declared as in the class library.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (78:21)
+|  |  |  |  SCArgumentDeclare (78:21): second
+|  |  |  |  SCArgumentDeclare (78:29): last
+|  |  |  |  SCArgumentDeclare (78:35): function
+|  |  |  SCBody (79:9)
+|  |  |  |  SCVariableDeclare (79:13): step (assigned, captured)
+|  |  |  |  SCVariableDeclare (79:19): j, prototype
+|  |  |  |  |  SCLiteral (79:21) = 0
+|  |  |  |  SCMessage (80:9): if
+|  |  |  |  |  SCMessage (80:13): isNil
+|  |  |  |  |  |  SCRead (80:13): local second, declared (78:21): second
+|  |  |  |  |  SCPositionalArgs (80:9)
+|  |  |  |  |  |  SCFunction (80:27)
+|  |  |  |  |  |  |  SCBody (80:27)
+|  |  |  |  |  |  |  |  SCVariableDeclare (80:33): extra, prototype
+|  |  |  |  |  |  |  |  |  SCLiteral (80:41) = 1
+|  |  |  |  |  |  |  |  SCAssign (80:44): local step, declared (79:13): step
+|  |  |  |  |  |  |  |  |  SCRead (80:51): local extra = 1, declared (80:33): extra = 1
+SCClass (84:1): ArrayedCollection : Object, version 3.16
+|  SCMemberList (84:1)
+|  SCMethodList (84:1)
+|  |  SCMethod (86:5): do, version 3.16: do { arg function, extra;'\n'        var i=0;'\n'        function.value;'\n'    }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Hard coded method has the wrong arguments or variables
+|  |  |  bytecode/loops.sc:86:5
+|  |  |     84 │ ArrayedCollection {
+|  |  |     85 │     // expect-error: Hard coded method has the wrong arguments or variables
+|  |  |     86 │     do { arg function, extra;
+|  |  |        ┆     ^^ this method's code is replaced by a loop that expects 2 arguments, counting `this`, and 1 variables, and no variadic arguments.
+|  |  |     87 │         var i=0;
+|  |  |     88 │         function.value;
+|  |  |     89 │     }
+|  |  |
+|  |  |  The compiler replaces the code of some loop methods, e.g., `Integer:do` and `ArrayedCollection:do`, with special bytecode that uses the method's arguments and variables directly, so they must be declared as in the class library.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (86:14)
+|  |  |  |  SCArgumentDeclare (86:14): function
+|  |  |  |  SCArgumentDeclare (86:24): extra
+|  |  |  SCBody (87:9)
+|  |  |  |  SCVariableDeclare (87:13): i, prototype
+|  |  |  |  |  SCLiteral (87:15) = 0
+|  |  |  |  SCMessage (88:9): value
+|  |  |  |  |  SCRead (88:9): local function, declared (86:14): function
+|  |  SCMethod (91:5): reverseDo, version 3.16: reverseDo { arg function ...rest;'\n'        var i=0, j=0;'\n'    }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Hard coded method has the wrong arguments or variables
+|  |  |  bytecode/loops.sc:91:5
+|  |  |     89 │     }
+|  |  |     90 │     // expect-error: Hard coded method has the wrong arguments or variables
+|  |  |     91 │     reverseDo { arg function ...rest;
+|  |  |        ┆     ^^^^^^^^^ this method's code is replaced by a loop that expects 2 arguments, counting `this`, and 2 variables, and no variadic arguments.
+|  |  |     92 │         var i=0, j=0;
+|  |  |     93 │     }
+|  |  |     94 │ }
+|  |  |
+|  |  |  The compiler replaces the code of some loop methods, e.g., `Integer:do` and `ArrayedCollection:do`, with special bytecode that uses the method's arguments and variables directly, so they must be declared as in the class library.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (91:17)
+|  |  |  |  SCArgumentDeclare (91:21): function
+|  |  |  SCArgumentDeclareList (91:17)
+|  |  |  |  SCArgumentDeclare (91:33): rest
+|  |  |  SCBody (92:9)
+|  |  |  |  SCVariableDeclare (92:13): i, prototype
+|  |  |  |  |  SCLiteral (92:15) = 0
+|  |  |  |  SCVariableDeclare (92:18): j, prototype
+|  |  |  |  |  SCLiteral (92:20) = 0
+SCClass (96:1): Dictionary : Object, version 3.16
+|  SCMemberList (96:1)
+|  SCMethodList (96:1)
+|  |  SCMethod (98:5): keysValuesArrayDo, version 3.16: keysValuesArrayDo { arg argArray, function = { 1 };'\n'        var i=0, j=0, key, val;'\n'        var arraySize = argArray.size;'\n'    }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Hard coded method with a computed value
+|  |  |  bytecode/loops.sc:98:50
+|  |  |     96 │ Dictionary {
+|  |  |     97 │     // expect-error: Hard coded method with a computed value
+|  |  |     98 │     keysValuesArrayDo { arg argArray, function = { 1 };
+|  |  |        ┆                                                  ^^^^^ this would never be computed, as the method's code is replaced by a loop.
+|  |  |     99 │         var i=0, j=0, key, val;
+|  |  |    100 │         var arraySize = argArray.size;
+|  |  |    101 │     }
+|  |  |
+|  |  |  The compiler replaces the code of some loop methods, e.g., `Integer:do` and `ArrayedCollection:do`, with special bytecode, so their arguments' defaults and variables' initial values can only be literals.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Hard coded method with a computed value
+|  |  |  bytecode/loops.sc:100:25
+|  |  |     98 │     keysValuesArrayDo { arg argArray, function = { 1 };
+|  |  |     99 │         var i=0, j=0, key, val;
+|  |  |    100 │         var arraySize = argArray.size;
+|  |  |        ┆                         ^^^^^^^^^^^^^ this would never be computed, as the method's code is replaced by a loop.
+|  |  |    101 │     }
+|  |  |    102 │ }
+|  |  |    103 │ 
+|  |  |
+|  |  |  The compiler replaces the code of some loop methods, e.g., `Integer:do` and `ArrayedCollection:do`, with special bytecode, so their arguments' defaults and variables' initial values can only be literals.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (98:29)
+|  |  |  |  SCArgumentDeclare (98:29): argArray
+|  |  |  |  SCArgumentDeclare (98:39): function, computed
+|  |  |  |  |  SCFunction (98:50) -> 1
+|  |  |  |  |  |  SCBody (98:50)
+|  |  |  |  |  |  |  SCLiteral (98:52) = 1
+|  |  |  SCBody (99:9)
+|  |  |  |  SCVariableDeclare (99:13): i, prototype
+|  |  |  |  |  SCLiteral (99:15) = 0
+|  |  |  |  SCVariableDeclare (99:18): j, prototype
+|  |  |  |  |  SCLiteral (99:20) = 0
+|  |  |  |  SCVariableDeclare (99:23): key
+|  |  |  |  SCVariableDeclare (99:28): val
+|  |  |  |  SCVariableDeclare (100:13): arraySize, computed
+|  |  |  |  |  SCMessage (100:25): size
+|  |  |  |  |  |  SCRead (100:25): local argArray, declared (98:29): argArray
+
+
+
+BYTECODE DUMP 
+
+
+AbstractObjectExperimental
+Object
+Meta_Object
+Class
+String
+True
+False
+Nil
+Float
+|  function 0 (25:5): method do
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    8F 11           ExtendedCodes
+|  |  2    8F 12           ExtendedCodes
+|  function 2 (107:5): method reverseDo
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    C0 09           SendSpecialMsgThisOpt
+|  |  2    80 03           StoreTempVar
+|  |  4    31              PushTempZeroVar
+|  |  5    33              PushTempZeroVar
+|  |  6    32              PushTempZeroVar
+|  |  7    C3 06           SendSpecialMsg
+|  |  9    F0              Drop
+|  |  10   F4              ReturnSelf
+Integer
+|  function 0 (38:5): method do
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    8F 00           ExtendedCodes
+|  |  2    8F 01           ExtendedCodes
+Char
+Symbol
+Ref
+Array
+Event
+Interpreter
+|  accessor (66:10): method cmdLine
+|  |  shortcut: return instance variable 0
+|  accessor (67:11): method a
+|  |  shortcut: return instance variable 5
+|  accessor (67:11): method a_
+|  |  shortcut: assign instance variable 5
+|  accessor (67:16): method b
+|  |  shortcut: return instance variable 6
+|  accessor (67:16): method b_
+|  |  shortcut: assign instance variable 6
+|  accessor (67:21): method c
+|  |  shortcut: return instance variable 7
+|  accessor (67:21): method c_
+|  |  shortcut: assign instance variable 7
+|  accessor (67:26): method d
+|  |  shortcut: return instance variable 8
+|  accessor (67:26): method d_
+|  |  shortcut: assign instance variable 8
+|  accessor (67:31): method e
+|  |  shortcut: return instance variable 9
+|  accessor (67:31): method e_
+|  |  shortcut: assign instance variable 9
+|  accessor (67:36): method f
+|  |  shortcut: return instance variable 10
+|  accessor (67:36): method f_
+|  |  shortcut: assign instance variable 10
+|  accessor (67:41): method g
+|  |  shortcut: return instance variable 11
+|  accessor (67:41): method g_
+|  |  shortcut: assign instance variable 11
+|  accessor (67:46): method h
+|  |  shortcut: return instance variable 12
+|  accessor (67:46): method h_
+|  |  shortcut: assign instance variable 12
+|  accessor (67:51): method i
+|  |  shortcut: return instance variable 13
+|  accessor (67:51): method i_
+|  |  shortcut: assign instance variable 13
+|  accessor (67:56): method j
+|  |  shortcut: return instance variable 14
+|  accessor (67:56): method j_
+|  |  shortcut: assign instance variable 14
+|  accessor (68:11): method k
+|  |  shortcut: return instance variable 15
+|  accessor (68:11): method k_
+|  |  shortcut: assign instance variable 15
+|  accessor (68:16): method l
+|  |  shortcut: return instance variable 16
+|  accessor (68:16): method l_
+|  |  shortcut: assign instance variable 16
+|  accessor (68:21): method m
+|  |  shortcut: return instance variable 17
+|  accessor (68:21): method m_
+|  |  shortcut: assign instance variable 17
+|  accessor (68:26): method n
+|  |  shortcut: return instance variable 18
+|  accessor (68:26): method n_
+|  |  shortcut: assign instance variable 18
+|  accessor (68:31): method o
+|  |  shortcut: return instance variable 19
+|  accessor (68:31): method o_
+|  |  shortcut: assign instance variable 19
+|  accessor (68:36): method p
+|  |  shortcut: return instance variable 20
+|  accessor (68:36): method p_
+|  |  shortcut: assign instance variable 20
+|  accessor (68:41): method q
+|  |  shortcut: return instance variable 21
+|  accessor (68:41): method q_
+|  |  shortcut: assign instance variable 21
+|  accessor (68:46): method r
+|  |  shortcut: return instance variable 22
+|  accessor (68:46): method r_
+|  |  shortcut: assign instance variable 22
+|  accessor (68:51): method s
+|  |  shortcut: return instance variable 23
+|  accessor (68:51): method s_
+|  |  shortcut: assign instance variable 23
+|  accessor (68:56): method t
+|  |  shortcut: return instance variable 24
+|  accessor (68:56): method t_
+|  |  shortcut: assign instance variable 24
+|  accessor (69:11): method u
+|  |  shortcut: return instance variable 25
+|  accessor (69:11): method u_
+|  |  shortcut: assign instance variable 25
+|  accessor (69:16): method v
+|  |  shortcut: return instance variable 26
+|  accessor (69:16): method v_
+|  |  shortcut: assign instance variable 26
+|  accessor (69:21): method w
+|  |  shortcut: return instance variable 27
+|  accessor (69:21): method w_
+|  |  shortcut: assign instance variable 27
+|  accessor (69:26): method x
+|  |  shortcut: return instance variable 28
+|  accessor (69:26): method x_
+|  |  shortcut: assign instance variable 28
+|  accessor (69:31): method y
+|  |  shortcut: return instance variable 29
+|  accessor (69:31): method y_
+|  |  shortcut: assign instance variable 29
+|  accessor (69:36): method z
+|  |  shortcut: return instance variable 30
+|  accessor (69:36): method z_
+|  |  shortcut: assign instance variable 30
+|  accessor (70:11): method codeDump
+|  |  shortcut: return instance variable 31
+|  accessor (70:11): method codeDump_
+|  |  shortcut: assign instance variable 31
+|  accessor (70:23): method preProcessor
+|  |  shortcut: return instance variable 32
+|  accessor (70:23): method preProcessor_
+|  |  shortcut: assign instance variable 32
+|  function 0 (72:5): method functionCompileContext
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    F4              ReturnSelf
+Number
+ArrayedCollection
+Dictionary
+Successfully compiled 18 classes.

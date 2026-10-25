@@ -687,6 +687,36 @@ Diagnostic Diagnostic::too_many_arguments(TextInfoPtr t, sc::lex::SourceCodeRang
                    "Event, or use performList." };
 }
 
+Diagnostic Diagnostic::hard_coded_loop_signature(TextInfoPtr t, sc::lex::SourceCodeRange l, std::size_t arguments,
+                                                 std::size_t variables) {
+    return { "Hard coded method has the wrong arguments or variables",
+             Severity::Error,
+             { { std::move(t), l,
+                 "this method's code is replaced by a loop that expects " + std::to_string(arguments)
+                     + " arguments, counting `this`, and " + std::to_string(variables)
+                     + " variables, and no variadic arguments." } },
+             "The compiler replaces the code of some loop methods, e.g., `Integer:do` and `ArrayedCollection:do`, with "
+             "special bytecode that uses the method's arguments and variables directly, so they must be declared as "
+             "in the class library." };
+}
+
+Diagnostic Diagnostic::hard_coded_loop_extension_ignored(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+    return { "Extension of a hard coded method is ignored",
+             Severity::Warning,
+             { { std::move(t), l, "this extension's code is replaced by a loop, as the method it replaces is." } },
+             "The compiler replaces the code of some loop methods, e.g., `Integer:do` and `ArrayedCollection:do`, with "
+             "special bytecode. Before 3.16 this also happens to an extension method replacing one of them, so the "
+             "extension's code never runs. Add `//# VERSION 3.16` to the extension to compile its own code." };
+}
+
+Diagnostic Diagnostic::hard_coded_loop_computed_value(TextInfoPtr t, sc::lex::SourceCodeRange l) {
+    return { "Hard coded method with a computed value",
+             Severity::Error,
+             { { std::move(t), l, "this would never be computed, as the method's code is replaced by a loop." } },
+             "The compiler replaces the code of some loop methods, e.g., `Integer:do` and `ArrayedCollection:do`, with "
+             "special bytecode, so their arguments' defaults and variables' initial values can only be literals." };
+}
+
 Diagnostic Diagnostic::literal_out_of_range(TextInfoPtr t, sc::lex::SourceCodeRange l, bool is_float) {
     if (is_float)
         return { "Literal out of range",

@@ -509,6 +509,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                         build.ir->payload(r.ir_node).poisoned = true;
                         build.ir->payload(r.ir_node).constant_result = {};
                     }
+                    build.ir->payload(r.ir_node).extension = method->is_extention;
                     build.ir->append(build.method_list, r.ir_node);
                 }
 

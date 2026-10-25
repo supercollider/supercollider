@@ -12,22 +12,9 @@
 #include <sstream>
 
 #include "sc_parser/ast.hpp"
+#include "sc_util/unreachable.hpp"
 
 namespace sc::ir {
-
-namespace priv {
-// from cpp ref
-[[noreturn]] inline void unreachable() {
-    // Uses compiler specific extensions if possible.
-    // Even if no extension is used, undefined behavior is still raised by
-    // an empty function body and the noreturn attribute.
-#if defined(_MSC_VER) && !defined(__clang__) // MSVC
-    __assume(false);
-#else // GCC, Clang
-    __builtin_unreachable();
-#endif
-}
-}
 
 template <typename T> std::optional<T> from(const char* begin, const char* end) {
     T t;
@@ -96,7 +83,7 @@ std::optional<std::int32_t> synthesize_literal(const ast::IntNode& node, std::st
         break;
     }
     default:
-        priv::unreachable();
+        util::unreachable();
     }
     if (magnitude > limit)
         return std::nullopt;
@@ -226,7 +213,7 @@ std::optional<double> synthesize_literal(const ast::FloatNode& node, std::string
         break;
     }
     default:
-        priv::unreachable();
+        util::unreachable();
     }
     if (!value || (!std::isfinite(*value) && str != "inf"))
         return std::nullopt;

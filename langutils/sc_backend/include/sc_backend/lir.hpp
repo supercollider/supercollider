@@ -13,7 +13,6 @@
 #include <cstdint>
 #include <limits>
 #include <variant>
-#include <vector>
 
 // The lowered ir: each function's instructions in the order the VM runs them, operands first, with locals, members and
 // nested functions resolved. How each is encoded is the emitter's choice. Bodies are sub-regions, contiguous ranges of
@@ -225,6 +224,8 @@ static_assert(sizeof(FunctionSubRegion) == 8);
 struct Function {
     FrameIndex frame;
     ir::SourceIndex source;
+    // A root whose code, and its nested functions', all lowered, so can be emitted. Unset for nested functions.
+    bool complete { false };
     util::IndexedVector<InstructionIndex, Instruction> instructions {};
     util::IndexedVector<InstructionIndex, SourceSpan> spans {};
     util::IndexedVector<FunctionSubRegionIndex, FunctionSubRegion> sub_regions {};
@@ -233,9 +234,9 @@ struct Function {
 
 inline constexpr FunctionSubRegionIndex body_sub_region { 0 };
 
+// A root's nested functions follow it.
 struct LoweredGraph {
     util::IndexedVector<FunctionIndex, Function> functions {};
-    std::vector<FunctionIndex> roots {};
 };
 
 }

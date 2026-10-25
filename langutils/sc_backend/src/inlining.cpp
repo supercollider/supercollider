@@ -4,6 +4,7 @@
 #include "sc_sema/symbol_table.hpp"
 #include "sc_sema/versions.hpp"
 
+#include <string_view>
 #include <vector>
 
 // This file is AI made with little human supervision.
@@ -235,6 +236,20 @@ SpecialSymbols::SpecialSymbols(ir::SymbolTable& symbols):
     add(Opcode::names::binary_math, OpBinaryMath {});
     for (std::size_t i { 0 }; i < Opcode::names::special_classes.size(); ++i)
         special_classes.insert({ symbols.get(Opcode::names::special_classes[i]), static_cast<std::uint8_t>(i) });
+
+    const auto loop = [&](std::string_view owner, std::string_view selector, HardCodedLoop l) {
+        hard_coded_loops.push_back({ symbols.get_class_name(owner), symbols.get_selector(selector), l });
+    };
+    loop("Integer", "do", HardCodedLoop::IntegerDo);
+    loop("Integer", "reverseDo", HardCodedLoop::IntegerReverseDo);
+    loop("Integer", "for", HardCodedLoop::IntegerFor);
+    loop("Integer", "forBy", HardCodedLoop::IntegerForBy);
+    loop("ArrayedCollection", "do", HardCodedLoop::ArrayedCollectionDo);
+    loop("ArrayedCollection", "reverseDo", HardCodedLoop::ArrayedCollectionReverseDo);
+    loop("Dictionary", "keysValuesArrayDo", HardCodedLoop::DictionaryKeysValuesArrayDo);
+    loop("Number", "forSeries", HardCodedLoop::NumberForSeries);
+    loop("Float", "do", HardCodedLoop::FloatDo);
+    loop("Float", "reverseDo", HardCodedLoop::FloatReverseDo);
 }
 
 std::optional<SpecialSymbols::SpecialSelector> SpecialSymbols::find(ir::Symbol selector) const {
@@ -243,4 +258,11 @@ std::optional<SpecialSymbols::SpecialSelector> SpecialSymbols::find(ir::Symbol s
     return std::nullopt;
 }
 
+std::optional<HardCodedLoop> SpecialSymbols::find_hard_coded_loop(ir::SymSCClassName owner,
+                                                                  ir::SymSCSelector selector) const {
+    for (const auto& m : hard_coded_loops)
+        if (m.owner == owner && m.selector == selector)
+            return m.loop;
+    return std::nullopt;
+}
 }

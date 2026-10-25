@@ -826,7 +826,7 @@ struct Lowerer {
         }
     }
 
-    // A root's functions are only kept when all of it can be emitted.
+    // A root's functions are kept when it fails, for debugging, but it isn't complete.
     template <typename Function> void root(Function f, bool is_method) {
         const ir::NodeIndex i { *f };
         const auto started = cursor.enter(i);
@@ -835,8 +835,7 @@ struct Lowerer {
         contents(f, is_method);
         end_function();
         (void)cursor.exit(i);
-        if (!failed)
-            out.roots.push_back(index);
+        out.functions[index].complete = !failed;
     }
 
     void lower_class(ir::SCClass_I c) {

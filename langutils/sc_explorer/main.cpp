@@ -297,9 +297,7 @@ void add_backend(Tree& lir_tree, Tree& bytecode_tree, const Backend& b, const Ir
         if (const auto method = g.as_a<sc::ir::SCMethod_I>(owner))
             detail = "method " + std::string { ctx.symbol_table(*g.payload(*method).selector) };
         const bool is_emitted = std::find(emitted.roots.begin(), emitted.roots.end(), *root) != emitted.roots.end();
-        const auto& lowered_roots = lowered.roots;
-        const bool not_lowered =
-            !frame.parent && std::find(lowered_roots.begin(), lowered_roots.end(), index) == lowered_roots.end();
+        const bool not_lowered = !frame.parent && !function.complete;
 
         lir_tree.add(
             1,
@@ -324,7 +322,7 @@ void add_backend(Tree& lir_tree, Tree& bytecode_tree, const Backend& b, const Ir
             }
         }
 
-        if (!is_emitted)
+        if (!is_emitted || emitted.functions[index].thrown_away)
             continue;
         bytecode_tree.add(1, { "function " + std::to_string(fi), detail, range_of(owner), {} });
         add_frame(bytecode_tree, frame);

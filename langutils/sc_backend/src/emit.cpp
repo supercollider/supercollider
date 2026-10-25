@@ -5,6 +5,7 @@
 #include "sc_sema/symbol_table.hpp"
 #include "sc_sema/versions.hpp"
 #include "sc_util/overload.hpp"
+#include "sc_util/unreachable.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -1359,6 +1360,129 @@ OptionalMethodShortcut method_shortcut(const EmitContext& ctx, const lir::Functi
     return {};
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Hard coded loops
+////////////////////////////////////////////////////////////////////////////////
+
+// The opcodes use the frame's slots directly, `arguments` counting `this`.
+struct LoopFrame {
+    std::uint32_t arguments;
+    std::uint32_t variables;
+};
+
+LoopFrame loop_frame(HardCodedLoop loop) {
+    switch (loop) {
+    case HardCodedLoop::IntegerDo:
+    case HardCodedLoop::ArrayedCollectionDo:
+    case HardCodedLoop::FloatDo:
+        return { 2, 1 };
+    case HardCodedLoop::IntegerReverseDo:
+    case HardCodedLoop::ArrayedCollectionReverseDo:
+    case HardCodedLoop::FloatReverseDo:
+        return { 2, 2 };
+    case HardCodedLoop::IntegerFor:
+        return { 3, 3 };
+    case HardCodedLoop::IntegerForBy:
+    case HardCodedLoop::NumberForSeries:
+        return { 4, 2 };
+    case HardCodedLoop::DictionaryKeysValuesArrayDo:
+        return { 3, 5 };
+    }
+    util::unreachable();
+}
+
+// From 3.16 an extension replacing one of these methods is compiled as written.
+std::optional<HardCodedLoop> hard_coded_loop(const EmitContext& ctx, ir::SCMethod_I method) {
+    const auto& payload = ctx.graph.payload(method);
+    if (payload.extension && !ir::hard_codes_extension_loops(payload.version))
+        return std::nullopt;
+    const auto root = ctx.graph.root();
+    const auto* class_i = root ? std::get_if<ir::SCClass_I>(&*root) : nullptr;
+    if (!class_i)
+        return std::nullopt;
+    return ctx.special_symbols.find_hard_coded_loop(ctx.graph.payload(*class_i).name, *payload.selector);
+}
+
+// The old compiler's checks, as errors, though it emitted the loop anyway. Returns whether there were none.
+bool check_loop_frame(const EmitContext& ctx, ir::SCMethod_I method, const Frame& frame, HardCodedLoop loop,
+                      std::vector<sc::diag::Diagnostic>& diagnostics) {
+    const auto& payload = ctx.graph.payload(method);
+    const auto selector_loc = payload.selector.location;
+    if (payload.extension)
+        diagnostics.push_back(sc::diag::Diagnostic::hard_coded_loop_extension_ignored(
+            ctx.graph.text_info(selector_loc.source), ir::IRGraph::range(selector_loc)));
+    const auto num_diags_before = diagnostics.size();
+    const auto expected = loop_frame(loop);
+    const auto arguments = std::uint32_t { frame.has_this } + frame.num_positional;
+    if (frame.variadic != Variadic::None || arguments != expected.arguments
+        || frame.num_slots() - arguments != expected.variables)
+        diagnostics.push_back(
+            sc::diag::Diagnostic::hard_coded_loop_signature(ctx.graph.text_info(selector_loc.source), //
+                                                            ir::IRGraph::range(selector_loc), //
+                                                            expected.arguments, expected.variables));
+
+    const auto computed_error = [&](ir::NodeIndex i) {
+        const auto loc = ctx.graph.location(i);
+        diagnostics.push_back(sc::diag::Diagnostic::hard_coded_loop_computed_value(ctx.graph.text_info(loc.source),
+                                                                                   ir::IRGraph::range(loc)));
+    };
+    const auto [positional, _, body] = ctx.graph.children(method);
+    for (auto it = ctx.graph.children(positional).iter(); it; ++it) {
+        const auto [value] = ctx.graph.children(*it);
+        if (!ctx.graph.payload(*it).prototype && !ctx.graph.is_a<ir::SCMissing_I>(ir::NodeIndex { *value }))
+            computed_error(ir::NodeIndex { *value });
+    }
+    for (auto it = ctx.graph.children(body).iter(); it; ++it) {
+        const ir::NodeIndex i { **it };
+        if (const auto declare = ctx.graph.as_a<ir::SCVariableDeclare_I>(i)) {
+            const auto [value] = ctx.graph.children(*declare);
+            if (!ctx.graph.payload(*declare).prototype && !ctx.graph.is_a<ir::SCMissing_I>(ir::NodeIndex { *value }))
+                computed_error(ir::NodeIndex { *value });
+        } else if (ctx.graph.is_a<ir::SCPackDeclare_I>(i)) {
+            computed_error(i);
+        }
+    }
+    // error if we emitted a diagnostic.
+    return diagnostics.size() == num_diags_before;
+}
+
+CompilingBytecodes::Data loop_code(HardCodedLoop loop, sc::lex::SourceCodeRange loc) {
+    CompilingBytecodes bc;
+    switch (loop) {
+    case HardCodedLoop::IntegerDo:
+        Extended::IntegerDo.emit(bc, loc);
+        break;
+    case HardCodedLoop::IntegerReverseDo:
+        Extended::IntegerReverseDo.emit(bc, loc);
+        break;
+    case HardCodedLoop::IntegerFor:
+        Extended::IntegerFor.emit(bc, loc);
+        break;
+    case HardCodedLoop::IntegerForBy:
+        Extended::IntegerForBy.emit(bc, loc);
+        break;
+    case HardCodedLoop::ArrayedCollectionDo:
+        Extended::ArrayedCollectionDo.emit(bc, loc);
+        break;
+    case HardCodedLoop::ArrayedCollectionReverseDo:
+        Extended::ArrayedCollectionReversedDo.emit(bc, loc);
+        break;
+    case HardCodedLoop::DictionaryKeysValuesArrayDo:
+        Extended::DictionaryKeyValuesArrayDo.emit(bc, loc);
+        break;
+    case HardCodedLoop::NumberForSeries:
+        Extended::NumberForSeries.emit(bc, loc);
+        break;
+    case HardCodedLoop::FloatDo:
+        Extended::FloatDo.emit(bc, loc);
+        break;
+    case HardCodedLoop::FloatReverseDo:
+        Extended::FloatDoReverse.emit(bc, loc);
+        break;
+    }
+    return std::move(bc).finish();
+}
+
 // In the order the old compiler added them, by member, getter then setter.
 std::vector<Accessor> accessors(const EmitContext& ctx) {
     std::vector<Accessor> out;
@@ -1397,6 +1521,58 @@ std::vector<Accessor> accessors(const EmitContext& ctx) {
     }
     return out;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Roots
+////////////////////////////////////////////////////////////////////////////////
+
+// A root and the functions nested in it, which follow it up to end. Returns whether all were emitted, stopping at the
+// first that fails.
+bool emit_root(const EmitContext& ctx, const lir::LoweredGraph& lowered,
+               const util::IndexedVector<lir::FunctionIndex, FunctionProperties>& properties, lir::FunctionIndex root,
+               lir::FunctionIndex end, EmittedGraph& out) {
+    const auto& root_frame = ctx.frames.frames[lowered.functions[root].frame];
+    // Check for shortcuts
+    if (const auto found = method_shortcut(ctx, lowered.functions[root], root_frame);
+        !std::holds_alternative<std::monostate>(found)) {
+        // Its code is a single return, so creates no functions.
+        assert(*end == *root + 1);
+        EmittedFunction emitted {};
+        emitted.shortcut = found;
+        emitted.properties = properties[root];
+        out.functions.push_back(std::move(emitted));
+        return true;
+    }
+    // Some methods are hard coded so have a shorter exit path.
+    if (const auto method = ctx.graph.as_a<ir::SCMethod_I>(ir::NodeIndex { *root_frame.owner })) {
+        if (const auto loop = hard_coded_loop(ctx, *method)) {
+            if (!check_loop_frame(ctx, *method, root_frame, *loop, out.diagnostics))
+                return false;
+            // The body is thrown away, with the functions in it, and anything it would have made the method.
+            EmittedFunction emitted {};
+            emitted.code = loop_code(*loop, ir::IRGraph::range(ctx.graph.location(ir::NodeIndex { **method })));
+            out.functions.push_back(std::move(emitted));
+            for (std::uint32_t fi { *root + 1 }; fi < *end; ++fi) {
+                EmittedFunction thrown_away {};
+                thrown_away.thrown_away = true;
+                out.functions.push_back(std::move(thrown_away));
+            }
+            return true;
+        }
+    }
+    for (std::uint32_t fi { *root }; fi < *end; ++fi) {
+        const lir::FunctionIndex index { fi };
+        const auto& function = lowered.functions[index];
+        const auto& frame = ctx.frames.frames[function.frame];
+        Emitter emitter { ctx, function, frame, {}, out.diagnostics };
+        emitter.run(ctx.graph.is_a<ir::SCMethod_I>(ir::NodeIndex { *frame.owner }));
+        emitter.out.properties = properties[index];
+        out.functions.push_back(std::move(emitter.out));
+        if (emitter.failed)
+            return false;
+    }
+    return true;
+}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1407,40 +1583,21 @@ EmittedGraph emit(const EmitContext& ctx, const lir::LoweredGraph& lowered) {
     EmittedGraph out;
     out.accessors = accessors(ctx);
     const auto properties = function_properties(ctx, lowered.functions);
-    // Nested functions follow their root, a function whose frame has no parent.
-    std::optional<lir::FunctionIndex> root;
-    bool root_failed { false };
-    const auto finish_root = [&]() {
-        if (root && !root_failed)
-            out.roots.push_back(*root);
-    };
-    for (std::uint32_t fi { 0 }; fi < lowered.functions.size(); ++fi) {
-        const lir::FunctionIndex index { fi };
-        const auto& function = lowered.functions[index];
-        const auto& frame = ctx.frames.frames[function.frame];
-        if (!frame.parent) {
-            finish_root();
-            root = index;
-            root_failed = std::find(lowered.roots.begin(), lowered.roots.end(), index) == lowered.roots.end();
-        }
-        if (root_failed) {
-            out.functions.push_back({});
-            continue;
-        }
-        if (const auto found = method_shortcut(ctx, function, frame); !std::holds_alternative<std::monostate>(found)) {
-            EmittedFunction emitted {};
-            emitted.shortcut = found;
-            emitted.properties = properties[index];
-            out.functions.push_back(std::move(emitted));
-            continue;
-        }
-        Emitter emitter { ctx, function, frame, {}, out.diagnostics };
-        emitter.run(ctx.graph.is_a<ir::SCMethod_I>(ir::NodeIndex { *frame.owner }));
-        root_failed = emitter.failed;
-        emitter.out.properties = properties[index];
-        out.functions.push_back(std::move(emitter.out));
+    // Nested functions follow their root, a function whose frame has no parent. A root that fails leaves out the rest.
+    const auto size = static_cast<std::uint32_t>(lowered.functions.size());
+    for (std::uint32_t begin { 0 }; begin < size;) {
+        // begin to end should span over the function and its nested functions.
+        std::uint32_t end { begin + 1 };
+        while (end < size && ctx.frames.frames[lowered.functions[lir::FunctionIndex { end }].frame].parent)
+            ++end;
+        const lir::FunctionIndex root { begin };
+        if (lowered.functions[root].complete
+            && emit_root(ctx, lowered, properties, root, lir::FunctionIndex { end }, out))
+            out.roots.push_back(root);
+
+        out.functions.resize(end);
+        begin = end;
     }
-    finish_root();
     return out;
 }
 

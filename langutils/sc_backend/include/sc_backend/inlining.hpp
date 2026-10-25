@@ -93,6 +93,27 @@ struct NilTest {
 // Special symbols
 ////////////////////////////////////////////////////////////////////////////////
 
+// Methods whose code is replaced by extended opcodes that loop using the method's frame, e.g., `Integer:do`.
+enum struct HardCodedLoop : std::uint8_t {
+    IntegerDo,
+    IntegerReverseDo,
+    IntegerFor,
+    IntegerForBy,
+    ArrayedCollectionDo,
+    ArrayedCollectionReverseDo,
+    DictionaryKeysValuesArrayDo,
+    NumberForSeries,
+    FloatDo,
+    FloatReverseDo,
+};
+
+struct HardCodedLoopMethod {
+    ir::SymSCClassName owner;
+    ir::SymSCSelector selector;
+    HardCodedLoop loop;
+};
+static_assert(sizeof(HardCodedLoopMethod) == 12);
+
 struct SpecialSymbols {
     explicit SpecialSymbols(ir::SymbolTable& symbols);
 
@@ -104,8 +125,12 @@ struct SpecialSymbols {
     // Methods that never get a shortcut.
     ir::SymSCSelector does_not_understand;
     ir::SymSCSelector function_compile_context;
+    std::vector<HardCodedLoopMethod> hard_coded_loops;
 
     [[nodiscard]] std::optional<SpecialSelector> find(ir::Symbol selector) const;
+    // Of an instance method, also in an extension.
+    [[nodiscard]] std::optional<HardCodedLoop> find_hard_coded_loop(ir::SymSCClassName owner,
+                                                                    ir::SymSCSelector selector) const;
 };
 
 }

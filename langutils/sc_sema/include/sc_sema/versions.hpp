@@ -27,6 +27,11 @@ namespace sc::ir {
     return v >= ast::LanguageVersion::V3_16;
 }
 
+// Old code replaced an extension's `Integer:do` and the other hard coded loop methods too, ignoring its body.
+[[nodiscard]] constexpr bool hard_codes_extension_loops(ast::LanguageVersion v) {
+    return v < ast::LanguageVersion::V3_16;
+}
+
 [[nodiscard]] constexpr bool allows_closed_function_return(ast::LanguageVersion v) {
     return v < ast::LanguageVersion::V3_16;
 }

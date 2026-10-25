@@ -276,6 +276,8 @@ struct SCMethod : priv::Node<SCMethod_I(SCArgumentDeclareList_I positional_argum
     Locatable<SymSCSelector> selector;
     std::optional<Locatable<SymSCPrimitive>> primitive;
     bool poisoned { false };
+    // In a class extension, replacing any method of the class with the same selector.
+    bool extension { false };
     // Can differ from its class's, when it is in an extension.
     ast::LanguageVersion version;
     // What calling the method returns, when it is known and has no effects. Only set without arguments, as their values

@@ -138,6 +138,8 @@ using OptionalMethodShortcut =
 static_assert(sizeof(OptionalMethodShortcut) == 12);
 
 struct EmittedFunction {
+    // In the body of a method whose code is a hard coded loop, so never made.
+    bool thrown_away { false };
     FunctionProperties properties {};
     OptionalMethodShortcut shortcut {};
     CompilingBytecodes::Data code {};

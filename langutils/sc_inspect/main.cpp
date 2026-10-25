@@ -854,8 +854,7 @@ int main(int argc, char* argv[]) {
                 sc::ir::describe::write_location(std::cout, g.location(owner));
                 if (const auto method = g.as_a<sc::ir::SCMethod_I>(owner))
                     std::cout << ": method " << symbol_table(*g.payload(*method).selector);
-                const auto& roots = lowered.roots;
-                if (!frame.parent && std::find(roots.begin(), roots.end(), index) == roots.end())
+                if (!frame.parent && !function.complete)
                     std::cout << " (not emitted)";
                 std::cout << "\n";
                 for (std::uint32_t ri { 0 }; ri < function.sub_regions.size(); ++ri) {
@@ -873,7 +872,7 @@ int main(int argc, char* argv[]) {
         }
     }
     // Each class's accessors, then each emitted function's tables and bytecode, see write_emitted. Functions of a
-    // method or interpreted function that can't be emitted are left out.
+    // method or interpreted function that can't be emitted, or in a hard coded loop method, are left out.
     if (show_bytecode) {
         std::cout << "\n\n\nBYTECODE DUMP \n\n\n";
         for (const auto& dumped : classes) {
@@ -893,7 +892,8 @@ int main(int argc, char* argv[]) {
                 if (!frame.parent)
                     root = index;
                 const auto& roots = f.emitted.roots;
-                if (std::find(roots.begin(), roots.end(), *root) == roots.end())
+                if (std::find(roots.begin(), roots.end(), *root) == roots.end()
+                    || f.emitted.functions[index].thrown_away)
                     continue;
                 const sc::ir::NodeIndex owner { *frame.owner };
                 std::cout << "|  function " << fi << " ";
