@@ -1,0 +1,3 @@
+add_executable(sc_bench_interpreted main.cpp)
+target_link_libraries(sc_bench_interpreted PRIVATE sc_compiler)
+set_property(TARGET sc_bench_interpreted PROPERTY FOLDER LangUtils)

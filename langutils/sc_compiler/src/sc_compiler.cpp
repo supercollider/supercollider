@@ -209,6 +209,28 @@ compile_class_library(const util::IndexedVector<ir::SourceEntryIndex, ClassFileS
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// Interpreted code
+////////////////////////////////////////////////////////////////////////////////
+
+InterpretedParsed parse_interpreted(std::shared_ptr<const src::TextInfo> text) {
+    auto [ast_graph, _] = sc::ast::parse(std::move(text));
+    if (!ast_graph)
+        return {};
+    InterpretedParsed parsed { nullptr, ast_graph->diagnostics() };
+    const auto root = ast_graph->root();
+    if (root && !std::holds_alternative<sc::ast::ClassOrExtensionListIndex>(*root))
+        parsed.ast = std::move(ast_graph);
+    return parsed;
+}
+
+InterpretedIR compile_interpreted_ir(ClassLibrary& library, InterpretedParsed&& parsed, ast::LanguageVersion version) {
+    if (!parsed.ast)
+        return {};
+    auto r = library.compiler.compile_interpreted(std::move(parsed.ast), version);
+    return { std::move(r.ir), std::move(r.diagnostics) };
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Backend
 ////////////////////////////////////////////////////////////////////////////////
 

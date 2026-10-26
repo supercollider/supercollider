@@ -29,16 +29,14 @@
 
 namespace sc::compiler {
 
-////////////////////////////////////////////////////////////////////////////////
-// API
-////////////////////////////////////////////////////////////////////////////////
-
 struct ClassFile;
 struct ClassFileSource;
 struct VMDefinitions;
 struct ClassLibraryTimes;
 struct ClassLibrary;
 struct Backend;
+struct InterpretedParsed;
+struct InterpretedIR;
 struct FramedGraph;
 struct LoweredGraph;
 struct EmittedGraph;
@@ -46,25 +44,13 @@ struct CompiledGraph;
 
 using ClassFiles = util::IndexedVector<ir::SourceEntryIndex, ClassFile>;
 
-// Each path is a module, a directory's .sc files or one .sc file.
-[[nodiscard]] ClassFiles
-find_class_files(const util::IndexedVector<ir::ModuleIndex, std::filesystem::path>& module_paths);
+////////////////////////////////////////////////////////////////////////////////
+// API: sclang
+////////////////////////////////////////////////////////////////////////////////
 
 // The VM's definitions, its intrinsic classes and primitives, are checked against the classes, none are without them.
 [[nodiscard]] std::unique_ptr<ClassLibrary> compile_class_library(const ClassFiles& files, std::size_t num_threads,
                                                                   ClassLibraryTimes& times, const VMDefinitions& vm);
-// Text that isn't in files, e.g., an editor's.
-[[nodiscard]] std::unique_ptr<ClassLibrary>
-compile_class_library(const util::IndexedVector<ir::SourceEntryIndex, ClassFileSource>& sources,
-                      std::size_t num_threads, ClassLibraryTimes& times, const VMDefinitions& vm);
-
-using CompilationUnit = ir::join<ir::SCClass_I, ir::SCInterpreted_I>;
-
-// The backend's stages, each moving the last's result into its own.
-[[nodiscard]] FramedGraph layout_frames(const ClassLibrary& library, const ir::IRGraph& g, CompilationUnit root);
-[[nodiscard]] LoweredGraph lower(ClassLibrary& library, FramedGraph&& framed);
-[[nodiscard]] EmittedGraph emit(const ClassLibrary& library, LoweredGraph&& lowered);
-[[nodiscard]] CompiledGraph finish(const ClassLibrary& library, EmittedGraph&& emitted);
 
 // A class graph's topological position.
 using ClassGraphIndex = util::StrongIndex<std::uint32_t, struct ClassGraphIndex__>;
@@ -73,6 +59,33 @@ using ClassGraphIndex = util::StrongIndex<std::uint32_t, struct ClassGraphIndex_
 // library, to its symbols, which are thread safe.
 [[nodiscard]] util::IndexedVector<ClassGraphIndex, CompiledGraph> compile_class_graphs(ClassLibrary& library,
                                                                                        std::size_t num_threads);
+
+// Interpreted code, e.g., an editor's text or an scd file, after the class library, then the backend's stages as a
+// class's are, from layout_frames.
+[[nodiscard]] InterpretedParsed parse_interpreted(std::shared_ptr<const src::TextInfo> text);
+[[nodiscard]] InterpretedIR compile_interpreted_ir(ClassLibrary& library, InterpretedParsed&& parsed,
+                                                   ast::LanguageVersion version);
+
+////////////////////////////////////////////////////////////////////////////////
+// API: inspection and debugging
+////////////////////////////////////////////////////////////////////////////////
+
+// Each path is a module, a directory's .sc files or one .sc file.
+[[nodiscard]] ClassFiles
+find_class_files(const util::IndexedVector<ir::ModuleIndex, std::filesystem::path>& module_paths);
+
+// Text that isn't in files, e.g., an editor's.
+[[nodiscard]] std::unique_ptr<ClassLibrary>
+compile_class_library(const util::IndexedVector<ir::SourceEntryIndex, ClassFileSource>& sources,
+                      std::size_t num_threads, ClassLibraryTimes& times, const VMDefinitions& vm);
+
+using CompilationUnit = ir::join<ir::SCClass_I, ir::SCInterpreted_I>;
+
+// The backend's stages, each moving the last's result into its own, which compile_class_graphs runs per graph.
+[[nodiscard]] FramedGraph layout_frames(const ClassLibrary& library, const ir::IRGraph& g, CompilationUnit root);
+[[nodiscard]] LoweredGraph lower(ClassLibrary& library, FramedGraph&& framed);
+[[nodiscard]] EmittedGraph emit(const ClassLibrary& library, LoweredGraph&& lowered);
+[[nodiscard]] CompiledGraph finish(const ClassLibrary& library, EmittedGraph&& emitted);
 
 void write_compiled(std::ostream& out, const CompiledGraph& compiled, const ClassLibrary& library);
 
@@ -170,6 +183,22 @@ struct ClassLibrary {
     std::vector<diag::Diagnostic> diagnostics {};
     // Set by compile_class_library.
     std::optional<Backend> backend {};
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Interpreted code
+////////////////////////////////////////////////////////////////////////////////
+
+// Null if it can't be parsed, or is a class file.
+struct InterpretedParsed {
+    std::shared_ptr<const ast::ASTGraph> ast;
+    std::vector<diag::Diagnostic> diagnostics;
+};
+
+// Null if it wasn't parsed, or the library has no Interpreter to compile it in. Its root is an ir::SCInterpreted_I.
+struct InterpretedIR {
+    std::shared_ptr<const ir::IRGraph> graph;
+    std::vector<diag::Diagnostic> diagnostics;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
