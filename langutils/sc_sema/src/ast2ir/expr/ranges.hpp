@@ -8,10 +8,11 @@ namespace sc::ir::ast2ir {
 
 struct Expr;
 
-// `(first, second..last)` as an SCRange, folded into a constant array when it can be.
-// A missing last is an error, unless unbounded is true, for ranges that are only iterated, e.g., `x <- (1..)` in a
-// generator, as nothing is created.
-Return<SCAnyExpr_I> compile_range(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast::ASTGraph>& ast_graph,
-                                  Context& ctx, ast::RangeIndex i, bool unbounded);
+// Whether a range needs its last. Optional for ranges that are only iterated, e.g., `x <- (1..)` in a generator, as
+// nothing is created. Deprecated for `(1..).do(f)` before 3.16, a warning.
+enum class RangeEnd { Required, Optional, Deprecated };
 
+// `(first, second..last)` as an SCRange, folded into a constant array when it can be.
+Return<SCAnyExpr_I> compile_range(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast::ASTGraph>& ast_graph,
+                                  Context& ctx, ast::RangeIndex i, RangeEnd end);
 }

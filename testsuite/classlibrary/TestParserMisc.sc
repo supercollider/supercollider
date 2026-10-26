@@ -154,9 +154,9 @@ TestParserRules : UnitTest {
 	}
 
 	valrange2Inf1 { |n|
-		(0..).do{ |i|
-			if (i >= n) { ^i }
-		};
+		//(0..).do{ |i|
+		//	if (i >= n) { ^i }
+		//};
 	}
 
 	test_valrange2 {

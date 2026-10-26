@@ -816,6 +816,15 @@ Diagnostic Diagnostic::unbounded_range(TextInfoPtr first_t, sc::src::SourceCodeR
              "`(1..10)`." };
 }
 
+Diagnostic Diagnostic::unbounded_range_do(TextInfoPtr t, sc::src::SourceCodeRange l) {
+    return { "Iterating a range without an end is removed in 3.16",
+             Severity::Warning,
+             { { std::move(t), l, "this counts up forever." } },
+             "Before 3.16, `(1..).do(f)` calls f with each number from 1 forever, without making the range. From "
+             "3.16 a range without an end is an error outside a generator. Use a generator, e.g., "
+             "`{; f.(i), i <- (1..) }`, or add an end." };
+}
+
 Diagnostic Diagnostic::range_too_many_arguments(TextInfoPtr first_t, sc::src::SourceCodeRange first_l) {
     return { "Too many arguments in range",
              Severity::Error,

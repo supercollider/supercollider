@@ -69,7 +69,7 @@ void declare(GeneratorContext& c, Locatable<SymSCIdentifier> name, join<SCGenQua
 // The collection being iterated. It is only iterated, so a range can be unbounded, e.g., `x <- (1..)`.
 SCAnyExpr_I compile_source(GeneratorContext& c, ast::AnyExprIndex source) {
     if (const auto range = c.ast_graph->as_a<ast::RangeIndex>(source))
-        return compile_range(c.expr, c.ir, c.ast_graph, c.ctx, *range, true).ir_node;
+        return compile_range(c.expr, c.ir, c.ast_graph, c.ctx, *range, RangeEnd::Optional).ir_node;
     return c.expr(source).ir_node;
 }
 

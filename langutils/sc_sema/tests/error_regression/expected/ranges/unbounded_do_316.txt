@@ -1,0 +1,131 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): UnboundedDo316 : Object, version 3.16
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (4:5): poisoned: postfix, version 3.16: postfix { |n| (0..).do { |i| if (i >= n) { ^i } }; ^nil }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Range has no end
+|  |  |  ranges/unbounded_do_316.sc:4:19
+|  |  |      2 │ // `(a..).do(f)` is removed in 3.16, a range without an end is an error outside a generator.
+|  |  |      3 │ UnboundedDo316 {
+|  |  |      4 │     postfix { |n| (0..).do { |i| if (i >= n) { ^i } }; ^nil }
+|  |  |        ┆                   ^^^^^ this would create an infinite array.
+|  |  |      5 │     prefix { |n| do((n..), { |i| i.postln }); ^n }
+|  |  |      6 │     bounded { |n| (0..n).do { |i| if (i >= 2) { ^i } }; ^nil }
+|  |  |      7 │     generator { |n| {; if (i >= n) { ^i }, i <- (0..) }; ^nil }
+|  |  |
+|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (4:16)
+|  |  |  |  SCArgumentDeclare (4:16): n (captured)
+|  |  |  SCBody (4:19)
+|  |  |  |  SCMessage (4:19): do
+|  |  |  |  |  SCRange (4:19)
+|  |  |  |  |  |  SCLiteral (4:20) = 0
+|  |  |  |  |  |  SCMissing (4:19)
+|  |  |  |  |  |  SCMissing (4:19)
+|  |  |  |  |  SCPositionalArgs (4:19)
+|  |  |  |  |  |  SCFunction (4:28)
+|  |  |  |  |  |  |  SCArgumentDeclareList (4:31)
+|  |  |  |  |  |  |  |  SCArgumentDeclare (4:31): i (captured)
+|  |  |  |  |  |  |  SCBody (4:28)
+|  |  |  |  |  |  |  |  SCMessage (4:34): if
+|  |  |  |  |  |  |  |  |  SCMessage (4:38): >=
+|  |  |  |  |  |  |  |  |  |  SCRead (4:38): local i, declared (4:31): i
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (4:38)
+|  |  |  |  |  |  |  |  |  |  |  SCRead (4:43): local n, declared (4:16): n
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (4:34)
+|  |  |  |  |  |  |  |  |  |  SCFunction (4:46)
+|  |  |  |  |  |  |  |  |  |  |  SCBody (4:46)
+|  |  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (4:48)
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (4:49): local i, declared (4:31): i
+|  |  |  |  SCExplicitReturn (4:56)
+|  |  |  |  |  SCLiteral (4:57) = nil
+|  |  SCMethod (5:5): poisoned: prefix, version 3.16: prefix { |n| do((n..), { |i| i.postln }); ^n }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Range has no end
+|  |  |  ranges/unbounded_do_316.sc:5:21
+|  |  |      3 │ UnboundedDo316 {
+|  |  |      4 │     postfix { |n| (0..).do { |i| if (i >= n) { ^i } }; ^nil }
+|  |  |      5 │     prefix { |n| do((n..), { |i| i.postln }); ^n }
+|  |  |        ┆                     ^^^^^ this would create an infinite array.
+|  |  |      6 │     bounded { |n| (0..n).do { |i| if (i >= 2) { ^i } }; ^nil }
+|  |  |      7 │     generator { |n| {; if (i >= n) { ^i }, i <- (0..) }; ^nil }
+|  |  |      8 │ }
+|  |  |
+|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (5:15)
+|  |  |  |  SCArgumentDeclare (5:15): n
+|  |  |  SCBody (5:18)
+|  |  |  |  SCMessage (5:18): do
+|  |  |  |  |  SCRange (5:21)
+|  |  |  |  |  |  SCRead (5:22): local n, declared (5:15): n
+|  |  |  |  |  |  SCMissing (5:21)
+|  |  |  |  |  |  SCMissing (5:21)
+|  |  |  |  |  SCPositionalArgs (5:18)
+|  |  |  |  |  |  SCFunction (5:28)
+|  |  |  |  |  |  |  SCArgumentDeclareList (5:31)
+|  |  |  |  |  |  |  |  SCArgumentDeclare (5:31): i
+|  |  |  |  |  |  |  SCBody (5:28)
+|  |  |  |  |  |  |  |  SCMessage (5:34): postln
+|  |  |  |  |  |  |  |  |  SCRead (5:34): local i, declared (5:31): i
+|  |  |  |  SCExplicitReturn (5:47)
+|  |  |  |  |  SCRead (5:48): local n, declared (5:15): n
+|  |  SCMethod (6:5): bounded, version 3.16: bounded { |n| (0..n).do { |i| if (i >= 2) { ^i } }; ^nil }
+|  |  |  SCArgumentDeclareList (6:16)
+|  |  |  |  SCArgumentDeclare (6:16): n
+|  |  |  SCBody (6:19)
+|  |  |  |  SCMessage (6:19): do
+|  |  |  |  |  SCRange (6:19)
+|  |  |  |  |  |  SCLiteral (6:20) = 0
+|  |  |  |  |  |  SCMissing (6:19)
+|  |  |  |  |  |  SCRead (6:23): local n, declared (6:16): n
+|  |  |  |  |  SCPositionalArgs (6:19)
+|  |  |  |  |  |  SCFunction (6:29)
+|  |  |  |  |  |  |  SCArgumentDeclareList (6:32)
+|  |  |  |  |  |  |  |  SCArgumentDeclare (6:32): i (captured)
+|  |  |  |  |  |  |  SCBody (6:29)
+|  |  |  |  |  |  |  |  SCMessage (6:35): if
+|  |  |  |  |  |  |  |  |  SCMessage (6:39): >=
+|  |  |  |  |  |  |  |  |  |  SCRead (6:39): local i, declared (6:32): i
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (6:39)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (6:44) = 2
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (6:35)
+|  |  |  |  |  |  |  |  |  |  SCFunction (6:47)
+|  |  |  |  |  |  |  |  |  |  |  SCBody (6:47)
+|  |  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (6:49)
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (6:50): local i, declared (6:32): i
+|  |  |  |  SCExplicitReturn (6:57)
+|  |  |  |  |  SCLiteral (6:58) = nil
+|  |  SCMethod (7:5): generator, version 3.16: generator { |n| {; if (i >= n) { ^i }, i <- (0..) }; ^nil }
+|  |  |  SCArgumentDeclareList (7:18)
+|  |  |  |  SCArgumentDeclare (7:18): n
+|  |  |  SCBody (7:21)
+|  |  |  |  SCImmediateGenerator (7:21)
+|  |  |  |  |  SCGenQualList (7:44)
+|  |  |  |  |  |  SCGenQualIterate (7:44): i (captured)
+|  |  |  |  |  |  |  SCRange (7:49)
+|  |  |  |  |  |  |  |  SCLiteral (7:50) = 0
+|  |  |  |  |  |  |  |  SCMissing (7:49)
+|  |  |  |  |  |  |  |  SCMissing (7:49)
+|  |  |  |  |  SCMessage (7:24): if
+|  |  |  |  |  |  SCMessage (7:28): >=
+|  |  |  |  |  |  |  SCRead (7:28): local i, declared (7:44): i <- (0..)
+|  |  |  |  |  |  |  SCPositionalArgs (7:28)
+|  |  |  |  |  |  |  |  SCRead (7:33): local n, declared (7:18): n
+|  |  |  |  |  |  SCPositionalArgs (7:24)
+|  |  |  |  |  |  |  SCFunction (7:36)
+|  |  |  |  |  |  |  |  SCBody (7:36)
+|  |  |  |  |  |  |  |  |  SCExplicitReturn (7:38)
+|  |  |  |  |  |  |  |  |  |  SCRead (7:39): local i, declared (7:44): i <- (0..)
+|  |  |  |  SCExplicitReturn (7:58)
+|  |  |  |  |  SCLiteral (7:59) = nil
+Successfully compiled 16 classes.

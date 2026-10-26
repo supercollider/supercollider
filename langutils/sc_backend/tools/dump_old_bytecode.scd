@@ -16,7 +16,7 @@ dumpFn = { |name, f|
 	// A shortcut has no code, its selectors hold the literal returned or the selector sent.
 	if (f.code.isNil) { file.write("  shortcut: %\n".format(f.selectors.cs.replace("\n", "\\n").replace("\t", "\\t"))) };
 	file.write("  selectors: %\n".format(f.selectors.asArray.as(Array).collect({ |s| if (s.isKindOf(FunctionDef)) { "function" } { s.asString } }).join(", ")));
-	file.write("  constants: %\n".format(f.constants.asArray.collect({ |c| c.cs.replace("\n", "\\n").replace("\t", "\\t") }).join(", ")));
+	file.write("  constants: %\n".format(f.constants.asArray.collect({ |c| c.cs.replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t") }).join(", ")));
 	f.selectors.asArray.as(Array).do { |s| if (s.isKindOf(FunctionDef)) { dumpFn.("  nested", s) } };
 };
 try {

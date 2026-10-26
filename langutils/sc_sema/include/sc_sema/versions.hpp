@@ -36,6 +36,11 @@ namespace sc::ir {
     return v >= ast::LanguageVersion::V3_16;
 }
 
+// Old code sent `(1..).do(f)` as one forSeries, so the range was never made.
+[[nodiscard]] constexpr bool allows_unbounded_range_do(ast::LanguageVersion v) {
+    return v < ast::LanguageVersion::V3_16;
+}
+
 [[nodiscard]] constexpr bool allows_closed_function_return(ast::LanguageVersion v) {
     return v < ast::LanguageVersion::V3_16;
 }

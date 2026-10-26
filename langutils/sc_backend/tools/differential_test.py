@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""The differential test (B7): compiles the class library and sc_sema's Legacy bytecode test classes with old sclang
-and with the backend, and compares every method's bytes, tables and properties, see compare_bytecode.py.
+"""The differential test (B7): compiles the class library, the testsuite's classes and sc_sema's Legacy bytecode test
+classes with old sclang and with the backend, and compares every method's bytes, tables and properties, see compare_bytecode.py.
 
     differential_test.py [--sclang PATH] [--sc-inspect PATH] [--keep DIR]
 
@@ -22,6 +22,8 @@ REPO = os.path.normpath(os.path.join(TOOLS, '..', '..', '..'))
 TEST_CLASSES = os.path.join(REPO, 'langutils', 'sc_sema', 'tests', 'error_regression', 'input', 'versions')
 # bytecode_loops.sc redefines Integer and Float.
 SKIPPED = {'bytecode_loops.sc'}
+# The testsuite's class directories, which a development sclang_conf.yaml includes.
+TESTSUITE_CLASSES = [os.path.join(REPO, 'testsuite', name) for name in ('classlibrary', 'sclangErrorRegressions')]
 
 
 def skipped_directory(name):
@@ -91,6 +93,8 @@ def main():
     for name in sorted(os.listdir(TEST_CLASSES)):
         if name.startswith('bytecode_') and name.endswith('.sc') and name not in SKIPPED:
             shutil.copy(os.path.join(TEST_CLASSES, name), tests)
+    for src in TESTSUITE_CLASSES:
+        copy_compiled(src, os.path.join(tests, os.path.basename(src)))
     # One module, as the test classes are compiled with the library by old sclang.
     library = os.path.join(work, 'library')
     copy_compiled(os.path.join(REPO, 'SCClassLibrary'), library)

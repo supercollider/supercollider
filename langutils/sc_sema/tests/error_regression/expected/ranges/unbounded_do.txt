@@ -1,0 +1,233 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): UnboundedDo : Object
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (4:5): postfix: postfix { |n| (0..).do { |i| if (i >= n) { ^i } }; ^nil }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Warning: Iterating a range without an end is removed in 3.16
+|  |  |  ranges/unbounded_do.sc:4:19
+|  |  |      2 │ // of do would make the range.
+|  |  |      3 │ UnboundedDo {
+|  |  |      4 │     postfix { |n| (0..).do { |i| if (i >= n) { ^i } }; ^nil }
+|  |  |        ┆                   ^^^^^ this counts up forever.
+|  |  |      5 │     prefix { |n| do((n..), { |i| i.postln }); ^n }
+|  |  |      6 │     noFunction { ^(0..).do }
+|  |  |      7 │     keyword { |f| ^(0..).do(function: f) }
+|  |  |
+|  |  |  Before 3.16, `(1..).do(f)` calls f with each number from 1 forever, without making the range. From 3.16 a range without an end is an error outside a generator. Use a generator, e.g., `{; f.(i), i <- (1..) }`, or add an end.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (4:16)
+|  |  |  |  SCArgumentDeclare (4:16): n (captured)
+|  |  |  SCBody (4:19)
+|  |  |  |  SCMessage (4:19): do
+|  |  |  |  |  SCRange (4:19)
+|  |  |  |  |  |  SCLiteral (4:20) = 0
+|  |  |  |  |  |  SCMissing (4:19)
+|  |  |  |  |  |  SCMissing (4:19)
+|  |  |  |  |  SCPositionalArgs (4:19)
+|  |  |  |  |  |  SCFunction (4:28)
+|  |  |  |  |  |  |  SCArgumentDeclareList (4:31)
+|  |  |  |  |  |  |  |  SCArgumentDeclare (4:31): i (captured)
+|  |  |  |  |  |  |  SCBody (4:28)
+|  |  |  |  |  |  |  |  SCMessage (4:34): if
+|  |  |  |  |  |  |  |  |  SCMessage (4:38): >=
+|  |  |  |  |  |  |  |  |  |  SCRead (4:38): local i, declared (4:31): i
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (4:38)
+|  |  |  |  |  |  |  |  |  |  |  SCRead (4:43): local n, declared (4:16): n
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (4:34)
+|  |  |  |  |  |  |  |  |  |  SCFunction (4:46)
+|  |  |  |  |  |  |  |  |  |  |  SCBody (4:46)
+|  |  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (4:48)
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (4:49): local i, declared (4:31): i
+|  |  |  |  SCExplicitReturn (4:56)
+|  |  |  |  |  SCLiteral (4:57) = nil
+|  |  SCMethod (5:5): prefix: prefix { |n| do((n..), { |i| i.postln }); ^n }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Warning: Iterating a range without an end is removed in 3.16
+|  |  |  ranges/unbounded_do.sc:5:21
+|  |  |      3 │ UnboundedDo {
+|  |  |      4 │     postfix { |n| (0..).do { |i| if (i >= n) { ^i } }; ^nil }
+|  |  |      5 │     prefix { |n| do((n..), { |i| i.postln }); ^n }
+|  |  |        ┆                     ^^^^^ this counts up forever.
+|  |  |      6 │     noFunction { ^(0..).do }
+|  |  |      7 │     keyword { |f| ^(0..).do(function: f) }
+|  |  |      8 │     variadic { |f| ^(0..).do(*f) }
+|  |  |
+|  |  |  Before 3.16, `(1..).do(f)` calls f with each number from 1 forever, without making the range. From 3.16 a range without an end is an error outside a generator. Use a generator, e.g., `{; f.(i), i <- (1..) }`, or add an end.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (5:15)
+|  |  |  |  SCArgumentDeclare (5:15): n
+|  |  |  SCBody (5:18)
+|  |  |  |  SCMessage (5:18): do
+|  |  |  |  |  SCRange (5:21)
+|  |  |  |  |  |  SCRead (5:22): local n, declared (5:15): n
+|  |  |  |  |  |  SCMissing (5:21)
+|  |  |  |  |  |  SCMissing (5:21)
+|  |  |  |  |  SCPositionalArgs (5:18)
+|  |  |  |  |  |  SCFunction (5:28)
+|  |  |  |  |  |  |  SCArgumentDeclareList (5:31)
+|  |  |  |  |  |  |  |  SCArgumentDeclare (5:31): i
+|  |  |  |  |  |  |  SCBody (5:28)
+|  |  |  |  |  |  |  |  SCMessage (5:34): postln
+|  |  |  |  |  |  |  |  |  SCRead (5:34): local i, declared (5:31): i
+|  |  |  |  SCExplicitReturn (5:47)
+|  |  |  |  |  SCRead (5:48): local n, declared (5:15): n
+|  |  SCMethod (6:5): poisoned: noFunction: noFunction { ^(0..).do }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Range has no end
+|  |  |  ranges/unbounded_do.sc:6:19
+|  |  |      4 │     postfix { |n| (0..).do { |i| if (i >= n) { ^i } }; ^nil }
+|  |  |      5 │     prefix { |n| do((n..), { |i| i.postln }); ^n }
+|  |  |      6 │     noFunction { ^(0..).do }
+|  |  |        ┆                   ^^^^^ this would create an infinite array.
+|  |  |      7 │     keyword { |f| ^(0..).do(function: f) }
+|  |  |      8 │     variadic { |f| ^(0..).do(*f) }
+|  |  |      9 │     adverb { |f| ^(0..).do.x(f) }
+|  |  |
+|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (6:18)
+|  |  |  |  SCExplicitReturn (6:18)
+|  |  |  |  |  SCMessage (6:19): do
+|  |  |  |  |  |  SCRange (6:19)
+|  |  |  |  |  |  |  SCLiteral (6:20) = 0
+|  |  |  |  |  |  |  SCMissing (6:19)
+|  |  |  |  |  |  |  SCMissing (6:19)
+|  |  SCMethod (7:5): poisoned: keyword: keyword { |f| ^(0..).do(function: f) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Range has no end
+|  |  |  ranges/unbounded_do.sc:7:20
+|  |  |      5 │     prefix { |n| do((n..), { |i| i.postln }); ^n }
+|  |  |      6 │     noFunction { ^(0..).do }
+|  |  |      7 │     keyword { |f| ^(0..).do(function: f) }
+|  |  |        ┆                    ^^^^^ this would create an infinite array.
+|  |  |      8 │     variadic { |f| ^(0..).do(*f) }
+|  |  |      9 │     adverb { |f| ^(0..).do.x(f) }
+|  |  |     10 │     otherSelector { |f| ^(0..).collect(f) }
+|  |  |
+|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (7:16)
+|  |  |  |  SCArgumentDeclare (7:16): f
+|  |  |  SCBody (7:19)
+|  |  |  |  SCExplicitReturn (7:19)
+|  |  |  |  |  SCMessage (7:20): do
+|  |  |  |  |  |  SCRange (7:20)
+|  |  |  |  |  |  |  SCLiteral (7:21) = 0
+|  |  |  |  |  |  |  SCMissing (7:20)
+|  |  |  |  |  |  |  SCMissing (7:20)
+|  |  |  |  |  |  SCKwArgs (7:20)
+|  |  |  |  |  |  |  SCKwArg (7:29): function
+|  |  |  |  |  |  |  |  SCRead (7:39): local f, declared (7:16): f
+|  |  SCMethod (8:5): poisoned: variadic: variadic { |f| ^(0..).do(*f) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Range has no end
+|  |  |  ranges/unbounded_do.sc:8:21
+|  |  |      6 │     noFunction { ^(0..).do }
+|  |  |      7 │     keyword { |f| ^(0..).do(function: f) }
+|  |  |      8 │     variadic { |f| ^(0..).do(*f) }
+|  |  |        ┆                     ^^^^^ this would create an infinite array.
+|  |  |      9 │     adverb { |f| ^(0..).do.x(f) }
+|  |  |     10 │     otherSelector { |f| ^(0..).collect(f) }
+|  |  |     11 │     infix { |f| ^((0..) do: f) }
+|  |  |
+|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (8:17)
+|  |  |  |  SCArgumentDeclare (8:17): f
+|  |  |  SCBody (8:20)
+|  |  |  |  SCExplicitReturn (8:20)
+|  |  |  |  |  SCMessage (8:21): do
+|  |  |  |  |  |  SCRange (8:21)
+|  |  |  |  |  |  |  SCLiteral (8:22) = 0
+|  |  |  |  |  |  |  SCMissing (8:21)
+|  |  |  |  |  |  |  SCMissing (8:21)
+|  |  |  |  |  |  SCVariadicArgs (8:21)
+|  |  |  |  |  |  |  SCRead (8:31): local f, declared (8:17): f
+|  |  SCMethod (9:5): poisoned: adverb: adverb { |f| ^(0..).do.x(f) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Range has no end
+|  |  |  ranges/unbounded_do.sc:9:19
+|  |  |      7 │     keyword { |f| ^(0..).do(function: f) }
+|  |  |      8 │     variadic { |f| ^(0..).do(*f) }
+|  |  |      9 │     adverb { |f| ^(0..).do.x(f) }
+|  |  |        ┆                   ^^^^^ this would create an infinite array.
+|  |  |     10 │     otherSelector { |f| ^(0..).collect(f) }
+|  |  |     11 │     infix { |f| ^((0..) do: f) }
+|  |  |     12 │ }
+|  |  |
+|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (9:15)
+|  |  |  |  SCArgumentDeclare (9:15): f
+|  |  |  SCBody (9:18)
+|  |  |  |  SCExplicitReturn (9:18)
+|  |  |  |  |  SCMessage (9:19): x
+|  |  |  |  |  |  SCMessage (9:19): do
+|  |  |  |  |  |  |  SCRange (9:19)
+|  |  |  |  |  |  |  |  SCLiteral (9:20) = 0
+|  |  |  |  |  |  |  |  SCMissing (9:19)
+|  |  |  |  |  |  |  |  SCMissing (9:19)
+|  |  |  |  |  |  SCPositionalArgs (9:19)
+|  |  |  |  |  |  |  SCRead (9:30): local f, declared (9:15): f
+|  |  SCMethod (10:5): poisoned: otherSelector: otherSelector { |f| ^(0..).collect(f) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Range has no end
+|  |  |  ranges/unbounded_do.sc:10:26
+|  |  |      8 │     variadic { |f| ^(0..).do(*f) }
+|  |  |      9 │     adverb { |f| ^(0..).do.x(f) }
+|  |  |     10 │     otherSelector { |f| ^(0..).collect(f) }
+|  |  |        ┆                          ^^^^^ this would create an infinite array.
+|  |  |     11 │     infix { |f| ^((0..) do: f) }
+|  |  |     12 │ }
+|  |  |
+|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (10:22)
+|  |  |  |  SCArgumentDeclare (10:22): f
+|  |  |  SCBody (10:25)
+|  |  |  |  SCExplicitReturn (10:25)
+|  |  |  |  |  SCMessage (10:26): collect
+|  |  |  |  |  |  SCRange (10:26)
+|  |  |  |  |  |  |  SCLiteral (10:27) = 0
+|  |  |  |  |  |  |  SCMissing (10:26)
+|  |  |  |  |  |  |  SCMissing (10:26)
+|  |  |  |  |  |  SCPositionalArgs (10:26)
+|  |  |  |  |  |  |  SCRead (10:40): local f, declared (10:22): f
+|  |  SCMethod (11:5): poisoned: infix: infix { |f| ^((0..) do: f) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Range has no end
+|  |  |  ranges/unbounded_do.sc:11:19
+|  |  |      9 │     adverb { |f| ^(0..).do.x(f) }
+|  |  |     10 │     otherSelector { |f| ^(0..).collect(f) }
+|  |  |     11 │     infix { |f| ^((0..) do: f) }
+|  |  |        ┆                   ^^^^^ this would create an infinite array.
+|  |  |     12 │ }
+|  |  |
+|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (11:14)
+|  |  |  |  SCArgumentDeclare (11:14): f
+|  |  |  SCBody (11:17)
+|  |  |  |  SCExplicitReturn (11:17)
+|  |  |  |  |  SCMessage (11:19): do
+|  |  |  |  |  |  SCRange (11:19)
+|  |  |  |  |  |  |  SCLiteral (11:20) = 0
+|  |  |  |  |  |  |  SCMissing (11:19)
+|  |  |  |  |  |  |  SCMissing (11:19)
+|  |  |  |  |  |  SCPositionalArgs (11:19)
+|  |  |  |  |  |  |  SCRead (11:29): local f, declared (11:14): f
+Successfully compiled 16 classes.

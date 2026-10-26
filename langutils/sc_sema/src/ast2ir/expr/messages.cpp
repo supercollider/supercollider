@@ -3,6 +3,7 @@
 // Needs the ast graph for the children and payloads, and the symbol table for the selectors.
 #include "ast2ir/consteval.hpp"
 #include "ast2ir/expr.hpp"
+#include "ast2ir/expr/ranges.hpp"
 #include "ast2ir/literal_synthesis.hpp"
 #include "sc_parser/ast.hpp"
 #include "sc_parser/ast_untyped.hpp"
@@ -43,7 +44,43 @@ struct MessageArguments {
     // Positional arguments must come before any variadic argument, as that is the order they are passed in.
     std::optional<ast::VariadicArgIndex> first_variadic {};
     bool reported_variadic_not_last { false };
+    // The receiver is a range that is only iterated, see iterates_range.
+    bool unbounded_receiver { false };
 };
+
+// `(a..).do(f)` is sent as `a.forSeries(nil, nil, f)`, so the range is never made and can be unbounded, with a warning
+// as it is removed in 3.16. Like the old compiler, only a plain `do` with positional arguments, at most 15 including
+// the receiver, is sent that way.
+bool iterates_range(const ast::ASTGraph& g, ast::SelectorMaybeAdverbIndex selector_i, ast::ArgumentListIndex arg_list,
+                    ast::BlockListIndex blocks, bool receiver_in_arguments) {
+    if (g.as_a<ast::SelectorWAdverbIndex>(selector_i) || get_string_view(g, selector_i) != "do")
+        return false;
+    int num_args { 1 };
+    for (auto it = g.children(arg_list).iter(); it; ++it) {
+        const ast::ArgumentEntryIndex entry = *it;
+        if (g.as_a<ast::KwArgIndex>(entry) || g.as_a<ast::VariadicArgIndex>(entry))
+            return false;
+        if (const auto inner = g.as_a<ast::BlockListIndex>(entry)) {
+            for (auto b = g.children(*inner).iter(); b; ++b)
+                ++num_args;
+        } else {
+            ++num_args;
+        }
+    }
+    for (auto it = g.children(blocks).iter(); it; ++it)
+        ++num_args;
+    if (receiver_in_arguments)
+        --num_args;
+    return num_args > 1 && num_args <= 15;
+}
+
+// The receiver, which can be an unbounded range before 3.16 if it is only iterated.
+Return<SCAnyExpr_I> receiver_expr(MessageContext& msg_ctx, ast::AnyExprIndex receiver, bool unbounded) {
+    if (const auto range = msg_ctx.ast_graph->as_a<ast::RangeIndex>(receiver);
+        range && unbounded && allows_unbounded_range_do(msg_ctx.expr.version))
+        return compile_range(msg_ctx.expr, msg_ctx.ir, msg_ctx.ast_graph, msg_ctx.ctx, *range, RangeEnd::Deprecated);
+    return msg_ctx.expr(receiver);
+}
 
 MessageArguments make_arguments(MessageContext& msg_ctx, ast::Index message_i, const Selector& selector,
                                 bool first_positional_is_receiver = false) {
@@ -126,6 +163,9 @@ void append_arguments(MessageContext& msg_ctx, MessageArguments& args, ast::Argu
             msg_ctx.ir.append(args.variadic, msg_ctx.expr(ast::AnyExprIndex { expr }).ir_node);
         } else if (const auto blocks = g.as_a<ast::BlockListIndex>(entry)) {
             append_blocks(msg_ctx, args, *blocks);
+        } else if (args.first_positional_is_receiver && !args.receiver) {
+            append_positional(msg_ctx, args,
+                              receiver_expr(msg_ctx, ast::AnyExprIndex { *entry }, args.unbounded_receiver));
         } else {
             append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { *entry }));
         }
@@ -249,7 +289,8 @@ Return<SCAnyExpr_I> create_message(MessageContext& msg_ctx, ast::Index message_i
 Return<SCAnyExpr_I> Expr::operator()(ast::PostfixMessageIndex i) {
     MessageContext msg_ctx { *this, ctx, ir, ast_graph };
     const auto [receiver, selector_i, arg_list, blocks] = ast_graph->children(i);
-    const auto receiver_r = msg_ctx.expr(ast::AnyExprIndex { receiver });
+    const auto receiver_r = receiver_expr(msg_ctx, ast::AnyExprIndex { receiver },
+                                          iterates_range(*ast_graph, selector_i, arg_list, blocks, false));
     const auto sel = selector(msg_ctx, selector_i);
     auto args = make_arguments(msg_ctx, { *i }, sel);
     append_arguments(msg_ctx, args, arg_list);
@@ -263,6 +304,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::PrefixMessageIndex i) {
     const auto sel = selector(msg_ctx, selector_i);
     // Functional notation, `foo(a, b)` is `a.foo(b)`.
     auto args = make_arguments(msg_ctx, { *i }, sel, true);
+    args.unbounded_receiver = iterates_range(*ast_graph, selector_i, arg_list, blocks, true);
     append_arguments(msg_ctx, args, arg_list);
     append_blocks(msg_ctx, args, blocks);
 

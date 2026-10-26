@@ -65,11 +65,13 @@ RangeNodes compile_parts(Expr& expr, IRGraph& ir, const std::shared_ptr<const as
 }
 
 Return<SCAnyExpr_I> compile_range(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast::ASTGraph>& ast_graph,
-                                  Context& ctx, ast::RangeIndex i, bool unbounded) {
+                                  Context& ctx, ast::RangeIndex i, RangeEnd end) {
     const TypeInfo type { ctx.common_classes.array, TypeConfidence::Absolute };
     const auto r = compile_parts(expr, ir, ast_graph, ctx, ConstEval::range_parts(*ast_graph, i), { *i });
-    if (!r.last && !unbounded)
+    if (!r.last && end == RangeEnd::Required)
         expr.sink(sc::diag::Diagnostic::unbounded_range(get_text_info(*ast_graph), get_location(*ast_graph, i)));
+    else if (!r.last && end == RangeEnd::Deprecated)
+        expr.sink(sc::diag::Diagnostic::unbounded_range_do(get_text_info(*ast_graph), get_location(*ast_graph, i)));
 
     const auto range =
         ir.create(SCRange {}, location_of(ir, *ast_graph, { *i }), r.first.ir_node, r.second_i, r.last_i);
@@ -95,7 +97,9 @@ Return<SCAnyExpr_I> compile_range(Expr& expr, IRGraph& ir, const std::shared_ptr
 // `(first..last)`, `(first, second..last)`, `(..last)` is `(0..last)`.
 // Without a last, it is unbounded, which is an error here as it would be created. Contexts that only iterate it, e.g.,
 // generators, use compile_range directly.
-Return<SCAnyExpr_I> Expr::operator()(ast::RangeIndex i) { return compile_range(*this, ir, ast_graph, ctx, i, false); }
+Return<SCAnyExpr_I> Expr::operator()(ast::RangeIndex i) {
+    return compile_range(*this, ir, ast_graph, ctx, i, RangeEnd::Required);
+}
 
 // `(: first, second..last)`, a Routine, so it is never constant, and last can be missing.
 Return<SCAnyExpr_I> Expr::operator()(ast::RangeGeneratorIndex i) {

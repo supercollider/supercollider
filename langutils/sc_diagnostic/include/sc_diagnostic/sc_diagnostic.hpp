@@ -184,6 +184,9 @@ public:
 
     [[nodiscard]] static Diagnostic unbounded_range(TextInfoPtr first_t, sc::src::SourceCodeRange first_l);
 
+    // A warning, `(1..).do(f)` before 3.16, which is an error from 3.16.
+    [[nodiscard]] static Diagnostic unbounded_range_do(TextInfoPtr t, sc::src::SourceCodeRange l);
+
     [[nodiscard]] static Diagnostic range_too_many_arguments(TextInfoPtr first_t, sc::src::SourceCodeRange first_l);
 
     [[nodiscard]] static Diagnostic range_argument_not_value(TextInfoPtr first_t, sc::src::SourceCodeRange first_l);
