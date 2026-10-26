@@ -523,7 +523,9 @@ int asCompileString(PyrSlot* slot, char* str) {
         break;
     case tagChar: {
         int c = slotRawChar(slot);
-        if (isprint(c)) {
+        if (c == '\\') {
+            strcpy(str, "$\\\\");
+        } else if (isprint(c)) {
             sprintf(str, "$%c", c);
         } else {
             switch (c) {
