@@ -30,6 +30,11 @@
 #include <variant>
 #include <vector>
 
+#ifndef NDEBUG
+#    include "PyrMessage.h"
+#    include <unordered_set>
+#endif
+
 namespace {
 
 namespace fs = std::filesystem;
@@ -173,6 +178,16 @@ struct Source {
     PyrString* text;
     PyrSymbol* path;
 };
+
+#ifndef NDEBUG
+// Every class and meta class made, with the superclass and methods the compiler gave it, to check the runtime's
+// finalisation against, see checkFinalisedClassLibrary.
+struct LoadedClass {
+    PyrClass* superclass;
+    std::vector<PyrMethod*> methods;
+};
+std::unordered_map<PyrClass*, LoadedClass> gLoadedClasses;
+#endif
 
 // Makes the VM's objects from the compiled graphs, as the old compiler made them. Every object is permanent.
 struct Loader {
@@ -393,6 +408,10 @@ struct Loader {
             name->u.classobj = classobj;
             metaName->u.classobj = metaclassobj;
         }
+#ifndef NDEBUG
+        gLoadedClasses[classobj] = { superclassobj, {} };
+        gLoadedClasses[metaclassobj] = { superclassobj ? superclassobj->classptr : class_class, {} };
+#endif
 
         const auto file = source(g, layout.location.source);
         const auto charPos = PyrSlot::make(narrow<int32_t>(layout.location.range.begin.absolute));
@@ -658,6 +677,9 @@ struct Loader {
         }
         setShortcut(method, f.emitted.shortcut, g);
         addMethod(owner, method);
+#ifndef NDEBUG
+        gLoadedClasses.at(owner).methods.push_back(method);
+#endif
     }
 
     void makeAccessor(const compiler::CompiledGraph& g, const compiler::CompiledAccessor& a, PyrClass* owner) {
@@ -678,6 +700,9 @@ struct Loader {
         method->sourceCodeEndIndex = PyrSlot::make(narrow<int32_t>(a.location.range.end.absolute));
         setShortcut(method, a.shortcut, g);
         addMethod(owner, method);
+#ifndef NDEBUG
+        gLoadedClasses.at(owner).methods.push_back(method);
+#endif
     }
 
     // The accessors first, then the methods, as the old compiler added them.
@@ -767,6 +792,9 @@ bool newCompilerRequested() {
 
 bool loadClassLibrary(std::size_t& thingsPosted) {
     post("\tUsing the new compiler (SCLANG_NEW_COMPILER=1)\n");
+#ifndef NDEBUG
+    gLoadedClasses.clear();
+#endif
     ClassFileFinder finder;
     ir::ModuleIndex module { 0 };
     const bool found = gLanguageConfig->forEachIncludedDirectory([&](const fs::path& dir) {
@@ -826,4 +854,51 @@ bool loadClassLibrary(std::size_t& thingsPosted) {
         loader.makeMethods(g);
     gNumClassVars = narrow<int>(library->backend->members.num_class_variables());
     return true;
+}
+
+void checkFinalisedClassLibrary() {
+#ifndef NDEBUG
+    const auto loaded = [](PyrClass* c) -> const LoadedClass& { return gLoadedClasses.at(c); };
+
+    // The class tree, built from the superclasses, has every class.
+    assert(narrow<std::size_t>(gNumClasses) == gLoadedClasses.size());
+    std::unordered_map<PyrClass*, int> numSubclasses;
+    for (const auto& [c, l] : gLoadedClasses) {
+        assert((IsNil(&c->superclass) ? nullptr : slotRawSymbol(&c->superclass)->u.classobj) == l.superclass);
+        if (l.superclass)
+            ++numSubclasses[l.superclass];
+    }
+    for (const auto& [c, l] : gLoadedClasses) {
+        const auto* subclasses = IsObj(&c->subclasses) ? slotRawObject(&c->subclasses) : nullptr;
+        assert((subclasses ? subclasses->size : 0) == numSubclasses[c]);
+        for (int i = 0; subclasses && i < subclasses->size; ++i)
+            assert(loaded(slotRawClass(&subclasses->slots[i])).superclass == c);
+    }
+
+    // Each class variable has one slot.
+    std::vector<bool> used(narrow<std::size_t>(gNumClassVars), false);
+    for (const auto& [c, l] : gLoadedClasses) {
+        const auto first = slotRawInt(&c->classVarIndex);
+        for (int i = 0; i < numClassVars(c); ++i) {
+            assert(!used.at(narrow<std::size_t>(first + i)));
+            used[first + i] = true;
+        }
+    }
+    assert(std::all_of(used.begin(), used.end(), [](bool b) { return b; }));
+
+    // A selector finds the nearest class's method, a class has one method per selector.
+    for (const auto& [c, l] : gLoadedClasses) {
+        std::unordered_set<PyrSymbol*> own;
+        for (auto* m : l.methods)
+            assert(own.insert(slotRawSymbol(&m->name)).second);
+        std::unordered_set<PyrSymbol*> seen;
+        for (PyrClass* ancestor = c; ancestor; ancestor = loaded(ancestor).superclass)
+            for (auto* m : loaded(ancestor).methods) {
+                auto* selector = slotRawSymbol(&m->name);
+                if (seen.insert(selector).second)
+                    assert(gRowTable[slotRawInt(&c->classIndex) + selector->u.index] == m);
+            }
+    }
+    gLoadedClasses.clear();
+#endif
 }

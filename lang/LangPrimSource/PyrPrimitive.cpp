@@ -1027,7 +1027,7 @@ int blockValueEnvirWithKeys(VMGlobals* g, int allArgsPushed, int numKeyArgsPushe
 
     auto [frame, block] = buildFrameForBlockPrims(g, args);
 
-    auto curEnvirSlot = &g->classvars->slots[1]; // currentEnvironment is the second class var.
+    auto curEnvirSlot = &g->classvars->slots[cvxCurrentEnvironment];
     auto maybeEnvirObj =
         isKindOfSlot(curEnvirSlot, s_identitydictionary->u.classobj) ? slotRawObject(curEnvirSlot) : nullptr;
 
@@ -2823,7 +2823,7 @@ void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numAr
     gc = g->gc;
 
     // save environment in oldthread
-    PyrSlot* currentEnvironmentSlot = &g->classvars->slots[1];
+    PyrSlot* currentEnvironmentSlot = &g->classvars->slots[cvxCurrentEnvironment];
     slotCopy(&oldthread->environment, currentEnvironmentSlot);
     gc->GCWrite(oldthread, currentEnvironmentSlot);
 
@@ -2978,7 +2978,7 @@ void initPyrThread(VMGlobals* g, PyrThread* thread, PyrSlot* func, int stacksize
         gc->GCWrite(thread, clock);
     }
 
-    PyrSlot* currentEnvironmentSlot = &g->classvars->slots[1];
+    PyrSlot* currentEnvironmentSlot = &g->classvars->slots[cvxCurrentEnvironment];
     slotCopy(&thread->environment, currentEnvironmentSlot);
     gc->GCWrite(thread, currentEnvironmentSlot);
 

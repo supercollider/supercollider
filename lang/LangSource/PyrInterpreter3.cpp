@@ -177,6 +177,7 @@ PyrProcess* newPyrProcess(VMGlobals* g, PyrClass* procclassobj) {
         }
         classobj = slotRawClass(&classobj->nextclass);
     }
+    initClassVarOffsets();
 
     SetNil(&proc->nowExecutingPath);
 
@@ -332,7 +333,6 @@ void initRuntime(VMGlobals* g, int poolSize, AllocPool* inPool) {
 
     initThreads();
     initPatterns();
-    initUniqueMethods();
     initGUI();
 #ifdef GC_SANITYCHECK
     g->gc->SanityCheck();

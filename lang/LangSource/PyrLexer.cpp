@@ -1791,6 +1791,8 @@ SCLANG_DLLEXPORT_C bool compileLibrary(bool wasCompiledPreviously, bool standalo
     const auto numSelectors = setSelectorFlags();
 
     buildBigMethodMatrix(numSelectors);
+    if (newCompilerRequested())
+        checkFinalisedClassLibrary();
 
     post("\tNumber of Symbols %d\n", gMainVMGlobals->symbolTable->NumItems());
     const auto elapsed = elapsedTime() - startTime;

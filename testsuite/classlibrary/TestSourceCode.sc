@@ -36,10 +36,10 @@ TestSourceCode : UnitTest {
  		f = (_ + 1)
  		// dont' remove this comment or new line
  		;
- 		this.assertEquals(f.def.sourceCode.quote, "(_ + 1)".quote);
+ 		this.assertEquals(f.def.sourceCode.quote, "_ + 1".quote);
 
  		f = (_ + 1);
- 		this.assertEquals(f.def.sourceCode.quote, "(_ + 1)".quote);
+ 		this.assertEquals(f.def.sourceCode.quote, "_ + 1".quote);
 
 
 
@@ -48,7 +48,7 @@ TestSourceCode : UnitTest {
  		this.assertEquals(f.def.sourceCode.quote, "_ + _ + _ + _".quote);
 
  		f = (_ + (_ + (_)) + _);
- 		this.assertEquals(f.def.sourceCode.quote, "(_ + (_ + (_)) + _)".quote);
+ 		this.assertEquals(f.def.sourceCode.quote, "_ + (_ + (_)) + _".quote);
 	}
 
 	test_compileString {

@@ -103,13 +103,15 @@ bool gKeywordError = true;
 extern bool gTraceInterpreter;
 
 std::int64_t cvxUniqueMethods;
+std::int64_t cvxCurrentEnvironment;
 extern int ivxIdentDict_array;
 
 void StoreToImmutableB(VMGlobals* g, PyrSlot*& sp, unsigned char*& ip);
 
-void initUniqueMethods() {
+void initClassVarOffsets() {
     PyrClass* dummyclass;
     cvxUniqueMethods = classVarOffset("Object", "uniqueMethods", &dummyclass);
+    cvxCurrentEnvironment = classVarOffset("Object", "currentEnvironment", &dummyclass);
 }
 
 HOT void sendMessageImpl(VMGlobals* g, PyrSymbol* selector, PyrSlot* recvrSlot, PyrClass* classobj,

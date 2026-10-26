@@ -27,8 +27,9 @@ static constexpr size_t temporaryKeywordStackCapacity = 128;
 extern PyrSlot temporaryKeywordStack[temporaryKeywordStackCapacity];
 extern bool gKeywordError;
 extern PyrMethod** gRowTable;
+extern std::int64_t cvxCurrentEnvironment;
 
-void initUniqueMethods();
+void initClassVarOffsets();
 
 void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, std::int64_t totalSuppliedArgs,
                            std::int64_t numKwArgsSupplied, bool isMethod, PyrObject* optionalEnvirLookup = nullptr);
