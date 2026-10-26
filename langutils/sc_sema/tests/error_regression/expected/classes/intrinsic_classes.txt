@@ -1,0 +1,129 @@
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Intrinsic has incorrect super class
+classes/intrinsic_classes.sc:19:23
+   17 │ IntrinsicSub : IntrinsicGood { var c; }
+   18 │ IntrinsicBase {}
+   19 │ IntrinsicWrongSuper : IntrinsicBase {}
+      ┆                       ^^^^^^^^^^^^^ Should be 'Object'.
+   20 │ IntrinsicWrongSlot[slot] {}
+   21 │ IntrinsicMissingSlot {}
+   22 │ IntrinsicUnexpectedSlot[slot] {}
+
+Intrinsic classes are a part of the compiler and cannot be changed.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Intrinsic has incorrect slot def.
+classes/intrinsic_classes.sc:20:1
+   18 │ IntrinsicBase {}
+   19 │ IntrinsicWrongSuper : IntrinsicBase {}
+   20 │ IntrinsicWrongSlot[slot] {}
+      ┆ ^^^^^^^^^^^^^^^^^^ Should be 'char'.
+   21 │ IntrinsicMissingSlot {}
+   22 │ IntrinsicUnexpectedSlot[slot] {}
+   23 │ IntrinsicTooMany { var a, b; }
+
+Intrinsic classes are a part of the compiler and cannot be changed.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Intrinsic has incorrect slot def.
+classes/intrinsic_classes.sc:21:1
+   19 │ IntrinsicWrongSuper : IntrinsicBase {}
+   20 │ IntrinsicWrongSlot[slot] {}
+   21 │ IntrinsicMissingSlot {}
+      ┆ ^^^^^^^^^^^^^^^^^^^^ Should be 'slot'.
+   22 │ IntrinsicUnexpectedSlot[slot] {}
+   23 │ IntrinsicTooMany { var a, b; }
+   24 │ IntrinsicTooFew { var a; }
+
+Intrinsic classes are a part of the compiler and cannot be changed.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Intrinsic has slot def when shouldn't
+classes/intrinsic_classes.sc:22:1
+   20 │ IntrinsicWrongSlot[slot] {}
+   21 │ IntrinsicMissingSlot {}
+   22 │ IntrinsicUnexpectedSlot[slot] {}
+      ┆ ^^^^^^^^^^^^^^^^^^^^^^^ Delete this.
+   23 │ IntrinsicTooMany { var a, b; }
+   24 │ IntrinsicTooFew { var a; }
+   25 │ IntrinsicNone {}
+
+Intrinsic classes are a part of the compiler and cannot be changed.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Intrinsic class has the wrong instance variables
+classes/intrinsic_classes.sc:23:27
+   21 │ IntrinsicMissingSlot {}
+   22 │ IntrinsicUnexpectedSlot[slot] {}
+   23 │ IntrinsicTooMany { var a, b; }
+      ┆                           ^ The VM expects exactly `a`.
+   24 │ IntrinsicTooFew { var a; }
+   25 │ IntrinsicNone {}
+   26 │ IntrinsicUnexpected { var a; }
+
+Intrinsic classes are a part of the compiler and cannot be changed.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Intrinsic class has the wrong instance variables
+classes/intrinsic_classes.sc:24:23
+   22 │ IntrinsicUnexpectedSlot[slot] {}
+   23 │ IntrinsicTooMany { var a, b; }
+   24 │ IntrinsicTooFew { var a; }
+      ┆                       ^ The VM expects exactly `a, b`.
+   25 │ IntrinsicNone {}
+   26 │ IntrinsicUnexpected { var a; }
+   27 │ IntrinsicWrongName { var a, c; }
+
+Intrinsic classes are a part of the compiler and cannot be changed.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Intrinsic class has the wrong instance variables
+classes/intrinsic_classes.sc:25:1
+   23 │ IntrinsicTooMany { var a, b; }
+   24 │ IntrinsicTooFew { var a; }
+   25 │ IntrinsicNone {}
+      ┆ ^^^^^^^^^^^^^ The VM expects exactly `a`.
+   26 │ IntrinsicUnexpected { var a; }
+   27 │ IntrinsicWrongName { var a, c; }
+   28 │ IntrinsicValue { var a = 1; }
+
+Intrinsic classes are a part of the compiler and cannot be changed.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Intrinsic class has the wrong instance variables
+classes/intrinsic_classes.sc:26:27
+   24 │ IntrinsicTooFew { var a; }
+   25 │ IntrinsicNone {}
+   26 │ IntrinsicUnexpected { var a; }
+      ┆                           ^ The VM expects no instance variables.
+   27 │ IntrinsicWrongName { var a, c; }
+   28 │ IntrinsicValue { var a = 1; }
+
+Intrinsic classes are a part of the compiler and cannot be changed.
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Intrinsic class has wrong member name.
+classes/intrinsic_classes.sc:27:29
+   25 │ IntrinsicNone {}
+   26 │ IntrinsicUnexpected { var a; }
+   27 │ IntrinsicWrongName { var a, c; }
+      ┆                             ^ rename to "b"
+   28 │ IntrinsicValue { var a = 1; }
+
+──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
+Successfully compiled 0 classes.

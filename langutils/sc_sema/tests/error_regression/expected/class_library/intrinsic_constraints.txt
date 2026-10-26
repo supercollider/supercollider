@@ -1,28 +1,14 @@
 
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Intrinsic has incorrect super class
-class_library/intrinsic_constraints.sc:9:10
-    7 │ 
-    8 │ AbstractObjectExperimental {}
-    9 │ Object : Class {}
-      ┆          ^^^^^ Should be 'Meta_AbstractObjectExperimental'.
-   10 │ Class {}
-   11 │ String {}
-   12 │ True {}
-
-Intrinsic classes are a part of the compiler and cannot be changed.
-──────────────────────────────────────────────────────────────────────────────────
-
-──────────────────────────────────────────────────────────────────────────────────
-Error: Intrinsic has incorrect super class
-class_library/intrinsic_constraints.sc:9:10
-    7 │ 
-    8 │ AbstractObjectExperimental {}
-    9 │ Object : Class {}
+class_library/intrinsic_constraints.sc:12:10
+   10 │ 
+   11 │ AbstractObjectExperimental {}
+   12 │ Object : Class {}
       ┆          ^^^^^ Should be 'AbstractObjectExperimental'.
-   10 │ Class {}
-   11 │ String {}
-   12 │ True {}
+   13 │ Class {}
+   14 │ String {}
+   15 │ True {}
 
 Intrinsic classes are a part of the compiler and cannot be changed.
 ──────────────────────────────────────────────────────────────────────────────────

@@ -3,6 +3,7 @@
 #include "sc_source/text_info.hpp"
 #include "sc_source/text_location.hpp"
 
+#include <cstddef>
 #include <filesystem>
 #include <ostream>
 #include <memory>
@@ -84,6 +85,19 @@ public:
 
     [[nodiscard]] static Diagnostic intrinsic_class_wrong_member_name(TextInfoPtr, sc::src::SourceCodeRange loc,
                                                                       std::string_view expected);
+    // The VM relies on an intrinsic class's own instance variables, expected is them in order, empty for none.
+    [[nodiscard]] static Diagnostic intrinsic_class_wrong_members(TextInfoPtr, sc::src::SourceCodeRange loc,
+                                                                  std::string_view expected);
+
+    // A method whose arguments don't match its primitive's, from the VM's table. The arguments count the receiver.
+    [[nodiscard]] static Diagnostic primitive_argument_count(TextInfoPtr t, sc::src::SourceCodeRange arguments,
+                                                             sc::src::SourceCodeRange primitive, std::size_t expected,
+                                                             std::size_t got);
+    [[nodiscard]] static Diagnostic primitive_needs_variadic_arguments(TextInfoPtr t,
+                                                                       sc::src::SourceCodeRange arguments,
+                                                                       sc::src::SourceCodeRange primitive);
+    [[nodiscard]] static Diagnostic primitive_needs_keyword_arguments(TextInfoPtr t, sc::src::SourceCodeRange arguments,
+                                                                      sc::src::SourceCodeRange primitive);
 
     // Two extensions of the same method in one module, whose order isn't defined.
     [[nodiscard]] static Diagnostic duplicate_extention(TextInfoPtr first_t, sc::src::SourceCodeRange first_l,
@@ -107,6 +121,10 @@ public:
 
     [[nodiscard]] static Diagnostic duplicate_member(TextInfoPtr first_t, sc::src::SourceCodeRange first_l,
                                                      TextInfoPtr second_t, sc::src::SourceCodeRange second_l);
+
+    // A warning, a subclass's class variable or constant with the name of its superclass's, which it hides.
+    [[nodiscard]] static Diagnostic hidden_class_member(TextInfoPtr first_t, sc::src::SourceCodeRange first_l,
+                                                        TextInfoPtr second_t, sc::src::SourceCodeRange second_l);
 
     [[nodiscard]] static Diagnostic duplicate_member_in_base(TextInfoPtr first_t, sc::src::SourceCodeRange first_l,
                                                              TextInfoPtr second_t, sc::src::SourceCodeRange second_l);

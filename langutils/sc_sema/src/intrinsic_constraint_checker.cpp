@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <iterator>
+#include <string>
 
 namespace sc::ir {
 
@@ -40,9 +41,9 @@ namespace sc::ir {
             return;
         }
         if (sym && !decl.super()) {
-            // Should have one, but doesn't
+            // Should have one, but doesn't, reported at the class name.
             const auto g = decl.ast_graph();
-            out.push_back(sc::diag::Diagnostic::incorrect_super_class(g->text_info(), g->location(decl.super()->second),
+            out.push_back(sc::diag::Diagnostic::incorrect_super_class(g->text_info(), g->location(decl.name_index()),
                                                                       cxt.symbol_table({ *sym })));
         } else {
             // Shouldn't have one, but does.
@@ -76,72 +77,37 @@ namespace sc::ir {
         }
     }();
 
-    // Check members
-
-    // deal with empty requirement
+    // Check members, the class's own instance variables, which must be the expected names in order. Their initial
+    // values are the class library's, e.g., Thread's `state = 0`, as the old compiler had it.
     [&]() {
         if (!c.member_names)
             return; // does not care.
-        // Expected both to be empty
-        if (c.member_names->empty() && decl.member_order().empty())
-            return;
+        const auto g = decl.ast_graph();
+        const auto& expected_names = *c.member_names;
+        const auto& members = decl.member_order();
+        std::string expected;
+        for (const auto name : expected_names)
+            expected += (expected.empty() ? "" : ", ") + std::string { cxt.symbol_table(name) };
 
-        else if (c.member_names->empty() && !decl.member_order().empty()) {
-            // Shouldn't be any.
-            const auto first_name = decl.member_order().front();
-            const auto& fnd = *decl.find_member(first_name);
-            const auto g = decl.ast_graph();
-            out.push_back(sc::diag::Diagnostic::todo(g->text_info(), g->location(fnd.name_index)));
-            return;
-        }
-        // member_names is not empty.
-
-        if (decl.member_order().empty()) {
-            // Didn't provide any, uses class name location
-            const auto g = decl.ast_graph();
-            out.push_back(sc::diag::Diagnostic::todo(g->text_info(), g->location(decl.name_index())));
+        // Too many reports the first extra member, too few the last member or, without any, the class name.
+        if (members.size() != expected_names.size()) {
+            const auto at = members.size() > expected_names.size()
+                ? decl.find_member(*std::next(members.begin(), static_cast<std::ptrdiff_t>(expected_names.size())))
+                      ->name_index
+                : members.empty() ? decl.name_index()
+                                  : decl.find_member(members.back())->name_index;
+            out.push_back(
+                sc::diag::Diagnostic::intrinsic_class_wrong_members(g->text_info(), g->location(at), expected));
             return;
         }
 
-        // both have something.
-
-        if (decl.member_order().size() < c.member_names->size()) {
-            // Too few
-            const auto& fnd = *decl.find_member(decl.member_order().back());
-            const auto g = decl.ast_graph();
-            out.push_back(sc::diag::Diagnostic::todo(g->text_info(), g->location(fnd.name_index)));
-            return;
-        } else if (decl.member_order().size() > c.member_names->size()) {
-            // Too many, the first extra member is reported.
-            const auto final_name =
-                *std::next(decl.member_order().begin(), static_cast<std::ptrdiff_t>(c.member_names->size()));
-            const auto& fnd = *decl.find_member(final_name);
-            const auto g = decl.ast_graph();
-            out.push_back(sc::diag::Diagnostic::todo(g->text_info(), g->location(fnd.name_index)));
-            return;
-        }
-
-
-        assert(c.member_names->size() == decl.member_order().size()); // checked above.
-
-        // The members are in the same order as the expected names.
-        auto next_expected = c.member_names->begin();
-        for (const auto& got_name : decl.member_order()) {
+        auto next_expected = expected_names.begin();
+        for (const auto& got_name : members) {
             const auto& got = *decl.find_member(got_name);
-            const auto& expected = *next_expected++;
-
-            if (got.expr_index) {
-                //  Intrinsic classes shouldn't have defaults.
-                const auto g = decl.ast_graph();
-                out.push_back(sc::diag::Diagnostic::todo(g->text_info(), g->location(got.expr_index->second)));
-                return;
-            }
-            if (got.name != expected) {
-                //  Incorrect name
-                const auto g = decl.ast_graph();
-                const auto expected_name = cxt.symbol_table(expected);
+            const auto& expected_name = *next_expected++;
+            if (got.name != expected_name) {
                 out.push_back(sc::diag::Diagnostic::intrinsic_class_wrong_member_name(
-                    g->text_info(), g->location(got.name_index), expected_name));
+                    g->text_info(), g->location(got.name_index), cxt.symbol_table(expected_name)));
                 return;
             }
         }

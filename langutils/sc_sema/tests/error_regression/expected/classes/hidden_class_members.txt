@@ -1,0 +1,142 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): HiddenBase : Object
+|  SCMemberList (5:1)
+|  SCMethodList (5:1)
+SCClass (5:1): Meta_HiddenBase : Meta_Object
+|  SCMemberList (5:1)
+|  |  SCMember (7:11): nl = "\n"
+|  |  SCMember (6:15): delim = $ 
+|  SCMethodList (5:1)
+|  |  SCMethod (8:5): baseDelim: *baseDelim { ^delim }
+|  |  |  SCBody (8:18)
+|  |  |  |  SCExplicitReturn (8:18)
+|  |  |  |  |  SCRead (8:19): instance delim, declared (6:15): delim
+|  |  SCMethod (9:5): baseNl: *baseNl { ^nl }
+|  |  |  SCBody (9:15)
+|  |  |  |  SCExplicitReturn (9:15)
+|  |  |  |  |  SCRead (9:16): instance nl, declared (7:11): nl
+SCClass (12:1): HiddenSub : HiddenBase
+|  SCMemberList (12:1)
+|  SCMethodList (12:1)
+SCClass (12:1): Meta_HiddenSub : Meta_HiddenBase
+|  SCMemberList (12:1)
+|  |  SCMember (14:12): nl = $\n
+|  |  SCMember (13:15): delim = $,
+|  SCMethodList (12:1)
+|  |  SCMethod (15:5): subDelim: *subDelim { ^delim }
+|  |  |  SCBody (15:17)
+|  |  |  |  SCExplicitReturn (15:17)
+|  |  |  |  |  SCRead (15:18): instance delim, declared (13:15): delim
+|  |  SCMethod (16:5): subNl: *subNl { ^nl }
+|  |  |  SCBody (16:14)
+|  |  |  |  SCExplicitReturn (16:14)
+|  |  |  |  |  SCRead (16:15): instance nl, declared (14:12): nl
+|  |  SCMethod (17:5): setDelim: *setDelim { |d| delim = d; ^d }
+|  |  |  SCArgumentDeclareList (17:18)
+|  |  |  |  SCArgumentDeclare (17:18): d
+|  |  |  SCBody (17:21)
+|  |  |  |  SCAssign (17:21): instance delim, declared (13:15): delim
+|  |  |  |  |  SCRead (17:29): local d, declared (17:18): d
+|  |  |  |  SCExplicitReturn (17:32)
+|  |  |  |  |  SCRead (17:33): local d, declared (17:18): d
+SCClass (20:1): HiddenSubSub : HiddenSub
+|  SCMemberList (20:1)
+|  SCMethodList (20:1)
+SCClass (20:1): Meta_HiddenSubSub : Meta_HiddenSub
+|  SCMemberList (20:1)
+|  SCMethodList (20:1)
+|  |  SCMethod (21:5): subSubDelim: *subSubDelim { ^delim }
+|  |  |  SCBody (21:20)
+|  |  |  |  SCExplicitReturn (21:20)
+|  |  |  |  |  SCRead (21:21): instance delim, declared (13:15): delim
+SCClass (24:1): HiddenInstanceBase : Object
+|  SCMemberList (24:1)
+|  |  SCMember (25:9): a
+|  SCMethodList (24:1)
+SCClass (28:1): HiddenInstance : HiddenInstanceBase
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Duplicate member with base class.
+|  classes/hidden_class_members.sc:25:9
+|     23 │ 
+|     24 │ HiddenInstanceBase {
+|     25 │     var a;
+|        ┆         ^ First declared here...
+|     26 │ }
+|     27 │ 
+|     28 │ HiddenInstance : HiddenInstanceBase {
+|
+|  classes/hidden_class_members.sc:29:9
+|     27 │ 
+|     28 │ HiddenInstance : HiddenInstanceBase {
+|     29 │     var a;
+|        ┆         ^  ...duplicated here.
+|     30 │ }
+|
+|  Duplicate members are not allowed within a class hierarchy. Please delete one.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (28:1)
+|  SCMethodList (28:1)
+
+
+
+COMPILED DUMP 
+
+
+HiddenBase
+|  class (5:1): superclass Object, not indexed
+Meta_HiddenBase
+|  class (5:1): superclass Meta_Object, not indexed
+|  class variables from 0
+|  class variables: delim = $ ,
+|  constants: nl = "\n",
+|  accessor delim (6:15): shortcut: return class variable 0
+|  method baseDelim: function 0
+|  method baseNl: function 1
+|  function 0 (8:5): baseDelim
+|  |  arguments: this,
+|  |  code: 3 bytes, 0 selectors, 0 constants
+|  function 1 (9:5): baseNl
+|  |  arguments: this,
+|  |  code: 2 bytes, 0 selectors, 1 constants
+HiddenSub
+|  class (12:1): superclass HiddenBase, not indexed
+Meta_HiddenSub
+|  class (12:1): superclass Meta_HiddenBase, not indexed
+|  class variables from 1
+|  class variables: delim = $,,
+|  constants: nl = $\n,
+|  accessor nl (14:12): shortcut: return literal $\n
+|  accessor delim (13:15): shortcut: return class variable 1
+|  method subDelim: function 0
+|  method subNl: function 1
+|  method setDelim: function 2
+|  function 0 (15:5): subDelim
+|  |  arguments: this,
+|  |  code: 3 bytes, 0 selectors, 0 constants
+|  function 1 (16:5): subNl
+|  |  arguments: this,
+|  |  code: 2 bytes, 0 selectors, 1 constants
+|  function 2 (17:5): setDelim
+|  |  arguments: this, d = nil,
+|  |  code: 5 bytes, 0 selectors, 0 constants
+HiddenSubSub
+|  class (20:1): superclass HiddenSub, not indexed
+Meta_HiddenSubSub
+|  class (20:1): superclass Meta_HiddenSub, not indexed
+|  method subSubDelim: function 0
+|  function 0 (21:5): subSubDelim
+|  |  arguments: this,
+|  |  code: 3 bytes, 0 selectors, 0 constants
+HiddenInstanceBase
+|  class (24:1): superclass Object, not indexed
+|  instance variables: a,
+HiddenInstance
+|  class (28:1): superclass HiddenInstanceBase, not indexed
+|  instance variables: a,
+Successfully compiled 20 classes.

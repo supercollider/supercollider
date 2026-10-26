@@ -65,6 +65,7 @@ set(sclang_sources
     LangSource/dumpByteCodes.cpp
     LangSource/CompilerContext.cpp
     LangSource/ClassLibraryInfo.cpp
+    LangSource/ClassLibraryLoader.cpp
 
     ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_win.cpp
@@ -211,7 +212,7 @@ endif()
 target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC)
 target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
 
-target_link_libraries(libsclang sc_lexer sc_bytecode)
+target_link_libraries(libsclang sc_lexer sc_bytecode sc_compiler)
 
 if(SC_QT OR SC_IDE)
     get_target_property(QtCore_location Qt${QT_VERSION_MAJOR}::Core LOCATION)

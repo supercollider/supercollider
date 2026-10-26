@@ -93,16 +93,24 @@ struct ParsedClassFiles {
     }
 };
 
-// Not the class library's constraints, only what the compiler needs to work and to test the intrinsic system.
-ir::IntrinsicConstraints intrinsic_constraints(ir::SymbolTable& symbols, ir::SymSCClassName abstract_object) {
+// The VM's intrinsic classes, each once, the only constraints, as only the VM relies on a class's layout.
+ir::IntrinsicConstraints intrinsic_constraints(ir::SymbolTable& symbols, const VMDefinitions& vm) {
     ir::IntrinsicConstraints constraints {};
-    constraints.insert({ abstract_object, ir::IntrinsicConstraint { abstract_object, {}, {}, {} } });
-    const auto object = symbols.get_class_name("Object");
-    constraints.insert({ object, ir::IntrinsicConstraint { object, { abstract_object }, {}, {} } });
-    const auto meta_object = symbols.get_meta_class_name(object);
-    constraints.insert(
-        { meta_object,
-          ir::IntrinsicConstraint { meta_object, { symbols.get_meta_class_name(abstract_object) }, {}, {} } });
+    for (const auto& c : vm.classes) {
+        const auto name = symbols.get_class_name(c.name);
+        ir::IntrinsicConstraint constraint {
+            name, ir::OptionalSymSCClassName {}, std::vector<ir::SymSCIdentifier> {}, {}
+        };
+        if (c.superclass)
+            constraint.super_class = ir::OptionalSymSCClassName { symbols.get_class_name(*c.superclass) };
+        if (c.slot_type)
+            constraint.slot_def = symbols.get_identifier(*c.slot_type);
+        for (const auto& v : c.instance_variables)
+            constraint.member_names->push_back(symbols.get_identifier(v));
+        const auto [_, inserted] = constraints.insert({ name, std::move(constraint) });
+        assert(inserted && "the VM defines an intrinsic class twice");
+        (void)inserted;
+    }
     return constraints;
 }
 }
@@ -139,8 +147,8 @@ ClassLibrary::ClassLibrary(ir::ClassLibrarySources class_sources):
 
 namespace {
 
-std::unique_ptr<ClassLibrary> compile_parsed(ParsedClassFiles parsed, std::size_t num_threads,
-                                             ClassLibraryTimes& times) {
+std::unique_ptr<ClassLibrary> compile_parsed(ParsedClassFiles parsed, std::size_t num_threads, ClassLibraryTimes& times,
+                                             const VMDefinitions& vm) {
     auto library = std::make_unique<ClassLibrary>(std::move(parsed.sources));
     for (const auto& log : parsed.logs.raw())
         library->parse_log += log.str();
@@ -148,9 +156,14 @@ std::unique_ptr<ClassLibrary> compile_parsed(ParsedClassFiles parsed, std::size_
         for (auto& d : file)
             library->parse_diagnostics.push_back(std::move(d));
 
+    for (const auto& p : vm.primitives)
+        library->ctx.primitive_signatures.insert(
+            { library->symbols.get_primitive(p.name),
+              ir::PrimitiveSignature { p.num_arguments, p.variadic_arguments, p.keyword_arguments } });
+
     const auto sema_start = Clock::now();
-    library->diagnostics = library->compiler.compile_class_library(
-        intrinsic_constraints(library->symbols, library->abstract_object), num_threads);
+    library->diagnostics =
+        library->compiler.compile_class_library(intrinsic_constraints(library->symbols, vm), num_threads);
     times.sema = seconds_since(sema_start);
 
     const auto member_table_start = Clock::now();
@@ -161,7 +174,7 @@ std::unique_ptr<ClassLibrary> compile_parsed(ParsedClassFiles parsed, std::size_
 }
 
 std::unique_ptr<ClassLibrary> compile_class_library(const ClassFiles& files, std::size_t num_threads,
-                                                    ClassLibraryTimes& times) {
+                                                    ClassLibraryTimes& times, const VMDefinitions& vm) {
     const auto parse_start = Clock::now();
     ParsedClassFiles parsed { files.size() };
     {
@@ -177,12 +190,12 @@ std::unique_ptr<ClassLibrary> compile_class_library(const ClassFiles& files, std
         pool.join();
     }
     times.parse = seconds_since(parse_start);
-    return compile_parsed(std::move(parsed), num_threads, times);
+    return compile_parsed(std::move(parsed), num_threads, times, vm);
 }
 
 std::unique_ptr<ClassLibrary>
 compile_class_library(const util::IndexedVector<ir::SourceEntryIndex, ClassFileSource>& sources,
-                      std::size_t num_threads, ClassLibraryTimes& times) {
+                      std::size_t num_threads, ClassLibraryTimes& times, const VMDefinitions& vm) {
     const auto parse_start = Clock::now();
     ParsedClassFiles parsed { sources.size() };
     {
@@ -192,7 +205,7 @@ compile_class_library(const util::IndexedVector<ir::SourceEntryIndex, ClassFileS
         pool.join();
     }
     times.parse = seconds_since(parse_start);
-    return compile_parsed(std::move(parsed), num_threads, times);
+    return compile_parsed(std::move(parsed), num_threads, times, vm);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

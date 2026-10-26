@@ -57,6 +57,48 @@ std::optional<sc::ast::LanguageVersion> parse_release(const std::string& release
     return sc::ast::version_for_release(major, minor);
 }
 
+// `Name : Super [slot] a b`, an intrinsic class, its superclass, slot type and own instance variables, each but the
+// name optional, see --intrinsic.
+std::optional<sc::compiler::IntrinsicClass> parse_intrinsic(const std::string& text) {
+    std::istringstream words { text };
+    sc::compiler::IntrinsicClass c;
+    if (!(words >> c.name))
+        return std::nullopt;
+    for (std::string word; words >> word;) {
+        if (word == ":") {
+            std::string superclass;
+            if (!(words >> superclass))
+                return std::nullopt;
+            c.superclass = superclass;
+        } else if (word.size() > 2 && word.front() == '[' && word.back() == ']') {
+            c.slot_type = word.substr(1, word.size() - 2);
+        } else {
+            c.instance_variables.push_back(word);
+        }
+    }
+    return c;
+}
+
+// `_Name 2 args kwargs`, a primitive, how many arguments it takes counting the receiver, and whether it takes
+// variadic positional arguments, then keyword ones, see --primitive.
+std::optional<sc::compiler::Primitive> parse_primitive(const std::string& text) {
+    std::istringstream words { text };
+    sc::compiler::Primitive p { {}, 0, false, false };
+    unsigned num_arguments { 0 };
+    if (!(words >> p.name >> num_arguments) || num_arguments == 0 || num_arguments > 255)
+        return std::nullopt;
+    p.num_arguments = static_cast<std::uint8_t>(num_arguments);
+    for (std::string word; words >> word;) {
+        if (word == "args")
+            p.variadic_arguments = true;
+        else if (word == "kwargs")
+            p.keyword_arguments = true;
+        else
+            return std::nullopt;
+    }
+    return p;
+}
+
 // How long each stage took, in seconds, see --time. The backend's are summed over its graphs.
 struct StageTimes {
     double find_files = 0;
@@ -151,7 +193,8 @@ int main(int argc, char* argv[]) {
     if (argc <= 1) {
         std::cout << "ERROR: incorrect number of arguments to sc_inspect, expected "
                      "[--threads n] [--relative-to dir] [--interpreted-version x.y] [--no-dump] [--frames] [--lir] "
-                     "[--bytecode] [--compiled] [--time] [--prelude dir|.sc file]... [dir|.sc file]... "
+                     "[--bytecode] [--compiled] [--time] [--intrinsic class]... [--primitive primitive]... "
+                     "[--prelude dir|.sc file]... [dir|.sc file]... "
                   << std::endl;
         return EXIT_FAILURE;
     }
@@ -178,6 +221,8 @@ int main(int argc, char* argv[]) {
     // --compiled adds what the VM's objects are made from after that, each class's layout and its functions' frames.
     // With --no-dump, --frames, --lir, --bytecode or --compiled run the backend up to that stage over every graph
     // without printing it, timing the backend on its own.
+    // --intrinsic and --primitive give a definition the VM would, checked against the classes, as the regression
+    // tests can't run the VM, see parse_intrinsic and parse_primitive.
     // --time prints how long each stage took, after everything else, see StageTimes. The total is from after the
     // arguments are read until before the dump is written, so it leaves out printing.
     sc::util::IndexedVector<sc::ir::ModuleIndex, std::filesystem::path> module_paths;
@@ -193,6 +238,7 @@ int main(int argc, char* argv[]) {
     bool show_bytecode = false;
     bool show_compiled = false;
     bool show_times = false;
+    sc::compiler::VMDefinitions vm;
     for (int i { 1 }; i < argc; ++i) {
         const auto arg = get_path(argv[i]);
         if (arg == "--threads" && i + 1 < argc) {
@@ -221,6 +267,22 @@ int main(int argc, char* argv[]) {
             show_bytecode = true;
         } else if (arg == "--compiled") {
             show_compiled = true;
+        } else if (arg == "--intrinsic" && i + 1 < argc) {
+            const std::string text = get_path(argv[++i]).string();
+            const auto c = parse_intrinsic(text);
+            if (!c) {
+                std::cout << "ERROR: --intrinsic expects `Name : Super [slot] a b`, not '" << text << "'" << std::endl;
+                return EXIT_FAILURE;
+            }
+            vm.classes.push_back(*c);
+        } else if (arg == "--primitive" && i + 1 < argc) {
+            const std::string text = get_path(argv[++i]).string();
+            const auto p = parse_primitive(text);
+            if (!p) {
+                std::cout << "ERROR: --primitive expects `_Name 2 args kwargs`, not '" << text << "'" << std::endl;
+                return EXIT_FAILURE;
+            }
+            vm.primitives.push_back(*p);
         } else if (arg == "--time") {
             show_times = true;
         } else if (arg == "--relative-to" && i + 1 < argc) {
@@ -241,7 +303,7 @@ int main(int argc, char* argv[]) {
     const auto files = sc::compiler::find_class_files(module_paths);
     times.find_files = seconds_since(find_start);
 
-    const auto library = sc::compiler::compile_class_library(files, num_threads, times.library);
+    const auto library = sc::compiler::compile_class_library(files, num_threads, times.library, vm);
     std::cout << library->parse_log;
     auto& ctx = library->ctx;
     auto& comp = library->compiler;

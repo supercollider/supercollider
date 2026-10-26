@@ -39,6 +39,9 @@ The first lines can also be `// no-prelude`, to compile it without the shared pr
 different modules. A module is a path given to the compiler. `// frames` adds the backend's frame layout to the
 output, see sc_inspect's --frames, `// lir` adds the backend's lowered ir after the dump, see --lir, `// bytecode`
 adds its bytecode after that, see --bytecode, and `// compiled` what the VM's objects are made from, see --compiled.
+`// intrinsic: Name : Super [slot] a b` and `// primitive: _Name 2 args kwargs` give a definition the VM would, an
+intrinsic class's layout or a primitive's arguments, checked against the test, see sc_inspect's --intrinsic and
+--primitive.
 A test fails when an assertion doesn't hold, even when its output is overridden, so overriding can't hide a change
 the test was written to catch.
 
@@ -87,6 +90,10 @@ COMPILED = '// compiled'
 BACKEND_HEADERS = ['LIR DUMP', 'BYTECODE DUMP', 'COMPILED DUMP']
 # Another module compiled before the test, e.g., `// module: other` is modules/other.sc.
 MODULE = re.compile(r'^// module: (?P<name>\S+)$')
+
+# The VM's definitions, e.g., `// intrinsic: Name : Super [slot] a b` or `// primitive: _Name 2 args kwargs`.
+INTRINSIC = re.compile(r'^// intrinsic: (?P<definition>.+)$')
+PRIMITIVE = re.compile(r'^// primitive: (?P<definition>.+)$')
 # Outside input, so the modules aren't tests themselves.
 MODULES_DIR = Path(__file__).parent / 'modules'
 
@@ -264,7 +271,8 @@ def test_name(sc_file):
 
 def headers(sc_file):
     """Whether the test uses the prelude, the release its interpreted code is compiled as, the modules compiled before
-    it, and whether it shows the frames, the lowered ir, the bytecode and the compiled output, from its first lines."""
+    it, whether it shows the frames, the lowered ir, the bytecode and the compiled output, and the sc_inspect arguments
+    giving the VM's definitions, from its first lines."""
     uses_prelude = True
     release = None
     modules = []
@@ -272,6 +280,7 @@ def headers(sc_file):
     lir = False
     bytecode = False
     compiled = False
+    vm = []
     with open(sc_file) as f:
         for line in f:
             line = line.strip()
@@ -289,13 +298,17 @@ def headers(sc_file):
                 release = version['release']
             elif module := MODULE.match(line):
                 modules.append(MODULES_DIR / f"{module['name']}.sc")
+            elif intrinsic := INTRINSIC.match(line):
+                vm += ['--intrinsic', intrinsic['definition']]
+            elif primitive := PRIMITIVE.match(line):
+                vm += ['--primitive', primitive['definition']]
             else:
                 break
-    return uses_prelude, release, modules, frames, lir, bytecode, compiled
+    return uses_prelude, release, modules, frames, lir, bytecode, compiled, vm
 
 
 def run_sc_inspect(cmd, sc_file):
-    uses_prelude, release, modules, frames, lir, bytecode, compiled = headers(sc_file)
+    uses_prelude, release, modules, frames, lir, bytecode, compiled, vm = headers(sc_file)
     # Paths in diagnostics are relative to the input directory, so the output doesn't depend on where it is run.
     # The output is the same however many threads compile it, two checks that, while leaving cpus for other tests.
     args = [cmd, '--threads', '2', '--relative-to', INPUT_DIR]
@@ -309,6 +322,7 @@ def run_sc_inspect(cmd, sc_file):
         args += ['--bytecode']
     if compiled:
         args += ['--compiled']
+    args += vm
     if uses_prelude:
         args += ['--prelude', PRELUDE]
     # Each path is its own module, in order, so the test is the last.

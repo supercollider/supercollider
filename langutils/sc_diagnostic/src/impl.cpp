@@ -390,6 +390,49 @@ Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::src::T
 }
 
 
+Diagnostic Diagnostic::intrinsic_class_wrong_members(TextInfoPtr t, sc::src::SourceCodeRange loc,
+                                                     std::string_view expected) {
+    std::string msg = expected.empty() ? std::string { "The VM expects no instance variables." }
+                                       : "The VM expects exactly `" + std::string { expected } + "`.";
+    return { "Intrinsic class has the wrong instance variables",
+             Severity::Error,
+             { { std::move(t), loc, std::move(msg) } },
+             "Intrinsic classes are a part of the compiler and cannot be changed." };
+}
+
+Diagnostic Diagnostic::primitive_argument_count(TextInfoPtr t, sc::src::SourceCodeRange arguments,
+                                                sc::src::SourceCodeRange primitive, std::size_t expected,
+                                                std::size_t got) {
+    // Without the receiver, as they are written.
+    const auto count = [](std::size_t n) { return std::to_string(n - 1) + (n == 2 ? " argument" : " arguments"); };
+    return { "Primitive argument mismatch",
+             Severity::Error,
+             {
+                 { t, arguments, "The method takes " + count(got) + "..." },
+                 { t, primitive, "...but this primitive takes " + count(expected) + "." },
+             } };
+}
+
+Diagnostic Diagnostic::primitive_needs_variadic_arguments(TextInfoPtr t, sc::src::SourceCodeRange arguments,
+                                                          sc::src::SourceCodeRange primitive) {
+    return { "Primitive argument mismatch",
+             Severity::Error,
+             {
+                 { t, arguments, "Insert variadic positional arguments, `...args`..." },
+                 { t, primitive, "...as this primitive takes them." },
+             } };
+}
+
+Diagnostic Diagnostic::primitive_needs_keyword_arguments(TextInfoPtr t, sc::src::SourceCodeRange arguments,
+                                                         sc::src::SourceCodeRange primitive) {
+    return { "Primitive argument mismatch",
+             Severity::Error,
+             {
+                 { t, arguments, "Insert variadic keyword arguments, `...args, kwargs`..." },
+                 { t, primitive, "...as this primitive takes them." },
+             } };
+}
+
 [[nodiscard]] Diagnostic Diagnostic::inheritance_cycle(
     std::vector<std::pair<std::shared_ptr<const sc::src::TextInfo>, sc::src::SourceCodeRange>> m) {
     std::vector<Location> locs { };
@@ -565,6 +608,18 @@ Diagnostic Diagnostic::duplicate_member_in_base(TextInfoPtr first_t, sc::src::So
                  { std::move(second_t), second_l, " ...duplicated here." },
              },
              "Duplicate members are not allowed within a class hierarchy. Please delete one." };
+}
+
+Diagnostic Diagnostic::hidden_class_member(TextInfoPtr first_t, sc::src::SourceCodeRange first_l, TextInfoPtr second_t,
+                                           sc::src::SourceCodeRange second_l) {
+    return { "Class member hides the superclass's",
+             Severity::Warning,
+             {
+                 { std::move(first_t), first_l, "Declared in a superclass here..." },
+                 { std::move(second_t), second_l, "...and again here, which hides it." },
+             },
+             "This class and its subclasses use this one, the superclass's own methods still use theirs. Rename one "
+             "unless that is what you meant." };
 }
 
 Diagnostic Diagnostic::non_terminating_return(TextInfoPtr first_t, sc::src::SourceCodeRange first_l) {

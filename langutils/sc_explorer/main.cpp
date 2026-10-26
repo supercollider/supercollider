@@ -396,7 +396,7 @@ int main(int argc, char* argv[]) {
         source_file = class_files.push_back({ text, preludes.next_index() });
 
     sc::compiler::ClassLibraryTimes times;
-    const auto library = sc::compiler::compile_class_library(class_files, 1, times);
+    const auto library = sc::compiler::compile_class_library(class_files, 1, times, {});
     for (auto& d : library->parse_diagnostics)
         diagnostics.push_back(std::move(d));
     for (auto& d : library->diagnostics)

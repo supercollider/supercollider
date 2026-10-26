@@ -24,7 +24,7 @@ ArrayedCollection : SequenceableCollection {
 		^this.primitiveFailed
 	}
 
-	swap { arg i, j; var temp;
+	swap { arg i, j;
 		_BasicSwap;
 		^this.primitiveFailed;
 	}
@@ -162,11 +162,8 @@ ArrayedCollection : SequenceableCollection {
 		^this.primitiveFailed;
 	}
 	addAll { arg aCollection;
-		var array;
-		_ArrayAddAll
-		array = this;
-		aCollection.asCollection.do({ arg item; array = array.add(item) }) ;
-		^array
+		_ArrayAddAll;
+		^aCollection.asCollection.inject(this, { arg array, item; array.add(item) })
 	}
 	putEach { arg keys, values;
 		_ArrayPutEach
@@ -206,14 +203,8 @@ ArrayedCollection : SequenceableCollection {
 		^super ++ anArray
 	}
 	overWrite { arg aCollection, pos=0;
-		var array, grow;
-		_ArrayOverwrite
+		_ArrayOverwrite;
 		^this.primitiveFailed
-		//array = this.growClear(pos + aCollection.size - this.size);
-		//grow = pos + aCollection.size - this.size;
-		//if (grow > 0, { array = this ++ this.class.newClear(grow); },{ array = this });
-		//aCollection.do({ arg item, i; array.put(pos + i, item); });
-		//^array
 	}
 	grow { arg sizeIncrease;
 		// returns an array of sufficient capacity.

@@ -26,6 +26,7 @@
 #include <mutex>
 #include "AllocPools.h"
 #include "ClassLibraryInfo.hpp"
+#include "ClassLibraryLoader.hpp"
 #include "CompilerContext.hpp"
 #include "PyrKernel.h"
 #include "PyrObjectHdr.h"
@@ -1651,83 +1652,89 @@ SCLANG_DLLEXPORT_C bool compileLibrary(bool wasCompiledPreviously, bool standalo
     initClasses();
     initPrimitives();
 
-    ClassLibraryFileMap files;
-    ClassDependencyList classDependencyList;
-    std::vector<ClassExtentionFile> extList;
-
-    // Goes through all the files.
-    // Adds them to the classdependencylist.
-    declareDependencyTreeLoadFiles(files, classDependencyList, extList, nullptr);
-
-    std::unordered_map<PyrSymbol*, std::size_t> ordering;
-    const auto* symbolTable = gMainVMGlobals->symbolTable;
-    {
-        const auto sz = symbolTable->TableSize();
-        for (std::size_t i { 0 }; i < sz; ++i) {
-            PyrSymbol* sym = symbolTable->Get(i);
-            if (sym && (sym->flags & sym_Class)) {
-                ordering.insert({ sym, i });
-            }
-        }
-    }
-
-    classDependencyList.finalize(ordering);
-
-    auto [topo, disconnected] = classDependencyList.getTopologicalOrdering();
-
-    // Post some diagnostics for the bad heirarchy
-    for (const std::vector<ClassDependency>& dis : disconnected) {
-        if (dis.size() == 1) { // A chain of one, either inherits from self, or from an undefined class
-            if (dis[0].superClassName == dis[0].className) {
-                const auto h = dis[0].textInfo->createDiagnosticHighlight(dis[0].rangeOfSuperClass.value(),
-                                                                          "Classes cannot inherit from themselves");
-                const auto str = diagnosticToCompilerError(ErrorType::Error, "Self inheritance", &h, 1);
-                ::postText(str.c_str(), str.size());
-            } else {
-                const auto h = dis[0].textInfo->createDiagnosticHighlight(dis[0].rangeOfSuperClass.value(),
-                                                                          "This superclass does not exist.");
-                const auto str = diagnosticToCompilerError(ErrorType::Error, "Undefined classes", &h, 1);
-                ::postText(str.c_str(), str.size());
-            }
-        } else {
-            // Long chain
-            std::vector<DiagnosticHighlight> diags;
-            const auto disSz = dis.size();
-            for (std::size_t i { 0 }; i < disSz; ++i) {
-                if (i == 0)
-                    diags.push_back(dis[i].textInfo->createDiagnosticHighlight(dis[i].rangeOfClassName,
-                                                                               "Inheritance loop started here..."));
-                else if (i + 1 == disSz)
-                    diags.push_back(dis[i].textInfo->createDiagnosticHighlight(dis[i].rangeOfClassName,
-                                                                               "...inheritance loop ended here."));
-                else
-                    diags.push_back(dis[i].textInfo->createDiagnosticHighlight(dis[i].rangeOfClassName, "..."));
-            }
-
-            const auto str = diagnosticToCompilerError(ErrorType::Error, "Inheritance loop", &diags[0], diags.size());
-            ::postText(str.c_str(), str.size());
-        }
-    }
-
     std::size_t thingsPosted { 0 };
 
-    std::vector<ClassDependency> classesToRemove;
-    for (const auto& d : topo) {
-        const auto [result, postedCount] = compile(d);
-        thingsPosted += postedCount;
-        if (!result)
-            classesToRemove.push_back(d);
-    }
+    if (newCompilerRequested()) {
+        if (!loadClassLibrary(thingsPosted))
+            throw std::runtime_error { "Class Library has failed to compile." };
+    } else {
+        ClassLibraryFileMap files;
+        ClassDependencyList classDependencyList;
+        std::vector<ClassExtentionFile> extList;
 
-    bool errorInExt { false };
-    for (const auto& d : extList) {
-        const auto [result, postedCount] = compile(d);
-        thingsPosted += postedCount;
-        errorInExt = errorInExt || !result;
-    }
+        // Goes through all the files.
+        // Adds them to the classdependencylist.
+        declareDependencyTreeLoadFiles(files, classDependencyList, extList, nullptr);
 
-    if (!classesToRemove.empty() || errorInExt) {
-        throw std::runtime_error { "Class Library has failed to compile." };
+        std::unordered_map<PyrSymbol*, std::size_t> ordering;
+        const auto* symbolTable = gMainVMGlobals->symbolTable;
+        {
+            const auto sz = symbolTable->TableSize();
+            for (std::size_t i { 0 }; i < sz; ++i) {
+                PyrSymbol* sym = symbolTable->Get(i);
+                if (sym && (sym->flags & sym_Class)) {
+                    ordering.insert({ sym, i });
+                }
+            }
+        }
+
+        classDependencyList.finalize(ordering);
+
+        auto [topo, disconnected] = classDependencyList.getTopologicalOrdering();
+
+        // Post some diagnostics for the bad heirarchy
+        for (const std::vector<ClassDependency>& dis : disconnected) {
+            if (dis.size() == 1) { // A chain of one, either inherits from self, or from an undefined class
+                if (dis[0].superClassName == dis[0].className) {
+                    const auto h = dis[0].textInfo->createDiagnosticHighlight(dis[0].rangeOfSuperClass.value(),
+                                                                              "Classes cannot inherit from themselves");
+                    const auto str = diagnosticToCompilerError(ErrorType::Error, "Self inheritance", &h, 1);
+                    ::postText(str.c_str(), str.size());
+                } else {
+                    const auto h = dis[0].textInfo->createDiagnosticHighlight(dis[0].rangeOfSuperClass.value(),
+                                                                              "This superclass does not exist.");
+                    const auto str = diagnosticToCompilerError(ErrorType::Error, "Undefined classes", &h, 1);
+                    ::postText(str.c_str(), str.size());
+                }
+            } else {
+                // Long chain
+                std::vector<DiagnosticHighlight> diags;
+                const auto disSz = dis.size();
+                for (std::size_t i { 0 }; i < disSz; ++i) {
+                    if (i == 0)
+                        diags.push_back(dis[i].textInfo->createDiagnosticHighlight(dis[i].rangeOfClassName,
+                                                                                   "Inheritance loop started here..."));
+                    else if (i + 1 == disSz)
+                        diags.push_back(dis[i].textInfo->createDiagnosticHighlight(dis[i].rangeOfClassName,
+                                                                                   "...inheritance loop ended here."));
+                    else
+                        diags.push_back(dis[i].textInfo->createDiagnosticHighlight(dis[i].rangeOfClassName, "..."));
+                }
+
+                const auto str =
+                    diagnosticToCompilerError(ErrorType::Error, "Inheritance loop", &diags[0], diags.size());
+                ::postText(str.c_str(), str.size());
+            }
+        }
+
+        std::vector<ClassDependency> classesToRemove;
+        for (const auto& d : topo) {
+            const auto [result, postedCount] = compile(d);
+            thingsPosted += postedCount;
+            if (!result)
+                classesToRemove.push_back(d);
+        }
+
+        bool errorInExt { false };
+        for (const auto& d : extList) {
+            const auto [result, postedCount] = compile(d);
+            thingsPosted += postedCount;
+            errorInExt = errorInExt || !result;
+        }
+
+        if (!classesToRemove.empty() || errorInExt) {
+            throw std::runtime_error { "Class Library has failed to compile." };
+        }
     }
 
 

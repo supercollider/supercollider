@@ -1,0 +1,829 @@
+#include "ClassLibraryLoader.hpp"
+
+#include "GC.h"
+#include "PyrInterpreter.h"
+#include "PyrKernel.h"
+#include "PyrKernelProto.h"
+#include "PyrListPrim.h"
+#include "PyrObject.h"
+#include "PyrPrimitive.h"
+#include "PyrSlot.h"
+#include "PyrSymbol.h"
+#include "PyrSymbolTable.h"
+#include "SCBase.h"
+#include "SC_Codecvt.hpp"
+#include "SC_Filesystem.hpp"
+#include "SC_LanguageConfig.hpp"
+#include "sc_compiler/sc_compiler.hpp"
+#include "sc_util/narrow.hpp"
+
+#include <algorithm>
+#include <cassert>
+#include <cstdlib>
+#include <cstring>
+#include <filesystem>
+#include <set>
+#include <string>
+#include <string_view>
+#include <thread>
+#include <unordered_map>
+#include <variant>
+#include <vector>
+
+namespace {
+
+namespace fs = std::filesystem;
+namespace backend = sc::backend;
+namespace compiler = sc::compiler;
+namespace ir = sc::ir;
+using sc::util::narrow;
+
+// As the old compiler allocated a class file's objects.
+constexpr int classLibraryFlags = obj_permanent | obj_immutable;
+
+////////////////////////////////////////////////////////////////////////////////
+// Class files
+////////////////////////////////////////////////////////////////////////////////
+
+// As the old compiler's pass one walked the directories, each included directory is a module.
+struct ClassFileFinder {
+    compiler::ClassFiles files {};
+    std::set<fs::path> compiledDirectories {};
+
+    bool shouldSkip(const fs::path& dir) const {
+        return compiledDirectories.count(dir) != 0 || gLanguageConfig->pathIsExcluded(dir)
+            || SC_Filesystem::instance().shouldNotCompileDirectory(dir);
+    }
+
+    void addFile(const fs::path& path, ir::ModuleIndex module) {
+        if (gLanguageConfig->pathIsExcluded(path)) {
+            post("\texcluding file: '%s'\n", SC_Codecvt::path_to_utf8_str(path).c_str());
+            return;
+        }
+        if (path.filename().string().front() != '.' && path.extension() == ".sc")
+            (void)files.push_back({ path, module });
+    }
+
+    bool addDirectory(const fs::path& dir, ir::ModuleIndex module) {
+        std::error_code ec;
+        const fs::path expanded = SC_Filesystem::instance().expandTilde(dir);
+        fs::recursive_directory_iterator it(expanded, fs::directory_options::follow_directory_symlink, ec);
+        if (ec) {
+            if (ec.default_error_condition() != std::errc::no_such_file_or_directory) {
+                error("Could not open directory '%s': (%d) %s\n", SC_Codecvt::path_to_utf8_str(expanded).c_str(),
+                      ec.value(), ec.message().c_str());
+                return false;
+            }
+            const auto& defaults = gLanguageConfig->defaultClassLibraryDirectories();
+            if (std::find(defaults.begin(), defaults.end(), expanded) != defaults.end())
+                fs::create_directories(expanded, ec);
+            else
+                post("WARNING: Could not open directory: '%s'\n"
+                     "\tTo resolve this, either create the directory or remove it from your compilation paths.\n\n",
+                     SC_Codecvt::path_to_utf8_str(expanded).c_str());
+            return true;
+        }
+        if (shouldSkip(expanded))
+            return true;
+        post("\tCompiling directory '%s'\n", SC_Codecvt::path_to_utf8_str(expanded).c_str());
+        compiledDirectories.insert(expanded);
+
+        for (; it != fs::end(it); it.increment(ec)) {
+            if (ec) {
+                error("Could not iterate on '%s': %s\n", SC_Codecvt::path_to_utf8_str(it->path()).c_str(),
+                      ec.message().c_str());
+                return true;
+            }
+            const fs::path path = *it;
+            if (fs::is_directory(path)) {
+                if (shouldSkip(path))
+                    it.disable_recursion_pending();
+                else
+                    compiledDirectories.insert(path);
+                continue;
+            }
+            bool isAlias = false;
+            const fs::path resolved = SC_Filesystem::resolveIfAlias(path, isAlias);
+            if (isAlias && fs::is_directory(resolved)) {
+                if (!addDirectory(resolved, module))
+                    return false;
+            } else if (resolved.empty()) {
+                error("Could not resolve symlink: %s\n", SC_Codecvt::path_to_utf8_str(path).c_str());
+            } else {
+                addFile(resolved, module);
+            }
+        }
+        return true;
+    }
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Loader
+////////////////////////////////////////////////////////////////////////////////
+
+int instanceFormat(ir::SCClass::MemoryLayout layout) {
+    using Layout = ir::SCClass::MemoryLayout;
+    switch (layout) {
+    case Layout::NotIndexed:
+        return obj_notindexed;
+    case Layout::Slot:
+        return obj_slot;
+    case Layout::Double:
+        return obj_double;
+    case Layout::Float:
+        return obj_float;
+    case Layout::Int32:
+        return obj_int32;
+    case Layout::Int16:
+        return obj_int16;
+    case Layout::Int8:
+        return obj_int8;
+    case Layout::Char:
+        return obj_char;
+    case Layout::Symbol:
+        return obj_symbol;
+    }
+    return obj_notindexed;
+}
+
+template <typename T> PyrObject* newRawArray(const std::vector<T>& values, int format, PyrClass* classptr) {
+    const auto size = narrow<int>(values.size());
+    auto* array = PyrGC::NewPermanent(size * sizeof(T), classLibraryFlags, format);
+    array->classptr = classptr;
+    array->size = size;
+    if (size)
+        std::memcpy(array->slots, values.data(), size * sizeof(T));
+    return array;
+}
+
+PyrSymbolArray* newSymbolArray(int size) {
+    auto* array = newPyrSymbolArray(nullptr, size, classLibraryFlags, false);
+    array->size = size;
+    return array;
+}
+
+PyrObject* newArray(int size) {
+    auto* array = newPyrArray(nullptr, size, classLibraryFlags, false);
+    array->size = size;
+    nilSlots(array->slots, array->size);
+    return array;
+}
+
+struct Source {
+    PyrString* text;
+    PyrSymbol* path;
+};
+
+// Makes the VM's objects from the compiled graphs, as the old compiler made them. Every object is permanent.
+struct Loader {
+    explicit Loader(const compiler::ClassLibrary& library): library(library) {
+        classVariableOwners.resize(library.backend->members.num_class_variables(), nullptr);
+    }
+
+    const compiler::ClassLibrary& library;
+    std::unordered_map<ir::Symbol, PyrSymbol*, std::hash<ir::Symbol>> symbols {};
+    std::unordered_map<const sc::src::TextInfo*, Source> sources {};
+    // A member's owning class, either of its names, to the class object holding its class variables and constants.
+    std::unordered_map<ir::Symbol, PyrClass*, std::hash<ir::Symbol>> memberOwners {};
+    // By absolute class variable index, the name of the class declaring it.
+    std::vector<PyrSymbol*> classVariableOwners;
+
+    PyrSymbol* symbol(ir::Symbol s) {
+        if (const auto fnd = symbols.find(s); fnd != symbols.end())
+            return fnd->second;
+        const auto text = library.symbols(s);
+        auto* sym = getsymlen(text.data(), text.size());
+        symbols.emplace(s, sym);
+        return sym;
+    }
+
+    Source source(const compiler::CompiledGraph& g, ir::SourceIndex index) {
+        const auto& text = g.sources[index];
+        if (const auto fnd = sources.find(text.get()); fnd != sources.end())
+            return fnd->second;
+        const auto& str = text->source.as_string();
+        auto* pyrString = newPyrStringN(nullptr, narrow<int>(str.size()), obj_immutable | obj_permanent, false);
+        std::memcpy(pyrString->s, str.data(), str.size());
+        const auto path = text->file_path ? SC_Codecvt::path_to_utf8_str(*text->file_path) : std::string {};
+        const Source s { pyrString, getsym(path.c_str()) };
+        sources.emplace(text.get(), s);
+        return s;
+    }
+
+    // Values
+
+    PyrSlot value(ir::ConstExprIndex index) {
+        const auto& constants = library.ctx.constant_table;
+        return constants(index).visit(sc::util::overload {
+            [](double d) { return PyrSlot::make(d); },
+            [](std::int32_t i) { return PyrSlot::make(i); },
+            [](char c) { return PyrSlot::make(c); },
+            [](bool b) { return PyrSlot::make(b); },
+            [](ir::Nil) { return PyrSlot {}; },
+            [&](ir::SymSCSymbol s) { return PyrSlot::make(symbol(s)); },
+            [&](ir::SymSCString s) {
+                const auto text = library.symbols(s);
+                auto* str = newPyrStringN(nullptr, narrow<int>(text.size()), classLibraryFlags, false);
+                std::memcpy(str->s, text.data(), text.size());
+                return PyrSlot::make(str);
+            },
+            // As a literal array's element, a class name is a symbol.
+            [&](ir::SymSCClassName s) { return PyrSlot::make(symbol(s)); },
+            [&](const ir::ConstExprArray& elements) {
+                auto* array = newArray(narrow<int>(elements.size()));
+                for (const auto i : elements.indices())
+                    array->slots[*i] = value(elements[i]);
+                return PyrSlot::make(array);
+            },
+            [&](const ir::ConstExprEvent& pairs) { return event(pairs); },
+            [](const ir::ConstExprDoubleArray& v) {
+                return PyrSlot::make(newRawArray(v, obj_double, class_doublearray));
+            },
+            [](const ir::ConstExprFloatArray& v) { return PyrSlot::make(newRawArray(v, obj_float, class_floatarray)); },
+            [](const ir::ConstExprInt32Array& v) { return PyrSlot::make(newRawArray(v, obj_int32, class_int32array)); },
+            [](const ir::ConstExprInt16Array& v) { return PyrSlot::make(newRawArray(v, obj_int16, class_int16array)); },
+            [](const ir::ConstExprInt8Array& v) { return PyrSlot::make(newRawArray(v, obj_int8, class_int8array)); },
+            [&](const ir::ConstExprSymbolArray& v) {
+                auto* array = newSymbolArray(narrow<int>(v.size()));
+                for (std::size_t i = 0; i < v.size(); ++i)
+                    array->symbols[i] = symbol(v[i]);
+                return PyrSlot::make(array);
+            },
+        });
+    }
+
+    // As `Event.new(n, nil, nil, true)` then `put` for each pair would make it, see Set:initSet and identDictPut: a
+    // `proto` or `parent` key sets that variable, a later key replaces an earlier one's value, and a nil value removes
+    // it. The array, four slots per pair, is never full enough to grow.
+    PyrSlot event(const ir::ConstExprEvent& pairs) {
+        auto* protoName = getsym("proto");
+        auto* parentName = getsym("parent");
+        std::vector<std::pair<PyrSlot, PyrSlot>> entries;
+        PyrSlot proto {};
+        PyrSlot parent {};
+        for (const auto& [k, v] : pairs) {
+            const auto key = value(k);
+            const auto val = value(v);
+            if (IsSym(&key) && (slotRawSymbol(&key) == protoName || slotRawSymbol(&key) == parentName)) {
+                (slotRawSymbol(&key) == protoName ? proto : parent) = val;
+                continue;
+            }
+            const auto fnd =
+                std::find_if(entries.begin(), entries.end(), [&](const auto& e) { return SlotEq(&e.first, &key); });
+            if (IsNil(&val)) {
+                if (fnd != entries.end())
+                    entries.erase(fnd);
+            } else if (fnd != entries.end()) {
+                fnd->second = val;
+            } else {
+                entries.push_back({ key, val });
+            }
+        }
+
+        auto* array = newArray(std::max(2 * narrow<int>(pairs.size()), 2) * 2);
+        for (auto& [key, val] : entries) {
+            PyrSlot* pair = array->slots + arrayAtIdentityHashInPairs(array, &key);
+            pair[0] = key;
+            pair[1] = val;
+        }
+
+        auto* eventClass = s_event->u.classobj;
+        const auto numSlots = slotRawObject(&eventClass->iprototype)->size;
+        auto* obj = PyrGC::NewPermanent(numSlots * sizeof(PyrSlot), classLibraryFlags, obj_notindexed);
+        obj->classptr = eventClass;
+        obj->size = numSlots;
+        nilSlots(obj->slots, numSlots);
+        const auto set = [&](const char* name, PyrSlot slot) {
+            const auto index = instVarOffset("IdentityDictionary", name);
+            assert(index >= 0);
+            obj->slots[index] = slot;
+        };
+        set("array", PyrSlot::make(array));
+        set("size", PyrSlot::make(narrow<int32_t>(entries.size())));
+        set("proto", proto);
+        set("parent", parent);
+        set("know", PyrSlot::make(true));
+        return PyrSlot::make(obj);
+    }
+
+    PyrSlot value(ir::OptionalConstExprIndex index) {
+        return index ? value(ir::ConstExprIndex { *index }) : PyrSlot {};
+    }
+
+    // The slot itself, shared by identity, as the old compiler pushed the class's constValues.
+    PyrSlot classConstant(const backend::ClassConstant& c) {
+        auto* owner = memberOwners.at(c.owner);
+        auto* names = slotRawSymbolArray(&owner->constNames);
+        auto* sym = symbol(c.name);
+        for (int i = 0; i < names->size; ++i)
+            if (names->symbols[i] == sym)
+                return slotRawObject(&owner->constValues)->slots[i];
+        assert(false);
+        return value(c.value);
+    }
+
+    PyrSlot switchTable(const backend::SwitchTable& table) {
+        auto* array = newArray(narrow<int>(table.capacity));
+        // The first of duplicate keys wins.
+        for (const auto& [key, offset] : table.offsets) {
+            auto keySlot = value(key);
+            PyrSlot* pair = array->slots + arrayAtIdentityHashInPairs(array, &keySlot);
+            if (IsNil(pair)) {
+                pair[0] = keySlot;
+                pair[1] = PyrSlot::make(narrow<int32_t>(*offset));
+            }
+        }
+        for (int i = 0; i < array->size; i += 2)
+            if (IsNil(array->slots + i))
+                array->slots[i + 1] = PyrSlot::make(narrow<int32_t>(*table.default_offset));
+        return PyrSlot::make(array);
+    }
+
+    // Classes
+
+    // Both the class and its meta class, as the old compiler made them, with the names of their members, whose values
+    // are filled once every class is made, see fillClass, as a value can be an object of any class, e.g., an Event.
+    void makeClass(const compiler::CompiledGraph& g, const compiler::CompiledGraph& meta) {
+        const auto& layout = *g.layout;
+        const auto& metaLayout = *meta.layout;
+        auto* name = symbol(layout.name);
+        auto* superclassName = layout.superclass ? symbol(ir::SymSCClassName { *layout.superclass }) : nullptr;
+        PyrClass* superclassobj = superclassName ? superclassName->u.classobj : nullptr;
+        // Sema rejects an undefined superclass, and the classes are made in topological order.
+        assert(!superclassName || superclassobj);
+
+        const auto numInstVars = narrow<int>(layout.instance_variables.size());
+        const auto numSuper = numSuperInstVars(superclassobj);
+        const auto numClassVars = narrow<int>(metaLayout.class_variables.size());
+        const auto numConsts = narrow<int>(metaLayout.constants.size());
+        const auto numInstMethods = narrow<int>(g.methods.size() + g.accessors.size());
+        const auto numClassMethods = narrow<int>(meta.methods.size() + meta.accessors.size());
+        const auto format = instanceFormat(layout.memory_layout);
+        assert(numSuper <= numInstVars);
+
+        // A meta class's instance variables are Class's, copied before Class itself is remade.
+        const auto copyClassInstanceVariables = [](PyrClass* metaclassobj) {
+            memcpy(slotRawObject(&metaclassobj->iprototype)->slots, slotRawObject(&class_class->iprototype)->slots,
+                   sizeof(PyrSlot) * classClassNumInstVars);
+            memcpy(slotRawSymbolArray(&metaclassobj->instVarNames)->symbols,
+                   slotRawSymbolArray(&class_class->instVarNames)->symbols, sizeof(PyrSymbol*) * classClassNumInstVars);
+            slotRawObject(&metaclassobj->iprototype)->size = classClassNumInstVars;
+            slotRawSymbolArray(&metaclassobj->instVarNames)->size = classClassNumInstVars;
+        };
+
+        PyrClass* classobj = name->u.classobj;
+        PyrClass* metaclassobj;
+        if (classobj) {
+            // Intrinsic, made by initClasses, sema checked the class library declares it as the VM does.
+            assert(slotRawSymbol(&classobj->superclass)->u.classobj == superclassobj);
+            assert(slotRawInt(&classobj->instanceFormat) == format);
+            metaclassobj = classobj->classptr;
+            reallocClassObj(metaclassobj, classClassNumInstVars, 0, 0, numClassMethods, format, 0);
+            copyClassInstanceVariables(metaclassobj);
+            reallocClassObj(classobj, numInstVars, numClassVars, numConsts, numInstMethods, format, 0);
+        } else {
+            auto* metaName = getmetasym(name->name);
+            metaName->flags |= sym_MetaClass;
+            auto* metaSuperclassName = superclassName ? getmetasym(superclassName->name) : nullptr;
+            metaclassobj = newClassObj(class_class, metaName, metaSuperclassName, classClassNumInstVars, 0, 0,
+                                       numClassMethods, format, 0);
+            copyClassInstanceVariables(metaclassobj);
+            classobj = newClassObj(metaclassobj, name, superclassName, numInstVars, numClassVars, numConsts,
+                                   numInstMethods, format, 0);
+            name->u.classobj = classobj;
+            metaName->u.classobj = metaclassobj;
+        }
+
+        const auto file = source(g, layout.location.source);
+        const auto charPos = PyrSlot::make(narrow<int32_t>(layout.location.range.begin.absolute));
+        for (auto* c : { classobj, metaclassobj }) {
+            c->filenameSym = PyrSlot::make(file.path);
+            c->charPos = charPos;
+        }
+
+        if (numInstVars) {
+            auto* names = slotRawSymbolArray(&classobj->instVarNames);
+            if (numSuper)
+                memcpy(names->symbols, slotRawSymbolArray(&superclassobj->instVarNames)->symbols,
+                       sizeof(PyrSymbol*) * numSuper);
+            for (int i = numSuper; i < numInstVars; ++i)
+                names->symbols[i] = symbol(layout.instance_variables[i].name);
+            names->size = numInstVars;
+        }
+        const auto setNames = [&](const std::vector<compiler::CompiledMember>& members, PyrSlot& namesSlot) {
+            if (members.empty())
+                return;
+            auto* names = slotRawSymbolArray(&namesSlot);
+            for (std::size_t i = 0; i < members.size(); ++i)
+                names->symbols[i] = symbol(members[i].name);
+            names->size = narrow<int>(members.size());
+        };
+        setNames(metaLayout.class_variables, classobj->classVarNames);
+        setNames(metaLayout.constants, classobj->constNames);
+
+        // The backend numbers class variables by meta class name.
+        const auto firstClassVariable = **metaLayout.first_class_variable;
+        classobj->classVarIndex = PyrSlot::make(narrow<int32_t>(firstClassVariable));
+        for (int i = 0; i < numClassVars; ++i)
+            classVariableOwners[firstClassVariable + i] = name;
+
+        memberOwners[layout.name] = classobj;
+        memberOwners[metaLayout.name] = classobj;
+    }
+
+    // The values of the class's members, its superclass's filled first.
+    void fillClass(const compiler::CompiledGraph& g, const compiler::CompiledGraph& meta) {
+        const auto& layout = *g.layout;
+        auto* classobj = symbol(layout.name)->u.classobj;
+        auto* superclassobj =
+            layout.superclass ? symbol(ir::SymSCClassName { *layout.superclass })->u.classobj : nullptr;
+        const auto numInstVars = narrow<int>(layout.instance_variables.size());
+        const auto numSuper = numSuperInstVars(superclassobj);
+
+        // The inherited instance variables are the superclass's, so their prototypes are the same objects.
+        if (numInstVars) {
+            auto* prototype = slotRawObject(&classobj->iprototype);
+            if (numSuper)
+                memcpy(prototype->slots, slotRawObject(&superclassobj->iprototype)->slots, sizeof(PyrSlot) * numSuper);
+            for (int i = numSuper; i < numInstVars; ++i)
+                prototype->slots[i] = value(layout.instance_variables[i].value);
+            prototype->size = numInstVars;
+        }
+        const auto setValues = [&](const std::vector<compiler::CompiledMember>& members, PyrSlot& valuesSlot) {
+            if (members.empty())
+                return;
+            auto* values = slotRawObject(&valuesSlot);
+            for (std::size_t i = 0; i < members.size(); ++i)
+                values->slots[i] = value(members[i].value);
+            values->size = narrow<int>(members.size());
+        };
+        setValues(meta.layout->class_variables, classobj->cprototype);
+        setValues(meta.layout->constants, classobj->constValues);
+    }
+
+    // Methods and functions
+
+    void fillFunction(const compiler::CompiledGraph& g, backend::lir::FunctionIndex index, PyrBlock* block,
+                      MethodType type) {
+        const auto& f = g.functions[index];
+        const auto& emitted = f.emitted;
+        const auto numSlots = narrow<int>(f.slots.size());
+        const int numPositional = (f.has_this ? 1 : 0) + narrow<int>(f.num_positional);
+        const int numVariadic = static_cast<int>(f.variadic);
+        const int numArguments = numPositional + numVariadic;
+        const int numVariables = numSlots - numArguments;
+        // Too many is reported, so nothing is loaded.
+        assert(numSlots <= 255);
+
+        *METHRAW(block) = PyrMethodRaw { 0,
+                                         0,
+                                         static_cast<unsigned short>(type),
+                                         narrow<unsigned short>((numSlots + FRAMESIZE) * sizeof(PyrSlot)),
+                                         0,
+                                         narrow<unsigned char>(numPositional),
+                                         narrow<unsigned char>(numVariadic),
+                                         narrow<unsigned char>(numVariables),
+                                         narrow<unsigned char>(numSlots),
+                                         static_cast<unsigned char>(emitted.properties.needs_heap_context),
+                                         narrow<unsigned char>(f.has_this ? numSlots - 1 : numSlots),
+                                         narrow<unsigned char>(numArguments) };
+
+        const auto file = source(g, f.location.source);
+        block->sourceCodeFileOrSnippet = PyrSlot::make(file.text);
+        block->filePath = PyrSlot::make(file.path);
+        block->sourceCodeStartIndex = PyrSlot::make(narrow<int32_t>(f.location.range.begin.absolute));
+        block->sourceCodeEndIndex = PyrSlot::make(narrow<int32_t>(f.location.range.end.absolute));
+        block->isClosed = PyrSlot::make(emitted.properties.is_closed);
+
+        const auto names = [&](int first, int last) {
+            auto* array = newSymbolArray(last - first);
+            for (int i = first; i < last; ++i)
+                array->symbols[i - first] = symbol(f.slots[backend::FrameSlotIndex { narrow<std::uint32_t>(i) }].name);
+            return PyrSlot::make(array);
+        };
+        if (f.has_this && numArguments == 1)
+            block->argNames = o_argnamethis;
+        else if (numArguments)
+            block->argNames = names(0, numArguments);
+        if (numVariables)
+            block->varNames = names(numArguments, numSlots);
+
+        if (f.has_this && numSlots == 1) {
+            block->prototypeFrame = o_onenilarray;
+        } else if (numSlots) {
+            auto* prototype = newArray(numSlots);
+            for (int i = 0; i < numSlots; ++i) {
+                if (i >= numPositional && i < numArguments)
+                    prototype->slots[i] = o_emptyarray;
+                else
+                    prototype->slots[i] =
+                        value(f.slots[backend::FrameSlotIndex { narrow<std::uint32_t>(i) }].prototype);
+            }
+            block->prototypeFrame = PyrSlot::make(prototype);
+        }
+
+        // A method run by its shortcut has no code.
+        if (!std::holds_alternative<std::monostate>(emitted.shortcut))
+            return;
+
+        const auto& code = emitted.code;
+        if (!code.codes.raw().empty()) {
+            auto* bytes = newPyrInt8Array(nullptr, narrow<int>(code.codes.size()), classLibraryFlags, false);
+            std::memcpy(bytes->b, code.codes.raw().data(), code.codes.size());
+            bytes->size = narrow<int>(code.codes.size());
+            block->code = PyrSlot::make(bytes);
+
+            const auto numLocations = narrow<int>(2 * code.locations.size());
+            auto* locations = newPyrInt32Array(nullptr, numLocations, classLibraryFlags, false);
+            std::memcpy(locations->i, code.locations.raw().data(), numLocations * sizeof(int32_t));
+            locations->size = numLocations;
+            block->codeLocations = PyrSlot::make(locations);
+
+            auto* sizes = newPyrInt8Array(nullptr, narrow<int>(code.sizeOfCodes.size()), classLibraryFlags, false);
+            std::memcpy(sizes->b, code.sizeOfCodes.raw().data(), code.sizeOfCodes.size());
+            sizes->size = narrow<int>(code.sizeOfCodes.size());
+            block->codeSizes = PyrSlot::make(sizes);
+        }
+
+        if (!emitted.selectors.raw().empty()) {
+            auto* selectors = newArray(narrow<int>(emitted.selectors.size()));
+            for (const auto i : emitted.selectors.indices())
+                selectors->slots[*i] = std::visit(
+                    sc::util::overload {
+                        [&](ir::SymSCSelector s) { return PyrSlot::make(symbol(s)); },
+                        [&](ir::SymSCClassName s) { return PyrSlot::make(symbol(s)); },
+                        [&](backend::lir::FunctionIndex nested) { return PyrSlot::make(makeBlock(g, nested, block)); },
+                    },
+                    emitted.selectors[i]);
+            block->selectors = PyrSlot::make(selectors);
+        }
+
+        if (!emitted.constants.raw().empty()) {
+            auto* constants = newArray(narrow<int>(emitted.constants.size()));
+            for (const auto i : emitted.constants.indices())
+                constants->slots[*i] =
+                    std::visit(sc::util::overload {
+                                   [&](ir::ConstExprIndex v) { return value(v); },
+                                   [&](ir::SymSCSymbol s) { return PyrSlot::make(symbol(s)); },
+                                   [&](const backend::ClassConstant& c) { return classConstant(c); },
+                                   [&](backend::SwitchTableIndex t) { return switchTable(emitted.switch_tables[t]); },
+                               },
+                               emitted.constants[i]);
+            block->constants = PyrSlot::make(constants);
+        }
+    }
+
+    PyrBlock* makeBlock(const compiler::CompiledGraph& g, backend::lir::FunctionIndex index, PyrBlock* parent) {
+        const auto& f = g.functions[index];
+        assert(!f.emitted.thrown_away);
+        auto* block = newPyrBlock(false, classLibraryFlags);
+        block->name = f.name ? PyrSlot::make(symbol(ir::SymSCSymbol { *f.name })) : PyrSlot {};
+        block->contextDef = f.emitted.properties.has_context ? PyrSlot::make(parent) : PyrSlot {};
+        fillFunction(g, index, block, methBlock);
+        return block;
+    }
+
+    // The old compiler's payloads: a class variable's shortcut keeps its class's name.
+    void setShortcut(PyrMethod* method, const backend::OptionalMethodShortcut& shortcut,
+                     const compiler::CompiledGraph& g) {
+        auto* raw = METHRAW(method);
+        const auto set = [&](MethodType type, std::uint32_t specialIndex = 0) {
+            raw->methType = static_cast<unsigned short>(type);
+            raw->specialIndex = narrow<unsigned short>(specialIndex);
+        };
+        const auto classVariableOwner = [&](backend::ClassVariableIndex index) {
+            return PyrSlot::make(classVariableOwners[*index]);
+        };
+        std::visit(sc::util::overload {
+                       [](std::monostate) {},
+                       [&](backend::shortcut::ReturnSelf) { set(methReturnSelf); },
+                       [&](backend::shortcut::ReturnLiteral s) {
+                           set(methReturnLiteral);
+                           method->selectors = literal(s.value, g);
+                       },
+                       [&](backend::shortcut::ReturnArgument s) { set(methReturnArg, *s.slot); },
+                       [&](backend::shortcut::ReturnInstance s) { set(methReturnInstVar, *s.slot); },
+                       [&](backend::shortcut::AssignInstance s) { set(methAssignInstVar, *s.slot); },
+                       [&](backend::shortcut::Redirect s) {
+                           set(s.super ? methRedirectSuper : methRedirect);
+                           method->selectors = PyrSlot::make(symbol(s.selector));
+                       },
+                       [&](backend::shortcut::ForwardInstance s) {
+                           set(methForwardInstVar, *s.slot);
+                           method->selectors = PyrSlot::make(symbol(s.selector));
+                       },
+                       [&](backend::shortcut::ForwardClassVariable s) {
+                           set(methForwardClassVar, *s.index);
+                           method->selectors = PyrSlot::make(symbol(s.selector));
+                           method->constants = classVariableOwner(s.index);
+                       },
+                       [&](backend::shortcut::ReturnClassVariable s) {
+                           set(methReturnClassVar, *s.index);
+                           method->selectors = classVariableOwner(s.index);
+                       },
+                       [&](backend::shortcut::AssignClassVariable s) {
+                           set(methAssignClassVar, *s.index);
+                           method->selectors = classVariableOwner(s.index);
+                       },
+                   },
+                   shortcut);
+    }
+
+    // A constant's accessor returns its constValues' slot.
+    PyrSlot literal(ir::ConstExprIndex v, const compiler::CompiledGraph& g) {
+        if (g.layout) {
+            if (const auto fnd = memberOwners.find(g.layout->name); fnd != memberOwners.end()) {
+                auto* owner = fnd->second;
+                const auto& constants = g.layout->constants;
+                for (std::size_t i = 0; i < constants.size(); ++i)
+                    if (constants[i].value && ir::ConstExprIndex { *constants[i].value } == v)
+                        return slotRawObject(&owner->constValues)->slots[i];
+            }
+        }
+        return value(v);
+    }
+
+    void makeMethod(const compiler::CompiledGraph& g, const compiler::CompiledMethod& m, PyrClass* owner) {
+        const auto& f = g.functions[m.function];
+        auto* method = newPyrMethod();
+        auto* primitive = m.primitive ? symbol(ir::SymSCPrimitive { *m.primitive }) : nullptr;
+        fillFunction(g, m.function, method, primitive ? methPrimitive : methNormal);
+        method->ownerclass = PyrSlot::make(owner);
+        method->name = PyrSlot::make(symbol(m.selector));
+        method->contextDef = PyrSlot {};
+        if (primitive) {
+            method->primitiveName = PyrSlot::make(primitive);
+            // Not the symbol's special index.
+            METHRAW(method)->specialIndex = narrow<unsigned short>(primitive->u.index);
+        }
+        setShortcut(method, f.emitted.shortcut, g);
+        addMethod(owner, method);
+    }
+
+    void makeAccessor(const compiler::CompiledGraph& g, const compiler::CompiledAccessor& a, PyrClass* owner) {
+        const bool setter = std::holds_alternative<backend::shortcut::AssignInstance>(a.shortcut)
+            || std::holds_alternative<backend::shortcut::AssignClassVariable>(a.shortcut);
+        const unsigned char numArgs = setter ? 2 : 1;
+        auto* method = newPyrMethod();
+        *METHRAW(method) =
+            PyrMethodRaw { 0,      0, methNormal, 0, 0, numArgs, 0, 0, numArgs, 0, narrow<unsigned char>(numArgs - 1),
+                           numArgs };
+        const auto file = source(g, a.location.source);
+        method->ownerclass = PyrSlot::make(owner);
+        method->name = PyrSlot::make(symbol(a.selector));
+        method->filePath = PyrSlot::make(file.path);
+        method->isClosed = PyrSlot::make(false);
+        method->sourceCodeFileOrSnippet = PyrSlot::make(file.text);
+        method->sourceCodeStartIndex = PyrSlot::make(narrow<int32_t>(a.location.range.begin.absolute));
+        method->sourceCodeEndIndex = PyrSlot::make(narrow<int32_t>(a.location.range.end.absolute));
+        setShortcut(method, a.shortcut, g);
+        addMethod(owner, method);
+    }
+
+    // The accessors first, then the methods, as the old compiler added them.
+    void makeMethods(const compiler::CompiledGraph& g) {
+        auto* owner = symbol(g.layout->name)->u.classobj;
+        if (!owner)
+            return;
+        for (const auto& a : g.accessors)
+            makeAccessor(g, a, owner);
+        for (const auto& m : g.methods)
+            makeMethod(g, m, owner);
+    }
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// VM definitions
+////////////////////////////////////////////////////////////////////////////////
+
+const char* slotTypeName(int format) {
+    switch (format) {
+    case obj_slot:
+        return "slot";
+    case obj_double:
+        return "double";
+    case obj_float:
+        return "float";
+    case obj_int32:
+        return "int32";
+    case obj_int16:
+        return "int16";
+    case obj_int8:
+        return "int8";
+    case obj_char:
+        return "char";
+    case obj_symbol:
+        return "symbol";
+    default:
+        return nullptr;
+    }
+}
+
+// The intrinsic classes initClasses made, and the primitives initPrimitives defined, for sema to check.
+compiler::VMDefinitions vmDefinitions() {
+    compiler::VMDefinitions vm;
+    for (PyrClass* c = gClassList; c; c = slotRawClass(&c->nextclass)) {
+        auto* name = slotRawSymbol(&c->name);
+        if (!(slotRawInt(&c->classFlags) & classIsIntrinsic) || (name->flags & sym_MetaClass))
+            continue;
+        compiler::IntrinsicClass intrinsic { name->name, {}, {}, {} };
+        auto* superclass = slotRawSymbol(&c->superclass);
+        if (superclass != s_none)
+            intrinsic.superclass = superclass->name;
+        if (const auto* slotType = slotTypeName(slotRawInt(&c->instanceFormat)))
+            intrinsic.slot_type = slotType;
+        const auto first = numSuperInstVars(superclass->u.classobj);
+        if (NotNil(&c->instVarNames)) {
+            auto* names = slotRawSymbolArray(&c->instVarNames);
+            for (int i = first; i < names->size; ++i)
+                intrinsic.instance_variables.push_back(names->symbols[i]->name);
+        }
+        vm.classes.push_back(std::move(intrinsic));
+    }
+    for (int i = 0; i < gPrimitiveTable.size; ++i) {
+        const auto& prim = gPrimitiveTable.table[i];
+        if (prim.func == undefinedPrimitive || !prim.name)
+            continue;
+        vm.primitives.push_back({ prim.name->name, prim.numNormalArguments, prim.hasVariablePositionalArguments,
+                                  prim.hasVariableKeywordArguments });
+    }
+    return vm;
+}
+
+std::size_t postDiagnostic(const sc::diag::Diagnostic& d, std::size_t& errors) {
+    if (d.severity() == sc::diag::Severity::Error)
+        ++errors;
+    const auto text = d.to_string();
+    postText(text.c_str(), text.size());
+    postText("\n", 1);
+    return 1;
+}
+}
+
+bool newCompilerRequested() {
+    const char* value = std::getenv("SCLANG_NEW_COMPILER");
+    return value && std::string_view { value } == "1";
+}
+
+bool loadClassLibrary(std::size_t& thingsPosted) {
+    post("\tUsing the new compiler (SCLANG_NEW_COMPILER=1)\n");
+    ClassFileFinder finder;
+    ir::ModuleIndex module { 0 };
+    const bool found = gLanguageConfig->forEachIncludedDirectory([&](const fs::path& dir) {
+        const bool ok = finder.addDirectory(dir, module);
+        module = sc::util::advance(module, 1u);
+        return ok;
+    });
+    if (!found)
+        return false;
+
+    compiler::ClassLibraryTimes times;
+    const auto numThreads = std::max(1u, std::thread::hardware_concurrency());
+    const auto library = compiler::compile_class_library(finder.files, numThreads, times, vmDefinitions());
+
+    std::size_t errors { 0 };
+    if (!library->parse_log.empty()) {
+        postText(library->parse_log.c_str(), library->parse_log.size());
+        ++errors;
+    }
+    for (const auto& d : library->parse_diagnostics)
+        thingsPosted += postDiagnostic(d, errors);
+    for (const auto& d : library->diagnostics)
+        thingsPosted += postDiagnostic(d, errors);
+
+    // In topological order, so a superclass is made before its subclasses. With an error, a class may be poisoned and
+    // not compiled, so nothing is made.
+    std::vector<compiler::CompiledGraph> classes;
+    library->compiler.depth_first_do([&](const ir::IRGraph& g) {
+        const auto root = std::get<ir::SCClass_I>(*g.root());
+        auto compiled = compiler::finish(
+            *library, compiler::emit(*library, compiler::lower(*library, compiler::layout_frames(*library, g, root))));
+        for (const auto& d : compiled.diagnostics)
+            thingsPosted += postDiagnostic(d, errors);
+        classes.push_back(std::move(compiled));
+    });
+    if (errors)
+        return false;
+
+    Loader loader { *library };
+    std::unordered_map<PyrSymbol*, const compiler::CompiledGraph*> metaClasses;
+    for (const auto& g : classes)
+        if (library->symbols.is_meta(g.layout->name))
+            metaClasses.emplace(loader.symbol(g.layout->name), &g);
+    // Every class graph has its meta class's, they are only poisoned together, which is an error.
+    std::vector<std::pair<const compiler::CompiledGraph*, const compiler::CompiledGraph*>> classAndMeta;
+    for (const auto& g : classes)
+        if (!library->symbols.is_meta(g.layout->name)) {
+            const auto fnd = metaClasses.find(getmetasym(loader.symbol(g.layout->name)->name));
+            assert(fnd != metaClasses.end());
+            classAndMeta.push_back({ &g, fnd->second });
+        }
+    for (const auto& [g, meta] : classAndMeta)
+        loader.makeClass(*g, *meta);
+    for (const auto& [g, meta] : classAndMeta)
+        loader.fillClass(*g, *meta);
+    for (const auto& g : classes)
+        loader.makeMethods(g);
+    gNumClassVars = narrow<int>(library->backend->members.num_class_variables());
+    return true;
+}

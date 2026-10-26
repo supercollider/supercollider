@@ -23,6 +23,10 @@ struct Method : private Base {
     Return<SCMethod_I> operator()(ast::AnyValidMethodIndex, SymSCSelector selector, ast::Index name_index);
 
 private:
+    // Reports a mismatch with the VM's table, see Context::primitive_signatures.
+    void check_primitive(SymSCPrimitive primitive, SCArgumentDeclareList_I arguments, SCArgumentDeclareList_I variadic,
+                         ast::Index arguments_i, ast::Index primitive_i, ast::Index name_index);
+
     // Declared before expr, as expr refers to it.
     DiagnosticSink sink;
     Expr expr;

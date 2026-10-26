@@ -100,6 +100,8 @@ Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i, SymSCSelector 
     (void)expr.scope.push_back({});
     expr.predeclare_legacy_frame(method, arg_list, body);
     declare_arguments(expr, ir, ast_graph, ctx, argument_list, variadic_args, arg_list, method);
+    if (primitive)
+        check_primitive(primitive->value, argument_list, variadic_args, { *arg_list }, { *maybe_prim }, name_index);
     const auto result = compile_body(expr, ir, ast_graph, ctx, method, body_i, body);
     expr.close_legacy_frame();
     expr.scope.pop_back();
@@ -117,5 +119,36 @@ Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i, SymSCSelector 
     sink = {};
 
     return { method };
+}
+
+// Only the VM knows its primitives' arguments, which the old compiler checked against its table too.
+void Method::check_primitive(SymSCPrimitive primitive, SCArgumentDeclareList_I arguments,
+                             SCArgumentDeclareList_I variadic, ast::Index arguments_i, ast::Index primitive_i,
+                             ast::Index name_index) {
+    const auto fnd = ctx.primitive_signatures.find(primitive);
+    if (fnd == ctx.primitive_signatures.end())
+        return;
+    const auto& signature = fnd->second;
+    const auto text = get_text_info(*ast_graph);
+    const auto primitive_l = get_location(*ast_graph, primitive_i);
+    // Without any arguments, the method's name.
+    auto arguments_l = get_location(*ast_graph, arguments_i);
+    if (arguments_l.size() == 0)
+        arguments_l = get_location(*ast_graph, name_index);
+    const auto count = [&](SCArgumentDeclareList_I list) {
+        std::size_t n = 0;
+        for (auto it = ir.children(list).iter(); it; ++it)
+            ++n;
+        return n;
+    };
+    const auto num_arguments = 1 + count(arguments);
+    const auto num_variadic = count(variadic);
+    if (num_arguments != signature.num_arguments)
+        sink(sc::diag::Diagnostic::primitive_argument_count(text, arguments_l, primitive_l, signature.num_arguments,
+                                                            num_arguments));
+    if (signature.variadic_arguments && num_variadic < 1)
+        sink(sc::diag::Diagnostic::primitive_needs_variadic_arguments(text, arguments_l, primitive_l));
+    if (signature.keyword_arguments && num_variadic < 2)
+        sink(sc::diag::Diagnostic::primitive_needs_keyword_arguments(text, arguments_l, primitive_l));
 }
 }

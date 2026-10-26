@@ -20,24 +20,40 @@ ir::OptionalSymSCSymbol function_name(ClassLibrary& library, const ir::IRGraph& 
     return {};
 }
 
+// A computed value that is a literal, e.g., `a = (false)` or `b(#[1])`, but not a class name, which is read.
+ir::OptionalConstExprIndex literal_value(const ClassLibrary& library, const ir::IRGraph& g, ir::NodeIndex value) {
+    const auto collection = g.as_a<ir::SCCollection_I>(value);
+    if (!g.is_a<ir::SCLiteral_I>(value) && !(collection && g.payload(*collection).literal))
+        return {};
+    const auto constant = g.node_as_constexpr(value);
+    if (!constant || library.ctx.constant_table(*constant).get_if<ir::SymSCClassName>())
+        return {};
+    return *constant;
+}
+
 // A method's or function's own arguments and variables, not those hoisted into its frame from an inlined function,
-// which are set each time it runs.
+// which are set each time it runs. A bracketed literal is computed when nil is passed, but the frame holds it too, as
+// the old compiler had it, e.g., for SynthDef's controls.
 template <typename Function>
-void set_prototypes(const ir::IRGraph& g, const backend::Frames& frames, backend::FrameIndex frame, Function f,
+void set_prototypes(const ClassLibrary& library, const ir::IRGraph& g, const backend::Frames& frames,
+                    backend::FrameIndex frame, Function f,
                     util::IndexedVector<backend::FrameSlotIndex, CompiledSlot>& slots) {
-    const auto set = [&](ir::LocalIndex local, ir::OptionalConstExprIndex prototype) {
-        const auto& location = frames.locations[local];
+    const auto set = [&](auto declare) {
+        const auto& d = g.payload(declare);
+        const auto& location = frames.locations[d.local];
         assert(location.frame && *location.frame == *frame);
         (void)frame;
-        slots[location.slot].prototype = prototype;
+        const auto [value] = g.children(declare);
+        slots[location.slot].prototype =
+            d.prototype ? d.prototype : literal_value(library, g, ir::NodeIndex { *value });
     };
     const auto [positional, variadic, body] = g.children(f);
     for (const auto list : { positional, variadic })
         for (auto it = g.children(list).iter(); it; ++it)
-            set(g.payload(*it).local, g.payload(*it).prototype);
+            set(*it);
     for (auto it = g.children(body).iter(); it; ++it)
         if (const auto declare = g.as_a<ir::SCVariableDeclare_I>(*it))
-            set(g.payload(*declare).local, g.payload(*declare).prototype);
+            set(*declare);
 }
 
 util::IndexedVector<backend::FrameSlotIndex, CompiledSlot> compiled_slots(const ClassLibrary& library,
@@ -50,9 +66,9 @@ util::IndexedVector<backend::FrameSlotIndex, CompiledSlot> compiled_slots(const 
         (void)slots.push_back(
             { local ? g.local(ir::LocalIndex { *local }).name : library.ctx.common_symbols.this_, {} });
     if (const auto method = g.as_a<ir::SCMethod_I>(frame.owner))
-        set_prototypes(g, frames, index, *method, slots);
+        set_prototypes(library, g, frames, index, *method, slots);
     else if (const auto function = g.as_a<ir::SCFunction_I>(frame.owner))
-        set_prototypes(g, frames, index, *function, slots);
+        set_prototypes(library, g, frames, index, *function, slots);
     return slots;
 }
 

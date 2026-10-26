@@ -33,6 +33,7 @@ namespace sc::compiler {
 
 struct ClassFile;
 struct ClassFileSource;
+struct VMDefinitions;
 struct ClassLibraryTimes;
 struct ClassLibrary;
 struct Backend;
@@ -47,12 +48,13 @@ using ClassFiles = util::IndexedVector<ir::SourceEntryIndex, ClassFile>;
 [[nodiscard]] ClassFiles
 find_class_files(const util::IndexedVector<ir::ModuleIndex, std::filesystem::path>& module_paths);
 
+// The VM's definitions, its intrinsic classes and primitives, are checked against the classes, none are without them.
 [[nodiscard]] std::unique_ptr<ClassLibrary> compile_class_library(const ClassFiles& files, std::size_t num_threads,
-                                                                  ClassLibraryTimes& times);
+                                                                  ClassLibraryTimes& times, const VMDefinitions& vm);
 // Text that isn't in files, e.g., an editor's.
 [[nodiscard]] std::unique_ptr<ClassLibrary>
 compile_class_library(const util::IndexedVector<ir::SourceEntryIndex, ClassFileSource>& sources,
-                      std::size_t num_threads, ClassLibraryTimes& times);
+                      std::size_t num_threads, ClassLibraryTimes& times, const VMDefinitions& vm);
 
 using CompilationUnit = ir::join<ir::SCClass_I, ir::SCInterpreted_I>;
 
@@ -77,6 +79,35 @@ struct ClassFileSource {
     // Says it is a class file.
     std::shared_ptr<const src::TextInfo> text;
     ir::ModuleIndex module;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// VM definitions
+////////////////////////////////////////////////////////////////////////////////
+
+// What the VM defines itself, as strings, as the library's symbols don't exist yet.
+
+// A class whose layout the VM relies on, e.g., Array or Interpreter.
+struct IntrinsicClass {
+    std::string name;
+    std::optional<std::string> superclass;
+    // e.g., `slot` or `char`, none when it isn't indexed.
+    std::optional<std::string> slot_type;
+    // Its own, not those it inherits.
+    std::vector<std::string> instance_variables;
+};
+
+// See ir::PrimitiveSignature.
+struct Primitive {
+    std::string name;
+    std::uint8_t num_arguments;
+    bool variadic_arguments;
+    bool keyword_arguments;
+};
+
+struct VMDefinitions {
+    std::vector<IntrinsicClass> classes {};
+    std::vector<Primitive> primitives {};
 };
 
 ////////////////////////////////////////////////////////////////////////////////

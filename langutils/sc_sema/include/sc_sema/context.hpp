@@ -2,6 +2,7 @@
 
 #include "sc_diagnostic/sc_diagnostic.hpp"
 #include "sc_parser/indexes_typed.hpp"
+#include "sc_sema/primitive_signature.hpp"
 #include "sc_sema/common_classes.hpp"
 #include "sc_sema/common_symbols.hpp"
 #include "sc_sema/known_methods.hpp"
@@ -126,6 +127,7 @@ struct Context {
     ClassNames class_names {};
     // Filled in once the class library is declared, before compiling it.
     KnownMethods known_methods {};
+    PrimitiveSignatures primitive_signatures {};
 };
 
 }

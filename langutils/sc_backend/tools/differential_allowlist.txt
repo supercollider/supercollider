@@ -18,21 +18,3 @@ BytecodeShortcuts:hiddenReturn  `var other; ^other` hides an instance variable
 # Shorter: a sequence ending in `nil` returns with ReturnNil, the old compiler only used it for a plain `^nil`.
 BytecodeDifferences:returnSequenceNil  `^(a; nil)`
 
-# Not compiled: a `var` before a primitive is a parse error in the new grammar, the class library will be changed.
-ArrayedCollection:swap  `var` before `_Prim`
-ArrayedCollection:addAll  `var` before `_Prim`
-ArrayedCollection:overWrite  `var` before `_Prim`
-Object:asString  `var` before `_Prim`
-
-# Not compiled: a subclass redeclaring its superclass's class variable or constant is an error
-# (duplicate_member_in_base), the old compiler made a second one. These are the accessors of the redeclared ones.
-Meta_Char:nl  constant `nl`, also in Object
-Meta_CSVFileReader:delim  class variable `delim`, also in FileReader
-Meta_SemiColonFileReader:delim  class variable `delim`, also in FileReader
-Meta_TabFileReader:delim  class variable `delim`, also in FileReader
-Meta_EventPatternProxy:defaultQuant  class variable `defaultQuant`, also in TaskProxy
-Meta_EventPatternProxy:defaultQuant_  class variable `defaultQuant`, also in TaskProxy
-Meta_TaskProxy:defaultQuant  class variable `defaultQuant`, also in PatternProxy
-Meta_TaskProxy:defaultQuant_  class variable `defaultQuant`, also in PatternProxy
-Meta_TempoBusClock:default  class variable `default`, also in TempoClock
-Meta_TempoBusClock:default_  class variable `default`, also in TempoClock

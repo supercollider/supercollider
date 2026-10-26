@@ -12,6 +12,7 @@
 #include "sc_sema/source_location.hpp"
 #include "sc_sema/symbol_table.hpp"
 #include "sc_sema/symbols.hpp"
+#include "sc_sema/versions.hpp"
 #include "sc_sema/ir.hpp"
 #include "ast2ir/ast2ir_base.hpp"
 
@@ -314,6 +315,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
         }
 
 
+        const bool is_meta = ctx.symbol_table.is_meta(decl.name());
         for (auto s : decl.member_order()) {
             const auto& mem_decl = decl.find_member(s);
             if (names.count(mem_decl->name)) {
@@ -322,13 +324,23 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                     std::find_if(members.begin(), members.end(),
                                  [n = mem_decl->name](const MemberEntry& m) { return n == std::get<0>(m).name; });
                 assert(fnd != members.end());
+                const auto base_text = std::get<1>(*fnd)->text_info();
+                const auto base_location = std::get<1>(*fnd)->location(std::get<2>(*fnd));
+                const auto here_text = decl.ast_graph()->text_info();
+                const auto here_location = decl.ast_graph()->location(mem_decl->name_index);
 
-                ctx.diagnostics(diag::Diagnostic::duplicate_member_in_base(
-                    std::get<1>(*fnd)->text_info(), std::get<1>(*fnd)->location(std::get<2>(*fnd)),
-                    decl.ast_graph()->text_info(), decl.ast_graph()->location(mem_decl->name_index)));
-
-                // This avoids pushing the variable and the code should revert to the old behaviour.
-                continue;
+                // An instance variable needs its own slot, but a class variable or constant can hide the superclass's,
+                // as the old compiler allowed, so this class and its subclasses use this one.
+                if (!is_meta) {
+                    ctx.diagnostics(
+                        diag::Diagnostic::duplicate_member_in_base(base_text, base_location, here_text, here_location));
+                    // This avoids pushing the variable and the code should revert to the old behaviour.
+                    continue;
+                }
+                if (warns_hidden_class_members(decl.version()))
+                    ctx.diagnostics(
+                        diag::Diagnostic::hidden_class_member(base_text, base_location, here_text, here_location));
+                members.erase(fnd);
             }
             SCMember ir_mem { mem_decl->name, decl.name() };
             if (mem_decl->expr_index) {

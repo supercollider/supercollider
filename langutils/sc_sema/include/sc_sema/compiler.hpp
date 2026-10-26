@@ -37,7 +37,6 @@ struct ClassDeclaration;
 struct IRCompiler {
     IRCompiler(Context& mctx): ctx(mctx) {}
 
-    // It is required that all common classes (in the context) are also listed here as constaints.
     [[nodiscard]] std::vector<sc::diag::Diagnostic>
     compile_class_library(const IntrinsicConstraints& intrinsic_constraints, //
                           size_t num_threads = std::thread::hardware_concurrency() //
