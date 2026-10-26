@@ -126,6 +126,11 @@ struct ClassFileFinder {
 // Loader
 ////////////////////////////////////////////////////////////////////////////////
 
+// The loader only loads class graphs.
+const compiler::CompiledClass& classOf(const compiler::CompiledGraph& g) {
+    return std::get<compiler::CompiledClass>(g.unit);
+}
+
 int instanceFormat(ir::SCClass::MemoryLayout layout) {
     using Layout = ir::SCClass::MemoryLayout;
     switch (layout) {
@@ -359,8 +364,8 @@ struct Loader {
     // Both the class and its meta class, as the old compiler made them, with the names of their members, whose values
     // are filled once every class is made, see fillClass, as a value can be an object of any class, e.g., an Event.
     void makeClass(const compiler::CompiledGraph& g, const compiler::CompiledGraph& meta) {
-        const auto& layout = *g.layout;
-        const auto& metaLayout = *meta.layout;
+        const auto& layout = classOf(g);
+        const auto& metaLayout = classOf(meta);
         auto* name = symbol(layout.name);
         auto* superclassName = layout.superclass ? symbol(ir::SymSCClassName { *layout.superclass }) : nullptr;
         PyrClass* superclassobj = superclassName ? superclassName->u.classobj : nullptr;
@@ -452,7 +457,7 @@ struct Loader {
 
     // The values of the class's members, its superclass's filled first.
     void fillClass(const compiler::CompiledGraph& g, const compiler::CompiledGraph& meta) {
-        const auto& layout = *g.layout;
+        const auto& layout = classOf(g);
         auto* classobj = symbol(layout.name)->u.classobj;
         auto* superclassobj =
             layout.superclass ? symbol(ir::SymSCClassName { *layout.superclass })->u.classobj : nullptr;
@@ -476,8 +481,8 @@ struct Loader {
                 values->slots[i] = value(members[i].value);
             values->size = narrow<int>(members.size());
         };
-        setValues(meta.layout->class_variables, classobj->cprototype);
-        setValues(meta.layout->constants, classobj->constValues);
+        setValues(classOf(meta).class_variables, classobj->cprototype);
+        setValues(classOf(meta).constants, classobj->constValues);
     }
 
     // Methods and functions
@@ -650,14 +655,13 @@ struct Loader {
 
     // A constant's accessor returns its constValues' slot.
     PyrSlot literal(ir::ConstExprIndex v, const compiler::CompiledGraph& g) {
-        if (g.layout) {
-            if (const auto fnd = memberOwners.find(g.layout->name); fnd != memberOwners.end()) {
-                auto* owner = fnd->second;
-                const auto& constants = g.layout->constants;
-                for (std::size_t i = 0; i < constants.size(); ++i)
-                    if (constants[i].value && ir::ConstExprIndex { *constants[i].value } == v)
-                        return slotRawObject(&owner->constValues)->slots[i];
-            }
+        const auto& layout = classOf(g);
+        if (const auto fnd = memberOwners.find(layout.name); fnd != memberOwners.end()) {
+            auto* owner = fnd->second;
+            const auto& constants = layout.constants;
+            for (std::size_t i = 0; i < constants.size(); ++i)
+                if (constants[i].value && ir::ConstExprIndex { *constants[i].value } == v)
+                    return slotRawObject(&owner->constValues)->slots[i];
         }
         return value(v);
     }
@@ -707,7 +711,7 @@ struct Loader {
 
     // The accessors first, then the methods, as the old compiler added them.
     void makeMethods(const compiler::CompiledGraph& g) {
-        auto* owner = symbol(g.layout->name)->u.classobj;
+        auto* owner = symbol(classOf(g).name)->u.classobj;
         if (!owner)
             return;
         for (const auto& a : g.accessors)
@@ -821,28 +825,23 @@ bool loadClassLibrary(std::size_t& thingsPosted) {
 
     // In topological order, so a superclass is made before its subclasses. With an error, a class may be poisoned and
     // not compiled, so nothing is made.
-    std::vector<compiler::CompiledGraph> classes;
-    library->compiler.depth_first_do([&](const ir::IRGraph& g) {
-        const auto root = std::get<ir::SCClass_I>(*g.root());
-        auto compiled = compiler::finish(
-            *library, compiler::emit(*library, compiler::lower(*library, compiler::layout_frames(*library, g, root))));
-        for (const auto& d : compiled.diagnostics)
+    const auto classes = compiler::compile_class_graphs(*library, numThreads);
+    for (const auto& g : classes.raw())
+        for (const auto& d : g.diagnostics)
             thingsPosted += postDiagnostic(d, errors);
-        classes.push_back(std::move(compiled));
-    });
     if (errors)
         return false;
 
     Loader loader { *library };
     std::unordered_map<PyrSymbol*, const compiler::CompiledGraph*> metaClasses;
-    for (const auto& g : classes)
-        if (library->symbols.is_meta(g.layout->name))
-            metaClasses.emplace(loader.symbol(g.layout->name), &g);
+    for (const auto& g : classes.raw())
+        if (library->symbols.is_meta(classOf(g).name))
+            metaClasses.emplace(loader.symbol(classOf(g).name), &g);
     // Every class graph has its meta class's, they are only poisoned together, which is an error.
     std::vector<std::pair<const compiler::CompiledGraph*, const compiler::CompiledGraph*>> classAndMeta;
-    for (const auto& g : classes)
-        if (!library->symbols.is_meta(g.layout->name)) {
-            const auto fnd = metaClasses.find(getmetasym(loader.symbol(g.layout->name)->name));
+    for (const auto& g : classes.raw())
+        if (!library->symbols.is_meta(classOf(g).name)) {
+            const auto fnd = metaClasses.find(getmetasym(loader.symbol(classOf(g).name)->name));
             assert(fnd != metaClasses.end());
             classAndMeta.push_back({ &g, fnd->second });
         }
@@ -850,7 +849,7 @@ bool loadClassLibrary(std::size_t& thingsPosted) {
         loader.makeClass(*g, *meta);
     for (const auto& [g, meta] : classAndMeta)
         loader.fillClass(*g, *meta);
-    for (const auto& g : classes)
+    for (const auto& g : classes.raw())
         loader.makeMethods(g);
     gNumClassVars = narrow<int>(library->backend->members.num_class_variables());
     return true;

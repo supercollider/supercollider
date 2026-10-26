@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <variant>
+#include <vector>
 
 namespace sc::compiler {
 
@@ -12,7 +13,7 @@ namespace {
 // Functions
 ////////////////////////////////////////////////////////////////////////////////
 
-ir::OptionalSymSCSymbol function_name(ClassLibrary& library, const ir::IRGraph& g, backend::FrameOwner_I owner) {
+ir::OptionalSymSCSymbol function_name(const ClassLibrary& library, const ir::IRGraph& g, backend::FrameOwner_I owner) {
     if (const auto method = g.as_a<ir::SCMethod_I>(owner))
         return ir::SymSCSymbol::from(g.payload(*method).selector.value);
     if (const auto function = g.as_a<ir::SCFunction_I>(owner))
@@ -204,15 +205,14 @@ void write_function(std::ostream& out, backend::lir::FunctionIndex index, const 
 // API
 ////////////////////////////////////////////////////////////////////////////////
 
-CompiledGraph finish(ClassLibrary& library, EmittedGraph&& emitted) {
+CompiledGraph finish(const ClassLibrary& library, EmittedGraph&& emitted) {
     const auto& g = *emitted.graph;
     const auto& frames = emitted.frames;
     const auto& lowered = emitted.lowered;
-    CompiledGraph out;
-    out.sources = g.sources();
     const auto class_i = g.as_a<ir::SCClass_I>(emitted.root);
-    if (class_i)
-        out.layout = compiled_class(library, g, *class_i);
+    CompiledGraph out { class_i ? decltype(CompiledGraph::unit) { compiled_class(library, g, *class_i) }
+                                : CompiledInterpreted {} };
+    out.sources = g.sources();
 
     util::IndexedVector<backend::FrameIndex, backend::lir::OptionalFunctionIndex> function_of_frame;
     function_of_frame.resize(frames.frames.size());
@@ -244,7 +244,7 @@ CompiledGraph finish(ClassLibrary& library, EmittedGraph&& emitted) {
             if (m.primitive)
                 out.methods.back().primitive = m.primitive->value;
         } else {
-            out.interpreted.push_back(root);
+            std::get<CompiledInterpreted>(out.unit).functions.push_back(root);
         }
     }
 
@@ -259,7 +259,10 @@ CompiledGraph finish(ClassLibrary& library, EmittedGraph&& emitted) {
 
 void write_compiled(std::ostream& out, const CompiledGraph& compiled, const ClassLibrary& library) {
     const auto& symbols = library.symbols;
-    if (const auto& layout = compiled.layout) {
+    static const std::vector<backend::lir::FunctionIndex> no_functions {};
+    const auto* interpreted_unit = std::get_if<CompiledInterpreted>(&compiled.unit);
+    const auto& interpreted = interpreted_unit ? interpreted_unit->functions : no_functions;
+    if (const auto* layout = std::get_if<CompiledClass>(&compiled.unit)) {
         out << symbols(layout->name) << "\n|  class ";
         write_location(out, layout->location);
         if (layout->superclass)
@@ -286,15 +289,14 @@ void write_compiled(std::ostream& out, const CompiledGraph& compiled, const Clas
             out << ", primitive " << symbols(ir::SymSCPrimitive { *method.primitive });
         out << "\n";
     }
-    if (!compiled.interpreted.empty()) {
+    if (!interpreted.empty()) {
         out << "|  interpreted:";
-        for (const auto f : compiled.interpreted)
+        for (const auto f : interpreted)
             out << " function " << *f << ",";
         out << "\n";
     }
     // A function's root is emitted when a method or the interpreted code is.
     const auto& methods = compiled.methods;
-    const auto& interpreted = compiled.interpreted;
     for (const auto index : compiled.functions.indices()) {
         auto root = index;
         while (const auto parent = compiled.functions[root].parent)

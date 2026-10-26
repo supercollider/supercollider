@@ -15,6 +15,7 @@
 #include "sc_sema/source_location.hpp"
 #include "sc_sema/symbol_table.hpp"
 #include "sc_util/indexed_vector.hpp"
+#include "sc_util/strong_index.hpp"
 
 #include <cstddef>
 #include <cstdint>
@@ -23,6 +24,7 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <variant>
 #include <vector>
 
 namespace sc::compiler {
@@ -62,7 +64,15 @@ using CompilationUnit = ir::join<ir::SCClass_I, ir::SCInterpreted_I>;
 [[nodiscard]] FramedGraph layout_frames(const ClassLibrary& library, const ir::IRGraph& g, CompilationUnit root);
 [[nodiscard]] LoweredGraph lower(ClassLibrary& library, FramedGraph&& framed);
 [[nodiscard]] EmittedGraph emit(const ClassLibrary& library, LoweredGraph&& lowered);
-[[nodiscard]] CompiledGraph finish(ClassLibrary& library, EmittedGraph&& emitted);
+[[nodiscard]] CompiledGraph finish(const ClassLibrary& library, EmittedGraph&& emitted);
+
+// A class graph's topological position.
+using ClassGraphIndex = util::StrongIndex<std::uint32_t, struct ClassGraphIndex__>;
+
+// Every class graph through the backend's stages, in parallel, in topological order. Only lowering writes to the
+// library, to its symbols, which are thread safe.
+[[nodiscard]] util::IndexedVector<ClassGraphIndex, CompiledGraph> compile_class_graphs(ClassLibrary& library,
+                                                                                       std::size_t num_threads);
 
 void write_compiled(std::ostream& out, const CompiledGraph& compiled, const ClassLibrary& library);
 
@@ -249,15 +259,17 @@ struct CompiledAccessor {
 };
 static_assert(sizeof(CompiledAccessor) == 44);
 
+struct CompiledInterpreted {
+    // A region's each, in order.
+    std::vector<backend::lir::FunctionIndex> functions;
+};
+
 struct CompiledGraph {
-    // Not for interpreted code.
-    std::optional<CompiledClass> layout;
+    std::variant<CompiledClass, CompiledInterpreted> unit;
     util::IndexedVector<ir::SourceIndex, std::shared_ptr<const src::TextInfo>> sources;
     util::IndexedVector<backend::lir::FunctionIndex, CompiledFunction> functions;
     std::vector<CompiledMethod> methods;
     std::vector<CompiledAccessor> accessors;
-    // Interpreted code's functions, a region's each, in order.
-    std::vector<backend::lir::FunctionIndex> interpreted;
     // The frames', then the emitter's.
     std::vector<diag::Diagnostic> diagnostics;
 };

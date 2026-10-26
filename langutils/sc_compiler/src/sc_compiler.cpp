@@ -245,4 +245,27 @@ EmittedGraph emit(const ClassLibrary& library, LoweredGraph&& lowered) {
     auto emitted = backend::emit(emitting, lowered.lowered);
     return { lowered.graph, lowered.root, std::move(lowered.frames), std::move(lowered.lowered), std::move(emitted) };
 }
+
+util::IndexedVector<ClassGraphIndex, CompiledGraph> compile_class_graphs(ClassLibrary& library,
+                                                                         std::size_t num_threads) {
+    util::IndexedVector<ClassGraphIndex, const ir::IRGraph*> graphs;
+    library.compiler.depth_first_do([&](const ir::IRGraph& g) { (void)graphs.push_back(&g); });
+    util::IndexedVector<ClassGraphIndex, std::optional<CompiledGraph>> results;
+    results.resize(graphs.size());
+    {
+        boost::asio::thread_pool pool { num_threads };
+        for (const auto i : graphs.indices())
+            boost::asio::post(pool, [&, i] {
+                const auto& g = *graphs[i];
+                const auto root = std::get<ir::SCClass_I>(*g.root());
+                results[i] = finish(library, emit(library, lower(library, layout_frames(library, g, root))));
+            });
+        pool.join();
+    }
+    util::IndexedVector<ClassGraphIndex, CompiledGraph> compiled;
+    compiled.raw().reserve(results.size());
+    for (auto& r : results.raw())
+        (void)compiled.push_back(std::move(*r));
+    return compiled;
+}
 }
