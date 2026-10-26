@@ -2281,17 +2281,23 @@ HOT void Interpret(VMGlobals* g) {
                 break;
 
             case methAssignInstVar: {
-                sp -= numArgsPushed - 1;
+                PyrSlot value {};
+                if (numArgsPushed >= 2) {
+                    // ditch extra
+                    sp -= numArgsPushed - 1;
+                    value = sp[1];
+                } else if (IsObj(&meth->prototypeFrame)) {
+                    // not enough args, has default
+                    value = slotRawObject(&meth->prototypeFrame)->slots[1];
+                } // else nil.
+
                 index = methraw->specialIndex;
                 PyrObject* obj = slotRawObject(slot);
                 if (obj->IsImmutable()) {
                     StoreToImmutableB(g, sp, ip);
                 } else {
-                    if (numArgsPushed >= 2) {
-                        slotCopy(&obj->slots[index], sp + 1);
-                        g->gc->GCWrite(obj, sp + 1);
-                    } else
-                        slotCopy(&obj->slots[index], &gSpecialValues.Nil_);
+                    slotCopy(&obj->slots[index], &value);
+                    g->gc->GCWrite(obj, &value);
                     slotCopy(sp, slot);
                 }
                 break;
@@ -2302,15 +2308,21 @@ HOT void Interpret(VMGlobals* g) {
                 slotCopy(sp, &g->classvars->slots[methraw->specialIndex]);
                 break;
 
-            case methAssignClassVar:
-                sp -= numArgsPushed - 1;
+            case methAssignClassVar: {
+                PyrSlot value {};
                 if (numArgsPushed >= 2) {
-                    slotCopy(&g->classvars->slots[methraw->specialIndex], sp + 1);
-                    g->gc->GCWrite(g->classvars, sp + 1);
-                } else
-                    slotCopy(&g->classvars->slots[methraw->specialIndex], &gSpecialValues.Nil_);
+                    // ditch extra
+                    sp -= numArgsPushed - 1;
+                    value = sp[1];
+                } else if (IsObj(&meth->prototypeFrame)) {
+                    // default if present
+                    value = slotRawObject(&meth->prototypeFrame)->slots[1];
+                } // else nil
+                slotCopy(&g->classvars->slots[methraw->specialIndex], &value);
+                g->gc->GCWrite(g->classvars, &value);
                 slotCopy(sp, slot);
                 break;
+            }
 
             case methRedirect: /* send a different selector to self */
                 pushDefaultArgsAndChopUnused();
@@ -2399,18 +2411,22 @@ HOT void Interpret(VMGlobals* g) {
                 break;
 
             case methAssignInstVar: {
-                sp -= numArgsPushed - 1;
-                numArgsPushed -= numKeyArgsPushed << 1;
+                PyrSlot value;
+                if (numKeyArgsPushed == 0 && numArgsPushed >= 2) {
+                    sp -= numArgsPushed - 1;
+                    value = sp[1];
+                } else {
+                    g->sp = sp;
+                    value = shortcutMethAssign(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
+                    sp = g->sp;
+                }
                 index = methraw->specialIndex;
                 PyrObject* obj = slotRawObject(slot);
                 if (obj->IsImmutable()) {
                     StoreToImmutableB(g, sp, ip);
                 } else {
-                    if (numArgsPushed >= 2) {
-                        slotCopy(&obj->slots[index], sp + 1);
-                        g->gc->GCWrite(obj, sp + 1);
-                    } else
-                        slotCopy(&obj->slots[index], &gSpecialValues.Nil_);
+                    slotCopy(&obj->slots[index], &value);
+                    g->gc->GCWrite(obj, &value);
                     slotCopy(sp, slot);
                 }
                 break;
@@ -2421,15 +2437,21 @@ HOT void Interpret(VMGlobals* g) {
                 slotCopy(sp, &g->classvars->slots[methraw->specialIndex]);
                 break;
 
-            case methAssignClassVar:
-                sp -= numArgsPushed - 1;
-                if (numArgsPushed >= 2) {
-                    slotCopy(&g->classvars->slots[methraw->specialIndex], sp + 1);
-                    g->gc->GCWrite(g->classvars, sp + 1);
-                } else
-                    slotCopy(&g->classvars->slots[methraw->specialIndex], &gSpecialValues.Nil_);
+            case methAssignClassVar: {
+                PyrSlot value;
+                if (numKeyArgsPushed == 0 && numArgsPushed >= 2) {
+                    sp -= numArgsPushed - 1;
+                    value = sp[1];
+                } else {
+                    g->sp = sp;
+                    value = shortcutMethAssign(g, meth, methraw, numArgsPushed, numKeyArgsPushed);
+                    sp = g->sp;
+                }
+                slotCopy(&g->classvars->slots[methraw->specialIndex], &value);
+                g->gc->GCWrite(g->classvars, &value);
                 slotCopy(sp, slot);
                 break;
+            }
 
             case methRedirect: /* send a different selector to self, e.g. this.subclassResponsibility */
                 g->sp = sp;

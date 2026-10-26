@@ -47,3 +47,6 @@ void returnFromMethod(VMGlobals* g);
 
 int keywordFixStack(VMGlobals* g, PyrMethod* meth, PyrMethodRaw* methraw, std::int64_t allArgsPushed,
                     std::int64_t numKeyArgsPushed);
+
+PyrSlot shortcutMethAssign(VMGlobals* g, PyrMethod* meth, PyrMethodRaw* methraw, std::int64_t allArgsPushed,
+                           std::int64_t numKeyArgsPushed);
