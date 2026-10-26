@@ -91,7 +91,7 @@ struct UnexpectedToken {
 class parser;
 
 struct ParserContext {
-    enum struct Mode { ClassLibrary, CommandInitial, CommandContinue };
+    enum struct Mode { ClassLibrary, CommandInitial, CommandContinue, FunctionInitial, FunctionContinue };
     std::shared_ptr<const sc::src::TextInfo> text_info;
     // Used to emit the specical interpret token.
     Mode mode;

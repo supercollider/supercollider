@@ -17,7 +17,7 @@ const auto tester_base = [](const char* src, bool is_class_file, bool no_diags) 
         sc::src::NormalisedSource(src),
         sc::src::FileCodeLocation {},
         "test_file",
-        is_class_file,
+        is_class_file ? sc::src::TextKind::ClassFile : sc::src::TextKind::ScdFile,
     });
 
     auto [graph, accepted] = P::parse(text_info);
@@ -415,10 +415,11 @@ Foo {
 
 // A file in another encoding, here Mac Roman non-breaking spaces, is reported once at its first invalid byte.
 BOOST_AUTO_TEST_CASE(invalid_utf8_reported_once) {
-    auto text_info = std::make_shared<sc::src::TextInfo>(sc::src::NormalisedSource("a = 1;\n\xca\xca"
-                                                                                   "b = 2;\nc = \xca"
-                                                                                   "3;\n"),
-                                                         sc::src::FileCodeLocation {}, "test_file", false);
+    auto text_info =
+        std::make_shared<sc::src::TextInfo>(sc::src::NormalisedSource("a = 1;\n\xca\xca"
+                                                                      "b = 2;\nc = \xca"
+                                                                      "3;\n"),
+                                            sc::src::FileCodeLocation {}, "test_file", sc::src::TextKind::ScdFile);
     auto [graph, result] = P::parse(text_info);
     BOOST_TEST_REQUIRE(graph->diagnostics().size() == 1);
     const auto& d = graph->diagnostics()[0];
@@ -433,8 +434,9 @@ using V = P::LanguageVersion;
 // The version of each class and extension, in order, and the names of the diagnostics.
 void check_versions(const char* src, const std::vector<V>& versions, const std::vector<std::string>& diagnostics,
                     bool is_class_file = true) {
-    auto text_info = std::make_shared<sc::src::TextInfo>(sc::src::NormalisedSource(src), sc::src::FileCodeLocation {},
-                                                         "test_file", is_class_file);
+    auto text_info =
+        std::make_shared<sc::src::TextInfo>(sc::src::NormalisedSource(src), sc::src::FileCodeLocation {}, "test_file",
+                                            is_class_file ? sc::src::TextKind::ClassFile : sc::src::TextKind::ScdFile);
     auto [graph, result] = P::parse(text_info);
 
     std::vector<V> found_versions;
@@ -514,7 +516,7 @@ BOOST_AUTO_TEST_CASE(versions_interpreted) {
 BOOST_AUTO_TEST_CASE(closed_blocks) {
     auto text_info =
         std::make_shared<sc::src::TextInfo>(sc::src::NormalisedSource("#{ |a| { a } }; { #{ } }; f(#{ 1 }) { 2 }"),
-                                            sc::src::FileCodeLocation {}, "test_file", false);
+                                            sc::src::FileCodeLocation {}, "test_file", sc::src::TextKind::ScdFile);
     auto [graph, result] = P::parse(text_info);
     BOOST_TEST(result);
     BOOST_TEST(graph->diagnostics().empty());
@@ -530,4 +532,38 @@ BOOST_AUTO_TEST_CASE(closed_blocks) {
         closed.push_back(c);
     BOOST_TEST(closed == (std::vector<bool> { true, false, false, true, true, false }),
                boost::test_tools::per_element());
+}
+
+// The VM's interpreted code is one function, as the old grammar's cmdlinecode: a body, or a body with variables in
+// brackets, whose variables are the function's own. Without regions, a missing semicolon is an error.
+BOOST_AUTO_TEST_CASE(interpreted_function) {
+    const auto parse_function = [](const char* src) {
+        auto text_info =
+            std::make_shared<sc::src::TextInfo>(sc::src::NormalisedSource(src), sc::src::FileCodeLocation {},
+                                                "test_file", sc::src::TextKind::InterpretedFunction);
+        return std::get<0>(P::parse(text_info));
+    };
+    for (const char* src : { "", ";", "1", "a = 1; b = 2; a + b;", "var a = 1; a", "(var a = 1; a)", "( var a, b; )",
+                             "(a; b)", "^1", "a = 1; ^a", "(\nvar a = 1;\na\n) // comment" }) {
+        BOOST_TEST_CONTEXT(src) {
+            const auto graph = parse_function(src);
+            BOOST_TEST_REQUIRE(graph);
+            BOOST_TEST(graph->diagnostics().empty());
+            const auto root = graph->root();
+            BOOST_TEST_REQUIRE(root.has_value());
+            BOOST_TEST(std::holds_alternative<P::FileAsFunctionIndex>(*root));
+            bool immediately_evaluated = false;
+            graph->flat_walk([&](const auto&, const auto& payload, const sc::src::SourceCodeRange&, size_t) {
+                immediately_evaluated =
+                    immediately_evaluated || std::holds_alternative<P::ImmediatelyEvaluatedBlock>(payload);
+            });
+            BOOST_TEST(!immediately_evaluated);
+        }
+    }
+    for (const char* src : { "|a| a", "(var a = 1; a); 2", "(var a = 1; a) (var b = 2; b)", "a = 1\nb = 2" }) {
+        BOOST_TEST_CONTEXT(src) {
+            const auto graph = parse_function(src);
+            BOOST_TEST(!(graph && graph->diagnostics().empty()));
+        }
+    }
 }

@@ -1607,6 +1607,7 @@ void shutdownLibrary(bool wasCompiledPreviously) {
         }
 
         pyr_pool_runtime->FreeAll();
+        unloadClassLibrary();
     }
 
     gClassLibraryInfo.reset();

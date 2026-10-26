@@ -59,7 +59,7 @@ using namespace sc::ast;
 %token <LexerToken> VAR ARG CLASSVAR CONST
 %token <LexerToken> NIL TRUE FALSE PI
 %token <LexerToken> ELLIPSIS DOTDOT BEGINCLOSEDFUNC
-%token <LexerToken> BADTOKEN INTERPRET
+%token <LexerToken> BADTOKEN INTERPRET INTERPRET_FUNCTION
 %token <LexerToken> LEFTARROW 
 %token <LexerToken> WHILE
 %token <LexerToken> LEXER_ERROR
@@ -158,7 +158,7 @@ using namespace sc::ast;
 // misc
 %type <RWAccessorIndex> accessor 
 
-%type <FileAsFunctionIndex> file_as_func
+%type <FileAsFunctionIndex> file_as_func interpreted_function
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -178,6 +178,7 @@ go
 	: region semicolon.opt YYEOF { $$ = cxt.graph->assign_root($region); }
 	| INTERPRET YYEOF { $$ = cxt.graph->assign_root(cxt.create(RegionList{}, @$)); }
 	| file_as_func { $$ = cxt.graph->assign_root($1); }
+	| interpreted_function { $$ = cxt.graph->assign_root($1); }
 	| classOrExtList.list[classes] YYEOF  { $$ = cxt.graph->assign_root($classes); }
 	| %empty { $$ = cxt.graph->assign_root(cxt.create(ClassOrExtensionList{}, @$));}
 	;
@@ -195,6 +196,26 @@ file_as_func
 
 	| INTERPRET variable_declarations[decls] semicolon.opt YYEOF
 		{ $$ = cxt.create(FileAsFunction{}, @$, cxt.create(DeclareArgumentList{}, @1), cxt.create(BlockContentsList{}, @3, $decls)); }
+	;
+
+////////////////////////////////////////////////////////////////////////////////
+// interpreted function
+////////////////////////////////////////////////////////////////////////////////
+
+// What the VM interprets, as the old grammar's cmdlinecode: a body, or a body with variables in brackets, as a function
+// without arguments.
+interpreted_function
+	: INTERPRET_FUNCTION block.contents[contents] semicolon.opt YYEOF
+		{ $$ = cxt.create(FileAsFunction{}, @$, cxt.create(DeclareArgumentList{}, @1), $contents); }
+
+	| INTERPRET_FUNCTION semicolon.opt YYEOF
+		{ $$ = cxt.create(FileAsFunction{}, @$, cxt.create(DeclareArgumentList{}, @1), cxt.create(BlockContentsList{}, @$)); }
+
+	| INTERPRET_FUNCTION OPENPAREN variable_declarations[decls] SEMICOLON block.contents[contents] semicolon.opt CLOSEPAREN YYEOF
+		{ $$ = cxt.create(FileAsFunction{}, @$, cxt.create(DeclareArgumentList{}, @1), cxt.graph->prepend($contents, $decls)); }
+
+	| INTERPRET_FUNCTION OPENPAREN variable_declarations[decls] semicolon.opt CLOSEPAREN YYEOF
+		{ $$ = cxt.create(FileAsFunction{}, @$, cxt.create(DeclareArgumentList{}, @1), cxt.create(BlockContentsList{}, @decls, $decls)); }
 	;
 
 ////////////////////////////////////////////////////////////////////////////////

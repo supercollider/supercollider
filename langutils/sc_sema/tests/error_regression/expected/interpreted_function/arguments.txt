@@ -1,0 +1,17 @@
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Unexpected Token.
+interpreted_function/arguments.scd:3:1
+    1 │ // interpreted-function
+    2 │ // The old grammar had no arguments here, only an scd file can be a function with arguments.
+    3 │ |x| x + 1
+      ┆ ^ Expected an expression, the end of the file, `;`, `^`, or `var`, but found `|`.
+
+──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
+Successfully compiled 15 classes.

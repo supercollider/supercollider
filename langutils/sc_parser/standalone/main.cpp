@@ -51,8 +51,9 @@ int main(int argc, char* argv[]) {
 #else
     const auto* const source = argv[argc - 1];
 #endif // _MSC_VER
-    const auto text_info = std::make_shared<sc::src::TextInfo>(sc::src::NormalisedSource { std::string { source } },
-                                                               sc::src::FileCodeLocation {}, "source", class_file);
+    const auto text_info = std::make_shared<sc::src::TextInfo>(
+        sc::src::NormalisedSource { std::string { source } }, sc::src::FileCodeLocation {}, "source",
+        class_file ? sc::src::TextKind::ClassFile : sc::src::TextKind::ScdFile);
 
     const auto [graph, _] = sc::ast::parse(text_info);
     bool has_error = false;

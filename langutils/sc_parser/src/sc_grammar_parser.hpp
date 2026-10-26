@@ -491,6 +491,7 @@ namespace sc { namespace ast { namespace parser {
       char dummy29[sizeof (DictionaryIndex)];
 
       // file_as_func
+      // interpreted_function
       char dummy30[sizeof (FileAsFunctionIndex)];
 
       // float.raw_unsigned
@@ -557,6 +558,7 @@ namespace sc { namespace ast { namespace parser {
       // BEGINCLOSEDFUNC
       // BADTOKEN
       // INTERPRET
+      // INTERPRET_FUNCTION
       // LEFTARROW
       // WHILE
       // LEXER_ERROR
@@ -721,23 +723,24 @@ namespace sc { namespace ast { namespace parser {
     TOKEN_BEGINCLOSEDFUNC = 297,   // BEGINCLOSEDFUNC
     TOKEN_BADTOKEN = 298,          // BADTOKEN
     TOKEN_INTERPRET = 299,         // INTERPRET
-    TOKEN_LEFTARROW = 300,         // LEFTARROW
-    TOKEN_WHILE = 301,             // WHILE
-    TOKEN_LEXER_ERROR = 302,       // LEXER_ERROR
-    TOKEN_COLON = 303,             // COLON
-    TOKEN_EQUALSSIGN = 304,        // EQUALSSIGN
-    TOKEN_BINOP = 305,             // BINOP
-    TOKEN_KEYBINOP = 306,          // KEYBINOP
-    TOKEN_MINUS = 307,             // MINUS
-    TOKEN_LESSTHAN = 308,          // LESSTHAN
-    TOKEN_GREATERTHAN = 309,       // GREATERTHAN
-    TOKEN_MULTIPLY = 310,          // MULTIPLY
-    TOKEN_ADD = 311,               // ADD
-    TOKEN_PIPE = 312,              // PIPE
-    TOKEN_READWRITEVAR = 313,      // READWRITEVAR
-    TOKEN_DOT = 314,               // DOT
-    TOKEN_BACKTICK = 315,          // BACKTICK
-    TOKEN_UMINUS = 316             // UMINUS
+    TOKEN_INTERPRET_FUNCTION = 300, // INTERPRET_FUNCTION
+    TOKEN_LEFTARROW = 301,         // LEFTARROW
+    TOKEN_WHILE = 302,             // WHILE
+    TOKEN_LEXER_ERROR = 303,       // LEXER_ERROR
+    TOKEN_COLON = 304,             // COLON
+    TOKEN_EQUALSSIGN = 305,        // EQUALSSIGN
+    TOKEN_BINOP = 306,             // BINOP
+    TOKEN_KEYBINOP = 307,          // KEYBINOP
+    TOKEN_MINUS = 308,             // MINUS
+    TOKEN_LESSTHAN = 309,          // LESSTHAN
+    TOKEN_GREATERTHAN = 310,       // GREATERTHAN
+    TOKEN_MULTIPLY = 311,          // MULTIPLY
+    TOKEN_ADD = 312,               // ADD
+    TOKEN_PIPE = 313,              // PIPE
+    TOKEN_READWRITEVAR = 314,      // READWRITEVAR
+    TOKEN_DOT = 315,               // DOT
+    TOKEN_BACKTICK = 316,          // BACKTICK
+    TOKEN_UMINUS = 317             // UMINUS
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -754,7 +757,7 @@ namespace sc { namespace ast { namespace parser {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 62, ///< Number of tokens.
+        YYNTOKENS = 63, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
@@ -801,104 +804,106 @@ namespace sc { namespace ast { namespace parser {
         S_BEGINCLOSEDFUNC = 42,                  // BEGINCLOSEDFUNC
         S_BADTOKEN = 43,                         // BADTOKEN
         S_INTERPRET = 44,                        // INTERPRET
-        S_LEFTARROW = 45,                        // LEFTARROW
-        S_WHILE = 46,                            // WHILE
-        S_LEXER_ERROR = 47,                      // LEXER_ERROR
-        S_COLON = 48,                            // COLON
-        S_EQUALSSIGN = 49,                       // EQUALSSIGN
-        S_BINOP = 50,                            // BINOP
-        S_KEYBINOP = 51,                         // KEYBINOP
-        S_MINUS = 52,                            // MINUS
-        S_LESSTHAN = 53,                         // LESSTHAN
-        S_GREATERTHAN = 54,                      // GREATERTHAN
-        S_MULTIPLY = 55,                         // MULTIPLY
-        S_ADD = 56,                              // ADD
-        S_PIPE = 57,                             // PIPE
-        S_READWRITEVAR = 58,                     // READWRITEVAR
-        S_DOT = 59,                              // DOT
-        S_BACKTICK = 60,                         // BACKTICK
-        S_UMINUS = 61,                           // UMINUS
-        S_YYACCEPT = 62,                         // $accept
-        S_go = 63,                               // go
-        S_file_as_func = 64,                     // file_as_func
-        S_65_region_item = 65,                   // region.item
-        S_region = 66,                           // region
-        S_67_classOrExtList_list = 67,           // classOrExtList.list
-        S_68_classOrExtList_item = 68,           // classOrExtList.item
-        S_class = 69,                            // class
-        S_70_class_super_opt = 70,               // class.super.opt
-        S_71_class_slot_opt = 71,                // class.slot.opt
-        S_72_class_extension = 72,               // class.extension
-        S_73_members_entry_item = 73,            // members.entry.item
-        S_74_members_entry_list = 74,            // members.entry.list
-        S_75_members_entry = 75,                 // members.entry
-        S_members = 76,                          // members
-        S_77_members_opt = 77,                   // members.opt
-        S_78_method_name = 78,                   // method.name
-        S_79_method_base = 79,                   // method.base
-        S_method = 80,                           // method
-        S_81_method_list = 81,                   // method.list
-        S_82_method_list_opt = 82,               // method.list.opt
-        S_83_block_open = 83,                    // block.open
-        S_block = 84,                            // block
-        S_85_block_opt_list = 85,                // block.opt_list
-        S_86_block_list = 86,                    // block.list
-        S_87_block_contents = 87,                // block.contents
-        S_88_block_contents_item = 88,           // block.contents.item
-        S_adverb = 89,                           // adverb
-        S_90_binary_op_raw = 90,                 // binary_op.raw
-        S_91_binary_op_no_adverb = 91,           // binary_op.no_adverb
-        S_binary_op = 92,                        // binary_op
-        S_msgsend = 93,                          // msgsend
-        S_94_expr_dotrange = 94,                 // expr.dotrange
-        S_95_expr_dotrange_assign = 95,          // expr.dotrange.assign
-        S_96_expr_base_range = 96,               // expr.base.range
-        S_97_expr_base_range_assign = 97,        // expr.base.range.assign
-        S_range = 98,                            // range
-        S_99_range_generator = 99,               // range.generator
-        S_100_expr_base = 100,                   // expr.base
-        S_expr = 101,                            // expr
-        S_102_expr_or_seq_base = 102,            // expr_or_seq.base
-        S_expr_or_seq = 103,                     // expr_or_seq
-        S_generator = 104,                       // generator
-        S_105_generator_qual_list = 105,         // generator.qual.list
-        S_106_generator_qual = 106,              // generator.qual
-        S_107_argument_declarations_list = 107,  // argument_declarations.list
-        S_108_argument_declarations_pipelist = 108, // argument_declarations.pipelist
-        S_argument_declarations = 109,           // argument_declarations
-        S_110_argument_declarations_opt = 110,   // argument_declarations.opt
-        S_111_arguments_entries = 111,           // arguments.entries
-        S_112_arguments_no_trailing = 112,       // arguments.no_trailing
-        S_arguments = 113,                       // arguments
-        S_114_arguments_paren = 114,             // arguments.paren
-        S_115_arguments_maybe_paren = 115,       // arguments.maybe_paren
-        S_116_variable_declarations_list_item = 116, // variable_declarations.list.item
-        S_117_variable_declarations_list = 117,  // variable_declarations.list
-        S_variable_declarations = 118,           // variable_declarations
-        S_119_literal_terminal = 119,            // literal.terminal
-        S_120_literal_array_contents = 120,      // literal.array.contents
-        S_121_literal_dictionary_entry = 121,    // literal.dictionary.entry
-        S_122_literal_dictionary_entries = 122,  // literal.dictionary.entries
-        S_123_literal_dictionary = 123,          // literal.dictionary
-        S_124_literal_array = 124,               // literal.array
-        S_literal = 125,                         // literal
-        S_name = 126,                            // name
-        S_127_name_list = 127,                   // name.list
-        S_128_name_pack = 128,                   // name.pack
-        S_ascii = 129,                           // ascii
-        S_nil = 130,                             // nil
-        S_boolean = 131,                         // boolean
-        S_symbol = 132,                          // symbol
-        S_string = 133,                          // string
-        S_integer = 134,                         // integer
-        S_135_float_raw_unsigned = 135,          // float.raw_unsigned
-        S_136_float_raw = 136,                   // float.raw
-        S_137_accidental_unsigned = 137,         // accidental.unsigned
-        S_accidental = 138,                      // accidental
-        S_float = 139,                           // float
-        S_accessor = 140,                        // accessor
-        S_141_semicolon_opt = 141,               // semicolon.opt
-        S_142_comma_opt = 142                    // comma.opt
+        S_INTERPRET_FUNCTION = 45,               // INTERPRET_FUNCTION
+        S_LEFTARROW = 46,                        // LEFTARROW
+        S_WHILE = 47,                            // WHILE
+        S_LEXER_ERROR = 48,                      // LEXER_ERROR
+        S_COLON = 49,                            // COLON
+        S_EQUALSSIGN = 50,                       // EQUALSSIGN
+        S_BINOP = 51,                            // BINOP
+        S_KEYBINOP = 52,                         // KEYBINOP
+        S_MINUS = 53,                            // MINUS
+        S_LESSTHAN = 54,                         // LESSTHAN
+        S_GREATERTHAN = 55,                      // GREATERTHAN
+        S_MULTIPLY = 56,                         // MULTIPLY
+        S_ADD = 57,                              // ADD
+        S_PIPE = 58,                             // PIPE
+        S_READWRITEVAR = 59,                     // READWRITEVAR
+        S_DOT = 60,                              // DOT
+        S_BACKTICK = 61,                         // BACKTICK
+        S_UMINUS = 62,                           // UMINUS
+        S_YYACCEPT = 63,                         // $accept
+        S_go = 64,                               // go
+        S_file_as_func = 65,                     // file_as_func
+        S_interpreted_function = 66,             // interpreted_function
+        S_67_region_item = 67,                   // region.item
+        S_region = 68,                           // region
+        S_69_classOrExtList_list = 69,           // classOrExtList.list
+        S_70_classOrExtList_item = 70,           // classOrExtList.item
+        S_class = 71,                            // class
+        S_72_class_super_opt = 72,               // class.super.opt
+        S_73_class_slot_opt = 73,                // class.slot.opt
+        S_74_class_extension = 74,               // class.extension
+        S_75_members_entry_item = 75,            // members.entry.item
+        S_76_members_entry_list = 76,            // members.entry.list
+        S_77_members_entry = 77,                 // members.entry
+        S_members = 78,                          // members
+        S_79_members_opt = 79,                   // members.opt
+        S_80_method_name = 80,                   // method.name
+        S_81_method_base = 81,                   // method.base
+        S_method = 82,                           // method
+        S_83_method_list = 83,                   // method.list
+        S_84_method_list_opt = 84,               // method.list.opt
+        S_85_block_open = 85,                    // block.open
+        S_block = 86,                            // block
+        S_87_block_opt_list = 87,                // block.opt_list
+        S_88_block_list = 88,                    // block.list
+        S_89_block_contents = 89,                // block.contents
+        S_90_block_contents_item = 90,           // block.contents.item
+        S_adverb = 91,                           // adverb
+        S_92_binary_op_raw = 92,                 // binary_op.raw
+        S_93_binary_op_no_adverb = 93,           // binary_op.no_adverb
+        S_binary_op = 94,                        // binary_op
+        S_msgsend = 95,                          // msgsend
+        S_96_expr_dotrange = 96,                 // expr.dotrange
+        S_97_expr_dotrange_assign = 97,          // expr.dotrange.assign
+        S_98_expr_base_range = 98,               // expr.base.range
+        S_99_expr_base_range_assign = 99,        // expr.base.range.assign
+        S_range = 100,                           // range
+        S_101_range_generator = 101,             // range.generator
+        S_102_expr_base = 102,                   // expr.base
+        S_expr = 103,                            // expr
+        S_104_expr_or_seq_base = 104,            // expr_or_seq.base
+        S_expr_or_seq = 105,                     // expr_or_seq
+        S_generator = 106,                       // generator
+        S_107_generator_qual_list = 107,         // generator.qual.list
+        S_108_generator_qual = 108,              // generator.qual
+        S_109_argument_declarations_list = 109,  // argument_declarations.list
+        S_110_argument_declarations_pipelist = 110, // argument_declarations.pipelist
+        S_argument_declarations = 111,           // argument_declarations
+        S_112_argument_declarations_opt = 112,   // argument_declarations.opt
+        S_113_arguments_entries = 113,           // arguments.entries
+        S_114_arguments_no_trailing = 114,       // arguments.no_trailing
+        S_arguments = 115,                       // arguments
+        S_116_arguments_paren = 116,             // arguments.paren
+        S_117_arguments_maybe_paren = 117,       // arguments.maybe_paren
+        S_118_variable_declarations_list_item = 118, // variable_declarations.list.item
+        S_119_variable_declarations_list = 119,  // variable_declarations.list
+        S_variable_declarations = 120,           // variable_declarations
+        S_121_literal_terminal = 121,            // literal.terminal
+        S_122_literal_array_contents = 122,      // literal.array.contents
+        S_123_literal_dictionary_entry = 123,    // literal.dictionary.entry
+        S_124_literal_dictionary_entries = 124,  // literal.dictionary.entries
+        S_125_literal_dictionary = 125,          // literal.dictionary
+        S_126_literal_array = 126,               // literal.array
+        S_literal = 127,                         // literal
+        S_name = 128,                            // name
+        S_129_name_list = 129,                   // name.list
+        S_130_name_pack = 130,                   // name.pack
+        S_ascii = 131,                           // ascii
+        S_nil = 132,                             // nil
+        S_boolean = 133,                         // boolean
+        S_symbol = 134,                          // symbol
+        S_string = 135,                          // string
+        S_integer = 136,                         // integer
+        S_137_float_raw_unsigned = 137,          // float.raw_unsigned
+        S_138_float_raw = 138,                   // float.raw
+        S_139_accidental_unsigned = 139,         // accidental.unsigned
+        S_accidental = 140,                      // accidental
+        S_float = 141,                           // float
+        S_accessor = 142,                        // accessor
+        S_143_semicolon_opt = 143,               // semicolon.opt
+        S_144_comma_opt = 144                    // comma.opt
       };
     };
 
@@ -939,7 +944,7 @@ namespace sc { namespace ast { namespace parser {
         value.move< ASCIIIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_137_accidental_unsigned: // accidental.unsigned
+      case symbol_kind::S_139_accidental_unsigned: // accidental.unsigned
       case symbol_kind::S_accidental: // accidental
         value.move< AccidentalIndex > (std::move (that.value));
         break;
@@ -949,19 +954,19 @@ namespace sc { namespace ast { namespace parser {
         break;
 
       case symbol_kind::S_msgsend: // msgsend
-      case symbol_kind::S_100_expr_base: // expr.base
+      case symbol_kind::S_102_expr_base: // expr.base
       case symbol_kind::S_expr: // expr
-      case symbol_kind::S_102_expr_or_seq_base: // expr_or_seq.base
+      case symbol_kind::S_104_expr_or_seq_base: // expr_or_seq.base
       case symbol_kind::S_expr_or_seq: // expr_or_seq
         value.move< AnyExprIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_79_method_base: // method.base
+      case symbol_kind::S_81_method_base: // method.base
       case symbol_kind::S_method: // method
         value.move< AnyMethodIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_119_literal_terminal: // literal.terminal
+      case symbol_kind::S_121_literal_terminal: // literal.terminal
       case symbol_kind::S_literal: // literal
         value.move< AnyPossiblyLiteralIndex > (std::move (that.value));
         break;
@@ -970,33 +975,33 @@ namespace sc { namespace ast { namespace parser {
         value.move< AnySymbolIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_111_arguments_entries: // arguments.entries
+      case symbol_kind::S_113_arguments_entries: // arguments.entries
         value.move< ArgumentEntryIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_112_arguments_no_trailing: // arguments.no_trailing
+      case symbol_kind::S_114_arguments_no_trailing: // arguments.no_trailing
       case symbol_kind::S_arguments: // arguments
-      case symbol_kind::S_114_arguments_paren: // arguments.paren
-      case symbol_kind::S_115_arguments_maybe_paren: // arguments.maybe_paren
+      case symbol_kind::S_116_arguments_paren: // arguments.paren
+      case symbol_kind::S_117_arguments_maybe_paren: // arguments.maybe_paren
         value.move< ArgumentListIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_120_literal_array_contents: // literal.array.contents
-      case symbol_kind::S_124_literal_array: // literal.array
+      case symbol_kind::S_122_literal_array_contents: // literal.array.contents
+      case symbol_kind::S_126_literal_array: // literal.array
         value.move< ArrayIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_94_expr_dotrange: // expr.dotrange
-      case symbol_kind::S_96_expr_base_range: // expr.base.range
+      case symbol_kind::S_96_expr_dotrange: // expr.dotrange
+      case symbol_kind::S_98_expr_base_range: // expr.base.range
         value.move< AtMessageIndex > (std::move (that.value));
         break;
 
       case symbol_kind::S_members: // members
-      case symbol_kind::S_77_members_opt: // members.opt
+      case symbol_kind::S_79_members_opt: // members.opt
         value.move< BigMemberListIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_87_block_contents: // block.contents
+      case symbol_kind::S_89_block_contents: // block.contents
         value.move< BlockContentsListIndex > (std::move (that.value));
         break;
 
@@ -1004,12 +1009,12 @@ namespace sc { namespace ast { namespace parser {
         value.move< BlockIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_88_block_contents_item: // block.contents.item
+      case symbol_kind::S_90_block_contents_item: // block.contents.item
         value.move< BlockItemIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_85_block_opt_list: // block.opt_list
-      case symbol_kind::S_86_block_list: // block.list
+      case symbol_kind::S_87_block_opt_list: // block.opt_list
+      case symbol_kind::S_88_block_list: // block.list
         value.move< BlockListIndex > (std::move (that.value));
         break;
 
@@ -1017,7 +1022,7 @@ namespace sc { namespace ast { namespace parser {
         value.move< BooleanLitIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_72_class_extension: // class.extension
+      case symbol_kind::S_74_class_extension: // class.extension
         value.move< ClassExtensionIndex > (std::move (that.value));
         break;
 
@@ -1025,57 +1030,58 @@ namespace sc { namespace ast { namespace parser {
         value.move< ClassIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_68_classOrExtList_item: // classOrExtList.item
+      case symbol_kind::S_70_classOrExtList_item: // classOrExtList.item
         value.move< ClassOrExtensionIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_67_classOrExtList_list: // classOrExtList.list
+      case symbol_kind::S_69_classOrExtList_list: // classOrExtList.list
         value.move< ClassOrExtensionListIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_75_members_entry: // members.entry
+      case symbol_kind::S_77_members_entry: // members.entry
         value.move< DeclareAnyMemberListIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_116_variable_declarations_list_item: // variable_declarations.list.item
+      case symbol_kind::S_118_variable_declarations_list_item: // variable_declarations.list.item
         value.move< DeclareAnyVariableIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_107_argument_declarations_list: // argument_declarations.list
-      case symbol_kind::S_108_argument_declarations_pipelist: // argument_declarations.pipelist
+      case symbol_kind::S_109_argument_declarations_list: // argument_declarations.list
+      case symbol_kind::S_110_argument_declarations_pipelist: // argument_declarations.pipelist
       case symbol_kind::S_argument_declarations: // argument_declarations
-      case symbol_kind::S_110_argument_declarations_opt: // argument_declarations.opt
+      case symbol_kind::S_112_argument_declarations_opt: // argument_declarations.opt
         value.move< DeclareArgumentListIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_73_members_entry_item: // members.entry.item
+      case symbol_kind::S_75_members_entry_item: // members.entry.item
         value.move< DeclareMemberIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_74_members_entry_list: // members.entry.list
+      case symbol_kind::S_76_members_entry_list: // members.entry.list
         value.move< DeclareMemberListIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_117_variable_declarations_list: // variable_declarations.list
+      case symbol_kind::S_119_variable_declarations_list: // variable_declarations.list
       case symbol_kind::S_variable_declarations: // variable_declarations
         value.move< DeclareVariableListIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_121_literal_dictionary_entry: // literal.dictionary.entry
+      case symbol_kind::S_123_literal_dictionary_entry: // literal.dictionary.entry
         value.move< DictionaryEntryIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_122_literal_dictionary_entries: // literal.dictionary.entries
-      case symbol_kind::S_123_literal_dictionary: // literal.dictionary
+      case symbol_kind::S_124_literal_dictionary_entries: // literal.dictionary.entries
+      case symbol_kind::S_125_literal_dictionary: // literal.dictionary
         value.move< DictionaryIndex > (std::move (that.value));
         break;
 
       case symbol_kind::S_file_as_func: // file_as_func
+      case symbol_kind::S_interpreted_function: // interpreted_function
         value.move< FileAsFunctionIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_135_float_raw_unsigned: // float.raw_unsigned
-      case symbol_kind::S_136_float_raw: // float.raw
+      case symbol_kind::S_137_float_raw_unsigned: // float.raw_unsigned
+      case symbol_kind::S_138_float_raw: // float.raw
         value.move< FloatLitIndex > (std::move (that.value));
         break;
 
@@ -1087,11 +1093,11 @@ namespace sc { namespace ast { namespace parser {
         value.move< GeneratorAnyIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_106_generator_qual: // generator.qual
+      case symbol_kind::S_108_generator_qual: // generator.qual
         value.move< GeneratorQualAnyIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_105_generator_qual_list: // generator.qual.list
+      case symbol_kind::S_107_generator_qual_list: // generator.qual.list
         value.move< GeneratorQualListIndex > (std::move (that.value));
         break;
 
@@ -1145,6 +1151,7 @@ namespace sc { namespace ast { namespace parser {
       case symbol_kind::S_BEGINCLOSEDFUNC: // BEGINCLOSEDFUNC
       case symbol_kind::S_BADTOKEN: // BADTOKEN
       case symbol_kind::S_INTERPRET: // INTERPRET
+      case symbol_kind::S_INTERPRET_FUNCTION: // INTERPRET_FUNCTION
       case symbol_kind::S_LEFTARROW: // LEFTARROW
       case symbol_kind::S_WHILE: // WHILE
       case symbol_kind::S_LEXER_ERROR: // LEXER_ERROR
@@ -1165,16 +1172,16 @@ namespace sc { namespace ast { namespace parser {
         value.move< LexerToken > (std::move (that.value));
         break;
 
-      case symbol_kind::S_81_method_list: // method.list
-      case symbol_kind::S_82_method_list_opt: // method.list.opt
+      case symbol_kind::S_83_method_list: // method.list
+      case symbol_kind::S_84_method_list_opt: // method.list.opt
         value.move< MethodListIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_127_name_list: // name.list
+      case symbol_kind::S_129_name_list: // name.list
         value.move< NameListIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_128_name_pack: // name.pack
+      case symbol_kind::S_130_name_pack: // name.pack
         value.move< NamePackIndex > (std::move (that.value));
         break;
 
@@ -1190,12 +1197,12 @@ namespace sc { namespace ast { namespace parser {
         value.move< RWAccessorIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_95_expr_dotrange_assign: // expr.dotrange.assign
-      case symbol_kind::S_97_expr_base_range_assign: // expr.base.range.assign
+      case symbol_kind::S_97_expr_dotrange_assign: // expr.dotrange.assign
+      case symbol_kind::S_99_expr_base_range_assign: // expr.base.range.assign
         value.move< RangeAssignIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_99_range_generator: // range.generator
+      case symbol_kind::S_101_range_generator: // range.generator
         value.move< RangeGeneratorIndex > (std::move (that.value));
         break;
 
@@ -1203,7 +1210,7 @@ namespace sc { namespace ast { namespace parser {
         value.move< RangeIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_65_region_item: // region.item
+      case symbol_kind::S_67_region_item: // region.item
         value.move< RegionItemIndex > (std::move (that.value));
         break;
 
@@ -1211,9 +1218,9 @@ namespace sc { namespace ast { namespace parser {
         value.move< RegionListIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_78_method_name: // method.name
-      case symbol_kind::S_90_binary_op_raw: // binary_op.raw
-      case symbol_kind::S_91_binary_op_no_adverb: // binary_op.no_adverb
+      case symbol_kind::S_80_method_name: // method.name
+      case symbol_kind::S_92_binary_op_raw: // binary_op.raw
+      case symbol_kind::S_93_binary_op_no_adverb: // binary_op.no_adverb
         value.move< SelectorIndex > (std::move (that.value));
         break;
 
@@ -1225,15 +1232,15 @@ namespace sc { namespace ast { namespace parser {
         value.move< StringLitIndex > (std::move (that.value));
         break;
 
-      case symbol_kind::S_83_block_open: // block.open
+      case symbol_kind::S_85_block_open: // block.open
         value.move< bool > (std::move (that.value));
         break;
 
-      case symbol_kind::S_70_class_super_opt: // class.super.opt
+      case symbol_kind::S_72_class_super_opt: // class.super.opt
         value.move< maybe<ClassNameIdentifierIndex> > (std::move (that.value));
         break;
 
-      case symbol_kind::S_71_class_slot_opt: // class.slot.opt
+      case symbol_kind::S_73_class_slot_opt: // class.slot.opt
         value.move< maybe<NamedIdentifierIndex> > (std::move (that.value));
         break;
 
@@ -2058,7 +2065,7 @@ switch (yykind)
         value.template destroy< ASCIIIndex > ();
         break;
 
-      case symbol_kind::S_137_accidental_unsigned: // accidental.unsigned
+      case symbol_kind::S_139_accidental_unsigned: // accidental.unsigned
       case symbol_kind::S_accidental: // accidental
         value.template destroy< AccidentalIndex > ();
         break;
@@ -2068,19 +2075,19 @@ switch (yykind)
         break;
 
       case symbol_kind::S_msgsend: // msgsend
-      case symbol_kind::S_100_expr_base: // expr.base
+      case symbol_kind::S_102_expr_base: // expr.base
       case symbol_kind::S_expr: // expr
-      case symbol_kind::S_102_expr_or_seq_base: // expr_or_seq.base
+      case symbol_kind::S_104_expr_or_seq_base: // expr_or_seq.base
       case symbol_kind::S_expr_or_seq: // expr_or_seq
         value.template destroy< AnyExprIndex > ();
         break;
 
-      case symbol_kind::S_79_method_base: // method.base
+      case symbol_kind::S_81_method_base: // method.base
       case symbol_kind::S_method: // method
         value.template destroy< AnyMethodIndex > ();
         break;
 
-      case symbol_kind::S_119_literal_terminal: // literal.terminal
+      case symbol_kind::S_121_literal_terminal: // literal.terminal
       case symbol_kind::S_literal: // literal
         value.template destroy< AnyPossiblyLiteralIndex > ();
         break;
@@ -2089,33 +2096,33 @@ switch (yykind)
         value.template destroy< AnySymbolIndex > ();
         break;
 
-      case symbol_kind::S_111_arguments_entries: // arguments.entries
+      case symbol_kind::S_113_arguments_entries: // arguments.entries
         value.template destroy< ArgumentEntryIndex > ();
         break;
 
-      case symbol_kind::S_112_arguments_no_trailing: // arguments.no_trailing
+      case symbol_kind::S_114_arguments_no_trailing: // arguments.no_trailing
       case symbol_kind::S_arguments: // arguments
-      case symbol_kind::S_114_arguments_paren: // arguments.paren
-      case symbol_kind::S_115_arguments_maybe_paren: // arguments.maybe_paren
+      case symbol_kind::S_116_arguments_paren: // arguments.paren
+      case symbol_kind::S_117_arguments_maybe_paren: // arguments.maybe_paren
         value.template destroy< ArgumentListIndex > ();
         break;
 
-      case symbol_kind::S_120_literal_array_contents: // literal.array.contents
-      case symbol_kind::S_124_literal_array: // literal.array
+      case symbol_kind::S_122_literal_array_contents: // literal.array.contents
+      case symbol_kind::S_126_literal_array: // literal.array
         value.template destroy< ArrayIndex > ();
         break;
 
-      case symbol_kind::S_94_expr_dotrange: // expr.dotrange
-      case symbol_kind::S_96_expr_base_range: // expr.base.range
+      case symbol_kind::S_96_expr_dotrange: // expr.dotrange
+      case symbol_kind::S_98_expr_base_range: // expr.base.range
         value.template destroy< AtMessageIndex > ();
         break;
 
       case symbol_kind::S_members: // members
-      case symbol_kind::S_77_members_opt: // members.opt
+      case symbol_kind::S_79_members_opt: // members.opt
         value.template destroy< BigMemberListIndex > ();
         break;
 
-      case symbol_kind::S_87_block_contents: // block.contents
+      case symbol_kind::S_89_block_contents: // block.contents
         value.template destroy< BlockContentsListIndex > ();
         break;
 
@@ -2123,12 +2130,12 @@ switch (yykind)
         value.template destroy< BlockIndex > ();
         break;
 
-      case symbol_kind::S_88_block_contents_item: // block.contents.item
+      case symbol_kind::S_90_block_contents_item: // block.contents.item
         value.template destroy< BlockItemIndex > ();
         break;
 
-      case symbol_kind::S_85_block_opt_list: // block.opt_list
-      case symbol_kind::S_86_block_list: // block.list
+      case symbol_kind::S_87_block_opt_list: // block.opt_list
+      case symbol_kind::S_88_block_list: // block.list
         value.template destroy< BlockListIndex > ();
         break;
 
@@ -2136,7 +2143,7 @@ switch (yykind)
         value.template destroy< BooleanLitIndex > ();
         break;
 
-      case symbol_kind::S_72_class_extension: // class.extension
+      case symbol_kind::S_74_class_extension: // class.extension
         value.template destroy< ClassExtensionIndex > ();
         break;
 
@@ -2144,57 +2151,58 @@ switch (yykind)
         value.template destroy< ClassIndex > ();
         break;
 
-      case symbol_kind::S_68_classOrExtList_item: // classOrExtList.item
+      case symbol_kind::S_70_classOrExtList_item: // classOrExtList.item
         value.template destroy< ClassOrExtensionIndex > ();
         break;
 
-      case symbol_kind::S_67_classOrExtList_list: // classOrExtList.list
+      case symbol_kind::S_69_classOrExtList_list: // classOrExtList.list
         value.template destroy< ClassOrExtensionListIndex > ();
         break;
 
-      case symbol_kind::S_75_members_entry: // members.entry
+      case symbol_kind::S_77_members_entry: // members.entry
         value.template destroy< DeclareAnyMemberListIndex > ();
         break;
 
-      case symbol_kind::S_116_variable_declarations_list_item: // variable_declarations.list.item
+      case symbol_kind::S_118_variable_declarations_list_item: // variable_declarations.list.item
         value.template destroy< DeclareAnyVariableIndex > ();
         break;
 
-      case symbol_kind::S_107_argument_declarations_list: // argument_declarations.list
-      case symbol_kind::S_108_argument_declarations_pipelist: // argument_declarations.pipelist
+      case symbol_kind::S_109_argument_declarations_list: // argument_declarations.list
+      case symbol_kind::S_110_argument_declarations_pipelist: // argument_declarations.pipelist
       case symbol_kind::S_argument_declarations: // argument_declarations
-      case symbol_kind::S_110_argument_declarations_opt: // argument_declarations.opt
+      case symbol_kind::S_112_argument_declarations_opt: // argument_declarations.opt
         value.template destroy< DeclareArgumentListIndex > ();
         break;
 
-      case symbol_kind::S_73_members_entry_item: // members.entry.item
+      case symbol_kind::S_75_members_entry_item: // members.entry.item
         value.template destroy< DeclareMemberIndex > ();
         break;
 
-      case symbol_kind::S_74_members_entry_list: // members.entry.list
+      case symbol_kind::S_76_members_entry_list: // members.entry.list
         value.template destroy< DeclareMemberListIndex > ();
         break;
 
-      case symbol_kind::S_117_variable_declarations_list: // variable_declarations.list
+      case symbol_kind::S_119_variable_declarations_list: // variable_declarations.list
       case symbol_kind::S_variable_declarations: // variable_declarations
         value.template destroy< DeclareVariableListIndex > ();
         break;
 
-      case symbol_kind::S_121_literal_dictionary_entry: // literal.dictionary.entry
+      case symbol_kind::S_123_literal_dictionary_entry: // literal.dictionary.entry
         value.template destroy< DictionaryEntryIndex > ();
         break;
 
-      case symbol_kind::S_122_literal_dictionary_entries: // literal.dictionary.entries
-      case symbol_kind::S_123_literal_dictionary: // literal.dictionary
+      case symbol_kind::S_124_literal_dictionary_entries: // literal.dictionary.entries
+      case symbol_kind::S_125_literal_dictionary: // literal.dictionary
         value.template destroy< DictionaryIndex > ();
         break;
 
       case symbol_kind::S_file_as_func: // file_as_func
+      case symbol_kind::S_interpreted_function: // interpreted_function
         value.template destroy< FileAsFunctionIndex > ();
         break;
 
-      case symbol_kind::S_135_float_raw_unsigned: // float.raw_unsigned
-      case symbol_kind::S_136_float_raw: // float.raw
+      case symbol_kind::S_137_float_raw_unsigned: // float.raw_unsigned
+      case symbol_kind::S_138_float_raw: // float.raw
         value.template destroy< FloatLitIndex > ();
         break;
 
@@ -2206,11 +2214,11 @@ switch (yykind)
         value.template destroy< GeneratorAnyIndex > ();
         break;
 
-      case symbol_kind::S_106_generator_qual: // generator.qual
+      case symbol_kind::S_108_generator_qual: // generator.qual
         value.template destroy< GeneratorQualAnyIndex > ();
         break;
 
-      case symbol_kind::S_105_generator_qual_list: // generator.qual.list
+      case symbol_kind::S_107_generator_qual_list: // generator.qual.list
         value.template destroy< GeneratorQualListIndex > ();
         break;
 
@@ -2264,6 +2272,7 @@ switch (yykind)
       case symbol_kind::S_BEGINCLOSEDFUNC: // BEGINCLOSEDFUNC
       case symbol_kind::S_BADTOKEN: // BADTOKEN
       case symbol_kind::S_INTERPRET: // INTERPRET
+      case symbol_kind::S_INTERPRET_FUNCTION: // INTERPRET_FUNCTION
       case symbol_kind::S_LEFTARROW: // LEFTARROW
       case symbol_kind::S_WHILE: // WHILE
       case symbol_kind::S_LEXER_ERROR: // LEXER_ERROR
@@ -2284,16 +2293,16 @@ switch (yykind)
         value.template destroy< LexerToken > ();
         break;
 
-      case symbol_kind::S_81_method_list: // method.list
-      case symbol_kind::S_82_method_list_opt: // method.list.opt
+      case symbol_kind::S_83_method_list: // method.list
+      case symbol_kind::S_84_method_list_opt: // method.list.opt
         value.template destroy< MethodListIndex > ();
         break;
 
-      case symbol_kind::S_127_name_list: // name.list
+      case symbol_kind::S_129_name_list: // name.list
         value.template destroy< NameListIndex > ();
         break;
 
-      case symbol_kind::S_128_name_pack: // name.pack
+      case symbol_kind::S_130_name_pack: // name.pack
         value.template destroy< NamePackIndex > ();
         break;
 
@@ -2309,12 +2318,12 @@ switch (yykind)
         value.template destroy< RWAccessorIndex > ();
         break;
 
-      case symbol_kind::S_95_expr_dotrange_assign: // expr.dotrange.assign
-      case symbol_kind::S_97_expr_base_range_assign: // expr.base.range.assign
+      case symbol_kind::S_97_expr_dotrange_assign: // expr.dotrange.assign
+      case symbol_kind::S_99_expr_base_range_assign: // expr.base.range.assign
         value.template destroy< RangeAssignIndex > ();
         break;
 
-      case symbol_kind::S_99_range_generator: // range.generator
+      case symbol_kind::S_101_range_generator: // range.generator
         value.template destroy< RangeGeneratorIndex > ();
         break;
 
@@ -2322,7 +2331,7 @@ switch (yykind)
         value.template destroy< RangeIndex > ();
         break;
 
-      case symbol_kind::S_65_region_item: // region.item
+      case symbol_kind::S_67_region_item: // region.item
         value.template destroy< RegionItemIndex > ();
         break;
 
@@ -2330,9 +2339,9 @@ switch (yykind)
         value.template destroy< RegionListIndex > ();
         break;
 
-      case symbol_kind::S_78_method_name: // method.name
-      case symbol_kind::S_90_binary_op_raw: // binary_op.raw
-      case symbol_kind::S_91_binary_op_no_adverb: // binary_op.no_adverb
+      case symbol_kind::S_80_method_name: // method.name
+      case symbol_kind::S_92_binary_op_raw: // binary_op.raw
+      case symbol_kind::S_93_binary_op_no_adverb: // binary_op.no_adverb
         value.template destroy< SelectorIndex > ();
         break;
 
@@ -2344,15 +2353,15 @@ switch (yykind)
         value.template destroy< StringLitIndex > ();
         break;
 
-      case symbol_kind::S_83_block_open: // block.open
+      case symbol_kind::S_85_block_open: // block.open
         value.template destroy< bool > ();
         break;
 
-      case symbol_kind::S_70_class_super_opt: // class.super.opt
+      case symbol_kind::S_72_class_super_opt: // class.super.opt
         value.template destroy< maybe<ClassNameIdentifierIndex> > ();
         break;
 
-      case symbol_kind::S_71_class_slot_opt: // class.slot.opt
+      case symbol_kind::S_73_class_slot_opt: // class.slot.opt
         value.template destroy< maybe<NamedIdentifierIndex> > ();
         break;
 
@@ -3186,6 +3195,21 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_INTERPRET_FUNCTION (LexerToken v, location_type l)
+      {
+        return symbol_type (token::TOKEN_INTERPRET_FUNCTION, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_INTERPRET_FUNCTION (const LexerToken& v, const location_type& l)
+      {
+        return symbol_type (token::TOKEN_INTERPRET_FUNCTION, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_LEFTARROW (LexerToken v, location_type l)
       {
         return symbol_type (token::TOKEN_LEFTARROW, std::move (v), std::move (l));
@@ -3778,9 +3802,9 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 2461,     ///< Last index in yytable_.
-      yynnts_ = 81,  ///< Number of nonterminal symbols.
-      yyfinal_ = 82 ///< Termination state number.
+      yylast_ = 2649,     ///< Last index in yytable_.
+      yynnts_ = 82,  ///< Number of nonterminal symbols.
+      yyfinal_ = 92 ///< Termination state number.
     };
 
 
@@ -3792,7 +3816,7 @@ switch (yykind)
 
 #line 7 "langutils/sc_parser/src/sc_grammar.y"
 } } } // sc::ast::parser
-#line 3796 "langutils/sc_parser/src/sc_grammar_parser.hpp"
+#line 3820 "langutils/sc_parser/src/sc_grammar_parser.hpp"
 
 
 

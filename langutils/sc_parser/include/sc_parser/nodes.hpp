@@ -426,6 +426,7 @@ struct BigMemberList : ListNode<BigMemberListIndex, DeclareAnyMemberListIndex> {
     static constexpr auto name { "BigMemberList" };
 };
 
+// An scd file written as a function, e.g., `|x| x + 1`, or the VM's interpreted code
 struct FileAsFunction : Node<FileAsFunctionIndex(DeclareArgumentListIndex, BlockContentsListIndex)> {
     static constexpr auto name { "FileAsFunction" };
 };

@@ -19,6 +19,7 @@
 */
 
 #include "ClassLibraryInfo.hpp"
+#include "ClassLibraryLoader.hpp"
 #include "CompilerContext.hpp"
 #include "PyrErrors.h"
 #include "PyrObjectHdr.h"
@@ -2547,6 +2548,17 @@ PyrMethod* GetFunctionCompileContext(VMGlobals* g, CompilerContext& cxt) {
 }
 
 #if !SCPLAYER
+// A closure over the interpreter's frame.
+static PyrClosure* InterpretedClosure(VMGlobals* g, PyrBlock* block) {
+    constexpr auto closure_size = (sizeof(PyrClosure) - sizeof(PyrObjectHdr)) / sizeof(PyrSlot);
+    auto closure = reinterpret_cast<PyrClosure*>(g->gc->New(closure_size, 0, obj_notindexed, false));
+    closure->classptr = class_func;
+    closure->size = 2;
+    closure->block = PyrSlot::make(block);
+    closure->context = g->process->interpreter.getPyrObjType<PyrInterpreter>()->context;
+    return closure;
+}
+
 int prCompileString(struct VMGlobals* g, int numArgsPushed) {
     auto stackStart = g->sp - 4;
     auto interpreter = stackStart[0];
@@ -2560,6 +2572,21 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
         return errWrongType;
     auto string = stringSlot.getPyrObjType<PyrString>();
 
+    if (loadedClassLibrary()) {
+        const auto start = sc::src::FileCodeLocation {
+            0,
+            static_cast<std::uint32_t>(lineNumber.isInt() ? lineNumber.getInt() : 0),
+            static_cast<std::uint32_t>(column.isInt() ? column.getInt() : 0),
+        };
+        auto block = compileInterpreted(g, { string->s, static_cast<size_t>(string->size) },
+                                        fileName.isSymbol() ? fileName.getSymbol() : nullptr, start);
+        if (!block) {
+            stackStart[0] = PyrSlot {};
+            return errFailed;
+        }
+        stackStart[0] = PyrSlot::make(InterpretedClosure(g, block));
+        return errNone;
+    }
 
     sc::src::NormalisedSource src { string->s, static_cast<size_t>(string->size) };
     const auto& srcStr = src.as_string();
@@ -2621,14 +2648,7 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
 
         // Compiler should always write a pyrblock to the result when compiling a blocknode.
         assert(compileResult.isObjectHdr() && compileResult.getPyrObjType<PyrObject>()->classptr == class_fundef);
-        auto block = compileResult.getPyrObjType<PyrBlock>();
-        constexpr auto closure_size = (sizeof(PyrClosure) - sizeof(PyrObjectHdr)) / sizeof(PyrSlot);
-        auto closure = reinterpret_cast<PyrClosure*>(g->gc->New(closure_size, 0, obj_notindexed, false));
-        closure->classptr = class_func;
-        closure->size = 2;
-        closure->block = PyrSlot::make(block);
-        closure->context = g->process->interpreter.getPyrObjType<PyrInterpreter>()->context;
-        stackStart[0] = PyrSlot::make(closure);
+        stackStart[0] = PyrSlot::make(InterpretedClosure(g, compileResult.getPyrObjType<PyrBlock>()));
         return errNone;
     };
 

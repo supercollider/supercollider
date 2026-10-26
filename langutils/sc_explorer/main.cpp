@@ -352,8 +352,9 @@ void write_diagnostic(std::ostream& out, const sc::diag::Diagnostic& d, const sc
 }
 
 TextInfoPtr make_text(std::string source, std::optional<std::filesystem::path> path, bool class_file) {
-    return std::make_shared<const sc::src::TextInfo>(sc::src::NormalisedSource { source }, sc::src::FileCodeLocation {},
-                                                     std::move(path), class_file);
+    return std::make_shared<const sc::src::TextInfo>(
+        sc::src::NormalisedSource { source }, sc::src::FileCodeLocation {}, std::move(path),
+        class_file ? sc::src::TextKind::ClassFile : sc::src::TextKind::ScdFile);
 }
 
 } // namespace

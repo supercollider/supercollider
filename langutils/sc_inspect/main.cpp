@@ -117,8 +117,9 @@ double seconds_since(Clock::time_point start) { return std::chrono::duration<dou
 
 using InterpretedFileIndex = sc::util::StrongIndex<std::uint32_t, struct InterpretedFileIndex__>;
 
-// An scd file, parsed as interpreted code. Null if it can't be read, or is a class file.
-std::shared_ptr<const sc::ast::ASTGraph> parse_interpreted(const std::filesystem::path& path,
+// An scd file, parsed as interpreted code, as regions or as the VM's one function. Null if it can't be read, or is a
+// class file.
+std::shared_ptr<const sc::ast::ASTGraph> parse_interpreted(const std::filesystem::path& path, sc::src::TextKind kind,
                                                            std::vector<sc::diag::Diagnostic>& diagnostics) {
     std::ifstream file_stream { path };
     if (!file_stream.is_open())
@@ -129,7 +130,7 @@ std::shared_ptr<const sc::ast::ASTGraph> parse_interpreted(const std::filesystem
         sc::src::NormalisedSource { std::move(ss).str() }, //
         sc::src::FileCodeLocation {}, //
         path, //
-        false //
+        kind //
     });
     auto [ast_graph, _] = sc::ast::parse(text_info);
     if (!ast_graph)
@@ -191,11 +192,13 @@ int wmain(int argc, wchar_t* argv[]) {
 int main(int argc, char* argv[]) {
 #endif // _MSC_VER
     if (argc <= 1) {
-        std::cout << "ERROR: incorrect number of arguments to sc_inspect, expected "
-                     "[--threads n] [--relative-to dir] [--interpreted-version x.y] [--no-dump] [--frames] [--lir] "
-                     "[--bytecode] [--compiled] [--time] [--intrinsic class]... [--primitive primitive]... "
-                     "[--prelude dir|.sc file]... [dir|.sc file]... "
-                  << std::endl;
+        std::cout
+            << "ERROR: incorrect number of arguments to sc_inspect, expected "
+               "[--threads n] [--relative-to dir] [--interpreted-version x.y] [--interpreted-function] [--no-dump] "
+               "[--frames] [--lir] "
+               "[--bytecode] [--compiled] [--time] [--intrinsic class]... [--primitive primitive]... "
+               "[--prelude dir|.sc file]... [dir|.sc file]... "
+            << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -212,7 +215,8 @@ int main(int argc, char* argv[]) {
     // The output is in source order, so it is the same however many threads compile it, --threads sets how many, all
     // of them by default.
     // Interpreted code, the scd files, is compiled as the release after --interpreted-version, e.g., 3.16, as it has no
-    // version comment, legacy by default.
+    // version comment, legacy by default. They are lists of regions, unless --interpreted-function parses each as the
+    // VM's interpreted code, one function, see sc::src::TextKind.
     // --no-dump only compiles, printing how many diagnostics and classes there are, e.g., to time the compiler, as
     // writing the dump takes longer than compiling.
     // --frames adds the backend's frame layout, each frame's slots, and where each variable read or assigned is.
@@ -232,6 +236,7 @@ int main(int argc, char* argv[]) {
     std::optional<std::filesystem::path> relative_to;
     size_t num_threads = std::max(1u, std::thread::hardware_concurrency());
     auto interpreted_version = sc::ast::LanguageVersion::Legacy;
+    auto interpreted_kind = sc::src::TextKind::ScdFile;
     bool dump = true;
     bool show_frames = false;
     bool show_lir = false;
@@ -257,6 +262,8 @@ int main(int argc, char* argv[]) {
                 return EXIT_FAILURE;
             }
             interpreted_version = *version;
+        } else if (arg == "--interpreted-function") {
+            interpreted_kind = sc::src::TextKind::InterpretedFunction;
         } else if (arg == "--no-dump") {
             dump = false;
         } else if (arg == "--frames") {
@@ -322,7 +329,8 @@ int main(int argc, char* argv[]) {
     {
         boost::asio::thread_pool pool { num_threads };
         for (const auto i : scd_files.indices())
-            boost::asio::post(pool, [&, i] { scd_asts[i] = parse_interpreted(scd_files[i], scd_diagnostics[i]); });
+            boost::asio::post(
+                pool, [&, i] { scd_asts[i] = parse_interpreted(scd_files[i], interpreted_kind, scd_diagnostics[i]); });
         pool.join();
     }
     times.interpreted_parse = seconds_since(interpreted_parse_start);

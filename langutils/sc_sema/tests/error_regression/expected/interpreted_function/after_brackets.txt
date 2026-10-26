@@ -1,0 +1,22 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): poisoned: interpreted_function/after_brackets.scd
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unexpected Token.
+|  interpreted_function/after_brackets.scd:3:15
+|      1 │ // interpreted-function
+|      2 │ // Variables in brackets are the whole function, as in the old grammar, nothing follows them.
+|      3 │ (var q = 1; q); q
+|        ┆               ^ Expected the end of the file, but found `;`.
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCFunction (1:1)
+|  |  SCBody (1:1)
+|  |  |  SCExprList (3:1)
+|  |  |  SCRead (3:17): instance q, declared (38:41): q
+Successfully compiled 15 classes.

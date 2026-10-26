@@ -173,6 +173,11 @@ inline int yylex(sc::ast::parser::parser::value_type* v, sc::src::SourceCodeRang
         *loc = {};
         return T::TOKEN_INTERPRET;
     }
+    if (cxt.mode == sc::ast::parser::ParserContext::Mode::FunctionInitial) {
+        cxt.mode = sc::ast::parser::ParserContext::Mode::FunctionContinue;
+        *loc = {};
+        return T::TOKEN_INTERPRET_FUNCTION;
+    }
 
     const auto& current = cxt.tokens[cxt.next];
     *loc = current.range;

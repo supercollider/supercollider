@@ -16,11 +16,19 @@ namespace sc::ast {
 
 [[nodiscard]] std::tuple<std::shared_ptr<ASTGraph>, bool> parse(std::shared_ptr<const src::TextInfo> text_info,
                                                                 ::sc::lex::CodePointStream cps) {
-    parser::ParserContext ctx {
-        text_info,
-        text_info->is_class_file ? parser::ParserContext::Mode::ClassLibrary
-                                 : parser::ParserContext::Mode::CommandInitial,
-    };
+    const auto mode = [&] {
+        using Mode = parser::ParserContext::Mode;
+        switch (text_info->kind) {
+        case src::TextKind::ClassFile:
+            return Mode::ClassLibrary;
+        case src::TextKind::ScdFile:
+            return Mode::CommandInitial;
+        case src::TextKind::InterpretedFunction:
+            return Mode::FunctionInitial;
+        }
+        return Mode::CommandInitial;
+    }();
+    parser::ParserContext ctx { text_info, mode };
     parser::tokenise(ctx, std::move(cps));
     ctx.claim_file_version();
 

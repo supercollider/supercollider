@@ -49,8 +49,9 @@ Interpreter {
 
 std::shared_ptr<const sc::ast::ASTGraph> parse(std::string source, const char* path, bool class_file,
                                                std::vector<sc::diag::Diagnostic>& diagnostics) {
-    auto text_info = std::make_shared<sc::src::TextInfo>(sc::src::NormalisedSource { std::move(source) },
-                                                         sc::src::FileCodeLocation {}, path, class_file);
+    auto text_info = std::make_shared<sc::src::TextInfo>(
+        sc::src::NormalisedSource { std::move(source) }, sc::src::FileCodeLocation {}, path,
+        class_file ? sc::src::TextKind::ClassFile : sc::src::TextKind::ScdFile);
     auto [ast_graph, _] = sc::ast::parse(text_info);
     if (ast_graph)
         for (const auto& d : ast_graph->diagnostics())

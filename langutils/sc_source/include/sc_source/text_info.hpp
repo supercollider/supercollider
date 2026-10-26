@@ -4,6 +4,7 @@
 #include "sc_source/normalise_source.hpp"
 #include "sc_source/text_location.hpp"
 #include <cassert>
+#include <cstdint>
 #include <filesystem>
 #include <optional>
 #include <stdexcept>
@@ -11,14 +12,18 @@
 
 namespace sc::src {
 
+// How the text is parsed. An scd file is a list of regions, which only tools see, as the VM runs interpreted code,
+// including an executed scd file, as one function, as the old grammar did.
+enum struct TextKind : std::uint8_t { ClassFile, ScdFile, InterpretedFunction };
+
 struct TextInfo {
     // Throws std::length_error if the source is larger than max_source_size, as positions are 32 bit.
     TextInfo(NormalisedSource src, FileCodeLocation start_in_file, std::optional<std::filesystem::path> path,
-             bool class_file):
+             TextKind kind):
         source(std::move(src)),
         source_start_in_file(start_in_file),
         file_path(std::move(path)),
-        is_class_file(class_file) {
+        kind(kind) {
         if (source.as_string().size() > max_source_size)
             throw std::length_error { "source is larger than the " + std::to_string(max_source_size)
                                       + " bytes supported" };
@@ -27,7 +32,7 @@ struct TextInfo {
     NormalisedSource source;
     FileCodeLocation source_start_in_file;
     std::optional<std::filesystem::path> file_path; // can be nullptr;
-    bool is_class_file;
+    TextKind kind;
 
     [[nodiscard]] std::string_view read(SourceCodeRange r) const noexcept {
         const char* str = source.as_string().c_str();

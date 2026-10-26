@@ -44,7 +44,7 @@ std::shared_ptr<sc::src::TextInfo> make_class_file_text(std::string source, cons
         sc::src::NormalisedSource { std::move(source) }, //
         sc::src::FileCodeLocation {}, //
         path, //
-        true //
+        sc::src::TextKind::ClassFile //
     });
 }
 

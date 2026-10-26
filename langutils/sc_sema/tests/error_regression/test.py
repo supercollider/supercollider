@@ -34,6 +34,8 @@ assertions apply to all of it, wherever they are, as long as each is alone on it
 It is compiled as the legacy version, unless its first lines say which release, as interpreted code has no version
 comment, e.g.,
     // interpreted-version: 3.16
+It is parsed as an scd file's regions, unless its first lines say `// interpreted-function`, which parses it as the VM
+does, one function, see sc_inspect's --interpreted-function.
 The first lines can also be `// no-prelude`, to compile it without the shared prelude.sc, and any number of
 `// module: NAME`, which compiles modules/NAME.sc as its own module, before the test, e.g., to test extensions in
 different modules. A module is a path given to the compiler. `// frames` adds the backend's frame layout to the
@@ -78,6 +80,8 @@ PRELUDE = Path(__file__).parent / 'prelude.sc'
 NO_PRELUDE = '// no-prelude'
 # The release interpreted code is compiled as, e.g., `// interpreted-version: 3.16`.
 INTERPRETED_VERSION = re.compile(r'^// interpreted-version: (?P<release>\S+)$')
+# Parses the scd file as the VM's one function, see sc_inspect's --interpreted-function.
+INTERPRETED_FUNCTION = '// interpreted-function'
 # Adds the backend's frames to the output, see sc_inspect's --frames.
 FRAMES = '// frames'
 # Adds the backend's lowered ir after the dump, see sc_inspect's --lir.
@@ -270,11 +274,12 @@ def test_name(sc_file):
 
 
 def headers(sc_file):
-    """Whether the test uses the prelude, the release its interpreted code is compiled as, the modules compiled before
-    it, whether it shows the frames, the lowered ir, the bytecode and the compiled output, and the sc_inspect arguments
-    giving the VM's definitions, from its first lines."""
+    """Whether the test uses the prelude, the release its interpreted code is compiled as, whether it is parsed as one
+    function, the modules compiled before it, whether it shows the frames, the lowered ir, the bytecode and the compiled
+    output, and the sc_inspect arguments giving the VM's definitions, from its first lines."""
     uses_prelude = True
     release = None
+    function = False
     modules = []
     frames = False
     lir = False
@@ -286,6 +291,8 @@ def headers(sc_file):
             line = line.strip()
             if line == NO_PRELUDE:
                 uses_prelude = False
+            elif line == INTERPRETED_FUNCTION:
+                function = True
             elif line == FRAMES:
                 frames = True
             elif line == LIR:
@@ -304,16 +311,18 @@ def headers(sc_file):
                 vm += ['--primitive', primitive['definition']]
             else:
                 break
-    return uses_prelude, release, modules, frames, lir, bytecode, compiled, vm
+    return uses_prelude, release, function, modules, frames, lir, bytecode, compiled, vm
 
 
 def run_sc_inspect(cmd, sc_file):
-    uses_prelude, release, modules, frames, lir, bytecode, compiled, vm = headers(sc_file)
+    uses_prelude, release, function, modules, frames, lir, bytecode, compiled, vm = headers(sc_file)
     # Paths in diagnostics are relative to the input directory, so the output doesn't depend on where it is run.
     # The output is the same however many threads compile it, two checks that, while leaving cpus for other tests.
     args = [cmd, '--threads', '2', '--relative-to', INPUT_DIR]
     if release:
         args += ['--interpreted-version', release]
+    if function:
+        args += ['--interpreted-function']
     if frames:
         args += ['--frames']
     if lir:

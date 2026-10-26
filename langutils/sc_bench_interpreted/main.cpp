@@ -232,7 +232,7 @@ std::optional<Compiled> compile(sc::compiler::ClassLibrary& library, const std::
 
     auto start = Clock::now();
     auto text = std::make_shared<sc::src::TextInfo>(sc::src::NormalisedSource { source }, sc::src::FileCodeLocation {},
-                                                    std::nullopt, false);
+                                                    std::nullopt, sc::src::TextKind::InterpretedFunction);
     auto parsed = compiler::parse_interpreted(std::move(text));
     t.parse = seconds_since(start);
     num_diagnostics += parsed.diagnostics.size();

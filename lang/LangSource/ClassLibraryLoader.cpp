@@ -14,6 +14,7 @@
 #include "SC_Codecvt.hpp"
 #include "SC_Filesystem.hpp"
 #include "SC_LanguageConfig.hpp"
+#include "VMGlobals.h"
 #include "sc_compiler/sc_compiler.hpp"
 #include "sc_util/narrow.hpp"
 
@@ -22,6 +23,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -43,8 +46,13 @@ namespace compiler = sc::compiler;
 namespace ir = sc::ir;
 using sc::util::narrow;
 
-// As the old compiler allocated a class file's objects.
-constexpr int classLibraryFlags = obj_permanent | obj_immutable;
+// As the old compiler allocated objects: a class file's are permanent, interpreted code's are the GC's, made without
+// collecting.
+struct Allocation {
+    PyrGC* gc;
+    int flags;
+};
+constexpr Allocation classLibraryAllocation { nullptr, obj_permanent | obj_immutable };
 
 ////////////////////////////////////////////////////////////////////////////////
 // Class files
@@ -156,9 +164,15 @@ int instanceFormat(ir::SCClass::MemoryLayout layout) {
     return obj_notindexed;
 }
 
-template <typename T> PyrObject* newRawArray(const std::vector<T>& values, int format, PyrClass* classptr) {
+PyrObject* newObject(Allocation alloc, std::size_t numBytes, int format) {
+    return alloc.gc ? alloc.gc->New(numBytes, alloc.flags, format, false)
+                    : PyrGC::NewPermanent(numBytes, alloc.flags, format);
+}
+
+template <typename T>
+PyrObject* newRawArray(Allocation alloc, const std::vector<T>& values, int format, PyrClass* classptr) {
     const auto size = narrow<int>(values.size());
-    auto* array = PyrGC::NewPermanent(size * sizeof(T), classLibraryFlags, format);
+    auto* array = newObject(alloc, size * sizeof(T), format);
     array->classptr = classptr;
     array->size = size;
     if (size)
@@ -166,14 +180,14 @@ template <typename T> PyrObject* newRawArray(const std::vector<T>& values, int f
     return array;
 }
 
-PyrSymbolArray* newSymbolArray(int size) {
-    auto* array = newPyrSymbolArray(nullptr, size, classLibraryFlags, false);
+PyrSymbolArray* newSymbolArray(Allocation alloc, int size) {
+    auto* array = newPyrSymbolArray(alloc.gc, size, alloc.flags, false);
     array->size = size;
     return array;
 }
 
-PyrObject* newArray(int size) {
-    auto* array = newPyrArray(nullptr, size, classLibraryFlags, false);
+PyrObject* newArray(Allocation alloc, int size) {
+    auto* array = newPyrArray(alloc.gc, size, alloc.flags, false);
     array->size = size;
     nilSlots(array->slots, array->size);
     return array;
@@ -182,7 +196,23 @@ PyrObject* newArray(int size) {
 struct Source {
     PyrString* text;
     PyrSymbol* path;
+    // An interpreted text's line and column in its file, nil for a class file's.
+    std::optional<sc::src::FileCodeLocation> startInFile;
 };
+
+// The class library's compiler and the objects found while loading it, kept for interpreted code until the library is
+// freed.
+struct LoadedLibrary {
+    std::unique_ptr<compiler::ClassLibrary> library;
+    std::unordered_map<ir::Symbol, PyrSymbol*, std::hash<ir::Symbol>> symbols {};
+    // A member's owning class, either of its names, to the class object holding its class variables and constants.
+    std::unordered_map<ir::Symbol, PyrClass*, std::hash<ir::Symbol>> memberOwners {};
+    // By absolute class variable index, the name of the class declaring it.
+    std::vector<PyrSymbol*> classVariableOwners {};
+    // Interpreted code's root function is compiled in it.
+    PyrMethod* functionCompileContext = nullptr;
+};
+std::unique_ptr<LoadedLibrary> gLoadedLibrary;
 
 #ifndef NDEBUG
 // Every class and meta class made, with the superclass and methods the compiler gave it, to check the runtime's
@@ -194,19 +224,21 @@ struct LoadedClass {
 std::unordered_map<PyrClass*, LoadedClass> gLoadedClasses;
 #endif
 
-// Makes the VM's objects from the compiled graphs, as the old compiler made them. Every object is permanent.
+// Makes the VM's objects from the compiled graphs, as the old compiler made them.
 struct Loader {
-    explicit Loader(const compiler::ClassLibrary& library): library(library) {
-        classVariableOwners.resize(library.backend->members.num_class_variables(), nullptr);
-    }
+    Loader(LoadedLibrary& loaded, Allocation alloc):
+        library(*loaded.library),
+        alloc(alloc),
+        symbols(loaded.symbols),
+        memberOwners(loaded.memberOwners),
+        classVariableOwners(loaded.classVariableOwners) {}
 
     const compiler::ClassLibrary& library;
-    std::unordered_map<ir::Symbol, PyrSymbol*, std::hash<ir::Symbol>> symbols {};
+    Allocation alloc;
+    std::unordered_map<ir::Symbol, PyrSymbol*, std::hash<ir::Symbol>>& symbols;
+    std::unordered_map<ir::Symbol, PyrClass*, std::hash<ir::Symbol>>& memberOwners;
+    std::vector<PyrSymbol*>& classVariableOwners;
     std::unordered_map<const sc::src::TextInfo*, Source> sources {};
-    // A member's owning class, either of its names, to the class object holding its class variables and constants.
-    std::unordered_map<ir::Symbol, PyrClass*, std::hash<ir::Symbol>> memberOwners {};
-    // By absolute class variable index, the name of the class declaring it.
-    std::vector<PyrSymbol*> classVariableOwners;
 
     PyrSymbol* symbol(ir::Symbol s) {
         if (const auto fnd = symbols.find(s); fnd != symbols.end())
@@ -222,12 +254,18 @@ struct Loader {
         if (const auto fnd = sources.find(text.get()); fnd != sources.end())
             return fnd->second;
         const auto& str = text->source.as_string();
-        auto* pyrString = newPyrStringN(nullptr, narrow<int>(str.size()), obj_immutable | obj_permanent, false);
+        auto* pyrString = newPyrStringN(alloc.gc, narrow<int>(str.size()), alloc.flags, false);
         std::memcpy(pyrString->s, str.data(), str.size());
         const auto path = text->file_path ? SC_Codecvt::path_to_utf8_str(*text->file_path) : std::string {};
-        const Source s { pyrString, getsym(path.c_str()) };
+        const Source s { pyrString, getsym(path.c_str()), startInFile(*text) };
         sources.emplace(text.get(), s);
         return s;
+    }
+
+    static std::optional<sc::src::FileCodeLocation> startInFile(const sc::src::TextInfo& text) {
+        if (text.kind == sc::src::TextKind::ClassFile)
+            return std::nullopt;
+        return text.source_start_in_file;
     }
 
     // Values
@@ -243,28 +281,36 @@ struct Loader {
             [&](ir::SymSCSymbol s) { return PyrSlot::make(symbol(s)); },
             [&](ir::SymSCString s) {
                 const auto text = library.symbols(s);
-                auto* str = newPyrStringN(nullptr, narrow<int>(text.size()), classLibraryFlags, false);
+                auto* str = newPyrStringN(alloc.gc, narrow<int>(text.size()), alloc.flags, false);
                 std::memcpy(str->s, text.data(), text.size());
                 return PyrSlot::make(str);
             },
             // As a literal array's element, a class name is a symbol.
             [&](ir::SymSCClassName s) { return PyrSlot::make(symbol(s)); },
             [&](const ir::ConstExprArray& elements) {
-                auto* array = newArray(narrow<int>(elements.size()));
+                auto* array = newArray(alloc, narrow<int>(elements.size()));
                 for (const auto i : elements.indices())
                     array->slots[*i] = value(elements[i]);
                 return PyrSlot::make(array);
             },
             [&](const ir::ConstExprEvent& pairs) { return event(pairs); },
-            [](const ir::ConstExprDoubleArray& v) {
-                return PyrSlot::make(newRawArray(v, obj_double, class_doublearray));
+            [&](const ir::ConstExprDoubleArray& v) {
+                return PyrSlot::make(newRawArray(alloc, v, obj_double, class_doublearray));
             },
-            [](const ir::ConstExprFloatArray& v) { return PyrSlot::make(newRawArray(v, obj_float, class_floatarray)); },
-            [](const ir::ConstExprInt32Array& v) { return PyrSlot::make(newRawArray(v, obj_int32, class_int32array)); },
-            [](const ir::ConstExprInt16Array& v) { return PyrSlot::make(newRawArray(v, obj_int16, class_int16array)); },
-            [](const ir::ConstExprInt8Array& v) { return PyrSlot::make(newRawArray(v, obj_int8, class_int8array)); },
+            [&](const ir::ConstExprFloatArray& v) {
+                return PyrSlot::make(newRawArray(alloc, v, obj_float, class_floatarray));
+            },
+            [&](const ir::ConstExprInt32Array& v) {
+                return PyrSlot::make(newRawArray(alloc, v, obj_int32, class_int32array));
+            },
+            [&](const ir::ConstExprInt16Array& v) {
+                return PyrSlot::make(newRawArray(alloc, v, obj_int16, class_int16array));
+            },
+            [&](const ir::ConstExprInt8Array& v) {
+                return PyrSlot::make(newRawArray(alloc, v, obj_int8, class_int8array));
+            },
             [&](const ir::ConstExprSymbolArray& v) {
-                auto* array = newSymbolArray(narrow<int>(v.size()));
+                auto* array = newSymbolArray(alloc, narrow<int>(v.size()));
                 for (std::size_t i = 0; i < v.size(); ++i)
                     array->symbols[i] = symbol(v[i]);
                 return PyrSlot::make(array);
@@ -300,7 +346,7 @@ struct Loader {
             }
         }
 
-        auto* array = newArray(std::max(2 * narrow<int>(pairs.size()), 2) * 2);
+        auto* array = newArray(alloc, std::max(2 * narrow<int>(pairs.size()), 2) * 2);
         for (auto& [key, val] : entries) {
             PyrSlot* pair = array->slots + arrayAtIdentityHashInPairs(array, &key);
             pair[0] = key;
@@ -309,7 +355,7 @@ struct Loader {
 
         auto* eventClass = s_event->u.classobj;
         const auto numSlots = slotRawObject(&eventClass->iprototype)->size;
-        auto* obj = PyrGC::NewPermanent(numSlots * sizeof(PyrSlot), classLibraryFlags, obj_notindexed);
+        auto* obj = newObject(alloc, numSlots * sizeof(PyrSlot), obj_notindexed);
         obj->classptr = eventClass;
         obj->size = numSlots;
         nilSlots(obj->slots, numSlots);
@@ -343,7 +389,7 @@ struct Loader {
     }
 
     PyrSlot switchTable(const backend::SwitchTable& table) {
-        auto* array = newArray(narrow<int>(table.capacity));
+        auto* array = newArray(alloc, narrow<int>(table.capacity));
         // The first of duplicate keys wins.
         for (const auto& [key, offset] : table.offsets) {
             auto keySlot = value(key);
@@ -518,9 +564,18 @@ struct Loader {
         block->sourceCodeStartIndex = PyrSlot::make(narrow<int32_t>(f.location.range.begin.absolute));
         block->sourceCodeEndIndex = PyrSlot::make(narrow<int32_t>(f.location.range.end.absolute));
         block->isClosed = PyrSlot::make(emitted.properties.is_closed);
+        // Each block's own, mutable, as the old compiler made it.
+        if (file.startInFile) {
+            assert(alloc.gc);
+            auto* location = newPyrArray(alloc.gc, 2, 0, false);
+            location->size = 2;
+            location->slots[0] = PyrSlot::make(narrow<int32_t>(file.startInFile->line_number));
+            location->slots[1] = PyrSlot::make(narrow<int32_t>(file.startInFile->column));
+            block->fileLocation = PyrSlot::make(location);
+        }
 
         const auto names = [&](int first, int last) {
-            auto* array = newSymbolArray(last - first);
+            auto* array = newSymbolArray(alloc, last - first);
             for (int i = first; i < last; ++i)
                 array->symbols[i - first] = symbol(f.slots[backend::FrameSlotIndex { narrow<std::uint32_t>(i) }].name);
             return PyrSlot::make(array);
@@ -535,7 +590,7 @@ struct Loader {
         if (f.has_this && numSlots == 1) {
             block->prototypeFrame = o_onenilarray;
         } else if (numSlots) {
-            auto* prototype = newArray(numSlots);
+            auto* prototype = newArray(alloc, numSlots);
             for (int i = 0; i < numSlots; ++i) {
                 if (i >= numPositional && i < numArguments)
                     prototype->slots[i] = o_emptyarray;
@@ -552,25 +607,25 @@ struct Loader {
 
         const auto& code = emitted.code;
         if (!code.codes.raw().empty()) {
-            auto* bytes = newPyrInt8Array(nullptr, narrow<int>(code.codes.size()), classLibraryFlags, false);
+            auto* bytes = newPyrInt8Array(alloc.gc, narrow<int>(code.codes.size()), alloc.flags, false);
             std::memcpy(bytes->b, code.codes.raw().data(), code.codes.size());
             bytes->size = narrow<int>(code.codes.size());
             block->code = PyrSlot::make(bytes);
 
             const auto numLocations = narrow<int>(2 * code.locations.size());
-            auto* locations = newPyrInt32Array(nullptr, numLocations, classLibraryFlags, false);
+            auto* locations = newPyrInt32Array(alloc.gc, numLocations, alloc.flags, false);
             std::memcpy(locations->i, code.locations.raw().data(), numLocations * sizeof(int32_t));
             locations->size = numLocations;
             block->codeLocations = PyrSlot::make(locations);
 
-            auto* sizes = newPyrInt8Array(nullptr, narrow<int>(code.sizeOfCodes.size()), classLibraryFlags, false);
+            auto* sizes = newPyrInt8Array(alloc.gc, narrow<int>(code.sizeOfCodes.size()), alloc.flags, false);
             std::memcpy(sizes->b, code.sizeOfCodes.raw().data(), code.sizeOfCodes.size());
             sizes->size = narrow<int>(code.sizeOfCodes.size());
             block->codeSizes = PyrSlot::make(sizes);
         }
 
         if (!emitted.selectors.raw().empty()) {
-            auto* selectors = newArray(narrow<int>(emitted.selectors.size()));
+            auto* selectors = newArray(alloc, narrow<int>(emitted.selectors.size()));
             for (const auto i : emitted.selectors.indices())
                 selectors->slots[*i] = std::visit(
                     sc::util::overload {
@@ -583,7 +638,7 @@ struct Loader {
         }
 
         if (!emitted.constants.raw().empty()) {
-            auto* constants = newArray(narrow<int>(emitted.constants.size()));
+            auto* constants = newArray(alloc, narrow<int>(emitted.constants.size()));
             for (const auto i : emitted.constants.indices())
                 constants->slots[*i] =
                     std::visit(sc::util::overload {
@@ -600,7 +655,7 @@ struct Loader {
     PyrBlock* makeBlock(const compiler::CompiledGraph& g, backend::lir::FunctionIndex index, PyrBlock* parent) {
         const auto& f = g.functions[index];
         assert(!f.emitted.thrown_away);
-        auto* block = newPyrBlock(false, classLibraryFlags);
+        auto* block = newPyrBlock(alloc.gc != nullptr, alloc.flags);
         block->name = f.name ? PyrSlot::make(symbol(ir::SymSCSymbol { *f.name })) : PyrSlot {};
         block->contextDef = f.emitted.properties.has_context ? PyrSlot::make(parent) : PyrSlot {};
         fillFunction(g, index, block, methBlock);
@@ -779,6 +834,21 @@ compiler::VMDefinitions vmDefinitions() {
     return vm;
 }
 
+// The compiler requires an Interpreter class, which defines it.
+PyrMethod* findFunctionCompileContext() {
+    auto* interpreter = getsym("Interpreter")->u.classobj;
+    assert(interpreter && IsObj(&interpreter->methods));
+    auto* methods = slotRawObject(&interpreter->methods);
+    auto* selector = getsym("functionCompileContext");
+    for (int i = 0; i < methods->size; ++i) {
+        auto* method = slotRawMethod(&methods->slots[i]);
+        if (slotRawSymbol(&method->name) == selector)
+            return method;
+    }
+    assert(false && "Interpreter has no functionCompileContext");
+    return nullptr;
+}
+
 std::size_t postDiagnostic(const sc::diag::Diagnostic& d, std::size_t& errors) {
     if (d.severity() == sc::diag::Severity::Error)
         ++errors;
@@ -811,7 +881,7 @@ bool loadClassLibrary(std::size_t& thingsPosted) {
 
     compiler::ClassLibraryTimes times;
     const auto numThreads = std::max(1u, std::thread::hardware_concurrency());
-    const auto library = compiler::compile_class_library(finder.files, numThreads, times, vmDefinitions());
+    auto library = compiler::compile_class_library(finder.files, numThreads, times, vmDefinitions());
 
     std::size_t errors { 0 };
     if (!library->parse_log.empty()) {
@@ -832,15 +902,19 @@ bool loadClassLibrary(std::size_t& thingsPosted) {
     if (errors)
         return false;
 
-    Loader loader { *library };
+    auto loaded = std::make_unique<LoadedLibrary>();
+    loaded->library = std::move(library);
+    loaded->classVariableOwners.resize(loaded->library->backend->members.num_class_variables(), nullptr);
+    Loader loader { *loaded, classLibraryAllocation };
+    const auto& lib = loader.library;
     std::unordered_map<PyrSymbol*, const compiler::CompiledGraph*> metaClasses;
     for (const auto& g : classes.raw())
-        if (library->symbols.is_meta(classOf(g).name))
+        if (lib.symbols.is_meta(classOf(g).name))
             metaClasses.emplace(loader.symbol(classOf(g).name), &g);
     // Every class graph has its meta class's, they are only poisoned together, which is an error.
     std::vector<std::pair<const compiler::CompiledGraph*, const compiler::CompiledGraph*>> classAndMeta;
     for (const auto& g : classes.raw())
-        if (!library->symbols.is_meta(classOf(g).name)) {
+        if (!lib.symbols.is_meta(classOf(g).name)) {
             const auto fnd = metaClasses.find(getmetasym(loader.symbol(classOf(g).name)->name));
             assert(fnd != metaClasses.end());
             classAndMeta.push_back({ &g, fnd->second });
@@ -851,8 +925,63 @@ bool loadClassLibrary(std::size_t& thingsPosted) {
         loader.fillClass(*g, *meta);
     for (const auto& g : classes.raw())
         loader.makeMethods(g);
-    gNumClassVars = narrow<int>(library->backend->members.num_class_variables());
+    loaded->functionCompileContext = findFunctionCompileContext();
+    gNumClassVars = narrow<int>(lib.backend->members.num_class_variables());
+    gLoadedLibrary = std::move(loaded);
     return true;
+}
+
+void unloadClassLibrary() { gLoadedLibrary.reset(); }
+
+compiler::ClassLibrary* loadedClassLibrary() { return gLoadedLibrary ? gLoadedLibrary->library.get() : nullptr; }
+
+PyrBlock* loadInterpreted(VMGlobals* g, const compiler::CompiledGraph& compiled, PyrString* text, PyrSymbol* path,
+                          PyrBlock* context) {
+    assert(gLoadedLibrary);
+    const auto& functions = std::get<compiler::CompiledInterpreted>(compiled.unit).functions;
+    assert(functions.size() == 1 && compiled.sources.size() == 1);
+    Loader loader { *gLoadedLibrary, { g->gc, obj_immutable } };
+    const auto& source = compiled.sources.raw().front();
+    loader.sources.emplace(source.get(), Source { text, path, Loader::startInFile(*source) });
+    return loader.makeBlock(compiled, functions.front(), context);
+}
+
+PyrBlock* compileInterpreted(VMGlobals* g, std::string_view code, PyrSymbol* path,
+                             sc::src::FileCodeLocation startInFile) {
+    assert(gLoadedLibrary);
+    auto& library = *gLoadedLibrary->library;
+    auto text = std::make_shared<sc::src::TextInfo>(sc::src::NormalisedSource { code.data(), code.size() }, startInFile,
+                                                    path ? std::optional<fs::path> { path->name } : std::nullopt,
+                                                    sc::src::TextKind::InterpretedFunction);
+
+    std::size_t errors { 0 };
+    auto parsed = compiler::parse_interpreted(text);
+    for (const auto& d : parsed.diagnostics)
+        postDiagnostic(d, errors);
+    auto ir = compiler::compile_interpreted_ir(library, std::move(parsed), sc::ast::LanguageVersion::Legacy);
+    for (const auto& d : ir.diagnostics)
+        postDiagnostic(d, errors);
+    if (errors || !ir.graph)
+        return nullptr;
+
+    const auto& graph = *ir.graph;
+    auto framed = compiler::layout_frames(library, graph, std::get<ir::SCInterpreted_I>(*graph.root()));
+    const auto compiled =
+        compiler::finish(library, compiler::emit(library, compiler::lower(library, std::move(framed))));
+    for (const auto& d : compiled.diagnostics)
+        postDiagnostic(d, errors);
+    if (errors)
+        return nullptr;
+    // Unimplemented by the backend, e.g., a `~x` pack target.
+    if (std::get<compiler::CompiledInterpreted>(compiled.unit).functions.empty()) {
+        post("ERROR: the new compiler can't compile this code yet.\n");
+        return nullptr;
+    }
+
+    const auto& normalised = text->source.as_string();
+    auto* string = newPyrString(g->gc, normalised.c_str(), 0, false);
+    return loadInterpreted(g, compiled, string, path ? path : getsym("interpreted_text"),
+                           gLoadedLibrary->functionCompileContext);
 }
 
 void checkFinalisedClassLibrary() {
