@@ -42,8 +42,6 @@ LoweringSymbols::LoweringSymbols(ir::SymbolTable& symbols):
 
 namespace {
 
-// Sub-regions nest, e.g., a default argument's value in a body, so each is collected on its own and appended to its
-// function when it ends, keeping each contiguous.
 // The functions of an inlined `case`, the receiver then the arguments.
 using CaseFunctionIndex = util::StrongIndex<std::uint32_t, struct CaseFunctionIndex__>;
 using CaseFunctions = util::IndexedVector<CaseFunctionIndex, ir::SCFunction_I>;
@@ -51,9 +49,13 @@ using CaseFunctions = util::IndexedVector<CaseFunctionIndex, ir::SCFunction_I>;
 // A generator's qualifiers, in the order they are written.
 using QualifierIndex = util::StrongIndex<std::uint32_t, struct QualifierIndex__>;
 
+// Instructions lowered but not yet placed in their function.
+using PendingIndex = util::StrongIndex<std::uint32_t, struct PendingIndex__>;
+using PendingRegionIndex = util::StrongIndex<std::uint32_t, struct PendingRegionIndex__>;
+
 struct SubRegionBuild {
-    std::vector<lir::Instruction> instructions {};
-    std::vector<lir::SourceSpan> spans {};
+    util::IndexedVector<PendingIndex, lir::Instruction> instructions {};
+    util::IndexedVector<PendingIndex, lir::SourceSpan> spans {};
 };
 
 struct Lowerer {
@@ -63,13 +65,18 @@ struct Lowerer {
     FrameCursor cursor;
     lir::LoweredGraph out {};
 
-    // Innermost last, as are each one's regions.
+    // Innermost last.
     struct Building {
         lir::FunctionIndex function;
         bool is_method;
-        std::vector<SubRegionBuild> regions {};
+        // Its first sub-region in region_starts.
+        PendingRegionIndex first_region;
     };
     std::vector<Building> building {};
+    // Sub-regions nest, e.g., a default argument's value in a body, and functions nest, so all are built on one stack,
+    // each from its start, and appended to its function when it ends, keeping each contiguous.
+    SubRegionBuild pending {};
+    util::IndexedVector<PendingRegionIndex, PendingIndex> region_starts {};
     // The root being lowered can't be emitted, e.g., a frame is over the VM's limit.
     bool failed { false };
     // Legacy code only uses literals' values, a read of a variable sema knows is 1 still reads it.
@@ -82,22 +89,33 @@ struct Lowerer {
     lir::Function& function() { return out.functions[building.back().function]; }
 
     void emit(lir::Instruction instruction, ir::NodeIndex at) {
-        auto& region = building.back().regions.back();
+        assert(!region_starts.empty());
         const auto range = ir::IRGraph::range(ir_graph.location(at));
-        region.instructions.push_back(instruction);
-        region.spans.push_back({ range.begin.absolute, range.end.absolute });
+        (void)pending.instructions.push_back(instruction);
+        (void)pending.spans.push_back({ range.begin.absolute, range.end.absolute });
     }
 
-    void begin_sub_region() { building.back().regions.emplace_back(); }
+    void begin_sub_region() { (void)region_starts.push_back(pending.instructions.next_index()); }
+
+    // Removes the innermost sub-region from the stack.
+    template <typename Take> void pop_sub_region(const Take& take) {
+        const auto start = static_cast<std::ptrdiff_t>(*region_starts.back());
+        region_starts.pop_back();
+        auto& instructions = pending.instructions.raw();
+        auto& spans = pending.spans.raw();
+        take(instructions.begin() + start, instructions.end(), spans.begin() + start, spans.end());
+        instructions.erase(instructions.begin() + start, instructions.end());
+        spans.erase(spans.begin() + start, spans.end());
+    }
 
     lir::FunctionSubRegion append_sub_region() {
-        auto region = std::move(building.back().regions.back());
-        building.back().regions.pop_back();
         auto& f = function();
-        const lir::FunctionSubRegion placed { f.instructions.next_index(),
-                                              static_cast<std::uint32_t>(region.instructions.size()) };
-        f.instructions.raw().insert(f.instructions.raw().end(), region.instructions.begin(), region.instructions.end());
-        f.spans.raw().insert(f.spans.raw().end(), region.spans.begin(), region.spans.end());
+        lir::FunctionSubRegion placed { f.instructions.next_index(), 0 };
+        pop_sub_region([&](auto i_begin, auto i_end, auto s_begin, auto s_end) {
+            placed.size = static_cast<std::uint32_t>(i_end - i_begin);
+            f.instructions.raw().insert(f.instructions.raw().end(), i_begin, i_end);
+            f.spans.raw().insert(f.spans.raw().end(), s_begin, s_end);
+        });
         return placed;
     }
 
@@ -109,15 +127,20 @@ struct Lowerer {
     // Instructions lowered before they are placed, e.g., an operand pushed after a function lowered later. Any
     // sub-regions they hold are already placed.
     SubRegionBuild take_sub_region() {
-        auto region = std::move(building.back().regions.back());
-        building.back().regions.pop_back();
-        return region;
+        SubRegionBuild taken;
+        pop_sub_region([&](auto i_begin, auto i_end, auto s_begin, auto s_end) {
+            taken.instructions.raw().assign(i_begin, i_end);
+            taken.spans.raw().assign(s_begin, s_end);
+        });
+        return taken;
     }
 
     void place(const SubRegionBuild& taken) {
-        auto& region = building.back().regions.back();
-        region.instructions.insert(region.instructions.end(), taken.instructions.begin(), taken.instructions.end());
-        region.spans.insert(region.spans.end(), taken.spans.begin(), taken.spans.end());
+        assert(!region_starts.empty());
+        auto& instructions = pending.instructions.raw();
+        auto& spans = pending.spans.raw();
+        instructions.insert(instructions.end(), taken.instructions.raw().begin(), taken.instructions.raw().end());
+        spans.insert(spans.end(), taken.spans.raw().begin(), taken.spans.raw().end());
     }
 
     // The body is sub-region 0, reserved first though it ends last.
@@ -125,13 +148,13 @@ struct Lowerer {
         lir::Function f { frame, ir_graph.location(owner).source };
         f.sub_regions.push_back({ lir::InstructionIndex { 0 }, 0 });
         const auto index = out.functions.push_back(std::move(f));
-        building.push_back({ index, ir_graph.is_a<ir::SCMethod_I>(owner) });
+        building.push_back({ index, ir_graph.is_a<ir::SCMethod_I>(owner), region_starts.next_index() });
         begin_sub_region();
         return index;
     }
 
     void end_function() {
-        assert(building.back().regions.size() == 1);
+        assert(region_starts.size() == *building.back().first_region + 1);
         const auto sub = append_sub_region();
         function().sub_regions[lir::body_sub_region] = sub;
         building.pop_back();
