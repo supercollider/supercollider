@@ -196,6 +196,8 @@ struct Emitter {
     std::vector<sc::diag::Diagnostic>& diagnostics;
     bool failed { false };
     bool reported_selectors { false };
+    // Each constant's identity, so adding one doesn't look up every entry again.
+    util::IndexedVector<ConstantIndex, SlotIdentity> constant_identities {};
 
     [[nodiscard]] const lir::Instruction& instruction(lir::InstructionIndex i) const {
         return function.instructions[i];
@@ -245,10 +247,11 @@ struct Emitter {
     }
 
     ConstantIndex add_constant(ConstantContent entry) {
-        const auto identity = identity_of(ctx.constants, entry);
-        for (const auto i : out.constants.indices())
-            if (identity == identity_of(ctx.constants, out.constants[i]))
+        auto identity = identity_of(ctx.constants, entry);
+        for (const auto i : constant_identities.indices())
+            if (identity == constant_identities[i])
                 return i;
+        (void)constant_identities.push_back(std::move(identity));
         return out.constants.push_back(std::move(entry));
     }
 
@@ -579,47 +582,50 @@ struct Emitter {
             stack.erase(stack.end() - static_cast<std::ptrdiff_t>(count), stack.end());
             stack.push_back({ start, i });
         };
-        for (const auto i : lir::instructions(region)) {
-            std::visit(util::overload {
-                           [&](const lir::Send& s) {
-                               const std::uint32_t count = 1u + s.num_positional + 2u * s.num_keyword;
-                               assert(stack.size() >= count);
-                               (void)sends.push_back({ i, operands.next_index(), count });
-                               operands.raw().insert(operands.raw().end(),
-                                                     stack.end() - static_cast<std::ptrdiff_t>(count), stack.end());
-                               const auto receiver = stack[stack.size() - count];
-                               stack.erase(stack.end() - static_cast<std::ptrdiff_t>(count), stack.end());
-                               stack.push_back({ receiver.start, i });
-                           },
-                           [&](const lir::StoreLocal&) { stack.back().producer = i; },
-                           [&](const lir::StoreInstance&) { stack.back().producer = i; },
-                           [&](const lir::StoreClassVariable&) { stack.back().producer = i; },
-                           [&](const lir::Drop&) { (void)pop(); },
-                           [&](const lir::Return&) { return_value(plan, pop()); },
-                           [&](const lir::NonLocalReturn&) { return_value(plan, pop()); },
-                           [&](const lir::ReturnSelf&) {},
-                           [&](const lir::DefaultArgument&) {},
-                           [&](const lir::If&) { replace(i, 1); },
-                           [&](const lir::IfNil&) { replace(i, 1); },
-                           [&](const lir::IfNotNil&) { replace(i, 1); },
-                           [&](const lir::And&) { replace(i, 1); },
-                           [&](const lir::Or&) { replace(i, 1); },
-                           [&](const lir::OrIfNil&) { replace(i, 1); },
-                           [&](const lir::AndIfNotNil&) { replace(i, 1); },
-                           [&](const lir::QuestionMark&) { replace(i, 2); },
-                           [&](const lir::Switch&) { replace(i, 1); },
-                           [&](const lir::While&) {
-                               stack.push_back({ i, i });
-                           },
-                           [&](const lir::Loop&) {
-                               stack.push_back({ i, i });
-                           },
-                           [&](const lir::Unimplemented&) {},
-                           [&](const auto&) {
-                               stack.push_back({ i, i });
-                           },
-                       },
-                       instruction(i));
+        // Built once, not per instruction.
+        lir::InstructionIndex current { region.begin };
+        const auto read = util::overload {
+            [&](const lir::Send& s) {
+                const std::uint32_t count = 1u + s.num_positional + 2u * s.num_keyword;
+                assert(stack.size() >= count);
+                (void)sends.push_back({ current, operands.next_index(), count });
+                operands.raw().insert(operands.raw().end(), stack.end() - static_cast<std::ptrdiff_t>(count),
+                                      stack.end());
+                const auto receiver = stack[stack.size() - count];
+                stack.erase(stack.end() - static_cast<std::ptrdiff_t>(count), stack.end());
+                stack.push_back({ receiver.start, current });
+            },
+            [&](const lir::StoreLocal&) { stack.back().producer = current; },
+            [&](const lir::StoreInstance&) { stack.back().producer = current; },
+            [&](const lir::StoreClassVariable&) { stack.back().producer = current; },
+            [&](const lir::Drop&) { (void)pop(); },
+            [&](const lir::Return&) { return_value(plan, pop()); },
+            [&](const lir::NonLocalReturn&) { return_value(plan, pop()); },
+            [&](const lir::ReturnSelf&) {},
+            [&](const lir::DefaultArgument&) {},
+            [&](const lir::If&) { replace(current, 1); },
+            [&](const lir::IfNil&) { replace(current, 1); },
+            [&](const lir::IfNotNil&) { replace(current, 1); },
+            [&](const lir::And&) { replace(current, 1); },
+            [&](const lir::Or&) { replace(current, 1); },
+            [&](const lir::OrIfNil&) { replace(current, 1); },
+            [&](const lir::AndIfNotNil&) { replace(current, 1); },
+            [&](const lir::QuestionMark&) { replace(current, 2); },
+            [&](const lir::Switch&) { replace(current, 1); },
+            [&](const lir::While&) {
+                stack.push_back({ current, current });
+            },
+            [&](const lir::Loop&) {
+                stack.push_back({ current, current });
+            },
+            [&](const lir::Unimplemented&) {},
+            [&](const auto&) {
+                stack.push_back({ current, current });
+            },
+        };
+        for (const auto index : lir::instructions(region)) {
+            current = index;
+            std::visit(read, instruction(current));
         }
 
         plan.sends.resize(sends.size());
@@ -952,7 +958,81 @@ struct Emitter {
         SendIndex next_send { 0 };
         auto next_addition = plan.additions.begin();
         bool popped_by_store { false };
-        for (const auto i : lir::instructions(region)) {
+        // Built once, not per instruction, reading the instruction being encoded.
+        lir::InstructionIndex i { region.begin };
+        sc::src::SourceCodeRange loc {};
+        const auto encode_instruction = util::overload {
+            [&](const lir::PushLocal& p) { push_local(bc, loc, p.local); },
+            [&](const lir::PushInstance& p) {
+                PushInstVarX.emit(bc, loc, Operands::Index::fromRaw(static_cast<int>(*p.slot)));
+            },
+            [&](const lir::PushClassVariable& p) {
+                const std::uint32_t index { *p.index };
+                if (PushClassVar.validNibble(index))
+                    PushClassVar.emit(bc, loc, index);
+                else
+                    PushClassVarX.emit(bc, loc, Operands::UnsignedInt<16, 1>::fromFull(index),
+                                       Operands::UnsignedInt<16, 0>::fromFull(index));
+            },
+            [&](const lir::PushConstant& p) { push_constant(bc, loc, p.value); },
+            [&](const lir::PushClassConstant& p) {
+                const auto& member = ctx.graph.member(p.member);
+                push_constant_entry(bc, loc, ClassConstant { member.owner, member.name, p.value });
+            },
+            [&](const lir::PushSpecialValue& p) {
+                PushSpecialValue.emit(bc, loc,
+                                      { p.value == lir::SpecialValue::Nil        ? OpSpecialValue::Nil_
+                                            : p.value == lir::SpecialValue::True ? OpSpecialValue::True
+                                                                                 : OpSpecialValue::False });
+            },
+            [&](const lir::PushInteger& p) { push_integer(bc, loc, p.value); },
+            [&](const lir::PushSymbol& p) { push_constant_entry(bc, loc, p.value); },
+            [&](const lir::PushClass& p) { push_class(bc, loc, p.name); },
+            [&](const lir::PushSpecial& p) { special(bc, loc, p.kind); },
+            [&](const lir::PushFunction& p) {
+                PushLiteralX.emit(bc, loc, Operands::Index::fromRaw(*add_selector(p.function)));
+            },
+            [&](const lir::StoreLocal&) { popped_by_store = store(bc, loc, instruction(i), drop_follows(plan, i)); },
+            [&](const lir::StoreInstance&) { popped_by_store = store(bc, loc, instruction(i), drop_follows(plan, i)); },
+            [&](const lir::StoreClassVariable&) {
+                popped_by_store = store(bc, loc, instruction(i), drop_follows(plan, i));
+            },
+            [&](const lir::Dup&) { Dup.emit(bc, loc); },
+            [&](const lir::Drop&) { Drop.emit(bc, loc); },
+            [&](const lir::Send&) {},
+            [&](const lir::Return&) { emit_return(bc, loc, plan, i); },
+            [&](const lir::NonLocalReturn&) { emit_return(bc, loc, plan, i); },
+            [&](const lir::ReturnSelf&) { ReturnSelf.emit(bc, loc); },
+            [&](const lir::DefaultArgument& d) { default_argument(bc, loc, d); },
+            [&](const lir::If& b) { branch(bc, loc, b.then_body, b.else_body, JumpIfFalsePushNil, JumpIfFalse); },
+            [&](const lir::IfNil& b) {
+                branch(bc, loc, b.then_body, b.else_body, Extended::IfNotNilJumpPushNilElsePop.Jump,
+                       Extended::IfNotNilJump.Jump);
+            },
+            [&](const lir::IfNotNil& b) {
+                branch(bc, loc, b.then_body, b.else_body, Extended::IfNilThenJumpElsePopNil.Jump,
+                       Extended::IfNilJump.Jump);
+            },
+            [&](const lir::And& b) { jump_over(bc, loc, JumpIfFalsePushFalse, b.rhs); },
+            [&](const lir::Or& b) { jump_over(bc, loc, JumpIfTruePushTrue, b.rhs); },
+            [&](const lir::OrIfNil& b) { jump_over(bc, loc, Extended::DoubleQuestionMark.Jump, b.rhs); },
+            [&](const lir::AndIfNotNil& b) { jump_over(bc, loc, Extended::IfNilThenJumpElsePopNil.Jump, b.rhs); },
+            [&](const lir::QuestionMark&) { Extended::QuestionMark.emit(bc, loc); },
+            [&](const lir::While& w) { while_(bc, loc, w); },
+            [&](const lir::Loop& l) {
+                auto body = encode_value(l.body, loc);
+                const auto length = body.length();
+                bc.consume(std::move(body));
+                jump(bc, loc, JumpBack, length + 1);
+            },
+            [&](const lir::Switch& s) { switch_(bc, loc, s); },
+            [&](const lir::Unimplemented&) {
+                assert(false);
+                failed = true;
+            },
+        };
+        for (const auto index : lir::instructions(region)) {
+            i = index;
             for (; next_addition != plan.additions.end() && next_addition->first == i; ++next_addition) {
                 const auto s = next_addition->second;
                 // Added at the send, after its arguments, it is added when it is encoded.
@@ -961,7 +1041,7 @@ struct Emitter {
                         add_selector(std::get<lir::Send>(instruction(plan.send_instructions[s])).selector);
             }
             const auto& in = instruction(i);
-            const auto loc = location(i);
+            loc = location(i);
             const bool left_out = plan.left_out(i);
             if (const auto* s = std::get_if<lir::Send>(&in)) {
                 auto& p = plan.sends[next_send];
@@ -980,82 +1060,7 @@ struct Emitter {
                 assert(std::holds_alternative<lir::Drop>(in));
                 continue;
             }
-            std::visit(
-                util::overload {
-                    [&](const lir::PushLocal& p) { push_local(bc, loc, p.local); },
-                    [&](const lir::PushInstance& p) {
-                        PushInstVarX.emit(bc, loc, Operands::Index::fromRaw(static_cast<int>(*p.slot)));
-                    },
-                    [&](const lir::PushClassVariable& p) {
-                        const std::uint32_t index { *p.index };
-                        if (PushClassVar.validNibble(index))
-                            PushClassVar.emit(bc, loc, index);
-                        else
-                            PushClassVarX.emit(bc, loc, Operands::UnsignedInt<16, 1>::fromFull(index),
-                                               Operands::UnsignedInt<16, 0>::fromFull(index));
-                    },
-                    [&](const lir::PushConstant& p) { push_constant(bc, loc, p.value); },
-                    [&](const lir::PushClassConstant& p) {
-                        const auto& member = ctx.graph.member(p.member);
-                        push_constant_entry(bc, loc, ClassConstant { member.owner, member.name, p.value });
-                    },
-                    [&](const lir::PushSpecialValue& p) {
-                        PushSpecialValue.emit(bc, loc,
-                                              { p.value == lir::SpecialValue::Nil        ? OpSpecialValue::Nil_
-                                                    : p.value == lir::SpecialValue::True ? OpSpecialValue::True
-                                                                                         : OpSpecialValue::False });
-                    },
-                    [&](const lir::PushInteger& p) { push_integer(bc, loc, p.value); },
-                    [&](const lir::PushSymbol& p) { push_constant_entry(bc, loc, p.value); },
-                    [&](const lir::PushClass& p) { push_class(bc, loc, p.name); },
-                    [&](const lir::PushSpecial& p) { special(bc, loc, p.kind); },
-                    [&](const lir::PushFunction& p) {
-                        PushLiteralX.emit(bc, loc, Operands::Index::fromRaw(*add_selector(p.function)));
-                    },
-                    [&](const lir::StoreLocal&) { popped_by_store = store(bc, loc, in, drop_follows(plan, i)); },
-                    [&](const lir::StoreInstance&) { popped_by_store = store(bc, loc, in, drop_follows(plan, i)); },
-                    [&](const lir::StoreClassVariable&) {
-                        popped_by_store = store(bc, loc, in, drop_follows(plan, i));
-                    },
-                    [&](const lir::Dup&) { Dup.emit(bc, loc); },
-                    [&](const lir::Drop&) { Drop.emit(bc, loc); },
-                    [&](const lir::Send&) {},
-                    [&](const lir::Return&) { emit_return(bc, loc, plan, i); },
-                    [&](const lir::NonLocalReturn&) { emit_return(bc, loc, plan, i); },
-                    [&](const lir::ReturnSelf&) { ReturnSelf.emit(bc, loc); },
-                    [&](const lir::DefaultArgument& d) { default_argument(bc, loc, d); },
-                    [&](const lir::If& b) {
-                        branch(bc, loc, b.then_body, b.else_body, JumpIfFalsePushNil, JumpIfFalse);
-                    },
-                    [&](const lir::IfNil& b) {
-                        branch(bc, loc, b.then_body, b.else_body, Extended::IfNotNilJumpPushNilElsePop.Jump,
-                               Extended::IfNotNilJump.Jump);
-                    },
-                    [&](const lir::IfNotNil& b) {
-                        branch(bc, loc, b.then_body, b.else_body, Extended::IfNilThenJumpElsePopNil.Jump,
-                               Extended::IfNilJump.Jump);
-                    },
-                    [&](const lir::And& b) { jump_over(bc, loc, JumpIfFalsePushFalse, b.rhs); },
-                    [&](const lir::Or& b) { jump_over(bc, loc, JumpIfTruePushTrue, b.rhs); },
-                    [&](const lir::OrIfNil& b) { jump_over(bc, loc, Extended::DoubleQuestionMark.Jump, b.rhs); },
-                    [&](const lir::AndIfNotNil& b) {
-                        jump_over(bc, loc, Extended::IfNilThenJumpElsePopNil.Jump, b.rhs);
-                    },
-                    [&](const lir::QuestionMark&) { Extended::QuestionMark.emit(bc, loc); },
-                    [&](const lir::While& w) { while_(bc, loc, w); },
-                    [&](const lir::Loop& l) {
-                        auto body = encode_value(l.body, loc);
-                        const auto length = body.length();
-                        bc.consume(std::move(body));
-                        jump(bc, loc, JumpBack, length + 1);
-                    },
-                    [&](const lir::Switch& s) { switch_(bc, loc, s); },
-                    [&](const lir::Unimplemented&) {
-                        assert(false);
-                        failed = true;
-                    },
-                },
-                in);
+            std::visit(encode_instruction, in);
         }
         return bc;
     }

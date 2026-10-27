@@ -51,6 +51,25 @@ bool all_inlineable(const ir::IRGraph& g, const Arguments& functions, ast::Langu
     return true;
 }
 
+// The selectors inlining handles, checked before the arguments are collected.
+bool inlined_selector(OpSpecialSelectors selector) {
+    switch (selector) {
+    case OpSpecialSelectors::If:
+    case OpSpecialSelectors::And:
+    case OpSpecialSelectors::Or:
+    case OpSpecialSelectors::DoubleQuestionMark:
+    case OpSpecialSelectors::ExclamationQuestionMark:
+    case OpSpecialSelectors::QuestionMark:
+    case OpSpecialSelectors::While:
+    case OpSpecialSelectors::Loop:
+    case OpSpecialSelectors::Case:
+    case OpSpecialSelectors::Switch:
+        return true;
+    default:
+        return false;
+    }
+}
+
 // Keys and functions, then an optional default function.
 bool can_inline_switch(const InliningContext& ctx, const ir::IRGraph& g, const Arguments& args,
                        ast::LanguageVersion version) {
@@ -76,7 +95,7 @@ std::optional<Inlined> inlining(const InliningContext& ctx, const ir::IRGraph& g
         return std::nullopt;
     const auto special = ctx.symbols.find(ir::Symbol { *payload.selector });
     const auto* selector = special ? std::get_if<OpSpecialSelectors>(&*special) : nullptr;
-    if (!selector || !only_positional(g, m))
+    if (!selector || !inlined_selector(*selector) || !only_positional(g, m))
         return std::nullopt;
     const auto args = positional_arguments(g, m);
     const auto [receiver, p, k, v, a] = g.children(m);
