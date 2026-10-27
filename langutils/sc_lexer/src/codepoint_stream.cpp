@@ -11,56 +11,8 @@ namespace sc::lex {
              src.line_number == 0 ? src.column + source_start_in_file.column : src.column };
 }
 
-[[nodiscard]] std::tuple<src::SourceCodeLocation, src::CodePoint> CodePointStream::start_token() {
-    if (state.prev_was_newline) {
-        state.current_line_number += 1;
-        state.current_column_count = 0;
-        state.prev_was_newline = false;
-    }
-    return { { state.next_byte_offest, state.current_line_number, state.current_column_count }, advance() };
-}
-
-[[nodiscard]] src::SourceCodeLocation CodePointStream::end_token() const {
-    return { state.next_byte_offest, state.current_line_number, state.current_column_count };
-}
-
-void CodePointStream::State::update(src::CodePoint next, std::uint8_t sz) noexcept {
-    if (prev_was_newline) {
-        current_line_number += 1;
-        current_column_count = 0;
-        prev_was_newline = false;
-    } else {
-        // TODO: this is wrong and should be removed.
-        current_column_count += 1; // codepoint_width(next);
-    }
-    prev_was_newline = src::is_newline(next);
-    next_byte_offest += sz;
-}
-
-src::CodePoint CodePointStream::advance() {
-    // outside snippet
-    if (source + state.next_byte_offest >= snippet + snippet_len)
-        return 0;
-
-    const auto remaining = std::max<ptrdiff_t>(0, (snippet + snippet_len) - (source + state.next_byte_offest));
-
-    const auto [c, sz] =
-        src::utf8_sequence_to_codepoint(source + state.next_byte_offest, static_cast<std::size_t>(remaining));
-
-    state.update(c, sz);
-
-    return c;
-}
-
-[[nodiscard]] src::CodePoint CodePointStream::advance_and_peek() {
-    advance();
-    return peek();
-}
-
 [[nodiscard]] std::tuple<const char*, std::size_t>
 CodePointStream::source_code_range_to_text(const src::SourceCodeRange& range) const {
     return { source + range.begin.absolute, range.end.absolute - range.begin.absolute };
 }
-
-[[nodiscard]] src::CodePoint CodePointStream::peek() const { return peek_n<1>()[0]; }
 }

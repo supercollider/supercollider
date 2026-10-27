@@ -2,7 +2,10 @@
 
 #include <assert.h>
 #include <cstdint>
+#include <algorithm>
 #include <array>
+#include <cstddef>
+#include <tuple>
 
 #include "sc_source/text_location.hpp"
 #include "sc_source/codepoint.hpp"
@@ -52,7 +55,17 @@ class CodePointStream {
         // Byte offset in line, not visual column.
         std::uint32_t current_column_count { 0 };
         bool prev_was_newline { false };
-        void update(src::CodePoint next, std::uint8_t sz) noexcept;
+        void update(src::CodePoint next, std::uint8_t sz) noexcept {
+            if (prev_was_newline) {
+                current_line_number += 1;
+                current_column_count = 0;
+                prev_was_newline = false;
+            } else {
+                current_column_count += 1;
+            }
+            prev_was_newline = src::is_newline(next);
+            next_byte_offest += sz;
+        }
     } state {};
 
 public:
@@ -115,10 +128,19 @@ public:
     source_code_range_to_text(const src::SourceCodeRange& range) const;
 
     // Advances the stream, returns start location and codepoint.
-    [[nodiscard]] std::tuple<src::SourceCodeLocation, src::CodePoint> start_token();
+    [[nodiscard]] std::tuple<src::SourceCodeLocation, src::CodePoint> start_token() {
+        if (state.prev_was_newline) {
+            state.current_line_number += 1;
+            state.current_column_count = 0;
+            state.prev_was_newline = false;
+        }
+        return { { state.next_byte_offest, state.current_line_number, state.current_column_count }, advance() };
+    }
 
     // Does not advance the stream, returns the end of the token
-    [[nodiscard]] src::SourceCodeLocation end_token() const;
+    [[nodiscard]] src::SourceCodeLocation end_token() const {
+        return { state.next_byte_offest, state.current_line_number, state.current_column_count };
+    }
 
 
     // Peeking returns the next N CodePoints, but does not advance the state.
@@ -143,14 +165,36 @@ public:
         return { out };
     }
 
-    [[nodiscard]] src::CodePoint peek() const;
-
+    // The lexer peeks and advances for every character, so these are inline, see utf8_sequence_to_codepoint.
+    [[nodiscard]] src::CodePoint peek() const {
+        if (source + state.next_byte_offest >= snippet + snippet_len)
+            return 0;
+        return std::get<0>(src::utf8_sequence_to_codepoint(
+            source + state.next_byte_offest,
+            static_cast<std::size_t>((snippet + snippet_len) - (source + state.next_byte_offest))));
+    }
 
     // Returns next character, advancing the stream.
-    src::CodePoint advance();
+    src::CodePoint advance() {
+        // outside snippet
+        if (source + state.next_byte_offest >= snippet + snippet_len)
+            return 0;
+
+        const auto remaining = std::max<ptrdiff_t>(0, (snippet + snippet_len) - (source + state.next_byte_offest));
+
+        const auto [c, sz] =
+            src::utf8_sequence_to_codepoint(source + state.next_byte_offest, static_cast<std::size_t>(remaining));
+
+        state.update(c, sz);
+
+        return c;
+    }
 
     // Advance followed by peek
-    [[nodiscard]] src::CodePoint advance_and_peek();
+    [[nodiscard]] src::CodePoint advance_and_peek() {
+        advance();
+        return peek();
+    }
 
     // Commits peek to the current token, advancing it.
     template <std::size_t N> src::SourceCodeLocation advance_by_peek(Peek<N> peek) {
