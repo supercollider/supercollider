@@ -22,6 +22,7 @@
 #include <cassert>
 #include <cstring>
 #include <filesystem>
+#include <map>
 #include <memory>
 #include <optional>
 #include <set>
@@ -870,6 +871,63 @@ std::size_t postDiagnostic(const sc::diag::Diagnostic& d, std::size_t& errors) {
     postText("\n", 1);
     return 1;
 }
+
+using ClassAndMeta = std::pair<const compiler::CompiledGraph*, const compiler::CompiledGraph*>;
+
+void makeClassNamesAsOldCompiler(Loader& loader, const compiler::ClassFiles& files,
+                                 const std::vector<compiler::CompiledGraph>& graphs) {
+    std::map<fs::path, ir::SourceEntryIndex> fileOrder;
+    for (const auto i : files.indices())
+        fileOrder.emplace(files[i].path, i);
+    struct Definition {
+        ir::SourceEntryIndex file;
+        std::uint32_t position;
+        const compiler::CompiledClass* layout;
+    };
+    std::vector<Definition> definitions;
+    for (const auto& g : graphs) {
+        const auto& layout = classOf(g);
+        if (loader.library.symbols.is_meta(layout.name))
+            continue;
+        const auto& path = g.sources[layout.location.source]->file_path;
+        definitions.push_back(
+            { path ? fileOrder.at(*path) : files.next_index(), layout.location.range.begin.absolute, &layout });
+    }
+    std::sort(definitions.begin(), definitions.end(), [](const Definition& l, const Definition& r) {
+        return std::pair { *l.file, l.position } < std::pair { *r.file, r.position };
+    });
+    for (const auto& d : definitions) {
+        loader.symbol(d.layout->name);
+        if (d.layout->superclass)
+            loader.symbol(ir::SymSCClassName { *d.layout->superclass });
+    }
+}
+
+void orderAsOldCompiler(Loader& loader, std::vector<ClassAndMeta>& classes) {
+    std::unordered_map<PyrSymbol*, int> slots;
+    for (const auto& [g, meta] : classes)
+        slots.emplace(loader.symbol(classOf(*g).name), 0);
+    const auto* table = gMainVMGlobals->symbolTable;
+    for (int i = 0; i < table->TableSize(); ++i)
+        if (const auto fnd = slots.find(table->Get(i)); fnd != slots.end())
+            fnd->second = i;
+
+    std::unordered_map<PyrSymbol*, int> depths;
+    std::unordered_map<const compiler::CompiledGraph*, std::pair<int, int>> keys;
+    for (const auto& [g, meta] : classes) {
+        const auto& layout = classOf(*g);
+        auto* name = loader.symbol(layout.name);
+        int depth = 0;
+        if (layout.superclass)
+            if (const auto fnd = depths.find(loader.symbol(ir::SymSCClassName { *layout.superclass }));
+                fnd != depths.end())
+                depth = fnd->second + 1;
+        depths.emplace(name, depth);
+        keys.emplace(g, std::pair { depth, slots.at(name) });
+    }
+    std::sort(classes.begin(), classes.end(),
+              [&](const ClassAndMeta& l, const ClassAndMeta& r) { return keys.at(l.first) < keys.at(r.first); });
+}
 }
 
 bool loadClassLibrary(std::size_t& thingsPosted) {
@@ -914,18 +972,20 @@ bool loadClassLibrary(std::size_t& thingsPosted) {
     loaded->classVariableOwners.resize(loaded->library->backend->members.num_class_variables(), nullptr);
     Loader loader { *loaded, classLibraryAllocation };
     const auto& lib = loader.library;
+    makeClassNamesAsOldCompiler(loader, finder.files, classes.raw());
     std::unordered_map<PyrSymbol*, const compiler::CompiledGraph*> metaClasses;
     for (const auto& g : classes.raw())
         if (lib.symbols.is_meta(classOf(g).name))
             metaClasses.emplace(loader.symbol(classOf(g).name), &g);
     // Every class graph has its meta class's, they are only poisoned together, which is an error.
-    std::vector<std::pair<const compiler::CompiledGraph*, const compiler::CompiledGraph*>> classAndMeta;
+    std::vector<ClassAndMeta> classAndMeta;
     for (const auto& g : classes.raw())
         if (!lib.symbols.is_meta(classOf(g).name)) {
             const auto fnd = metaClasses.find(getmetasym(loader.symbol(classOf(g).name)->name));
             assert(fnd != metaClasses.end());
             classAndMeta.push_back({ &g, fnd->second });
         }
+    orderAsOldCompiler(loader, classAndMeta);
     for (const auto& [g, meta] : classAndMeta)
         loader.makeClass(*g, *meta);
     for (const auto& [g, meta] : classAndMeta)
