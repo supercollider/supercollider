@@ -44,6 +44,7 @@ static const std::string POST_INLINE_WARNINGS = "postInlineWarnings";
 static const std::string CLASS_LIB_DIR_NAME = "SCClassLibrary";
 const std::string SCLANG_YAML_CONFIG_FILENAME = "sclang_conf.yaml";
 static std::string EXCLUDE_DEFAULT_PATHS = "excludeDefaultPaths";
+static const std::string INTERPRETED_VERSION = "interpretedVersion";
 
 using DirName = SC_Filesystem::DirName;
 namespace fs = std::filesystem;
@@ -133,6 +134,8 @@ bool SC_LanguageConfig::readLibraryConfigYAML(const Path& fileName, bool standal
 
             processPathList(INCLUDE_PATHS, doc, [](const Path& p) { gLanguageConfig->addIncludedDirectory(p); });
             processPathList(EXCLUDE_PATHS, doc, [](const Path& p) { gLanguageConfig->addExcludedDirectory(p); });
+            if (const auto& version = doc[INTERPRETED_VERSION])
+                gLanguageConfig->mInterpretedVersion = version.as<std::string>("");
         }
         return true;
     } catch (std::exception& e) {
@@ -172,6 +175,11 @@ bool SC_LanguageConfig::writeLibraryConfigYAML(const Path& fileName) {
 
     out << Key << EXCLUDE_DEFAULT_PATHS;
     out << Value << gLanguageConfig->mExcludeDefaultPaths;
+
+    if (!gLanguageConfig->mInterpretedVersion.empty()) {
+        out << Key << INTERPRETED_VERSION;
+        out << Value << gLanguageConfig->mInterpretedVersion;
+    }
 
     out << EndMap;
 

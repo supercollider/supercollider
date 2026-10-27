@@ -211,6 +211,8 @@ struct LoadedLibrary {
     std::vector<PyrSymbol*> classVariableOwners {};
     // Interpreted code's root function is compiled in it.
     PyrMethod* functionCompileContext = nullptr;
+    // From the language config's interpretedVersion.
+    sc::ast::LanguageVersion interpretedVersion = sc::ast::LanguageVersion::Legacy;
 };
 std::unique_ptr<LoadedLibrary> gLoadedLibrary;
 
@@ -849,6 +851,17 @@ PyrMethod* findFunctionCompileContext() {
     return nullptr;
 }
 
+sc::ast::LanguageVersion interpretedVersion() {
+    const auto& release = gLanguageConfig->getInterpretedVersion();
+    if (release.empty())
+        return sc::ast::LanguageVersion::V3_16;
+    if (const auto version = sc::ast::parse_release(release))
+        return *version;
+    post("WARNING: interpretedVersion '%s' in the language config isn't a known release, e.g., 3.16, using legacy\n",
+         release.c_str());
+    return sc::ast::LanguageVersion::Legacy;
+}
+
 std::size_t postDiagnostic(const sc::diag::Diagnostic& d, std::size_t& errors) {
     if (d.severity() == sc::diag::Severity::Error)
         ++errors;
@@ -926,6 +939,8 @@ bool loadClassLibrary(std::size_t& thingsPosted) {
     for (const auto& g : classes.raw())
         loader.makeMethods(g);
     loaded->functionCompileContext = findFunctionCompileContext();
+    loaded->interpretedVersion = interpretedVersion();
+    post("\tInterpreted code is compiled as %s\n", sc::ast::to_string(loaded->interpretedVersion));
     gNumClassVars = narrow<int>(lib.backend->members.num_class_variables());
     gLoadedLibrary = std::move(loaded);
     return true;
@@ -958,7 +973,7 @@ PyrBlock* compileInterpreted(VMGlobals* g, std::string_view code, PyrSymbol* pat
     auto parsed = compiler::parse_interpreted(text);
     for (const auto& d : parsed.diagnostics)
         postDiagnostic(d, errors);
-    auto ir = compiler::compile_interpreted_ir(library, std::move(parsed), sc::ast::LanguageVersion::Legacy);
+    auto ir = compiler::compile_interpreted_ir(library, std::move(parsed), gLoadedLibrary->interpretedVersion);
     for (const auto& d : ir.diagnostics)
         postDiagnostic(d, errors);
     if (errors || !ir.graph)

@@ -43,20 +43,6 @@
 
 #define DIAG_LOGGING true
 
-// A release, e.g., `3.16`, as the version it compiles as. Nothing if it isn't `major.minor`, or is after the latest.
-std::optional<sc::ast::LanguageVersion> parse_release(const std::string& release) {
-    unsigned major { 0 };
-    unsigned minor { 0 };
-    const auto* end = release.data() + release.size();
-    const auto [dot, major_error] = std::from_chars(release.data(), end, major);
-    if (major_error != std::errc {} || dot == end || *dot != '.')
-        return std::nullopt;
-    const auto [last, minor_error] = std::from_chars(dot + 1, end, minor);
-    if (minor_error != std::errc {} || last != end)
-        return std::nullopt;
-    return sc::ast::version_for_release(major, minor);
-}
-
 // `Name : Super [slot] a b`, an intrinsic class, its superclass, slot type and own instance variables, each but the
 // name optional, see --intrinsic.
 std::optional<sc::compiler::IntrinsicClass> parse_intrinsic(const std::string& text) {
@@ -255,7 +241,7 @@ int main(int argc, char* argv[]) {
             }
         } else if (arg == "--interpreted-version" && i + 1 < argc) {
             const std::string release = get_path(argv[++i]).string();
-            const auto version = parse_release(release);
+            const auto version = sc::ast::parse_release(release);
             if (!version) {
                 std::cout << "ERROR: --interpreted-version expects a known release, e.g., 3.16, not '" << release << "'"
                           << std::endl;
