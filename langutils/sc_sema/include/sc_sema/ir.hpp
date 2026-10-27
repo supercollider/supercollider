@@ -7,12 +7,10 @@
 #include "sc_util/overload.hpp"
 #include "sc_util/typed_graph_helper.hpp"
 #include "sc_util/typed_graph.hpp"
-#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <unordered_map>
 #include <utility>
-#include <vector>
 
 namespace sc::src {
 struct TextInfo;
@@ -181,8 +179,17 @@ public:
     // The text the locations refer to. Holding the text keeps it alive, the ast isn't needed once it is lowered.
     ////////////////////////////////////////////////////////////////////////////////
     // Adds the source to the table if it isn't already there.
-    [[nodiscard]] SourceIndex register_source(std::shared_ptr<const src::TextInfo> text);
-    [[nodiscard]] SourceLocation make_location(std::shared_ptr<const src::TextInfo> text, src::SourceCodeRange range);
+    [[nodiscard]] SourceIndex register_source(const std::shared_ptr<const src::TextInfo>& text) {
+        // There are only a few sources per graph, e.g., the class, its extensions, and its base classes.
+        for (const auto i : m_sources.indices())
+            if (m_sources[i] == text)
+                return i;
+        return m_sources.push_back(text);
+    }
+    [[nodiscard]] SourceLocation make_location(const std::shared_ptr<const src::TextInfo>& text,
+                                               src::SourceCodeRange range) {
+        return { register_source(text), range };
+    }
     [[nodiscard]] const std::shared_ptr<const src::TextInfo>& text_info(SourceIndex i) const;
     [[nodiscard]] const util::IndexedVector<SourceIndex, std::shared_ptr<const src::TextInfo>>& sources() const {
         return m_sources;

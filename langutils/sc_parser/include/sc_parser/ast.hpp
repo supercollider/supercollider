@@ -201,10 +201,10 @@ public:
     using Base::orphans;
     using Base::payload;
 
-    const sc::src::SourceCodeRange& location(UntypedNodeIndex i) const;
-    sc::src::SourceCodeRange& location(UntypedNodeIndex i);
+    const sc::src::SourceCodeRange& location(UntypedNodeIndex i) const { return m_node_locations[*i]; }
+    sc::src::SourceCodeRange& location(UntypedNodeIndex i) { return m_node_locations[*i]; }
 
-    [[nodiscard]] std::shared_ptr<const src::TextInfo> text_info() const;
+    [[nodiscard]] const std::shared_ptr<const src::TextInfo>& text_info() const { return m_text_info; }
 
     [[nodiscard]] std::string_view string_view(UntypedNodeIndex i) const;
     [[nodiscard]] std::string string(UntypedNodeIndex i) const;

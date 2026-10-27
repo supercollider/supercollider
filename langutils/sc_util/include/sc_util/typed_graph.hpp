@@ -328,8 +328,7 @@ public: // This is meant to be privately inherited from.
         UntypedNodeIndex last_valid = child;
         for (OptIndex c = last_valid; c; c = m_node_edges[*c].next_sibling) {
             m_node_edges[*c].parent = p;
-            if (auto fnd = std::find(m_orphans.begin(), m_orphans.end(), Index(*c)); fnd != m_orphans.end())
-                m_orphans.erase(fnd);
+            remove_orphan(Index(*c));
             last_valid = *c;
         }
 
@@ -369,8 +368,7 @@ public: // This is meant to be privately inherited from.
         m_last_child[*e] = {};
 
 
-        if (auto fnd = std::find(m_orphans.begin(), m_orphans.end(), Index(*e)); fnd != m_orphans.end())
-            m_orphans.erase(fnd);
+        remove_orphan(Index(*e));
 
         m_dead_nodes.push_back(e);
 
@@ -466,6 +464,11 @@ private:
     [[nodiscard]] bool not_dead(UntypedNodeIndex i) const {
         return std::find(m_dead_nodes.begin(), m_dead_nodes.end(), i) == m_dead_nodes.end();
     }
+    // Searched from the back, as a node is usually given a parent soon after it is created.
+    void remove_orphan(Index i) {
+        if (const auto fnd = std::find(m_orphans.rbegin(), m_orphans.rend(), i); fnd != m_orphans.rend())
+            m_orphans.erase(std::next(fnd).base());
+    }
     /// [child] can be either a single node, or a list.
     void append_to_parent_unchecked(UntypedNodeIndex parent_i, UntypedNodeIndex child_i) {
         assert(*parent_i != *child_i);
@@ -483,8 +486,7 @@ private:
         UntypedNodeIndex last_valid = child_i;
         for (OptIndex c = last_valid; c; c = m_node_edges[*c].next_sibling) {
             m_node_edges[*c].parent = parent_i;
-            if (auto fnd = std::find(m_orphans.begin(), m_orphans.end(), Index(*c)); fnd != m_orphans.end())
-                m_orphans.erase(fnd);
+            remove_orphan(Index(*c));
             last_valid = *c;
         }
         m_last_child[*parent_i] = last_valid;

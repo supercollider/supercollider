@@ -13,18 +13,6 @@ template struct sc::util::typed_graph::GraphImplementation<sc::ir::OptNodeIndex,
 
 namespace sc::ir {
 
-SourceIndex IRGraph::register_source(std::shared_ptr<const src::TextInfo> text) {
-    // There are only a few sources per graph, e.g., the class, its extensions, and its base classes.
-    for (const auto i : m_sources.indices())
-        if (m_sources[i] == text)
-            return i;
-    return m_sources.push_back(std::move(text));
-}
-
-SourceLocation IRGraph::make_location(std::shared_ptr<const src::TextInfo> text, src::SourceCodeRange range) {
-    return { register_source(std::move(text)), range };
-}
-
 const std::shared_ptr<const src::TextInfo>& IRGraph::text_info(SourceIndex i) const {
     assert(m_sources.contains(i));
     return m_sources[i];

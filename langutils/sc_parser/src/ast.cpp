@@ -18,7 +18,7 @@ namespace sc::ast {
 AnyExprIndex::Variant to_variant(const ASTGraph& g, AnyExprIndex i) { return g.index_to_variant(i); }
 BlockItemIndex::Variant to_variant(const ASTGraph& g, BlockItemIndex i) { return g.index_to_variant(i); }
 
-std::shared_ptr<const src::TextInfo> get_text_info(const ASTGraph& graph) { return graph.text_info(); }
+const std::shared_ptr<const src::TextInfo>& get_text_info(const ASTGraph& graph) { return graph.text_info(); }
 
 sc::src::SourceCodeRange get_location(const ASTGraph& graph, OptionalIndex i) { return graph.location(i); }
 
@@ -123,9 +123,6 @@ void ASTGraph::debug_flat_print(std::ostream& stream) const {
     });
 }
 
-const sc::src::SourceCodeRange& ASTGraph::location(UntypedNodeIndex i) const { return m_node_locations[*i]; }
-sc::src::SourceCodeRange& ASTGraph::location(UntypedNodeIndex i) { return m_node_locations[*i]; }
-std::shared_ptr<const src::TextInfo> ASTGraph::text_info() const { return m_text_info; }
 std::string_view ASTGraph::string_view(UntypedNodeIndex i) const { return m_text_info->read(location(i)); }
 std::string ASTGraph::string(UntypedNodeIndex i) const { return std::string { m_text_info->read(location(i)) }; }
 void ASTGraph::register_bracketed_expr(UntypedNodeIndex i) { m_bracketed_exprs.insert(i); }

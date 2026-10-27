@@ -13,7 +13,7 @@ struct ASTGraph;
 
 // including the whole ast graph is slow (particularly for clangd), this provides some type erasure.
 
-[[nodiscard]] std::shared_ptr<const sc::src::TextInfo> get_text_info(const ASTGraph&);
+[[nodiscard]] const std::shared_ptr<const sc::src::TextInfo>& get_text_info(const ASTGraph&);
 
 [[nodiscard]] sc::src::SourceCodeRange get_location(const ASTGraph&, OptionalIndex);
 [[nodiscard]] std::string_view get_string_view(const ASTGraph&, OptionalIndex);
