@@ -260,7 +260,7 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  |     46 │     // expect-reads: instance_var -> instance_var
 |  |  |     47 │     reads_member { ^{: x + instance_var, x <- [1, 2] } }
 |  |  |
-|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`. To iterate forever, as `(1..).do(f)` did before 3.16, write `(:1..)`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (44:31)
 |  |  |  |  SCVariableDeclare (44:35): x, computed

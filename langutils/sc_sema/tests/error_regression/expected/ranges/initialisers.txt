@@ -31,7 +31,7 @@ SCClass (2:1): RangeInitialisers : Object, version 3.16
 |     13 │     var too_large = (1..2000);
 |     14 │ }
 |
-|  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`. To iterate forever, as `(1..).do(f)` did before 3.16, write `(:1..)`.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────

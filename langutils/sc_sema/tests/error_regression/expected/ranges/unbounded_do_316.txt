@@ -20,7 +20,7 @@ SCClass (3:1): UnboundedDo316 : Object, version 3.16
 |  |  |      6 │     bounded { |n| (0..n).do { |i| if (i >= 2) { ^i } }; ^nil }
 |  |  |      7 │     generator { |n| {; if (i >= n) { ^i }, i <- (0..) }; ^nil }
 |  |  |
-|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`. To iterate forever, as `(1..).do(f)` did before 3.16, write `(:1..)`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (4:16)
 |  |  |  |  SCArgumentDeclare (4:16): n (captured)
@@ -60,7 +60,7 @@ SCClass (3:1): UnboundedDo316 : Object, version 3.16
 |  |  |      7 │     generator { |n| {; if (i >= n) { ^i }, i <- (0..) }; ^nil }
 |  |  |      8 │ }
 |  |  |
-|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`. To iterate forever, as `(1..).do(f)` did before 3.16, write `(:1..)`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (5:15)
 |  |  |  |  SCArgumentDeclare (5:15): n

@@ -92,7 +92,7 @@ SCClass (3:1): UnboundedDo : Object
 |  |  |      8 │     variadic { |f| ^(0..).do(*f) }
 |  |  |      9 │     adverb { |f| ^(0..).do.x(f) }
 |  |  |
-|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`. To iterate forever, as `(1..).do(f)` did before 3.16, write `(:1..)`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (6:18)
 |  |  |  |  SCExplicitReturn (6:18)
@@ -114,7 +114,7 @@ SCClass (3:1): UnboundedDo : Object
 |  |  |      9 │     adverb { |f| ^(0..).do.x(f) }
 |  |  |     10 │     otherSelector { |f| ^(0..).collect(f) }
 |  |  |
-|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`. To iterate forever, as `(1..).do(f)` did before 3.16, write `(:1..)`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (7:16)
 |  |  |  |  SCArgumentDeclare (7:16): f
@@ -141,7 +141,7 @@ SCClass (3:1): UnboundedDo : Object
 |  |  |     10 │     otherSelector { |f| ^(0..).collect(f) }
 |  |  |     11 │     infix { |f| ^((0..) do: f) }
 |  |  |
-|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`. To iterate forever, as `(1..).do(f)` did before 3.16, write `(:1..)`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (8:17)
 |  |  |  |  SCArgumentDeclare (8:17): f
@@ -167,7 +167,7 @@ SCClass (3:1): UnboundedDo : Object
 |  |  |     11 │     infix { |f| ^((0..) do: f) }
 |  |  |     12 │ }
 |  |  |
-|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`. To iterate forever, as `(1..).do(f)` did before 3.16, write `(:1..)`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (9:15)
 |  |  |  |  SCArgumentDeclare (9:15): f
@@ -193,7 +193,7 @@ SCClass (3:1): UnboundedDo : Object
 |  |  |     11 │     infix { |f| ^((0..) do: f) }
 |  |  |     12 │ }
 |  |  |
-|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`. To iterate forever, as `(1..).do(f)` did before 3.16, write `(:1..)`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (10:22)
 |  |  |  |  SCArgumentDeclare (10:22): f
@@ -217,7 +217,7 @@ SCClass (3:1): UnboundedDo : Object
 |  |  |        ┆                   ^^^^^ this would create an infinite array.
 |  |  |     12 │ }
 |  |  |
-|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`. To iterate forever, as `(1..).do(f)` did before 3.16, write `(:1..)`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (11:14)
 |  |  |  |  SCArgumentDeclare (11:14): f

@@ -813,7 +813,7 @@ Diagnostic Diagnostic::unbounded_range(TextInfoPtr first_t, sc::src::SourceCodeR
              Severity::Error,
              { { std::move(first_t), first_l, "this would create an infinite array." } },
              "A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., "
-             "`(1..10)`." };
+             "`(1..10)`. To iterate forever, as `(1..).do(f)` did before 3.16, write `(:1..)`." };
 }
 
 Diagnostic Diagnostic::unbounded_range_do(TextInfoPtr t, sc::src::SourceCodeRange l) {

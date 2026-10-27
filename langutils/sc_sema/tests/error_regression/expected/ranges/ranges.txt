@@ -98,7 +98,7 @@ SCClass (2:1): Ranges : Object, version 3.16
 |  |  |     16 │     in_array { ^[(1..3), 4] }
 |  |  |     17 │     receiver { ^(1..3).do { |x| x } }
 |  |  |
-|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`. To iterate forever, as `(1..).do(f)` did before 3.16, write `(:1..)`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (14:17)
 |  |  |  |  SCExplicitReturn (14:17)
@@ -119,7 +119,7 @@ SCClass (2:1): Ranges : Object, version 3.16
 |  |  |     17 │     receiver { ^(1..3).do { |x| x } }
 |  |  |     18 │ }
 |  |  |
-|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`.
+|  |  |  A range without an end, e.g., `(1..)`, can only be iterated, e.g., in a generator. Add an end, e.g., `(1..10)`. To iterate forever, as `(1..).do(f)` did before 3.16, write `(:1..)`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (15:22)
 |  |  |  |  SCExplicitReturn (15:22)
