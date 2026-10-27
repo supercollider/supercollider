@@ -164,9 +164,9 @@ public: // This is meant to be privately inherited from.
     // errors and tracking it slowed down every append.
     [[nodiscard]] std::vector<Index> orphans() const {
         std::vector<Index> out;
-        for (std::size_t i { 0 }; i < m_node_edges.size(); ++i)
-            if (!m_node_edges[i].parent && not_dead(UntypedNodeIndex { i }))
-                out.push_back(Index { i });
+        for (const Index i : range(Index { 0 }, Index::from(m_node_edges.size())))
+            if (!m_node_edges[*i].parent && not_dead(UntypedNodeIndex { *i }))
+                out.push_back(i);
         return out;
     }
 
