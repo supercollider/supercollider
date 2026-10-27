@@ -213,6 +213,11 @@ public:
 
     [[nodiscard]] bool is_bracketed(UntypedNodeIndex i) const;
 
+    // Whether there is a `_` anywhere.
+    // This is important in interpreted code where checking this later is slow.
+    // Class library code compilation performance matters less.
+    [[nodiscard]] bool has_curry() const { return m_has_curry; }
+
     ////////////////////////////////////////////////////////////////////////////////
     // Children. This is the type safe way to walk the graph.
     ////////////////////////////////////////////////////////////////////////////////
@@ -284,6 +289,8 @@ private:
 
     bool m_has_fatal_diagnostic { false };
 
+    bool m_has_curry { false };
+
     std::variant<std::monostate, RegionListIndex, ClassOrExtensionListIndex, FileAsFunctionIndex> m_roots {};
 
     std::unordered_set<UntypedNodeIndex> m_bracketed_exprs {};
@@ -348,6 +355,8 @@ inline void ASTGraph::depth_first_traverse(Index i, EnterNode enter_node, Before
 template <typename Node, typename... ChildrenIndexes>
 typename Node::Index ASTGraph::create(Node&& node, src::SourceCodeRange location, ChildrenIndexes&&... child_indexes) {
     const auto index = Base::create(std::forward<Node>(node), std::forward<ChildrenIndexes>(child_indexes)...);
+    if constexpr (std::is_same_v<std::decay_t<Node>, CurryNode>)
+        m_has_curry = true;
 
     if (*index < m_node_locations.size()) {
         m_node_locations[*index] = std::move(location);

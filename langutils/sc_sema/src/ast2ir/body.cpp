@@ -9,6 +9,9 @@
 #include "sc_sema/symbol_table.hpp"
 #include "sc_util/overload.hpp"
 #include <algorithm>
+#include <cassert>
+#include <optional>
+#include <string_view>
 #include <vector>
 
 namespace sc::ir::ast2ir {
@@ -16,29 +19,53 @@ namespace sc::ir::ast2ir {
 namespace {
 
 // Used to deduce whether we can perform a read at compile time.
+// Declares variables, records when we write to them.
 struct VariableUses {
-    std::vector<SymSCIdentifier> assigned;
-    std::vector<SymSCIdentifier> captured;
+    std::vector<std::string_view> declared;
+    // Assigned, or used by an inner function, each once.
+    std::vector<std::string_view> assigned_or_captured;
 
-    [[nodiscard]] static bool contains(const std::vector<SymSCIdentifier>& names, SymSCIdentifier name) {
+    [[nodiscard]] static bool contains(const std::vector<std::string_view>& names, std::string_view name) {
         return std::find(names.begin(), names.end(), name) != names.end();
     }
-    [[nodiscard]] bool can_be_constant(SymSCIdentifier name) const {
-        return !contains(assigned, name) && !contains(captured, name);
+    [[nodiscard]] bool can_be_constant(std::string_view name) const {
+        assert(contains(declared, name));
+        return !contains(assigned_or_captured, name);
     }
+    // Every declared name is known not to be constant, so scanning further can't change anything.
+    [[nodiscard]] bool settled() const { return assigned_or_captured.size() == declared.size(); }
 };
 
 // This does another pass over the function body.
 class VariableScanner {
 public:
-    VariableScanner(const ast::ASTGraph& g, SymbolTable& symbols, VariableUses& uses):
-        g(g),
-        symbols(symbols),
-        uses(uses) {}
+    VariableScanner(const ast::ASTGraph& g, VariableUses& uses): g(g), uses(uses) {}
+
+    // The names declared by contents' variable lists, each once.
+    void declare(ast::BlockContentsListIndex contents) {
+        for (auto it = g.children(contents).iter(); it; ++it) {
+            const auto declarations = g.as_a<ast::DeclareVariableListIndex>(*it);
+            if (!declarations)
+                continue;
+            for (auto item = g.children(*declarations).iter(); item; ++item) {
+                if (const auto name = g.as_a<ast::NamedIdentifierIndex>(*item)) {
+                    add_declared(*name);
+                } else if (const auto with_default = g.as_a<ast::DeclareVariableWithDefaultIndex>(*item)) {
+                    const auto [name, value] = g.children(*with_default);
+                    add_declared(name);
+                } else if (const auto pack = g.as_a<ast::VariablePackAssignIndex>(*item)) {
+                    const auto [names, value] = g.children(*pack);
+                    add_declared_names({ *names });
+                }
+            }
+        }
+    }
 
     void scan(ast::Index node) {
+        if (uses.settled())
+            return;
         // A partial application, `a + _`, is a function, so what it reads is captured.
-        if (!curry_arguments(g, node).empty()) {
+        if (g.has_curry() && !curry_arguments(g, node).empty()) {
             hidden_names.emplace_back();
             scan_children(node);
             hidden_names.pop_back();
@@ -47,14 +74,13 @@ public:
         if (const auto assignment = g.as_a<ast::AssignmentIndex>(node);
             assignment && g.payload(*assignment).target == ast::AssignmentNode::Target::Normal) {
             const auto [name, value] = g.children(*assignment);
-            if (const auto sym = symbol(name); !hidden(sym))
-                uses.assigned.push_back(sym);
+            record(name);
             scan({ *value });
             return;
         }
         if (const auto pack = g.as_a<ast::VariablePackAssignIndex>(node)) {
             const auto [names, value] = g.children(*pack);
-            record_names({ *names }, uses.assigned);
+            record_names({ *names });
             scan({ *value });
             return;
         }
@@ -100,19 +126,45 @@ public:
             return;
         }
         if (const auto name = g.as_a<ast::NamedIdentifierIndex>(node); name && in_function())
-            if (const auto sym = symbol(*name); !hidden(sym))
-                uses.captured.push_back(sym);
+            record(*name);
         scan_children(node);
     }
 
 private:
     [[nodiscard]] bool in_function() const { return !hidden_names.empty(); }
 
-    [[nodiscard]] SymSCIdentifier symbol(ast::NamedIdentifierIndex name) {
-        return symbols.get_identifier(std::string { get_string_view(g, name) });
+    void add_declared(ast::NamedIdentifierIndex name) {
+        if (const auto text = get_string_view(g, name); !VariableUses::contains(uses.declared, text))
+            uses.declared.push_back(text);
     }
 
-    [[nodiscard]] bool hidden(SymSCIdentifier name) const {
+    // The names in a pack, `#a, b`. Environment variables, `#~a`, aren't variables, so are skipped.
+    void add_declared_names(ast::Index node) {
+        if (g.as_a<ast::EnvIdentifierIndex>(node))
+            return;
+        if (const auto name = g.as_a<ast::NamedIdentifierIndex>(node)) {
+            add_declared(*name);
+            return;
+        }
+        for (auto c = g.edges(node).first_child; c; c = g.edges(c).next_sibling)
+            add_declared_names({ *c });
+    }
+
+    // The name's text if the body declares it, otherwise it is never asked about.
+    [[nodiscard]] std::optional<std::string_view> declared(ast::NamedIdentifierIndex name) const {
+        if (const auto text = get_string_view(g, name); VariableUses::contains(uses.declared, text))
+            return text;
+        return std::nullopt;
+    }
+
+    // Assigned, or used by an inner function, unless an inner declaration hides it.
+    void record(ast::NamedIdentifierIndex name) {
+        if (const auto text = declared(name);
+            text && !hidden(*text) && !VariableUses::contains(uses.assigned_or_captured, *text))
+            uses.assigned_or_captured.push_back(*text);
+    }
+
+    [[nodiscard]] bool hidden(std::string_view name) const {
         for (const auto& names : hidden_names)
             if (VariableUses::contains(names, name))
                 return true;
@@ -121,8 +173,8 @@ private:
 
     // Only a function's variables hide names, the outermost body's are what is being scanned for.
     void hide(ast::NamedIdentifierIndex name) {
-        if (in_function())
-            hidden_names.back().push_back(symbol(name));
+        if (const auto text = declared(name); text && in_function())
+            hidden_names.back().push_back(*text);
     }
 
     // The names in a pack, `#a, b`. Environment variables, `#~a`, aren't variables, so are skipped.
@@ -143,16 +195,15 @@ private:
     }
 
     // The names in a pack, `#a, b`, that aren't hidden. Environment variables, `#~a`, aren't variables, so are skipped.
-    void record_names(ast::Index node, std::vector<SymSCIdentifier>& into) {
+    void record_names(ast::Index node) {
         if (g.as_a<ast::EnvIdentifierIndex>(node))
             return;
         if (const auto name = g.as_a<ast::NamedIdentifierIndex>(node)) {
-            if (const auto sym = symbol(*name); !hidden(sym))
-                into.push_back(sym);
+            record(*name);
             return;
         }
         for (auto c = g.edges(node).first_child; c; c = g.edges(c).next_sibling)
-            record_names({ *c }, into);
+            record_names({ *c });
     }
 
     // An inner function, its arguments hide outer names.
@@ -199,10 +250,9 @@ private:
     }
 
     const ast::ASTGraph& g;
-    SymbolTable& symbols;
     VariableUses& uses;
-    // One list per inner function, the outermost body has none.
-    std::vector<std::vector<SymSCIdentifier>> hidden_names;
+    // One list per inner function, the outermost body has none. Only declared names, the others aren't tracked.
+    std::vector<std::vector<std::string_view>> hidden_names;
 };
 
 // The class of a constant, e.g., an element of a constant array.
@@ -265,7 +315,8 @@ bool add_variable(BodyContext& b, ast::NamedIdentifierIndex name_i, SymSCIdentif
     // Constant if its value is and it is never assigned or used by an inner function.
     // Mutable values, e.g., arrays, are never constant, as any method could change them, through this variable or any
     // other reference to the object.
-    if (escaped || !b.uses.can_be_constant(name) || (constant && b.ctx.constant_table(*constant).is_mutable())) {
+    if (escaped || !b.uses.can_be_constant(get_string_view(g, name_i))
+        || (constant && b.ctx.constant_table(*constant).is_mutable())) {
         constant = std::nullopt;
         type = std::nullopt;
     }
@@ -424,8 +475,12 @@ OptionalConstExprIndex can_be_prototyped(const ast::ASTGraph& g, ast::DeclareArg
 
 BodyResult compile_body(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast::ASTGraph>& ast_graph, Context& ctx,
                         join<SCFunction_I, SCMethod_I> owner, SCBody_I body, ast::BlockContentsListIndex contents) {
+    // Most functions declare no variables, so have nothing to scan for.
     VariableUses uses;
-    VariableScanner { *ast_graph, ctx.symbol_table, uses }.scan({ *contents });
+    VariableScanner scanner { *ast_graph, uses };
+    scanner.declare(contents);
+    if (!uses.declared.empty())
+        scanner.scan({ *contents });
     BodyContext b { expr, ir, ctx, ast_graph, owner, body, std::move(uses) };
 
     // Only the last item's value matters, the others only need to be constant.

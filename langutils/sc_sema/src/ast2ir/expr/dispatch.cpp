@@ -12,8 +12,9 @@ template struct Return<SCAnyExpr_I>;
 Return<SCAnyExpr_I> Expr::operator()(ast::AnyExprIndex i) {
     // A call with `_` is a function, e.g., `_ + 1` is `{ |_| _ + 1 }`, unless they are already being applied, which is
     // how the call itself is compiled.
-    if (const auto curries = curry_arguments(*ast_graph, { *i }); !curries.empty() && curries != applied_curries)
-        return partially_apply(*this, ir, ast_graph, ctx, i, curries);
+    if (ast_graph->has_curry())
+        if (const auto curries = curry_arguments(*ast_graph, { *i }); !curries.empty() && curries != applied_curries)
+            return partially_apply(*this, ir, ast_graph, ctx, i, curries);
     return std::visit(*this, to_variant(*ast_graph, i));
 }
 }

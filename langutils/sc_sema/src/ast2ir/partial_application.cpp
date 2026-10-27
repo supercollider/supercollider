@@ -14,6 +14,8 @@ namespace sc::ir::ast2ir {
 
 Curries curry_arguments(const ast::ASTGraph& g, ast::Index node) {
     Curries curries;
+    if (!g.has_curry())
+        return curries;
     const auto add = [&](ast::Index i) {
         if (const auto curry = g.as_a<ast::CurryIndex>(i))
             (void)curries.push_back(*curry);
