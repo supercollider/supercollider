@@ -86,8 +86,7 @@ public: // This is meant to be privately inherited from.
     ////////////////////////////////////////////////////////////////////////////////
 
     std::vector<UntypedNodeIndex> m_dead_nodes {};
-    std::vector<OptIndex> m_last_child { };
-    std::vector<Index> m_orphans { };
+    std::vector<OptIndex> m_last_child {};
     // One entry per node.
     std::vector<Edges> m_node_edges { };
     std::vector<typename Helper::Variant> m_node_payload { };
@@ -139,8 +138,6 @@ public: // This is meant to be privately inherited from.
             }
         }();
 
-        m_orphans.push_back(Index { *index });
-
         // Just call the unchecked version, but if the child is invalid, and we are allowed invalid nodes, it will skip
         // it.
         const auto append_node = [&](auto c) {
@@ -163,9 +160,15 @@ public: // This is meant to be privately inherited from.
         return index;
     }
 
-    /// Returns set of currently orphaned nodes.
-    /// This does a copy
-    [[nodiscard]] std::vector<Index> orphans() const { return m_orphans; }
+    // The nodes without a parent, in index order. Found when asked rather than tracked, as it is only needed after
+    // errors and tracking it slowed down every append.
+    [[nodiscard]] std::vector<Index> orphans() const {
+        std::vector<Index> out;
+        for (std::size_t i { 0 }; i < m_node_edges.size(); ++i)
+            if (!m_node_edges[i].parent && not_dead(UntypedNodeIndex { i }))
+                out.push_back(Index { i });
+        return out;
+    }
 
     ////////////////////////////////////////////////////////////////////////////////
     // accessors
@@ -328,7 +331,6 @@ public: // This is meant to be privately inherited from.
         UntypedNodeIndex last_valid = child;
         for (OptIndex c = last_valid; c; c = m_node_edges[*c].next_sibling) {
             m_node_edges[*c].parent = p;
-            remove_orphan(Index(*c));
             last_valid = *c;
         }
 
@@ -366,9 +368,6 @@ public: // This is meant to be privately inherited from.
 
         eaten_edges = { };
         m_last_child[*e] = {};
-
-
-        remove_orphan(Index(*e));
 
         m_dead_nodes.push_back(e);
 
@@ -464,11 +463,6 @@ private:
     [[nodiscard]] bool not_dead(UntypedNodeIndex i) const {
         return std::find(m_dead_nodes.begin(), m_dead_nodes.end(), i) == m_dead_nodes.end();
     }
-    // Searched from the back, as a node is usually given a parent soon after it is created.
-    void remove_orphan(Index i) {
-        if (const auto fnd = std::find(m_orphans.rbegin(), m_orphans.rend(), i); fnd != m_orphans.rend())
-            m_orphans.erase(std::next(fnd).base());
-    }
     /// [child] can be either a single node, or a list.
     void append_to_parent_unchecked(UntypedNodeIndex parent_i, UntypedNodeIndex child_i) {
         assert(*parent_i != *child_i);
@@ -486,7 +480,6 @@ private:
         UntypedNodeIndex last_valid = child_i;
         for (OptIndex c = last_valid; c; c = m_node_edges[*c].next_sibling) {
             m_node_edges[*c].parent = parent_i;
-            remove_orphan(Index(*c));
             last_valid = *c;
         }
         m_last_child[*parent_i] = last_valid;
