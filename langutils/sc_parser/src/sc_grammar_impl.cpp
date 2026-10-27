@@ -24,10 +24,8 @@ void sc::ast::parser::parser::report_syntax_error(const context& symbol_cxt) con
     if (cxt.lookahead && *cxt.lookahead > 0) {
         const auto& token = cxt.tokens[*cxt.lookahead - 1];
         if (!token.inserted() && !sc::lex::is_error(token.token))
-            before = UnexpectedToken::Before {
-                static_cast<int>(symbol_type { to_parser_token(token.token), sc::ast::LexerToken {}, {} }.kind()),
-                *cxt.lookahead - 1
-            };
+            before = UnexpectedToken::Before { static_cast<int>(by_kind { to_parser_token(token.token) }.kind()),
+                                               *cxt.lookahead - 1 };
     }
     cxt.unexpected_token_error =
         UnexpectedToken { symbol_cxt.location(), std::move(expected_int),

@@ -383,307 +383,307 @@ Terminals, with rules where they appear
 
     $end (0) 0 1 2 5 7 8 9 10 11 12 13
     error (256) 20 23 51 131
-    REGION_SEPARATOR <LexerToken> (258) 22
-    OPENCURLY <LexerToken> (259) 28 34 47 48 49 50 51 58 160 161
-    CLOSECURLY <LexerToken> (260) 28 34 47 48 49 50 60 61 160 161
-    OPENSQUARE <LexerToken> (261) 32 33 99 103 104 105 106 107 108 109 110 111 112 113 114 133 134 142 143 153 154 155 156 240 241
-    CLOSESQUARE <LexerToken> (262) 32 33 99 103 104 105 106 107 108 109 110 111 112 113 114 133 134 142 143 153 154 155 156 240 241
-    OPENPAREN <LexerToken> (263) 12 13 16 17 18 77 90 91 92 93 94 98 102 115 116 117 118 119 120 121 122 123 124 130 131 150 152 167 173 176 180 181 185 186 207 209 210 213 215 239
-    CLOSEPAREN <LexerToken> (264) 12 13 16 17 18 77 90 91 92 93 94 98 102 115 116 117 118 119 120 121 122 123 124 130 150 152 167 173 176 180 181 185 186 207 209 210 213 215 239
-    SEMICOLON <LexerToken> (265) 8 12 18 21 42 69 71 158 161 187 188 189 190 191 192 287
-    NONLOCALRETURN <LexerToken> (266) 15 70 71 72
-    COMMA <LexerToken> (267) 37 117 118 121 122 160 161 163 174 175 176 190 192 196 198 205 217 231 232 233 238 249 250 289
-    HASH <LexerToken> (268) 241 247 248
-    TILDE <LexerToken> (269) 132 149 248 250 253
-    NAME <LexerToken> (270) 245
-    INTEGER <LexerToken> (271) 262
-    INTEGER_RADIX <LexerToken> (272) 263
-    HEXADECIMAL <LexerToken> (273) 264
-    FLOAT <LexerToken> (274) 266
-    FLOAT_RADIX <LexerToken> (275) 267
-    FLOAT_EXPONENT <LexerToken> (276) 268
-    FLOAT_INF <LexerToken> (277) 269
-    ACCIDENTAL_STEPS <LexerToken> (278) 272
-    ACCIDENTAL_CENTS <LexerToken> (279) 273
-    SYMBOL_QUOTE <LexerToken> (280) 258
-    SYMBOL_SLASH <LexerToken> (281) 259
-    STRINGLINE <LexerToken> (282) 260 261
-    ASCII <LexerToken> (283) 254
-    PRIMITIVENAME <LexerToken> (284) 49 50
-    CLASSNAME <LexerToken> (285) 28 30 34 99 100 101 102 146
-    CURRYARG <LexerToken> (286) 128
-    VAR <LexerToken> (287) 39 166 167 218
-    ARG <LexerToken> (288) 187 188 189 190 191 192
-    CLASSVAR <LexerToken> (289) 38
-    CONST <LexerToken> (290) 40
-    NIL <LexerToken> (291) 255
-    TRUE <LexerToken> (292) 256
-    FALSE <LexerToken> (293) 257
-    PI <LexerToken> (294) 278 279 280 281
-    ELLIPSIS <LexerToken> (295) 189 190 191 192 195 196 197 198 252 253
-    DOTDOT <LexerToken> (296) 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124
-    BEGINCLOSEDFUNC <LexerToken> (297) 59
-    BADTOKEN <LexerToken> (298)
-    INTERPRET <LexerToken> (299) 2 7 8 9 19 20
-    INTERPRET_FUNCTION <LexerToken> (300) 10 11 12 13
-    LEFTARROW <LexerToken> (301) 164 165
-    WHILE <LexerToken> (302) 170 246
-    LEXER_ERROR <LexerToken> (303)
-    COLON <LexerToken> (304) 30 120 121 122 123 124 160 169 170 229 232 234
-    EQUALSSIGN <LexerToken> (305) 106 107 108 112 113 114 145 148 149 150 151 153 154 155 156 166 172 175 179 181 184 186 212 214
-    BINOP <LexerToken> (306) 78
-    KEYBINOP <LexerToken> (307) 87 201 230 233 235
-    MINUS <LexerToken> (308) 82 265 271 275 281
-    LESSTHAN <LexerToken> (309) 80 283
-    GREATERTHAN <LexerToken> (310) 81 284
-    MULTIPLY <LexerToken> (311) 53 83 202
-    ADD <LexerToken> (312) 34 84
-    PIPE <LexerToken> (313) 85 193 194 195 196 197 198
-    READWRITEVAR <LexerToken> (314) 79 285
-    DOT <LexerToken> (315) 75 76 77 96 97 98 103 104 105 106 107 108 142 143 145 155 156
-    BACKTICK <LexerToken> (316) 147
-    UMINUS <LexerToken> (317)
+    REGION_SEPARATOR <v_LexerToken> (258) 22
+    OPENCURLY <v_LexerToken> (259) 28 34 47 48 49 50 51 58 160 161
+    CLOSECURLY <v_LexerToken> (260) 28 34 47 48 49 50 60 61 160 161
+    OPENSQUARE <v_LexerToken> (261) 32 33 99 103 104 105 106 107 108 109 110 111 112 113 114 133 134 142 143 153 154 155 156 240 241
+    CLOSESQUARE <v_LexerToken> (262) 32 33 99 103 104 105 106 107 108 109 110 111 112 113 114 133 134 142 143 153 154 155 156 240 241
+    OPENPAREN <v_LexerToken> (263) 12 13 16 17 18 77 90 91 92 93 94 98 102 115 116 117 118 119 120 121 122 123 124 130 131 150 152 167 173 176 180 181 185 186 207 209 210 213 215 239
+    CLOSEPAREN <v_LexerToken> (264) 12 13 16 17 18 77 90 91 92 93 94 98 102 115 116 117 118 119 120 121 122 123 124 130 150 152 167 173 176 180 181 185 186 207 209 210 213 215 239
+    SEMICOLON <v_LexerToken> (265) 8 12 18 21 42 69 71 158 161 187 188 189 190 191 192 287
+    NONLOCALRETURN <v_LexerToken> (266) 15 70 71 72
+    COMMA <v_LexerToken> (267) 37 117 118 121 122 160 161 163 174 175 176 190 192 196 198 205 217 231 232 233 238 249 250 289
+    HASH <v_LexerToken> (268) 241 247 248
+    TILDE <v_LexerToken> (269) 132 149 248 250 253
+    NAME <v_LexerToken> (270) 245
+    INTEGER <v_LexerToken> (271) 262
+    INTEGER_RADIX <v_LexerToken> (272) 263
+    HEXADECIMAL <v_LexerToken> (273) 264
+    FLOAT <v_LexerToken> (274) 266
+    FLOAT_RADIX <v_LexerToken> (275) 267
+    FLOAT_EXPONENT <v_LexerToken> (276) 268
+    FLOAT_INF <v_LexerToken> (277) 269
+    ACCIDENTAL_STEPS <v_LexerToken> (278) 272
+    ACCIDENTAL_CENTS <v_LexerToken> (279) 273
+    SYMBOL_QUOTE <v_LexerToken> (280) 258
+    SYMBOL_SLASH <v_LexerToken> (281) 259
+    STRINGLINE <v_LexerToken> (282) 260 261
+    ASCII <v_LexerToken> (283) 254
+    PRIMITIVENAME <v_LexerToken> (284) 49 50
+    CLASSNAME <v_LexerToken> (285) 28 30 34 99 100 101 102 146
+    CURRYARG <v_LexerToken> (286) 128
+    VAR <v_LexerToken> (287) 39 166 167 218
+    ARG <v_LexerToken> (288) 187 188 189 190 191 192
+    CLASSVAR <v_LexerToken> (289) 38
+    CONST <v_LexerToken> (290) 40
+    NIL <v_LexerToken> (291) 255
+    TRUE <v_LexerToken> (292) 256
+    FALSE <v_LexerToken> (293) 257
+    PI <v_LexerToken> (294) 278 279 280 281
+    ELLIPSIS <v_LexerToken> (295) 189 190 191 192 195 196 197 198 252 253
+    DOTDOT <v_LexerToken> (296) 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124
+    BEGINCLOSEDFUNC <v_LexerToken> (297) 59
+    BADTOKEN <v_LexerToken> (298)
+    INTERPRET <v_LexerToken> (299) 2 7 8 9 19 20
+    INTERPRET_FUNCTION <v_LexerToken> (300) 10 11 12 13
+    LEFTARROW <v_LexerToken> (301) 164 165
+    WHILE <v_LexerToken> (302) 170 246
+    LEXER_ERROR <v_LexerToken> (303)
+    COLON <v_LexerToken> (304) 30 120 121 122 123 124 160 169 170 229 232 234
+    EQUALSSIGN <v_LexerToken> (305) 106 107 108 112 113 114 145 148 149 150 151 153 154 155 156 166 172 175 179 181 184 186 212 214
+    BINOP <v_LexerToken> (306) 78
+    KEYBINOP <v_LexerToken> (307) 87 201 230 233 235
+    MINUS <v_LexerToken> (308) 82 265 271 275 281
+    LESSTHAN <v_LexerToken> (309) 80 283
+    GREATERTHAN <v_LexerToken> (310) 81 284
+    MULTIPLY <v_LexerToken> (311) 53 83 202
+    ADD <v_LexerToken> (312) 34 84
+    PIPE <v_LexerToken> (313) 85 193 194 195 196 197 198
+    READWRITEVAR <v_LexerToken> (314) 79 285
+    DOT <v_LexerToken> (315) 75 76 77 96 97 98 103 104 105 106 107 108 142 143 145 155 156
+    BACKTICK <v_LexerToken> (316) 147
+    UMINUS <v_LexerToken> (317)
 
 
 Nonterminals, with rules where they appear
 
     $accept (63)
         on left: 0
-    go <GoIndex> (64)
+    go <v_GoIndex> (64)
         on left: 1 2 3 4 5 6
         on right: 0
-    file_as_func <FileAsFunctionIndex> (65)
+    file_as_func <v_FileAsFunctionIndex> (65)
         on left: 7 8 9
         on right: 3
-    interpreted_function <FileAsFunctionIndex> (66)
+    interpreted_function <v_FileAsFunctionIndex> (66)
         on left: 10 11 12 13
         on right: 4
-    region.item <RegionItemIndex> (67)
+    region.item <v_RegionItemIndex> (67)
         on left: 14 15 16 17 18
         on right: 19 21 22
-    region <RegionListIndex> (68)
+    region <v_RegionListIndex> (68)
         on left: 19 20 21 22 23
         on right: 1 21 22 23
-    classOrExtList.list <ClassOrExtensionListIndex> (69)
+    classOrExtList.list <v_ClassOrExtensionListIndex> (69)
         on left: 24 25
         on right: 5 25
-    classOrExtList.item <ClassOrExtensionIndex> (70)
+    classOrExtList.item <v_ClassOrExtensionIndex> (70)
         on left: 26 27
         on right: 24 25
-    class <ClassIndex> (71)
+    class <v_ClassIndex> (71)
         on left: 28
         on right: 26
-    class.super.opt <maybe<ClassNameIdentifierIndex>> (72)
+    class.super.opt <v_maybe_ClassNameIdentifierIndex> (72)
         on left: 29 30
         on right: 28
-    class.slot.opt <maybe<NamedIdentifierIndex>> (73)
+    class.slot.opt <v_maybe_NamedIdentifierIndex> (73)
         on left: 31 32 33
         on right: 28
-    class.extension <ClassExtensionIndex> (74)
+    class.extension <v_ClassExtensionIndex> (74)
         on left: 34
         on right: 27
-    members.entry.item <DeclareMemberIndex> (75)
+    members.entry.item <v_DeclareMemberIndex> (75)
         on left: 35
         on right: 36 37
-    members.entry.list <DeclareMemberListIndex> (76)
+    members.entry.list <v_DeclareMemberListIndex> (76)
         on left: 36 37
         on right: 37 38 39 40
-    members.entry <DeclareAnyMemberListIndex> (77)
+    members.entry <v_DeclareAnyMemberListIndex> (77)
         on left: 38 39 40
         on right: 41 42
-    members <BigMemberListIndex> (78)
+    members <v_BigMemberListIndex> (78)
         on left: 41 42
         on right: 42 44
-    members.opt <BigMemberListIndex> (79)
+    members.opt <v_BigMemberListIndex> (79)
         on left: 43 44
         on right: 28
-    method.name <SelectorIndex> (80)
+    method.name <v_SelectorIndex> (80)
         on left: 45 46
         on right: 47 48 49 50 51
-    method.base <AnyMethodIndex> (81)
+    method.base <v_AnyMethodIndex> (81)
         on left: 47 48 49 50 51
         on right: 52 53
-    method <AnyMethodIndex> (82)
+    method <v_AnyMethodIndex> (82)
         on left: 52 53
         on right: 54 55
-    method.list <MethodListIndex> (83)
+    method.list <v_MethodListIndex> (83)
         on left: 54 55
         on right: 55 57
-    method.list.opt <MethodListIndex> (84)
+    method.list.opt <v_MethodListIndex> (84)
         on left: 56 57
         on right: 28 34
-    block.open <bool> (85)
+    block.open <v_bool> (85)
         on left: 58 59
         on right: 60 61
-    block <BlockIndex> (86)
+    block <v_BlockIndex> (86)
         on left: 60 61
         on right: 64 66 226
-    block.opt_list <BlockListIndex> (87)
+    block.opt_list <v_BlockListIndex> (87)
         on left: 62 63
         on right: 90 93 96 97 98 101 102
-    block.list <BlockListIndex> (88)
+    block.list <v_BlockListIndex> (88)
         on left: 64 65 66 67
         on right: 63 66 67 91 92 94 95 100
-    block.contents <BlockContentsListIndex> (89)
+    block.contents <v_BlockContentsListIndex> (89)
         on left: 68 69 70 71 72
         on right: 7 8 10 12 16 18 47 49 60 69 70 71
-    block.contents.item <BlockItemIndex> (90)
+    block.contents.item <v_BlockItemIndex> (90)
         on left: 73 74
         on right: 68 69
-    adverb <AdverbIndex> (91)
+    adverb <v_AdverbIndex> (91)
         on left: 75 76 77
         on right: 88
-    binary_op.raw <SelectorIndex> (92)
+    binary_op.raw <v_SelectorIndex> (92)
         on left: 78 79 80 81 82 83 84 85
         on right: 46 86
-    binary_op.no_adverb <SelectorIndex> (93)
+    binary_op.no_adverb <v_SelectorIndex> (93)
         on left: 86 87
         on right: 88 89 90 91 92
-    binary_op <SelectorMaybeAdverbIndex> (94)
+    binary_op <v_SelectorMaybeAdverbIndex> (94)
         on left: 88 89
         on right: 144
-    msgsend <AnyExprIndex> (95)
+    msgsend <v_AnyExprIndex> (95)
         on left: 90 91 92 93 94 95 96 97 98 99 100 101 102
         on right: 129
-    expr.dotrange <AtMessageIndex> (96)
+    expr.dotrange <v_AtMessageIndex> (96)
         on left: 103 104 105
         on right: 140
-    expr.dotrange.assign <RangeAssignIndex> (97)
+    expr.dotrange.assign <v_RangeAssignIndex> (97)
         on left: 106 107 108
         on right: 141
-    expr.base.range <AtMessageIndex> (98)
+    expr.base.range <v_AtMessageIndex> (98)
         on left: 109 110 111
         on right: 135
-    expr.base.range.assign <RangeAssignIndex> (99)
+    expr.base.range.assign <v_RangeAssignIndex> (99)
         on left: 112 113 114
         on right: 139
-    range <RangeIndex> (100)
+    range <v_RangeIndex> (100)
         on left: 115 116 117 118 119
         on right: 136
-    range.generator <RangeGeneratorIndex> (101)
+    range.generator <v_RangeGeneratorIndex> (101)
         on left: 120 121 122 123 124
         on right: 137
-    expr.base <AnyExprIndex> (102)
+    expr.base <v_AnyExprIndex> (102)
         on left: 125 126 127 128 129 130 131 132 133 134 135 136 137
         on right: 109 110 111 112 113 114 133 134 138 153 154
-    expr <AnyExprIndex> (103)
+    expr <v_AnyExprIndex> (103)
         on left: 138 139 140 141 142 143 144 145 146 147 148 149 150 151 152 153 154 155 156
         on right: 14 15 70 71 72 73 96 97 98 103 104 105 106 107 108 112 113 114 142 143 144 145 147 148 149 150 151 153 154 155 156 157 158 172 175 212 214 234
-    expr_or_seq.base <AnyExprIndex> (104)
+    expr_or_seq.base <v_AnyExprIndex> (104)
         on left: 157 158
         on right: 158 159
-    expr_or_seq <AnyExprIndex> (105)
+    expr_or_seq <v_AnyExprIndex> (105)
         on left: 159
         on right: 77 103 104 106 108 109 111 112 114 115 116 117 118 119 120 121 122 123 124 130 152 160 161 164 165 166 167 168 169 170 173 176 180 181 185 186 201 202 203 213 215 228 229 230 231 232 233 234 235
-    generator <GeneratorAnyIndex> (106)
+    generator <v_GeneratorAnyIndex> (106)
         on left: 160 161
         on right: 65 67 126
-    generator.qual.list <GeneratorQualListIndex> (107)
+    generator.qual.list <v_GeneratorQualListIndex> (107)
         on left: 162 163
         on right: 160 161 163
-    generator.qual <GeneratorQualAnyIndex> (108)
+    generator.qual <v_GeneratorQualAnyIndex> (108)
         on left: 164 165 166 167 168 169 170
         on right: 162 163
-    argument_declarations.list <DeclareArgumentListIndex> (109)
+    argument_declarations.list <v_DeclareArgumentListIndex> (109)
         on left: 171 172 173 174 175 176
         on right: 174 175 176 188 189 190
-    argument_declarations.pipelist <DeclareArgumentListIndex> (110)
+    argument_declarations.pipelist <v_DeclareArgumentListIndex> (110)
         on left: 177 178 179 180 181 182 183 184 185 186
         on right: 182 183 184 185 186 194 195 196
-    argument_declarations <DeclareArgumentListIndex> (111)
+    argument_declarations <v_DeclareArgumentListIndex> (111)
         on left: 187 188 189 190 191 192 193 194 195 196 197 198
         on right: 7 16 17 200
-    argument_declarations.opt <DeclareArgumentListIndex> (112)
+    argument_declarations.opt <v_DeclareArgumentListIndex> (112)
         on left: 199 200
         on right: 47 48 49 50 60 61
-    arguments.entries <ArgumentEntryIndex> (113)
+    arguments.entries <v_ArgumentEntryIndex> (113)
         on left: 201 202 203
         on right: 204 205
-    arguments.no_trailing <ArgumentListIndex> (114)
+    arguments.no_trailing <v_ArgumentListIndex> (114)
         on left: 204 205
         on right: 205 206
-    arguments <ArgumentListIndex> (115)
+    arguments <v_ArgumentListIndex> (115)
         on left: 206
         on right: 90 93 103 105 106 107 109 110 112 113 133 142 150 153 155 207 210
-    arguments.paren <ArgumentListIndex> (116)
+    arguments.paren <v_ArgumentListIndex> (116)
         on left: 207
         on right: 97 101
-    arguments.maybe_paren <ArgumentListIndex> (117)
+    arguments.maybe_paren <v_ArgumentListIndex> (117)
         on left: 208 209 210
         on right: 96
-    variable_declarations.list.item <DeclareAnyVariableIndex> (118)
+    variable_declarations.list.item <v_DeclareAnyVariableIndex> (118)
         on left: 211 212 213 214 215
         on right: 35 216 217
-    variable_declarations.list <DeclareVariableListIndex> (119)
+    variable_declarations.list <v_DeclareVariableListIndex> (119)
         on left: 216 217
         on right: 217 218
-    variable_declarations <DeclareVariableListIndex> (120)
+    variable_declarations <v_DeclareVariableListIndex> (120)
         on left: 218
         on right: 8 9 12 13 18 74
-    literal.terminal <AnyPossiblyLiteralIndex> (121)
+    literal.terminal <v_AnyPossiblyLiteralIndex> (121)
         on left: 219 220 221 222 223 224 225 226
         on right: 242
-    literal.array.contents <ArrayIndex> (122)
+    literal.array.contents <v_ArrayIndex> (122)
         on left: 227 228 229 230 231 232 233
         on right: 99 231 232 233 240 241
-    literal.dictionary.entry <DictionaryEntryIndex> (123)
+    literal.dictionary.entry <v_DictionaryEntryIndex> (123)
         on left: 234 235
         on right: 237 238
-    literal.dictionary.entries <DictionaryIndex> (124)
+    literal.dictionary.entries <v_DictionaryIndex> (124)
         on left: 236 237 238
         on right: 238 239
-    literal.dictionary <DictionaryIndex> (125)
+    literal.dictionary <v_DictionaryIndex> (125)
         on left: 239
         on right: 244
-    literal.array <ArrayIndex> (126)
+    literal.array <v_ArrayIndex> (126)
         on left: 240 241
         on right: 243
-    literal <AnyPossiblyLiteralIndex> (127)
+    literal <v_AnyPossiblyLiteralIndex> (127)
         on left: 242 243 244
         on right: 125 177 179 182 184
-    name <NamedIdentifierIndex> (128)
+    name <v_NamedIdentifierIndex> (128)
         on left: 245 246
         on right: 32 45 75 93 94 95 96 127 132 145 148 149 150 164 165 166 167 171 172 173 174 175 176 177 178 179 180 181 182 183 184 185 186 189 190 191 192 195 196 197 198 211 212 213 247 248 249 250 252 253
-    name.list <NameListIndex> (129)
+    name.list <v_NameListIndex> (129)
         on left: 247 248 249 250
         on right: 249 250 251 252 253
-    name.pack <NamePackIndex> (130)
+    name.pack <v_NamePackIndex> (130)
         on left: 251 252 253
         on right: 151 152 214 215
-    ascii <ASCIIIndex> (131)
+    ascii <v_ASCIIIndex> (131)
         on left: 254
         on right: 225
-    nil <NilLitIndex> (132)
+    nil <v_NilLitIndex> (132)
         on left: 255
         on right: 224
-    boolean <BooleanLitIndex> (133)
+    boolean <v_BooleanLitIndex> (133)
         on left: 256 257
         on right: 223
-    symbol <AnySymbolIndex> (134)
+    symbol <v_AnySymbolIndex> (134)
         on left: 258 259
         on right: 219
-    string <StringLitIndex> (135)
+    string <v_StringLitIndex> (135)
         on left: 260 261
         on right: 220 261
-    integer <IntLitIndex> (136)
+    integer <v_IntLitIndex> (136)
         on left: 262 263 264 265
         on right: 76 221 265 279
-    float.raw_unsigned <FloatLitIndex> (137)
+    float.raw_unsigned <v_FloatLitIndex> (137)
         on left: 266 267 268 269
         on right: 270 271
-    float.raw <FloatLitIndex> (138)
+    float.raw <v_FloatLitIndex> (138)
         on left: 270 271
         on right: 276 278
-    accidental.unsigned <AccidentalIndex> (139)
+    accidental.unsigned <v_AccidentalIndex> (139)
         on left: 272 273
         on right: 274 275
-    accidental <AccidentalIndex> (140)
+    accidental <v_AccidentalIndex> (140)
         on left: 274 275
         on right: 277
-    float <FloatProducingIndex> (141)
+    float <v_FloatProducingIndex> (141)
         on left: 276 277 278 279 280 281
         on right: 222
-    accessor <RWAccessorIndex> (142)
+    accessor <v_RWAccessorIndex> (142)
         on left: 282 283 284 285
         on right: 35
     semicolon.opt (143)

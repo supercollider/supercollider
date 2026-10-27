@@ -156,17 +156,19 @@ sc::src::SourceCodeRange bracket(ParserContext&, sc::src::SourceCodeRange open_b
 // Whether the parser can take token next. It uses lookahead correction, so is exact.
 inline bool parser_accepts(const sc::ast::parser::parser& p, sc::ast::parser::parser::token_kind_type token) {
     using P = sc::ast::parser::parser;
-    const auto kind = P::symbol_type { token, sc::ast::LexerToken {}, {} }.kind();
+    const auto kind = P::by_kind { token }.kind();
     std::array<P::symbol_kind_type, P::symbol_kind::YYNTOKENS> expected {};
-    const auto count = P::context { p, P::symbol_type { P::token::TOKEN_YYEOF, {} } }.expected_tokens(
-        expected.data(), static_cast<int>(expected.size()));
+    P::symbol_type end_of_file {};
+    end_of_file.kind_ = P::symbol_kind::S_YYEOF;
+    const auto count =
+        P::context { p, end_of_file }.expected_tokens(expected.data(), static_cast<int>(expected.size()));
     return std::find(expected.begin(), expected.begin() + count, kind) != expected.begin() + count;
 }
 
 inline int yylex(sc::ast::parser::parser::value_type* v, sc::src::SourceCodeRange* loc,
                  sc::ast::parser::ParserContext& cxt) {
     using T = sc::ast::parser::parser::token_kind_type;
-    v->emplace<sc::ast::LexerToken>();
+    v->v_LexerToken = {};
 
     if (cxt.mode == sc::ast::parser::ParserContext::Mode::CommandInitial) {
         cxt.mode = sc::ast::parser::ParserContext::Mode::CommandContinue;

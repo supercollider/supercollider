@@ -2,7 +2,68 @@
 %require "3.8"
 %language "C++"
 
-%define api.value.type variant
+// Bison also offers a variant option.
+// The variant is MUCH cleaner to read, but because these are all index types and don't have constructors,
+//  using the union saves about 7% performance and 6k lines of code in the generatd file.
+// This is ugly, but works well.
+%union {
+    ASCIIIndex v_ASCIIIndex;
+    AccidentalIndex v_AccidentalIndex;
+    AdverbIndex v_AdverbIndex;
+    AnyExprIndex v_AnyExprIndex;
+    AnyMethodIndex v_AnyMethodIndex;
+    AnyPossiblyLiteralIndex v_AnyPossiblyLiteralIndex;
+    AnySymbolIndex v_AnySymbolIndex;
+    ArgumentEntryIndex v_ArgumentEntryIndex;
+    ArgumentListIndex v_ArgumentListIndex;
+    ArrayIndex v_ArrayIndex;
+    AtMessageIndex v_AtMessageIndex;
+    BigMemberListIndex v_BigMemberListIndex;
+    BlockContentsListIndex v_BlockContentsListIndex;
+    BlockIndex v_BlockIndex;
+    BlockItemIndex v_BlockItemIndex;
+    BlockListIndex v_BlockListIndex;
+    BooleanLitIndex v_BooleanLitIndex;
+    ClassExtensionIndex v_ClassExtensionIndex;
+    ClassIndex v_ClassIndex;
+    ClassOrExtensionIndex v_ClassOrExtensionIndex;
+    ClassOrExtensionListIndex v_ClassOrExtensionListIndex;
+    DeclareAnyMemberListIndex v_DeclareAnyMemberListIndex;
+    DeclareAnyVariableIndex v_DeclareAnyVariableIndex;
+    DeclareArgumentListIndex v_DeclareArgumentListIndex;
+    DeclareMemberIndex v_DeclareMemberIndex;
+    DeclareMemberListIndex v_DeclareMemberListIndex;
+    DeclareVariableListIndex v_DeclareVariableListIndex;
+    DictionaryEntryIndex v_DictionaryEntryIndex;
+    DictionaryIndex v_DictionaryIndex;
+    FileAsFunctionIndex v_FileAsFunctionIndex;
+    FloatLitIndex v_FloatLitIndex;
+    FloatProducingIndex v_FloatProducingIndex;
+    GeneratorAnyIndex v_GeneratorAnyIndex;
+    GeneratorQualAnyIndex v_GeneratorQualAnyIndex;
+    GeneratorQualListIndex v_GeneratorQualListIndex;
+    GoIndex v_GoIndex;
+    IntLitIndex v_IntLitIndex;
+    LexerToken v_LexerToken;
+    MethodListIndex v_MethodListIndex;
+    NameListIndex v_NameListIndex;
+    NamePackIndex v_NamePackIndex;
+    NamedIdentifierIndex v_NamedIdentifierIndex;
+    NilLitIndex v_NilLitIndex;
+    RWAccessorIndex v_RWAccessorIndex;
+    RangeAssignIndex v_RangeAssignIndex;
+    RangeGeneratorIndex v_RangeGeneratorIndex;
+    RangeIndex v_RangeIndex;
+    RegionItemIndex v_RegionItemIndex;
+    RegionListIndex v_RegionListIndex;
+    SelectorIndex v_SelectorIndex;
+    SelectorMaybeAdverbIndex v_SelectorMaybeAdverbIndex;
+    StringLitIndex v_StringLitIndex;
+    bool v_bool;
+    maybe<ClassNameIdentifierIndex> v_maybe_ClassNameIdentifierIndex;
+    maybe<NamedIdentifierIndex> v_maybe_NamedIdentifierIndex;
+    value_type() {}
+}
 %define api.token.prefix {TOKEN_}
 %define api.namespace {sc::ast::parser}
 %define parse.error custom
@@ -50,115 +111,115 @@ using namespace sc::ast;
 
 
 // There is still location data, just no semantic value (the token tag is all the data you need)
-%token <LexerToken> REGION_SEPARATOR
-%token <LexerToken> OPENCURLY CLOSECURLY OPENSQUARE CLOSESQUARE OPENPAREN CLOSEPAREN 
-%token <LexerToken> SEMICOLON NONLOCALRETURN COMMA HASH TILDE
+%token <v_LexerToken> REGION_SEPARATOR
+%token <v_LexerToken> OPENCURLY CLOSECURLY OPENSQUARE CLOSESQUARE OPENPAREN CLOSEPAREN 
+%token <v_LexerToken> SEMICOLON NONLOCALRETURN COMMA HASH TILDE
 
 // TODO: these literal tokens should be expand into all the types the lexer recognizes and turned into nodes (lower case versions).
-%token <LexerToken> NAME INTEGER INTEGER_RADIX HEXADECIMAL FLOAT FLOAT_RADIX FLOAT_EXPONENT FLOAT_INF ACCIDENTAL_STEPS ACCIDENTAL_CENTS SYMBOL_QUOTE SYMBOL_SLASH STRINGLINE ASCII PRIMITIVENAME CLASSNAME CURRYARG 
-%token <LexerToken> VAR ARG CLASSVAR CONST
-%token <LexerToken> NIL TRUE FALSE PI
-%token <LexerToken> ELLIPSIS DOTDOT BEGINCLOSEDFUNC
-%token <LexerToken> BADTOKEN INTERPRET INTERPRET_FUNCTION
-%token <LexerToken> LEFTARROW 
-%token <LexerToken> WHILE
-%token <LexerToken> LEXER_ERROR
+%token <v_LexerToken> NAME INTEGER INTEGER_RADIX HEXADECIMAL FLOAT FLOAT_RADIX FLOAT_EXPONENT FLOAT_INF ACCIDENTAL_STEPS ACCIDENTAL_CENTS SYMBOL_QUOTE SYMBOL_SLASH STRINGLINE ASCII PRIMITIVENAME CLASSNAME CURRYARG 
+%token <v_LexerToken> VAR ARG CLASSVAR CONST
+%token <v_LexerToken> NIL TRUE FALSE PI
+%token <v_LexerToken> ELLIPSIS DOTDOT BEGINCLOSEDFUNC
+%token <v_LexerToken> BADTOKEN INTERPRET INTERPRET_FUNCTION
+%token <v_LexerToken> LEFTARROW 
+%token <v_LexerToken> WHILE
+%token <v_LexerToken> LEXER_ERROR
 
-%left  <LexerToken> COLON
-%right <LexerToken> EQUALSSIGN
-%left  <LexerToken> BINOP KEYBINOP MINUS LESSTHAN GREATERTHAN MULTIPLY ADD PIPE READWRITEVAR
-%left  <LexerToken> DOT
-%right <LexerToken> BACKTICK
-%right <LexerToken> UMINUS
+%left  <v_LexerToken> COLON
+%right <v_LexerToken> EQUALSSIGN
+%left  <v_LexerToken> BINOP KEYBINOP MINUS LESSTHAN GREATERTHAN MULTIPLY ADD PIPE READWRITEVAR
+%left  <v_LexerToken> DOT
+%right <v_LexerToken> BACKTICK
+%right <v_LexerToken> UMINUS
 
 ////////////////////////////////////////////////////////////////////////////////
 // types
 ////////////////////////////////////////////////////////////////////////////////
 
-%type <GoIndex> go
+%type <v_GoIndex> go
 
-%type <RegionListIndex> region
-%type <RegionItemIndex> region.item 
+%type <v_RegionListIndex> region
+%type <v_RegionItemIndex> region.item 
 
-%type <ClassOrExtensionListIndex> classOrExtList.list
-%type <ClassOrExtensionIndex> classOrExtList.item
+%type <v_ClassOrExtensionListIndex> classOrExtList.list
+%type <v_ClassOrExtensionIndex> classOrExtList.item
 
-%type <ClassExtensionIndex> class.extension 
-%type <ClassIndex> class
+%type <v_ClassExtensionIndex> class.extension 
+%type <v_ClassIndex> class
 
-%type <maybe<ClassNameIdentifierIndex>> class.super.opt
-%type <maybe<NamedIdentifierIndex>> class.slot.opt
+%type <v_maybe_ClassNameIdentifierIndex> class.super.opt
+%type <v_maybe_NamedIdentifierIndex> class.slot.opt
 
-%type <BigMemberListIndex> members members.opt
-%type <DeclareAnyMemberListIndex> members.entry
+%type <v_BigMemberListIndex> members members.opt
+%type <v_DeclareAnyMemberListIndex> members.entry
 
-%type <DeclareMemberListIndex> members.entry.list
+%type <v_DeclareMemberListIndex> members.entry.list
 
-%type <DeclareMemberIndex> members.entry.item 
+%type <v_DeclareMemberIndex> members.entry.item 
 
-%type <SelectorIndex> method.name
-%type <AnyMethodIndex> method  method.base
-%type <MethodListIndex> method.list method.list.opt
+%type <v_SelectorIndex> method.name
+%type <v_AnyMethodIndex> method  method.base
+%type <v_MethodListIndex> method.list method.list.opt
 
-%type <AnyExprIndex> msgsend // not all msgsends result in a message node!
+%type <v_AnyExprIndex> msgsend // not all msgsends result in a message node!
 
-%type<ArgumentEntryIndex> arguments.entries
-%type<ArgumentListIndex> arguments arguments.no_trailing arguments.paren arguments.maybe_paren
+%type<v_ArgumentEntryIndex> arguments.entries
+%type<v_ArgumentListIndex> arguments arguments.no_trailing arguments.paren arguments.maybe_paren
 
-%type <DeclareArgumentListIndex> argument_declarations.list argument_declarations argument_declarations.pipelist argument_declarations.opt
+%type <v_DeclareArgumentListIndex> argument_declarations.list argument_declarations argument_declarations.pipelist argument_declarations.opt
 
-%type <DeclareVariableListIndex> variable_declarations.list variable_declarations
-%type <DeclareAnyVariableIndex> variable_declarations.list.item
+%type <v_DeclareVariableListIndex> variable_declarations.list variable_declarations
+%type <v_DeclareAnyVariableIndex> variable_declarations.list.item
 
-%type<BlockListIndex> block.opt_list block.list
+%type<v_BlockListIndex> block.opt_list block.list
 
-%type <AnyExprIndex> expr expr.base
-%type <AnyExprIndex> expr_or_seq expr_or_seq.base 
+%type <v_AnyExprIndex> expr expr.base
+%type <v_AnyExprIndex> expr_or_seq expr_or_seq.base 
 
-%type <NamedIdentifierIndex> name 
+%type <v_NamedIdentifierIndex> name 
 
-%type <SelectorIndex> binary_op.no_adverb binary_op.raw
-%type <SelectorMaybeAdverbIndex> binary_op
-%type <AdverbIndex> adverb
+%type <v_SelectorIndex> binary_op.no_adverb binary_op.raw
+%type <v_SelectorMaybeAdverbIndex> binary_op
+%type <v_AdverbIndex> adverb
 
-%type <GeneratorAnyIndex> generator
-%type <GeneratorQualAnyIndex> generator.qual
-%type <GeneratorQualListIndex> generator.qual.list
+%type <v_GeneratorAnyIndex> generator
+%type <v_GeneratorQualAnyIndex> generator.qual
+%type <v_GeneratorQualListIndex> generator.qual.list
 
 // literals
-%type <AnyPossiblyLiteralIndex> literal literal.terminal 
+%type <v_AnyPossiblyLiteralIndex> literal literal.terminal 
 
-%type <ArrayIndex> literal.array literal.array.contents
-%type <DictionaryIndex> literal.dictionary literal.dictionary.entries
-%type <DictionaryEntryIndex> literal.dictionary.entry
+%type <v_ArrayIndex> literal.array literal.array.contents
+%type <v_DictionaryIndex> literal.dictionary literal.dictionary.entries
+%type <v_DictionaryEntryIndex> literal.dictionary.entry
 
-%type <NameListIndex> name.list
-%type <NamePackIndex> name.pack
+%type <v_NameListIndex> name.list
+%type <v_NamePackIndex> name.pack
 
-%type <BlockItemIndex> block.contents.item
-%type <BlockContentsListIndex> block.contents 
-%type <BlockIndex> block 
-%type <bool> block.open
-%type <NilLitIndex> nil
-%type <BooleanLitIndex> boolean
-%type <AnySymbolIndex> symbol
-%type <StringLitIndex> string
-%type <IntLitIndex> integer
-%type <FloatLitIndex> float.raw float.raw_unsigned
-%type <AccidentalIndex> accidental accidental.unsigned
-%type <FloatProducingIndex> float
-%type <ASCIIIndex> ascii
+%type <v_BlockItemIndex> block.contents.item
+%type <v_BlockContentsListIndex> block.contents 
+%type <v_BlockIndex> block 
+%type <v_bool> block.open
+%type <v_NilLitIndex> nil
+%type <v_BooleanLitIndex> boolean
+%type <v_AnySymbolIndex> symbol
+%type <v_StringLitIndex> string
+%type <v_IntLitIndex> integer
+%type <v_FloatLitIndex> float.raw float.raw_unsigned
+%type <v_AccidentalIndex> accidental accidental.unsigned
+%type <v_FloatProducingIndex> float
+%type <v_ASCIIIndex> ascii
 
-%type <RangeIndex> range 
-%type <AtMessageIndex> expr.base.range expr.dotrange
-%type <RangeGeneratorIndex> range.generator
-%type <RangeAssignIndex> expr.dotrange.assign expr.base.range.assign
+%type <v_RangeIndex> range 
+%type <v_AtMessageIndex> expr.base.range expr.dotrange
+%type <v_RangeGeneratorIndex> range.generator
+%type <v_RangeAssignIndex> expr.dotrange.assign expr.base.range.assign
 
 
 // misc
-%type <RWAccessorIndex> accessor 
+%type <v_RWAccessorIndex> accessor 
 
-%type <FileAsFunctionIndex> file_as_func interpreted_function
+%type <v_FileAsFunctionIndex> file_as_func interpreted_function
 
 
 ////////////////////////////////////////////////////////////////////////////////
