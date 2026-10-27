@@ -27,6 +27,14 @@
 
 namespace sc::ir {
 
+struct IRCompiler::InterpreterMembers {
+    std::optional<ast2ir::Scope> meta_class_members;
+    ast2ir::Scope class_members;
+};
+
+IRCompiler::IRCompiler(Context& mctx): ctx(mctx) {}
+
+IRCompiler::~IRCompiler() = default;
 
 std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
     const IntrinsicConstraints& intrinsic_constraints, //
@@ -528,6 +536,16 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
         pool.join();
     }
 
+    const auto interpreter = ctx.common_symbols.interpreter;
+    const auto* decl = ctx.class_declarations.get_unsafe(interpreter);
+    if (decl && !decl->poisoned() && decl->find_method(ctx.common_symbols.function_compile_context)) {
+        if (auto class_ir = class_graph(interpreter)) {
+            const auto meta_ir = decl->meta_class() ? class_graph(*decl->meta_class()) : nullptr;
+            m_interpreter_members = std::make_unique<const InterpreterMembers>(
+                InterpreterMembers { meta_ir ? std::optional { ast2ir::member_scope(meta_ir) } : std::nullopt,
+                                     ast2ir::member_scope(std::move(class_ir)) });
+        }
+    }
 
     return ctx.diagnostics.consume();
 }
@@ -545,24 +563,13 @@ IRCompiler::Interpreted IRCompiler::compile_interpreted(std::shared_ptr<const as
     assert(root && !std::holds_alternative<ast::ClassOrExtensionListIndex>(*root));
     const auto root_i = std::visit([](auto i) { return ast::Index { *i }; }, *root);
 
-    // The Interpreter's graphs, if it and functionCompileContext compiled.
-    const auto interpreter = ctx.common_symbols.interpreter;
-    const auto* decl = ctx.class_declarations.get_unsafe(interpreter);
-    std::shared_ptr<const IRGraph> class_ir;
-    std::shared_ptr<const IRGraph> meta_ir;
-    if (decl && !decl->poisoned() && decl->find_method(ctx.common_symbols.function_compile_context)) {
-        class_ir = class_graph(interpreter);
-        if (const auto meta = decl->meta_class())
-            meta_ir = class_graph(*meta);
-    }
-    if (!class_ir) {
+    if (!m_interpreter_members) {
         return { nullptr,
                  { sc::diag::Diagnostic::missing_interpreter_context(get_text_info(*ast_graph),
                                                                      get_location(*ast_graph, root_i)) } };
     }
 
-    const auto members = ast2ir::member_scope(class_ir);
-    const auto meta_members = meta_ir ? std::optional { ast2ir::member_scope(meta_ir) } : std::nullopt;
+    const auto& [meta_members, members] = *m_interpreter_members;
     auto ir = std::make_shared<IRGraph>();
     const ast2ir::InterpreterScopes interpreter_scopes { meta_members ? &*meta_members : nullptr, members };
     ast2ir::Interpreted interpreted { *ir, ast_graph, ctx, version, interpreter_scopes };

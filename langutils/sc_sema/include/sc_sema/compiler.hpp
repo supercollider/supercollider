@@ -35,7 +35,8 @@ struct ClassDeclaration;
                                                                            ClassDeclaration& decl);
 
 struct IRCompiler {
-    IRCompiler(Context& mctx): ctx(mctx) {}
+    IRCompiler(Context& mctx);
+    ~IRCompiler();
 
     [[nodiscard]] std::vector<sc::diag::Diagnostic>
     compile_class_library(const IntrinsicConstraints& intrinsic_constraints, //
@@ -77,6 +78,11 @@ private:
     // This will be a nullptr if the class is poisoned.
     util::IndexedVector<TopologicalPosition, std::shared_ptr<IRGraph>> m_classes {};
     std::unordered_map<SymSCClassName, TopologicalPosition, std::hash<Symbol>> m_class_positions {};
+
+    // The Interpreter's members, built once after the class library, as every piece of interpreted code reads them.
+    // Null if it, or functionCompileContext, didn't compile.
+    struct InterpreterMembers;
+    std::unique_ptr<const InterpreterMembers> m_interpreter_members;
 };
 
 
