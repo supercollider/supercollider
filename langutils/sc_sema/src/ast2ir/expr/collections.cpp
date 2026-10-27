@@ -8,6 +8,7 @@
 #include "sc_sema/context.hpp"
 #include "sc_sema/ir.hpp"
 #include "sc_sema/symbol_table.hpp"
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <limits>
@@ -32,6 +33,28 @@ Return<SCAnyExpr_I> symbol(CollectionContext& c, ast::Index i, std::string_view 
     const auto lit = c.ir.create(SCLiteral { const_i }, location_of(c.ir, *c.ast_graph, i));
     c.ir.register_node_as_consteval(lit, const_i);
     return { lit, const_i, TypeInfo { c.ctx.common_classes.symbol, TypeConfidence::Absolute } };
+}
+
+// Whether a class is among the values, in a nested array or event too. A class is only a constant by itself, as an
+// element of a constant collection a class name is a symbol, as in `#[Array]`, so a folded `[Array]` would hold a
+// symbol and not the class.
+bool holds_class(const ConstantTable& constants, ConstExprIndex value) {
+    const auto& v = constants(value);
+    if (v.get_if<SymSCClassName>())
+        return true;
+    if (const auto* array = v.get_if<ConstExprArray>())
+        return std::any_of(array->raw().begin(), array->raw().end(),
+                           [&](ConstExprIndex e) { return holds_class(constants, e); });
+    if (const auto* event = v.get_if<ConstExprEvent>())
+        return std::any_of(event->begin(), event->end(), [&](const auto& pair) {
+            return holds_class(constants, pair.first) || holds_class(constants, pair.second);
+        });
+    return false;
+}
+
+bool holds_class(const ConstantTable& constants, const ConstExprArray& values) {
+    return std::any_of(values.raw().begin(), values.raw().end(),
+                       [&](ConstExprIndex e) { return holds_class(constants, e); });
 }
 
 // Compiles the elements of an array literal into the collection.
@@ -89,6 +112,8 @@ Return<SCAnyExpr_I> array(CollectionContext& c, ast::ArrayIndex i, bool is_immut
     // Legacy code only knows `#[...]`, the old compiler created the others when the code ran.
     auto values = append_elements(c, collection, i, is_immutable);
     if (!values || (!is_immutable && !c.expr.can_fold_constants()))
+        return { collection, type };
+    if (!is_immutable && holds_class(c.ctx.constant_table, *values))
         return { collection, type };
 
     const auto const_i = c.ctx.constant_table.register_constexpr({ std::move(*values) });
@@ -200,6 +225,9 @@ Return<SCAnyExpr_I> Expr::operator()(ast::CollectionIndex i) {
     if (!values || !can_fold_constants())
         return { collection, type };
 
+    if (holds_class(ctx.constant_table, *values))
+        return { collection, type };
+
     auto constant = collection_constant(ctx, class_sym, std::move(*values));
     if (!constant)
         return { collection, type };
@@ -241,6 +269,9 @@ Return<SCAnyExpr_I> Expr::operator()(ast::DictionaryIndex i) {
 
     if (!all_constant || !can_fold_constants())
         return { collection, type };
+    for (const auto& [key, element] : values)
+        if (holds_class(ctx.constant_table, key) || holds_class(ctx.constant_table, element))
+            return { collection, type };
 
     const auto const_i = ctx.constant_table.register_constexpr({ std::move(values) });
     ir.register_node_as_consteval(collection, const_i);

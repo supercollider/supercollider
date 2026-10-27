@@ -425,6 +425,11 @@ ConstEval::Result ConstEval::operator()(ast::ArrayIndex i) {
     encountered_immutable_array |= p.is_immutable;
     ConstExprArray out;
     for (auto it = ast_graph->children(i).iter(); it; ++it) {
+        // A class is only a constant by itself, in a constant collection it would be a symbol, as `#[...]` makes it.
+        if (!encountered_immutable_array && ast_graph->as_a<ast::ClassNameIdentifierIndex>(*it)) {
+            encountered_immutable_array = outer_immutable;
+            return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, *it)) };
+        }
         Result r = std::visit(*this, ast_graph->index_to_variant(*it));
         if (auto s = r.success()) {
             (void)out.push_back(s->first);
@@ -447,6 +452,9 @@ ConstEval::Result ConstEval::operator()(ast::DictionaryIndex i) {
     ConstExprEvent out;
     for (auto c = ast_graph->children(i).iter(); c; ++c) {
         const auto [key, value] = ast_graph->children(*c);
+        for (const auto element : { ast::Index { *key }, ast::Index { *value } })
+            if (!encountered_immutable_array && ast_graph->as_a<ast::ClassNameIdentifierIndex>(element))
+                return { Diagnostic::not_constant(get_text_info(*ast_graph), get_location(*ast_graph, element)) };
 
         Result key_r = std::visit(*this, ast_graph->index_to_variant(key));
         if (key_r.success()) {
