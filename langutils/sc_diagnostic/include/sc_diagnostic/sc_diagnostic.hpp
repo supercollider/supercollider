@@ -212,6 +212,10 @@ public:
 
     // `this = 1` or `#this = a`, see declared_special_variable.
     [[nodiscard]] static Diagnostic assigned_special_variable(TextInfoPtr t, sc::src::SourceCodeRange l);
+    // The backend can't compile the method or function at l yet, so it is left out of the library.
+    [[nodiscard]] static Diagnostic not_compiled(TextInfoPtr t, sc::src::SourceCodeRange l);
+    // `#~a, b = v`, packing into environment variables isn't supported yet.
+    [[nodiscard]] static Diagnostic unsupported_environment_pack(TextInfoPtr t, sc::src::SourceCodeRange l);
     // `x = 1`, or `#x = ...`, at assign_l, where x is declared `const` at const_l. The assignment is last, so the
     // diagnostic is the method's.
     [[nodiscard]] static Diagnostic assigned_constant(TextInfoPtr const_t, sc::src::SourceCodeRange const_l,

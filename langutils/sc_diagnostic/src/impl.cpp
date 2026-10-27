@@ -992,6 +992,21 @@ Diagnostic Diagnostic::assigned_special_variable(TextInfoPtr t, sc::src::SourceC
              std::string { special_variables } + ", so can't be assigned." };
 }
 
+Diagnostic Diagnostic::not_compiled(TextInfoPtr t, sc::src::SourceCodeRange l) {
+    return { "Not compiled",
+             Severity::Error,
+             { { std::move(t), l, "the compiler can't compile this yet." } },
+             "The backend doesn't support something in this code yet, so it is left out. Sending it will fail." };
+}
+
+Diagnostic Diagnostic::unsupported_environment_pack(TextInfoPtr t, sc::src::SourceCodeRange l) {
+    return { "Unsupported assignment",
+             Severity::Error,
+             { { std::move(t), l, "environment variables can't be packed yet." } },
+             "Assigning several values at once to environment variables, e.g., `#~a, ~b = x`, isn't supported yet. "
+             "Assign them one at a time, e.g., `~a = x[0]; ~b = x[1]`." };
+}
+
 Diagnostic Diagnostic::assigned_constant(TextInfoPtr const_t, sc::src::SourceCodeRange const_l, TextInfoPtr assign_t,
                                          sc::src::SourceCodeRange assign_l) {
     return { "Assigning to a constant",

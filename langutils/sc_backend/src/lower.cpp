@@ -303,18 +303,7 @@ struct Lowerer {
         return count;
     }
 
-    [[nodiscard]] bool has_environment_target(ir::SCPackTargetList_I targets) const {
-        for (auto it = ir_graph.children(targets).iter(); it; ++it)
-            if (ir_graph.payload(*it).kind == ir::SCAssign::Kind::Environment)
-                return true;
-        return false;
-    }
-
     [[nodiscard]] bool lowered_yet(ir::NodeIndex i) const {
-        if (const auto pack = ir_graph.as_a<ir::SCPackAssign_I>(i)) {
-            const auto [_, targets] = ir_graph.children(*pack);
-            return !has_environment_target(targets);
-        }
         if (const auto message = ir_graph.as_a<ir::SCMessage_I>(i)) {
             // performList takes one array, the old grammar only allowed one.
             const auto [r, p, k, variadic, a] = ir_graph.children(*message);

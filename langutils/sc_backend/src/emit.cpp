@@ -1635,8 +1635,15 @@ EmittedGraph emit(const EmitContext& ctx, const lir::LoweredGraph& lowered) {
         auto end = util::advance(root);
         while (lowered.functions.contains(end) && ctx.frames.frames[lowered.functions[end].frame].parent)
             end = util::advance(end);
+        const auto num_diagnostics = out.diagnostics.size();
         if (lowered.functions[root].complete && emit_root(ctx, lowered, properties, root, end, out))
             out.roots.push_back(root);
+        else if (out.diagnostics.size() == num_diagnostics) {
+            // Failed without saying why, so the cause is something the backend can't do yet.
+            const auto location = ctx.graph.location(ctx.frames.frames[lowered.functions[root].frame].owner);
+            out.diagnostics.push_back(
+                sc::diag::Diagnostic::not_compiled(ctx.graph.text_info(location.source), ir::IRGraph::range(location)));
+        }
 
         out.functions.resize(*end);
         root = end;

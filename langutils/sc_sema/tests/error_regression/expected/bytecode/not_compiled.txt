@@ -1,0 +1,51 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): NotCompiled : Object, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (6:5): two_variadic, version 3.16: two_variadic { |a, b| ^this.foo(*a, *b) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Not compiled
+|  |  |  bytecode/not_compiled.sc:6:5
+|  |  |      4 │ NotCompiled {
+|  |  |      5 │     // expect-error: Not compiled
+|  |  |      6 │     two_variadic { |a, b| ^this.foo(*a, *b) }
+|  |  |        ┆     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the compiler can't compile this yet.
+|  |  |      7 │     // expect: no diagnostics
+|  |  |      8 │     fine { ^1 }
+|  |  |      9 │ }
+|  |  |
+|  |  |  The backend doesn't support something in this code yet, so it is left out. Sending it will fail.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (6:21)
+|  |  |  |  SCArgumentDeclare (6:21): a
+|  |  |  |  SCArgumentDeclare (6:24): b
+|  |  |  SCBody (6:27)
+|  |  |  |  SCExplicitReturn (6:27)
+|  |  |  |  |  SCMessage (6:28): foo
+|  |  |  |  |  |  SCSpecial (6:28): this
+|  |  |  |  |  |  SCVariadicArgs (6:28)
+|  |  |  |  |  |  |  SCRead (6:38): local a, declared (6:21): a
+|  |  |  |  |  |  |  SCRead (6:42): local b, declared (6:24): b
+|  |  SCMethod (8:5): fine, version 3.16: fine { ^1 } -> 1
+|  |  |  SCBody (8:12)
+|  |  |  |  SCExplicitReturn (8:12)
+|  |  |  |  |  SCLiteral (8:13) = 1
+
+
+
+BYTECODE DUMP 
+
+
+NotCompiled
+|  function 1 (8:5): method fine
+|  |  properties:
+|  |  shortcut: return literal 1
+|  |  selectors:
+|  |  constants:
+Successfully compiled 16 classes.

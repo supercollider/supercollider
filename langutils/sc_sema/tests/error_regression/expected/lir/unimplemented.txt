@@ -7,17 +7,17 @@ IR GRAPH DUMP
 SCClass (4:1): LirUnimplemented : Object, version 3.16
 |  SCMemberList (4:1)
 |  SCMethodList (4:1)
-|  |  SCMethod (6:5): environment_target, version 3.16: environment_target { |v| var q; ^#~p, q = v }
-|  |  |  SCArgumentDeclareList (6:27)
-|  |  |  |  SCArgumentDeclare (6:27): v
-|  |  |  SCBody (6:30)
-|  |  |  |  SCVariableDeclare (6:34): q (assigned)
-|  |  |  |  SCExplicitReturn (6:37)
-|  |  |  |  |  SCPackAssign (6:38)
-|  |  |  |  |  |  SCRead (6:47): local v, declared (6:27): v
-|  |  |  |  |  |  SCPackTargets (6:38)
-|  |  |  |  |  |  |  SCPackTarget (6:39): environment p at 0
-|  |  |  |  |  |  |  SCPackTarget (6:43): local q at 1, declared (6:34): q
+|  |  SCMethod (6:5): two_variadic, version 3.16: two_variadic { |a, b| ^this.foo(*a, *b) }
+|  |  |  SCArgumentDeclareList (6:21)
+|  |  |  |  SCArgumentDeclare (6:21): a
+|  |  |  |  SCArgumentDeclare (6:24): b
+|  |  |  SCBody (6:27)
+|  |  |  |  SCExplicitReturn (6:27)
+|  |  |  |  |  SCMessage (6:28): foo
+|  |  |  |  |  |  SCSpecial (6:28): this
+|  |  |  |  |  |  SCVariadicArgs (6:28)
+|  |  |  |  |  |  |  SCRead (6:38): local a, declared (6:21): a
+|  |  |  |  |  |  |  SCRead (6:42): local b, declared (6:24): b
 
 
 
@@ -25,8 +25,8 @@ LIR DUMP
 
 
 LirUnimplemented
-|  function 0 (6:5): method environment_target (not emitted)
+|  function 0 (6:5): method two_variadic (not emitted)
 |  |  body 0
-|  |  |  Unimplemented SCPackAssign
+|  |  |  Unimplemented SCMessage
 |  |  |  Return
 Successfully compiled 16 classes.

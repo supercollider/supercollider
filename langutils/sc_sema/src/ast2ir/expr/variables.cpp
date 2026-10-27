@@ -362,12 +362,8 @@ Return<SCAnyExpr_I> Expr::operator()(ast::VariablePackAssignIndex i) {
     const auto targets = ir.create(SCPackTargets {}, location({ *names }));
     const auto add_target = [&](ast::Index target, std::uint32_t index, bool is_rest) {
         if (const auto env = ast_graph->as_a<ast::EnvIdentifierIndex>(target)) {
-            const auto [env_name] = ast_graph->children(*env);
-            const auto sym = ctx.symbol_table.get_identifier(std::string { get_string_view(*ast_graph, env_name) });
-            ir.append(
-                targets,
-                ir.create(SCPackTarget { { location({ **env }), sym }, SCAssign::Kind::Environment, index, is_rest },
-                          location({ **env })));
+            sink(sc::diag::Diagnostic::unsupported_environment_pack(get_text_info(*ast_graph),
+                                                                    get_location(*ast_graph, *env)));
             return;
         }
         const auto name = ast_graph->as_a<ast::NamedIdentifierIndex>(target);

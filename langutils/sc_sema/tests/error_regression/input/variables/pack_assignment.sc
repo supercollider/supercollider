@@ -11,6 +11,7 @@ PackAssign {
     assign_members { #instance_var, class_var = [1, 2] }
     // expect-reads: x -> x
     assign_argument { |x| #x = [1]; ^x }
+    // expect-error: Unsupported assignment
     assign_environment { var a; #~e, a ...~rest = [1, 2, 3] }
     // expect-reads: b -> b
     assign_parenthesised { var a, b; #a, b ([1, 2]); ^b }
