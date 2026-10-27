@@ -1,0 +1,15 @@
+(
+    name: "DemonWidgets",
+    summary: "Widgets, gadgets and arcane devices for summoning demons.",
+    version: "1.0.0",
+    schelp: "DemonWidgets",
+    dependencies: [],
+    license: "GPL",
+    copyright: "Frank Furter, Dr.-Ing. 2015",
+    preInstall: { TestQuark.testResults['preInstall'] = true },
+    postInstall: { TestQuark.testResults['postInstall'] = true },
+    preUpdate: { TestQuark.testResults['preUpdate'] = true },
+    postUpdate: { TestQuark.testResults['postUpdate'] = true },
+    preUninstall: { TestQuark.testResults['preUninstall'] = true },
+    postUninstall: { TestQuark.testResults['postUninstall'] = true },
+)
