@@ -15,8 +15,8 @@
 #include <variant>
 
 // The lowered ir: each function's instructions in the order the VM runs them, operands first, with locals, members and
-// nested functions resolved. How each is encoded is the emitter's choice. Bodies are sub-regions, contiguous ranges of
-// a function's instructions, so the emitter can measure them to lay out jumps.
+// nested functions resolved. How each is encoded is the emitter's choice. Each body, the function's own and those
+// inlined into it, is a contiguous range of its instructions, so the emitter can measure them to lay out jumps.
 namespace sc::backend::lir {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -29,9 +29,9 @@ using OptionalFunctionIndex =
     util::StrongOptionalIndex<std::uint32_t, struct FunctionIndex__, std::numeric_limits<std::uint32_t>::max()>;
 // The rest are within one function.
 using InstructionIndex = util::StrongIndex<std::uint32_t, struct InstructionIndex__>;
-using FunctionSubRegionIndex = util::StrongIndex<std::uint32_t, struct FunctionSubRegionIndex__>;
-using OptionalFunctionSubRegionIndex = util::StrongOptionalIndex<std::uint32_t, struct FunctionSubRegionIndex__,
-                                                                 std::numeric_limits<std::uint32_t>::max()>;
+using BodyIndex = util::StrongIndex<std::uint32_t, struct BodyIndex__>;
+using OptionalBodyIndex =
+    util::StrongOptionalIndex<std::uint32_t, struct BodyIndex__, std::numeric_limits<std::uint32_t>::max()>;
 using SwitchCaseIndex = util::StrongIndex<std::uint32_t, struct SwitchCaseIndex__>;
 
 // A slot the VM can address, see FrameSlotIndex.
@@ -131,7 +131,7 @@ struct NonLocalReturn {};
 // Computes the argument when it is nil, its prototype doesn't hold its default.
 struct DefaultArgument {
     SlotIndex slot;
-    FunctionSubRegionIndex value;
+    BodyIndex value;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -142,45 +142,45 @@ struct DefaultArgument {
 // old compiler had special forms for empty `if` bodies.
 
 struct If {
-    FunctionSubRegionIndex then_body;
-    OptionalFunctionSubRegionIndex else_body;
+    BodyIndex then_body;
+    OptionalBodyIndex else_body;
 };
 struct IfNil {
-    FunctionSubRegionIndex then_body;
-    OptionalFunctionSubRegionIndex else_body;
+    BodyIndex then_body;
+    OptionalBodyIndex else_body;
 };
 struct IfNotNil {
-    FunctionSubRegionIndex then_body;
-    OptionalFunctionSubRegionIndex else_body;
+    BodyIndex then_body;
+    OptionalBodyIndex else_body;
 };
 struct And {
-    FunctionSubRegionIndex rhs;
+    BodyIndex rhs;
 };
 struct Or {
-    FunctionSubRegionIndex rhs;
+    BodyIndex rhs;
 };
 struct OrIfNil {
-    FunctionSubRegionIndex rhs;
+    BodyIndex rhs;
 };
 struct AndIfNotNil {
-    FunctionSubRegionIndex rhs;
+    BodyIndex rhs;
 };
 // Both operands are on the stack.
 struct QuestionMark {};
 // Pushes nil when it ends.
 struct While {
-    FunctionSubRegionIndex condition;
-    OptionalFunctionSubRegionIndex body;
+    BodyIndex condition;
+    OptionalBodyIndex body;
 };
 // Never ends, but counts as pushing a value.
 struct Loop {
-    FunctionSubRegionIndex body;
+    BodyIndex body;
 };
 
 // The default has no key.
 struct SwitchCase {
     ir::OptionalConstExprIndex key;
-    FunctionSubRegionIndex body;
+    BodyIndex body;
 };
 static_assert(sizeof(SwitchCase) == 8);
 
@@ -216,14 +216,14 @@ struct SourceSpan {
 };
 static_assert(sizeof(SourceSpan) == 8);
 
-struct FunctionSubRegion {
+struct Body {
     InstructionIndex begin;
     std::uint32_t size;
 };
-static_assert(sizeof(FunctionSubRegion) == 8);
+static_assert(sizeof(Body) == 8);
 
-[[nodiscard]] inline util::IndexRange<InstructionIndex> instructions(const FunctionSubRegion& r) {
-    return { r.begin, util::advance(r.begin, r.size) };
+[[nodiscard]] inline util::IndexRange<InstructionIndex> instructions(const Body& b) {
+    return { b.begin, util::advance(b.begin, b.size) };
 }
 
 struct Function {
@@ -233,11 +233,11 @@ struct Function {
     bool complete { false };
     util::IndexedVector<InstructionIndex, Instruction> instructions {};
     util::IndexedVector<InstructionIndex, SourceSpan> spans {};
-    util::IndexedVector<FunctionSubRegionIndex, FunctionSubRegion> sub_regions {};
+    util::IndexedVector<BodyIndex, Body> bodies {};
     util::IndexedVector<SwitchCaseIndex, SwitchCase> switch_cases {};
 };
 
-inline constexpr FunctionSubRegionIndex body_sub_region { 0 };
+inline constexpr BodyIndex function_body { 0 };
 
 // A root's nested functions follow it.
 struct LoweredGraph {

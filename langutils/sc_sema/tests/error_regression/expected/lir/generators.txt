@@ -128,33 +128,33 @@ LIR DUMP
 
 LirGenerators
 |  function 0 (7:5): method iterate
-|  |  region 0
+|  |  body 0
 |  |  |  PushFunction 1
 |  |  |  Send r (positional 0, tail from method)
 |  |  |  Return
 |  function 1 (7:20)
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 1, slot 1
 |  |  |  PushFunction 2
 |  |  |  Send do (positional 1, tail from function)
 |  function 2 (7:26)
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 0
 |  |  |  Send yield (positional 0, tail from function)
 |  function 3 (9:5): method range
-|  |  region 0
+|  |  body 0
 |  |  |  PushFunction 4
 |  |  |  Send r (positional 0, tail from method)
 |  |  |  Return
 |  function 4 (9:18)
-|  |  region 0
+|  |  body 0
 |  |  |  PushConstant 1
 |  |  |  PushConstant 3
 |  |  |  PushLocal depth 1, slot 1
 |  |  |  PushFunction 5
 |  |  |  Send forSeries (positional 3, tail from function)
 |  function 5 (9:29)
-|  |  region 0
+|  |  body 0
 |  |  |  PushClass Array
 |  |  |  PushInteger 2
 |  |  |  Send new (positional 1, implicit)
@@ -164,107 +164,107 @@ LirGenerators
 |  |  |  Send add (positional 1, implicit)
 |  |  |  Send yield (positional 0, tail from function)
 |  function 6 (11:5): method declare
-|  |  region 0
+|  |  body 0
 |  |  |  PushFunction 7
 |  |  |  Send r (positional 0, tail from method)
 |  |  |  Return
 |  function 7 (11:20)
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 1, slot 1
 |  |  |  PushFunction 8
 |  |  |  Send do (positional 1, tail from function)
 |  function 8 (11:26)
-|  |  region 0
+|  |  body 0
 |  |  |  PushFunction 9
 |  |  |  PushLocal depth 0, slot 0
 |  |  |  PushConstant 1
 |  |  |  Send + (positional 1, binary)
 |  |  |  Send value (positional 1, tail from function)
 |  function 9 (11:34)
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 0
 |  |  |  Send yield (positional 0, tail from function)
 |  function 10 (13:5): method condition
-|  |  region 0
+|  |  body 0
 |  |  |  PushFunction 11
 |  |  |  Send r (positional 0, tail from method)
 |  |  |  Return
 |  function 11 (13:22)
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 1, slot 1
 |  |  |  PushFunction 12
 |  |  |  Send do (positional 1, tail from function)
 |  function 12 (13:28)
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 0
 |  |  |  Send odd (positional 0)
-|  |  |  If then region 2
-|  |  region 1
+|  |  |  If then body 2
+|  |  body 1
 |  |  |  PushLocal depth 0, slot 0
 |  |  |  Send yield (positional 0, tail from function)
-|  |  region 2
+|  |  body 2
 |  |  |  PushLocal depth 0, slot 0
-|  |  |  IfNotNil then region 1
+|  |  |  IfNotNil then body 1
 |  function 13 (15:5): method effect_and_while
-|  |  region 0
+|  |  body 0
 |  |  |  PushFunction 14
 |  |  |  Send r (positional 0, tail from method)
 |  |  |  Return
 |  function 14 (15:29)
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 1, slot 1
 |  |  |  PushFunction 15
 |  |  |  Send do (positional 1, tail from function)
 |  function 15 (15:35)
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 0
 |  |  |  Send postln (positional 0)
 |  |  |  Drop
 |  |  |  PushLocal depth 0, slot 0
 |  |  |  PushConstant 10
 |  |  |  Send < (positional 1, binary)
-|  |  |  If then region 1, else region 2
-|  |  region 1
+|  |  |  If then body 1, else body 2
+|  |  body 1
 |  |  |  PushLocal depth 0, slot 0
 |  |  |  Send yield (positional 0, tail from function)
-|  |  region 2
+|  |  body 2
 |  |  |  PushSpecialValue nil
 |  |  |  Send alwaysYield (positional 0, tail from function)
 |  function 16 (17:5): method immediate
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  PushFunction 17
 |  |  |  Send do (positional 1, tail from method)
 |  |  |  Return
 |  function 17 (17:35)
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 0
 |  |  |  Send postln (positional 0, tail from function)
 |  function 18 (19:5): method range_generator
-|  |  region 0
+|  |  body 0
 |  |  |  PushConstant 1
 |  |  |  PushConstant 3
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Send seriesIter (positional 2, tail from method)
 |  |  |  Return
 |  function 19 (21:5): method non_local_return
-|  |  region 0
+|  |  body 0
 |  |  |  PushFunction 20
 |  |  |  Send r (positional 0, tail from method)
 |  |  |  Return
 |  function 20 (21:29)
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 1, slot 1
 |  |  |  PushFunction 21
 |  |  |  Send do (positional 1, tail from function)
 |  function 21 (21:53)
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 0
-|  |  |  If then region 1, else region 2
+|  |  |  If then body 1, else body 2
 |  |  |  Send yield (positional 0, tail from function)
-|  |  region 1
+|  |  body 1
 |  |  |  PushConstant 1
 |  |  |  NonLocalReturn
-|  |  region 2
+|  |  body 2
 |  |  |  PushConstant 2
 Successfully compiled 16 classes.

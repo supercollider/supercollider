@@ -30,14 +30,14 @@ LIR DUMP
 
 PerformLegacy
 |  function 0 (5:5): method postfix
-|  |  region 0
+|  |  body 0
 |  |  |  PushConstant 1
 |  |  |  PushConstant \foo
 |  |  |  PushConstant 2
 |  |  |  Send perform (positional 2, tail from method)
 |  |  |  Return
 |  function 1 (6:5): method selectorOnly
-|  |  region 0
+|  |  body 0
 |  |  |  PushConstant 1
 |  |  |  PushConstant \foo
 |  |  |  Send perform (positional 1, tail from method)

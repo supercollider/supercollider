@@ -74,7 +74,7 @@ using SlotIdentity =
 // Plans
 ////////////////////////////////////////////////////////////////////////////////
 
-// A value on the stack while a sub-region is read, as the instructions that start and finish computing it.
+// A value on the stack while a body is read, as the instructions that start and finish computing it.
 struct Value {
     lir::InstructionIndex start;
     lir::InstructionIndex producer;
@@ -88,7 +88,7 @@ static_assert(sizeof(Value) == 8);
 using OperandIndex = util::StrongIndex<std::uint32_t, struct OperandIndex__>;
 inline constexpr OperandIndex receiver_operand { 0 };
 
-// One send's operands, a part of its sub-region's, see RegionPlan.
+// One send's operands, a part of its body's, see BodyPlan.
 class SendOperands {
 public:
     SendOperands(const Value* first, std::uint32_t count): m_first(first), m_count(count) {}
@@ -108,7 +108,7 @@ private:
     return { first, OperandIndex { n } };
 }
 
-// Each send of a sub-region, in order.
+// Each send of a body, in order.
 using SendIndex = util::StrongIndex<std::uint32_t, struct SendIndex__>;
 
 enum struct SendOp : std::uint8_t {
@@ -152,10 +152,10 @@ struct SendPlan {
 static_assert(sizeof(SendPlan) == 16);
 
 
-struct RegionPlan {
-    explicit RegionPlan(lir::FunctionSubRegion r): region(r), m_left_out(r.size, false) {}
+struct BodyPlan {
+    explicit BodyPlan(lir::Body b): body(b), m_left_out(b.size, false) {}
 
-    lir::FunctionSubRegion region;
+    lir::Body body;
     util::IndexedVector<SendIndex, SendPlan> sends {};
     util::IndexedVector<SendIndex, lir::InstructionIndex> send_instructions {};
     // The instruction each send's selector is added at, and the send, sorted by instruction. Sends added at the same
@@ -163,16 +163,16 @@ struct RegionPlan {
     std::vector<std::pair<lir::InstructionIndex, SendIndex>> additions {};
 
     [[nodiscard]] bool contains(lir::InstructionIndex i) const {
-        return *i >= *region.begin && *i < *region.begin + region.size;
+        return *i >= *body.begin && *i < *body.begin + body.size;
     }
     [[nodiscard]] bool left_out(lir::InstructionIndex i) const { return m_left_out[offset(i)]; }
     void leave_out(lir::InstructionIndex i) { m_left_out[offset(i)] = true; }
 
 private:
-    // A vector<bool> by position in the region, packed, so not an IndexedVector.
+    // A vector<bool> by position in the body, packed, so not an IndexedVector.
     [[nodiscard]] std::size_t offset(lir::InstructionIndex i) const {
         assert(contains(i));
-        return *i - *region.begin;
+        return *i - *body.begin;
     }
     std::vector<bool> m_left_out;
 };
@@ -336,7 +336,7 @@ struct Emitter {
     }
 
     // Decides one send, see PyrCallNode::compileCall, PyrBinopCallNode::compileCall and PyrSetterNode::compileCall.
-    SendPlan decide(RegionPlan& plan, const lir::Send& s, SendOperands args) {
+    SendPlan decide(BodyPlan& plan, const lir::Send& s, SendOperands args) {
         SendPlan p;
         const std::uint32_t n = 1u + s.num_positional;
         const std::uint32_t k = s.num_keyword;
@@ -555,78 +555,89 @@ struct Emitter {
             leave_out_arg(a);
     }
 
-    // Reads the sub-region's stack, then decides its sends from the last, so a send that absorbs the one computing its
-    // receiver, e.g., forSeries, decides first, and the outer of two sends adding a selector at the same instruction
-    // adds it first.
-    RegionPlan plan_region(lir::FunctionSubRegion region) {
-        RegionPlan plan { region };
-        std::vector<Value> stack;
-        // Every send's operands, one after another.
-        using RegionOperandIndex = util::StrongIndex<std::uint32_t, struct RegionOperandIndex__>;
-        util::IndexedVector<RegionOperandIndex, Value> operands;
+    // Reads a body's instructions in order: which instructions produce each value on the stack, and every send's
+    // operands.
+    struct StackReader {
+        using BodyOperandIndex = util::StrongIndex<std::uint32_t, struct BodyOperandIndex__>;
         struct SendArgs {
             lir::InstructionIndex instruction;
-            RegionOperandIndex first;
+            BodyOperandIndex first;
             std::uint32_t count;
         };
-        util::IndexedVector<SendIndex, SendArgs> sends;
-        const auto pop = [&]() {
+
+        const Emitter& emitter;
+        BodyPlan& plan;
+        lir::InstructionIndex at { 0 };
+        std::vector<Value> stack {};
+        // Every send's operands, one after another.
+        util::IndexedVector<BodyOperandIndex, Value> operands {};
+        util::IndexedVector<SendIndex, SendArgs> sends {};
+
+        void read() {
+            for (const auto i : lir::instructions(plan.body)) {
+                at = i;
+                std::visit(*this, emitter.instruction(i));
+            }
+        }
+
+        void operator()(const lir::Send& s) {
+            const std::uint32_t count = 1u + s.num_positional + 2u * s.num_keyword;
+            assert(stack.size() >= count);
+            (void)sends.push_back({ at, operands.next_index(), count });
+            operands.raw().insert(operands.raw().end(), stack.end() - static_cast<std::ptrdiff_t>(count), stack.end());
+            replace(count);
+        }
+        void operator()(const lir::StoreLocal&) { stack.back().producer = at; }
+        void operator()(const lir::StoreInstance&) { stack.back().producer = at; }
+        void operator()(const lir::StoreClassVariable&) { stack.back().producer = at; }
+        void operator()(const lir::Drop&) { (void)pop(); }
+        void operator()(const lir::Return&) { return_value(pop()); }
+        void operator()(const lir::NonLocalReturn&) { return_value(pop()); }
+        void operator()(const lir::ReturnSelf&) {}
+        void operator()(const lir::DefaultArgument&) {}
+        void operator()(const lir::If&) { replace(1); }
+        void operator()(const lir::IfNil&) { replace(1); }
+        void operator()(const lir::IfNotNil&) { replace(1); }
+        void operator()(const lir::And&) { replace(1); }
+        void operator()(const lir::Or&) { replace(1); }
+        void operator()(const lir::OrIfNil&) { replace(1); }
+        void operator()(const lir::AndIfNotNil&) { replace(1); }
+        void operator()(const lir::QuestionMark&) { replace(2); }
+        void operator()(const lir::Switch&) { replace(1); }
+        void operator()(const lir::Unimplemented&) {}
+        // The pushes, While and Loop.
+        template <typename Push> void operator()(const Push&) { stack.push_back({ at, at }); }
+
+        Value pop() {
             assert(!stack.empty());
             const auto v = stack.back();
             stack.pop_back();
             return v;
-        };
-        const auto replace = [&](lir::InstructionIndex i, std::size_t count) {
+        }
+
+        // The top count values become one, produced here.
+        void replace(std::size_t count) {
             assert(stack.size() >= count);
             const auto start = stack[stack.size() - count].start;
             stack.erase(stack.end() - static_cast<std::ptrdiff_t>(count), stack.end());
-            stack.push_back({ start, i });
-        };
-        // Built once, not per instruction.
-        lir::InstructionIndex current { region.begin };
-        const auto read = util::overload {
-            [&](const lir::Send& s) {
-                const std::uint32_t count = 1u + s.num_positional + 2u * s.num_keyword;
-                assert(stack.size() >= count);
-                (void)sends.push_back({ current, operands.next_index(), count });
-                operands.raw().insert(operands.raw().end(), stack.end() - static_cast<std::ptrdiff_t>(count),
-                                      stack.end());
-                const auto receiver = stack[stack.size() - count];
-                stack.erase(stack.end() - static_cast<std::ptrdiff_t>(count), stack.end());
-                stack.push_back({ receiver.start, current });
-            },
-            [&](const lir::StoreLocal&) { stack.back().producer = current; },
-            [&](const lir::StoreInstance&) { stack.back().producer = current; },
-            [&](const lir::StoreClassVariable&) { stack.back().producer = current; },
-            [&](const lir::Drop&) { (void)pop(); },
-            [&](const lir::Return&) { return_value(plan, pop()); },
-            [&](const lir::NonLocalReturn&) { return_value(plan, pop()); },
-            [&](const lir::ReturnSelf&) {},
-            [&](const lir::DefaultArgument&) {},
-            [&](const lir::If&) { replace(current, 1); },
-            [&](const lir::IfNil&) { replace(current, 1); },
-            [&](const lir::IfNotNil&) { replace(current, 1); },
-            [&](const lir::And&) { replace(current, 1); },
-            [&](const lir::Or&) { replace(current, 1); },
-            [&](const lir::OrIfNil&) { replace(current, 1); },
-            [&](const lir::AndIfNotNil&) { replace(current, 1); },
-            [&](const lir::QuestionMark&) { replace(current, 2); },
-            [&](const lir::Switch&) { replace(current, 1); },
-            [&](const lir::While&) {
-                stack.push_back({ current, current });
-            },
-            [&](const lir::Loop&) {
-                stack.push_back({ current, current });
-            },
-            [&](const lir::Unimplemented&) {},
-            [&](const auto&) {
-                stack.push_back({ current, current });
-            },
-        };
-        for (const auto index : lir::instructions(region)) {
-            current = index;
-            std::visit(read, instruction(current));
+            stack.push_back({ start, at });
         }
+
+        // `^nil`, `^true` and `^false` are one bytecode, when the value is the literal.
+        void return_value(Value v) {
+            if (v.pushed_by_one_instruction() && emitter.special_value(v.producer))
+                plan.leave_out(v.producer);
+        }
+    };
+
+    // Reads the body's stack, then decides its sends from the last, so a send that absorbs the one computing its
+    // receiver, e.g., forSeries, decides first, and the outer of two sends adding a selector at the same instruction
+    // adds it first.
+    BodyPlan plan_body(lir::Body body) {
+        BodyPlan plan { body };
+        StackReader reader { *this, plan };
+        reader.read();
+        const auto& sends = reader.sends;
 
         plan.sends.resize(sends.size());
         for (const auto& s : sends.raw())
@@ -639,7 +650,7 @@ struct Emitter {
                 continue;
             }
             const auto& send = std::get<lir::Send>(instruction(i));
-            const SendOperands args { &operands[sends[s].first], sends[s].count };
+            const SendOperands args { &reader.operands[sends[s].first], sends[s].count };
             plan.sends[s] = decide(plan, send, args);
             if (plan.sends[s].add == AddSelector::AtReceiver)
                 plan.additions.push_back({ args[receiver_operand].start, s });
@@ -649,12 +660,6 @@ struct Emitter {
         std::stable_sort(plan.additions.begin(), plan.additions.end(),
                          [](const auto& l, const auto& r) { return *l.first < *r.first; });
         return plan;
-    }
-
-    // `^nil`, `^true` and `^false` are one bytecode, when the value is the literal.
-    void return_value(RegionPlan& plan, Value v) const {
-        if (v.pushed_by_one_instruction() && special_value(v.producer))
-            plan.leave_out(v.producer);
     }
 
     [[nodiscard]] std::optional<lir::SpecialValue> special_value(lir::InstructionIndex i) const {
@@ -771,45 +776,38 @@ struct Emitter {
         }
     }
 
-    // Whether it popped the value, which only the short bytecodes can.
-    bool store(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, const lir::Instruction& i, bool drop) {
-        return std::visit(util::overload {
-                              [&](const lir::StoreLocal& s) {
-                                  const auto [depth, slot] = s.local;
-                                  assert(depth <= std::numeric_limits<std::uint8_t>::max());
-                                  if (drop && *slot <= 15 && depth < 8) {
-                                      StoreTempVar.emit(bc, loc, depth, Operands::Index::fromRaw(*slot));
-                                      return true;
-                                  }
-                                  StoreTempVarX.emit(bc, loc, Operands::FrameOffset::fromRaw(static_cast<Byte>(depth)),
-                                                     Operands::Index::fromRaw(*slot));
-                                  return false;
-                              },
-                              [&](const lir::StoreInstance& s) {
-                                  const auto slot = *s.slot;
-                                  if (drop && slot <= 15) {
-                                      StoreInstVar.emit(bc, loc, slot);
-                                      return true;
-                                  }
-                                  StoreInstVarX.emit(bc, loc, Operands::Index::fromRaw(static_cast<int>(slot)));
-                                  return false;
-                              },
-                              [&](const lir::StoreClassVariable& s) {
-                                  const std::uint32_t index { *s.index };
-                                  if (drop && index < 4096) {
-                                      StoreClassVar.emit(bc, loc, index);
-                                      return true;
-                                  }
-                                  StoreClassVarX.emit(bc, loc, Operands::UnsignedInt<16, 1>::fromFull(index),
-                                                      Operands::UnsignedInt<16, 0>::fromFull(index));
-                                  return false;
-                              },
-                              [](const auto&) {
-                                  assert(false);
-                                  return false;
-                              },
-                          },
-                          i);
+    // Each returns whether it popped the value, which only the short bytecodes can.
+    bool store(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, const lir::StoreLocal& s, bool drop) {
+        const auto [depth, slot] = s.local;
+        assert(depth <= std::numeric_limits<std::uint8_t>::max());
+        if (drop && *slot <= 15 && depth < 8) {
+            StoreTempVar.emit(bc, loc, depth, Operands::Index::fromRaw(*slot));
+            return true;
+        }
+        StoreTempVarX.emit(bc, loc, Operands::FrameOffset::fromRaw(static_cast<Byte>(depth)),
+                           Operands::Index::fromRaw(*slot));
+        return false;
+    }
+
+    bool store(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, const lir::StoreInstance& s, bool drop) {
+        const auto slot = *s.slot;
+        if (drop && slot <= 15) {
+            StoreInstVar.emit(bc, loc, slot);
+            return true;
+        }
+        StoreInstVarX.emit(bc, loc, Operands::Index::fromRaw(static_cast<int>(slot)));
+        return false;
+    }
+
+    bool store(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, const lir::StoreClassVariable& s, bool drop) {
+        const std::uint32_t index { *s.index };
+        if (drop && index < 4096) {
+            StoreClassVar.emit(bc, loc, index);
+            return true;
+        }
+        StoreClassVarX.emit(bc, loc, Operands::UnsignedInt<16, 1>::fromFull(index),
+                            Operands::UnsignedInt<16, 0>::fromFull(index));
+        return false;
     }
 
     void send(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, const lir::Send& s, const SendPlan& p) {
@@ -936,7 +934,7 @@ struct Emitter {
     // As PyrVarDefNode::compileArg: if the argument isn't nil, jump over the code computing its default.
     void default_argument(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, const lir::DefaultArgument& d) {
         push_local(bc, loc, { 0, d.slot });
-        auto value = encode(function.sub_regions[d.value]);
+        auto value = encode(function.bodies[d.value]);
         StoreTempVarX.emit(value, loc, Operands::FrameOffset::fromRaw(0), Operands::Index::fromRaw(*d.slot));
         const auto length = value.length();
         if (length > max_jump) {
@@ -952,118 +950,160 @@ struct Emitter {
         Drop.emit(bc, loc);
     }
 
-    CompilingBytecodes encode(lir::FunctionSubRegion region) {
-        auto plan = plan_region(region);
-        CompilingBytecodes bc;
-        SendIndex next_send { 0 };
-        auto next_addition = plan.additions.begin();
-        bool popped_by_store { false };
-        // Built once, not per instruction, reading the instruction being encoded.
-        lir::InstructionIndex i { region.begin };
+    // Encodes a body, an instruction at a time: first the selectors the old compiler added before compiling the
+    // receivers starting there, then the instruction itself.
+    struct BodyEncoder {
+        Emitter& emitter;
+        BodyPlan plan;
+        CompilingBytecodes bc {};
+        lir::InstructionIndex at { 0 };
         sc::src::SourceCodeRange loc {};
-        const auto encode_instruction = util::overload {
-            [&](const lir::PushLocal& p) { push_local(bc, loc, p.local); },
-            [&](const lir::PushInstance& p) {
-                PushInstVarX.emit(bc, loc, Operands::Index::fromRaw(static_cast<int>(*p.slot)));
-            },
-            [&](const lir::PushClassVariable& p) {
-                const std::uint32_t index { *p.index };
-                if (PushClassVar.validNibble(index))
-                    PushClassVar.emit(bc, loc, index);
-                else
-                    PushClassVarX.emit(bc, loc, Operands::UnsignedInt<16, 1>::fromFull(index),
-                                       Operands::UnsignedInt<16, 0>::fromFull(index));
-            },
-            [&](const lir::PushConstant& p) { push_constant(bc, loc, p.value); },
-            [&](const lir::PushClassConstant& p) {
-                const auto& member = ctx.graph.member(p.member);
-                push_constant_entry(bc, loc, ClassConstant { member.owner, member.name, p.value });
-            },
-            [&](const lir::PushSpecialValue& p) {
-                PushSpecialValue.emit(bc, loc,
-                                      { p.value == lir::SpecialValue::Nil        ? OpSpecialValue::Nil_
-                                            : p.value == lir::SpecialValue::True ? OpSpecialValue::True
-                                                                                 : OpSpecialValue::False });
-            },
-            [&](const lir::PushInteger& p) { push_integer(bc, loc, p.value); },
-            [&](const lir::PushSymbol& p) { push_constant_entry(bc, loc, p.value); },
-            [&](const lir::PushClass& p) { push_class(bc, loc, p.name); },
-            [&](const lir::PushSpecial& p) { special(bc, loc, p.kind); },
-            [&](const lir::PushFunction& p) {
-                PushLiteralX.emit(bc, loc, Operands::Index::fromRaw(*add_selector(p.function)));
-            },
-            [&](const lir::StoreLocal&) { popped_by_store = store(bc, loc, instruction(i), drop_follows(plan, i)); },
-            [&](const lir::StoreInstance&) { popped_by_store = store(bc, loc, instruction(i), drop_follows(plan, i)); },
-            [&](const lir::StoreClassVariable&) {
-                popped_by_store = store(bc, loc, instruction(i), drop_follows(plan, i));
-            },
-            [&](const lir::Dup&) { Dup.emit(bc, loc); },
-            [&](const lir::Drop&) { Drop.emit(bc, loc); },
-            [&](const lir::Send&) {},
-            [&](const lir::Return&) { emit_return(bc, loc, plan, i); },
-            [&](const lir::NonLocalReturn&) { emit_return(bc, loc, plan, i); },
-            [&](const lir::ReturnSelf&) { ReturnSelf.emit(bc, loc); },
-            [&](const lir::DefaultArgument& d) { default_argument(bc, loc, d); },
-            [&](const lir::If& b) { branch(bc, loc, b.then_body, b.else_body, JumpIfFalsePushNil, JumpIfFalse); },
-            [&](const lir::IfNil& b) {
-                branch(bc, loc, b.then_body, b.else_body, Extended::IfNotNilJumpPushNilElsePop.Jump,
-                       Extended::IfNotNilJump.Jump);
-            },
-            [&](const lir::IfNotNil& b) {
-                branch(bc, loc, b.then_body, b.else_body, Extended::IfNilThenJumpElsePopNil.Jump,
-                       Extended::IfNilJump.Jump);
-            },
-            [&](const lir::And& b) { jump_over(bc, loc, JumpIfFalsePushFalse, b.rhs); },
-            [&](const lir::Or& b) { jump_over(bc, loc, JumpIfTruePushTrue, b.rhs); },
-            [&](const lir::OrIfNil& b) { jump_over(bc, loc, Extended::DoubleQuestionMark.Jump, b.rhs); },
-            [&](const lir::AndIfNotNil& b) { jump_over(bc, loc, Extended::IfNilThenJumpElsePopNil.Jump, b.rhs); },
-            [&](const lir::QuestionMark&) { Extended::QuestionMark.emit(bc, loc); },
-            [&](const lir::While& w) { while_(bc, loc, w); },
-            [&](const lir::Loop& l) {
-                auto body = encode_value(l.body, loc);
-                const auto length = body.length();
-                bc.consume(std::move(body));
-                jump(bc, loc, JumpBack, length + 1);
-            },
-            [&](const lir::Switch& s) { switch_(bc, loc, s); },
-            [&](const lir::Unimplemented&) {
-                assert(false);
-                failed = true;
-            },
+        SendIndex next_send { 0 };
+        std::vector<std::pair<lir::InstructionIndex, SendIndex>>::const_iterator next_addition {
+            plan.additions.begin()
         };
-        for (const auto index : lir::instructions(region)) {
-            i = index;
-            for (; next_addition != plan.additions.end() && next_addition->first == i; ++next_addition) {
-                const auto s = next_addition->second;
-                // Added at the send, after its arguments, it is added when it is encoded.
-                if (plan.sends[s].add == AddSelector::AtReceiver)
-                    plan.sends[s].selector =
-                        add_selector(std::get<lir::Send>(instruction(plan.send_instructions[s])).selector);
+        // A short store popped its value, so the Drop following it is already encoded.
+        bool dropped_by_store { false };
+
+        CompilingBytecodes encode() {
+            for (const auto i : lir::instructions(plan.body)) {
+                at = i;
+                loc = emitter.location(i);
+                add_receiver_selectors();
+                if (!encoded_elsewhere())
+                    std::visit(*this, emitter.instruction(i));
             }
-            const auto& in = instruction(i);
-            loc = location(i);
-            const bool left_out = plan.left_out(i);
-            if (const auto* s = std::get_if<lir::Send>(&in)) {
-                auto& p = plan.sends[next_send];
-                next_send = util::advance(next_send);
-                if (!left_out) {
-                    if (p.add == AddSelector::AtSend)
-                        p.selector = add_selector(s->selector);
-                    send(bc, loc, *s, p);
-                }
-                continue;
-            }
-            if (left_out)
-                continue;
-            if (popped_by_store) {
-                popped_by_store = false;
-                assert(std::holds_alternative<lir::Drop>(in));
-                continue;
-            }
-            std::visit(encode_instruction, in);
+            return std::move(bc);
         }
-        return bc;
-    }
+
+        // Selectors added at the send, after its arguments, are added when it is encoded.
+        void add_receiver_selectors() {
+            for (; next_addition != plan.additions.end() && next_addition->first == at; ++next_addition) {
+                const auto s = next_addition->second;
+                if (plan.sends[s].add == AddSelector::AtReceiver)
+                    plan.sends[s].selector = emitter.add_selector(
+                        std::get<lir::Send>(emitter.instruction(plan.send_instructions[s])).selector);
+            }
+        }
+
+        // Absorbed by another instruction, or the Drop a store popped.
+        bool encoded_elsewhere() {
+            if (plan.left_out(at))
+                return true;
+            if (!dropped_by_store)
+                return false;
+            dropped_by_store = false;
+            assert(std::holds_alternative<lir::Drop>(emitter.instruction(at)));
+            return true;
+        }
+
+        void operator()(const lir::PushLocal& p) { emitter.push_local(bc, loc, p.local); }
+        void operator()(const lir::PushInstance& p) {
+            PushInstVarX.emit(bc, loc, Operands::Index::fromRaw(static_cast<int>(*p.slot)));
+        }
+        void operator()(const lir::PushClassVariable& p) {
+            const std::uint32_t index { *p.index };
+            if (PushClassVar.validNibble(index))
+                PushClassVar.emit(bc, loc, index);
+            else
+                PushClassVarX.emit(bc, loc, Operands::UnsignedInt<16, 1>::fromFull(index),
+                                   Operands::UnsignedInt<16, 0>::fromFull(index));
+        }
+        void operator()(const lir::PushConstant& p) { emitter.push_constant(bc, loc, p.value); }
+        void operator()(const lir::PushClassConstant& p) {
+            const auto& member = emitter.ctx.graph.member(p.member);
+            emitter.push_constant_entry(bc, loc, ClassConstant { member.owner, member.name, p.value });
+        }
+        void operator()(const lir::PushSpecialValue& p) {
+            PushSpecialValue.emit(bc, loc,
+                                  { p.value == lir::SpecialValue::Nil        ? OpSpecialValue::Nil_
+                                        : p.value == lir::SpecialValue::True ? OpSpecialValue::True
+                                                                             : OpSpecialValue::False });
+        }
+        void operator()(const lir::PushInteger& p) { emitter.push_integer(bc, loc, p.value); }
+        void operator()(const lir::PushSymbol& p) { emitter.push_constant_entry(bc, loc, p.value); }
+        void operator()(const lir::PushClass& p) { emitter.push_class(bc, loc, p.name); }
+        void operator()(const lir::PushSpecial& p) { emitter.special(bc, loc, p.kind); }
+        void operator()(const lir::PushFunction& p) {
+            PushLiteralX.emit(bc, loc, Operands::Index::fromRaw(*emitter.add_selector(p.function)));
+        }
+        void operator()(const lir::StoreLocal& s) { dropped_by_store = emitter.store(bc, loc, s, drop_follows()); }
+        void operator()(const lir::StoreInstance& s) { dropped_by_store = emitter.store(bc, loc, s, drop_follows()); }
+        void operator()(const lir::StoreClassVariable& s) {
+            dropped_by_store = emitter.store(bc, loc, s, drop_follows());
+        }
+        void operator()(const lir::Dup&) { Dup.emit(bc, loc); }
+        void operator()(const lir::Drop&) { Drop.emit(bc, loc); }
+        void operator()(const lir::Send& s) {
+            // Sends are numbered in order, including those left out, which aren't visited.
+            while (plan.send_instructions[next_send] != at)
+                next_send = util::advance(next_send);
+            auto& p = plan.sends[next_send];
+            if (p.add == AddSelector::AtSend)
+                p.selector = emitter.add_selector(s.selector);
+            emitter.send(bc, loc, s, p);
+        }
+        void operator()(const lir::Return&) { encode_return(); }
+        void operator()(const lir::NonLocalReturn&) { encode_return(); }
+        void operator()(const lir::ReturnSelf&) { ReturnSelf.emit(bc, loc); }
+        void operator()(const lir::DefaultArgument& d) { emitter.default_argument(bc, loc, d); }
+        void operator()(const lir::If& b) {
+            emitter.branch(bc, loc, b.then_body, b.else_body, JumpIfFalsePushNil, JumpIfFalse);
+        }
+        void operator()(const lir::IfNil& b) {
+            emitter.branch(bc, loc, b.then_body, b.else_body, Extended::IfNotNilJumpPushNilElsePop.Jump,
+                           Extended::IfNotNilJump.Jump);
+        }
+        void operator()(const lir::IfNotNil& b) {
+            emitter.branch(bc, loc, b.then_body, b.else_body, Extended::IfNilThenJumpElsePopNil.Jump,
+                           Extended::IfNilJump.Jump);
+        }
+        void operator()(const lir::And& b) { emitter.jump_over(bc, loc, JumpIfFalsePushFalse, b.rhs); }
+        void operator()(const lir::Or& b) { emitter.jump_over(bc, loc, JumpIfTruePushTrue, b.rhs); }
+        void operator()(const lir::OrIfNil& b) { emitter.jump_over(bc, loc, Extended::DoubleQuestionMark.Jump, b.rhs); }
+        void operator()(const lir::AndIfNotNil& b) {
+            emitter.jump_over(bc, loc, Extended::IfNilThenJumpElsePopNil.Jump, b.rhs);
+        }
+        void operator()(const lir::QuestionMark&) { Extended::QuestionMark.emit(bc, loc); }
+        void operator()(const lir::While& w) { emitter.while_(bc, loc, w); }
+        void operator()(const lir::Loop& l) {
+            auto body = emitter.encode_value(l.body, loc);
+            const auto length = body.length();
+            bc.consume(std::move(body));
+            emitter.jump(bc, loc, JumpBack, length + 1);
+        }
+        void operator()(const lir::Switch& s) { emitter.switch_(bc, loc, s); }
+        void operator()(const lir::Unimplemented&) {
+            assert(false);
+            emitter.failed = true;
+        }
+
+        [[nodiscard]] bool drop_follows() const {
+            const auto next = util::advance(at);
+            return plan.contains(next) && !plan.left_out(next)
+                && std::holds_alternative<lir::Drop>(emitter.instruction(next));
+        }
+
+        void encode_return() {
+            if (at != plan.body.begin && plan.left_out(util::retreat(at)))
+                if (const auto value = emitter.special_value(util::retreat(at))) {
+                    switch (*value) {
+                    case lir::SpecialValue::Nil:
+                        ReturnNil.emit(bc, loc);
+                        return;
+                    case lir::SpecialValue::True:
+                        ReturnTrue.emit(bc, loc);
+                        return;
+                    case lir::SpecialValue::False:
+                        ReturnFalse.emit(bc, loc);
+                        return;
+                    }
+                }
+            Return.emit(bc, loc);
+        }
+    };
+
+    CompilingBytecodes encode(lir::Body body) { return BodyEncoder { *this, plan_body(body) }.encode(); }
 
     ////////////////////////////////////////////////////////////////////////////////
     // Inlined sends, laid out as compileIfMsg and its neighbours in PyrParseNode.cpp did
@@ -1083,8 +1123,8 @@ struct Emitter {
     }
 
     // An empty body is nil. The old compiler left the stack without a value for some, `a and: { }`.
-    CompilingBytecodes encode_value(lir::FunctionSubRegionIndex r, sc::src::SourceCodeRange loc) {
-        auto bc = encode(function.sub_regions[r]);
+    CompilingBytecodes encode_value(lir::BodyIndex r, sc::src::SourceCodeRange loc) {
+        auto bc = encode(function.bodies[r]);
         if (bc.length() == 0)
             PushSpecialValue.emit(bc, loc, { OpSpecialValue::Nil_ });
         return bc;
@@ -1093,12 +1133,12 @@ struct Emitter {
     // short_jump skips the then body leaving nil, long_jump goes to the else body. The else body is encoded first, as
     // the old compiler did, which orders the tables.
     template <typename Short, typename Long>
-    void branch(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, lir::FunctionSubRegionIndex then_body,
-                lir::OptionalFunctionSubRegionIndex else_body, const Short& short_jump, const Long& long_jump) {
+    void branch(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, lir::BodyIndex then_body,
+                lir::OptionalBodyIndex else_body, const Short& short_jump, const Long& long_jump) {
         std::optional<CompilingBytecodes> else_bc;
         if (else_body)
-            else_bc = encode(function.sub_regions[lir::FunctionSubRegionIndex { *else_body }]);
-        auto then_bc = encode(function.sub_regions[then_body]);
+            else_bc = encode(function.bodies[lir::BodyIndex { *else_body }]);
+        auto then_bc = encode(function.bodies[then_body]);
         if (else_bc && else_bc->length() > 0) {
             if (then_bc.length() == 0)
                 PushSpecialValue.emit(then_bc, loc, { OpSpecialValue::Nil_ });
@@ -1116,8 +1156,7 @@ struct Emitter {
     }
 
     template <typename Op>
-    void jump_over(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, const Op& op,
-                   lir::FunctionSubRegionIndex rhs) {
+    void jump_over(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, const Op& op, lir::BodyIndex rhs) {
         auto rhs_bc = encode_value(rhs, loc);
         jump(bc, loc, op, rhs_bc.length());
         bc.consume(std::move(rhs_bc));
@@ -1128,7 +1167,7 @@ struct Emitter {
         auto condition = encode_value(w.condition, loc);
         CompilingBytecodes body;
         if (w.body)
-            body = encode_value(lir::FunctionSubRegionIndex { *w.body }, loc);
+            body = encode_value(lir::BodyIndex { *w.body }, loc);
         else
             PushSpecialValue.emit(body, loc, { OpSpecialValue::Nil_ });
         const auto condition_length = condition.length();
@@ -1147,11 +1186,11 @@ struct Emitter {
         Extended::Switch.emit(bc, loc);
 
         // Each key's body, then the default, the last without a key.
-        struct Body {
+        struct EncodedBody {
             ir::OptionalConstExprIndex key;
             CompilingBytecodes code;
         };
-        std::vector<Body> bodies;
+        std::vector<EncodedBody> bodies;
         for (const auto c : lir::cases(s)) {
             const auto& sc = function.switch_cases[c];
             bodies.push_back({ sc.key, encode_value(sc.body, loc) });
@@ -1192,33 +1231,9 @@ struct Emitter {
             bc.consume(std::move(body.code));
     }
 
-    [[nodiscard]] bool drop_follows(const RegionPlan& plan, lir::InstructionIndex i) const {
-        const auto next = util::advance(i);
-        return plan.contains(next) && !plan.left_out(next) && std::holds_alternative<lir::Drop>(instruction(next));
-    }
-
-    void emit_return(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, const RegionPlan& plan,
-                     lir::InstructionIndex i) {
-        if (i != plan.region.begin && plan.left_out(util::retreat(i)))
-            if (const auto value = special_value(util::retreat(i))) {
-                switch (*value) {
-                case lir::SpecialValue::Nil:
-                    ReturnNil.emit(bc, loc);
-                    return;
-                case lir::SpecialValue::True:
-                    ReturnTrue.emit(bc, loc);
-                    return;
-                case lir::SpecialValue::False:
-                    ReturnFalse.emit(bc, loc);
-                    return;
-                }
-            }
-        Return.emit(bc, loc);
-    }
-
     // A function, not a method, ends with BlockReturn, after its body leaves its value on the stack.
     void run(bool is_method) {
-        auto bc = encode(function.sub_regions[lir::body_sub_region]);
+        auto bc = encode(function.bodies[lir::function_body]);
         if (!is_method) {
             const auto range = ir::IRGraph::range(owner_location());
             BlockReturn.emit(bc, { { range.end.absolute, 0, 0 }, { range.end.absolute, 0, 0 } });

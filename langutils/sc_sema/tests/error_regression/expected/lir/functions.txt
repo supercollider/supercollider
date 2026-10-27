@@ -91,17 +91,17 @@ LIR DUMP
 
 LirFunctions
 |  function 0 (7:5): method returns_this
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Send foo (positional 0)
 |  |  |  Drop
 |  |  |  ReturnSelf
 |  function 1 (9:5): method nested
-|  |  region 0
+|  |  body 0
 |  |  |  PushFunction 2
 |  |  |  Return
 |  function 2 (9:19)
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 1, slot 1
 |  |  |  PushLocal depth 0, slot 0
 |  |  |  Send + (positional 1, binary)
@@ -109,36 +109,36 @@ LirFunctions
 |  |  |  Drop
 |  |  |  PushFunction 3
 |  function 3 (9:40)
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 1, slot 1
 |  |  |  Send bar (positional 0, tail from function)
 |  function 4 (11:5): method empty_function
-|  |  region 0
+|  |  body 0
 |  |  |  PushFunction 5
 |  |  |  Return
 |  function 5 (11:23)
-|  |  region 0
+|  |  body 0
 |  |  |  PushSpecialValue nil
 |  function 6 (13:5): method function_ending_in_declaration
-|  |  region 0
+|  |  body 0
 |  |  |  PushFunction 7
 |  |  |  Return
 |  function 7 (13:39)
-|  |  region 0
+|  |  body 0
 |  |  |  PushSpecialValue nil
 |  function 8 (15:5): method nested_return
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
-|  |  |  If then region 1
+|  |  |  If then body 1
 |  |  |  Drop
 |  |  |  PushConstant 2
 |  |  |  Return
-|  |  region 1
+|  |  body 1
 |  |  |  PushConstant 1
 |  |  |  Return
 |  function 9 (18:5): method defaults
-|  |  region 0
-|  |  |  DefaultArgument slot 2, region 1
+|  |  body 0
+|  |  |  DefaultArgument slot 2, body 1
 |  |  |  PushClass Array
 |  |  |  PushInteger 3
 |  |  |  Send new (positional 1, implicit)
@@ -149,16 +149,16 @@ LirFunctions
 |  |  |  PushLocal depth 0, slot 3
 |  |  |  Send add (positional 1, implicit)
 |  |  |  Return
-|  |  region 1
+|  |  body 1
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  PushConstant 1
 |  |  |  Send + (positional 1, binary)
 |  function 10 (20:5): method partial_application
-|  |  region 0
+|  |  body 0
 |  |  |  PushFunction 11
 |  |  |  Return
 |  function 11 (20:28)
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 0
 |  |  |  PushConstant 1
 |  |  |  Send foo (positional 1, tail from function)

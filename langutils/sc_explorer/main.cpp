@@ -205,7 +205,7 @@ sc::src::SourceCodeRange range_from_offsets(const sc::src::TextInfo& text, std::
 }
 
 // As sc_inspect --lir and --bytecode, the root's class, then each function, starting with its frame. In the lir, each
-// function's regions, the body first, then their instructions, all functions, marking those of a method that can't be
+// function's bodies, its own first, then their instructions, all functions, marking those of a method that can't be
 // emitted. In the bytecode, the lines write_emitted prints for each emitted function, each opcode's at its source.
 void add_backend(Tree& lir_tree, Tree& bytecode_tree, sc::compiler::ClassLibrary& library, const IrRoot& r,
                  const sc::src::TextInfo* text, std::vector<sc::diag::Diagnostic>& diagnostics) {
@@ -291,11 +291,9 @@ void add_backend(Tree& lir_tree, Tree& bytecode_tree, sc::compiler::ClassLibrary
             { "function " + std::to_string(fi), detail + (not_lowered ? " (not emitted)" : ""), range_of(owner), {} });
         add_frame(lir_tree, frame);
         const bool in_text = g.text_info(function.source).get() == text;
-        for (std::uint32_t ri { 0 }; ri < function.sub_regions.size(); ++ri) {
-            const auto& region = function.sub_regions[sc::backend::lir::FunctionSubRegionIndex { ri }];
-            lir_tree.add(2, { "region " + std::to_string(ri), "", std::nullopt, {} });
-            for (std::uint32_t k { *region.begin }; k < *region.begin + region.size; ++k) {
-                const sc::backend::lir::InstructionIndex i { k };
+        for (const auto b : function.bodies.indices()) {
+            lir_tree.add(2, { "body " + std::to_string(*b), "", std::nullopt, {} });
+            for (const auto i : sc::backend::lir::instructions(function.bodies[b])) {
                 std::ostringstream line;
                 sc::backend::write_instruction(line, function, function.instructions[i], g, ctx.symbol_table,
                                                ctx.constant_table);

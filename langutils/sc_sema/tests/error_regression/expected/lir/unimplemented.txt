@@ -26,7 +26,7 @@ LIR DUMP
 
 LirUnimplemented
 |  function 0 (6:5): method environment_target (not emitted)
-|  |  region 0
+|  |  body 0
 |  |  |  Unimplemented SCPackAssign
 |  |  |  Return
 Successfully compiled 16 classes.

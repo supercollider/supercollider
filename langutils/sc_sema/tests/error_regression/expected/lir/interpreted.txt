@@ -35,14 +35,14 @@ LIR DUMP
 
 Interpreted
 |  function 0 (5:1)
-|  |  region 0
+|  |  body 0
 |  |  |  PushConstant 2
 |  |  |  StoreInstance slot 5
 |  function 1 (6:3)
-|  |  region 0
+|  |  body 0
 |  |  |  PushFunction 2
 |  function 2 (6:3)
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 0
 |  |  |  PushInstance slot 5
 |  |  |  Send + (positional 1, binary, tail from function)

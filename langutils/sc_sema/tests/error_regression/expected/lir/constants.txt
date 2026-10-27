@@ -58,20 +58,20 @@ LIR DUMP
 
 LirConstants
 |  function 0 (7:5): method literal_string
-|  |  region 0
+|  |  body 0
 |  |  |  PushConstant "text"
 |  |  |  Return
 |  function 1 (9:5): method literal_array
-|  |  region 0
+|  |  body 0
 |  |  |  PushConstant [1, 2]
 |  |  |  Return
 |  function 2 (11:5): method flat
-|  |  region 0
+|  |  body 0
 |  |  |  PushConstant [1, 2]
 |  |  |  Send copy (positional 0, implicit)
 |  |  |  Return
 |  function 3 (13:5): method nested
-|  |  region 0
+|  |  body 0
 |  |  |  PushConstant [1, [2, 3], "four"]
 |  |  |  Send copy (positional 0, implicit)
 |  |  |  Dup
@@ -88,11 +88,11 @@ LirConstants
 |  |  |  Drop
 |  |  |  Return
 |  function 4 (15:5): method expression_list
-|  |  region 0
+|  |  body 0
 |  |  |  PushConstant "text"
 |  |  |  Return
 |  function 5 (17:5): method event
-|  |  region 0
+|  |  body 0
 |  |  |  PushConstant (a: [1])
 |  |  |  Send copy (positional 0, implicit)
 |  |  |  Dup
@@ -103,7 +103,7 @@ LirConstants
 |  |  |  Drop
 |  |  |  Return
 |  function 6 (19:5): method immutable
-|  |  region 0
+|  |  body 0
 |  |  |  PushConstant 3
 |  |  |  Return
 Successfully compiled 16 classes.

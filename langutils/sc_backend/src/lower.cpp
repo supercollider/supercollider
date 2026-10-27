@@ -51,9 +51,9 @@ using QualifierIndex = util::StrongIndex<std::uint32_t, struct QualifierIndex__>
 
 // Instructions lowered but not yet placed in their function.
 using PendingIndex = util::StrongIndex<std::uint32_t, struct PendingIndex__>;
-using PendingRegionIndex = util::StrongIndex<std::uint32_t, struct PendingRegionIndex__>;
+using PendingBodyIndex = util::StrongIndex<std::uint32_t, struct PendingBodyIndex__>;
 
-struct SubRegionBuild {
+struct BodyBuild {
     util::IndexedVector<PendingIndex, lir::Instruction> instructions {};
     util::IndexedVector<PendingIndex, lir::SourceSpan> spans {};
 };
@@ -69,38 +69,38 @@ struct Lowerer {
     struct Building {
         lir::FunctionIndex function;
         bool is_method;
-        // Its first sub-region in region_starts.
-        PendingRegionIndex first_region;
+        // Its own body's start in body_starts.
+        PendingBodyIndex first_body;
     };
     std::vector<Building> building {};
-    // Sub-regions nest, e.g., a default argument's value in a body, and functions nest, so all are built on one stack,
-    // each from its start, and appended to its function when it ends, keeping each contiguous.
-    SubRegionBuild pending {};
-    util::IndexedVector<PendingRegionIndex, PendingIndex> region_starts {};
+    // Bodies nest, e.g., a default argument's value in a function's body, and functions nest, so all are built on one
+    // stack, each from its start, and appended to its function when it ends, keeping each contiguous.
+    BodyBuild pending {};
+    util::IndexedVector<PendingBodyIndex, PendingIndex> body_starts {};
     // The root being lowered can't be emitted, e.g., a frame is over the VM's limit.
     bool failed { false };
     // Legacy code only uses literals' values, a read of a variable sema knows is 1 still reads it.
     bool fold_constants { false };
 
     ////////////////////////////////////////////////////////////////////////////////
-    // Functions and sub-regions
+    // Functions and bodies
     ////////////////////////////////////////////////////////////////////////////////
 
     lir::Function& function() { return out.functions[building.back().function]; }
 
     void emit(lir::Instruction instruction, ir::NodeIndex at) {
-        assert(!region_starts.empty());
+        assert(!body_starts.empty());
         const auto range = ir::IRGraph::range(ir_graph.location(at));
         (void)pending.instructions.push_back(instruction);
         (void)pending.spans.push_back({ range.begin.absolute, range.end.absolute });
     }
 
-    void begin_sub_region() { (void)region_starts.push_back(pending.instructions.next_index()); }
+    void begin_body() { (void)body_starts.push_back(pending.instructions.next_index()); }
 
-    // Removes the innermost sub-region from the stack.
-    template <typename Take> void pop_sub_region(const Take& take) {
-        const auto start = static_cast<std::ptrdiff_t>(*region_starts.back());
-        region_starts.pop_back();
+    // Removes the innermost body from the stack.
+    template <typename Take> void pop_body(const Take& take) {
+        const auto start = static_cast<std::ptrdiff_t>(*body_starts.back());
+        body_starts.pop_back();
         auto& instructions = pending.instructions.raw();
         auto& spans = pending.spans.raw();
         take(instructions.begin() + start, instructions.end(), spans.begin() + start, spans.end());
@@ -108,10 +108,10 @@ struct Lowerer {
         spans.erase(spans.begin() + start, spans.end());
     }
 
-    lir::FunctionSubRegion append_sub_region() {
+    lir::Body append_body() {
         auto& f = function();
-        lir::FunctionSubRegion placed { f.instructions.next_index(), 0 };
-        pop_sub_region([&](auto i_begin, auto i_end, auto s_begin, auto s_end) {
+        lir::Body placed { f.instructions.next_index(), 0 };
+        pop_body([&](auto i_begin, auto i_end, auto s_begin, auto s_end) {
             placed.size = static_cast<std::uint32_t>(i_end - i_begin);
             f.instructions.raw().insert(f.instructions.raw().end(), i_begin, i_end);
             f.spans.raw().insert(f.spans.raw().end(), s_begin, s_end);
@@ -119,44 +119,44 @@ struct Lowerer {
         return placed;
     }
 
-    lir::FunctionSubRegionIndex end_sub_region() {
-        const auto placed = append_sub_region();
-        return function().sub_regions.push_back(placed);
+    lir::BodyIndex end_body() {
+        const auto placed = append_body();
+        return function().bodies.push_back(placed);
     }
 
     // Instructions lowered before they are placed, e.g., an operand pushed after a function lowered later. Any
-    // sub-regions they hold are already placed.
-    SubRegionBuild take_sub_region() {
-        SubRegionBuild taken;
-        pop_sub_region([&](auto i_begin, auto i_end, auto s_begin, auto s_end) {
+    // bodies they hold are already placed.
+    BodyBuild take_body() {
+        BodyBuild taken;
+        pop_body([&](auto i_begin, auto i_end, auto s_begin, auto s_end) {
             taken.instructions.raw().assign(i_begin, i_end);
             taken.spans.raw().assign(s_begin, s_end);
         });
         return taken;
     }
 
-    void place(const SubRegionBuild& taken) {
-        assert(!region_starts.empty());
+    void place(const BodyBuild& taken) {
+        assert(!body_starts.empty());
         auto& instructions = pending.instructions.raw();
         auto& spans = pending.spans.raw();
         instructions.insert(instructions.end(), taken.instructions.raw().begin(), taken.instructions.raw().end());
         spans.insert(spans.end(), taken.spans.raw().begin(), taken.spans.raw().end());
     }
 
-    // The body is sub-region 0, reserved first though it ends last.
+    // The function's own body is body 0, reserved first though it ends last.
     lir::FunctionIndex begin_function(FrameIndex frame, ir::NodeIndex owner) {
         lir::Function f { frame, ir_graph.location(owner).source };
-        f.sub_regions.push_back({ lir::InstructionIndex { 0 }, 0 });
+        f.bodies.push_back({ lir::InstructionIndex { 0 }, 0 });
         const auto index = out.functions.push_back(std::move(f));
-        building.push_back({ index, ir_graph.is_a<ir::SCMethod_I>(owner), region_starts.next_index() });
-        begin_sub_region();
+        building.push_back({ index, ir_graph.is_a<ir::SCMethod_I>(owner), body_starts.next_index() });
+        begin_body();
         return index;
     }
 
     void end_function() {
-        assert(region_starts.size() == *building.back().first_region + 1);
-        const auto sub = append_sub_region();
-        function().sub_regions[lir::body_sub_region] = sub;
+        assert(body_starts.size() == *building.back().first_body + 1);
+        const auto sub = append_body();
+        function().bodies[lir::function_body] = sub;
         building.pop_back();
     }
 
@@ -530,10 +530,10 @@ struct Lowerer {
         inline_body(f, [&](ir::NodeIndex item) { lower(item, tail); });
     }
 
-    lir::FunctionSubRegionIndex body_region(ir::SCFunction_I f, lir::Tail tail) {
-        begin_sub_region();
+    lir::BodyIndex inlined_body(ir::SCFunction_I f, lir::Tail tail) {
+        begin_body();
         inline_body(f, tail);
-        return end_sub_region();
+        return end_body();
     }
 
     // Lowers x of `x.isNil`, without the send.
@@ -559,21 +559,20 @@ struct Lowerer {
 
     template <typename Else>
     void branch(Inlined kind, ir::SCFunction_I then_body, const Else& else_body, lir::Tail tail, ir::NodeIndex at) {
-        const auto then_region = body_region(then_body, tail);
-        emit_branch(kind, then_region, else_body(), at);
+        const auto then_lowered = inlined_body(then_body, tail);
+        emit_branch(kind, then_lowered, else_body(), at);
     }
 
-    void emit_branch(Inlined kind, lir::FunctionSubRegionIndex then_region,
-                     lir::OptionalFunctionSubRegionIndex else_region, ir::NodeIndex at) {
+    void emit_branch(Inlined kind, lir::BodyIndex then_body, lir::OptionalBodyIndex else_body, ir::NodeIndex at) {
         switch (kind) {
         case Inlined::IfNil:
-            emit(lir::IfNil { then_region, else_region }, at);
+            emit(lir::IfNil { then_body, else_body }, at);
             return;
         case Inlined::IfNotNil:
-            emit(lir::IfNotNil { then_region, else_region }, at);
+            emit(lir::IfNotNil { then_body, else_body }, at);
             return;
         default:
-            emit(lir::If { then_region, else_region }, at);
+            emit(lir::If { then_body, else_body }, at);
             return;
         }
     }
@@ -600,14 +599,14 @@ struct Lowerer {
         }
         branch(
             test ? test->kind() : Inlined::If, functions[util::advance(k)],
-            [&]() -> lir::OptionalFunctionSubRegionIndex {
+            [&]() -> lir::OptionalBodyIndex {
                 if (remaining == 2)
                     return {};
                 if (remaining == 3)
-                    return body_region(functions[util::advance(k, 2)], tail);
-                begin_sub_region();
+                    return inlined_body(functions[util::advance(k, 2)], tail);
+                begin_body();
                 case_(functions, util::advance(k, 2), tail, at);
-                return end_sub_region();
+                return end_body();
             },
             tail, at);
     }
@@ -619,11 +618,11 @@ struct Lowerer {
         for (; cases.contains(util::advance(key_i)); key_i = util::advance(key_i, 2)) {
             const auto key = switch_key(ctx.inlining, ir_graph, cases[key_i], cursor.version());
             cursor.skip_over_children(cases[key_i]);
-            const auto body = body_region(ir_graph.assume_a<ir::SCFunction_I>(cases[util::advance(key_i)]), tail);
+            const auto body = inlined_body(ir_graph.assume_a<ir::SCFunction_I>(cases[util::advance(key_i)]), tail);
             lowered.push_back({ ir::OptionalConstExprIndex { *key }, body });
         }
         if (cases.contains(key_i))
-            lowered.push_back({ {}, body_region(ir_graph.assume_a<ir::SCFunction_I>(cases[key_i]), tail) });
+            lowered.push_back({ {}, inlined_body(ir_graph.assume_a<ir::SCFunction_I>(cases[key_i]), tail) });
         auto& switch_cases = function().switch_cases;
         const auto first = switch_cases.next_index();
         for (const auto& c : lowered)
@@ -657,27 +656,27 @@ struct Lowerer {
                 kind, ir_graph.assume_a<ir::SCFunction_I>(args[{ 0 }]),
                 [&]() {
                     if (!args.contains({ 1 }))
-                        return lir::OptionalFunctionSubRegionIndex {};
-                    return lir::OptionalFunctionSubRegionIndex { body_region(
-                        ir_graph.assume_a<ir::SCFunction_I>(args[{ 1 }]), tail) };
+                        return lir::OptionalBodyIndex {};
+                    return lir::OptionalBodyIndex { inlined_body(ir_graph.assume_a<ir::SCFunction_I>(args[{ 1 }]),
+                                                                 tail) };
                 },
                 tail, i);
             return;
         case Inlined::And:
             lower(receiver);
-            emit(lir::And { body_region(ir_graph.assume_a<ir::SCFunction_I>(args[{ 0 }]), tail) }, i);
+            emit(lir::And { inlined_body(ir_graph.assume_a<ir::SCFunction_I>(args[{ 0 }]), tail) }, i);
             return;
         case Inlined::Or:
             lower(receiver);
-            emit(lir::Or { body_region(ir_graph.assume_a<ir::SCFunction_I>(args[{ 0 }]), tail) }, i);
+            emit(lir::Or { inlined_body(ir_graph.assume_a<ir::SCFunction_I>(args[{ 0 }]), tail) }, i);
             return;
         case Inlined::OrIfNil:
             lower(receiver);
-            emit(lir::OrIfNil { body_region(ir_graph.assume_a<ir::SCFunction_I>(args[{ 0 }]), tail) }, i);
+            emit(lir::OrIfNil { inlined_body(ir_graph.assume_a<ir::SCFunction_I>(args[{ 0 }]), tail) }, i);
             return;
         case Inlined::AndIfNotNil:
             lower(receiver);
-            emit(lir::AndIfNotNil { body_region(ir_graph.assume_a<ir::SCFunction_I>(args[{ 0 }]), tail) }, i);
+            emit(lir::AndIfNotNil { inlined_body(ir_graph.assume_a<ir::SCFunction_I>(args[{ 0 }]), tail) }, i);
             return;
         case Inlined::QuestionMark:
             lower(receiver);
@@ -685,20 +684,20 @@ struct Lowerer {
             emit(lir::QuestionMark {}, i);
             return;
         case Inlined::While: {
-            const auto condition = body_region(ir_graph.assume_a<ir::SCFunction_I>(receiver), lir::Tail::None);
-            lir::OptionalFunctionSubRegionIndex body {};
+            const auto condition = inlined_body(ir_graph.assume_a<ir::SCFunction_I>(receiver), lir::Tail::None);
+            lir::OptionalBodyIndex body {};
             if (args.contains({ 0 }))
-                body = body_region(ir_graph.assume_a<ir::SCFunction_I>(args[{ 0 }]), lir::Tail::None);
+                body = inlined_body(ir_graph.assume_a<ir::SCFunction_I>(args[{ 0 }]), lir::Tail::None);
             emit(lir::While { condition, body }, i);
             return;
         }
         case Inlined::WhileTrue:
             // `true` isn't evaluated.
             cursor.skip_over_children(receiver);
-            emit(lir::Loop { body_region(ir_graph.assume_a<ir::SCFunction_I>(args[{ 0 }]), lir::Tail::None) }, i);
+            emit(lir::Loop { inlined_body(ir_graph.assume_a<ir::SCFunction_I>(args[{ 0 }]), lir::Tail::None) }, i);
             return;
         case Inlined::Loop:
-            emit(lir::Loop { body_region(ir_graph.assume_a<ir::SCFunction_I>(receiver), lir::Tail::None) }, i);
+            emit(lir::Loop { inlined_body(ir_graph.assume_a<ir::SCFunction_I>(receiver), lir::Tail::None) }, i);
             return;
         case Inlined::Case: {
             CaseFunctions functions;
@@ -860,9 +859,9 @@ struct Lowerer {
         } else if (const auto declare = ir_graph.as_a<ir::SCGenQualDeclare_I>(q)) {
             // `var x = value` is `{ |x| ... }.value(value)`, the function is pushed first.
             const auto [value] = ir_graph.children(*declare);
-            begin_sub_region();
+            begin_body();
             lower(value);
-            const auto taken = take_sub_region();
+            const auto taken = take_body();
             qualifier_function(g, k);
             place(taken);
             send(ctx.selectors.value, 1, tail, q);
@@ -871,9 +870,9 @@ struct Lowerer {
             const auto [expr] = ir_graph.children(*test);
             const auto kind = condition(expr);
             (void)cursor.exit(q);
-            begin_sub_region();
+            begin_body();
             nest(g, util::advance(k), tail);
-            emit_branch(kind, end_sub_region(), {}, q);
+            emit_branch(kind, end_body(), {}, q);
         } else if (const auto effect = ir_graph.as_a<ir::SCGenQualSideEffect_I>(q)) {
             const auto [expr] = ir_graph.children(*effect);
             lower(expr);
@@ -885,13 +884,13 @@ struct Lowerer {
             const auto [expr] = ir_graph.children(*guard);
             const auto kind = condition(expr);
             (void)cursor.exit(q);
-            begin_sub_region();
+            begin_body();
             nest(g, util::advance(k), tail);
-            const auto then_body = end_sub_region();
-            begin_sub_region();
+            const auto then_body = end_body();
+            begin_body();
             emit(lir::PushSpecialValue { lir::SpecialValue::Nil }, q);
             send(ctx.selectors.always_yield, 0, tail, q);
-            emit_branch(kind, then_body, end_sub_region(), q);
+            emit_branch(kind, then_body, end_body(), q);
         } else {
             assert(false && "unhandled generator qualifier");
         }
@@ -944,10 +943,10 @@ struct Lowerer {
                 cursor.skip_over_children(value_i);
                 continue;
             }
-            begin_sub_region();
+            begin_body();
             lower(value_i);
-            const auto region = end_sub_region();
-            emit(lir::DefaultArgument { own_slot(argument.local), region }, *it);
+            const auto default_value = end_body();
+            emit(lir::DefaultArgument { own_slot(argument.local), default_value }, *it);
         }
         for (auto it = ir_graph.children(variadic).iter(); it; ++it)
             cursor.skip_over_children(*it);
@@ -1110,11 +1109,10 @@ lir::LoweredGraph lower(const LoweringContext& ctx, ir::join<ir::SCClass_I, ir::
 void write_instruction(std::ostream& out, const lir::Function& function, const lir::Instruction& instruction,
                        const ir::IRGraph& graph, const ir::SymbolTable& symbols, const ir::ConstantTable& constants) {
     const auto local = [&](lir::LocalRef l) { out << " depth " << l.depth << ", slot " << unsigned { *l.slot }; };
-    const auto branches = [&](const char* name, lir::FunctionSubRegionIndex then_body,
-                              lir::OptionalFunctionSubRegionIndex else_body) {
-        out << name << " then region " << *then_body;
+    const auto branches = [&](const char* name, lir::BodyIndex then_body, lir::OptionalBodyIndex else_body) {
+        out << name << " then body " << *then_body;
         if (else_body)
-            out << ", else region " << *else_body;
+            out << ", else body " << *else_body;
     };
     std::visit(util::overload {
                    [&](const lir::PushLocal& p) {
@@ -1174,22 +1172,22 @@ void write_instruction(std::ostream& out, const lir::Function& function, const l
                    [&](const lir::ReturnSelf&) { out << "ReturnSelf"; },
                    [&](const lir::NonLocalReturn&) { out << "NonLocalReturn"; },
                    [&](const lir::DefaultArgument& d) {
-                       out << "DefaultArgument slot " << unsigned { *d.slot } << ", region " << *d.value;
+                       out << "DefaultArgument slot " << unsigned { *d.slot } << ", body " << *d.value;
                    },
                    [&](const lir::If& b) { branches("If", b.then_body, b.else_body); },
                    [&](const lir::IfNil& b) { branches("IfNil", b.then_body, b.else_body); },
                    [&](const lir::IfNotNil& b) { branches("IfNotNil", b.then_body, b.else_body); },
-                   [&](const lir::And& b) { out << "And region " << *b.rhs; },
-                   [&](const lir::Or& b) { out << "Or region " << *b.rhs; },
-                   [&](const lir::OrIfNil& b) { out << "OrIfNil region " << *b.rhs; },
-                   [&](const lir::AndIfNotNil& b) { out << "AndIfNotNil region " << *b.rhs; },
+                   [&](const lir::And& b) { out << "And body " << *b.rhs; },
+                   [&](const lir::Or& b) { out << "Or body " << *b.rhs; },
+                   [&](const lir::OrIfNil& b) { out << "OrIfNil body " << *b.rhs; },
+                   [&](const lir::AndIfNotNil& b) { out << "AndIfNotNil body " << *b.rhs; },
                    [&](const lir::QuestionMark&) { out << "QuestionMark"; },
                    [&](const lir::While& w) {
-                       out << "While condition region " << *w.condition;
+                       out << "While condition body " << *w.condition;
                        if (w.body)
-                           out << ", body region " << *w.body;
+                           out << ", body " << *w.body;
                    },
-                   [&](const lir::Loop& l) { out << "Loop region " << *l.body; },
+                   [&](const lir::Loop& l) { out << "Loop body " << *l.body; },
                    [&](const lir::Switch& s) {
                        out << "Switch";
                        const char* separator = " ";
@@ -1200,7 +1198,7 @@ void write_instruction(std::ostream& out, const lir::Function& function, const l
                                constants(ir::ConstExprIndex { *sc.key }).to_literal(out, symbols, constants);
                            else
                                out << "default";
-                           out << ": region " << *sc.body;
+                           out << ": body " << *sc.body;
                            separator = ", ";
                        }
                    },

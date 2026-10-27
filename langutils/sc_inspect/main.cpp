@@ -694,7 +694,7 @@ int main(int argc, char* argv[]) {
                     (void)cursor->exit(i);
             });
     }
-    // Each function's regions, the body first, each instruction on its own line. A method or interpreted function that
+    // Each function's bodies, its own first, each instruction on its own line. A method or interpreted function that
     // can't be emitted, e.g., one using something not lowered yet, is marked.
     if (show_lir) {
         std::cout << "\n\n\nLIR DUMP \n\n\n";
@@ -714,14 +714,12 @@ int main(int argc, char* argv[]) {
                 if (!frame.parent && !function.complete)
                     std::cout << " (not emitted)";
                 std::cout << "\n";
-                for (std::uint32_t ri { 0 }; ri < function.sub_regions.size(); ++ri) {
-                    const auto& region = function.sub_regions[sc::backend::lir::FunctionSubRegionIndex { ri }];
-                    std::cout << "|  |  region " << ri << "\n";
-                    for (std::uint32_t k { *region.begin }; k < *region.begin + region.size; ++k) {
+                for (const auto b : function.bodies.indices()) {
+                    std::cout << "|  |  body " << *b << "\n";
+                    for (const auto i : sc::backend::lir::instructions(function.bodies[b])) {
                         std::cout << "|  |  |  ";
-                        sc::backend::write_instruction(std::cout, function,
-                                                       function.instructions[sc::backend::lir::InstructionIndex { k }],
-                                                       g, symbol_table, ctx.constant_table);
+                        sc::backend::write_instruction(std::cout, function, function.instructions[i], g, symbol_table,
+                                                       ctx.constant_table);
                         std::cout << "\n";
                     }
                 }

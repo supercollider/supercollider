@@ -142,89 +142,89 @@ LIR DUMP
 
 LirInlining
 |  function 0 (6:5): method ifElse
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
-|  |  |  If then region 1, else region 2
+|  |  |  If then body 1, else body 2
 |  |  |  Return
-|  |  region 1
+|  |  body 1
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Send foo (positional 0, tail from method)
-|  |  region 2
+|  |  body 2
 |  |  |  PushConstant 2
 |  |  |  Return
 |  function 1 (8:5): method isNil
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
-|  |  |  IfNil then region 1
+|  |  |  IfNil then body 1
 |  |  |  Return
-|  |  region 1
+|  |  body 1
 |  |  |  PushConstant 1
 |  function 2 (10:5): method andOr
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
-|  |  |  And region 1
-|  |  |  Or region 2
-|  |  |  OrIfNil region 3
-|  |  |  AndIfNotNil region 4
+|  |  |  And body 1
+|  |  |  Or body 2
+|  |  |  OrIfNil body 3
+|  |  |  AndIfNotNil body 4
 |  |  |  Return
-|  |  region 1
+|  |  body 1
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Send foo (positional 0)
-|  |  region 2
+|  |  body 2
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Send bar (positional 0)
-|  |  region 3
+|  |  body 3
 |  |  |  PushConstant 1
-|  |  region 4
+|  |  body 4
 |  |  |  PushConstant 2
 |  function 3 (12:5): method loops
-|  |  region 0
-|  |  |  While condition region 1, body region 2
+|  |  body 0
+|  |  |  While condition body 1, body 2
 |  |  |  Drop
-|  |  |  Loop region 3
+|  |  |  Loop body 3
 |  |  |  Drop
 |  |  |  ReturnSelf
-|  |  region 1
+|  |  body 1
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Send next (positional 0)
-|  |  region 2
+|  |  body 2
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Send foo (positional 0)
-|  |  region 3
+|  |  body 3
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Return
 |  function 4 (14:5): method case
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  PushConstant 1
 |  |  |  Send == (positional 1, binary)
-|  |  |  If then region 1, else region 4
+|  |  |  If then body 1, else body 4
 |  |  |  Return
-|  |  region 1
+|  |  body 1
 |  |  |  PushConstant 1
-|  |  region 2
+|  |  body 2
 |  |  |  PushConstant 2
-|  |  region 3
+|  |  body 3
 |  |  |  PushConstant 3
-|  |  region 4
+|  |  body 4
 |  |  |  PushLocal depth 0, slot 1
-|  |  |  IfNotNil then region 2, else region 3
+|  |  |  IfNotNil then body 2, else body 3
 |  function 5 (16:5): method switch
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
-|  |  |  Switch \x: region 1, default: region 2
+|  |  |  Switch \x: body 1, default: body 2
 |  |  |  Return
-|  |  region 1
+|  |  body 1
 |  |  |  PushConstant 1
-|  |  region 2
+|  |  body 2
 |  |  |  PushConstant 2
 |  function 6 (18:5): method questionMark
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  PushFunction 7
 |  |  |  QuestionMark
 |  |  |  Return
 |  function 7 (18:29)
-|  |  region 0
+|  |  body 0
 |  |  |  PushConstant 1
 Successfully compiled 16 classes.

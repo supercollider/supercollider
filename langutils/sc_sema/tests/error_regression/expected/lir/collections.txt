@@ -64,7 +64,7 @@ LIR DUMP
 
 LirCollections
 |  function 0 (7:5): method array
-|  |  region 0
+|  |  body 0
 |  |  |  PushClass Array
 |  |  |  PushInteger 2
 |  |  |  Send new (positional 1, implicit)
@@ -74,7 +74,7 @@ LirCollections
 |  |  |  Send add (positional 1, implicit)
 |  |  |  Return
 |  function 1 (9:5): method set
-|  |  region 0
+|  |  body 0
 |  |  |  PushClass Set
 |  |  |  PushInteger 1
 |  |  |  Send new (positional 1, implicit)
@@ -82,7 +82,7 @@ LirCollections
 |  |  |  Send add (positional 1, implicit)
 |  |  |  Return
 |  function 2 (11:5): method event
-|  |  region 0
+|  |  body 0
 |  |  |  PushClass Event
 |  |  |  PushInteger 2
 |  |  |  PushSpecialValue nil
@@ -97,7 +97,7 @@ LirCollections
 |  |  |  Send put (positional 2, implicit)
 |  |  |  Return
 |  function 3 (14:5): method pack
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Dup
 |  |  |  PushInteger 0
@@ -118,7 +118,7 @@ LirCollections
 |  |  |  PushLocal depth 0, slot 2
 |  |  |  Return
 |  function 4 (16:5): method pack_assign
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Dup
 |  |  |  PushInteger 0

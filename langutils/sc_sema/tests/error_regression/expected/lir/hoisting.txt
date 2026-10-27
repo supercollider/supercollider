@@ -156,39 +156,39 @@ LIR DUMP
 
 LirHoisting
 |  function 0 (7:5): method ifVar
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
-|  |  |  If then region 1
+|  |  |  If then body 1
 |  |  |  Return
-|  |  region 1
+|  |  body 1
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Send foo (positional 0)
 |  |  |  StoreLocal depth 0, slot 2
 |  |  |  Drop
 |  |  |  PushLocal depth 0, slot 2
 |  function 1 (9:5): method literal
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
-|  |  |  If then region 1
+|  |  |  If then body 1
 |  |  |  Return
-|  |  region 1
+|  |  body 1
 |  |  |  PushConstant 1
 |  |  |  StoreLocal depth 0, slot 2
 |  |  |  Drop
 |  |  |  PushConstant 1
 |  function 2 (11:5): method loop
-|  |  region 0
-|  |  |  While condition region 1, body region 2
+|  |  body 0
+|  |  |  While condition body 1, body 2
 |  |  |  Drop
 |  |  |  ReturnSelf
-|  |  region 1
+|  |  body 1
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Send next (positional 0)
 |  |  |  StoreLocal depth 0, slot 2
 |  |  |  Drop
 |  |  |  PushLocal depth 0, slot 2
 |  |  |  Send notNil (positional 0)
-|  |  region 2
+|  |  body 2
 |  |  |  PushSpecialValue nil
 |  |  |  StoreLocal depth 0, slot 3
 |  |  |  Drop
@@ -199,11 +199,11 @@ LirHoisting
 |  |  |  Send + (positional 1, binary)
 |  |  |  StoreLocal depth 0, slot 3
 |  function 3 (13:5): method pack
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
-|  |  |  If then region 1
+|  |  |  If then body 1
 |  |  |  Return
-|  |  region 1
+|  |  body 1
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Dup
 |  |  |  PushInteger 0
@@ -220,11 +220,11 @@ LirHoisting
 |  |  |  PushLocal depth 0, slot 3
 |  |  |  Send + (positional 1, binary, tail from method)
 |  function 4 (15:5): method endsWithVar
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
-|  |  |  If then region 1
+|  |  |  If then body 1
 |  |  |  Return
-|  |  region 1
+|  |  body 1
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Send foo (positional 0)
 |  |  |  Drop
@@ -233,51 +233,51 @@ LirHoisting
 |  |  |  Drop
 |  |  |  PushSpecialValue nil
 |  function 5 (17:5): method switch
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
-|  |  |  Switch 1: region 1, default: region 2
+|  |  |  Switch 1: body 1, default: body 2
 |  |  |  Return
-|  |  region 1
+|  |  body 1
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Send foo (positional 0)
 |  |  |  StoreLocal depth 0, slot 2
 |  |  |  Drop
 |  |  |  PushLocal depth 0, slot 2
-|  |  region 2
+|  |  body 2
 |  |  |  PushSpecialValue nil
 |  |  |  StoreLocal depth 0, slot 3
 |  |  |  Drop
 |  |  |  PushConstant nil
 |  function 6 (19:5): method nonLocalReturn
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
-|  |  |  If then region 2
+|  |  |  If then body 2
 |  |  |  Drop
 |  |  |  PushConstant 2
 |  |  |  Return
-|  |  region 1
+|  |  body 1
 |  |  |  PushConstant 1
 |  |  |  Return
-|  |  region 2
+|  |  body 2
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Send foo (positional 0)
 |  |  |  StoreLocal depth 0, slot 2
 |  |  |  Drop
 |  |  |  PushLocal depth 0, slot 2
-|  |  |  If then region 1
+|  |  |  If then body 1
 |  |  |  Drop
 |  |  |  PushLocal depth 0, slot 2
 |  |  |  Return
 |  function 7 (21:5): method captured
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  PushFunction 8
 |  |  |  Send if (positional 1, tail from method)
 |  |  |  Return
 |  function 8 (21:28)
-|  |  region 0
+|  |  body 0
 |  |  |  PushFunction 9
 |  function 9 (21:41)
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 1, slot 0
 Successfully compiled 16 classes.

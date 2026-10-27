@@ -122,7 +122,7 @@ LIR DUMP
 
 LirExpressions
 |  function 0 (11:5): method locals
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  StoreLocal depth 0, slot 3
 |  |  |  Drop
@@ -132,7 +132,7 @@ LirExpressions
 |  |  |  PushLocal depth 0, slot 3
 |  |  |  Return
 |  function 1 (13:5): method members
-|  |  region 0
+|  |  body 0
 |  |  |  PushConstant 1
 |  |  |  StoreInstance slot 0
 |  |  |  Drop
@@ -142,7 +142,7 @@ LirExpressions
 |  |  |  PushConstant 7
 |  |  |  Return
 |  function 2 (15:5): method sends
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  PushConstant 1
 |  |  |  PushSymbol \key
@@ -150,20 +150,20 @@ LirExpressions
 |  |  |  Send foo (positional 1, keyword 1, tail from method)
 |  |  |  Return
 |  function 3 (17:5): method supers
-|  |  region 0
+|  |  body 0
 |  |  |  PushSpecial this
 |  |  |  PushConstant 1
 |  |  |  Send foo (positional 1, super, tail from method)
 |  |  |  Return
 |  function 4 (19:5): method adverb
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  PushConstant 1
 |  |  |  PushConstant \x
 |  |  |  Send + (positional 2, adverb, binary, tail from method)
 |  |  |  Return
 |  function 5 (21:5): method variadic
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  PushSymbol \foo
 |  |  |  PushConstant 1
@@ -171,14 +171,14 @@ LirExpressions
 |  |  |  Send performList (positional 3, tail from method)
 |  |  |  Return
 |  function 6 (23:5): method super_variadic
-|  |  region 0
+|  |  body 0
 |  |  |  PushSpecial this
 |  |  |  PushSymbol \foo
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Send superPerformList (positional 2, tail from method)
 |  |  |  Return
 |  function 7 (25:5): method environment
-|  |  region 0
+|  |  body 0
 |  |  |  PushSymbol \x
 |  |  |  PushConstant 3
 |  |  |  Send envirPut (positional 1)
@@ -187,14 +187,14 @@ LirExpressions
 |  |  |  Send envirGet (positional 0, tail from method)
 |  |  |  Return
 |  function 8 (27:5): method range
-|  |  region 0
+|  |  body 0
 |  |  |  PushConstant 1
 |  |  |  PushSpecialValue nil
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Send prSimpleNumberSeries (positional 2, tail from method)
 |  |  |  Return
 |  function 9 (29:5): method specials
-|  |  region 0
+|  |  body 0
 |  |  |  PushClass Array
 |  |  |  PushInteger 3
 |  |  |  Send new (positional 1, implicit)
@@ -206,7 +206,7 @@ LirExpressions
 |  |  |  Send add (positional 1, implicit)
 |  |  |  Return
 |  function 10 (31:5): method expression_list
-|  |  region 0
+|  |  body 0
 |  |  |  PushLocal depth 0, slot 1
 |  |  |  Send foo (positional 0)
 |  |  |  Drop
