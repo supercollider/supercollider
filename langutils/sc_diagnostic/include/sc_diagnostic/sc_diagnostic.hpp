@@ -253,12 +253,6 @@ public:
     // `^1` in interpreted code, including inside its functions, there is no method to return from.
     [[nodiscard]] static Diagnostic return_in_interpreted_code(TextInfoPtr t, sc::src::SourceCodeRange l);
 
-    // A warning, legacy code using a function's argument or variable before its declaration, e.g., `var a = b, b = 1`,
-    // as the old compiler allowed. It reads the variable, which 3.16 doesn't.
-    [[nodiscard]] static Diagnostic used_before_declaration(TextInfoPtr declaration_t,
-                                                            sc::src::SourceCodeRange declaration, TextInfoPtr use_t,
-                                                            sc::src::SourceCodeRange use);
-
     // A warning, legacy code using a generator qualifier's variable from a function in its own value, e.g.,
     // `{: y, var y = { y } }`, which, as in the old compiler, refers to what the variable hides, but 3.16 doesn't.
     [[nodiscard]] static Diagnostic qualifier_hidden_from_value(TextInfoPtr declaration_t,

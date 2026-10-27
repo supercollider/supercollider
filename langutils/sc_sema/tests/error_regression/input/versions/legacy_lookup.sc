@@ -4,7 +4,7 @@
 // 3.16 only allows a name after its declaration.
 LegacyLookup {
     // `x1` isn't a literal, so it is nil when `a1`'s default runs, and `a1` is nil.
-    // expect-warning: Variable used before its declaration
+    // expect: no diagnostics
     // expect-reads: x1 -> x1 =2 + 2
     // expect: not poisoned
     // expect: no result
@@ -18,7 +18,7 @@ LegacyLookup {
 
     // `x1` is a literal, so it is already in the frame, and `a1` is 4, but `a1` isn't a literal so it isn't known.
     // TODO: check this returns 4 once code can be run.
-    // expect-warning: Variable used before its declaration
+    // expect: no diagnostics
     // expect-reads: x1 -> x1 = 4
     // expect: not poisoned
     // expect: no result
@@ -31,7 +31,7 @@ LegacyLookup {
     }
 
     // `f` is nil while its own initial value runs.
-    // expect-warning: Variable used before its declaration
+    // expect: no diagnostics
     // expect-reads: f -> f = f
     // expect: not poisoned
     // expect: no result
@@ -40,29 +40,29 @@ LegacyLookup {
     // expect: no diagnostics
     // expect-reads: f -> f = { f }
     self_reference_in_function { var f = { f }; ^f }
-    // expect-warning: Variable used before its declaration
+    // expect: no diagnostics
     // expect-reads: b -> b = 1
     // expect: no result
     later_variable { var a = b, b = 1; ^a }
-    // expect-warning: Variable used before its declaration
+    // expect: no diagnostics
     // expect-reads: b -> b = 1
     later_variable_statement { var a = b; var b = 1; ^a }
     // The frame's `x` hides the outer one before it is declared, where 3.16 would read the outer one.
-    // expect-warning: Variable used before its declaration
+    // expect: no diagnostics
     // expect-reads: x -> x = 2
     hides_outer { var x = 1; ^{ var a = x, x = 2; a } }
-    // expect-warning: Variable used before its declaration
+    // expect: no diagnostics
     // expect-reads: g -> g = { 1 }
     later_variable_in_function { var f = { g.() }, g = { 1 }; ^f }
-    // expect-warning: Variable used before its declaration
+    // expect: no diagnostics
     // expect-reads: b -> b = 1
     later_argument { arg a = b, b = 1; ^a }
     // Assigned by an argument's default before its declaration, so `x` isn't constant, though its initial value is a
     // literal.
-    // expect-warning: Variable used before its declaration
+    // expect: no diagnostics
     // expect-reads: x -> x = 1
     argument_assigns_variable { |a = (x = 5)| var x = 1; ^x }
-    // expect-warning: Variable used before its declaration
+    // expect: no diagnostics
     // expect-reads: x -> x = 1
     argument_captures_variable { |a = { x }| var x = 1; ^x }
     // A declaration after an expression isn't in the frame, the old compiler didn't allow one, so it is an error, and
@@ -85,10 +85,10 @@ LegacyLookup {
     // expect-error: Variable not defined
     generator_function_in_value_undefined { ^{: y, var y = { y } } }
     // The frame's `foo` is nil while its initial value runs, so this is `nil + 1`, unlike 3.16.
-    // expect-warning: Variable used before its declaration
+    // expect: no diagnostics
     // expect-reads: foo -> foo = foo + 1; foo = foo + 1
     shadows_outer_expression { var foo = 10; ^{ var foo = foo + 1; foo == 11 } }
-    // expect-warning: Variable used before its declaration
+    // expect: no diagnostics
     // expect: no result
     nested_return { |x| var a = { if (x) { ^b }; ^2 }, b = 1; ^a }
 }

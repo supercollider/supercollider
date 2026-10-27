@@ -8,29 +8,6 @@ SCClass (5:1): LegacyLookup : Object
 |  SCMemberList (5:1)
 |  SCMethodList (5:1)
 |  |  SCMethod (11:5): argument_sees_computed_variable: argument_sees_computed_variable {'\n'        ^{'\n'            arg a1 = x1;'\n'            var x1 =2 + 2;'\n'            a1'\n'        }.()'\n'    }
-|  |  |
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Warning: Variable used before its declaration
-|  |  |  versions/legacy_lookup.sc:14:17
-|  |  |     12 │         ^{
-|  |  |     13 │             arg a1 = x1;
-|  |  |     14 │             var x1 =2 + 2;
-|  |  |        ┆                 ^^^^^^^^^ This is declared here...
-|  |  |     15 │             a1
-|  |  |     16 │         }.()
-|  |  |     17 │     }
-|  |  |
-|  |  |  versions/legacy_lookup.sc:13:22
-|  |  |     11 │     argument_sees_computed_variable {
-|  |  |     12 │         ^{
-|  |  |     13 │             arg a1 = x1;
-|  |  |        ┆                      ^^ ...but used before its initial value has run.
-|  |  |     14 │             var x1 =2 + 2;
-|  |  |     15 │             a1
-|  |  |     16 │         }.()
-|  |  |
-|  |  |  In the legacy version this is the variable, which is nil until its initial value runs, unless that is a literal. From 3.16 a name can only be used after its declaration, other than in a function in its own initial value, so this would be a different variable, or an error. Move the declaration first, or add `//# VERSION 3.16` once it is.
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (12:9)
 |  |  |  |  SCExplicitReturn (12:9)
 |  |  |  |  |  SCMessage (12:10): value
@@ -46,29 +23,6 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |  |  |  |  |  |  |  |  |  SCLiteral (14:25) = 2
 |  |  |  |  |  |  |  |  SCRead (15:13): local a1, declared (13:17): a1 = x1
 |  |  SCMethod (25:5): argument_sees_literal_variable: argument_sees_literal_variable {'\n'        ^{'\n'            arg a1 = x1;'\n'            var x1 = 4;'\n'            a1'\n'        }.()'\n'    }
-|  |  |
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Warning: Variable used before its declaration
-|  |  |  versions/legacy_lookup.sc:28:17
-|  |  |     26 │         ^{
-|  |  |     27 │             arg a1 = x1;
-|  |  |     28 │             var x1 = 4;
-|  |  |        ┆                 ^^^^^^ This is declared here...
-|  |  |     29 │             a1
-|  |  |     30 │         }.()
-|  |  |     31 │     }
-|  |  |
-|  |  |  versions/legacy_lookup.sc:27:22
-|  |  |     25 │     argument_sees_literal_variable {
-|  |  |     26 │         ^{
-|  |  |     27 │             arg a1 = x1;
-|  |  |        ┆                      ^^ ...but used before its initial value has run.
-|  |  |     28 │             var x1 = 4;
-|  |  |     29 │             a1
-|  |  |     30 │         }.()
-|  |  |
-|  |  |  In the legacy version this is the variable, which is nil until its initial value runs, unless that is a literal. From 3.16 a name can only be used after its declaration, other than in a function in its own initial value, so this would be a different variable, or an error. Move the declaration first, or add `//# VERSION 3.16` once it is.
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (26:9)
 |  |  |  |  SCExplicitReturn (26:9)
 |  |  |  |  |  SCMessage (26:10): value
@@ -81,29 +35,6 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |  |  |  |  |  |  |  SCLiteral (28:22) = 4
 |  |  |  |  |  |  |  |  SCRead (29:13): local a1, declared (27:17): a1 = x1
 |  |  SCMethod (38:5): self_reference: self_reference { var f = f; ^f }
-|  |  |
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Warning: Variable used before its declaration
-|  |  |  versions/legacy_lookup.sc:38:26
-|  |  |     36 │     // expect: not poisoned
-|  |  |     37 │     // expect: no result
-|  |  |     38 │     self_reference { var f = f; ^f }
-|  |  |        ┆                          ^^^^^ This is declared here...
-|  |  |     39 │     // Allowed in 3.16 too, as the function runs after `f` is assigned.
-|  |  |     40 │     // expect: no diagnostics
-|  |  |     41 │     // expect-reads: f -> f = { f }
-|  |  |
-|  |  |  versions/legacy_lookup.sc:38:30
-|  |  |     36 │     // expect: not poisoned
-|  |  |     37 │     // expect: no result
-|  |  |     38 │     self_reference { var f = f; ^f }
-|  |  |        ┆                              ^ ...but used before its initial value has run.
-|  |  |     39 │     // Allowed in 3.16 too, as the function runs after `f` is assigned.
-|  |  |     40 │     // expect: no diagnostics
-|  |  |     41 │     // expect-reads: f -> f = { f }
-|  |  |
-|  |  |  In the legacy version this is the variable, which is nil until its initial value runs, unless that is a literal. From 3.16 a name can only be used after its declaration, other than in a function in its own initial value, so this would be a different variable, or an error. Move the declaration first, or add `//# VERSION 3.16` once it is.
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (38:22)
 |  |  |  |  SCVariableDeclare (38:26): f, computed
 |  |  |  |  |  SCRead (38:30): local f, declared (38:26): f = f
@@ -118,29 +49,6 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |  |  SCExplicitReturn (42:49)
 |  |  |  |  |  SCRead (42:50): local f, declared (42:38): f = { f }
 |  |  SCMethod (46:5): later_variable: later_variable { var a = b, b = 1; ^a }
-|  |  |
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Warning: Variable used before its declaration
-|  |  |  versions/legacy_lookup.sc:46:33
-|  |  |     44 │     // expect-reads: b -> b = 1
-|  |  |     45 │     // expect: no result
-|  |  |     46 │     later_variable { var a = b, b = 1; ^a }
-|  |  |        ┆                                 ^^^^^ This is declared here...
-|  |  |     47 │     // expect-warning: Variable used before its declaration
-|  |  |     48 │     // expect-reads: b -> b = 1
-|  |  |     49 │     later_variable_statement { var a = b; var b = 1; ^a }
-|  |  |
-|  |  |  versions/legacy_lookup.sc:46:30
-|  |  |     44 │     // expect-reads: b -> b = 1
-|  |  |     45 │     // expect: no result
-|  |  |     46 │     later_variable { var a = b, b = 1; ^a }
-|  |  |        ┆                              ^ ...but used before its initial value has run.
-|  |  |     47 │     // expect-warning: Variable used before its declaration
-|  |  |     48 │     // expect-reads: b -> b = 1
-|  |  |     49 │     later_variable_statement { var a = b; var b = 1; ^a }
-|  |  |
-|  |  |  In the legacy version this is the variable, which is nil until its initial value runs, unless that is a literal. From 3.16 a name can only be used after its declaration, other than in a function in its own initial value, so this would be a different variable, or an error. Move the declaration first, or add `//# VERSION 3.16` once it is.
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (46:22)
 |  |  |  |  SCVariableDeclare (46:26): a, computed
 |  |  |  |  |  SCRead (46:30): local b, declared (46:33): b = 1
@@ -149,29 +57,6 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |  |  SCExplicitReturn (46:40)
 |  |  |  |  |  SCRead (46:41): local a, declared (46:26): a = b
 |  |  SCMethod (49:5): later_variable_statement: later_variable_statement { var a = b; var b = 1; ^a }
-|  |  |
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Warning: Variable used before its declaration
-|  |  |  versions/legacy_lookup.sc:49:47
-|  |  |     47 │     // expect-warning: Variable used before its declaration
-|  |  |     48 │     // expect-reads: b -> b = 1
-|  |  |     49 │     later_variable_statement { var a = b; var b = 1; ^a }
-|  |  |        ┆                                               ^^^^^ This is declared here...
-|  |  |     50 │     // The frame's `x` hides the outer one before it is declared, where 3.16 would read the outer one.
-|  |  |     51 │     // expect-warning: Variable used before its declaration
-|  |  |     52 │     // expect-reads: x -> x = 2
-|  |  |
-|  |  |  versions/legacy_lookup.sc:49:40
-|  |  |     47 │     // expect-warning: Variable used before its declaration
-|  |  |     48 │     // expect-reads: b -> b = 1
-|  |  |     49 │     later_variable_statement { var a = b; var b = 1; ^a }
-|  |  |        ┆                                        ^ ...but used before its initial value has run.
-|  |  |     50 │     // The frame's `x` hides the outer one before it is declared, where 3.16 would read the outer one.
-|  |  |     51 │     // expect-warning: Variable used before its declaration
-|  |  |     52 │     // expect-reads: x -> x = 2
-|  |  |
-|  |  |  In the legacy version this is the variable, which is nil until its initial value runs, unless that is a literal. From 3.16 a name can only be used after its declaration, other than in a function in its own initial value, so this would be a different variable, or an error. Move the declaration first, or add `//# VERSION 3.16` once it is.
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (49:32)
 |  |  |  |  SCVariableDeclare (49:36): a, computed
 |  |  |  |  |  SCRead (49:40): local b, declared (49:47): b = 1
@@ -180,29 +65,6 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |  |  SCExplicitReturn (49:54)
 |  |  |  |  |  SCRead (49:55): local a, declared (49:36): a = b
 |  |  SCMethod (53:5): hides_outer: hides_outer { var x = 1; ^{ var a = x, x = 2; a } }
-|  |  |
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Warning: Variable used before its declaration
-|  |  |  versions/legacy_lookup.sc:53:44
-|  |  |     51 │     // expect-warning: Variable used before its declaration
-|  |  |     52 │     // expect-reads: x -> x = 2
-|  |  |     53 │     hides_outer { var x = 1; ^{ var a = x, x = 2; a } }
-|  |  |        ┆                                            ^^^^^ This is declared here...
-|  |  |     54 │     // expect-warning: Variable used before its declaration
-|  |  |     55 │     // expect-reads: g -> g = { 1 }
-|  |  |     56 │     later_variable_in_function { var f = { g.() }, g = { 1 }; ^f }
-|  |  |
-|  |  |  versions/legacy_lookup.sc:53:41
-|  |  |     51 │     // expect-warning: Variable used before its declaration
-|  |  |     52 │     // expect-reads: x -> x = 2
-|  |  |     53 │     hides_outer { var x = 1; ^{ var a = x, x = 2; a } }
-|  |  |        ┆                                         ^ ...but used before its initial value has run.
-|  |  |     54 │     // expect-warning: Variable used before its declaration
-|  |  |     55 │     // expect-reads: g -> g = { 1 }
-|  |  |     56 │     later_variable_in_function { var f = { g.() }, g = { 1 }; ^f }
-|  |  |
-|  |  |  In the legacy version this is the variable, which is nil until its initial value runs, unless that is a literal. From 3.16 a name can only be used after its declaration, other than in a function in its own initial value, so this would be a different variable, or an error. Move the declaration first, or add `//# VERSION 3.16` once it is.
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (53:19)
 |  |  |  |  SCVariableDeclare (53:23): x, prototype
 |  |  |  |  |  SCLiteral (53:27) = 1
@@ -215,29 +77,6 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |  |  |  |  |  |  SCLiteral (53:48) = 2
 |  |  |  |  |  |  |  SCRead (53:51): local a, declared (53:37): a = x
 |  |  SCMethod (56:5): later_variable_in_function: later_variable_in_function { var f = { g.() }, g = { 1 }; ^f }
-|  |  |
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Warning: Variable used before its declaration
-|  |  |  versions/legacy_lookup.sc:56:52
-|  |  |     54 │     // expect-warning: Variable used before its declaration
-|  |  |     55 │     // expect-reads: g -> g = { 1 }
-|  |  |     56 │     later_variable_in_function { var f = { g.() }, g = { 1 }; ^f }
-|  |  |        ┆                                                    ^^^^^^^^^ This is declared here...
-|  |  |     57 │     // expect-warning: Variable used before its declaration
-|  |  |     58 │     // expect-reads: b -> b = 1
-|  |  |     59 │     later_argument { arg a = b, b = 1; ^a }
-|  |  |
-|  |  |  versions/legacy_lookup.sc:56:44
-|  |  |     54 │     // expect-warning: Variable used before its declaration
-|  |  |     55 │     // expect-reads: g -> g = { 1 }
-|  |  |     56 │     later_variable_in_function { var f = { g.() }, g = { 1 }; ^f }
-|  |  |        ┆                                            ^ ...but used before its initial value has run.
-|  |  |     57 │     // expect-warning: Variable used before its declaration
-|  |  |     58 │     // expect-reads: b -> b = 1
-|  |  |     59 │     later_argument { arg a = b, b = 1; ^a }
-|  |  |
-|  |  |  In the legacy version this is the variable, which is nil until its initial value runs, unless that is a literal. From 3.16 a name can only be used after its declaration, other than in a function in its own initial value, so this would be a different variable, or an error. Move the declaration first, or add `//# VERSION 3.16` once it is.
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (56:34)
 |  |  |  |  SCVariableDeclare (56:38): f, computed
 |  |  |  |  |  SCFunction (56:42): f
@@ -251,29 +90,6 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |  |  SCExplicitReturn (56:63)
 |  |  |  |  |  SCRead (56:64): local f, declared (56:38): f = { g.() }
 |  |  SCMethod (59:5): later_argument: later_argument { arg a = b, b = 1; ^a }
-|  |  |
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Warning: Variable used before its declaration
-|  |  |  versions/legacy_lookup.sc:59:33
-|  |  |     57 │     // expect-warning: Variable used before its declaration
-|  |  |     58 │     // expect-reads: b -> b = 1
-|  |  |     59 │     later_argument { arg a = b, b = 1; ^a }
-|  |  |        ┆                                 ^^^^^ This is declared here...
-|  |  |     60 │     // Assigned by an argument's default before its declaration, so `x` isn't constant, though its initial value is a
-|  |  |     61 │     // literal.
-|  |  |     62 │     // expect-warning: Variable used before its declaration
-|  |  |
-|  |  |  versions/legacy_lookup.sc:59:30
-|  |  |     57 │     // expect-warning: Variable used before its declaration
-|  |  |     58 │     // expect-reads: b -> b = 1
-|  |  |     59 │     later_argument { arg a = b, b = 1; ^a }
-|  |  |        ┆                              ^ ...but used before its initial value has run.
-|  |  |     60 │     // Assigned by an argument's default before its declaration, so `x` isn't constant, though its initial value is a
-|  |  |     61 │     // literal.
-|  |  |     62 │     // expect-warning: Variable used before its declaration
-|  |  |
-|  |  |  In the legacy version this is the variable, which is nil until its initial value runs, unless that is a literal. From 3.16 a name can only be used after its declaration, other than in a function in its own initial value, so this would be a different variable, or an error. Move the declaration first, or add `//# VERSION 3.16` once it is.
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (59:26)
 |  |  |  |  SCArgumentDeclare (59:26): a, computed
 |  |  |  |  |  SCRead (59:30): local b, declared (59:33): b = 1
@@ -283,29 +99,6 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |  |  SCExplicitReturn (59:40)
 |  |  |  |  |  SCRead (59:41): local a, declared (59:26): a = b
 |  |  SCMethod (64:5): argument_assigns_variable: argument_assigns_variable { |a = (x = 5)| var x = 1; ^x }
-|  |  |
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Warning: Variable used before its declaration
-|  |  |  versions/legacy_lookup.sc:64:51
-|  |  |     62 │     // expect-warning: Variable used before its declaration
-|  |  |     63 │     // expect-reads: x -> x = 1
-|  |  |     64 │     argument_assigns_variable { |a = (x = 5)| var x = 1; ^x }
-|  |  |        ┆                                                   ^^^^^ This is declared here...
-|  |  |     65 │     // expect-warning: Variable used before its declaration
-|  |  |     66 │     // expect-reads: x -> x = 1
-|  |  |     67 │     argument_captures_variable { |a = { x }| var x = 1; ^x }
-|  |  |
-|  |  |  versions/legacy_lookup.sc:64:39
-|  |  |     62 │     // expect-warning: Variable used before its declaration
-|  |  |     63 │     // expect-reads: x -> x = 1
-|  |  |     64 │     argument_assigns_variable { |a = (x = 5)| var x = 1; ^x }
-|  |  |        ┆                                       ^ ...but used before its initial value has run.
-|  |  |     65 │     // expect-warning: Variable used before its declaration
-|  |  |     66 │     // expect-reads: x -> x = 1
-|  |  |     67 │     argument_captures_variable { |a = { x }| var x = 1; ^x }
-|  |  |
-|  |  |  In the legacy version this is the variable, which is nil until its initial value runs, unless that is a literal. From 3.16 a name can only be used after its declaration, other than in a function in its own initial value, so this would be a different variable, or an error. Move the declaration first, or add `//# VERSION 3.16` once it is.
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (64:34)
 |  |  |  |  SCArgumentDeclare (64:34): a, computed
 |  |  |  |  |  SCAssign (64:39): local x, declared (64:51): x = 1
@@ -316,29 +109,6 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |  |  SCExplicitReturn (64:58)
 |  |  |  |  |  SCRead (64:59): local x, declared (64:51): x = 1
 |  |  SCMethod (67:5): argument_captures_variable: argument_captures_variable { |a = { x }| var x = 1; ^x }
-|  |  |
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Warning: Variable used before its declaration
-|  |  |  versions/legacy_lookup.sc:67:50
-|  |  |     65 │     // expect-warning: Variable used before its declaration
-|  |  |     66 │     // expect-reads: x -> x = 1
-|  |  |     67 │     argument_captures_variable { |a = { x }| var x = 1; ^x }
-|  |  |        ┆                                                  ^^^^^ This is declared here...
-|  |  |     68 │     // A declaration after an expression isn't in the frame, the old compiler didn't allow one, so it is an error, and
-|  |  |     69 │     // 3.16's rules apply.
-|  |  |     70 │     // expect-error: Variable declared after an expression
-|  |  |
-|  |  |  versions/legacy_lookup.sc:67:41
-|  |  |     65 │     // expect-warning: Variable used before its declaration
-|  |  |     66 │     // expect-reads: x -> x = 1
-|  |  |     67 │     argument_captures_variable { |a = { x }| var x = 1; ^x }
-|  |  |        ┆                                         ^ ...but used before its initial value has run.
-|  |  |     68 │     // A declaration after an expression isn't in the frame, the old compiler didn't allow one, so it is an error, and
-|  |  |     69 │     // 3.16's rules apply.
-|  |  |     70 │     // expect-error: Variable declared after an expression
-|  |  |
-|  |  |  In the legacy version this is the variable, which is nil until its initial value runs, unless that is a literal. From 3.16 a name can only be used after its declaration, other than in a function in its own initial value, so this would be a different variable, or an error. Move the declaration first, or add `//# VERSION 3.16` once it is.
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (67:35)
 |  |  |  |  SCArgumentDeclare (67:35): a, computed
 |  |  |  |  |  SCFunction (67:39): a
@@ -482,7 +252,7 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |     86 │     generator_function_in_value_undefined { ^{: y, var y = { y } } }
 |  |  |        ┆                                                    ^^^^^^^^^^^^^ This qualifier declares it...
 |  |  |     87 │     // The frame's `foo` is nil while its initial value runs, so this is `nil + 1`, unlike 3.16.
-|  |  |     88 │     // expect-warning: Variable used before its declaration
+|  |  |     88 │     // expect: no diagnostics
 |  |  |     89 │     // expect-reads: foo -> foo = foo + 1; foo = foo + 1
 |  |  |
 |  |  |  versions/legacy_lookup.sc:86:62
@@ -491,7 +261,7 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |     86 │     generator_function_in_value_undefined { ^{: y, var y = { y } } }
 |  |  |        ┆                                                              ^ ...but this function in its value can't see it.
 |  |  |     87 │     // The frame's `foo` is nil while its initial value runs, so this is `nil + 1`, unlike 3.16.
-|  |  |     88 │     // expect-warning: Variable used before its declaration
+|  |  |     88 │     // expect: no diagnostics
 |  |  |     89 │     // expect-reads: foo -> foo = foo + 1; foo = foo + 1
 |  |  |
 |  |  |  In the legacy version, as in the old compiler, the value is outside the qualifier, so this is what the name refers to there instead. From 3.16 a function in a qualifier's value refers to the qualifier's variable. Rename one of them to keep this meaning.
@@ -505,7 +275,7 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |     86 │     generator_function_in_value_undefined { ^{: y, var y = { y } } }
 |  |  |        ┆                                                              ^ this is not defined.
 |  |  |     87 │     // The frame's `foo` is nil while its initial value runs, so this is `nil + 1`, unlike 3.16.
-|  |  |     88 │     // expect-warning: Variable used before its declaration
+|  |  |     88 │     // expect: no diagnostics
 |  |  |     89 │     // expect-reads: foo -> foo = foo + 1; foo = foo + 1
 |  |  |
 |  |  |  Declare it with 'var', or use '~y' to refer to an environment variable.
@@ -520,29 +290,6 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |  |  |  |  |  |  |  |  SCExprList (86:62)
 |  |  |  |  |  |  SCRead (86:49): local y, declared (86:52): var y = { y }
 |  |  SCMethod (90:5): shadows_outer_expression: shadows_outer_expression { var foo = 10; ^{ var foo = foo + 1; foo == 11 } }
-|  |  |
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Warning: Variable used before its declaration
-|  |  |  versions/legacy_lookup.sc:90:53
-|  |  |     88 │     // expect-warning: Variable used before its declaration
-|  |  |     89 │     // expect-reads: foo -> foo = foo + 1; foo = foo + 1
-|  |  |     90 │     shadows_outer_expression { var foo = 10; ^{ var foo = foo + 1; foo == 11 } }
-|  |  |        ┆                                                     ^^^^^^^^^^^^^ This is declared here...
-|  |  |     91 │     // expect-warning: Variable used before its declaration
-|  |  |     92 │     // expect: no result
-|  |  |     93 │     nested_return { |x| var a = { if (x) { ^b }; ^2 }, b = 1; ^a }
-|  |  |
-|  |  |  versions/legacy_lookup.sc:90:59
-|  |  |     88 │     // expect-warning: Variable used before its declaration
-|  |  |     89 │     // expect-reads: foo -> foo = foo + 1; foo = foo + 1
-|  |  |     90 │     shadows_outer_expression { var foo = 10; ^{ var foo = foo + 1; foo == 11 } }
-|  |  |        ┆                                                           ^^^ ...but used before its initial value has run.
-|  |  |     91 │     // expect-warning: Variable used before its declaration
-|  |  |     92 │     // expect: no result
-|  |  |     93 │     nested_return { |x| var a = { if (x) { ^b }; ^2 }, b = 1; ^a }
-|  |  |
-|  |  |  In the legacy version this is the variable, which is nil until its initial value runs, unless that is a literal. From 3.16 a name can only be used after its declaration, other than in a function in its own initial value, so this would be a different variable, or an error. Move the declaration first, or add `//# VERSION 3.16` once it is.
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (90:32)
 |  |  |  |  SCVariableDeclare (90:36): foo, prototype
 |  |  |  |  |  SCLiteral (90:42) = 10
@@ -559,29 +306,6 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |  |  |  |  |  |  SCPositionalArgs (90:68)
 |  |  |  |  |  |  |  |  |  SCLiteral (90:75) = 11
 |  |  SCMethod (93:5): nested_return: nested_return { |x| var a = { if (x) { ^b }; ^2 }, b = 1; ^a }
-|  |  |
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Warning: Variable used before its declaration
-|  |  |  versions/legacy_lookup.sc:93:56
-|  |  |     91 │     // expect-warning: Variable used before its declaration
-|  |  |     92 │     // expect: no result
-|  |  |     93 │     nested_return { |x| var a = { if (x) { ^b }; ^2 }, b = 1; ^a }
-|  |  |        ┆                                                        ^^^^^ This is declared here...
-|  |  |     94 │ }
-|  |  |     95 │ 
-|  |  |     96 │ LookupThreeSixteen {
-|  |  |
-|  |  |  versions/legacy_lookup.sc:93:45
-|  |  |     91 │     // expect-warning: Variable used before its declaration
-|  |  |     92 │     // expect: no result
-|  |  |     93 │     nested_return { |x| var a = { if (x) { ^b }; ^2 }, b = 1; ^a }
-|  |  |        ┆                                             ^ ...but used before its initial value has run.
-|  |  |     94 │ }
-|  |  |     95 │ 
-|  |  |     96 │ LookupThreeSixteen {
-|  |  |
-|  |  |  In the legacy version this is the variable, which is nil until its initial value runs, unless that is a literal. From 3.16 a name can only be used after its declaration, other than in a function in its own initial value, so this would be a different variable, or an error. Move the declaration first, or add `//# VERSION 3.16` once it is.
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (93:22)
 |  |  |  |  SCArgumentDeclare (93:22): x (captured)
 |  |  |  SCBody (93:25)

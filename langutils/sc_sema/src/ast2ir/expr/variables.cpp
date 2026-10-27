@@ -234,17 +234,11 @@ std::optional<InitialisingUse> find_initialising(Expr& expr, Symbol name, const 
 }
 
 // The variable a use of an initialising variable refers to. Legacy code using one before its declaration refers to
-// the variable in its frame, which is nil until its initial value runs, unless that is a literal, but 3.16 doesn't,
-// so it warns.
-LocalIndex resolve_initialising(InitialisingUse use, bool assigns, DiagnosticSink& sink, IRGraph& ir,
-                                const ast::ASTGraph& g, ast::Index at) {
+// the variable in its frame, which is nil until its initial value runs, unless that is a literal.
+LocalIndex resolve_initialising(InitialisingUse use, bool assigns, IRGraph& ir) {
     auto& variable = *use.variable;
-    if (variable.later || !use.in_function) {
-        sink(sc::diag::Diagnostic::used_before_declaration(ir.text_info(variable.declaration.source),
-                                                           IRGraph::range(variable.declaration), get_text_info(g),
-                                                           get_location(g, at)));
+    if (variable.later || !use.in_function)
         variable.escaped = variable.escaped || assigns || use.in_function;
-    }
     auto& local = ir.local(variable.local);
     local.assigned_to = local.assigned_to || assigns;
     local.captured = local.captured || use.in_function;
@@ -295,9 +289,8 @@ Return<SCAnyExpr_I> Expr::operator()(ast::NamedIdentifierIndex i) {
     if (const auto kind = special_kind(ctx.common_symbols, name_sym))
         return { ir.create(SCSpecial { *kind }, location({ *i })) };
     if (const auto use = find_initialising(*this, name_sym, *ast_graph, { *i }))
-        return { ir.create(
-            SCRead { name_sym, SCRead::Kind::Local, resolve_initialising(*use, false, sink, ir, *ast_graph, { *i }) },
-            location({ *i })) };
+        return { ir.create(SCRead { name_sym, SCRead::Kind::Local, resolve_initialising(*use, false, ir) },
+                           location({ *i })) };
     if (const auto entry = resolve_symbol(name_sym)) {
         if (entry->local)
             record_local_use(name_sym, LocalIndex { *entry->local }, false);
@@ -346,8 +339,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentIndex i) {
         return expr_r;
     }
     if (const auto use = find_initialising(*this, name_sym, *ast_graph, { *name }))
-        return make_return(SCAssign::Kind::Local, resolve_initialising(*use, true, sink, ir, *ast_graph, { *name }),
-                           {});
+        return make_return(SCAssign::Kind::Local, resolve_initialising(*use, true, ir), {});
 
     if (const auto entry = resolve_symbol(name_sym)) {
         if (assigns_to_constant(*this, *entry, *ast_graph, { *name }))
@@ -393,7 +385,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::VariablePackAssignIndex i) {
                                                SCAssign::Kind::Local,
                                                index,
                                                is_rest,
-                                               resolve_initialising(*use, true, sink, ir, *ast_graph, { **name }) },
+                                               resolve_initialising(*use, true, ir) },
                                 location({ **name })));
             return;
         }
