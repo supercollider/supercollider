@@ -243,8 +243,8 @@ int main(int argc, char* argv[]) {
             const std::string release = get_path(argv[++i]).string();
             const auto version = sc::ast::parse_release(release);
             if (!version) {
-                std::cout << "ERROR: --interpreted-version expects a known release, e.g., 3.16, not '" << release << "'"
-                          << std::endl;
+                std::cout << "ERROR: --interpreted-version expects a known release, e.g., 3.16, or legacy, not '"
+                          << release << "'" << std::endl;
                 return EXIT_FAILURE;
             }
             interpreted_version = *version;

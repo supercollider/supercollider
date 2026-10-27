@@ -857,7 +857,8 @@ sc::ast::LanguageVersion interpretedVersion() {
         return sc::ast::LanguageVersion::V3_16;
     if (const auto version = sc::ast::parse_release(release))
         return *version;
-    post("WARNING: interpretedVersion '%s' in the language config isn't a known release, e.g., 3.16, using legacy\n",
+    post("WARNING: interpretedVersion '%s' in the language config isn't a known release, e.g., 3.16, or legacy, using "
+         "legacy\n",
          release.c_str());
     return sc::ast::LanguageVersion::Legacy;
 }

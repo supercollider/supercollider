@@ -308,19 +308,6 @@ void write_row(std::ostream& out, const std::string& name, const char* kind, std
     out << std::defaultfloat << "\n";
 }
 
-std::optional<sc::ast::LanguageVersion> parse_release(const std::string& release) {
-    unsigned major { 0 };
-    unsigned minor { 0 };
-    const auto* end = release.data() + release.size();
-    const auto [dot, major_error] = std::from_chars(release.data(), end, major);
-    if (major_error != std::errc {} || dot == end || *dot != '.')
-        return std::nullopt;
-    const auto [last, minor_error] = std::from_chars(dot + 1, end, minor);
-    if (minor_error != std::errc {} || last != end)
-        return std::nullopt;
-    return sc::ast::version_for_release(major, minor);
-}
-
 bool parse_count(const std::string& text, std::size_t& count) {
     const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), count);
     return error == std::errc {} && end == text.data() + text.size() && count > 0;
@@ -346,10 +333,10 @@ int main(int argc, char* argv[]) {
                 return EXIT_FAILURE;
             }
         } else if (arg == "--interpreted-version" && i + 1 < argc) {
-            const auto release = parse_release(argv[++i]);
+            const auto release = sc::ast::parse_release(argv[++i]);
             if (!release) {
-                std::cout << "ERROR: --interpreted-version expects a known release, e.g., 3.16, not '" << argv[i] << "'"
-                          << std::endl;
+                std::cout << "ERROR: --interpreted-version expects a known release, e.g., 3.16, or legacy, not '"
+                          << argv[i] << "'" << std::endl;
                 return EXIT_FAILURE;
             }
             version = *release;

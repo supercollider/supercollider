@@ -33,8 +33,11 @@ inline constexpr std::array language_releases { LanguageRelease { 3, 16, Languag
     return out;
 }
 
-// A release, e.g., `3.16`, as the version it compiles as. Nothing if it isn't `major.minor`, or is after the latest.
+// A release, e.g., `3.16`, as the version it compiles as, or `legacy`. Nothing if it isn't `major.minor` or `legacy`,
+// or is after the latest.
 [[nodiscard]] inline std::optional<LanguageVersion> parse_release(std::string_view release) {
+    if (release == "legacy")
+        return LanguageVersion::Legacy;
     unsigned major { 0 };
     unsigned minor { 0 };
     const auto* end = release.data() + release.size();
