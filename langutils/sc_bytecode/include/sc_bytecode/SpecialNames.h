@@ -6,7 +6,8 @@
 #include <string_view>
 
 // The names of the VM's special classes and selectors, indexed by their enums in OpcodeOperands.h, the same as lang/'s
-// initSpecialClasses and initSpecialSelectors (PyrParseNode.cpp) set gSpecialClasses and friends.
+// initSpecialClasses and initSpecialSelectors (SpecialSelectorsOperatorsAndClasses.cpp) set gSpecialClasses and
+// friends.
 namespace Opcode::names {
 
 inline constexpr std::array<std::string_view, static_cast<std::size_t>(OpSpecialClassEnum::COUNT)> special_classes {

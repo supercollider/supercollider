@@ -20,11 +20,11 @@
 
 #include "ClassLibraryInfo.hpp"
 #include "ClassLibraryLoader.hpp"
-#include "CompilerContext.hpp"
 #include "PyrErrors.h"
 #include "PyrObjectHdr.h"
 #include "PyrSymbolTable.h"
 #include "SC_Version.hpp"
+#include "SourceHighlight.hpp"
 #include "PyrErrors.h"
 #include "PyrKernel.h"
 #include "PyrObject.h"
@@ -35,7 +35,7 @@
 #include "PyrListPrim.h"
 #include "PyrSlot.h"
 #include "PyrMessage.h"
-#include "PyrParseNode.h"
+#include "SpecialSelectorsOperatorsAndClasses.h"
 #include "PyrKernelProto.h"
 #include "PyrInterpreter.h"
 #include "PyrDeepCopier.h"
@@ -45,7 +45,6 @@
 #include "SC_LanguageConfig.hpp"
 #include "SC_Filesystem.hpp"
 #include "VMGlobals.h"
-#include "sc_source/normalise_source.hpp"
 #include "sc_source/text_location.hpp"
 
 #include <cstddef>
@@ -76,8 +75,6 @@
 #endif
 
 namespace fs = std::filesystem;
-
-int yyparse();
 
 extern bool gTraceInterpreter;
 PyrSymbol* s_recvmsg;
@@ -2522,31 +2519,6 @@ int prInstancesOfClassRespondTo(struct VMGlobals* g, int numArgsPushed) {
 }
 
 
-PyrMethod* GetFunctionCompileContext(VMGlobals* g, CompilerContext& cxt) {
-    PyrClass* classobj;
-    PyrSymbol *classsym, *contextsym;
-    PyrMethod* meth;
-    // lookup interpreter class
-    classsym = getsym("Interpreter");
-    classobj = classsym->u.classobj;
-    if (!classobj) {
-        error("There is no Interpreter class.\n");
-        return nullptr;
-    }
-    // lookup functionCompileContext method
-    contextsym = getsym("functionCompileContext");
-    int index = slotRawInt(&classobj->classIndex) + contextsym->u.index;
-    meth = gRowTable[index];
-    if (!meth || slotRawSymbol(&meth->name) != contextsym) {
-        error("compile context method 'functionCompileContext' not found.\n");
-        return nullptr;
-    }
-    cxt.compilingClass = classobj;
-    cxt.compilingMethod = meth;
-    cxt.compilingBlock = meth;
-    return meth;
-}
-
 #if !SCPLAYER
 // A closure over the interpreter's frame.
 static PyrClosure* InterpretedClosure(VMGlobals* g, PyrBlock* block) {
@@ -2572,87 +2544,19 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
         return errWrongType;
     auto string = stringSlot.getPyrObjType<PyrString>();
 
-    if (loadedClassLibrary()) {
-        const auto start = sc::src::FileCodeLocation {
-            0,
-            static_cast<std::uint32_t>(lineNumber.isInt() ? lineNumber.getInt() : 0),
-            static_cast<std::uint32_t>(column.isInt() ? column.getInt() : 0),
-        };
-        auto block = compileInterpreted(g, { string->s, static_cast<size_t>(string->size) },
-                                        fileName.isSymbol() ? fileName.getSymbol() : nullptr, start);
-        if (!block) {
-            stackStart[0] = PyrSlot {};
-            return errFailed;
-        }
-        stackStart[0] = PyrSlot::make(InterpretedClosure(g, block));
-        return errNone;
-    }
-
-    sc::src::NormalisedSource src { string->s, static_cast<size_t>(string->size) };
-    const auto& srcStr = src.as_string();
-    auto* strPyr = newPyrString(g->gc, srcStr.c_str(), 0, false);
-
-    auto fileSym = fileName.isSymbol() ? fileName.getSymbol() : getsym("interpreted_text");
-
-    const auto offset = sc::src::FileCodeLocation {
+    const auto start = sc::src::FileCodeLocation {
         0,
         static_cast<std::uint32_t>(lineNumber.isInt() ? lineNumber.getInt() : 0),
         static_cast<std::uint32_t>(column.isInt() ? column.getInt() : 0),
     };
-
-
-    auto textInfo = std::make_shared<TextInfo>(std::move(src), *strPyr, *fileSym, offset);
-
-    CompilerContext cxt { textInfo, g };
-    // This is the only place where this can be set.
-    // In the future we should consider removing this.
-    cxt.generateTailCallByteCodes = gClassLibraryInfo.generateTailCalls;
-
-    const auto on_parse_failure = [&](const std::vector<CompilerContext::ParseErrorInCurFile>& errors,
-                                      int error_code) -> int {
-        for (const auto& er : errors) {
-            const auto hg = textInfo->createDiagnosticHighlight(er.location, std::string { er.msg });
-            const auto str = diagnosticToCompilerError(ErrorType::Error, "parsing error", &hg, 1);
-            cxt.postError(str);
-        }
+    auto block = compileInterpreted(g, { string->s, static_cast<size_t>(string->size) },
+                                    fileName.isSymbol() ? fileName.getSymbol() : nullptr, start);
+    if (!block) {
         stackStart[0] = PyrSlot {};
         return errFailed;
-    };
-
-    const auto on_parse_sucess = [&](PyrRootNode& root) -> int {
-        auto meth = GetFunctionCompileContext(g, cxt);
-        assert(meth); // Should be impossible.
-        if (!meth)
-            return errFailed;
-
-        auto& children = *root.children;
-        auto blockNode = nodeCast<PyrBlockNode>(&children);
-
-        // All cmd line code should return a block.
-        assert(blockNode);
-        if (!blockNode)
-            return errFailed;
-
-        // Should be only one top level block.
-        assert(blockNode->mNext == nullptr);
-
-        blockNode->mIsExplicitlyClosed = true;
-
-        PyrSlot compileResult {};
-        compileNode(cxt, blockNode, &compileResult, true);
-
-        if (cxt.errors > 0) {
-            stackStart[0] = PyrSlot {};
-            return errFailed;
-        }
-
-        // Compiler should always write a pyrblock to the result when compiling a blocknode.
-        assert(compileResult.isObjectHdr() && compileResult.getPyrObjType<PyrObject>()->classptr == class_fundef);
-        stackStart[0] = PyrSlot::make(InterpretedClosure(g, compileResult.getPyrObjType<PyrBlock>()));
-        return errNone;
-    };
-
-    return parse(cxt, on_parse_sucess, on_parse_failure);
+    }
+    stackStart[0] = PyrSlot::make(InterpretedClosure(g, block));
+    return errNone;
 }
 #endif
 

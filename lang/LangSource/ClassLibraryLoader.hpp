@@ -15,9 +15,6 @@ struct ClassLibrary;
 struct CompiledGraph;
 }
 
-// SCLANG_NEW_COMPILER=1 toggles new compiler
-[[nodiscard]] bool newCompilerRequested();
-
 // Also posts, will still need finalising. Keeps the library's compiler for interpreted code, until unloadClassLibrary.
 [[nodiscard]] bool loadClassLibrary(std::size_t& thingsPosted);
 

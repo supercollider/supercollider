@@ -28,7 +28,7 @@
 #include "InitAlloc.h"
 #include <limits>
 #include <string.h>
-#include "PyrLexer.h"
+#include "FatalInterpreterError.h"
 
 #define PAUSETIMES 0
 

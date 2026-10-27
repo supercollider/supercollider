@@ -29,7 +29,6 @@
 #include "PyrMathPrim.h"
 #include "PyrKernel.h"
 #include "PyrMessage.h"
-#include "PyrParseNode.h"
 #include "PyrSignal.h"
 #include "PyrSched.h"
 #include "PyrSymbol.h"

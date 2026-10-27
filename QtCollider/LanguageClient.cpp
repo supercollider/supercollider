@@ -25,7 +25,6 @@
 #include "QObjectProxy.h"
 
 #include <PyrKernel.h>
-#include <PyrLexer.h>
 
 #include <qmath.h>
 #include <QWidget>

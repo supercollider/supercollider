@@ -340,3 +340,13 @@ enum {
 
     op_NumSpecialClasses
 };
+
+struct PyrSymbol;
+
+extern PyrSymbol* gSpecialUnarySelectors[opNumUnarySelectors];
+extern PyrSymbol* gSpecialBinarySelectors[opNumBinarySelectors];
+extern PyrSymbol* gSpecialSelectors[opmNumSpecialSelectors];
+extern PyrSymbol* gSpecialClasses[op_NumSpecialClasses];
+
+void initSpecialSelectors();
+void initSpecialClasses();

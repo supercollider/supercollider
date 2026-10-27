@@ -1106,7 +1106,7 @@ struct Emitter {
     CompilingBytecodes encode(lir::Body body) { return BodyEncoder { *this, plan_body(body) }.encode(); }
 
     ////////////////////////////////////////////////////////////////////////////////
-    // Inlined sends, laid out as compileIfMsg and its neighbours in PyrParseNode.cpp did
+    // Inlined sends, laid out as the old compiler's compileIfMsg and its neighbours did
     ////////////////////////////////////////////////////////////////////////////////
 
     template <typename Op>

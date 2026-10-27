@@ -19,7 +19,7 @@
 */
 
 #include "PyrMessage.h"
-#include "PyrParseNode.h"
+#include "SpecialSelectorsOperatorsAndClasses.h"
 #include "PyrPrimitiveProto.h"
 #include "PyrInterpreter.h"
 #include "PyrPrimitive.h"

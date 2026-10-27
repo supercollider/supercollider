@@ -20,23 +20,9 @@
 
 #pragma once
 
-#include "SCBase.h"
-#include "PyrSymbol.h"
-#include "SC_Export.h"
 #include <stdexcept>
-
-// Note: this file is used to implement the bindings from sc_lexer to the requirements of the bison parser.
-// If you need to lex sc code, but don't need to compile it, you should use sc_lexer instead.
-
-// Called from inside the bison parser.
-int yylex();
-
-// Called from inside the bison parser when an error occurs.
-void yyerror(const char* s);
 
 /// Often the result of a gc error, used to represent any unrecoverable state.
 struct FatalInterpreterError : public std::runtime_error {
     using std::runtime_error::runtime_error;
 };
-
-// MAIN ENTRY POINTS OF SC LANG are located in SCBase.h

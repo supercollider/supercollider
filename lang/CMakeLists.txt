@@ -9,7 +9,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
     LangPrimSource
 
     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
-    LangSource/Bison
 )
 
 
@@ -46,24 +45,23 @@ set(sclang_sources
     LangPrimSource/PyrSymbolPrim.cpp
     LangPrimSource/PyrUnixPrim.cpp
     LangSource/AdvancingAllocPool.cpp
-    LangSource/DumpParseNode.cpp
     LangSource/GC.cpp
     LangSource/InitAlloc.cpp
     LangSource/PyrInterpreter3.cpp
-    LangSource/PyrLexer.cpp
+    LangSource/LibraryLifecycle.cpp
     LangSource/PyrMathOps.cpp
     LangSource/PyrMathSupport.cpp
     LangSource/PyrMessage.cpp
     LangSource/PyrObject.cpp
-    LangSource/PyrParseNode.cpp
     LangSource/PyrSignal.cpp
     LangSource/PyrSlot.cpp
     LangSource/PyrSymbolTable.cpp
     LangSource/SC_LanguageClient.cpp
     LangSource/SC_LanguageConfig.cpp
     LangSource/SimpleStack.cpp
+    LangSource/SourceHighlight.cpp
+    LangSource/SpecialSelectorsOperatorsAndClasses.cpp
     LangSource/dumpByteCodes.cpp
-    LangSource/CompilerContext.cpp
     LangSource/ClassLibraryInfo.cpp
     LangSource/ClassLibraryLoader.cpp
 
@@ -110,8 +108,6 @@ endif()
 file(GLOB_RECURSE headers ../include/*.h* )
 file(GLOB_RECURSE external_headers ../external_libraries/*.h* )
 list(APPEND sclang_sources ${headers} ${external_headers}) # make qt creator happy
-
-set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
 
 # audio API for listing devices, selected the same way as in the server
 if(AUDIOAPI STREQUAL "default")
@@ -199,17 +195,15 @@ endif()
 include(../SCDoc/CMakeLists.txt)
 list(APPEND sclang_sources ${SCDOC_SRCS})
 
-add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
+add_library(libsclang STATIC ${sclang_sources})
 
 if(FINAL_BUILD)
-    set_source_files_properties(${sclang_parser_source} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
     set_target_properties(libsclang PROPERTIES
         UNITY_BUILD ON
         UNITY_BUILD_BATCH_SIZE 16
     )
 endif()
 
-target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC)
 target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
 
 target_link_libraries(libsclang sc_lexer sc_bytecode sc_compiler)

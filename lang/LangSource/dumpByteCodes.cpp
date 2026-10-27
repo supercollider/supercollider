@@ -19,7 +19,7 @@
 */
 
 #include "PyrKernel.h"
-#include "PyrParseNode.h"
+#include "SpecialSelectorsOperatorsAndClasses.h"
 #include "PyrSymbol.h"
 #include "SCBase.h"
 

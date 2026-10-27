@@ -20,7 +20,6 @@
 
 #include <algorithm>
 #include <cassert>
-#include <cstdlib>
 #include <cstring>
 #include <filesystem>
 #include <memory>
@@ -873,13 +872,7 @@ std::size_t postDiagnostic(const sc::diag::Diagnostic& d, std::size_t& errors) {
 }
 }
 
-bool newCompilerRequested() {
-    const char* value = std::getenv("SCLANG_NEW_COMPILER");
-    return value && std::string_view { value } == "1";
-}
-
 bool loadClassLibrary(std::size_t& thingsPosted) {
-    post("\tUsing the new compiler (SCLANG_NEW_COMPILER=1)\n");
 #ifndef NDEBUG
     gLoadedClasses.clear();
 #endif
