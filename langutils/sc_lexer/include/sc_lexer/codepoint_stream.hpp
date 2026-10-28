@@ -102,6 +102,12 @@ public:
         snippet(source + snippet_start_in_src.absolute),
         snippet_len(static_cast<const std::string&>(src).size() - snippet_start_in_src.absolute) {}
 
+    // Only a pointer into the source is kept, so a temporary would dangle.
+    CodePointStream(const src::NormalisedSource&&, src::FileCodeLocation) = delete;
+    CodePointStream(const src::NormalisedSource&&) = delete;
+    CodePointStream(const src::NormalisedSource&&, src::FileCodeLocation, src::SourceCodeRange) = delete;
+    CodePointStream(const src::NormalisedSource&&, src::FileCodeLocation, src::SourceCodeLocation) = delete;
+
     CodePointStream(CodePointStream&&) noexcept = default;
     CodePointStream(const CodePointStream&) = default;
     CodePointStream& operator=(CodePointStream&&) noexcept = default;

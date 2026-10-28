@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
     const auto source_len = strlen(source);
     sc::src::NormalisedSource src { source, source_len };
 
-    CodePointStream stream { std::move(src), {} };
+    CodePointStream stream { src, {} };
     actions::TypeAndLocationAction action {};
 
     std::stringstream ss {};

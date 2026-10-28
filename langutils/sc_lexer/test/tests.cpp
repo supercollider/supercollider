@@ -425,7 +425,8 @@ BOOST_AUTO_TEST_CASE(newline_normalisation) {
 
 using TLoc = std::pair<sc::lex::TokenType, sc::src::SourceCodeRange>;
 template <size_t I> void match_loc(const char* text, const std::array<TLoc, I>& expected) {
-    CodePointStream stream { sc::src::NormalisedSource(text, strlen(text)), {} };
+    auto src = sc::src::NormalisedSource(text, strlen(text));
+    CodePointStream stream { src, {} };
     sc::lex::actions::TypeAndLocationAction action {};
 
     const auto test = [&](auto o, sc::lex::TokenType t, sc::src::SourceCodeRange r) {
