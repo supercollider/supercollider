@@ -2239,6 +2239,10 @@ int prObjectCopySeries(struct VMGlobals* g, int numArgsPushed) {
     } else
         return errFailed;
 
+    // A step pointing away from last has no elements, and a negative size corrupts the heap.
+    if (length < 0)
+        length = 0;
+
     int numbytes = length * elemsize;
 
     newobj = g->gc->New(numbytes, flags, inobj->obj_format, true);
