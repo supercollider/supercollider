@@ -262,4 +262,24 @@ TestNodeProxy_Server : UnitTest {
 		this.assert(container.instVarAt(\prevBundle).isNil, "Pending OSC message should be canceled when proxy synth is freed");
 	}
 
+	test_asCode_playState {
+		var codeString =
+		"(\n"
+		"a = NodeProxy.new(Server.fromName('TestNodeProxy_Server'));\n"
+		"a.play(\n"
+		"	out: 8, \n"
+		"	vol: 0.25\n"
+		"\n"
+		");\n"
+		");\n";
+
+		proxy.play(8, 2, vol: 0.25);
+
+		server.sync; // avoids "FAILURE IN SERVER /g_new Group 1 not found"
+
+		this.assertEquals(proxy.asCode, codeString,
+			"asCode-posting nodeproxy with settings should post these correctly."
+		);
+	}
+
 }

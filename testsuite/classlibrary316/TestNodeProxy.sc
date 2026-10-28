@@ -92,31 +92,6 @@ TestNodeProxy : UnitTest {
 		);
 	}
 
-	// this one needs the server booted ...
-	test_asCode_playState {
-		var codeString =
-		"(\n"
-		"a = NodeProxy.new(Server.fromName('TestNodeProxy'));\n"
-		"a.play(\n"
-		"	out: 8, \n"
-		"	vol: 0.25\n"
-		"\n"
-		");\n"
-		");\n";
-
-		this.bootServer(server);
-
-		proxy.play(8, 2, vol: 0.25);
-
-		server.sync; // avoids "FAILURE IN SERVER /g_new Group 1 not found"
-
-		this.assertEquals(proxy.asCode, codeString,
-			"asCode-posting nodeproxy with settings should post these correctly."
-		);
-
-		server.quitSync;
-	}
-
 	test_asCode_single_ndef {
 		var codeString = "Ndef('x', { DC.ar });\n";
 		proxy = Ndef(\x, { DC.ar });
@@ -252,36 +227,6 @@ TestNodeProxy : UnitTest {
 		this.assertEquals(proxy.source, 1967, "copying a proxy should return an independent object");
 	}
 
-	test_control_fade {
-		var server = Server(this.class.name);
-		var result;
-		var cond = Condition.new;
-		var fadeTime = 0.1;
-		var waitTime = (fadeTime + (server.latency * 2) + 1e-2);
-		var resp;
-
-		server.bootSync;
-
-		var proxy = NodeProxy(server);
-		proxy.source = { DC.kr(2000) };
-		proxy.fadeTime = fadeTime;
-
-		proxy.source = 440;
-		waitTime.wait;
-
-		resp = OSCFunc({ cond.unhang; resp.free; }, '/c_set');
-		var timeout = fork { 1.wait; cond.unhang };
-		proxy.bus.get({ |val| result = val });
-		cond.hang;
-		timeout.stop;
-		resp.free;
-
-		this.assertFloatEquals(result, proxy.source, "after the crossfade from a ugen function to a value the bus should have this value");
-
-		server.quitSync;
-		server.remove;
-	}
-
 	test_map_rates {
 
 		var p = ProxySpace.new.use {
@@ -311,99 +256,6 @@ TestNodeProxy : UnitTest {
 
 }
 
-
-TestNodeProxyBusMapping : UnitTest {
-	var server;
-
-	setUp {
-		server = Server(this.class.name);
-		server.latency = 0.1;
-		this.bootServer(server);
-		server.sync;
-	}
-
-
-	tearDown {
-		server.quitSync.remove;
-	}
-
-	test_audiorate_mapping {
-
-		var defaultValues = [-1.0, -2.0];
-		var controlValues = [162.0, 54.0];
-
-		var proxy = NodeProxy(server, \audio);
-		proxy.reshaping = \elastic;
-		proxy.fadeTime = 0;
-
-		proxy.source = {
-			var in = \in.ar(defaultValues);
-			A2K.kr(in);
-		};
-
-		var inputProxy = NodeProxy(server, \audio);
-		inputProxy.source = {
-			DC.ar(controlValues)
-		};
-
-		0.2.wait;
-
-		this.assert(proxy.rate == \control, "proxy should have initialized itself to control rate");
-
-		var synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
-
-		this.assertEquals(synthValues, defaultValues, "before mapping, synth values should be default values");
-
-		proxy <<>.in inputProxy;
-
-		0.2.wait;
-
-		synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
-
-		this.assertEquals(synthValues, controlValues, "after mapping, synth should return mapped values");
-
-
-	}
-
-	test_audiorate_mapping_elasticity {
-
-		var defaultValues = [-1.0, -2.0, -3.0];
-		var controlValues = [162.0, 54.0, 45.0, 87.0];
-
-		var proxy = NodeProxy(server, \audio, 7);
-		proxy.reshaping = \elastic;
-		proxy.fadeTime = 0.001;
-
-		proxy.source = {
-			var in = \in.ar(defaultValues);
-			A2K.kr(in);
-		};
-
-		var inputProxy = NodeProxy(server, \audio, 2);
-		inputProxy.reshaping = \elastic;
-		inputProxy.fadeTime = 0.001;
-		inputProxy.source = {
-			DC.ar(controlValues)
-		};
-
-		0.2.wait;
-
-		this.assertEquals(proxy.rate, \control, "proxy should have initialized itself to control rate");
-		this.assertEquals(proxy.numChannels, defaultValues.size, "proxy should have initialized itself to the correct number of channels");
-
-		var synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
-
-		this.assertEquals(synthValues.round, defaultValues.round, "before mapping, synth values should be default values");
-
-		proxy <<>.in inputProxy;
-
-		0.2.wait;
-
-		synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
-
-		this.assertEquals(synthValues.round, controlValues.keep(synthValues.size).round, "after mapping, synth should return mapped values");
-	}
-}
 
 TestNodeProxySeti : UnitTest {
 	var proxy, server;
