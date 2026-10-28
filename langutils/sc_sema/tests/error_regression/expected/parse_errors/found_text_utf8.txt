@@ -1,0 +1,31 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): FoundTextUtf8 : Object, version 3.16
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (6:5): poisoned: long_string, version 3.16: long_string { ^1 "éééééééééééééééééééé" }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/found_text_utf8.sc:6:20
+|  |  |      4 │     // expect: poisoned
+|  |  |      5 │     // expect-error: Missing Operator.
+|  |  |      6 │     long_string { ^1 "éééééééééééééééééééé" }
+|  |  |        ┆                    ^ This ends an expression...
+|  |  |      7 │ }
+|  |  |
+|  |  |  parse_errors/found_text_utf8.sc:6:22
+|  |  |      4 │     // expect: poisoned
+|  |  |      5 │     // expect-error: Missing Operator.
+|  |  |      6 │     long_string { ^1 "éééééééééééééééééééé" }
+|  |  |        ┆                      ^^^^^^^^^^^^^^^^^^^^^^ ...and `"ééééééééé...` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |      7 │ }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (6:19)
+|  |  |  |  SCExprList (6:19)
+Successfully compiled 16 classes.

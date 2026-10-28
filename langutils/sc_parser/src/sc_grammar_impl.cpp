@@ -327,7 +327,11 @@ std::string found_text(const ParserContext& cxt, Symbol got, sc::src::SourceCode
         return "the end of the file";
     constexpr size_t max_size = 20;
     const auto text = cxt.text_info->read(location);
-    const auto line = text.substr(0, std::min(text.find('\n'), max_size));
+    auto end = std::min(text.find('\n'), max_size);
+    // Not in the middle of a UTF-8 sequence, i.e., before a continuation byte.
+    while (end > 0 && end < text.size() && (static_cast<unsigned char>(text[end]) & 0xC0) == 0x80)
+        --end;
+    const auto line = text.substr(0, end);
     return "`" + std::string { line } + (line.size() < text.size() ? "...`" : "`");
 }
 }
