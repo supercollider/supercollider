@@ -17,13 +17,6 @@ namespace sc::lex {
 // Peek - used to look ahead into the codepoint stream
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <std::size_t N> struct Peek {
-    template <std::size_t M> [[nodiscard]] constexpr Peek<M> shrink_to() const noexcept {
-        static_assert(M <= N);
-        std::array<src::CodePoint, M> out;
-        std::copy(characters.data(), characters.data() + characters.size(), out.data());
-        return { out };
-    }
-
     [[nodiscard]] constexpr src::CodePoint operator[](std::size_t i) const { return characters[i]; }
 
     template <std::size_t I> [[nodiscard]] constexpr src::CodePoint at() const noexcept {
@@ -200,13 +193,6 @@ public:
     [[nodiscard]] src::CodePoint advance_and_peek() {
         advance();
         return peek();
-    }
-
-    // Commits peek to the current token, advancing it.
-    template <std::size_t N> src::SourceCodeLocation advance_by_peek(Peek<N> peek) {
-        for (std::size_t i { 0 }; i < N; ++i)
-            state.update(peek[i], src::codepoint_size(peek[i]));
-        return end_token();
     }
 
     // Peeks, if equal to one of c, then advances.
