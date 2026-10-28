@@ -219,7 +219,9 @@ using DeclareMemberListIndex = TypedIndex<NodeFlag::DeclareMemberList>;
 using DeclareClassMemberListIndex = TypedIndex<NodeFlag::DeclareClassMemberList>;
 using DeclareConstListIndex = TypedIndex<NodeFlag::DeclareConstList>;
 
-using DeclareAnyMemberListIndex = join<DeclareMemberListIndex, DeclareClassMemberListIndex, DeclareConstListIndex>;
+// A syntax error in a class's members is kept as an Error, see error_recovery::member.
+using BigMemberEntryIndex =
+    join<DeclareMemberListIndex, DeclareClassMemberListIndex, DeclareConstListIndex, ErrorIndex>;
 
 using BigMemberListIndex = TypedIndex<NodeFlag::BigMemberList>;
 

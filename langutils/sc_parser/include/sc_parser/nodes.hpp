@@ -422,7 +422,7 @@ struct DeclareConstList : ListNode<DeclareConstListIndex, DeclareMemberIndex> {
     static constexpr auto name { "DeclareClassVarList" };
 };
 
-struct BigMemberList : ListNode<BigMemberListIndex, DeclareAnyMemberListIndex> {
+struct BigMemberList : ListNode<BigMemberListIndex, BigMemberEntryIndex> {
     static constexpr auto name { "BigMemberList" };
 };
 

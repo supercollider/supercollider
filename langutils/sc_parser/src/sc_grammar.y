@@ -18,6 +18,7 @@
     ArgumentListIndex v_ArgumentListIndex;
     ArrayIndex v_ArrayIndex;
     AtMessageIndex v_AtMessageIndex;
+    BigMemberEntryIndex v_BigMemberEntryIndex;
     BigMemberListIndex v_BigMemberListIndex;
     BlockContentsListIndex v_BlockContentsListIndex;
     BlockIndex v_BlockIndex;
@@ -28,7 +29,6 @@
     ClassIndex v_ClassIndex;
     ClassOrExtensionIndex v_ClassOrExtensionIndex;
     ClassOrExtensionListIndex v_ClassOrExtensionListIndex;
-    DeclareAnyMemberListIndex v_DeclareAnyMemberListIndex;
     DeclareAnyVariableIndex v_DeclareAnyVariableIndex;
     DeclareArgumentListIndex v_DeclareArgumentListIndex;
     DeclareMemberIndex v_DeclareMemberIndex;
@@ -150,8 +150,8 @@ using namespace sc::ast;
 %type <v_maybe_ClassNameIdentifierIndex> class.super.opt
 %type <v_maybe_NamedIdentifierIndex> class.slot.opt
 
-%type <v_BigMemberListIndex> members members.opt
-%type <v_DeclareAnyMemberListIndex> members.entry
+%type <v_BigMemberListIndex> members
+%type <v_BigMemberEntryIndex> members.entry
 
 %type <v_DeclareMemberListIndex> members.entry.list
 
@@ -356,8 +356,14 @@ classOrExtList.item
 	;
 
 class 
-	: CLASSNAME[name] class.slot.opt[slot] class.super.opt[super] OPENCURLY members.opt[vars] method.list.opt[meths] CLOSECURLY
+	: CLASSNAME[name] class.slot.opt[slot] class.super.opt[super] OPENCURLY members[vars] semicolon.opt method.list.opt[meths] CLOSECURLY
 		{ $$ = cxt.create(Class{ cxt.take_version(@OPENCURLY) }, @$, cxt.create(ClassNameIdentifier{}, @name), $slot, $super, $vars, $meths); }
+	// With no members, so an error right after the `{` can be recovered from, see method.
+	| CLASSNAME[name] class.slot.opt[slot] class.super.opt[super] OPENCURLY method.list.opt[meths] CLOSECURLY
+		{
+			const auto no_members = cxt.create(BigMemberList{}, sc::src::SourceCodeRange { @OPENCURLY.end, @OPENCURLY.end });
+			$$ = cxt.create(Class{ cxt.take_version(@OPENCURLY) }, @$, cxt.create(ClassNameIdentifier{}, @name), $slot, $super, no_members, $meths);
+		}
 	;
 
 class.super.opt 
@@ -399,6 +405,36 @@ members.entry
 		{ $$ = cxt.graph->cast<DeclareMemberList>($vars); }
 	| CONST members.entry.list[vars]
 		{ $$ = cxt.graph->cast<DeclareConstList>($vars); }
+	| CLASSVAR error[e]
+		{
+			// Skips to the declaration's `;`, or the next method.
+			const auto dropped = error_recovery::member(cxt, @CLASSVAR, @e);
+			if (!dropped)
+				YYABORT;
+			$$ = cxt.create_error(*dropped, @e);
+			yyclearin;
+			yyerrok; // Recovered at the next item, so report its error.
+		}
+	| VAR error[e]
+		{
+			// Skips to the declaration's `;`, or the next method.
+			const auto dropped = error_recovery::member(cxt, @VAR, @e);
+			if (!dropped)
+				YYABORT;
+			$$ = cxt.create_error(*dropped, @e);
+			yyclearin;
+			yyerrok; // Recovered at the next item, so report its error.
+		}
+	| CONST error[e]
+		{
+			// Skips to the declaration's `;`, or the next method.
+			const auto dropped = error_recovery::member(cxt, @CONST, @e);
+			if (!dropped)
+				YYABORT;
+			$$ = cxt.create_error(*dropped, @e);
+			yyclearin;
+			yyerrok; // Recovered at the next item, so report its error.
+		}
 	;
 
 members
@@ -408,10 +444,6 @@ members
 		{ $$ = cxt.graph->append($1, $3); }
 	;
 
-members.opt
-	: %empty { $$ = cxt.create(BigMemberList{}, @$); }
-	| members semicolon.opt { $$ = $1; }
-	;
 
 ////////////////////////////////////////////////////////////////////////////////
 // methods
@@ -450,6 +482,17 @@ method.base
 
 method
 	: method.base { $$ = $1; }
+	| error[e]
+		{
+			// E.g., a method name with no `{`, or a stray `;`. Skips to the next method, or the class's closing curly.
+			const auto dropped = error_recovery::class_item(cxt, @e);
+			if (!dropped)
+				YYABORT;
+			@$ = *dropped;
+			$$ = cxt.create_error(*dropped, @e);
+			yyclearin;
+			yyerrok; // Recovered at the next item, so report its error.
+		}
 	| MULTIPLY method.base[meth] 
 		{ 
 			if (auto c = cxt.graph->as_a<MethodIndex>($meth)) {

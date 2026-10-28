@@ -56,14 +56,14 @@ SCClass (24:1): Foo : Object, version 3.16
 |  |  |  classes/duplicate_extension.sc:27:5
 |  |  |     25 │ 
 |  |  |     26 │ +Foo {
-|  |  |     27 │     bar {} 
+|  |  |     27 │     bar {}
 |  |  |        ┆     ^^^ This extension defines the method...
 |  |  |     28 │ }
 |  |  |
 |  |  |  classes/duplicate_extension.sc:21:5
 |  |  |     19 │ 
 |  |  |     20 │ +Foo {
-|  |  |     21 │     bar {} 
+|  |  |     21 │     bar {}
 |  |  |        ┆     ^^^ ...and so does this one, in the same module.
 |  |  |     22 │ }
 |  |  |     23 │ 

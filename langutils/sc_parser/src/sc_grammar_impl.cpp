@@ -366,9 +366,9 @@ void report(ParserContext& cxt) {
         }
     }
 
-    cxt.graph->add_diagnostic(diag::Diagnostic::unexpectedToken(cxt.text_info, unexpected.location,
-                                                                expected_list(std::move(expected)),
-                                                                found_text(cxt, got, unexpected.location)));
+    cxt.graph->add_diagnostic(diag::Diagnostic::unexpectedToken(
+        cxt.text_info, unexpected.report_at.value_or(unexpected.location), expected_list(std::move(expected)),
+        found_text(cxt, got, unexpected.location)));
 }
 
 void expr(ParserContext& cxt) { report(cxt); }
@@ -400,5 +400,77 @@ sc::src::SourceCodeRange bracket(ParserContext& cxt, sc::src::SourceCodeRange op
 sc::src::SourceCodeRange method(ParserContext& cxt, sc::src::SourceCodeRange open_bracket) {
     report(cxt);
     return skip_to_match(cxt, open_bracket);
+}
+
+namespace {
+// Whether a method's name is at i, as the `{` after it shows. A class method's `*` is before it.
+bool starts_method(const ParserContext& cxt, std::uint32_t i) {
+    using T = sc::lex::TokenType;
+    const auto t = cxt.tokens[i].token;
+    const bool name = t == T::Name || t == T::BinaryOperator || sc::lex::is_ambiguous_punctuation(t);
+    return name && i + 1 < cxt.tokens.size() && cxt.tokens[i + 1].token == T::OpenCurly;
+}
+
+// Past the token at i, or the whole bracketed part if it opens one.
+std::uint32_t skip_one(const ParserContext& cxt, std::uint32_t i) {
+    const auto& token = cxt.tokens[i];
+    if (sc::lex::is_open_bracket(token.token))
+        if (const auto m = token.matching())
+            return *m + 1;
+    return i + 1;
+}
+
+// Skips what is left of the item with an error, stopping before the next thing the class body can continue with.
+std::optional<sc::src::SourceCodeRange> skip_class_item(ParserContext& cxt, sc::src::SourceCodeRange error,
+                                                        bool stop_at_semicolon) {
+    using T = sc::lex::TokenType;
+    const auto from = cxt.lookahead.value_or(cxt.next);
+    // The error is that the method before it is incomplete, not that this one is wrong, which would poison it. So it
+    // is reported at the token before it.
+    if (cxt.unexpected_token_error && from > 0 && starts_method(cxt, from)) {
+        cxt.unexpected_token_error->report_at = cxt.tokens[from - 1].range;
+    }
+    report(cxt);
+    const auto is_end = [&](std::uint32_t i) {
+        return cxt.tokens[i].token == T::EndOfFile || cxt.tokens[i].token == T::CloseCurly;
+    };
+
+    // Erroring again where it last stopped, so the token must go for it to progress.
+    auto i = from;
+    if (cxt.recovered_at == from) {
+        if (is_end(from))
+            return std::nullopt;
+        i = skip_one(cxt, from);
+    }
+
+    while (!is_end(i) && !(stop_at_semicolon && cxt.tokens[i].token == T::SemiColon)) {
+        if (starts_method(cxt, i)) {
+            // A class method's `*`.
+            if (i > from && cxt.tokens[i - 1].token == T::Multiply)
+                --i;
+            break;
+        }
+        i = skip_one(cxt, i);
+    }
+
+    cxt.recovered_at = i;
+    cxt.next = i;
+    cxt.separator_inserted = false;
+    // Up to the token before where it stopped, so a method it stopped at isn't in the range.
+    const auto end = i > 0 ? cxt.tokens[i - 1].range.end : error.begin;
+    return sc::src::SourceCodeRange { error.begin, error.begin < end ? end : error.begin };
+}
+}
+
+std::optional<sc::src::SourceCodeRange> class_item(ParserContext& cxt, sc::src::SourceCodeRange error) {
+    return skip_class_item(cxt, error, false);
+}
+
+std::optional<sc::src::SourceCodeRange> member(ParserContext& cxt, sc::src::SourceCodeRange keyword,
+                                               sc::src::SourceCodeRange error) {
+    const auto dropped = skip_class_item(cxt, error, true);
+    if (!dropped)
+        return dropped;
+    return sc::src::SourceCodeRange { keyword.begin, dropped->end };
 }
 }

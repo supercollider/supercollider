@@ -87,6 +87,9 @@ struct UnexpectedToken {
         std::uint32_t index;
     };
     std::optional<Before> before {};
+    // Where to report it, when that isn't where it was found, e.g., the end of the junk before a method, see
+    // error_recovery::class_item.
+    std::optional<sc::src::SourceCodeRange> report_at {};
 };
 class parser;
 
@@ -122,6 +125,9 @@ struct ParserContext {
 
     // The token last emitted, which an error is at.
     std::optional<std::uint32_t> lookahead {};
+
+    // The token that class body recovery last stopped at, so recovering again at it skips it, see error_recovery.
+    std::optional<std::uint32_t> recovered_at {};
 
     // A region separator was inserted before the next token
     bool separator_inserted { false };

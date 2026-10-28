@@ -219,6 +219,7 @@ namespace sc { namespace ast { namespace parser {
     ArgumentListIndex v_ArgumentListIndex;
     ArrayIndex v_ArrayIndex;
     AtMessageIndex v_AtMessageIndex;
+    BigMemberEntryIndex v_BigMemberEntryIndex;
     BigMemberListIndex v_BigMemberListIndex;
     BlockContentsListIndex v_BlockContentsListIndex;
     BlockIndex v_BlockIndex;
@@ -229,7 +230,6 @@ namespace sc { namespace ast { namespace parser {
     ClassIndex v_ClassIndex;
     ClassOrExtensionIndex v_ClassOrExtensionIndex;
     ClassOrExtensionListIndex v_ClassOrExtensionListIndex;
-    DeclareAnyMemberListIndex v_DeclareAnyMemberListIndex;
     DeclareAnyVariableIndex v_DeclareAnyVariableIndex;
     DeclareArgumentListIndex v_DeclareArgumentListIndex;
     DeclareMemberIndex v_DeclareMemberIndex;
@@ -459,72 +459,71 @@ namespace sc { namespace ast { namespace parser {
         S_76_members_entry_list = 76,            // members.entry.list
         S_77_members_entry = 77,                 // members.entry
         S_members = 78,                          // members
-        S_79_members_opt = 79,                   // members.opt
-        S_80_method_name = 80,                   // method.name
-        S_81_method_base = 81,                   // method.base
-        S_method = 82,                           // method
-        S_83_method_list = 83,                   // method.list
-        S_84_method_list_opt = 84,               // method.list.opt
-        S_85_block_open = 85,                    // block.open
-        S_block = 86,                            // block
-        S_87_block_opt_list = 87,                // block.opt_list
-        S_88_block_list = 88,                    // block.list
-        S_89_block_contents = 89,                // block.contents
-        S_90_block_contents_item = 90,           // block.contents.item
-        S_adverb = 91,                           // adverb
-        S_92_binary_op_raw = 92,                 // binary_op.raw
-        S_93_binary_op_no_adverb = 93,           // binary_op.no_adverb
-        S_binary_op = 94,                        // binary_op
-        S_msgsend = 95,                          // msgsend
-        S_96_expr_dotrange = 96,                 // expr.dotrange
-        S_97_expr_dotrange_assign = 97,          // expr.dotrange.assign
-        S_98_expr_base_range = 98,               // expr.base.range
-        S_99_expr_base_range_assign = 99,        // expr.base.range.assign
-        S_range = 100,                           // range
-        S_101_range_generator = 101,             // range.generator
-        S_102_expr_base = 102,                   // expr.base
-        S_expr = 103,                            // expr
-        S_104_expr_or_seq_base = 104,            // expr_or_seq.base
-        S_expr_or_seq = 105,                     // expr_or_seq
-        S_generator = 106,                       // generator
-        S_107_generator_qual_list = 107,         // generator.qual.list
-        S_108_generator_qual = 108,              // generator.qual
-        S_109_argument_declarations_list = 109,  // argument_declarations.list
-        S_110_argument_declarations_pipelist = 110, // argument_declarations.pipelist
-        S_argument_declarations = 111,           // argument_declarations
-        S_112_argument_declarations_opt = 112,   // argument_declarations.opt
-        S_113_arguments_entries = 113,           // arguments.entries
-        S_114_arguments_no_trailing = 114,       // arguments.no_trailing
-        S_arguments = 115,                       // arguments
-        S_116_arguments_paren = 116,             // arguments.paren
-        S_117_arguments_maybe_paren = 117,       // arguments.maybe_paren
-        S_118_variable_declarations_list_item = 118, // variable_declarations.list.item
-        S_119_variable_declarations_list = 119,  // variable_declarations.list
-        S_variable_declarations = 120,           // variable_declarations
-        S_121_literal_terminal = 121,            // literal.terminal
-        S_122_literal_array_contents = 122,      // literal.array.contents
-        S_123_literal_dictionary_entry = 123,    // literal.dictionary.entry
-        S_124_literal_dictionary_entries = 124,  // literal.dictionary.entries
-        S_125_literal_dictionary = 125,          // literal.dictionary
-        S_126_literal_array = 126,               // literal.array
-        S_literal = 127,                         // literal
-        S_name = 128,                            // name
-        S_129_name_list = 129,                   // name.list
-        S_130_name_pack = 130,                   // name.pack
-        S_ascii = 131,                           // ascii
-        S_nil = 132,                             // nil
-        S_boolean = 133,                         // boolean
-        S_symbol = 134,                          // symbol
-        S_string = 135,                          // string
-        S_integer = 136,                         // integer
-        S_137_float_raw_unsigned = 137,          // float.raw_unsigned
-        S_138_float_raw = 138,                   // float.raw
-        S_139_accidental_unsigned = 139,         // accidental.unsigned
-        S_accidental = 140,                      // accidental
-        S_float = 141,                           // float
-        S_accessor = 142,                        // accessor
-        S_143_semicolon_opt = 143,               // semicolon.opt
-        S_144_comma_opt = 144                    // comma.opt
+        S_79_method_name = 79,                   // method.name
+        S_80_method_base = 80,                   // method.base
+        S_method = 81,                           // method
+        S_82_method_list = 82,                   // method.list
+        S_83_method_list_opt = 83,               // method.list.opt
+        S_84_block_open = 84,                    // block.open
+        S_block = 85,                            // block
+        S_86_block_opt_list = 86,                // block.opt_list
+        S_87_block_list = 87,                    // block.list
+        S_88_block_contents = 88,                // block.contents
+        S_89_block_contents_item = 89,           // block.contents.item
+        S_adverb = 90,                           // adverb
+        S_91_binary_op_raw = 91,                 // binary_op.raw
+        S_92_binary_op_no_adverb = 92,           // binary_op.no_adverb
+        S_binary_op = 93,                        // binary_op
+        S_msgsend = 94,                          // msgsend
+        S_95_expr_dotrange = 95,                 // expr.dotrange
+        S_96_expr_dotrange_assign = 96,          // expr.dotrange.assign
+        S_97_expr_base_range = 97,               // expr.base.range
+        S_98_expr_base_range_assign = 98,        // expr.base.range.assign
+        S_range = 99,                            // range
+        S_100_range_generator = 100,             // range.generator
+        S_101_expr_base = 101,                   // expr.base
+        S_expr = 102,                            // expr
+        S_103_expr_or_seq_base = 103,            // expr_or_seq.base
+        S_expr_or_seq = 104,                     // expr_or_seq
+        S_generator = 105,                       // generator
+        S_106_generator_qual_list = 106,         // generator.qual.list
+        S_107_generator_qual = 107,              // generator.qual
+        S_108_argument_declarations_list = 108,  // argument_declarations.list
+        S_109_argument_declarations_pipelist = 109, // argument_declarations.pipelist
+        S_argument_declarations = 110,           // argument_declarations
+        S_111_argument_declarations_opt = 111,   // argument_declarations.opt
+        S_112_arguments_entries = 112,           // arguments.entries
+        S_113_arguments_no_trailing = 113,       // arguments.no_trailing
+        S_arguments = 114,                       // arguments
+        S_115_arguments_paren = 115,             // arguments.paren
+        S_116_arguments_maybe_paren = 116,       // arguments.maybe_paren
+        S_117_variable_declarations_list_item = 117, // variable_declarations.list.item
+        S_118_variable_declarations_list = 118,  // variable_declarations.list
+        S_variable_declarations = 119,           // variable_declarations
+        S_120_literal_terminal = 120,            // literal.terminal
+        S_121_literal_array_contents = 121,      // literal.array.contents
+        S_122_literal_dictionary_entry = 122,    // literal.dictionary.entry
+        S_123_literal_dictionary_entries = 123,  // literal.dictionary.entries
+        S_124_literal_dictionary = 124,          // literal.dictionary
+        S_125_literal_array = 125,               // literal.array
+        S_literal = 126,                         // literal
+        S_name = 127,                            // name
+        S_128_name_list = 128,                   // name.list
+        S_129_name_pack = 129,                   // name.pack
+        S_ascii = 130,                           // ascii
+        S_nil = 131,                             // nil
+        S_boolean = 132,                         // boolean
+        S_symbol = 133,                          // symbol
+        S_string = 134,                          // string
+        S_integer = 135,                         // integer
+        S_136_float_raw_unsigned = 136,          // float.raw_unsigned
+        S_137_float_raw = 137,                   // float.raw
+        S_138_accidental_unsigned = 138,         // accidental.unsigned
+        S_accidental = 139,                      // accidental
+        S_float = 140,                           // float
+        S_accessor = 141,                        // accessor
+        S_142_semicolon_opt = 142,               // semicolon.opt
+        S_143_comma_opt = 143                    // comma.opt
       };
     };
 
@@ -1046,8 +1045,8 @@ namespace sc { namespace ast { namespace parser {
     /// Constants.
     enum
     {
-      yylast_ = 2587,     ///< Last index in yytable_.
-      yynnts_ = 82,  ///< Number of nonterminal symbols.
+      yylast_ = 2592,     ///< Last index in yytable_.
+      yynnts_ = 81,  ///< Number of nonterminal symbols.
       yyfinal_ = 93 ///< Termination state number.
     };
 
@@ -1060,7 +1059,7 @@ namespace sc { namespace ast { namespace parser {
 
 #line 68 "langutils/sc_parser/src/sc_grammar.y"
 } } } // sc::ast::parser
-#line 1064 "langutils/sc_parser/src/sc_grammar_parser.hpp"
+#line 1063 "langutils/sc_parser/src/sc_grammar_parser.hpp"
 
 
 
