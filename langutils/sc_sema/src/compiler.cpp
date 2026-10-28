@@ -42,6 +42,13 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
 {
     num_threads = std::max<size_t>(1, num_threads);
 
+    // Checked before anything is defined, as a second call would otherwise mutate the context first.
+    if (m_compile_has_been_called) {
+        assert(false);
+        std::terminate();
+    }
+    m_compile_has_been_called = true;
+
     // The files' classes and extensions in a fixed order, by module, then file, then position, as when two define the
     // same class or method, which is used depends on it. The classes are declared on several threads, so the first
     // definition of each is found beforehand.
@@ -60,7 +67,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
         const auto& path = g.text_info()->file_path;
         for (auto child = g.children(opt->index).iter(); child; ++child) {
             const ast::Index i { **child };
-            const Defined defined { &*opt, i, path ? path->string() : std::string {}, g.location(i).begin };
+            const Defined defined { &*opt, i, path ? path->generic_string() : std::string {}, g.location(i).begin };
             if (g.as_a<ast::ClassIndex>(i))
                 classes.push_back(defined);
             else if (g.as_a<ast::ClassExtensionIndex>(i))
@@ -83,13 +90,6 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
 
     {
         boost::asio::thread_pool pool { num_threads };
-        if (m_compile_has_been_called) {
-            // slowest memory order is fine here. This shouldn't happen
-            assert(false);
-            std::terminate();
-        }
-        m_compile_has_been_called = true;
-
         for (const auto index : ctx.class_library_ast.indices())
             boost::asio::post(pool, [&, index] {
                 const auto& opt = ctx.class_library_ast[index];
@@ -499,7 +499,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                     methods.push_back(&meth_it->second);
                 const auto source_order = [](const ClassDeclaration::Method* m) {
                     const auto& path = get_text_info(*m->ast_graph)->file_path;
-                    return std::tuple { path ? path->string() : std::string {},
+                    return std::tuple { path ? path->generic_string() : std::string {},
                                         get_location(*m->ast_graph, m->ast_node_index).begin };
                 };
                 std::sort(methods.begin(), methods.end(),

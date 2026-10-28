@@ -72,7 +72,7 @@ SymbolTable::~SymbolTable() {
 std::string_view& SymbolTable::entry(std::uint32_t id) {
     const auto [k, offset] = chunk_of(id, first_chunk_bits);
 
-    // TODO: I am unsure about this. I think it is correct, but my knowledge of memory ordering is a bit limited.
+    // Acquire pairs with the release half of the winner's compare_exchange, so its chunk is seen constructed.
     auto* chunk = m_chunks[k].load(std::memory_order_acquire);
     if (!chunk) {
         // Two threads can make it at once, from different shards, the loser deletes its own.

@@ -209,6 +209,8 @@ struct InterpretedIR {
 ////////////////////////////////////////////////////////////////////////////////
 
 // Each stage keeps the earlier stages' results. Diagnostics stay in the result of the stage that reported them.
+// The graph is not owned: the library's, or an InterpretedIR's (which holds it in a shared_ptr), must outlive every
+// stage made from it.
 struct FramedGraph {
     const ir::IRGraph* graph;
     CompilationUnit root;
