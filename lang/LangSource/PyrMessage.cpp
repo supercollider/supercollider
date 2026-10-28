@@ -78,21 +78,21 @@ private:
 
 // This MUST be called at the top of the function before the VMGlobals object is altered.
 void prepForTailCall(VMGlobals* g) {
-#if TAILCALLOPTIMIZE
-    const int tailCall = g->tailCall;
-    if (tailCall == 1)
-        returnFromMethod(g);
-    else if (tailCall > 0)
-        returnFromBlock(g);
-#endif
+    if constexpr (tailCallOptimize) {
+        const int tailCall = g->tailCall;
+        if (tailCall == 1)
+            returnFromMethod(g);
+        else if (tailCall > 0)
+            returnFromBlock(g);
+    }
 }
 
 struct ResetTailCall {
     VMGlobals* g;
     ~ResetTailCall() {
-#if TAILCALLOPTIMIZE
-        g->tailCall = 0;
-#endif
+        if constexpr (tailCallOptimize) {
+            g->tailCall = 0;
+        }
     }
 };
 
@@ -611,10 +611,10 @@ HOT void returnFromMethod(VMGlobals* g) {
     homeContext = slotRawFrame(&slotRawFrame(&curframe->context)->homeContext);
     if (homeContext == nullptr) {
     null_return:
-#if TAILCALLOPTIMIZE
-        if (g->tailCall)
-            return; // do nothing.
-#endif
+        if constexpr (tailCallOptimize) {
+            if (g->tailCall)
+                return; // do nothing.
+        }
 
         /*
             static bool once = true;

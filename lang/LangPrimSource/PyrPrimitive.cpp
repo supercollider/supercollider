@@ -2302,15 +2302,15 @@ int prSetTailCallOptimize(struct VMGlobals* g, int numArgsPushed);
 int prSetTailCallOptimize(struct VMGlobals* g, int numArgsPushed) {
     // PyrSlot *a = g->sp - 1;
 
-#if TAILCALLOPTIMIZE
-    PyrSlot* b = g->sp;
-    if (IsTrue(b)) {
-        gClassLibraryInfo.generateTailCalls = true;
-    } else if (IsFalse(b)) {
-        gClassLibraryInfo.generateTailCalls = false;
-    } else
-        return errWrongType;
-#endif
+    if constexpr (tailCallOptimize) {
+        PyrSlot* b = g->sp;
+        if (IsTrue(b)) {
+            gClassLibraryInfo.generateTailCalls = true;
+        } else if (IsFalse(b)) {
+            gClassLibraryInfo.generateTailCalls = false;
+        } else
+            return errWrongType;
+    }
 
     return errNone;
 }
@@ -2806,9 +2806,9 @@ void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numAr
     PyrGC* gc;
     PyrFrame* frame;
 
-#if TAILCALLOPTIMIZE
-    g->tailCall = 0; // ?? prevent a crash. is there a way to allow a TCO ?
-#endif
+    if constexpr (tailCallOptimize) {
+        g->tailCall = 0; // ?? prevent a crash. is there a way to allow a TCO ?
+    }
 
     oldthread = g->thread;
     if (newthread == oldthread)

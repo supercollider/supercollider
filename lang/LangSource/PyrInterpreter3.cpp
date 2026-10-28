@@ -299,9 +299,8 @@ static void handleSigUsr1(int param) {
 #endif
 
 template <typename F> void ifTailCallOptimise(F&& f) {
-#if TAILCALLOPTIMIZE
-    std::forward<F>(f)();
-#endif
+    if constexpr (tailCallOptimize)
+        std::forward<F>(f)();
 }
 
 void initRuntime(VMGlobals* g, int poolSize, AllocPool* inPool) {

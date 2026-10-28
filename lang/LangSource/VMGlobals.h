@@ -33,6 +33,8 @@ Each virtual machine has a copy of VMGlobals, which contains the state of the vi
 #include <cstdint>
 
 
+inline constexpr bool tailCallOptimize = true;
+
 struct VMGlobals {
     // global context
     class AllocPool* allocPool {};
