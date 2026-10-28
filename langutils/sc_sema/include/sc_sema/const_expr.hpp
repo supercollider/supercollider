@@ -7,9 +7,11 @@
 #include "symbols.hpp"
 
 #include <cstdint>
+#include <cstring>
 #include <deque>
 #include <mutex>
 #include <ostream>
+#include <type_traits>
 #include <unordered_map>
 #include <utility>
 #include <variant>
@@ -83,8 +85,24 @@ struct ConstExpression {
     ~ConstExpression() = default;
 
 
-    [[nodiscard]] constexpr friend bool operator==(const ConstExpression& lhs, const ConstExpression& rhs) {
-        return lhs.storage == rhs.storage;
+    // Floating point values are equal when their bits are, not their values, so `0.0` and `-0.0` are different
+    // constants, and a NaN is equal to itself.
+    // This is different from the PyrSlot on purpose.
+    [[nodiscard]] friend bool operator==(const ConstExpression& lhs, const ConstExpression& rhs) {
+        if (lhs.storage.index() != rhs.storage.index())
+            return false;
+        return std::visit(
+            [&](const auto& l) {
+                using T = std::decay_t<decltype(l)>;
+                const auto& r = std::get<T>(rhs.storage);
+                if constexpr (std::is_same_v<T, double>)
+                    return ConstExpression::same_bits(&l, &r, 1);
+                else if constexpr (std::is_same_v<T, ConstExprDoubleArray> || std::is_same_v<T, ConstExprFloatArray>)
+                    return l.size() == r.size() && ConstExpression::same_bits(l.data(), r.data(), l.size());
+                else
+                    return l == r;
+            },
+            lhs.storage);
     }
 
     template <typename F> decltype(auto) visit(F&& f) const { return std::visit(std::forward<F>(f), storage); }
@@ -104,6 +122,10 @@ struct ConstExpression {
     void to_literal(std::ostream&, const SymbolTable&, const ConstantTable&) const;
 
 private:
+    template <typename T> static bool same_bits(const T* l, const T* r, std::size_t count) {
+        return std::memcmp(l, r, count * sizeof(T)) == 0;
+    }
+
     ConstStorage storage;
 };
 

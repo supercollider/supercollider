@@ -44,7 +44,7 @@ SCClass (5:1): BytecodeValues : Object
 |  |  |  |  |  |  SCLiteral (12:79) = 2.0
 |  |  |  |  |  |  SCLiteral (12:84) = inf
 |  |  |  |  |  |  SCLiteral (12:89) = 1.25
-|  |  |  |  |  |  SCLiteral (12:96) = 0.0
+|  |  |  |  |  |  SCLiteral (12:96) = -0.0
 |  |  |  |  |  |  SCLiteral (12:101) = 1.25
 |  |  SCMethod (14:5): symbolsAndStrings: symbolsAndStrings { cv; ^[\a, \a, "s", "s", $c, $c, #[1, 2]] }
 |  |  |  SCBody (14:25)

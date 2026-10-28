@@ -7,6 +7,11 @@ namespace sc::ir {
 // Old legacy behaviour.
 [[nodiscard]] constexpr bool can_fold_constants(ast::LanguageVersion v) { return v >= ast::LanguageVersion::V3_16; }
 
+// Old code compared `-0.0` with its special numbers as a number, so pushed it as `0.0`.
+[[nodiscard]] constexpr bool distinguishes_negative_zero(ast::LanguageVersion v) {
+    return v >= ast::LanguageVersion::V3_16;
+}
+
 [[nodiscard]] constexpr bool is_frame_scoped(ast::LanguageVersion v) { return v < ast::LanguageVersion::V3_16; }
 
 [[nodiscard]] constexpr bool requires_predeclared_variables(ast::LanguageVersion v) {

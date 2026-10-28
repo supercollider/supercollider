@@ -8,6 +8,7 @@
 #include "sc_util/unreachable.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <cassert>
 #include <iomanip>
 #include <limits>
@@ -730,6 +731,18 @@ struct Emitter {
     }
 
     // As PyrSlotNode::compilePushLit, the values with their own bytecodes first.
+    // The language version of the root the function is in, which is a method or interpreted code.
+    [[nodiscard]] ast::LanguageVersion version() const {
+        const Frame* f = &frame;
+        while (f->parent)
+            f = &ctx.frames.frames[FrameIndex { *f->parent }];
+        if (const auto method = ctx.graph.as_a<ir::SCMethod_I>(f->owner))
+            return ctx.graph.payload(*method).version;
+        const auto root = ctx.graph.root();
+        const auto* interpreted = root ? std::get_if<ir::SCInterpreted_I>(&*root) : nullptr;
+        return interpreted ? ctx.graph.payload(*interpreted).version : ast::LanguageVersion::Legacy;
+    }
+
     void push_constant(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, ir::ConstExprIndex c) {
         const auto& value = ctx.constants(c);
         if (const auto* i = value.get_if<std::int32_t>()) {
@@ -739,8 +752,10 @@ struct Emitter {
         } else if (const auto* b = value.get_if<bool>()) {
             PushSpecialValue.emit(bc, loc, { *b ? OpSpecialValue::True : OpSpecialValue::False });
         } else if (const auto* d = value.get_if<double>()) {
-            // Compared as numbers, as the old compiler did, so -0.0 is 0.0.
-            if (*d == 0.5)
+            // Compared as numbers, as the old compiler did, so -0.0 is 0.0, until 3.16.
+            if (*d == 0.0 && std::signbit(*d) && ir::distinguishes_negative_zero(version()))
+                push_constant_entry(bc, loc, c);
+            else if (*d == 0.5)
                 PushSpecialNumber.emit(bc, loc, { OpSpecialNumbers::Half });
             else if (*d == -1.0)
                 PushSpecialNumber.emit(bc, loc, { OpSpecialNumbers::MinusOneFloat });

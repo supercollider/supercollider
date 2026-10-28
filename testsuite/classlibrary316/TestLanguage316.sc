@@ -324,6 +324,14 @@ TestLanguage316 : UnitTest {
 		this.assertEquals(2 ** 3, 8.0);
 	}
 
+	test_negative_zero_is_kept {
+		var zero = 0.0, negative = -0.0;
+		this.assertEquals(1 / negative, -inf, "-0.0 is not folded into 0.0");
+		this.assertEquals(1 / zero, inf);
+		this.assertEquals(1 / [0.0, -0.0][1], -inf, "nor in an array");
+		this.assertEquals(1 / [-0.0, 0.0][1], inf);
+	}
+
 	test_literal_is_shared {
 		var f = { #[1, 2] };
 		this.assert(f.value === f.value, "a literal array is the same object");
