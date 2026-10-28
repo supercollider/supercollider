@@ -198,4 +198,4 @@ jobs:
       - name: Run CTests
         continue-on-error: false
         if: matrix.ctest
-        run: cmake --build $BUILD_PATH --config Release --target test
+        run: ctest --test-dir $BUILD_PATH -C Release --output-on-failure
