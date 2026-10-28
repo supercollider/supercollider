@@ -128,8 +128,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////
     using Base::is_a;
 
-    template <typename TypedIndex, typename = std::enable_if<sc::util::typed_index::is_type_set_index<TypedIndex>()>>
-    [[nodiscard]] static constexpr const char* node_name(TypedIndex);
+    template <typename TypedIndex> [[nodiscard]] static constexpr const char* node_name(TypedIndex);
     [[nodiscard]] static constexpr const char* node_name(const Variant& variant) {
         return std::visit(
             [](const auto& v) -> const char* {
@@ -209,10 +208,6 @@ public:
     // Traversal
     ////////////////////////////////////////////////////////////////////////////////
 
-    template <typename F> [[nodiscard]] static constexpr bool signature_check() {
-        return std::is_invocable_v<F, const Edges&, const Variant&, const SourceLocation&, NodeIndex>;
-    }
-
     struct Default {
         void operator()(const Edges&, const Variant&, const SourceLocation&, NodeIndex, size_t /**depth*/) {}
     };
@@ -222,11 +217,7 @@ public:
         (const Edges& e, const Variant& v, const SourceLocation&, NodeIndex i, size_t depth)
     */
     template <typename EnterNode, typename BeforeChildren = Default, typename AfterChildren = Default,
-              typename ExitNode = Default,
-              typename = std::enable_if<signature_check<EnterNode>()>, //
-              typename = std::enable_if<signature_check<BeforeChildren>()>, //
-              typename = std::enable_if<signature_check<AfterChildren>()>, //
-              typename = std::enable_if<signature_check<ExitNode>()>>
+              typename ExitNode = Default>
 
     void depth_first_traverse(NodeIndex i, EnterNode enter_node, BeforeChildren before_children = {},
                               AfterChildren after_children = {}, ExitNode exit_node = {}) const;
@@ -279,7 +270,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////
 
-template <typename TypedIndex, typename> [[nodiscard]] constexpr const char* IRGraph::node_name(TypedIndex) {
+template <typename TypedIndex> [[nodiscard]] constexpr const char* IRGraph::node_name(TypedIndex) {
     using NodeType = NodeTypeFromIndex<TypedIndex>;
     return NodeType::type_name;
 };
@@ -298,8 +289,7 @@ template <typename Node, typename... ChildrenIndexes>
     return index;
 }
 
-template <typename EnterNode, typename BeforeChildren, typename AfterChildren, typename ExitNode, typename, typename,
-          typename, typename>
+template <typename EnterNode, typename BeforeChildren, typename AfterChildren, typename ExitNode>
 void IRGraph::depth_first_traverse(NodeIndex i, EnterNode enter_node, BeforeChildren before_children,
                                    AfterChildren after_children, ExitNode exit_node) const {
     const auto wrap = [&](auto& f) {

@@ -20,9 +20,7 @@ enum struct NodeType { Node, Terminal, List };
 // This is just used so you can check you have nodes in template parameters.
 struct NodeBaseBase {};
 
-template <typename ThisTypedIndex, NodeType T,
-          typename = std::enable_if<typed_index::is_type_set_index<ThisTypedIndex>()>>
-struct NodeBase : NodeBaseBase {
+template <typename ThisTypedIndex, NodeType T> struct NodeBase : NodeBaseBase {
     static_assert(ThisTypedIndex::size_of_set == 1, "Nodes must be represented by indexes that have exactly one enum.");
     using Index = ThisTypedIndex;
     static constexpr NodeType type { T };

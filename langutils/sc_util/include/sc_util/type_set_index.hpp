@@ -188,7 +188,7 @@ public:
     This is how you undo the type erasure.
     NOTE: it is the call-sight's job to ensure the passed in enum matches what the index actually represents.
      */
-    template <EnumType T, typename = std::enable_if<sizeof...(ThisSet) != 0>> //
+    template <EnumType T> //
     [[nodiscard]] constexpr Variant as_variant() const {
         // This might look weird, as this is compile time known, but for some reason compilers need it to be written
         // like this. I wonder if this is because this should be a consteval function but we don't have this in c++17?

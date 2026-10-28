@@ -180,12 +180,11 @@ public:
     using Base::cast;
     using Base::is_a;
 
-    template <typename TypedIndex, typename = std::enable_if<sc::util::typed_index::is_type_set_index<TypedIndex>()>>
-    [[nodiscard]] static constexpr const char* node_name(TypedIndex);
+    template <typename TypedIndex> [[nodiscard]] static constexpr const char* node_name(TypedIndex);
     [[nodiscard]] static constexpr const char* node_name(const Variant& variant);
 
     /// Turns as missing<NODEINDEX> into a std::optional<NODEINDEX>
-    template <typename TypedIndex, typename = std::enable_if<sc::util::typed_index::is_type_set_index<TypedIndex>()>>
+    template <typename TypedIndex>
     [[nodiscard]] constexpr auto present(TypedIndex i) const
         -> std::optional<typename decltype(TypedIndex::template remove_from_set<NodeFlag::Missing>())::type>;
 
@@ -304,7 +303,7 @@ struct ASTGraphAndValidIndex {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-template <typename TypedIndex, typename>
+template <typename TypedIndex>
 [[nodiscard]] constexpr auto ASTGraph::present(TypedIndex i) const
     -> std::optional<typename decltype(TypedIndex::template remove_from_set<NodeFlag::Missing>())::type> //
 {
@@ -315,7 +314,7 @@ template <typename F> inline void ASTGraph::flat_walk(F f) const {
     Base::flat_walk([&](const Edges& e, const Variant& v, size_t i) { std::invoke(f, e, v, m_node_locations[i], i); });
 }
 
-template <typename TypedIndex, typename> //
+template <typename TypedIndex> //
 [[nodiscard]] constexpr const char* ASTGraph::node_name(TypedIndex) {
     using NodeType = NodeTypeFromIndex<TypedIndex>;
     return NodeType::name;

@@ -173,14 +173,12 @@ public: // This is meant to be privately inherited from.
     // accessors
     ////////////////////////////////////////////////////////////////////////////////
 
-    template <typename TypedIndex, typename = std::enable_if<typed_index::is_type_set_index<TypedIndex>()>>
-    [[nodiscard]] constexpr NodeTypeFromIndex<TypedIndex>& payload(TypedIndex i) {
+    template <typename TypedIndex> [[nodiscard]] constexpr NodeTypeFromIndex<TypedIndex>& payload(TypedIndex i) {
         assert(not_dead(i));
         return std::get<PayloadPosition<TypedIndex>>(m_node_payload[*i]);
     }
 
-    template <typename TypedIndex, typename = std::enable_if<typed_index::is_type_set_index<TypedIndex>()>>
-    [[nodiscard]] constexpr const auto& payload(TypedIndex i) const {
+    template <typename TypedIndex> [[nodiscard]] constexpr const auto& payload(TypedIndex i) const {
         assert(not_dead(i));
         return std::get<PayloadPosition<TypedIndex>>(m_node_payload[*i]);
     }
@@ -389,12 +387,6 @@ public: // This is meant to be privately inherited from.
 
 
     template <typename F> //
-    [[nodiscard]] static constexpr bool signature() {
-        return std::is_invocable_v<F, const Edges&, const Variant&, Index, size_t>;
-    }
-
-
-    template <typename F, typename = std::enable_if<signature<F>()>> //
     void flat_walk(F f) const {
         const auto sz = m_node_payload.size();
         for (size_t i { 0 }; i < sz; ++i) {
@@ -402,7 +394,7 @@ public: // This is meant to be privately inherited from.
         }
     }
 
-    template <typename F, typename = std::enable_if<signature<F>()>> //
+    template <typename F> //
     void traverse_only_children(F f, Index i) const {
         const auto& edge = m_node_edges[i];
         if (auto start = edge.first_child) {
@@ -417,12 +409,7 @@ public: // This is meant to be privately inherited from.
     };
 
     template <typename EnterNode = Default, typename BeforeChildren = Default, typename AfterChildren = Default,
-              typename ExitNode = Default,
-              typename = std::enable_if<signature<EnterNode>()>, //
-              typename = std::enable_if<signature<BeforeChildren>()>, //
-              typename = std::enable_if<signature<AfterChildren>()>, //
-              typename = std::enable_if<signature<ExitNode>()> //
-              > //
+              typename ExitNode = Default> //
     void depth_first_traverse(Index i, EnterNode enter_node = {}, BeforeChildren before_children = {},
                               AfterChildren after_children = {}, ExitNode exit_node = {}) const {
         size_t visited { 0 };
@@ -501,11 +488,7 @@ private:
         return { std::tuple_element_t<IS, Tup>::from(UntypedNodeIndex { *child_indexes[IS] })... };
     };
 
-    template <typename EnterNode, typename BeforeChildren, typename AfterChildren, typename ExitNode,
-              typename = std::enable_if<signature<EnterNode>()>, //
-              typename = std::enable_if<signature<BeforeChildren>()>, //
-              typename = std::enable_if<signature<AfterChildren>()>, //
-              typename = std::enable_if<signature<ExitNode>()>>
+    template <typename EnterNode, typename BeforeChildren, typename AfterChildren, typename ExitNode>
     void depth_first_traverse_impl(EnterNode enter_node, BeforeChildren before_children, AfterChildren after_children,
                                    ExitNode exit_node, size_t i, size_t& visited, size_t depth = 0) const {
         // Recurses for children, but loops over siblings, so a long list, e.g., a large array, doesn't use the stack.
