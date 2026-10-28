@@ -30,6 +30,13 @@ OutOfRange {
     radix_too_large { ^16r80000000 }
     // expect-error: Literal out of range
     radix_base_too_large { ^99999999999999999999999r1 }
+    // Every radix from 36 up accepts the same digits, which is where the lexer stops reading the radix.
+    // expect: -> 35
+    radix_36 { ^36rZ }
+    // expect: -> 35
+    radix_37 { ^37rZ }
+    // expect: -> 1
+    radix_five_digits { ^99999r1 }
 
     // expect: no diagnostics
     float_large { ^1e308 }
