@@ -8,6 +8,9 @@
 #include <cstring>
 #include <iomanip>
 #include <sstream>
+#include <filesystem>
+#include <iomanip>
+#include <cctype>
 
 
 [[nodiscard]] std::tuple<const char*, std::size_t> TextInfo::indexIntoSource(sc::lex::SourceCodeRange range) const {
@@ -61,6 +64,35 @@ std::string diagnosticToCompilerError(ErrorType type, const char* generalDescrip
     return ss.str();
 }
 
+void streamFileUri(std::ostream& os, const char* filepath) {
+    std::error_code ec;
+    // u8path ensures UTF-8 const char* is decoded properly on Windows
+    // NOTE: after moving to C++20, cast UTF-8 const char* to const char8_t* instead of using u8path
+    auto abs_path = std::filesystem::absolute(std::filesystem::u8path(filepath), ec);
+    std::string generic = ec ? std::string(filepath) : abs_path.generic_u8string();
+
+    os << "file://";
+    if (!generic.empty() && generic.front() != '/') {
+        os << '/';
+    }
+
+    // Save stream format state
+    std::ios_base::fmtflags old_flags = os.flags();
+    char old_fill = os.fill('0');
+    os << std::hex << std::uppercase;
+
+    for (unsigned char c : generic) {
+        if (std::isalnum(c) || c == '/' || c == '-' || c == '.' || c == '_' || c == '~' || c == ':') {
+            os << c;
+        } else {
+            os << '%' << std::setw(2) << static_cast<int>(c);
+        }
+    }
+
+    // Restore stream format state so subsequent output is not affected
+    os.flags(old_flags);
+    os.fill(old_fill);
+}
 
 std::ostream& streamSourceCodeWithHighlight(std::ostream& ss, const DiagnosticHighlight& highlight, bool printSource,
                                             const char* newlinePrefixPtr, size_t newlinePrefixSz) {
@@ -69,9 +101,10 @@ std::ostream& streamSourceCodeWithHighlight(std::ostream& ss, const DiagnosticHi
     const auto starting_line = source_line + range.begin.line_number;
     const auto start_column = source_column + range.end.column;
 
-    if (filepath)
-        ss << "file://" << filepath << ':' << starting_line + 1 << ':' << start_column + 1 << '\n';
-    else
+    if (filepath && std::strcmp(filepath, "interpreted_text") != 0) {
+        streamFileUri(ss, filepath);
+        ss << ':' << starting_line + 1 << ':' << start_column + 1 << '\n';
+    } else
         ss << "unknown file:" << starting_line + 1 << ':' << start_column + 1 << '\n';
 
     if (!txt || txt_len == 0) {
