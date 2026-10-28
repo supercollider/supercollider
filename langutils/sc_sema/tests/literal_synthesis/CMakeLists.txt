@@ -1,0 +1,5 @@
+add_executable(sc_sema_literal_synthesis_test main.cpp)
+target_link_libraries(sc_sema_literal_synthesis_test boost_test sc_sema sc_parser)
+target_include_directories(sc_sema_literal_synthesis_test PRIVATE ${boost_include_dirs} ../../src)
+add_test(sc_sema_literal_synthesis_test_run sc_sema_literal_synthesis_test)
+set_property(TARGET sc_sema_literal_synthesis_test PROPERTY FOLDER Test/LangUtils)

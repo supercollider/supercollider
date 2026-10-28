@@ -7,9 +7,14 @@
 #include <optional>
 #include <utility>
 #include <cmath>
-#include <cstdlib>
-#include <iterator>
 #include <sstream>
+#include <string>
+#include <type_traits>
+#include <locale.h>
+#include <stdlib.h>
+#if defined(__APPLE__)
+#    include <xlocale.h>
+#endif
 
 #include "sc_parser/ast.hpp"
 #include "sc_util/unreachable.hpp"
@@ -17,6 +22,7 @@
 namespace sc::ir {
 
 template <typename T> std::optional<T> from(const char* begin, const char* end) {
+    static_assert(std::is_integral_v<T>, "Apple's libc++ has no floating point from_chars, use parse_double");
     T t;
     const auto [ptr, er] = std::from_chars(begin, end, t);
     if (ptr != end)
@@ -28,6 +34,28 @@ template <typename T> std::optional<T> from(const char* begin, const char* end) 
 template <typename T> std::optional<T> from(std::string_view v) { return from<T>(v.data(), v.data() + v.size()); }
 
 namespace {
+// strtod_l with the C locale, so '.' stays the decimal point once Qt has set the locale. strtod returns inf on
+// overflow, rejected by the caller, and 0 on underflow, rejected here, while denormals are kept.
+std::optional<double> parse_double(std::string_view str) {
+#if defined(_WIN32)
+    static const _locale_t c_locale = _create_locale(LC_ALL, "C");
+    const auto strtod_c = [](const char* text, char** last) { return _strtod_l(text, last, c_locale); };
+#else
+    static const locale_t c_locale = newlocale(LC_ALL_MASK, "C", nullptr);
+    const auto strtod_c = [](const char* text, char** last) { return strtod_l(text, last, c_locale); };
+#endif
+    const std::string text(str);
+    char* last = nullptr;
+    const double value = strtod_c(text.c_str(), &last);
+    if (last != text.c_str() + text.size())
+        return {};
+    const auto mantissa = str.substr(0, str.find_first_of("eE"));
+    const bool zero_digits = std::all_of(mantissa.begin(), mantissa.end(), [](char c) { return c == '0' || c == '.'; });
+    if (value == 0 && !zero_digits)
+        return {};
+    return { value };
+}
+
 // A digit's value, the letters are 10 to 35 in either case. The lexer only accepts digits valid for the base.
 int digit_value(char c) {
     if (c >= '0' && c <= '9')
@@ -203,8 +231,8 @@ std::optional<double> synthesize_literal(const ast::FloatNode& node, std::string
     case ast::FloatNode::Kind::Exponent:
         [[fallthrough]];
     case ast::FloatNode::Kind::Normal:
-        // `inf` is lexed as a float. from_chars reports values that overflow or underflow as out of range.
-        value = from<double>(str);
+        // `inf` is lexed as a float.
+        value = parse_double(str);
         break;
     case ast::FloatNode::Kind::Radix: {
         value = radix_float(str);

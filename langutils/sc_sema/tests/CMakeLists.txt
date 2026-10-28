@@ -1,2 +1,2 @@
 add_subdirectory(error_regression)
-
+add_subdirectory(literal_synthesis)
