@@ -87,6 +87,11 @@ target_include_directories(libsupernova PUBLIC
     .
 )
 
+# BUILDING_SCSYNTH is used in SC_Unit.h.
+# NOTE: supernova.exe also needs to see this definition, that's why it's PUBLIC.
+# (libsupernova is only an internal library and never included by third-party code.)
+target_compile_definitions(libsupernova PUBLIC BUILDING_SCSYNTH)
+
 if(SN_MEMORY_DEBUGGING)
     target_compile_definitions(libsupernova PUBLIC NOVA_MEMORY_DEBUGGING)
 endif()

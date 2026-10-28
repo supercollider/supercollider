@@ -18,6 +18,9 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+// NOTE TO PLUGIN AUTHORS: if you need to use Windows headers,
+// always include them *before* all SuperCollider headers!
+
 #pragma once
 
 #if defined(SUPERNOVA) && !defined(__cplusplus)

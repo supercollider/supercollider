@@ -72,7 +72,7 @@ void Unit_Dtor(Unit* inUnit) {}
 void Unit_ZeroOutputs(Unit* unit, int inNumSamples) {
     uint32 numOuts = unit->mNumOutputs;
     for (uint32 i = 0; i < numOuts; ++i) {
-        float* out = OUT(i);
+        float* out = unit->mOutBuf[i];
         Clear(inNumSamples, out);
     }
 }
