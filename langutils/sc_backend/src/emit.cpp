@@ -197,7 +197,8 @@ struct Emitter {
     EmittedFunction out {};
     std::vector<sc::diag::Diagnostic>& diagnostics;
     bool failed { false };
-    bool reported_selectors { false };
+    bool selector_table_full_reported { false };
+    bool instance_variable_out_of_reach_reported { false };
     // Each constant's identity, so adding one doesn't look up every entry again.
     util::IndexedVector<ConstantIndex, SlotIdentity> constant_identities {};
 
@@ -237,8 +238,8 @@ struct Emitter {
                     return index;
             }
         if (out.selectors.size() >= max_selectors) {
-            if (!reported_selectors) {
-                reported_selectors = true;
+            if (!selector_table_full_reported) {
+                selector_table_full_reported = true;
                 const auto loc = owner_location();
                 report(sc::diag::Diagnostic::selector_table_full(ctx.graph.text_info(loc.source),
                                                                  ir::IRGraph::range(loc), max_selectors));
@@ -246,6 +247,21 @@ struct Emitter {
             return SelectorIndex { 0 };
         }
         return out.selectors.push_back(entry);
+    }
+
+    // The bytecodes index instance variables by a byte.
+    [[nodiscard]] Operands::Index instance_slot(InstanceSlotIndex slot) {
+        constexpr InstanceSlotIndex max_instance_slot { std::numeric_limits<std::uint8_t>::max() };
+        if (*slot > *max_instance_slot) {
+            if (!instance_variable_out_of_reach_reported) {
+                instance_variable_out_of_reach_reported = true;
+                const auto loc = owner_location();
+                report(sc::diag::Diagnostic::instance_variable_out_of_reach(
+                    ctx.graph.text_info(loc.source), ir::IRGraph::range(loc), *slot, *max_instance_slot));
+            }
+            return Operands::Index::fromRaw(0);
+        }
+        return Operands::Index::fromRaw(static_cast<int>(*slot));
     }
 
     ConstantIndex add_constant(ConstantContent entry) {
@@ -811,7 +827,7 @@ struct Emitter {
             StoreInstVar.emit(bc, loc, slot);
             return true;
         }
-        StoreInstVarX.emit(bc, loc, Operands::Index::fromRaw(static_cast<int>(slot)));
+        StoreInstVarX.emit(bc, loc, instance_slot(s.slot));
         return false;
     }
 
@@ -1014,9 +1030,7 @@ struct Emitter {
         }
 
         void operator()(const lir::PushLocal& p) { emitter.push_local(bc, loc, p.local); }
-        void operator()(const lir::PushInstance& p) {
-            PushInstVarX.emit(bc, loc, Operands::Index::fromRaw(static_cast<int>(*p.slot)));
-        }
+        void operator()(const lir::PushInstance& p) { PushInstVarX.emit(bc, loc, emitter.instance_slot(p.slot)); }
         void operator()(const lir::PushClassVariable& p) {
             const std::uint32_t index { *p.index };
             if (PushClassVar.validNibble(index))

@@ -156,6 +156,10 @@ public:
     [[nodiscard]] static Diagnostic too_many_variables(TextInfoPtr t, sc::src::SourceCodeRange l, std::size_t count,
                                                        std::size_t limit);
 
+    // A method or function using an instance variable past the last its bytecode can index.
+    [[nodiscard]] static Diagnostic instance_variable_out_of_reach(TextInfoPtr t, sc::src::SourceCodeRange l,
+                                                                   std::size_t index, std::size_t limit);
+
     // A method or function that uses more selectors, class names and functions than its bytecode can index.
     [[nodiscard]] static Diagnostic selector_table_full(TextInfoPtr t, sc::src::SourceCodeRange l, std::size_t limit);
 

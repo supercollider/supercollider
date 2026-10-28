@@ -711,6 +711,18 @@ Diagnostic Diagnostic::too_many_variables(TextInfoPtr t, sc::src::SourceCodeRang
                    "Event, or split the code into smaller functions." };
 }
 
+Diagnostic Diagnostic::instance_variable_out_of_reach(TextInfoPtr t, sc::src::SourceCodeRange l, std::size_t index,
+                                                      std::size_t limit) {
+    return { "Instance variable out of reach",
+             Severity::Error,
+             { { std::move(t), l,
+                 "this uses instance variable number " + std::to_string(index) + ", past number "
+                     + std::to_string(limit) + "." } },
+             "Bytecode refers to an instance variable by a single byte, so only the first " + std::to_string(limit + 1)
+                 + ", counting those of the superclasses, can be used by a method or function written in a class. "
+                   "Group the others, e.g., into an Event." };
+}
+
 Diagnostic Diagnostic::selector_table_full(TextInfoPtr t, sc::src::SourceCodeRange l, std::size_t limit) {
     return { "Too many selectors",
              Severity::Error,
