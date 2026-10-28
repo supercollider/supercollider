@@ -185,7 +185,10 @@ ClassDeclaration::MethodInsert ClassDeclaration::insert(Method m) {
     }
     const bool legacy = current.version == ast::LanguageVersion::Legacy && m.version == ast::LanguageVersion::Legacy;
     if (legacy) {
+        // The earlier module's duplicate is still an error.
+        const bool poisoned = current.poisoned;
         current = std::move(m);
+        current.poisoned = poisoned;
         return { MethodInsertResult::OverwrittenBetweenModules, previous };
     }
     current.poisoned = true;

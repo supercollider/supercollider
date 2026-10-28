@@ -129,6 +129,12 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
             const auto class_name = ctx.symbol_table.get_class_name(ast_graph->string(class_name_i));
             const auto meta_class_name = ctx.symbol_table.get_meta_class_name(ast_graph->string(class_name_i));
 
+            // Skipped, as the old compiler did, which is silent in legacy code as it can extend classes that only
+            // exist in other installations.
+            if (version != ast::LanguageVersion::Legacy && !ctx.class_declarations.get_unsafe(class_name))
+                ctx.diagnostics(sc::diag::Diagnostic::extension_of_undefined_class(ast_graph->text_info(),
+                                                                                   ast_graph->location(class_name_i)));
+
             const auto insert = [&](SymSCClassName name, auto method_i) {
                 // An extension of a class that isn't defined is skipped.
                 auto* decl = ctx.class_declarations.get_unsafe(name);

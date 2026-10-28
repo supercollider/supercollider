@@ -111,6 +111,9 @@ public:
     [[nodiscard]] static Diagnostic extension_overwritten(TextInfoPtr first_t, sc::src::SourceCodeRange first_l,
                                                           TextInfoPtr second_t, sc::src::SourceCodeRange second_l);
 
+    // A warning, an extension of a class that isn't defined, which is skipped, e.g., a typo.
+    [[nodiscard]] static Diagnostic extension_of_undefined_class(TextInfoPtr t, sc::src::SourceCodeRange l);
+
     [[nodiscard]] static Diagnostic super_class_not_defined( //
         std::string name, std::vector<std::pair<TextInfoPtr, sc::src::SourceCodeRange>>);
     [[nodiscard]] static Diagnostic inheritance_cycle(std::vector<std::pair<TextInfoPtr, sc::src::SourceCodeRange>>);

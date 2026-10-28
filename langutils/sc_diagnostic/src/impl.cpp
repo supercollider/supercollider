@@ -508,6 +508,13 @@ Diagnostic Diagnostic::primitive_needs_keyword_arguments(TextInfoPtr t, sc::src:
              "In the legacy version, as in the old compiler, the extension from the module given last is used. From "
              "3.16 this is an error, as which is used depends on the order the modules are given." };
 }
+[[nodiscard]] Diagnostic Diagnostic::extension_of_undefined_class(TextInfoPtr t, sc::src::SourceCodeRange l) {
+    return { "Extension of an undefined class",
+             Severity::Warning,
+             { { std::move(t), l, "No class with this name is defined." } },
+             "The extension is skipped. Check the name, or that the file defining the class is given to the "
+             "compiler." };
+}
 [[nodiscard]] Diagnostic Diagnostic::default_inheritor_must_have_super(TextInfoPtr first_t,
                                                                        sc::src::SourceCodeRange first_l) {
     return { "Default inheritor must inherit from a class.",
