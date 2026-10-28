@@ -268,6 +268,14 @@ std::optional<ConstExpression> ConstEval::fold_copy_series(const ConstExpression
         array ? static_cast<std::int64_t>(array->size()) : static_cast<std::int64_t>(string.size());
 
     const std::int64_t f = first.value_or(0);
+
+    // As prObjectCopySeries: with no first, a negative last is empty; with no last, a first past the end is empty.
+    if ((!first && last && *last < 0) || (!last && f >= size)) {
+        if (array)
+            return ConstExpression { ConstExprArray {} };
+        return ConstExpression { symbols.get_string(std::string {}) };
+    }
+
     const std::int64_t l = last ? std::int64_t { *last } : size - 1;
     const std::int64_t step = second ? std::int64_t { *second } - f : (l >= f ? 1 : -1);
     if (step == 0 || (l > f && step < 0) || (l < f && step > 0))

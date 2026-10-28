@@ -214,6 +214,84 @@ SCClass (2:1): SliceFolding : Object, version 3.16
 |  |  |  |  |  |  |  SCLiteral (29:36) = nil
 |  |  |  |  |  |  |  SCMessage (29:40): foo
 |  |  |  |  |  |  |  |  SCLiteral (29:40) = 2
+|  |  SCMethod (32:5): first_past_end, version 3.16: first_past_end { ^[1, 2, 3][3..] } -> []
+|  |  |  SCBody (32:22)
+|  |  |  |  SCExplicitReturn (32:22)
+|  |  |  |  |  SCMessage (32:23): copySeries = []
+|  |  |  |  |  |  SCCollection (32:23): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (32:24) = 1
+|  |  |  |  |  |  |  SCLiteral (32:27) = 2
+|  |  |  |  |  |  |  SCLiteral (32:30) = 3
+|  |  |  |  |  |  SCPositionalArgs (32:23)
+|  |  |  |  |  |  |  SCLiteral (32:33) = 3
+|  |  |  |  |  |  |  SCLiteral (32:32) = nil
+|  |  |  |  |  |  |  SCLiteral (32:32) = nil
+|  |  SCMethod (33:5): first_past_end_string, version 3.16: first_past_end_string { ^"abc"[5..] } -> ""
+|  |  |  SCBody (33:29)
+|  |  |  |  SCExplicitReturn (33:29)
+|  |  |  |  |  SCMessage (33:30): copySeries = ""
+|  |  |  |  |  |  SCLiteral (33:30) = "abc"
+|  |  |  |  |  |  SCPositionalArgs (33:30)
+|  |  |  |  |  |  |  SCLiteral (33:36) = 5
+|  |  |  |  |  |  |  SCLiteral (33:35) = nil
+|  |  |  |  |  |  |  SCLiteral (33:35) = nil
+|  |  SCMethod (34:5): first_past_end_descending, version 3.16: first_past_end_descending { ^[1, 2, 3][4, 3..] } -> []
+|  |  |  SCBody (34:33)
+|  |  |  |  SCExplicitReturn (34:33)
+|  |  |  |  |  SCMessage (34:34): copySeries = []
+|  |  |  |  |  |  SCCollection (34:34): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (34:35) = 1
+|  |  |  |  |  |  |  SCLiteral (34:38) = 2
+|  |  |  |  |  |  |  SCLiteral (34:41) = 3
+|  |  |  |  |  |  SCPositionalArgs (34:34)
+|  |  |  |  |  |  |  SCLiteral (34:44) = 4
+|  |  |  |  |  |  |  SCLiteral (34:47) = 3
+|  |  |  |  |  |  |  SCLiteral (34:43) = nil
+|  |  SCMethod (35:5): negative_end_from_start, version 3.16: negative_end_from_start { ^[1, 2, 3][..-1] } -> []
+|  |  |  SCBody (35:31)
+|  |  |  |  SCExplicitReturn (35:31)
+|  |  |  |  |  SCMessage (35:32): copySeries = []
+|  |  |  |  |  |  SCCollection (35:32): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (35:33) = 1
+|  |  |  |  |  |  |  SCLiteral (35:36) = 2
+|  |  |  |  |  |  |  SCLiteral (35:39) = 3
+|  |  |  |  |  |  SCPositionalArgs (35:32)
+|  |  |  |  |  |  |  SCLiteral (35:41) = nil
+|  |  |  |  |  |  |  SCLiteral (35:41) = nil
+|  |  |  |  |  |  |  SCLiteral (35:45) = -1
+|  |  SCMethod (36:5): negative_end_from_start_string, version 3.16: negative_end_from_start_string { ^"abc"[..-2] } -> ""
+|  |  |  SCBody (36:38)
+|  |  |  |  SCExplicitReturn (36:38)
+|  |  |  |  |  SCMessage (36:39): copySeries = ""
+|  |  |  |  |  |  SCLiteral (36:39) = "abc"
+|  |  |  |  |  |  SCPositionalArgs (36:39)
+|  |  |  |  |  |  |  SCLiteral (36:44) = nil
+|  |  |  |  |  |  |  SCLiteral (36:44) = nil
+|  |  |  |  |  |  |  SCLiteral (36:48) = -2
+|  |  SCMethod (38:5): negative_end_with_first, version 3.16: negative_end_with_first { ^[1, 2, 3][0..-1] } -> [1]
+|  |  |  SCBody (38:31)
+|  |  |  |  SCExplicitReturn (38:31)
+|  |  |  |  |  SCMessage (38:32): copySeries = [1]
+|  |  |  |  |  |  SCCollection (38:32): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (38:33) = 1
+|  |  |  |  |  |  |  SCLiteral (38:36) = 2
+|  |  |  |  |  |  |  SCLiteral (38:39) = 3
+|  |  |  |  |  |  SCPositionalArgs (38:32)
+|  |  |  |  |  |  |  SCLiteral (38:42) = 0
+|  |  |  |  |  |  |  SCLiteral (38:41) = nil
+|  |  |  |  |  |  |  SCLiteral (38:46) = -1
+|  |  SCMethod (39:5): last_element_to_end, version 3.16: last_element_to_end { ^[1, 2, 3][2..] } -> [3]
+|  |  |  SCBody (39:27)
+|  |  |  |  SCExplicitReturn (39:27)
+|  |  |  |  |  SCMessage (39:28): copySeries = [3]
+|  |  |  |  |  |  SCCollection (39:28): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (39:29) = 1
+|  |  |  |  |  |  |  SCLiteral (39:32) = 2
+|  |  |  |  |  |  |  SCLiteral (39:35) = 3
+|  |  |  |  |  |  SCPositionalArgs (39:28)
+|  |  |  |  |  |  |  SCLiteral (39:38) = 2
+|  |  |  |  |  |  |  SCLiteral (39:37) = nil
+|  |  |  |  |  |  |  SCLiteral (39:37) = nil
 SCClass (2:1): Meta_SliceFolding : Meta_Object, version 3.16
 |  SCMemberList (2:1)
 |  |  SCMember (10:11): const_array = [10, 20, 30, 40]

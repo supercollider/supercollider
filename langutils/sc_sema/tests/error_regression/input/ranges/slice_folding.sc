@@ -27,4 +27,14 @@ SliceFolding {
     step_away { ^[1, 2, 3][2, 3..0] }
     receiver_not_constant { ^x[1..2] }
     bound_not_constant { ^[1, 2, 3][1..2.foo] }
+
+    // Empty as the runtime's copySeries makes them, not clamped to one element.
+    first_past_end { ^[1, 2, 3][3..] }
+    first_past_end_string { ^"abc"[5..] }
+    first_past_end_descending { ^[1, 2, 3][4, 3..] }
+    negative_end_from_start { ^[1, 2, 3][..-1] }
+    negative_end_from_start_string { ^"abc"[..-2] }
+    // These are not empty: a first is given, or the end is not open.
+    negative_end_with_first { ^[1, 2, 3][0..-1] }
+    last_element_to_end { ^[1, 2, 3][2..] }
 }
