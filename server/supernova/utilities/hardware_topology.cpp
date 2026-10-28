@@ -17,6 +17,9 @@
 //  Boston, MA 02111-1307, USA.
 
 #if defined(_WIN32)
+#    ifndef NOMINMAX
+#        define NOMINMAX
+#    endif
 #    include <windows.h>
 #    include <malloc.h>
 #elif defined(__APPLE__) || defined(__FreeBSD__) || defined(__FreeBSD_kernel__)

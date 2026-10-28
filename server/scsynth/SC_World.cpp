@@ -18,10 +18,6 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifdef _WIN32
-#    include "SC_Win32Utils.h"
-#endif
-
 #ifdef __APPLE__
 #    include "../../common/SC_Apple.hpp"
 #endif

@@ -22,7 +22,10 @@
 #ifdef DLOPEN
 #    include <dlfcn.h>
 #elif defined(_WIN32)
-#    include "SC_Win32Utils.h"
+#    ifndef NOMINMAX
+#        define NOMINMAX
+#    endif
+#    include <windows.h>
 #    include "SC_Codecvt.hpp"
 #endif
 

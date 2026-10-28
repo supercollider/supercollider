@@ -25,12 +25,8 @@
 
 #    include "SC_Errors.h"
 
-// on Windows, enable Windows libsndfile prototypes in order to access sf_wchar_open.
-// See sndfile.h, lines 739-752. Note that order matters: this has to be the first include of sndfile.h
 #    ifdef _WIN32
 #        include "SC_Codecvt.hpp" // utf8_cstr_to_utf16_wstring
-#        include <windows.h>
-#        define ENABLE_SNDFILE_WINDOWS_PROTOTYPES 1
 #    endif // _WIN32
 #    include <sndfile.h>
 #    include <sndfile.hh>
@@ -190,7 +186,7 @@ inline SCErr sndfileFormatInfoFromStrings(SF_INFO& info, const char* headerForma
 #    ifdef _WIN32
 
 /** @brief Opens a soundfile from a native file path */
-inline SNDFILE* sndfileOpenFromNativeString(LPCWSTR wpath, int mode, SF_INFO* sfinfo) {
+inline SNDFILE* sndfileOpenFromNativeString(const wchar_t* wpath, int mode, SF_INFO* sfinfo) {
     return sf_wchar_open(wpath, mode, sfinfo);
 }
 

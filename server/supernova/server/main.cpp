@@ -22,7 +22,6 @@
 #include <string>
 #include <vector>
 
-#include "SC_Win32Utils.h"
 #include "SC_ServerBootDelayWarning.h"
 
 #include <filesystem>
@@ -48,11 +47,15 @@
 #    include <SC_Apple.hpp>
 #endif
 
-#ifndef _WIN32
-#    include <unistd.h> // for _POSIX_MEMLOCK
+#ifdef _WIN32
+#    ifndef NOMINMAX
+#        define NOMINMAX
+#    endif
+#    include <windows.h>
 #endif
 
 #if (_POSIX_MEMLOCK - 0) >= 200112L
+#    include <unistd.h>
 #    include <sys/resource.h>
 #    include <sys/mman.h>
 #endif

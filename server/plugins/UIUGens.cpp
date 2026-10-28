@@ -26,10 +26,8 @@
 #ifndef _WIN32
 #    include <X11/Intrinsic.h>
 #else
-#    include "SC_Win32Utils.h"
 #    include <windows.h>
 #endif
-
 
 #include "SC_PlugIn.h"
 

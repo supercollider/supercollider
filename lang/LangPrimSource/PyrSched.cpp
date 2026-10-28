@@ -48,7 +48,6 @@
 
 // FIXME: These includes needs to be last on Windows, otherwise Ableton build breaks
 // (Windows header include ordering dependencies)
-#include "SC_Win32Utils.h"
 #ifdef _MSC_VER
 #    include "wintime.h"
 #else

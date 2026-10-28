@@ -49,9 +49,10 @@ Primitives for Unix.
 #include <thread>
 
 #ifdef _WIN32
-#    include "SC_Win32Utils.h"
-#else
-#    include <libgen.h>
+#    ifndef NOMINMAX
+#        define NOMINMAX
+#    endif
+#    include <windows.h>
 #endif
 
 extern ClassLibraryInfo gClassLibraryInfo;

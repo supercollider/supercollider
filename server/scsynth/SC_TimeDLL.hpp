@@ -17,20 +17,8 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
-/*
-#include "SC_CoreAudio.h"
-#include <stdarg.h>
-#include "SC_Prototypes.h"
-#include "SC_HiddenWorld.h"
-#include "SC_WorldOptions.h"
-#include <stdlib.h>
 
-#ifdef _WIN32
-#include "SC_Win32Utils.h"
-#else
-#include <sys/time.h>
-#endif
-*/
+#include <cstdint>
 
 // =====================================================================
 // SC_TimeDLL

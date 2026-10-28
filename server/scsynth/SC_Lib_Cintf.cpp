@@ -37,12 +37,13 @@
 #endif // _MSC_VER
 
 #ifdef _WIN32
+#    ifndef NOMINMAX
+#        define NOMINMAX
+#    endif
 #    include <windows.h>
-#    include "SC_Win32Utils.h"
 #    include "SC_Codecvt.hpp"
 #else
 #    include <dlfcn.h>
-#    include <libgen.h>
 #    include <sys/param.h>
 #endif // _WIN32
 

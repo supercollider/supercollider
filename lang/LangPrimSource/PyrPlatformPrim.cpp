@@ -29,10 +29,6 @@ Primitives for platform dependent directories, constants etc.
 #include "PyrPrimitive.h"
 #include "PyrKernel.h"
 #include "SCBase.h" // getsym
-#ifdef _WIN32
-#    include "SC_Win32Utils.h"
-#    include "Shlobj.h"
-#endif
 
 #include <filesystem>
 #include <boost/predef/architecture.h>
