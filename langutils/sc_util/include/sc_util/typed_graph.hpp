@@ -50,10 +50,10 @@ template <typename OptIndex, //
 struct GraphImplementation {
 public: // This is meant to be privately inherited from.
     ////////////////////////////////////////////////////////////////////////////////
-    // static_assert(HELPER::template all_node_types<IsTrivial>(), "Nodes should not allocate or require destructors.");
-    // static_assert(std::is_same_v<typename HELPER::UntypedStrongIndex, OptIndex>
-    //                  || std::is_same_v<typename HELPER::UntypedStrongIndex, Index>,
-    //             "Index types aren't the ones the nodes use.");
+    static_assert(HELPER::template all_node_types<IsTrivial>(), "Nodes should not allocate or require destructors.");
+    static_assert(std::is_same_v<typename HELPER::UntypedStrongIndex,
+                                 OptIndex> || std::is_same_v<typename HELPER::UntypedStrongIndex, Index>,
+                  "Index types aren't the ones the nodes use.");
 
     template <typename OptNodeIndex, typename T> friend struct Container;
     template <typename OptNodeIndex, typename T> friend struct Iter;
@@ -175,37 +175,37 @@ public: // This is meant to be privately inherited from.
 
     template <typename TypedIndex, typename = std::enable_if<typed_index::is_type_set_index<TypedIndex>()>>
     [[nodiscard]] constexpr NodeTypeFromIndex<TypedIndex>& payload(TypedIndex i) {
-        // assert(not_dead(i));
+        assert(not_dead(i));
         return std::get<PayloadPosition<TypedIndex>>(m_node_payload[*i]);
     }
 
     template <typename TypedIndex, typename = std::enable_if<typed_index::is_type_set_index<TypedIndex>()>>
     [[nodiscard]] constexpr const auto& payload(TypedIndex i) const {
-        // assert(not_dead(i));
+        assert(not_dead(i));
         return std::get<PayloadPosition<TypedIndex>>(m_node_payload[*i]);
     }
 
     [[nodiscard]] constexpr typename Helper::Variant& payload(UntypedNodeIndex i) {
-        // assert(not_dead(i));
+        assert(not_dead(i));
         return m_node_payload[*i];
     };
 
     [[nodiscard]] constexpr const typename Helper::Variant& payload(UntypedNodeIndex i) const {
-        // assert(not_dead(i));
+        assert(not_dead(i));
         return m_node_payload[*i];
     }
 
     [[nodiscard]] constexpr Edges& edges(UntypedNodeIndex i) {
-        // assert(not_dead(i));
+        assert(not_dead(i));
         return m_node_edges[*i];
     }
     [[nodiscard]] constexpr const Edges& edges(UntypedNodeIndex i) const {
-        // assert(not_dead(i));
+        assert(not_dead(i));
         return m_node_edges[*i];
     }
 
     [[nodiscard]] constexpr auto last_child(UntypedNodeIndex i) const {
-        // assert(not_dead(i));
+        assert(not_dead(i));
         return m_last_child[*i];
     }
 
@@ -223,14 +223,14 @@ public: // This is meant to be privately inherited from.
     // Checks type of untyped node.
     ////////////////////////////////////////////////////////////////////////////////
     template <typename TypedIndex> [[nodiscard]] constexpr bool is_a(UntypedNodeIndex i) const {
-        // assert(not_dead(i));
+        assert(not_dead(i));
         static_assert(IsNodeIndex<TypedIndex>, "Not the index of a single node in this graph.");
         return m_node_payload[*i].index() == PayloadPosition<TypedIndex>;
     }
 
 
     template <typename TypedIndex> [[nodiscard]] constexpr std::optional<TypedIndex> as_a(UntypedNodeIndex i) const {
-        // assert(not_dead(i));
+        assert(not_dead(i));
 
 
         static_assert(IsNodeIndex<TypedIndex>, "Not the index of a single node in this graph.");
@@ -251,8 +251,8 @@ public: // This is meant to be privately inherited from.
     // Return children of a node in a structured way.
     ////////////////////////////////////////////////////////////////////////////////
     template <typename TypedIndex> [[nodiscard]] constexpr auto children(TypedIndex i) const {
-        // assert(not_dead(i));
-        //  static_assert(TypedIndex::size_of_set == 1);
+        assert(not_dead(i));
+        static_assert(TypedIndex::size_of_set == 1);
         using N = NodeTypeFromIndex<TypedIndex>;
         if constexpr (N::is_terminal())
             return NoChildren {};
@@ -265,14 +265,14 @@ public: // This is meant to be privately inherited from.
     }
 
     template <typename TypedIndex> [[nodiscard]] constexpr auto index_to_variant(TypedIndex i) const {
-        // assert(not_dead(i));
+        assert(not_dead(i));
         // Visiting the payload would instantiate a branch for every node type in the graph, per index type.
         return i.as_variant(Helper::node_enums[m_node_payload[*i].index()]);
     }
 
 
     template <typename Action, typename TypedIndex> auto visit(Action action, TypedIndex i) const {
-        // assert(not_dead(i));
+        assert(not_dead(i));
         return std::visit(action, index_to_variant(i));
     }
 
@@ -281,7 +281,7 @@ public: // This is meant to be privately inherited from.
         typename decltype(Helper::template get_node_type_from_index_type<TypedIndex>())::type::HeldType, N>> //
     list_unpack(TypedIndex i) const {
         using NodeType = typename decltype(Helper::template get_node_type_from_index_type<TypedIndex>())::type;
-        // static_assert(NodeType::is_list());
+        static_assert(NodeType::is_list());
         using Held = typename decltype(Helper::template get_node_type_from_index_type<TypedIndex>())::type::HeldType;
         if (num_children(i) != N)
             return {};
@@ -294,13 +294,13 @@ public: // This is meant to be privately inherited from.
     ////////////////////////////////////////////////////////////////////////////////
     template <typename ParentI, typename ChildI> //
     ParentI append(ParentI p, ChildI c) {
-        // assert(not_dead(p));
-        // assert(not_dead(c));
-        //  static_assert(typed_index::is_type_set_index<ParentI>());
-        //  static_assert(typed_index::is_type_set_index<ChildI>());
+        assert(not_dead(p));
+        assert(not_dead(c));
+        static_assert(typed_index::is_type_set_index<ParentI>());
+        static_assert(typed_index::is_type_set_index<ChildI>() || std::is_same_v<ChildI, Index>);
         using Parent = typename decltype(Helper::template get_node_type_from_index_type<ParentI>())::type;
-        // static_assert(Parent::is_list());
-        // static_assert(std::is_convertible_v<ChildI, typename Parent::HeldType>);
+        static_assert(Parent::is_list());
+        static_assert(std::is_convertible_v<ChildI, typename Parent::HeldType>);
 
         append_to_parent_unchecked(p, c);
         return p;
@@ -308,13 +308,13 @@ public: // This is meant to be privately inherited from.
 
     template <typename ParentI, typename ChildI> //
     ParentI prepend(ParentI p, ChildI child) {
-        // assert(not_dead(p));
-        // assert(not_dead(child));
-        //  static_assert(typed_index::is_type_set_index<ParentI>());
-        //  static_assert(typed_index::is_type_set_index<ChildI>());
+        assert(not_dead(p));
+        assert(not_dead(child));
+        static_assert(typed_index::is_type_set_index<ParentI>());
+        static_assert(typed_index::is_type_set_index<ChildI>());
         using Parent = NodeTypeFromIndex<ParentI>;
-        // static_assert(Parent::is_list());
-        // static_assert(std::is_convertible_v<ChildI, typename Parent::HeldType>);
+        static_assert(Parent::is_list());
+        static_assert(std::is_convertible_v<ChildI, typename Parent::HeldType>);
 
         auto& parent_edges = m_node_edges[*p];
 
@@ -346,22 +346,22 @@ public: // This is meant to be privately inherited from.
     */
     template <typename Surviving, typename Eaten> //
     Surviving merge(Surviving s, Eaten e) {
-        // assert(s != e);
-        // assert(not_dead(s));
-        // assert(not_dead(e));
-        //  static_assert(typed_index::is_type_set_index<Surviving>());
-        //  static_assert(typed_index::is_type_set_index<Eaten>());
+        assert(s != e);
+        assert(not_dead(s));
+        assert(not_dead(e));
+        static_assert(typed_index::is_type_set_index<Surviving>());
+        static_assert(typed_index::is_type_set_index<Eaten>());
 
         using SurvivingType = NodeTypeFromIndex<Surviving>;
         using EatenType = NodeTypeFromIndex<Eaten>;
-        // static_assert(SurvivingType::is_list());
-        // static_assert(EatenType::is_list());
+        static_assert(SurvivingType::is_list());
+        static_assert(EatenType::is_list());
 
         static_assert(std::is_convertible_v<typename EatenType::ChildIndex, typename SurvivingType::ChildIndex>);
 
 
         auto& eaten_edges = m_node_edges[*e];
-        // assert(!eaten_edges.parent);
+        assert(!eaten_edges.parent);
         if (auto c = eaten_edges.first_child)
             append_to_parent_unchecked(s, c);
 
@@ -377,8 +377,8 @@ public: // This is meant to be privately inherited from.
     typename To::Index cast(FromIndex from_index, ARGS&&... args) {
         using ToIndex = typename To::Index;
         using From = NodeTypeFromIndex<FromIndex>;
-        // static_assert(From::type == To::type);
-        // static_assert(std::is_convertible_v<typename From::HeldType, typename To::HeldType>);
+        static_assert(From::type == To::type);
+        static_assert(std::is_convertible_v<typename From::HeldType, typename To::HeldType>);
         payload(UntypedNodeIndex { *from_index }) = To { std::forward<ARGS>(args)... };
         return ToIndex { *from_index };
     }

@@ -14,22 +14,18 @@ struct TypedGraphHelperBase {};
 
 template <typename ENUM, template <ENUM...> typename INDEXCREATOR, typename... Nodes>
 struct TypedGraphHelper : TypedGraphHelperBase {
-    /*
-    static_assert((std::is_base_of_v<NodeBaseBase, Nodes> && ...));
-    */
     using Variant = std::variant<Nodes...>;
     using Tuple = std::tuple<Nodes...>;
     using IndexSequence = std::make_index_sequence<sizeof...(Nodes)>;
     using UntypedStrongIndex = typename std::tuple_element_t<0, Tuple>::Index::UnderlyingIndex;
 
-    // template <typename N> [[nodiscard]] static constexpr bool check_enum_appears_once() {
-    //     return ((N::Index::Possible[0] == Nodes::Index::Possible[0] ? 1 : 0) + ...) == 1;
-    // }
+    template <typename N> [[nodiscard]] static constexpr bool check_enum_appears_once() {
+        return ((N::Index::Possible[0] == Nodes::Index::Possible[0] ? 1 : 0) + ...) == 1;
+    }
 
-    // static_assert(((Nodes::Index::size_of_set == 1) && ...),
-    //               "Each node must have an index type that contains a single enum entry.");
-    //  This is really slow O(N^2), but should be true.
-    //  static_assert((check_enum_appears_once<Nodes>() && ...), "Some nodes produce the same typed index.");
+    static_assert(((Nodes::Index::size_of_set == 1) && ...),
+                  "Each node must have an index type that contains a single enum entry.");
+    static_assert((check_enum_appears_once<Nodes>() && ...), "Some nodes produce the same typed index.");
 
     using UnderlyingEnum = ENUM;
     template <UnderlyingEnum... Es> using IndexCreator = INDEXCREATOR<Es...>;

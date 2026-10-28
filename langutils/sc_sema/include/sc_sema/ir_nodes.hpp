@@ -326,7 +326,7 @@ struct SCMethodList : priv::List<SCMethodList_I, SCMethod_I> {
     static constexpr auto type_name { "SCMethodList" };
 };
 
-struct SCMember : priv::Node<SCMember_I()> {
+struct SCMember : priv::Terminal<SCMember_I> {
     static constexpr auto type_name { "SCMember" };
 
     // The node's location is the member's name.
