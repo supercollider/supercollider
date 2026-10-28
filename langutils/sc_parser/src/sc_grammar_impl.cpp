@@ -21,11 +21,12 @@ void sc::ast::parser::parser::report_syntax_error(const context& symbol_cxt) con
 
     const bool at_inserted = cxt.lookahead && cxt.tokens[*cxt.lookahead].inserted();
     std::optional<UnexpectedToken::Before> before;
-    if (cxt.lookahead && *cxt.lookahead > 0) {
-        const auto& token = cxt.tokens[*cxt.lookahead - 1];
+    if (cxt.lookahead && *cxt.lookahead != TokenIndex { 0 }) {
+        const auto before_index = sc::util::retreat(*cxt.lookahead);
+        const auto& token = cxt.tokens[before_index];
         if (!token.inserted() && !sc::lex::is_error(token.token))
             before = UnexpectedToken::Before { static_cast<int>(by_kind { to_parser_token(token.token) }.kind()),
-                                               *cxt.lookahead - 1 };
+                                               before_index };
     }
     cxt.unexpected_token_error =
         UnexpectedToken { symbol_cxt.location(), std::move(expected_int),
@@ -134,16 +135,21 @@ constexpr std::array binary_operator {
 };
 constexpr std::array binary_operator_core { S::S_BINOP };
 
+// The token before i, nothing at the first.
+std::optional<TokenIndex> before(TokenIndex i) {
+    return i == TokenIndex { 0 } ? std::nullopt : std::optional { sc::util::retreat(i) };
+}
+
 template <typename Container> bool contains(const Container& c, Symbol s) {
     return std::find(c.begin(), c.end(), s) != c.end();
 }
 
 // What separates the items in the innermost bracket around the token at i: `,` in an array or a call's arguments, `;`
 // elsewhere, e.g., in a function or brackets around expressions.
-std::string_view separator_inside(const ParserContext& cxt, std::uint32_t i) {
+std::string_view separator_inside(const ParserContext& cxt, TokenIndex i) {
     using T = sc::lex::TokenType;
-    for (auto j = static_cast<std::int64_t>(i); j >= 0; --j) {
-        const auto& token = cxt.tokens[static_cast<std::size_t>(j)];
+    for (auto j = std::optional { i }; j; j = before(*j)) {
+        const auto& token = cxt.tokens[*j];
         // Skips a bracketed part, continuing before its opening bracket.
         if (sc::lex::is_close_bracket(token.token)) {
             if (const auto m = token.matching())
@@ -154,9 +160,9 @@ std::string_view separator_inside(const ParserContext& cxt, std::uint32_t i) {
             continue;
         if (token.token == T::OpenSquare)
             return ",";
-        if (token.token == T::OpenParen && j > 0) {
-            const auto before = cxt.tokens[static_cast<std::size_t>(j - 1)].token;
-            if (before == T::Name || before == T::ClassName || before == T::Dot)
+        if (token.token == T::OpenParen && *j != TokenIndex { 0 }) {
+            const auto previous = cxt.tokens[sc::util::retreat(*j)].token;
+            if (previous == T::Name || previous == T::ClassName || previous == T::Dot)
                 return ",";
         }
         return ";";
@@ -375,10 +381,11 @@ void expr(ParserContext& cxt) { report(cxt); }
 
 
 namespace {
-std::uint32_t matching_bracket(const ParserContext& cxt, sc::src::SourceCodeRange open_bracket) {
+TokenIndex matching_bracket(const ParserContext& cxt, sc::src::SourceCodeRange open_bracket) {
     auto i = cxt.lookahead.value_or(cxt.next);
-    while (i > 0 && !(cxt.tokens[i].range == open_bracket && sc::lex::is_open_bracket(cxt.tokens[i].token)))
-        --i;
+    while (i != TokenIndex { 0 }
+           && !(cxt.tokens[i].range == open_bracket && sc::lex::is_open_bracket(cxt.tokens[i].token)))
+        i = sc::util::retreat(i);
     assert(cxt.tokens[i].matching());
     return *cxt.tokens[i].matching();
 }
@@ -386,7 +393,7 @@ std::uint32_t matching_bracket(const ParserContext& cxt, sc::src::SourceCodeRang
 // Skips past the bracket matching the opening one, which the lookahead might be.
 sc::src::SourceCodeRange skip_to_match(ParserContext& cxt, sc::src::SourceCodeRange open_bracket) {
     const auto close = matching_bracket(cxt, open_bracket);
-    cxt.next = close + 1;
+    cxt.next = sc::util::advance(close);
     cxt.separator_inserted = false;
     return cxt.tokens[close].range;
 }
@@ -399,20 +406,20 @@ sc::src::SourceCodeRange bracket(ParserContext& cxt, sc::src::SourceCodeRange op
 
 namespace {
 // Whether a method's name is at i, as the `{` after it shows. A class method's `*` is before it.
-bool starts_method(const ParserContext& cxt, std::uint32_t i) {
+bool starts_method(const ParserContext& cxt, TokenIndex i) {
     using T = sc::lex::TokenType;
     const auto t = cxt.tokens[i].token;
     const bool name = t == T::Name || t == T::BinaryOperator || sc::lex::is_ambiguous_punctuation(t);
-    return name && i + 1 < cxt.tokens.size() && cxt.tokens[i + 1].token == T::OpenCurly;
+    return name && cxt.tokens.contains(sc::util::advance(i)) && cxt.tokens[sc::util::advance(i)].token == T::OpenCurly;
 }
 
 // Past the token at i, or the whole bracketed part if it opens one.
-std::uint32_t skip_one(const ParserContext& cxt, std::uint32_t i) {
+TokenIndex skip_one(const ParserContext& cxt, TokenIndex i) {
     const auto& token = cxt.tokens[i];
     if (sc::lex::is_open_bracket(token.token))
         if (const auto m = token.matching())
-            return *m + 1;
-    return i + 1;
+            return sc::util::advance(*m);
+    return sc::util::advance(i);
 }
 
 // Skips what is left of the item with an error, stopping before the next thing the class body can continue with.
@@ -422,11 +429,11 @@ std::optional<sc::src::SourceCodeRange> skip_class_item(ParserContext& cxt, sc::
     const auto from = cxt.lookahead.value_or(cxt.next);
     // The error is that the method before it is incomplete, not that this one is wrong, which would poison it. So it
     // is reported at the token before it.
-    if (cxt.unexpected_token_error && from > 0 && starts_method(cxt, from)) {
-        cxt.unexpected_token_error->report_at = cxt.tokens[from - 1].range;
+    if (cxt.unexpected_token_error && from != TokenIndex { 0 } && starts_method(cxt, from)) {
+        cxt.unexpected_token_error->report_at = cxt.tokens[sc::util::retreat(from)].range;
     }
     report(cxt);
-    const auto is_end = [&](std::uint32_t i) {
+    const auto is_end = [&](TokenIndex i) {
         return cxt.tokens[i].token == T::EndOfFile || cxt.tokens[i].token == T::CloseCurly;
     };
 
@@ -441,8 +448,8 @@ std::optional<sc::src::SourceCodeRange> skip_class_item(ParserContext& cxt, sc::
     while (!is_end(i) && !(stop_at_semicolon && cxt.tokens[i].token == T::SemiColon)) {
         if (starts_method(cxt, i)) {
             // A class method's `*`.
-            if (i > from && cxt.tokens[i - 1].token == T::Multiply)
-                --i;
+            if (i != from && cxt.tokens[sc::util::retreat(i)].token == T::Multiply)
+                i = sc::util::retreat(i);
             break;
         }
         i = skip_one(cxt, i);
@@ -452,7 +459,7 @@ std::optional<sc::src::SourceCodeRange> skip_class_item(ParserContext& cxt, sc::
     cxt.next = i;
     cxt.separator_inserted = false;
     // Up to the token before where it stopped, so a method it stopped at isn't in the range.
-    const auto end = i > 0 ? cxt.tokens[i - 1].range.end : error.begin;
+    const auto end = i != TokenIndex { 0 } ? cxt.tokens[sc::util::retreat(i)].range.end : error.begin;
     return sc::src::SourceCodeRange { error.begin, error.begin < end ? end : error.begin };
 }
 }
@@ -461,7 +468,7 @@ std::optional<sc::src::SourceCodeRange> arguments(ParserContext& cxt, sc::src::S
                                                   sc::lex::TokenType end) {
     using T = sc::lex::TokenType;
     report(cxt);
-    const auto is_end = [&](std::uint32_t i) {
+    const auto is_end = [&](TokenIndex i) {
         return cxt.tokens[i].token == T::EndOfFile || sc::lex::is_close_bracket(cxt.tokens[i].token);
     };
 
@@ -480,9 +487,9 @@ std::optional<sc::src::SourceCodeRange> arguments(ParserContext& cxt, sc::src::S
     cxt.separator_inserted = false;
     if (is_end(i)) {
         cxt.next = i;
-        return i > 0 ? cxt.tokens[i - 1].range : error;
+        return i != TokenIndex { 0 } ? cxt.tokens[sc::util::retreat(i)].range : error;
     }
-    cxt.next = i + 1;
+    cxt.next = sc::util::advance(i);
     return cxt.tokens[i].range;
 }
 
@@ -492,7 +499,7 @@ std::optional<sc::src::SourceCodeRange> statement(ParserContext& cxt, sc::src::S
     const auto from = cxt.lookahead.value_or(cxt.next);
     // The bracket closing the block the statement is in, not one whose opening bracket was in the statement, e.g., the
     // `]` of `[1 2]`, which is skipped.
-    const auto is_end = [&](std::uint32_t i) {
+    const auto is_end = [&](TokenIndex i) {
         const auto& token = cxt.tokens[i];
         if (token.token == T::EndOfFile)
             return true;
@@ -515,7 +522,7 @@ std::optional<sc::src::SourceCodeRange> statement(ParserContext& cxt, sc::src::S
     cxt.recovered_at = i;
     cxt.next = i;
     cxt.separator_inserted = false;
-    const auto end = i > 0 ? cxt.tokens[i - 1].range.end : error.begin;
+    const auto end = i != TokenIndex { 0 } ? cxt.tokens[sc::util::retreat(i)].range.end : error.begin;
     return sc::src::SourceCodeRange { error.begin, error.begin < end ? end : error.begin };
 }
 

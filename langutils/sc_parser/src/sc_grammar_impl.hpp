@@ -199,14 +199,16 @@ inline int yylex(sc::ast::parser::parser::value_type* v, sc::src::SourceCodeRang
 
     // The lexer has reported it, see tokenise.
     if (sc::lex::is_error(current.token)) {
-        cxt.lookahead = cxt.next++;
+        cxt.lookahead = cxt.next;
+        cxt.next = sc::util::advance(cxt.next);
         return T::TOKEN_LEXER_ERROR;
     }
 
     const auto token = to_parser_token(current.token);
 
     // Region recovery. Since scd files aren't valid sclang code, this tries to guess where the semicolons should go.
-    const auto* before = cxt.next > 0 ? &cxt.tokens[cxt.next - 1] : nullptr;
+    const auto* before =
+        cxt.next != sc::ast::parser::TokenIndex { 0 } ? &cxt.tokens[sc::util::retreat(cxt.next)] : nullptr;
     const bool starts_line = before && before->range.end.line_number < current.range.begin.line_number;
     if (cxt.mode == sc::ast::parser::ParserContext::Mode::CommandContinue && starts_line && !cxt.separator_inserted
         && current.token != sc::lex::TokenType::EndOfFile && !parser_accepts(*cxt.owner, token)
@@ -221,6 +223,6 @@ inline int yylex(sc::ast::parser::parser::value_type* v, sc::src::SourceCodeRang
     // The end of file is emitted again if asked, e.g., by error recovery.
     cxt.lookahead = cxt.next;
     if (current.token != sc::lex::TokenType::EndOfFile)
-        ++cxt.next;
+        cxt.next = sc::util::advance(cxt.next);
     return static_cast<int>(token);
 }

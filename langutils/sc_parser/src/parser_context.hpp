@@ -9,6 +9,8 @@
 #include "sc_source/text_info.hpp"
 #include "sc_source/text_location.hpp"
 #include "sc_lexer/tokens.hpp"
+#include "sc_util/indexed_vector.hpp"
+#include "sc_util/strong_index.hpp"
 
 #include <algorithm>
 #include <cstdint>
@@ -19,6 +21,9 @@
 
 namespace sc::ast::parser {
 
+// A position in ParserContext::tokens.
+struct TokenTag;
+using TokenIndex = sc::util::StrongIndex<std::uint32_t, TokenTag>;
 
 // Stores the token type, source code range.
 // Secondarily, it store an index where the matching parenthesis is (if the token is a parenthesis).
@@ -38,13 +43,13 @@ struct Token {
     sc::src::SourceCodeRange range;
 
     // When brackets, matching return the other one in a pair.
-    [[nodiscard]] std::optional<std::uint32_t> matching() const {
+    [[nodiscard]] std::optional<TokenIndex> matching() const {
         const auto m = bits & ~inserted_bit;
-        return m == no_match ? std::nullopt : std::optional { m };
+        return m == no_match ? std::nullopt : std::optional { TokenIndex { m } };
     }
 
     // Sets the other one in a pair.
-    void set_matching_index(std::uint32_t i) { bits = (bits & inserted_bit) | i; }
+    void set_matching_index(TokenIndex i) { bits = (bits & inserted_bit) | *i; }
 
     // Inserted to close an unclosed bracket, so isn't in the source and has an empty range at the token before it.
     [[nodiscard]] bool inserted() const { return bits & inserted_bit; }
@@ -84,7 +89,7 @@ struct UnexpectedToken {
     // between them.
     struct Before {
         int kind;
-        std::uint32_t index;
+        TokenIndex index;
     };
     std::optional<Before> before {};
     // Where to report it, when that isn't where it was found, e.g., the end of the junk before a method, see
@@ -101,7 +106,7 @@ struct ParserContext {
 
     std::shared_ptr<sc::ast::ASTGraph> graph = std::make_shared<ASTGraph>(text_info);
 
-    std::vector<Token> tokens {};
+    sc::util::IndexedVector<TokenIndex, Token> tokens {};
 
     // In source order, see tokenise.
     std::vector<VersionDirective> directives {};
@@ -121,14 +126,14 @@ struct ParserContext {
     void report_misplaced_versions();
 
     // The next token to emit, see yylex.
-    std::uint32_t next { 0 };
+    TokenIndex next { 0 };
 
     // The token last emitted, which an error is at.
-    std::optional<std::uint32_t> lookahead {};
+    std::optional<TokenIndex> lookahead {};
 
     // The token that class body or statement recovery last stopped at, so recovering again at it skips it, see
     // error_recovery.
-    std::optional<std::uint32_t> recovered_at {};
+    std::optional<TokenIndex> recovered_at {};
 
     // A region separator was inserted before the next token
     bool separator_inserted { false };

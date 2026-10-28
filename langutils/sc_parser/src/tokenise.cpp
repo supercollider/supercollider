@@ -115,11 +115,11 @@ struct BracketPairer {
     const std::vector<Action::Output>& input;
     bool use_indentation; // a different algorythm.
 
-    std::vector<Token> tokens {};
+    sc::util::IndexedVector<TokenIndex, Token> tokens {};
     std::vector<diag::Diagnostic> diagnostics {};
 
-    // Indexes into input vector are uint32_t, we do not support more tokens that this.
-    std::vector<std::uint32_t> open {};
+    // The brackets still open, as tokens, we do not support more tokens than fit in a TokenIndex.
+    std::vector<TokenIndex> open {};
     std::vector<std::optional<std::uint32_t>> open_indentation {};
 
     TokenType innermost() const { return tokens[open.back()].token; }
@@ -128,8 +128,9 @@ struct BracketPairer {
         const auto o = open.back();
         open.pop_back();
         open_indentation.pop_back();
-        tokens[o].set_matching_index(static_cast<std::uint32_t>(tokens.size()));
-        auto& closing = tokens.emplace_back(t, r);
+        const auto c = tokens.push_back(Token { t, r });
+        tokens[o].set_matching_index(c);
+        auto& closing = tokens[c];
         closing.set_matching_index(o);
         if (inserted)
             closing.set_inserted();
@@ -183,7 +184,7 @@ struct BracketPairer {
 };
 
 struct PairedBrackets {
-    std::vector<Token> tokens;
+    sc::util::IndexedVector<TokenIndex, Token> tokens;
     std::vector<diag::Diagnostic> diagnostics;
     // Brackets were still open at the end of the file.
     bool unclosed_at_end;
@@ -206,17 +207,17 @@ PairedBrackets pair_brackets(std::shared_ptr<const sc::src::TextInfo> text_info,
         if (sc::lex::is_open_bracket(t)) {
             const bool ends_line = i + 1 < input.size() && input[i + 1].range.begin.line_number > r.end.line_number;
             const bool curly = t == TokenType::OpenCurly || t == TokenType::BeginClosedFunction;
-            p.open.push_back(static_cast<std::uint32_t>(p.tokens.size()));
+            p.open.push_back(p.tokens.next_index());
             p.open_indentation.push_back(curly && ends_line ? std::optional { line_indentation } : std::nullopt);
-            p.tokens.emplace_back(t, r);
+            p.tokens.push_back(Token { t, r });
         } else if (sc::lex::is_close_bracket(t)) {
             p.close_bracket(i);
         } else if (t == TokenType::EndOfFile) {
             unclosed_at_end = !p.open.empty();
             p.produce_all_unclosed(0, std::nullopt);
-            p.tokens.emplace_back(t, r);
+            p.tokens.push_back(Token { t, r });
         } else {
-            p.tokens.emplace_back(t, r);
+            p.tokens.push_back(Token { t, r });
         }
     }
     return { std::move(p.tokens), std::move(p.diagnostics), unclosed_at_end };
