@@ -30,6 +30,7 @@
 #include <string_view>
 #include <thread>
 #include <unordered_map>
+#include <unordered_set>
 #include <variant>
 #include <vector>
 
@@ -928,6 +929,22 @@ void orderAsOldCompiler(Loader& loader, std::vector<ClassAndMeta>& classes) {
     std::sort(classes.begin(), classes.end(),
               [&](const ClassAndMeta& l, const ClassAndMeta& r) { return keys.at(l.first) < keys.at(r.first); });
 }
+
+// The VM can't run without its intrinsic classes, so it is an error if any is missing, or skipped for an error.
+bool requireIntrinsicClasses(const compiler::ClassLibrary& library, const compiler::VMDefinitions& vm,
+                             const std::vector<compiler::CompiledGraph>& graphs) {
+    std::unordered_set<std::string_view> compiled;
+    for (const auto& g : graphs)
+        compiled.insert(library.symbols(classOf(g).name));
+    bool ok = true;
+    for (const auto& c : vm.classes)
+        if (!compiled.count(c.name)) {
+            post("ERROR: the intrinsic class %s is missing or was skipped, so the class library can't be used.\n",
+                 c.name.c_str());
+            ok = false;
+        }
+    return ok;
+}
 }
 
 bool loadClassLibrary(std::size_t& thingsPosted) {
@@ -946,26 +963,29 @@ bool loadClassLibrary(std::size_t& thingsPosted) {
 
     compiler::ClassLibraryTimes times;
     const auto numThreads = std::max(1u, std::thread::hardware_concurrency());
-    auto library = compiler::compile_class_library(finder.files, numThreads, times, vmDefinitions());
+    const auto vm = vmDefinitions();
+    auto library = compiler::compile_class_library(finder.files, numThreads, times, vm);
 
+    // Errors are posted, but don't stop the library loading: a file that couldn't be parsed, and a poisoned class or
+    // method, are skipped, see requireIntrinsicClasses for what can't be.
     std::size_t errors { 0 };
-    if (!library->parse_log.empty()) {
+    if (!library->parse_log.empty())
         postText(library->parse_log.c_str(), library->parse_log.size());
-        ++errors;
-    }
     for (const auto& d : library->parse_diagnostics)
         thingsPosted += postDiagnostic(d, errors);
     for (const auto& d : library->diagnostics)
         thingsPosted += postDiagnostic(d, errors);
 
-    // In topological order, so a superclass is made before its subclasses. With an error, a class may be poisoned and
-    // not compiled, so nothing is made.
+    // In topological order, so a superclass is made before its subclasses. A poisoned class isn't compiled, so is
+    // missing from this, along with its subclasses.
     const auto classes = compiler::compile_class_graphs(*library, numThreads);
     for (const auto& g : classes.raw())
         for (const auto& d : g.diagnostics)
             thingsPosted += postDiagnostic(d, errors);
-    if (errors)
+    if (!requireIntrinsicClasses(*library, vm, classes.raw()))
         return false;
+    if (errors)
+        post("\n%zu errors in the class library, the classes and methods they are in are skipped.\n", errors);
 
     auto loaded = std::make_unique<LoadedLibrary>();
     loaded->library = std::move(library);
