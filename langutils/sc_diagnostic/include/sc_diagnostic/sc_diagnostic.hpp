@@ -303,8 +303,8 @@ public:
     [[nodiscard]] std::string to_string(const std::filesystem::path& relative_to) const;
 
 private:
-    Diagnostic(const char* name, Severity severity, std::vector<Location> locations = { },
-               std::string extra = { }) noexcept;
+    Diagnostic(const char* name, Severity severity, std::vector<Location> locations = {},
+               std::string extra = {}) noexcept;
     std::vector<Location> m_locations;
     std::string extra_info;
     const char* m_name;

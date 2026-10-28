@@ -144,7 +144,7 @@ Diagnostic::Diagnostic(const char* name, Severity severity, std::vector<Location
     m_locations(std::move(location)),
     extra_info(std::move(extra)),
     m_name(name),
-    m_severity(severity) { }
+    m_severity(severity) {}
 
 const std::vector<Diagnostic::Location>& Diagnostic::locations() const { return m_locations; }
 
@@ -372,11 +372,11 @@ Diagnostic Diagnostic::region_missing_semicolon(std::shared_ptr<const sc::src::T
 }
 
 [[nodiscard]] Diagnostic Diagnostic::missing_intrinsic_class(std::string extra) {
-    return { "Missing intrinsic class", Severity::Error, { }, std::move(extra) };
+    return { "Missing intrinsic class", Severity::Error, {}, std::move(extra) };
 }
 
 [[nodiscard]] Diagnostic Diagnostic::missing_common_class(std::string extra) {
-    return { "Missing common class", Severity::Error, { }, std::move(extra) };
+    return { "Missing common class", Severity::Error, {}, std::move(extra) };
 }
 
 [[nodiscard]] Diagnostic Diagnostic::intrinsic_class_wrong_member_name(std::shared_ptr<const sc::src::TextInfo> t,
@@ -435,7 +435,7 @@ Diagnostic Diagnostic::primitive_needs_keyword_arguments(TextInfoPtr t, sc::src:
 
 [[nodiscard]] Diagnostic Diagnostic::inheritance_cycle(
     std::vector<std::pair<std::shared_ptr<const sc::src::TextInfo>, sc::src::SourceCodeRange>> m) {
-    std::vector<Location> locs { };
+    std::vector<Location> locs {};
 
     for (auto& [t, r] : m) {
         locs.push_back({ std::move(t), r, "cycle detected" });

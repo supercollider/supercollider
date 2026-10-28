@@ -17,14 +17,13 @@ namespace sc::util::typed_graph {
 
 struct IsTrivial {
     template <typename T> [[nodiscard]] constexpr bool operator()() const {
-        return std::is_trivially_move_constructible_v<T> && std::is_trivially_destructible_v<T>
-            && std::is_nothrow_move_constructible_v<T> && std::is_trivially_move_assignable_v<T>
-            && std::is_nothrow_move_assignable_v<T>;
+        return std::is_trivially_move_constructible_v<
+                   T> && std::is_trivially_destructible_v<T> && std::is_nothrow_move_constructible_v<T> && std::is_trivially_move_assignable_v<T> && std::is_nothrow_move_assignable_v<T>;
     }
 };
 
 // Used when destructing children from a node.
-struct NoChildren { };
+struct NoChildren {};
 
 
 /**
@@ -88,8 +87,8 @@ public: // This is meant to be privately inherited from.
     std::vector<UntypedNodeIndex> m_dead_nodes {};
     std::vector<OptIndex> m_last_child {};
     // One entry per node.
-    std::vector<Edges> m_node_edges { };
-    std::vector<typename Helper::Variant> m_node_payload { };
+    std::vector<Edges> m_node_edges {};
+    std::vector<typename Helper::Variant> m_node_payload {};
 
     ////////////////////////////////////////////////////////////////////////////////
     // Create
@@ -125,15 +124,15 @@ public: // This is meant to be privately inherited from.
                 const auto index_raw = m_node_payload.size();
                 m_node_payload.emplace_back(std::in_place_index<PayloadPosition<typename Node::Index>>,
                                             std::move(node));
-                m_node_edges.push_back({ });
-                m_last_child.push_back({ });
+                m_node_edges.push_back({});
+                m_last_child.push_back({});
                 return index_raw;
             } else {
                 const size_t index_raw = *m_dead_nodes.back();
                 m_dead_nodes.pop_back();
                 m_node_payload[index_raw].template emplace<PayloadPosition<typename Node::Index>>(std::move(node));
-                m_node_edges[index_raw] = { };
-                m_last_child[index_raw] = { };
+                m_node_edges[index_raw] = {};
+                m_last_child[index_raw] = {};
                 return index_raw;
             }
         }();
@@ -256,7 +255,7 @@ public: // This is meant to be privately inherited from.
         //  static_assert(TypedIndex::size_of_set == 1);
         using N = NodeTypeFromIndex<TypedIndex>;
         if constexpr (N::is_terminal())
-            return NoChildren { };
+            return NoChildren {};
         else if constexpr (N::is_node()) {
             using Tup = typename N::ChildrenIndexTupleType;
             return build_node_children_tuple<Tup>(i, std::make_index_sequence<std::tuple_size_v<Tup>>());
@@ -366,7 +365,7 @@ public: // This is meant to be privately inherited from.
         if (auto c = eaten_edges.first_child)
             append_to_parent_unchecked(s, c);
 
-        eaten_edges = { };
+        eaten_edges = {};
         m_last_child[*e] = {};
 
         m_dead_nodes.push_back(e);

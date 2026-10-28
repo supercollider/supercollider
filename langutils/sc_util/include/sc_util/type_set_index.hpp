@@ -291,12 +291,12 @@ template <typename L, typename R> using join_two = typename JoinTwo<L, R>::Resul
 template <class T> struct JoinTwoAsBinaryOp {
     using Type = T;
     template <class O> [[nodiscard]] constexpr auto operator+(O) {
-        return JoinTwoAsBinaryOp<join_two<T, typename O::Type>> { };
+        return JoinTwoAsBinaryOp<join_two<T, typename O::Type>> {};
     }
 };
 
 template <typename... ToJoin> [[nodiscard]] inline constexpr auto join_all() {
-    return (JoinTwoAsBinaryOp<ToJoin> { } + ...);
+    return (JoinTwoAsBinaryOp<ToJoin> {} + ...);
 }
 
 } // details::join
