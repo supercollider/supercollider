@@ -68,8 +68,8 @@ SCClass (4:1): PartialApplicationBrackets : Object
 |  |  |  |  |  |  |  |  |  |  |  SCPositionalArgs (10:21)
 |  |  |  |  |  |  |  |  |  |  |  |  SCFunction (10:26)
 |  |  |  |  |  |  |  |  |  |  |  |  |  SCArgumentDeclareList (10:26)
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  SCArgumentDeclare (10:26): _1
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  SCArgumentDeclare (10:31): _2
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  SCArgumentDeclare (10:26): _
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  SCArgumentDeclare (10:31): _
 |  |  |  |  |  |  |  |  |  |  |  |  |  SCBody (10:26)
 |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCMessage (10:26): +
 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (10:26): local _1, declared (10:26): _
@@ -249,7 +249,7 @@ PartialApplicationBrackets
 |  |  arguments: _ = nil,
 |  |  code: 6 bytes, 1 selectors, 0 constants
 |  function 11 (10:26), in function 10
-|  |  arguments: _1 = nil, _2 = nil,
+|  |  arguments: _ = nil, _ = nil,
 |  |  code: 5 bytes, 0 selectors, 0 constants
 |  function 12 (11:5): sequence
 |  |  arguments: this,

@@ -128,13 +128,16 @@ Return<SCAnyExpr_I> partially_apply(Expr& expr, IRGraph& ir, const std::shared_p
 
     (void)expr.scope.push_back({});
     expr.scope.back().starts_function = true;
+    // Every argument is declared as `_`, as the old compiler named them in argNames, which the class library reads.
+    const auto declared = ctx.symbol_table.get_identifier("_");
     for (const auto n : curries.indices()) {
         const auto name = curry_argument_name(ctx, n, curries.size());
         const auto curry_location = location_of(ir, *ast_graph, { *curries[n] });
         const auto missing_default = ir.create(SCMissing {}, curry_location);
-        const auto local = expr.create_local(name, curry_location, function);
-        const auto arg = ir.create(SCArgumentDeclare { name, local, ctx.constant_table.register_constexpr({ Nil {} }) },
-                                   curry_location, missing_default);
+        const auto local = expr.create_local(declared, curry_location, function);
+        const auto arg =
+            ir.create(SCArgumentDeclare { declared, local, ctx.constant_table.register_constexpr({ Nil {} }) },
+                      curry_location, missing_default);
         ir.append(positional, arg);
         ScopeEntry entry { nullptr, function, arg, {}, {}, ScopeEntry::Kind::Argument, ScopeEntry::State::Initalised };
         entry.local = local;

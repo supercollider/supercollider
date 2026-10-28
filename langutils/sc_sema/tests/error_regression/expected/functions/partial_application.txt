@@ -24,8 +24,8 @@ SCClass (2:1): PartialApplication : Object, version 3.16
 |  |  |  |  SCExplicitReturn (7:18)
 |  |  |  |  |  SCFunction (7:19)
 |  |  |  |  |  |  SCArgumentDeclareList (7:19)
-|  |  |  |  |  |  |  SCArgumentDeclare (7:19): _1
-|  |  |  |  |  |  |  SCArgumentDeclare (7:23): _2
+|  |  |  |  |  |  |  SCArgumentDeclare (7:19): _
+|  |  |  |  |  |  |  SCArgumentDeclare (7:23): _
 |  |  |  |  |  |  SCBody (7:19)
 |  |  |  |  |  |  |  SCMessage (7:19): +
 |  |  |  |  |  |  |  |  SCRead (7:19): local _1, declared (7:19): _
@@ -45,9 +45,9 @@ SCClass (2:1): PartialApplication : Object, version 3.16
 |  |  |  |  SCExplicitReturn (9:17)
 |  |  |  |  |  SCFunction (9:18)
 |  |  |  |  |  |  SCArgumentDeclareList (9:18)
-|  |  |  |  |  |  |  SCArgumentDeclare (9:29): _1
-|  |  |  |  |  |  |  SCArgumentDeclare (9:32): _2
-|  |  |  |  |  |  |  SCArgumentDeclare (9:35): _3
+|  |  |  |  |  |  |  SCArgumentDeclare (9:29): _
+|  |  |  |  |  |  |  SCArgumentDeclare (9:32): _
+|  |  |  |  |  |  |  SCArgumentDeclare (9:35): _
 |  |  |  |  |  |  SCBody (9:18)
 |  |  |  |  |  |  |  SCMessage (9:18): foo
 |  |  |  |  |  |  |  |  SCRead (9:18): instance member, declared (3:9): member
@@ -60,8 +60,8 @@ SCClass (2:1): PartialApplication : Object, version 3.16
 |  |  |  |  SCExplicitReturn (10:30)
 |  |  |  |  |  SCFunction (10:31)
 |  |  |  |  |  |  SCArgumentDeclareList (10:31)
-|  |  |  |  |  |  |  SCArgumentDeclare (10:31): _1
-|  |  |  |  |  |  |  SCArgumentDeclare (10:37): _2
+|  |  |  |  |  |  |  SCArgumentDeclare (10:31): _
+|  |  |  |  |  |  |  SCArgumentDeclare (10:37): _
 |  |  |  |  |  |  SCBody (10:31)
 |  |  |  |  |  |  |  SCMessage (10:31): foo
 |  |  |  |  |  |  |  |  SCRead (10:31): local _1, declared (10:31): _
@@ -165,8 +165,8 @@ SCClass (2:1): PartialApplication : Object, version 3.16
 |  |  |  |  SCExplicitReturn (19:11)
 |  |  |  |  |  SCFunction (19:12)
 |  |  |  |  |  |  SCArgumentDeclareList (19:12)
-|  |  |  |  |  |  |  SCArgumentDeclare (19:19): _1
-|  |  |  |  |  |  |  SCArgumentDeclare (19:24): _2
+|  |  |  |  |  |  |  SCArgumentDeclare (19:19): _
+|  |  |  |  |  |  |  SCArgumentDeclare (19:24): _
 |  |  |  |  |  |  SCBody (19:12)
 |  |  |  |  |  |  |  SCMessage (19:12): put
 |  |  |  |  |  |  |  |  SCRead (19:12): instance member, declared (3:9): member
