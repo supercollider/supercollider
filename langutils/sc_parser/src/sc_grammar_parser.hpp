@@ -517,15 +517,16 @@ namespace sc { namespace ast { namespace parser {
         S_boolean = 133,                         // boolean
         S_symbol = 134,                          // symbol
         S_string = 135,                          // string
-        S_integer = 136,                         // integer
-        S_137_float_raw_unsigned = 137,          // float.raw_unsigned
-        S_138_float_raw = 138,                   // float.raw
-        S_139_accidental_unsigned = 139,         // accidental.unsigned
-        S_accidental = 140,                      // accidental
-        S_float = 141,                           // float
-        S_accessor = 142,                        // accessor
-        S_143_semicolon_opt = 143,               // semicolon.opt
-        S_144_comma_opt = 144                    // comma.opt
+        S_136_integer_unsigned = 136,            // integer.unsigned
+        S_integer = 137,                         // integer
+        S_138_float_raw_unsigned = 138,          // float.raw_unsigned
+        S_139_float_raw = 139,                   // float.raw
+        S_140_accidental_unsigned = 140,         // accidental.unsigned
+        S_accidental = 141,                      // accidental
+        S_float = 142,                           // float
+        S_accessor = 143,                        // accessor
+        S_144_semicolon_opt = 144,               // semicolon.opt
+        S_145_comma_opt = 145                    // comma.opt
       };
     };
 
@@ -1047,9 +1048,9 @@ namespace sc { namespace ast { namespace parser {
     /// Constants.
     enum
     {
-      yylast_ = 2844,     ///< Last index in yytable_.
-      yynnts_ = 81,  ///< Number of nonterminal symbols.
-      yyfinal_ = 94 ///< Termination state number.
+      yylast_ = 2884,     ///< Last index in yytable_.
+      yynnts_ = 82,  ///< Number of nonterminal symbols.
+      yyfinal_ = 95 ///< Termination state number.
     };
 
 
@@ -1061,7 +1062,7 @@ namespace sc { namespace ast { namespace parser {
 
 #line 68 "langutils/sc_parser/src/sc_grammar.y"
 } } } // sc::ast::parser
-#line 1065 "langutils/sc_parser/src/sc_grammar_parser.hpp"
+#line 1066 "langutils/sc_parser/src/sc_grammar_parser.hpp"
 
 
 

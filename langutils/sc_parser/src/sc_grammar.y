@@ -208,7 +208,7 @@ using namespace sc::ast;
 %type <v_BooleanLitIndex> boolean
 %type <v_AnySymbolIndex> symbol
 %type <v_StringLitIndex> string
-%type <v_IntLitIndex> integer
+%type <v_IntLitIndex> integer integer.unsigned
 %type <v_FloatLitIndex> float.raw float.raw_unsigned
 %type <v_AccidentalIndex> accidental accidental.unsigned
 %type <v_FloatProducingIndex> float
@@ -1285,16 +1285,16 @@ string
 	| string STRINGLINE { $$ = cxt.graph->append($1, cxt.create(StringLineNode{}, @2)); }
 	;
 
-integer	
+integer.unsigned
 	: INTEGER { $$ = cxt.create(IntNode{}, @$); }
 	| INTEGER_RADIX { $$ = cxt.create(IntNode{IntNode::Kind::Radix}, @$); }
 	| HEXADECIMAL { $$ = cxt.create(IntNode{IntNode::Kind::Hexadecimal}, @$); }
-	| MINUS integer %prec UMINUS 
-		{
-			// Reaches into the previous integer and changes its sign.
-			cxt.graph->payload($2).sign = IntNode::Sign::Negative;
-			$$ = $2;
-		}
+	;
+
+integer
+	: integer.unsigned { $$ = $1; }
+	| MINUS integer.unsigned %prec UMINUS
+		{ cxt.graph->payload($2).sign = IntNode::Sign::Negative; $$ = $2; }
 	;
 
 float.raw_unsigned 	
