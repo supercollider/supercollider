@@ -1,7 +1,7 @@
 // Copyright Jordan Henderson 2026
 #pragma once
 
-#include "strong_index.hpp"
+#include "sc_util/strong_index.hpp"
 #include <array>
 #include <cstddef>
 #include <limits>

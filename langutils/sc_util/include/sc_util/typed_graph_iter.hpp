@@ -2,6 +2,8 @@
 
 #include <vector>
 
+namespace sc::util::typed_graph {
+
 template <typename OptIndex> struct EdgesTemplate { OptIndex first_child, parent, next_sibling, prev_sibling; };
 
 template <typename OptNodeIndex, typename T> //
@@ -62,4 +64,6 @@ template <typename OptNodeIndex, typename T>
 template <typename OptNodeIndex, typename T> [[nodiscard]] constexpr T Iter<OptNodeIndex, T>::operator*() const {
     // assert(m_current);
     return T { *m_current };
+}
+
 }

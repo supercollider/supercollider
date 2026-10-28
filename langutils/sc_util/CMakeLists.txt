@@ -5,10 +5,12 @@ add_library(sc_util INTERFACE
     include/sc_util/type_set_index.hpp
     include/sc_util/typed_graph_node.hpp
     include/sc_util/typed_graph.hpp
+    include/sc_util/typed_graph_iter.hpp
     include/sc_util/typed_graph_helper.hpp
     include/sc_util/overload.hpp
     include/sc_util/indexed_vector.hpp
     include/sc_util/narrow.hpp
+    include/sc_util/unreachable.hpp
 )
 
 

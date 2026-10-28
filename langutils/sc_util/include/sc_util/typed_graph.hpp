@@ -1,7 +1,7 @@
 #pragma once
 
 #include "sc_util/typed_graph_iter.hpp"
-#include "type_set_index.hpp"
+#include "sc_util/type_set_index.hpp"
 #include <algorithm>
 #include <cassert>
 #include <functional>

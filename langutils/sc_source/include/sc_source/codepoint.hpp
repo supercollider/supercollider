@@ -14,7 +14,7 @@ inline constexpr CodePoint invalid_utf8_flag { std::numeric_limits<CodePoint>::m
                                                                                        std::size_t len) noexcept;
 
 // Returns codepoint and the number of bytes consumed.
-// Returns {invalid_utf8_flag, 0} when going past the end.
+// Returns {invalid_utf8_flag, 0} when going past the end, and {-1, 0} for a length of 0, so check for the end first.
 // Inline, as the lexer calls it for every character, which is nearly always ascii.
 [[nodiscard]] inline std::tuple<CodePoint, std::uint8_t> utf8_sequence_to_codepoint(const char* utf8,
                                                                                     std::size_t len) noexcept {

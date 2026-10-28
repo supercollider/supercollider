@@ -18,7 +18,7 @@ template <typename T> AnyExprIndex::Variant to_variant(const ASTGraph&, T) = del
 [[nodiscard]] const FloatNode& payload(const ASTGraph&, FloatLitIndex);
 
 
-[[nodiscard]] Iter<OptionalIndex, AnyExprIndex> iter(const ASTGraph&, ExprSeqIndex);
+[[nodiscard]] util::typed_graph::Iter<OptionalIndex, AnyExprIndex> iter(const ASTGraph&, ExprSeqIndex);
 
 [[nodiscard]] AnyExprIndex child(const ASTGraph&, NonLocalReturnExpr);
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "type_set_index.hpp"
+#include "sc_util/type_set_index.hpp"
 #include <tuple>
 #include <type_traits>
 

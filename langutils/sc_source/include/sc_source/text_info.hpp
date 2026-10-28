@@ -31,7 +31,7 @@ struct TextInfo {
 
     NormalisedSource source;
     FileCodeLocation source_start_in_file;
-    std::optional<std::filesystem::path> file_path; // can be nullptr;
+    std::optional<std::filesystem::path> file_path; // empty when the text has no file;
     TextKind kind;
 
     [[nodiscard]] std::string_view read(SourceCodeRange r) const noexcept {

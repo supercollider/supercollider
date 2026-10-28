@@ -29,7 +29,9 @@ std::string get_string(const ASTGraph& graph, OptionalIndex i) { return std::str
 [[nodiscard]] OptionalIndex next_sibling(const ASTGraph& g, OptionalIndex i) { return g.edges(i).next_sibling; }
 
 
-[[nodiscard]] Iter<OptionalIndex, AnyExprIndex> iter(const ASTGraph& g, ExprSeqIndex i) { return g.children(i).iter(); }
+[[nodiscard]] util::typed_graph::Iter<OptionalIndex, AnyExprIndex> iter(const ASTGraph& g, ExprSeqIndex i) {
+    return g.children(i).iter();
+}
 
 
 void ASTGraph::add_diagnostic(sc::diag::Diagnostic d) {
