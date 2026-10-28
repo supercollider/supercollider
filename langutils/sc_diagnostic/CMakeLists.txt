@@ -1,7 +1,7 @@
 include(${CMAKE_SOURCE_DIR}/cmake_modules/CompilerWarnings.cmake)
 
 add_library(sc_diagnostic STATIC 
-	src/impl.cpp
+    src/impl.cpp
 )
 
 # todo: enable warnings

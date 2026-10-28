@@ -18,11 +18,11 @@ Event {}
 
 
 +Foo {
-    bar {} 
+    bar {}
 }
 
 Foo { }
 
 +Foo {
-    bar {} 
+    bar {}
 }

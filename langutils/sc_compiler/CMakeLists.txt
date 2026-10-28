@@ -2,8 +2,8 @@ include(${CMAKE_SOURCE_DIR}/cmake_modules/CompilerWarnings.cmake)
 
 # The whole pipeline, from source files through the parser, sc_sema and sc_backend.
 add_library(sc_compiler STATIC
-	src/compiled.cpp
-	src/sc_compiler.cpp
+    src/compiled.cpp
+    src/sc_compiler.cpp
 )
 
 target_include_directories(sc_compiler PUBLIC include)
