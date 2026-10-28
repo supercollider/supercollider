@@ -27,6 +27,7 @@ SuperCollider real time audio synthesis system wasm binding
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
 #include "PyrSched.h"
+#include "SCBase.h"
 #include "SC_ComPort.h"
 #include "SC_World.h"
 #include "VMGlobals.h"

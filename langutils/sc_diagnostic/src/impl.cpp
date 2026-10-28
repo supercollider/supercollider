@@ -47,8 +47,10 @@ std::string diagnosticToString(Severity type, const char* generalDescription,
                 std::filesystem::absolute(*filepath).lexically_relative(std::filesystem::absolute(*relative_to));
             ss << relative.generic_string() << ':' << starting_line + 1 << ':' << start_column + 1 << '\n';
         } else if (filepath) {
-            const auto abs = std::filesystem::absolute(*filepath);
-            ss << "file://" << abs.string() << ':' << starting_line + 1 << ':' << start_column + 1 << '\n';
+            const auto abs = std::filesystem::absolute(*filepath).generic_string();
+            // A URI path starts with a slash, which a Windows drive letter doesn't, i.e., `file:///C:/...`.
+            ss << "file://" << (abs.front() == '/' ? "" : "/") << abs << ':' << starting_line + 1 << ':'
+               << start_column + 1 << '\n';
         } else
             ss << "unknown file:" << starting_line + 1 << ':' << start_column + 1 << '\n';
 

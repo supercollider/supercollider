@@ -191,7 +191,7 @@ void write_details(const Describe& d, std::ostream& out, const IRGraph::Variant&
                            out << "poisoned: ";
                        write_version(in.version, "", ": ");
                        if (const auto& path = g.text_info(loc.source)->file_path)
-                           out << (d.relative_to ? path->lexically_relative(*d.relative_to) : *path).string();
+                           out << (d.relative_to ? path->lexically_relative(*d.relative_to) : *path).generic_string();
                    },
                    [&](const SCFunction& f) {
                        if (f.name)

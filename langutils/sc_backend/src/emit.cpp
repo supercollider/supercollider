@@ -149,7 +149,8 @@ struct SendPlan {
     InstanceSlotIndex instance { 0 };
     SelectorIndex selector { 0 };
 };
-static_assert(sizeof(SendPlan) == 16);
+// libc++'s std::variant index is an unsigned int, not the smallest type.
+static_assert(sizeof(SendPlan) == (sizeof(SpecialSymbols::SpecialSelector) == 2 ? 16 : 24));
 
 
 struct BodyPlan {

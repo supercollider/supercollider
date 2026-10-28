@@ -1,9 +1,13 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
+#include <cwchar>
 #include <iostream>
 #include <memory>
 #include <string>
+#ifdef _MSC_VER
+#    include <windows.h>
+#endif // _MSC_VER
 
 #include "sc_diagnostic/sc_diagnostic.hpp"
 #include "sc_source/normalise_source.hpp"
@@ -32,7 +36,11 @@ int wmain(int argc, wchar_t* argv[]) {
 #else
 int main(int argc, char* argv[]) {
 #endif // _MSC_VER
+#ifdef _MSC_VER
+    const bool class_file = argc == 3 && std::wcscmp(argv[1], L"--class") == 0;
+#else
     const bool class_file = argc == 3 && std::strcmp(argv[1], "--class") == 0;
+#endif // _MSC_VER
     if (argc != 2 && !class_file) {
         std::cerr << "ERROR: incorrect number of arguments to sc_parser_standalone, expected [--class] and "
                      "supercollider source code.\n"

@@ -1028,10 +1028,11 @@ PyrBlock* loadInterpreted(VMGlobals* g, const compiler::CompiledGraph& compiled,
                           PyrBlock* context) {
     assert(gLoadedLibrary);
     const auto& functions = std::get<compiler::CompiledInterpreted>(compiled.unit).functions;
-    assert(functions.size() == 1 && compiled.sources.size() == 1);
+    assert(functions.size() == 1);
     Loader loader { *gLoadedLibrary, { g->gc, obj_immutable } };
-    const auto& source = compiled.sources.raw().front();
-    loader.sources.emplace(source.get(), Source { text, path, Loader::startInFile(*source) });
+    for (const auto& source : compiled.sources.raw())
+        if (source->kind == sc::src::TextKind::InterpretedFunction)
+            loader.sources.emplace(source.get(), Source { text, path, Loader::startInFile(*source) });
     return loader.makeBlock(compiled, functions.front(), context);
 }
 

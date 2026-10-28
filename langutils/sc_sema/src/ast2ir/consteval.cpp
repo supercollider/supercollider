@@ -17,6 +17,9 @@ namespace sc::ir::ast2ir {
 using Diagnostic = diag::Diagnostic;
 
 namespace {
+// M_PI, which MSVC only defines with _USE_MATH_DEFINES.
+constexpr double pi = 3.14159265358979323846;
+
 // An element of `#[...]`, where a name is a symbol and `[...]` is immutable too.
 bool is_legacy_literal_element(const ast::ASTGraph& g, ast::AnyExprIndex i) {
     const ast::Index node { *i };
@@ -516,7 +519,7 @@ ConstEval::Result ConstEval::operator()(ast::PiLitIndex pi_i) {
     if (!multiplier)
         return { Diagnostic::literal_out_of_range(get_text_info(*ast_graph), get_location(*ast_graph, maybe_num),
                                                   is_float) };
-    double d = M_PI * *multiplier;
+    double d = pi * *multiplier;
     if (!std::isfinite(d) && std::isfinite(*multiplier))
         return { Diagnostic::literal_out_of_range(get_text_info(*ast_graph), get_location(*ast_graph, pi_i), true) };
     // `-pi`, when there is a multiplier its own sign is used, e.g., `-2pi`.

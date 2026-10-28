@@ -338,7 +338,10 @@ def run_sc_inspect(cmd, sc_file):
     args += modules + [sc_file]
     output = subprocess.run(args, capture_output=True, text=True, check=True).stdout
     # Diagnostics written into the output as text, e.g., a poisoned method's errors, have absolute paths.
-    return output.replace(f'file://{Path(INPUT_DIR).resolve()}/', '')
+    # The C++ side prints absolute(), which doesn't follow symlinks, and a path on Windows is not case sensitive.
+    directory = Path(INPUT_DIR).absolute().as_posix()
+    prefix = 'file://' + ('' if directory.startswith('/') else '/') + directory + '/'
+    return re.sub(re.escape(prefix), '', output, flags=re.IGNORECASE if os.name == 'nt' else 0)
 
 
 def process_file(tools, sc_file, output_dir, override):

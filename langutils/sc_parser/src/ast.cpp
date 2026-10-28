@@ -104,7 +104,7 @@ void ASTGraph::debug_df_print(std::ostream& stream) const {
                 if (view[i] == '\n') {
                     stream << "'\\n'";
                 } else {
-                    stream.write(view.begin() + i, 1);
+                    stream.write(view.data() + i, 1);
                 }
             }
             stream << "\n";

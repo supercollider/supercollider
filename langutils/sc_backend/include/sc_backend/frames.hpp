@@ -60,7 +60,7 @@ struct Frame {
     [[nodiscard]] std::uint32_t num_variadic() const { return static_cast<std::uint32_t>(variadic); }
     [[nodiscard]] std::size_t num_slots() const { return slots.size(); }
 };
-static_assert(sizeof(Frame) == 48);
+static_assert(sizeof(Frame) == (sizeof(void*) == 8 ? 48 : 32)); // wasm is 32-bit
 
 struct LocalSlot {
     OptionalFrameIndex frame {};

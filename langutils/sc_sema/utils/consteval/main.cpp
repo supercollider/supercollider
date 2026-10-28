@@ -14,6 +14,9 @@
 #include <memory>
 #include <string>
 #include <vector>
+#ifdef _MSC_VER
+#    include <windows.h>
+#endif // _MSC_VER
 
 // Evaluates a piece of interpreted code as a constant, printing the result as json. The code is compiled as 3.16, after
 // this basic class library, the classes the compiler requires, as in the regression tests' prelude.
