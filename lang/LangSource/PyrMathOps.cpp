@@ -23,6 +23,7 @@
 #include <string.h>
 
 #include "Opcodes.h"
+#include "ClassLibraryInfo.hpp"
 #include "PyrInterpreter.h"
 #include "PyrPrimitive.h"
 #include "PyrPrimitiveProto.h"
@@ -565,7 +566,7 @@ int doSpecialUnaryArithMsg(VMGlobals* g, int numArgsPushed) {
         break;
     }
 
-    if constexpr (tailCallOptimize) {
+    if (gClassLibraryInfo.generateTailCalls) {
         g->tailCall = 0;
     }
     return errNone;
@@ -1732,7 +1733,7 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
     }
     g->sp = a; // drop
     g->numpop = 0;
-    if constexpr (tailCallOptimize) {
+    if (gClassLibraryInfo.generateTailCalls) {
         g->tailCall = 0;
     }
     return errNone;

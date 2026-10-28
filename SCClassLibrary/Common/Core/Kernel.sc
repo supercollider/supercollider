@@ -731,7 +731,7 @@ Frame : AbstractObjectExperimental /* !Never inherit from Frame!*/ {
 }
 
 DebugFrame {
-	var <functionDef, <args, <vars, <caller, <context, <address, <ipIndex;
+	var <functionDef, <args, <vars, <caller, <context, <address, <ipIndex, <tailCalledFrom;
 	// Object.getBackTrace returns one of these.
 	// 'functionDef' is the FunctionDef for this function or method.
 	// 'args' the values of the arguments to the function call.
@@ -785,6 +785,9 @@ DebugFrame {
 			count = count + 1;
 		};
 
+		if (stackToPrint.any { |f| f.tailCalledFrom.notNil }) {
+			stream << "\n" << prefix << "Some frames were removed by tail calls. Run with 'Process.tailCallOptimize = false;' to see the full backtrace.\n";
+		};
 
 		^stream;
 	 }

@@ -19,6 +19,7 @@
 */
 
 
+#include "ClassLibraryInfo.hpp"
 #include "GC.h"
 #include "Opcodes.h"
 #include "PyrInterpreter.h"
@@ -299,7 +300,7 @@ static void handleSigUsr1(int param) {
 #endif
 
 template <typename F> void ifTailCallOptimise(F&& f) {
-    if constexpr (tailCallOptimize)
+    if (gClassLibraryInfo.generateTailCalls)
         std::forward<F>(f)();
 }
 

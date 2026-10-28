@@ -1867,6 +1867,7 @@ int prGetBackTrace(VMGlobals* g, int numArgsPushed) {
             sum += bytecodeSizes->b[index];
         }
         debugFrame->ipIndex = PyrSlot::make(index);
+        debugFrame->tailCalledFrom = frame.tailCalledFrom;
         results.insert({ frameptr, outSlot });
     }
 
@@ -1900,22 +1901,32 @@ int debugFrame_AsErrorString(VMGlobals* g, int) {
         assert(def.isObjectHdr());
         assert(def.getObjectHdr()->classptr);
 
-        if (def.getObjectHdr()->classptr->name.getSymbol() == s_method) {
-            const auto* method = def.getPyrObjType<PyrMethod>();
-            ss << "Method Name: '" << method->ownerclass.getPyrObjType<PyrClass>()->name.getSymbol()->name;
-            ss << "-";
-            ss << method->name.getSymbol()->name << "'";
-        } else {
-            const auto* block = def.getPyrObjType<PyrBlock>();
-            if (!block->name.isNil()) {
-                ss << "Function Name: '" << block->name.getSymbol()->name << "'";
+        const auto writeName = [&ss](const PyrSlot& def) {
+            if (def.getObjectHdr()->classptr->name.getSymbol() == s_method) {
+                const auto* method = def.getPyrObjType<PyrMethod>();
+                ss << "Method Name: '" << method->ownerclass.getPyrObjType<PyrClass>()->name.getSymbol()->name;
+                ss << "-";
+                ss << method->name.getSymbol()->name << "'";
             } else {
-                ss << "Anonymous Function";
+                const auto* block = def.getPyrObjType<PyrBlock>();
+                if (!block->name.isNil()) {
+                    ss << "Function Name: '" << block->name.getSymbol()->name << "'";
+                } else {
+                    ss << "Anonymous Function";
+                }
             }
-        }
+        };
+        writeName(def);
         const auto* block = def.getPyrObjType<PyrBlock>();
 
         ss << '\n';
+
+        if (debugFrame->tailCalledFrom.isObjectHdr()) {
+            ss.write(prefixPtr, prefixSz);
+            ss << "  tail called from: ";
+            writeName(debugFrame->tailCalledFrom);
+            ss << '\n';
+        }
 
 
         if (printArgsAndVars) {
@@ -2302,15 +2313,14 @@ int prSetTailCallOptimize(struct VMGlobals* g, int numArgsPushed);
 int prSetTailCallOptimize(struct VMGlobals* g, int numArgsPushed) {
     // PyrSlot *a = g->sp - 1;
 
-    if constexpr (tailCallOptimize) {
-        PyrSlot* b = g->sp;
-        if (IsTrue(b)) {
-            gClassLibraryInfo.generateTailCalls = true;
-        } else if (IsFalse(b)) {
-            gClassLibraryInfo.generateTailCalls = false;
-        } else
-            return errWrongType;
-    }
+    PyrSlot* b = g->sp;
+    if (IsTrue(b)) {
+        gClassLibraryInfo.generateTailCalls = true;
+    } else if (IsFalse(b)) {
+        gClassLibraryInfo.generateTailCalls = false;
+    } else
+        return errWrongType;
+    g->tailCall = 0; // a tail call may already be pending from before the flag changed
 
     return errNone;
 }
@@ -2806,9 +2816,7 @@ void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numAr
     PyrGC* gc;
     PyrFrame* frame;
 
-    if constexpr (tailCallOptimize) {
-        g->tailCall = 0; // ?? prevent a crash. is there a way to allow a TCO ?
-    }
+    g->tailCall = 0; // ?? prevent a crash. is there a way to allow a TCO ?
 
     oldthread = g->thread;
     if (newthread == oldthread)
@@ -4221,6 +4229,8 @@ void initPrimitives() {
     definePrimitive(base, index++, "_Trace", prTraceOn, 1, 0);
     definePrimitive(base, index++, "_CanCallOS", prCanCallOS, 1, 0);
     definePrimitive(base, index++, "_KeywordError", prKeywordError, 1, 0);
+    definePrimitive(base, index++, "_GetTailCallOptimize", prGetTailCallOptimize, 1, 0);
+    definePrimitive(base, index++, "_SetTailCallOptimize", prSetTailCallOptimize, 2, 0);
 
 
     definePrimitive(base, index++, "_PrimitiveError", prPrimitiveError, 1, 0);
