@@ -5,6 +5,23 @@ on:
       sc-version:
         required: true
         type: string
+      tests-path:
+        description: Test class directory, relative to the repository root
+        required: true
+        type: string
+      compiler-tests-path:
+        description: Optional second test class directory, relative to the repository root
+        required: false
+        type: string
+        default: ''
+      interpreted-version:
+        description: Language version for interpreted code, 'legacy' or e.g. '3.16'
+        required: true
+        type: string
+      results-name:
+        description: Base name of the results file
+        required: true
+        type: string
 
 jobs:
   test-macos:
@@ -12,11 +29,12 @@ jobs:
     env:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-macOS-universal.dmg"
-      TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
-      COMPILER_TESTS_PATH: ${{ github.workspace }}/testsuite/classlibraryCompilerErrors
+      TESTS_PATH: ${{ github.workspace }}/${{ inputs.tests-path }}
+      COMPILER_TESTS_PATH: ${{ inputs.compiler-tests-path != '' && format('{0}/{1}', github.workspace, inputs.compiler-tests-path) || '' }}
+      INTERPRETED_VERSION: ${{ inputs.interpreted-version }}
       SCLANG: ${{ github.workspace }}/build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
       TEST_LIST_PROTO: ${{ github.workspace }}/testsuite/scripts/test_run_proto_gha.scd
-      TEST_LIST_RESULT: ${{ github.workspace }}/testsuite/scripts/run/gha_result.scxtar
+      TEST_LIST_RESULT: ${{ github.workspace }}/testsuite/scripts/run/${{ inputs.results-name }}.scxtar
       SCRIPT_RUN_TESTS: ${{ github.workspace }}/testsuite/scripts/sclang_test_runner.scd
       SCRIPT_PRINT_RESULTS: ${{ github.workspace }}/testsuite/scripts/print_results.scd
 
@@ -55,7 +73,7 @@ jobs:
         shell: bash
         continue-on-error: true
         run: |
-          timeout 20m $SCLANG --include-path $TESTS_PATH --include-path $COMPILER_TESTS_PATH $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT
+          timeout 20m $SCLANG --interpreted-version $INTERPRETED_VERSION --include-path $TESTS_PATH ${COMPILER_TESTS_PATH:+--include-path $COMPILER_TESTS_PATH} $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT
 
       - name: Post test results
         shell: bash
