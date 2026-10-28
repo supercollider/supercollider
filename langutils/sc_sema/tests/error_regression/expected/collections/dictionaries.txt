@@ -25,10 +25,10 @@ SCClass (2:1): Dictionaries : Object, version 3.16
 |  |  |  |  |  SCCollection (5:19): Event = (a: 1)
 |  |  |  |  |  |  SCLiteral (5:20) = \a
 |  |  |  |  |  |  SCLiteral (5:24) = 1
-|  |  SCMethod (6:5): string_key, version 3.16: string_key { ^("a": 1) } -> ("a": 1)
+|  |  SCMethod (6:5): string_key, version 3.16: string_key { ^("a": 1) }
 |  |  |  SCBody (6:18)
 |  |  |  |  SCExplicitReturn (6:18)
-|  |  |  |  |  SCCollection (6:19): Event = ("a": 1)
+|  |  |  |  |  SCCollection (6:19): Event
 |  |  |  |  |  |  SCLiteral (6:20) = "a"
 |  |  |  |  |  |  SCLiteral (6:25) = 1
 |  |  SCMethod (7:5): integer_key, version 3.16: integer_key { ^(1: \one) } -> (1: \one)

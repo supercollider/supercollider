@@ -177,8 +177,12 @@ std::optional<ConstExpression> collection_constant(const Context& ctx, SymSCClas
             return std::nullopt;
         ConstExprEvent pairs;
         pairs.reserve(values.size() / 2);
-        for (ConstArrayElementIndex key { 0 }; values.contains(key); key = util::advance(key, 2))
+        for (ConstArrayElementIndex key { 0 }; values.contains(key); key = util::advance(key, 2)) {
+            // Keys are compared by identity, so a copy of the event can't replace a mutable key, see push_copy.
+            if (ctx.constant_table(values[key]).is_mutable())
+                return std::nullopt;
             pairs.push_back({ values[key], values[util::advance(key)] });
+        }
         return ConstExpression { std::move(pairs) };
     }
 
@@ -270,7 +274,8 @@ Return<SCAnyExpr_I> Expr::operator()(ast::DictionaryIndex i) {
     if (!all_constant || !can_fold_constants())
         return { collection, type };
     for (const auto& [key, element] : values)
-        if (holds_class(ctx.constant_table, key) || holds_class(ctx.constant_table, element))
+        if (holds_class(ctx.constant_table, key) || holds_class(ctx.constant_table, element)
+            || ctx.constant_table(key).is_mutable())
             return { collection, type };
 
     const auto const_i = ctx.constant_table.register_constexpr({ std::move(values) });
