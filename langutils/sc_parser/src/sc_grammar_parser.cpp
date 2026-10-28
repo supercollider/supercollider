@@ -916,10 +916,10 @@ namespace sc { namespace ast { namespace parser {
 #line 413 "langutils/sc_parser/src/sc_grammar.y"
                 {
 			// Skips to the declaration's `;`, or the next method.
-			const auto dropped = error_recovery::member(cxt, yystack_[1].location, yystack_[0].location);
-			if (!dropped)
+			const auto error = error_recovery::member(cxt, yystack_[1].location, yystack_[0].location);
+			if (!error)
 				YYABORT;
-			(yylhs.value.v_BigMemberEntryIndex) = cxt.create_error(*dropped, yystack_[0].location);
+			(yylhs.value.v_BigMemberEntryIndex) = *error;
 			yyclearin;
 			yyerrok; // Recovered at the next item, so report its error.
 		}
@@ -930,10 +930,10 @@ namespace sc { namespace ast { namespace parser {
 #line 423 "langutils/sc_parser/src/sc_grammar.y"
                 {
 			// Skips to the declaration's `;`, or the next method.
-			const auto dropped = error_recovery::member(cxt, yystack_[1].location, yystack_[0].location);
-			if (!dropped)
+			const auto error = error_recovery::member(cxt, yystack_[1].location, yystack_[0].location);
+			if (!error)
 				YYABORT;
-			(yylhs.value.v_BigMemberEntryIndex) = cxt.create_error(*dropped, yystack_[0].location);
+			(yylhs.value.v_BigMemberEntryIndex) = *error;
 			yyclearin;
 			yyerrok; // Recovered at the next item, so report its error.
 		}
@@ -944,10 +944,10 @@ namespace sc { namespace ast { namespace parser {
 #line 433 "langutils/sc_parser/src/sc_grammar.y"
                 {
 			// Skips to the declaration's `;`, or the next method.
-			const auto dropped = error_recovery::member(cxt, yystack_[1].location, yystack_[0].location);
-			if (!dropped)
+			const auto error = error_recovery::member(cxt, yystack_[1].location, yystack_[0].location);
+			if (!error)
 				YYABORT;
-			(yylhs.value.v_BigMemberEntryIndex) = cxt.create_error(*dropped, yystack_[0].location);
+			(yylhs.value.v_BigMemberEntryIndex) = *error;
 			yyclearin;
 			yyerrok; // Recovered at the next item, so report its error.
 		}

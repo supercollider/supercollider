@@ -530,11 +530,10 @@ std::optional<sc::src::SourceCodeRange> class_item(ParserContext& cxt, sc::src::
     return skip_class_item(cxt, error, false);
 }
 
-std::optional<sc::src::SourceCodeRange> member(ParserContext& cxt, sc::src::SourceCodeRange keyword,
-                                               sc::src::SourceCodeRange error) {
+std::optional<ErrorIndex> member(ParserContext& cxt, sc::src::SourceCodeRange keyword, sc::src::SourceCodeRange error) {
     const auto dropped = skip_class_item(cxt, error, true);
     if (!dropped)
-        return dropped;
-    return sc::src::SourceCodeRange { keyword.begin, dropped->end };
+        return std::nullopt;
+    return cxt.create_error({ keyword.begin, dropped->end }, error);
 }
 }

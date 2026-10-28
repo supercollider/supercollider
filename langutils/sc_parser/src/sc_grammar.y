@@ -372,13 +372,13 @@ class
 
 class.super.opt 
 	: %empty { $$ = cxt.create(Missing{}, @$); } 
-	| COLON CLASSNAME { $$ = cxt.create(ClassNameIdentifier{}, @CLASSNAME); };
+	| COLON CLASSNAME { $$ = cxt.create(ClassNameIdentifier{}, @CLASSNAME); }
 	;
 
 class.slot.opt 
 	: %empty { $$ = cxt.create(Missing{}, @$); } 
-	| OPENSQUARE name CLOSESQUARE { $$ = $name; };
-	| OPENSQUARE CLOSESQUARE { $$ = cxt.create(Missing{}, @$); };
+	| OPENSQUARE name CLOSESQUARE { $$ = $name; }
+	| OPENSQUARE CLOSESQUARE { $$ = cxt.create(Missing{}, @$); }
 	;
 
 class.extension 
@@ -412,30 +412,30 @@ members.entry
 	| CLASSVAR error[e]
 		{
 			// Skips to the declaration's `;`, or the next method.
-			const auto dropped = error_recovery::member(cxt, @CLASSVAR, @e);
-			if (!dropped)
+			const auto error = error_recovery::member(cxt, @CLASSVAR, @e);
+			if (!error)
 				YYABORT;
-			$$ = cxt.create_error(*dropped, @e);
+			$$ = *error;
 			yyclearin;
 			yyerrok; // Recovered at the next item, so report its error.
 		}
 	| VAR error[e]
 		{
 			// Skips to the declaration's `;`, or the next method.
-			const auto dropped = error_recovery::member(cxt, @VAR, @e);
-			if (!dropped)
+			const auto error = error_recovery::member(cxt, @VAR, @e);
+			if (!error)
 				YYABORT;
-			$$ = cxt.create_error(*dropped, @e);
+			$$ = *error;
 			yyclearin;
 			yyerrok; // Recovered at the next item, so report its error.
 		}
 	| CONST error[e]
 		{
 			// Skips to the declaration's `;`, or the next method.
-			const auto dropped = error_recovery::member(cxt, @CONST, @e);
-			if (!dropped)
+			const auto error = error_recovery::member(cxt, @CONST, @e);
+			if (!error)
 				YYABORT;
-			$$ = cxt.create_error(*dropped, @e);
+			$$ = *error;
 			yyclearin;
 			yyerrok; // Recovered at the next item, so report its error.
 		}
