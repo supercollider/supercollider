@@ -283,6 +283,9 @@ struct SCMethod : priv::Node<SCMethod_I(SCArgumentDeclareList_I positional_argum
     // What calling the method returns, when it is known and has no effects. Only set without arguments, as their values
     // aren't known until the method is called. Callers can't rely on it unless they know which method is dispatched.
     OptionalConstExprIndex constant_result {};
+    // Set when it is poisoned: a string constant of the errors in it, which the backend gives to the error that
+    // calling the method throws.
+    OptionalConstExprIndex poison_message {};
     SCMethod(Locatable<SymSCSelector> s, std::optional<Locatable<SymSCPrimitive>> p, ast::LanguageVersion v):
         selector(s),
         primitive(p),

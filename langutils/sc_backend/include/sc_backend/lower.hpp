@@ -31,9 +31,13 @@ struct LoweringContext {
     const InliningContext& inlining;
     ir::SymSCClassName array;
     ir::SymSCClassName event;
+    // A poisoned method is lowered to throw this, with `thisMethod` and its errors. Without it, such a method is
+    // skipped.
+    ir::OptionalSymSCClassName poisoned_method_error;
 };
 
-// Root cannot be a poisoned method nor one that is too large for the VM.
+// Root cannot be a poisoned method nor one that is too large for the VM. A class's poisoned methods are lowered as
+// throwing ctx.poisoned_method_error.
 [[nodiscard]] lir::LoweredGraph lower(const LoweringContext& ctx, ir::join<ir::SCClass_I, ir::SCInterpreted_I> root);
 
 void write_instruction(std::ostream& out, const lir::Function& function, const lir::Instruction& instruction,
@@ -48,6 +52,7 @@ struct LoweringSymbols {
     explicit LoweringSymbols(ir::SymbolTable& symbols);
 
     ir::SymSCSelector new_;
+    ir::SymSCSelector throw_;
     ir::SymSCSelector add;
     ir::SymSCSelector put;
     ir::SymSCSelector at;

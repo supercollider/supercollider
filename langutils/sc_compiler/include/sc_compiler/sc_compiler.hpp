@@ -158,6 +158,9 @@ struct Backend {
     backend::LoweringSymbols selectors;
     backend::SpecialSymbols special_symbols;
     backend::InliningContext inlining;
+    // The class a poisoned method throws, see backend::LoweringContext. Unset when the library doesn't define it.
+    static constexpr const char* poisoned_method_error_name { "PoisonedMethodError" };
+    ir::OptionalSymSCClassName poisoned_method_error {};
 };
 
 ////////////////////////////////////////////////////////////////////////////////

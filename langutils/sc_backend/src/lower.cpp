@@ -17,6 +17,7 @@ namespace sc::backend {
 
 LoweringSymbols::LoweringSymbols(ir::SymbolTable& symbols):
     new_(symbols.get_selector("new")),
+    throw_(symbols.get_selector("throw")),
     add(symbols.get_selector("add")),
     put(symbols.get_selector("put")),
     at(symbols.get_selector("at")),
@@ -1023,12 +1024,32 @@ struct Lowerer {
         out.functions[index].complete = !failed;
     }
 
+    // `^PoisonedMethodError(thisMethod, errors).throw`, in place of a method that has an error. Its arguments aren't
+    // read, so however many it was called with are fine.
+    void poisoned_method(ir::SymSCClassName error, FrameIndex frame, ir::SCMethod_I m) {
+        const auto index = begin_function(frame, m);
+        emit(lir::PushClass { error }, m);
+        emit(lir::PushSpecial { ir::SCSpecial::Kind::Method }, m);
+        if (const auto message = ir_graph.payload(m).poison_message)
+            emit(lir::PushConstant { *message }, m);
+        else
+            emit(lir::PushSpecialValue { lir::SpecialValue::Nil }, m);
+        emit(lir::Send { ctx.selectors.new_, 2, 0, lir::SendKind::Normal, lir::SendForm::Call, lir::Tail::None }, m);
+        emit(lir::Send { ctx.selectors.throw_, 0, 0, lir::SendKind::Normal, lir::SendForm::Call, lir::Tail::None }, m);
+        emit(lir::Drop {}, m);
+        emit(lir::ReturnSelf {}, m);
+        end_function();
+        out.functions[index].complete = true;
+    }
+
     void lower_class(ir::SCClass_I c) {
         const auto [members, methods] = ir_graph.children(c);
         for (auto it = ir_graph.children(methods).iter(); it; ++it) {
             const auto m = *it;
             if (ir_graph.payload(m).poisoned) {
-                cursor.skip_over_children(m);
+                const auto started = cursor.skip_over_children(m);
+                if (ctx.poisoned_method_error && started)
+                    poisoned_method(*ctx.poisoned_method_error, *started, m);
                 continue;
             }
             fold_constants = ir::can_fold_constants(ir_graph.payload(m).version);

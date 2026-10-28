@@ -64,6 +64,29 @@ Method::Method(IRGraph& ir, std::shared_ptr<const ast::ASTGraph> ast, Context& c
     expr.interpreter = interpreter;
 }
 
+// The errors that poisoned a method, written in full, as the exception it throws shows them. Those the parser reported
+// inside the method aren't in the sink.
+static ConstExprIndex poison_message(Context& ctx, const ast::ASTGraph& ast, sc::src::SourceCodeRange range,
+                                     const std::vector<sc::diag::Diagnostic>& sink_diagnostics) {
+    std::string text;
+    const auto add = [&](const sc::diag::Diagnostic& d) {
+        if (!d.fatal())
+            return;
+        // Starts and ends with a blank line.
+        auto written = d.to_string();
+        const auto first = written.find_first_not_of('\n');
+        const auto last = written.find_last_not_of('\n');
+        if (first != std::string::npos)
+            text += written.substr(first, last - first + 1) + '\n';
+    };
+    for (const auto& d : ast.diagnostics())
+        if (d.within(ast.text_info(), range))
+            add(d);
+    for (const auto& d : sink_diagnostics)
+        add(d);
+    return ctx.constant_table.register_constexpr({ ctx.symbol_table.get_string(text) });
+}
+
 Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i, SymSCSelector selector, ast::Index name_index) {
     const auto [name, arg_list, maybe_prim, body] =
         std::visit([&](auto i) { return ast_graph->children(i); }, ast_graph->index_to_variant(i));
@@ -90,9 +113,11 @@ Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i, SymSCSelector 
 
     // Not compiled, as it would overflow the stack, so it is an empty, poisoned method.
     if (const auto deep = nested_too_deeply(*ast_graph, { *i })) {
-        ctx.diagnostics(sc::diag::Diagnostic::nested_too_deeply(get_text_info(*ast_graph),
-                                                                get_location(*ast_graph, *deep), max_nesting_depth));
+        auto too_deep = sc::diag::Diagnostic::nested_too_deeply(get_text_info(*ast_graph),
+                                                                get_location(*ast_graph, *deep), max_nesting_depth);
         ir.payload(method).poisoned = true;
+        ir.payload(method).poison_message = poison_message(ctx, *ast_graph, {}, { too_deep });
+        ctx.diagnostics(std::move(too_deep));
         return { method };
     }
 
@@ -109,6 +134,9 @@ Return<SCMethod_I> Method::operator()(ast::AnyValidMethodIndex i, SymSCSelector 
     // A fatal error anywhere in the method poisons all of it.
     sink.fatal = sink.fatal || parse_error_inside(*ast_graph, ast_graph->location({ *i }));
     ir.payload(method).poisoned = sink.fatal;
+    if (sink.fatal)
+        ir.payload(method).poison_message =
+            poison_message(ctx, *ast_graph, ast_graph->location({ *i }), sink.diagnostics);
 
     // Without `^` a method returns `this`, which isn't constant.
     // A primitive's body only runs when the primitive fails, so is never constant.

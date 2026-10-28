@@ -96,6 +96,10 @@ var action = {|stream|
 		catcher.value({ catcher.value( { catcher.value(throwSight, 0) }, 1 ) }, 2)
 	};
 
+	catch.value { BadClass1().foo };
+	catch.value { BadClass2().foo };
+	catch.value { BadClass2().bar };
+
 	stream
 };
 
@@ -114,6 +118,7 @@ try {
 		str = str.split($\n).collect{ |line|
 			line
 				.replaceRegexp("(\\s*)[0-9]+ │", "\t\t│")
+				.replaceRegexp("(\\s*)[0-9]+\\*│", "\t\t*│")
 				.replaceRegexp("(\\s*)┆", "\t\t┆")
 				.replaceRegexp("(\\s*)file:/.*$", "\t\tfile:/")
 		}.join($\n);

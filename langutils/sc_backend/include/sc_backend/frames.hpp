@@ -100,7 +100,8 @@ public:
     // The frame the node starts, if it does.
     std::optional<FrameIndex> enter(ir::NodeIndex i);
     std::optional<FrameIndex> exit(ir::NodeIndex i);
-    void skip_over_children(ir::NodeIndex i);
+    // Returns the frame the node starts, if it does.
+    std::optional<FrameIndex> skip_over_children(ir::NodeIndex i);
 
     [[nodiscard]] OptionalFrameIndex current() const {
         return m_stack.empty() ? OptionalFrameIndex {} : OptionalFrameIndex { m_stack.back() };

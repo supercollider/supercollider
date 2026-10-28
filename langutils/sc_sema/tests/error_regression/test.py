@@ -336,7 +336,9 @@ def run_sc_inspect(cmd, sc_file):
         args += ['--prelude', PRELUDE]
     # Each path is its own module, in order, so the test is the last.
     args += modules + [sc_file]
-    return subprocess.run(args, capture_output=True, text=True, check=True).stdout
+    output = subprocess.run(args, capture_output=True, text=True, check=True).stdout
+    # Diagnostics written into the output as text, e.g., a poisoned method's errors, have absolute paths.
+    return output.replace(f'file://{Path(INPUT_DIR).resolve()}/', '')
 
 
 def process_file(tools, sc_file, output_dir, override):

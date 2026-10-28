@@ -238,7 +238,11 @@ Backend::Backend(const ir::IRCompiler& compiler, ir::SymbolTable& symbols, const
     members(compiler, symbols),
     selectors(symbols),
     special_symbols(symbols),
-    inlining { special_symbols, constants } {}
+    inlining { special_symbols, constants } {
+    // Optional, a library without it skips its poisoned methods.
+    if (compiler.class_graph(symbols.get_class_name(poisoned_method_error_name)))
+        poisoned_method_error = ir::OptionalSymSCClassName { symbols.get_class_name(poisoned_method_error_name) };
+}
 
 FramedGraph layout_frames(const ClassLibrary& library, const ir::IRGraph& g, CompilationUnit root) {
     return { &g, root, backend::layout_frames(g, library.backend->inlining, root) };
@@ -247,10 +251,16 @@ FramedGraph layout_frames(const ClassLibrary& library, const ir::IRGraph& g, Com
 LoweredGraph lower(ClassLibrary& library, FramedGraph&& framed) {
     const auto& ctx = library.ctx;
     const auto& shared = *library.backend;
-    const backend::LoweringContext lowering {
-        *framed.graph,    framed.frames,   shared.members,           ctx.constant_table,      library.symbols,
-        shared.selectors, shared.inlining, ctx.common_classes.array, ctx.common_classes.event
-    };
+    const backend::LoweringContext lowering { *framed.graph,
+                                              framed.frames,
+                                              shared.members,
+                                              ctx.constant_table,
+                                              library.symbols,
+                                              shared.selectors,
+                                              shared.inlining,
+                                              ctx.common_classes.array,
+                                              ctx.common_classes.event,
+                                              shared.poisoned_method_error };
     auto lowered = backend::lower(lowering, framed.root);
     return { framed.graph, framed.root, std::move(framed.frames), std::move(lowered) };
 }
