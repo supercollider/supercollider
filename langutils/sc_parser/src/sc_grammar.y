@@ -264,9 +264,21 @@ file_as_func
 ////////////////////////////////////////////////////////////////////////////////
 
 // What the VM interprets, as the old grammar's cmdlinecode: a body, or a body with variables in brackets, as a function
-// without arguments.
+// with the arguments it declares, if any, e.g., an scd file loaded with arguments.
 interpreted_function
-	: INTERPRET_FUNCTION block.contents[contents] semicolon.opt YYEOF
+	: INTERPRET_FUNCTION argument_declarations[args] block.contents[contents] semicolon.opt YYEOF
+		{ $$ = cxt.create(FileAsFunction{}, @$, $args, $contents); }
+
+	| INTERPRET_FUNCTION argument_declarations[args] semicolon.opt YYEOF
+		{ $$ = cxt.create(FileAsFunction{}, @$, $args, cxt.create(BlockContentsList{}, @$)); }
+
+	| INTERPRET_FUNCTION OPENPAREN argument_declarations[args] block.contents[contents] semicolon.opt CLOSEPAREN YYEOF
+		{ $$ = cxt.create(FileAsFunction{}, @$, $args, $contents); }
+
+	| INTERPRET_FUNCTION OPENPAREN argument_declarations[args] semicolon.opt CLOSEPAREN YYEOF
+		{ $$ = cxt.create(FileAsFunction{}, @$, $args, cxt.create(BlockContentsList{}, @$)); }
+
+	| INTERPRET_FUNCTION block.contents[contents] semicolon.opt YYEOF
 		{ $$ = cxt.create(FileAsFunction{}, @$, cxt.create(DeclareArgumentList{}, @1), $contents); }
 
 	| INTERPRET_FUNCTION semicolon.opt YYEOF

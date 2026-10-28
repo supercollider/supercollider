@@ -45,7 +45,7 @@
 #ifndef YY_YY_LANGUTILS_SC_PARSER_SRC_SC_GRAMMAR_PARSER_HPP_INCLUDED
 # define YY_YY_LANGUTILS_SC_PARSER_SRC_SC_GRAMMAR_PARSER_HPP_INCLUDED
 // "%code requires" blocks.
-#line 78 "langutils/sc_parser/src/sc_grammar.y"
+#line 80 "langutils/sc_parser/src/sc_grammar.y"
 
 
 #include "parser_context.hpp"
@@ -186,7 +186,7 @@
 # define YYDEBUG 0
 #endif
 
-#line 66 "langutils/sc_parser/src/sc_grammar.y"
+#line 68 "langutils/sc_parser/src/sc_grammar.y"
 namespace sc { namespace ast { namespace parser {
 #line 192 "langutils/sc_parser/src/sc_grammar_parser.hpp"
 
@@ -206,7 +206,7 @@ namespace sc { namespace ast { namespace parser {
     /// Symbol semantic values.
     union value_type
     {
-#line 7 "langutils/sc_parser/src/sc_grammar.y"
+#line 9 "langutils/sc_parser/src/sc_grammar.y"
 
     ASCIIIndex v_ASCIIIndex;
     AccidentalIndex v_AccidentalIndex;
@@ -1046,9 +1046,9 @@ namespace sc { namespace ast { namespace parser {
     /// Constants.
     enum
     {
-      yylast_ = 2649,     ///< Last index in yytable_.
+      yylast_ = 2587,     ///< Last index in yytable_.
       yynnts_ = 82,  ///< Number of nonterminal symbols.
-      yyfinal_ = 92 ///< Termination state number.
+      yyfinal_ = 93 ///< Termination state number.
     };
 
 
@@ -1058,7 +1058,7 @@ namespace sc { namespace ast { namespace parser {
   };
 
 
-#line 66 "langutils/sc_parser/src/sc_grammar.y"
+#line 68 "langutils/sc_parser/src/sc_grammar.y"
 } } } // sc::ast::parser
 #line 1064 "langutils/sc_parser/src/sc_grammar_parser.hpp"
 

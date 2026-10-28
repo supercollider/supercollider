@@ -535,7 +535,8 @@ BOOST_AUTO_TEST_CASE(closed_blocks) {
 }
 
 // The VM's interpreted code is one function, as the old grammar's cmdlinecode: a body, or a body with variables in
-// brackets, whose variables are the function's own. Without regions, a missing semicolon is an error.
+// brackets, whose variables are the function's own, and arguments, e.g., an scd file loaded with arguments. Without
+// regions, a missing semicolon is an error.
 BOOST_AUTO_TEST_CASE(interpreted_function) {
     const auto parse_function = [](const char* src) {
         auto text_info =
@@ -544,7 +545,8 @@ BOOST_AUTO_TEST_CASE(interpreted_function) {
         return std::get<0>(P::parse(text_info));
     };
     for (const char* src : { "", ";", "1", "a = 1; b = 2; a + b;", "var a = 1; a", "(var a = 1; a)", "( var a, b; )",
-                             "(a; b)", "^1", "a = 1; ^a", "(\nvar a = 1;\na\n) // comment" }) {
+                             "(a; b)", "^1", "a = 1; ^a", "(\nvar a = 1;\na\n) // comment", "|a| a", "|a=1, b=2| a + b",
+                             "arg a; a", "|a|", "(|a| var b = a; b)", "(|a|)" }) {
         BOOST_TEST_CONTEXT(src) {
             const auto graph = parse_function(src);
             BOOST_TEST_REQUIRE(graph);
@@ -560,7 +562,7 @@ BOOST_AUTO_TEST_CASE(interpreted_function) {
             BOOST_TEST(!immediately_evaluated);
         }
     }
-    for (const char* src : { "|a| a", "(var a = 1; a); 2", "(var a = 1; a) (var b = 2; b)", "a = 1\nb = 2" }) {
+    for (const char* src : { "(var a = 1; a); 2", "(var a = 1; a) (var b = 2; b)", "a = 1\nb = 2" }) {
         BOOST_TEST_CONTEXT(src) {
             const auto graph = parse_function(src);
             BOOST_TEST(!(graph && graph->diagnostics().empty()));

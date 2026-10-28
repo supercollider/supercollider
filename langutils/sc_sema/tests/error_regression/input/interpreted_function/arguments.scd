@@ -1,3 +1,3 @@
 // interpreted-function
-// The old grammar had no arguments here, only an scd file can be a function with arguments.
+// The old grammar's cmdlinecode starts with arguments, as an scd file loaded with arguments does.
 |x| x + 1
