@@ -34,8 +34,8 @@ void sc::ast::parser::parser::report_syntax_error(const context& symbol_cxt) con
 }
 
 void sc::ast::parser::parser::error(const sc::src::SourceCodeRange&, const std::string&) {
-    // TODO: temporary code.
-    ////////////////	cxt.error_handler->operator()(cxt.text_info, loc, message);
+    // Syntax errors are reported by error_recovery::report. Bison only calls this for the others, e.g., memory
+    // exhausted, which makes parse() return `accepted == false` without a diagnostic of its own.
 }
 
 namespace sc::ast::parser {
