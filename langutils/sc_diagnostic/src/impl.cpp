@@ -723,6 +723,17 @@ Diagnostic Diagnostic::instance_variable_out_of_reach(TextInfoPtr t, sc::src::So
                    "Group the others, e.g., into an Event." };
 }
 
+Diagnostic Diagnostic::class_variable_out_of_reach(TextInfoPtr t, sc::src::SourceCodeRange l, std::size_t index,
+                                                   std::size_t limit) {
+    return { "Class variable out of reach",
+             Severity::Error,
+             { { std::move(t), l,
+                 "this uses class variable number " + std::to_string(index) + ", past number " + std::to_string(limit)
+                     + "." } },
+             "Bytecode refers to a class variable by two bytes, so only the first " + std::to_string(limit + 1)
+                 + " class variables of all the classes together can be used. Group some, e.g., into an Event." };
+}
+
 Diagnostic Diagnostic::selector_table_full(TextInfoPtr t, sc::src::SourceCodeRange l, std::size_t limit) {
     return { "Too many selectors",
              Severity::Error,

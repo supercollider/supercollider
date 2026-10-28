@@ -24,6 +24,9 @@ using namespace Opcode;
 constexpr std::size_t max_selectors { 255 };
 constexpr std::size_t max_jump { 65535 };
 constexpr std::size_t max_argument_count { 255 };
+constexpr ClassVariableIndex max_class_variable { std::numeric_limits<std::uint16_t>::max() };
+
+[[nodiscard]] bool class_variable_reachable(ClassVariableIndex index) { return *index <= *max_class_variable; }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Slot identity
@@ -199,6 +202,7 @@ struct Emitter {
     bool failed { false };
     bool selector_table_full_reported { false };
     bool instance_variable_out_of_reach_reported { false };
+    bool class_variable_out_of_reach_reported { false };
     // Each constant's identity, so adding one doesn't look up every entry again.
     util::IndexedVector<ConstantIndex, SlotIdentity> constant_identities {};
 
@@ -262,6 +266,20 @@ struct Emitter {
             return Operands::Index::fromRaw(0);
         }
         return Operands::Index::fromRaw(static_cast<int>(*slot));
+    }
+
+    // The bytecodes, and the shortcut methods, index class variables by two bytes.
+    [[nodiscard]] ClassVariableIndex class_variable(ClassVariableIndex index) {
+        if (!class_variable_reachable(index)) {
+            if (!class_variable_out_of_reach_reported) {
+                class_variable_out_of_reach_reported = true;
+                const auto loc = owner_location();
+                report(sc::diag::Diagnostic::class_variable_out_of_reach(
+                    ctx.graph.text_info(loc.source), ir::IRGraph::range(loc), *index, *max_class_variable));
+            }
+            return ClassVariableIndex { 0 };
+        }
+        return index;
     }
 
     ConstantIndex add_constant(ConstantContent entry) {
@@ -832,7 +850,7 @@ struct Emitter {
     }
 
     bool store(CompilingBytecodes& bc, sc::src::SourceCodeRange loc, const lir::StoreClassVariable& s, bool drop) {
-        const std::uint32_t index { *s.index };
+        const std::uint32_t index { *class_variable(s.index) };
         if (drop && index < 4096) {
             StoreClassVar.emit(bc, loc, index);
             return true;
@@ -1032,7 +1050,7 @@ struct Emitter {
         void operator()(const lir::PushLocal& p) { emitter.push_local(bc, loc, p.local); }
         void operator()(const lir::PushInstance& p) { PushInstVarX.emit(bc, loc, emitter.instance_slot(p.slot)); }
         void operator()(const lir::PushClassVariable& p) {
-            const std::uint32_t index { *p.index };
+            const std::uint32_t index { *emitter.class_variable(p.index) };
             if (PushClassVar.validNibble(index))
                 PushClassVar.emit(bc, loc, index);
             else
@@ -1391,7 +1409,7 @@ OptionalMethodShortcut method_shortcut(const EmitContext& ctx, const lir::Functi
         if (const auto* store = std::get_if<lir::StoreInstance>(&code[second]))
             return shortcut::AssignInstance { store->slot };
         if (const auto* store = std::get_if<lir::StoreClassVariable>(&code[second]);
-            store && ir::has_class_variable_shortcuts(payload.version))
+            store && ir::has_class_variable_shortcuts(payload.version) && class_variable_reachable(store->index))
             return shortcut::AssignClassVariable { store->index };
     }
     if (!std::holds_alternative<lir::Return>(code[last]))
@@ -1409,7 +1427,7 @@ OptionalMethodShortcut method_shortcut(const EmitContext& ctx, const lir::Functi
         if (const auto* p = std::get_if<lir::PushInstance>(&value))
             return shortcut::ReturnInstance { p->slot };
         if (const auto* p = std::get_if<lir::PushClassVariable>(&value);
-            p && ir::has_class_variable_shortcuts(payload.version))
+            p && ir::has_class_variable_shortcuts(payload.version) && class_variable_reachable(p->index))
             return shortcut::ReturnClassVariable { p->index };
     }
 
@@ -1432,7 +1450,7 @@ OptionalMethodShortcut method_shortcut(const EmitContext& ctx, const lir::Functi
         return {};
     if (const auto* p = std::get_if<lir::PushInstance>(&code[first]))
         return shortcut::ForwardInstance { send->selector, p->slot };
-    if (const auto* p = std::get_if<lir::PushClassVariable>(&code[first]))
+    if (const auto* p = std::get_if<lir::PushClassVariable>(&code[first]); p && class_variable_reachable(p->index))
         return shortcut::ForwardClassVariable { send->selector, p->index };
     return {};
 }
@@ -1561,7 +1579,7 @@ CompilingBytecodes::Data loop_code(HardCodedLoop loop, sc::src::SourceCodeRange 
 }
 
 // In the order the old compiler added them, by member, getter then setter.
-std::vector<Accessor> accessors(const EmitContext& ctx) {
+std::vector<Accessor> accessors(const EmitContext& ctx, std::vector<sc::diag::Diagnostic>& diagnostics) {
     std::vector<Accessor> out;
     const auto root = ctx.graph.root();
     const auto* class_i = root ? std::get_if<ir::SCClass_I>(&*root) : nullptr;
@@ -1578,6 +1596,12 @@ std::vector<Accessor> accessors(const EmitContext& ctx) {
         const auto* slot = std::get_if<InstanceSlotIndex>(&*location);
         const auto* index = std::get_if<ClassVariableIndex>(&*location);
         const auto* value = std::get_if<ir::OptionalConstExprIndex>(&*location);
+        if (index && !class_variable_reachable(*index)) {
+            const auto loc = ctx.graph.location(*it);
+            diagnostics.push_back(sc::diag::Diagnostic::class_variable_out_of_reach(
+                ctx.graph.text_info(loc.source), ir::IRGraph::range(loc), **index, *max_class_variable));
+            continue;
+        }
         if (member.getter) {
             OptionalMethodShortcut getter;
             if (slot)
@@ -1657,7 +1681,7 @@ bool emit_root(const EmitContext& ctx, const lir::LoweredGraph& lowered,
 
 EmittedGraph emit(const EmitContext& ctx, const lir::LoweredGraph& lowered) {
     EmittedGraph out;
-    out.accessors = accessors(ctx);
+    out.accessors = accessors(ctx, out.diagnostics);
     const auto properties = function_properties(ctx, lowered.functions);
     // Nested functions follow their root, a function whose frame has no parent. A root that fails leaves out the rest.
     for (lir::FunctionIndex root { 0 }; lowered.functions.contains(root);) {

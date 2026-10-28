@@ -160,6 +160,10 @@ public:
     [[nodiscard]] static Diagnostic instance_variable_out_of_reach(TextInfoPtr t, sc::src::SourceCodeRange l,
                                                                    std::size_t index, std::size_t limit);
 
+    // A class variable past the last the bytecode can index, or a shortcut method can hold.
+    [[nodiscard]] static Diagnostic class_variable_out_of_reach(TextInfoPtr t, sc::src::SourceCodeRange l,
+                                                                std::size_t index, std::size_t limit);
+
     // A method or function that uses more selectors, class names and functions than its bytecode can index.
     [[nodiscard]] static Diagnostic selector_table_full(TextInfoPtr t, sc::src::SourceCodeRange l, std::size_t limit);
 
