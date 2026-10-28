@@ -41,8 +41,8 @@ struct CurrentDiagnostics {
     }
 
 private:
-    mutable std::mutex m_lock { };
-    std::vector<sc::diag::Diagnostic> m_diagnostics { };
+    mutable std::mutex m_lock {};
+    std::vector<sc::diag::Diagnostic> m_diagnostics {};
 };
 
 
@@ -75,9 +75,9 @@ struct InheritanceEdges {
     }
 
 private:
-    mutable std::mutex m_lock { };
-    std::unordered_map<SymSCClassName, std::vector<SymSCClassName>, std::hash<Symbol>> m_sub_classes { };
-    std::unordered_map<SymSCClassName, SymSCClassName, std::hash<Symbol>> m_super_class { };
+    mutable std::mutex m_lock {};
+    std::unordered_map<SymSCClassName, std::vector<SymSCClassName>, std::hash<Symbol>> m_sub_classes {};
+    std::unordered_map<SymSCClassName, SymSCClassName, std::hash<Symbol>> m_super_class {};
 };
 
 // Where each class is first defined, by module, then file, then position, so when one is defined twice, the same one
@@ -119,11 +119,11 @@ struct Context {
     CommonClasses common_classes;
     CommonSymbols common_symbols;
     ModuleTable& modules;
-    ClassDeclarations class_declarations { };
+    ClassDeclarations class_declarations {};
     ClassLibrarySources& class_library_ast;
-    ConstantTable constant_table { };
-    CurrentDiagnostics diagnostics { };
-    InheritanceEdges inheritance_edges { };
+    ConstantTable constant_table {};
+    CurrentDiagnostics diagnostics {};
+    InheritanceEdges inheritance_edges {};
     ClassNames class_names {};
     // Filled in once the class library is declared, before compiling it.
     KnownMethods known_methods {};

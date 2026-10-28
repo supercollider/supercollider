@@ -236,15 +236,13 @@ using RegionListIndex = TypedIndex<NodeFlag::RegionList>;
 
 using GoIndex = join<RegionListIndex, ClassOrExtensionListIndex, FileAsFunctionIndex>;
 
-template <typename T> struct Wrapper {
-    using Type = T;
-};
+template <typename T> struct Wrapper { using Type = T; };
 
 template <std::size_t... I> auto any_index_builder(std::index_sequence<I...>) {
     using Type = TypedIndex<static_cast<NodeFlag>(I)...>;
-    return Wrapper<Type> { };
+    return Wrapper<Type> {};
 };
 
 // Accepts any index, without resorting to using Index or OptionalIndex directly.
-using AnyIndex = typename decltype(any_index_builder(std::index_sequence<static_cast<int>(NodeFlag::COUNT)> { }))::Type;
+using AnyIndex = typename decltype(any_index_builder(std::index_sequence<static_cast<int>(NodeFlag::COUNT)> {}))::Type;
 }

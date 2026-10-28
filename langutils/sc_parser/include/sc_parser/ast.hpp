@@ -130,9 +130,7 @@ extern template struct sc::util::typed_graph::GraphImplementation<sc::ast::Optio
 namespace sc::ast {
 
 namespace priv {
-template <typename... Os> struct overload : Os... {
-    using Os::operator()...;
-};
+template <typename... Os> struct overload : Os... { using Os::operator()...; };
 
 template <typename... Os> overload(Os...) -> overload<Os...>;
 }
@@ -285,7 +283,7 @@ private:
     std::shared_ptr<const src::TextInfo> m_text_info;
     std::vector<src::SourceCodeRange> m_node_locations {};
 
-    std::vector<sc::diag::Diagnostic> m_diagnostics { };
+    std::vector<sc::diag::Diagnostic> m_diagnostics {};
 
     bool m_has_fatal_diagnostic { false };
 

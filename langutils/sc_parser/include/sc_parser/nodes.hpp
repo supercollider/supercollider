@@ -91,27 +91,27 @@ struct IntNode : public TerminalNode<IntLitIndex> {
     static constexpr auto name { "IntNode" };
     enum struct Kind : std::uint8_t { Normal, Radix, Hexadecimal } kind;
     enum struct Sign { Positive, Negative } sign;
-    constexpr IntNode(Kind i = Kind::Normal, Sign s = Sign::Positive): kind(i), sign(s) { }
+    constexpr IntNode(Kind i = Kind::Normal, Sign s = Sign::Positive): kind(i), sign(s) {}
 };
 
 struct FloatNode : public TerminalNode<FloatLitIndex> {
     static constexpr auto name { "FloatNode" };
     enum struct Kind : std::uint8_t { Normal, Radix, Exponent, Inf } kind;
     enum struct Sign { Positive, Negative } sign;
-    constexpr FloatNode(Kind i = Kind::Normal, Sign s = Sign::Positive): kind(i), sign(s) { }
+    constexpr FloatNode(Kind i = Kind::Normal, Sign s = Sign::Positive): kind(i), sign(s) {}
 };
 
 struct PiNode : public Node<PiLitIndex(maybe<NumberIndex> multiplier)> {
     static constexpr auto name { "PiNode" };
     enum struct Sign { Positive, Negative } sign; // if the multiplier is signed, this is always positive.
-    constexpr PiNode(Sign s = Sign::Positive): sign(s) { }
+    constexpr PiNode(Sign s = Sign::Positive): sign(s) {}
 };
 
 struct AccidentalNode : public TerminalNode<AccidentalIndex> {
     static constexpr auto name { "AccidentalNode" };
     enum struct Kind { Steps, Cents } kind;
     enum struct Sign { Positive, Negative } sign;
-    constexpr AccidentalNode(Kind k, Sign s = Sign::Positive): kind(k), sign(s) { }
+    constexpr AccidentalNode(Kind k, Sign s = Sign::Positive): kind(k), sign(s) {}
 };
 
 struct StringLineNode : public TerminalNode<StringLineLitIndex> {
@@ -137,7 +137,7 @@ struct SymbolQuote : public TerminalNode<SymbolQuoteIndex> {
 struct BooleanNode : public TerminalNode<BooleanLitIndex> {
     static constexpr auto name { "BooleanNode" };
     bool value;
-    constexpr BooleanNode(bool v): value(v) { }
+    constexpr BooleanNode(bool v): value(v) {}
 };
 
 struct NilNode : public TerminalNode<NilLitIndex> {
@@ -207,7 +207,7 @@ struct NamePack : Node<NamePackIndex(NameListIndex, join<MissingIndex, NamedIden
 
 struct SelectorNode : TerminalNode<TypedIndex<NodeFlag::SelectorLiteral>> {
     static constexpr auto name { "SelectorNode" };
-    constexpr SelectorNode(bool infix = false) noexcept: is_infix_keyword(infix) { }
+    constexpr SelectorNode(bool infix = false) noexcept: is_infix_keyword(infix) {}
     bool is_infix_keyword;
 };
 
@@ -264,7 +264,7 @@ struct ReferenceNode : Node<ReferenceIndex(AnyExprIndex)> {
 struct AssignmentNode : Node<AssignmentIndex(NamedIdentifierIndex name, AnyExprIndex expr)> {
     static constexpr auto name { "AssignmentNode" };
     enum struct Target { Normal, Environment } target;
-    constexpr AssignmentNode(Target t = Target::Normal): target(t) { }
+    constexpr AssignmentNode(Target t = Target::Normal): target(t) {}
 };
 
 // This isn't a message node due to a nasty quirk in the grammar which was there in the original version.

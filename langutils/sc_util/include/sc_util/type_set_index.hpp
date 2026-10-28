@@ -136,7 +136,7 @@ template <typename Enum, Enum ToCheck, Enum... ElementsInSet> [[nodiscard]] inli
 }
 
 
-struct TypedIndexBase { };
+struct TypedIndexBase {};
 
 template <typename SPEC, typename INDEX_BASE, typename SPEC::EnumSet... ThisSet>
 struct TypedIndexHelper : public INDEX_BASE, public TypedIndexBase {
@@ -173,7 +173,7 @@ public:
     template <EnumType... OtherSet> [[nodiscard]] static constexpr bool is_sub_set_of() {
         return ((details::enum_set_includes<EnumType, ThisSet, OtherSet...>()) && ...);
     }
-    
+
 
     // This does the conversion, it looks complicate, but it is just an `operator T()`.
     // We have to do the conversion check in SFINAE rather than a static assert because we want to delete the function,
@@ -209,7 +209,7 @@ public:
     }
 
     template <EnumType ToRemove> [[nodiscard]] static constexpr auto remove_from_set() {
-        return Remover<ToRemove>::remove(std::make_index_sequence<sizeof...(ThisSet) - 1>{});
+        return Remover<ToRemove>::remove(std::make_index_sequence<sizeof...(ThisSet) - 1> {});
     }
 
 private:
@@ -229,9 +229,7 @@ private:
         return make[alternative](*this);
     }
 
-    template <typename T> struct TypeWrapper {
-        using type = T;
-    };
+    template <typename T> struct TypeWrapper { using type = T; };
 
     // Removes an enum value from the set.
     template <EnumType ToRemove> struct Remover {
@@ -242,9 +240,9 @@ private:
             using R = TypedIndexHelper< //
                 SPEC, //
                 INDEX_BASE, //
-                Possible[Is + offset(std::make_index_sequence<Is> { })]... //
+                Possible[Is + offset(std::make_index_sequence<Is> {})]... //
                 >;
-            return TypeWrapper<R> { };
+            return TypeWrapper<R> {};
         }
 
         template <size_t... Is> [[nodiscard]] static constexpr auto offset(std::index_sequence<Is...>) {

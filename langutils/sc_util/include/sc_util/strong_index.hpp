@@ -8,15 +8,14 @@
 
 namespace sc::util {
 
-template <typename UNDERLYING, typename TAG>//
- struct StrongIndex {
+template <typename UNDERLYING, typename TAG> //
+struct StrongIndex {
     using Tag = TAG;
     using Underlying = UNDERLYING;
     static_assert(std::is_integral_v<UNDERLYING>);
 
-    template<typename T>
-    [[nodiscard]] static constexpr StrongIndex from(T t) {
-        return StrongIndex{static_cast<Underlying>(t)};
+    template <typename T> [[nodiscard]] static constexpr StrongIndex from(T t) {
+        return StrongIndex { static_cast<Underlying>(t) };
     }
 
     constexpr StrongIndex(Underlying u): m_value(u) {}
@@ -102,18 +101,17 @@ template <typename UNDERLYING, typename TAG>
     return { first, last };
 }
 
-template<typename T>
-[[nodiscard]] static constexpr T default_invalid() {
+template <typename T> [[nodiscard]] static constexpr T default_invalid() {
     static_assert(std::is_integral_v<T>);
-    if constexpr(std::is_unsigned_v<T>){
+    if constexpr (std::is_unsigned_v<T>) {
         return std::numeric_limits<T>::max();
     } else {
         return -1;
     }
 }
 
-template <typename UNDERLYING, typename TAG, UNDERLYING INVALID_VALUE = default_invalid<UNDERLYING>()>//
- struct StrongOptionalIndex {
+template <typename UNDERLYING, typename TAG, UNDERLYING INVALID_VALUE = default_invalid<UNDERLYING>()> //
+struct StrongOptionalIndex {
     using Tag = TAG;
     using Underlying = UNDERLYING;
     static_assert(std::is_integral_v<Underlying>);
@@ -157,18 +155,15 @@ template <typename T, typename Y> [[nodiscard]] static constexpr bool is_a_pair(
 namespace std {
 
 
-
-template <typename UNDERLYING, typename TAG>//
+template <typename UNDERLYING, typename TAG> //
 struct hash<sc::util::StrongIndex<UNDERLYING, TAG>> {
     using T = sc::util::StrongIndex<UNDERLYING, TAG>;
     std::size_t operator()(const T& t) const { return std::hash<UNDERLYING> {}(*t); }
 };
 
-template <typename UNDERLYING, typename TAG, UNDERLYING INVALID>//
+template <typename UNDERLYING, typename TAG, UNDERLYING INVALID> //
 struct hash<sc::util::StrongOptionalIndex<UNDERLYING, TAG, INVALID>> {
     using T = sc::util::StrongOptionalIndex<UNDERLYING, TAG, INVALID>;
     std::size_t operator()(const T& t) const { return std::hash<UNDERLYING> {}(*t); }
 };
-
-
 }

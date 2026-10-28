@@ -60,8 +60,7 @@ struct IRCompiler {
 
     // Poisoned classes aren't compiled, so have no graph, and are skipped. Some are still in the hierarchy, e.g., one
     // declared with an invalid slot type, `Foo[bad] {}`.
-    template<typename F>
-    void depth_first_do(F&& f) const {
+    template <typename F> void depth_first_do(F&& f) const {
         for (const auto& g : m_classes.raw())
             if (g)
                 std::invoke(f, *g);

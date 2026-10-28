@@ -14,7 +14,4 @@ struct IntrinsicConstraint {
 };
 
 using IntrinsicConstraints = std::unordered_map<SymSCClassName, IntrinsicConstraint, std::hash<Symbol>>;
-
-
-
 }

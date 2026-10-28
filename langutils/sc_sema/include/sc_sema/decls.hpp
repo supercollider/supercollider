@@ -135,17 +135,17 @@ private:
     ast::Index m_name_index;
     ast::LanguageVersion m_version;
 
-    std::optional<std::pair<SymSCClassName, ast::Index>> m_super { };
-    std::optional<std::pair<SymSCIdentifier, ast::Index>> m_slot_def { };
+    std::optional<std::pair<SymSCClassName, ast::Index>> m_super {};
+    std::optional<std::pair<SymSCIdentifier, ast::Index>> m_slot_def {};
     // Meta classes don't have meta classes.
-    std::optional<SymSCClassName> m_meta_class { };
+    std::optional<SymSCClassName> m_meta_class {};
 
     std::unordered_map<Symbol, Member, std::hash<Symbol>> m_members_map;
-    std::vector<Symbol> m_members_order { };
+    std::vector<Symbol> m_members_order {};
 
     // The method in use, the class's own or an extension, see insert. Each has its own ast_graph.
-    std::unordered_map<Symbol, Method, std::hash<Symbol>> m_methods { };
-    std::unordered_map<Symbol, Method, std::hash<Symbol>> m_overriden_methods { };
+    std::unordered_map<Symbol, Method, std::hash<Symbol>> m_methods {};
+    std::unordered_map<Symbol, Method, std::hash<Symbol>> m_overriden_methods {};
 
     // Selector is the method name (a or a_) and the identifier refers to the member.
     // For reads, these are identical.
@@ -241,9 +241,9 @@ struct ClassDeclarations {
     void poison_all();
 
 private:
-    mutable std::mutex m_insert_lock{};
-    std::unordered_map<SymSCClassName, ClassDeclaration, std::hash<Symbol>> m_class_declarations { };
-    std::unordered_map<SymSCClassName, std::mutex, std::hash<Symbol>> m_class_locks { };
+    mutable std::mutex m_insert_lock {};
+    std::unordered_map<SymSCClassName, ClassDeclaration, std::hash<Symbol>> m_class_declarations {};
+    std::unordered_map<SymSCClassName, std::mutex, std::hash<Symbol>> m_class_locks {};
 };
 
 

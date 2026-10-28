@@ -67,9 +67,7 @@ FileAsFunctionIndex ASTGraph::assign_root(FileAsFunctionIndex i) {
                       m_roots);
 }
 
-template <typename... Ts> struct overload : Ts... {
-    using Ts::operator()...;
-};
+template <typename... Ts> struct overload : Ts... { using Ts::operator()...; };
 template <typename... Ts> overload(Ts... ts) -> overload<Ts...>;
 
 [[nodiscard]] std::optional<std::variant<RegionListIndex, ClassOrExtensionListIndex, FileAsFunctionIndex>>

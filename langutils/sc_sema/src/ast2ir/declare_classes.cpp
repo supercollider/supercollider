@@ -111,7 +111,7 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
     assert(!class_name_str.empty());
     if (class_name_str.substr(0, 5) == "Meta_") {
         cxt.diagnostics(diag::Diagnostic::todo(get_text_info(*ast_graph), get_location(*ast_graph, class_name_i)));
-        return { }; // Hard error here, this class cannot exist.
+        return {}; // Hard error here, this class cannot exist.
     }
     const auto class_name = cxt.symbol_table.get_class_name(class_name_str);
 
@@ -120,7 +120,7 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
         cxt.diagnostics( //
             diag::Diagnostic::duplicate_class(g->text_info(), get_location(*g, i), get_text_info(*ast_graph),
                                               get_location(*ast_graph, class_name_i)));
-        return { };
+        return {};
     }
 
     // the one class with no super.
@@ -147,7 +147,7 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
             // the root object cannot inheirt from anything.
             cxt.diagnostics(diag::Diagnostic::root_object_must_not_inherit(get_text_info(*ast_graph),
                                                                            get_location(*ast_graph, super_name_i)));
-            return { };
+            return {};
         }
     } else if (is_root_class) {
         cxt.inheritance_edges.insert(class_name);
@@ -155,7 +155,7 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
         // The default inheritor must inherit from something (unless it is also the root).
         cxt.diagnostics(diag::Diagnostic::default_inheritor_must_have_super(get_text_info(*ast_graph),
                                                                             get_location(*ast_graph, class_name_i)));
-        return { };
+        return {};
     } else {
         // Location here is just white space.
         class_decl.super(cxt.common_classes.default_inheritor, { *super_name_i });
@@ -198,7 +198,7 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
         const auto member_var = ast_graph->index_to_variant(*member_list_iter);
         std::visit( //
             util::overload {
-                [](auto) { },
+                [](auto) {},
                 [&](ast::DeclareConstListIndex list_i) {
                     for (auto class_var_it = ast_graph->children(list_i).iter(); class_var_it; ++class_var_it) {
                         const auto [accessor_i_t, member_node] = ast_graph->children(*class_var_it);
@@ -229,7 +229,7 @@ std::optional<DeclareClass::Result> DeclareClass::operator()(ast::ClassIndex cla
         const auto member_var = ast_graph->index_to_variant(*member_list_iter);
         std::visit( //
             util::overload {
-                [](auto) { },
+                [](auto) {},
                 [&](ast::DeclareMemberListIndex list_i) {
                     for (auto class_var_it = ast_graph->children(list_i).iter(); class_var_it; ++class_var_it) {
                         const auto [accessor_i_t, member_i] = ast_graph->children(*class_var_it);

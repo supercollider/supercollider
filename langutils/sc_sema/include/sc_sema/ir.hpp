@@ -228,8 +228,8 @@ public:
               typename = std::enable_if<signature_check<AfterChildren>()>, //
               typename = std::enable_if<signature_check<ExitNode>()>>
 
-    void depth_first_traverse(NodeIndex i, EnterNode enter_node, BeforeChildren before_children = { },
-                              AfterChildren after_children = { }, ExitNode exit_node = { }) const;
+    void depth_first_traverse(NodeIndex i, EnterNode enter_node, BeforeChildren before_children = {},
+                              AfterChildren after_children = {}, ExitNode exit_node = {}) const;
 
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -262,7 +262,7 @@ public:
         if (const auto fnd = nodes_to_constants.find(node); fnd != nodes_to_constants.end())
             return { fnd->second };
         else
-            return { };
+            return {};
     }
 
 
@@ -272,10 +272,9 @@ private:
     util::IndexedVector<LocalIndex, LocalVariable> m_locals {};
     util::IndexedVector<MemberIndex, MemberVariable> m_members {};
 
-    std::unordered_map<NodeIndex, ConstExprIndex> nodes_to_constants { };
+    std::unordered_map<NodeIndex, ConstExprIndex> nodes_to_constants {};
     std::variant<std::monostate, SCClass_I, SCAnyExpr_I, SCInterpreted_I> m_roots;
 };
-
 
 
 ////////////////////////////////////////////////////////////////////////////////

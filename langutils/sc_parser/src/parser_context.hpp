@@ -126,7 +126,7 @@ struct ParserContext {
     // A region separator was inserted before the next token
     bool separator_inserted { false };
 
-    std::optional<UnexpectedToken> unexpected_token_error { };
+    std::optional<UnexpectedToken> unexpected_token_error {};
 
     // Empties it, so it is reported once, see error_recovery::report.
     std::optional<UnexpectedToken> consume_error() { return std::exchange(unexpected_token_error, std::nullopt); }

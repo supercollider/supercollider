@@ -223,7 +223,7 @@ std::vector<sc::diag::Diagnostic> IRCompiler::compile_class_library( //
                                                               m_topological_ordering.raw(), ctx.symbol_table);
         for (const auto& chain : cycles) {
             {
-                std::optional<SymSCClassName> missing { };
+                std::optional<SymSCClassName> missing {};
                 for (const auto c : chain) {
                     if (auto decl = ctx.class_declarations.get_unsafe(c)) {
                         decl->poison();

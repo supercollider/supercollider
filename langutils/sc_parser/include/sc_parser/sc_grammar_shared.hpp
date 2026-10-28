@@ -7,7 +7,7 @@
 #include <system_error>
 #include <utility>
 
-namespace sc::ast{
+namespace sc::ast {
 // Used as the semantic value when returning a token from the lexer in the bison parser.
 struct LexerToken {};
 

@@ -29,52 +29,51 @@ void declare_arguments(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast:
     };
 
     for (auto arg_it = ast_graph->children(i).iter(); arg_it; ++arg_it) {
-        std::visit(
-            util::overload {
-                [&](ast::NamedIdentifierIndex i) {
-                    const auto sym = ctx.symbol_table.get_identifier(ast_graph->string(i));
-                    const auto missing_default = ir.create(SCMissing {}, location_of(ir, *ast_graph, { *i }));
-                    const auto nil = ctx.constant_table.register_constexpr({ Nil {} });
-                    const auto arg = ir.create(SCArgumentDeclare { sym, local(sym, { *i }), nil },
-                                               location_of(ir, *ast_graph, { *i }), missing_default);
-                    ir.append(args, arg);
-                    declared(sym, arg);
-                },
-                [&](ast::DeclareArgumentWithDefaultIndex i) {
-                    const auto bracketed = ast_graph->payload(i).bracketed;
-                    const auto [name, default_i] = ast_graph->children(i);
-                    const auto sym = ctx.symbol_table.get_identifier(ast_graph->string(name));
-                    // Compiled before this argument is declared, a function in it can still refer to it, see
-                    // Expr::initialising.
-                    const auto variable_local = local(sym, { *i });
-                    Expr::Initialising variable { sym, expr.current_scope(), location_of(ir, *ast_graph, { *i }),
-                                                  variable_local };
-                    variable.in_frame = true;
-                    expr.initialising.push_back(variable);
-                    // See Expr::in_unbracketed_argument_default.
-                    const bool outer = expr.in_unbracketed_argument_default;
-                    expr.in_unbracketed_argument_default = outer || !bracketed;
-                    const auto default_r = expr(ast::AnyExprIndex { default_i });
-                    expr.in_unbracketed_argument_default = outer;
-                    expr.initialising.pop_back();
-                    const auto prototype = can_be_prototyped(*ast_graph, i, default_r.const_index);
-                    try_name_expr(ir, default_r.ir_node, sym);
-                    const auto arg = ir.create(SCArgumentDeclare { sym, variable_local, prototype },
-                                               location_of(ir, *ast_graph, { *i }), default_r.ir_node);
-                    ir.append(args, arg);
-                    declared(sym, arg);
-                },
-                [&](ast::DeclareArgumentVariadicIndex i) {
-                    const auto [n] = ast_graph->children(i);
-                    const auto sym = ctx.symbol_table.get_identifier(ast_graph->string(n));
-                    const auto missing_default = ir.create(SCMissing {}, location_of(ir, *ast_graph, { *n }));
-                    const auto arg = ir.create(SCArgumentDeclare { sym, local(sym, { *n }), {} },
-                                               location_of(ir, *ast_graph, { *n }), missing_default);
-                    ir.append(var_args, arg);
-                    declared(sym, arg);
-                },
-            },
-            ast_graph->index_to_variant(*arg_it));
+        std::visit(util::overload {
+                       [&](ast::NamedIdentifierIndex i) {
+                           const auto sym = ctx.symbol_table.get_identifier(ast_graph->string(i));
+                           const auto missing_default = ir.create(SCMissing {}, location_of(ir, *ast_graph, { *i }));
+                           const auto nil = ctx.constant_table.register_constexpr({ Nil {} });
+                           const auto arg = ir.create(SCArgumentDeclare { sym, local(sym, { *i }), nil },
+                                                      location_of(ir, *ast_graph, { *i }), missing_default);
+                           ir.append(args, arg);
+                           declared(sym, arg);
+                       },
+                       [&](ast::DeclareArgumentWithDefaultIndex i) {
+                           const auto bracketed = ast_graph->payload(i).bracketed;
+                           const auto [name, default_i] = ast_graph->children(i);
+                           const auto sym = ctx.symbol_table.get_identifier(ast_graph->string(name));
+                           // Compiled before this argument is declared, a function in it can still refer to it, see
+                           // Expr::initialising.
+                           const auto variable_local = local(sym, { *i });
+                           Expr::Initialising variable { sym, expr.current_scope(), location_of(ir, *ast_graph, { *i }),
+                                                         variable_local };
+                           variable.in_frame = true;
+                           expr.initialising.push_back(variable);
+                           // See Expr::in_unbracketed_argument_default.
+                           const bool outer = expr.in_unbracketed_argument_default;
+                           expr.in_unbracketed_argument_default = outer || !bracketed;
+                           const auto default_r = expr(ast::AnyExprIndex { default_i });
+                           expr.in_unbracketed_argument_default = outer;
+                           expr.initialising.pop_back();
+                           const auto prototype = can_be_prototyped(*ast_graph, i, default_r.const_index);
+                           try_name_expr(ir, default_r.ir_node, sym);
+                           const auto arg = ir.create(SCArgumentDeclare { sym, variable_local, prototype },
+                                                      location_of(ir, *ast_graph, { *i }), default_r.ir_node);
+                           ir.append(args, arg);
+                           declared(sym, arg);
+                       },
+                       [&](ast::DeclareArgumentVariadicIndex i) {
+                           const auto [n] = ast_graph->children(i);
+                           const auto sym = ctx.symbol_table.get_identifier(ast_graph->string(n));
+                           const auto missing_default = ir.create(SCMissing {}, location_of(ir, *ast_graph, { *n }));
+                           const auto arg = ir.create(SCArgumentDeclare { sym, local(sym, { *n }), {} },
+                                                      location_of(ir, *ast_graph, { *n }), missing_default);
+                           ir.append(var_args, arg);
+                           declared(sym, arg);
+                       },
+                   },
+                   ast_graph->index_to_variant(*arg_it));
     }
 }
 }

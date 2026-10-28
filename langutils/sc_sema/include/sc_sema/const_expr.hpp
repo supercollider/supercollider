@@ -57,16 +57,16 @@ using ConstStorage = std::variant< //
     ConstExprSymbolArray>;
 
 struct ConstExpression {
-    constexpr ConstExpression(double d): storage(d) { }
-    constexpr ConstExpression(std::int32_t d): storage(d) { }
-    constexpr ConstExpression(char d): storage(d) { }
-    constexpr ConstExpression(bool d): storage(d) { }
-    constexpr ConstExpression(SymSCSymbol d): storage(d) { }
-    constexpr ConstExpression(SymSCString d): storage(d) { }
-    constexpr ConstExpression(SymSCClassName d): storage(d) { }
+    constexpr ConstExpression(double d): storage(d) {}
+    constexpr ConstExpression(std::int32_t d): storage(d) {}
+    constexpr ConstExpression(char d): storage(d) {}
+    constexpr ConstExpression(bool d): storage(d) {}
+    constexpr ConstExpression(SymSCSymbol d): storage(d) {}
+    constexpr ConstExpression(SymSCString d): storage(d) {}
+    constexpr ConstExpression(SymSCClassName d): storage(d) {}
     constexpr ConstExpression(Nil n): storage(n) {}
-    ConstExpression(ConstExprArray d) noexcept: storage(std::move(d)) { }
-    ConstExpression(ConstExprEvent d) noexcept: storage(std::move(d)) { }
+    ConstExpression(ConstExprArray d) noexcept: storage(std::move(d)) {}
+    ConstExpression(ConstExprEvent d) noexcept: storage(std::move(d)) {}
     ConstExpression(ConstExprDoubleArray d) noexcept: storage(std::move(d)) {}
     ConstExpression(ConstExprFloatArray d) noexcept: storage(std::move(d)) {}
     ConstExpression(ConstExprInt32Array d) noexcept: storage(std::move(d)) {}
