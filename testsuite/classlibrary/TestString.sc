@@ -137,6 +137,119 @@ TestString : UnitTest {
 		this.assertEquals(result, expected);
 	}
 
+	test_basename {
+		var paths = [
+			// relative paths
+			"bar.wav" -> "bar.wav", "bar" -> "bar",
+			"bar////" -> "bar", "foo/bar.wav" -> "bar.wav",
+			"foo/bar" -> "bar", "foo////bar" -> "bar",
+			"foo/bar////" -> "bar",
+			// absolute paths
+			"/bar.wav" -> "bar.wav", "///bar" -> "bar",
+			"/foo/bar.wav" -> "bar.wav", "/foo/bar/baz.wav" -> "baz.wav"
+		];
+		paths.do { |x|
+			this.assertEquals(x.key.basename, x.value);
+		}
+	}
+
+	test_basename_withEmptyString {
+		this.assertEquals("".basename, ".");
+	}
+
+	test_basename_withOnlyRootDir {
+		this.assertEquals("/".basename, "/");
+		this.assertEquals("//".basename, "/");
+		this.assertEquals("/////".basename, "/");
+	}
+
+	test_basename_Windows {
+		var paths;
+		if (thisProcess.platform.name == \windows) {
+			paths = [
+				// relative paths
+				"foo\\bar.wav" -> "bar.wav", "foo\\\\bar" -> "bar",
+				"foo\\bar\\\\" -> "bar", "foo\\/\\/bar" -> "bar",
+				"foo\\/\\/" -> "foo", "foo.wav\\/\\/" -> "foo.wav",
+				// absolute paths
+				"C:/foo" -> "foo", "C:\\foo" -> "foo",
+				"C:/bar/foo" -> "foo", "C:/\\/foo\\/\\bar" -> "bar",
+				// only Unix-style root
+				"\\" -> "\\", "\\\\" -> "\\",
+				"\\/\\/" -> "\\", "/\\/\\" -> "/",
+				// only drive
+				"C:/" -> ".", "C:\\" -> ".",
+				"C:/\\/\\" -> ".",
+				// "//foo" and "\\\\foo" are UNC paths!
+				"//foo" -> ".", "//foo/" -> ".",
+				"//foo////" -> ".", "//foo/bar/baz" -> "baz",
+				"\\\\foo" -> ".", "\\\\foo\\" -> ".",
+				"\\\\foo\\\\\\\\" -> ".", "\\\\foo\\bar\\baz" -> "baz"
+			];
+			paths.do { |x|
+				this.assertEquals(x.key.basename, x.value);
+			}
+		}
+	}
+
+	test_dirname {
+		var paths = [
+			// relative paths
+			"foo/bar.wav" -> "foo", "foo/bar" -> "foo",
+			"foo////bar" -> "foo", "foo/bar////" -> "foo",
+			"foo////bar////baz" -> "foo////bar", "bar.wav" -> ".",
+			"bar" -> ".", "bar////" -> ".",
+			// absolute paths
+			"/foo" -> "/", "///foo" -> "/",
+			"/foo/bar" -> "/foo", "///foo///bar" -> "///foo",
+			"/foo/bar/baz" -> "/foo/bar", "///foo//bar///baz" -> "///foo//bar"
+		];
+		paths.do { |x|
+			this.assertEquals(x.key.dirname, x.value);
+		}
+	}
+
+	test_dirname_withEmptyString {
+		this.assertEquals("".dirname, ".");
+	}
+
+	test_dirname_withOnlyRootDir {
+		this.assertEquals("/".dirname, "/");
+		this.assertEquals("/////".dirname, "/");
+	}
+
+	test_dirname_Windows {
+		var paths;
+		if (thisProcess.platform.name == \windows) {
+			paths = [
+				// relative paths
+				"foo\\bar.wav" -> "foo", "foo\\bar" -> "foo",
+				"foo/\\/\\bar" -> "foo", "foo/bar/\\/\\" -> "foo",
+				"foo/\\/\\bar/\\/\\baz" -> "foo/\\/\\bar",
+				"bar.wav/\\/\\" -> ".", "bar/\\/\\" -> ".",
+				// absolute paths
+				"\\foo" -> "\\", "\\\\\\foo" -> "\\",
+				"/\\\\\\foo" -> "/", "\\/foo\\bar" -> "\\/foo",
+				"C:/foo/bar" -> "C:/foo", "C:\\foo\\bar" -> "C:\\foo",
+				"C:\\/\\foo\\/\\bar\\/\\" -> "C:\\/\\foo",
+				// only Unix-style root
+				"\\" -> "\\", "\\\\" -> "\\",
+				"\\/\\/" -> "\\", "/\\/\\" -> "/",
+				// only drive
+				"C:/" -> "C:/", "C:\\" -> "C:\\",
+				"C:/\\/\\" -> "C:/", "C:\\/\\" -> "C:\\",
+				// "//foo" and "\\\\foo" are UNC paths!
+				"//foo" -> "//foo", "//foo/bar" -> "//foo",
+				"//foo////" -> "//foo", "//foo////bar" -> "//foo",
+				"\\\\foo" -> "\\\\foo", "\\\\foo\\bar" -> "\\\\foo",
+				"\\\\foo\\\\\\\\" -> "\\\\foo", "\\\\foo\\\\\\\\bar" -> "\\\\foo"
+			];
+			paths.do { |x|
+				this.assertEquals(x.key.dirname, x.value);
+			}
+		}
+	}
+
 	test_splitext {
 		var result = "/foo/bar/baz.xyz".splitext;
 		var expected = ["/foo/bar/baz", "xyz"];
