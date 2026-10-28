@@ -483,26 +483,31 @@ BodyResult compile_body(Expr& expr, IRGraph& ir, const std::shared_ptr<const ast
         scanner.scan({ *contents });
     BodyContext b { expr, ir, ctx, ast_graph, owner, body, std::move(uses) };
 
-    // Only the last item's value matters, the others only need to be constant.
+    // Only the last item's value matters, the others only need to be constant. Once a `^` is reached, what follows
+    // never runs, so it is compiled but doesn't change the result.
     bool all_constant = true;
     std::optional<ConstExprIndex> last;
     bool explicit_return = false;
     bool encountered_first_expression = false;
     for (auto it = ast_graph->children(contents).iter(); it; ++it) {
         const ast::BlockItemIndex item = *it;
-        explicit_return = false;
         if (const auto declarations = ast_graph->as_a<ast::DeclareVariableListIndex>(item)) {
             // Still declared, so its uses aren't reported as undefined too.
             if (encountered_first_expression && requires_predeclared_variables(expr.version))
                 expr.sink(sc::diag::Diagnostic::declaration_after_expression(
                     get_text_info(*ast_graph), get_location(*ast_graph, { **declarations })));
-            all_constant = declare_variables(b, *declarations) && all_constant;
-            last = std::nullopt;
+            const bool declared_constant = declare_variables(b, *declarations);
+            if (!explicit_return) {
+                all_constant = declared_constant && all_constant;
+                last = std::nullopt;
+            }
             continue;
         }
         encountered_first_expression = true;
         const auto r = expr(ast::AnyExprIndex { *item });
         ir.append(body, r.ir_node);
+        if (explicit_return)
+            continue;
         last = r.const_index;
         // A return isn't a value, but what it returns can be constant.
         if (const auto ret = ir.as_a<SCExplicitReturn_I>(r.ir_node)) {
