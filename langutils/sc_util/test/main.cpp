@@ -67,6 +67,10 @@ enum struct Elements { A, B, C };
 // Helper to define the types.
 using Spec = Spec<std::size_t, Elements, struct Test>;
 
+// Overload set for std::visit.
+template <typename... Ts> struct o : Ts... { using Ts::operator()...; };
+template <class... Ts> o(Ts...) -> o<Ts...>;
+
 // Test/example code, templated on a typed index or an optionally typed index.
 template <template <Elements...> typename IndexType> struct Tester {
     // Define index types that represent only a single element in the set.
@@ -105,10 +109,6 @@ template <template <Elements...> typename IndexType> struct Tester {
         AB_Index ab { a };
         return *ab == 0;
     }());
-
-    template <typename... Ts> struct o : Ts... { using Ts::operator()...; };
-    template <class... Ts> o(Ts...) -> o<Ts...>;
-
 
     static_assert([]() -> bool {
         using V = std::variant<A_Index, B_Index>;
