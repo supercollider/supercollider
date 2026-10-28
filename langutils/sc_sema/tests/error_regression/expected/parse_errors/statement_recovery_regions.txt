@@ -1,0 +1,42 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): poisoned: version 3.16: parse_errors/statement_recovery_regions.scd
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Missing Expression.
+|  parse_errors/statement_recovery_regions.scd:3:17
+|      1 │ // interpreted-version: 3.16
+|      2 │ // An error in a function is recovered from inside it, and the region carries on.
+|      3 │ var f = { |x| x + ; x * 2 };
+|        ┆                 ^ This `+` needs an expression after it...
+|      4 │ f.value(3)
+|
+|  parse_errors/statement_recovery_regions.scd:3:19
+|      1 │ // interpreted-version: 3.16
+|      2 │ // An error in a function is recovered from inside it, and the region carries on.
+|      3 │ var f = { |x| x + ; x * 2 };
+|        ┆                   ^ ...but found `;`.
+|      4 │ f.value(3)
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCFunction (1:1)
+|  |  SCBody (1:1)
+|  |  |  SCVariableDeclare (3:5): f, computed
+|  |  |  |  SCFunction (3:9): f
+|  |  |  |  |  SCArgumentDeclareList (3:12)
+|  |  |  |  |  |  SCArgumentDeclare (3:12): x
+|  |  |  |  |  SCBody (3:9)
+|  |  |  |  |  |  SCExprList (3:15)
+|  |  |  |  |  |  SCMessage (3:21): *
+|  |  |  |  |  |  |  SCRead (3:21): local x, declared (3:12): x
+|  |  |  |  |  |  |  SCPositionalArgs (3:21)
+|  |  |  |  |  |  |  |  SCLiteral (3:25) = 2
+|  |  |  SCMessage (4:1): value
+|  |  |  |  SCRead (4:1): local f, declared (3:5): f = { |x| x + ; x * 2 }
+|  |  |  |  SCPositionalArgs (4:1)
+|  |  |  |  |  SCLiteral (4:9) = 3
+Successfully compiled 15 classes.

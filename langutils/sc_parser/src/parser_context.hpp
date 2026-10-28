@@ -126,7 +126,8 @@ struct ParserContext {
     // The token last emitted, which an error is at.
     std::optional<std::uint32_t> lookahead {};
 
-    // The token that class body recovery last stopped at, so recovering again at it skips it, see error_recovery.
+    // The token that class body or statement recovery last stopped at, so recovering again at it skips it, see
+    // error_recovery.
     std::optional<std::uint32_t> recovered_at {};
 
     // A region separator was inserted before the next token

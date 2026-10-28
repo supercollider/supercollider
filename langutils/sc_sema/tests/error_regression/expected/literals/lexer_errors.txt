@@ -21,8 +21,8 @@ SCClass (4:1): LexerErrors : Object, version 3.16
 |  |  |     10 │     not_ascii { ^é }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (7:22)
-|  |  |  |  SCExprList (7:22)
+|  |  |  SCBody (7:24)
+|  |  |  |  SCExprList (7:24)
 |  |  SCMethod (10:5): poisoned: not_ascii, version 3.16: not_ascii { ^é }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -37,8 +37,8 @@ SCClass (4:1): LexerErrors : Object, version 3.16
 |  |  |     13 │     char_not_ascii { ^$é }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (10:15)
-|  |  |  |  SCExprList (10:15)
+|  |  |  SCBody (10:17)
+|  |  |  |  SCExprList (10:17)
 |  |  SCMethod (13:5): poisoned: char_not_ascii, version 3.16: char_not_ascii { ^$é }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -53,8 +53,8 @@ SCClass (4:1): LexerErrors : Object, version 3.16
 |  |  |     16 │     in_nested_function { |x| if (x) { ^$	 }; ^2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (13:20)
-|  |  |  |  SCExprList (13:20)
+|  |  |  SCBody (13:22)
+|  |  |  |  SCExprList (13:22)
 |  |  SCMethod (16:5): poisoned: in_nested_function, version 3.16: in_nested_function { |x| if (x) { ^$	 }; ^2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -67,6 +67,15 @@ SCClass (4:1): LexerErrors : Object, version 3.16
 |  |  |     17 │ }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (16:24)
-|  |  |  |  SCExprList (16:24)
+|  |  |  SCArgumentDeclareList (16:27)
+|  |  |  |  SCArgumentDeclare (16:27): x
+|  |  |  SCBody (16:30)
+|  |  |  |  SCMessage (16:30): if
+|  |  |  |  |  SCRead (16:34): local x, declared (16:27): x
+|  |  |  |  |  SCPositionalArgs (16:30)
+|  |  |  |  |  |  SCFunction (16:37)
+|  |  |  |  |  |  |  SCBody (16:37)
+|  |  |  |  |  |  |  |  SCExprList (16:39)
+|  |  |  |  SCExplicitReturn (16:46)
+|  |  |  |  |  SCLiteral (16:47) = 2
 Successfully compiled 16 classes.

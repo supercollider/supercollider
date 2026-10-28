@@ -1,0 +1,58 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): Unterminated : Object, version 3.16
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unclosed Bracket.
+|  parse_errors/statement_recovery_unterminated.sc:3:14
+|      1 │ //# VERSION 3.16
+|      2 │ // A method that is never closed, after an error in a statement.
+|      3 │ Unterminated {
+|        ┆              ^ This `{` is never closed.
+|      4 │     // expect: -> 1
+|      5 │     before { ^1 }
+|      6 │     broken { 1 + ; ^2
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (5:5): before, version 3.16: before { ^1 } -> 1
+|  |  |  SCBody (5:14)
+|  |  |  |  SCExplicitReturn (5:14)
+|  |  |  |  |  SCLiteral (5:15) = 1
+|  |  SCMethod (6:5): poisoned: broken, version 3.16: broken { 1 + ; ^2
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unclosed Bracket.
+|  |  |  parse_errors/statement_recovery_unterminated.sc:6:12
+|  |  |      4 │     // expect: -> 1
+|  |  |      5 │     before { ^1 }
+|  |  |      6 │     broken { 1 + ; ^2
+|  |  |        ┆            ^ This `{` is never closed.
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/statement_recovery_unterminated.sc:6:16
+|  |  |      4 │     // expect: -> 1
+|  |  |      5 │     before { ^1 }
+|  |  |      6 │     broken { 1 + ; ^2
+|  |  |        ┆                ^ This `+` needs an expression after it...
+|  |  |
+|  |  |  parse_errors/statement_recovery_unterminated.sc:6:18
+|  |  |      4 │     // expect: -> 1
+|  |  |      5 │     before { ^1 }
+|  |  |      6 │     broken { 1 + ; ^2
+|  |  |        ┆                  ^ ...but found `;`.
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (6:14)
+|  |  |  |  SCExprList (6:14)
+|  |  |  |  SCExplicitReturn (6:20)
+|  |  |  |  |  SCLiteral (6:21) = 2
+Successfully compiled 16 classes.

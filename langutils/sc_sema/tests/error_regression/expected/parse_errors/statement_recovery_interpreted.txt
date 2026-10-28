@@ -1,0 +1,94 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): poisoned: version 3.16: parse_errors/statement_recovery_interpreted.scd
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unexpected Token.
+|  parse_errors/statement_recovery_interpreted.scd:4:5
+|      2 │ // interpreted-function
+|      3 │ var a = 1;
+|      4 │ a = ;
+|        ┆     ^ Expected an expression, but found `;`.
+|      5 │ { 1 + ; 2 }.value;
+|      6 │ a + ; 
+|      7 │ (b = 2; b + ; b);
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Missing Expression.
+|  parse_errors/statement_recovery_interpreted.scd:5:5
+|      3 │ var a = 1;
+|      4 │ a = ;
+|      5 │ { 1 + ; 2 }.value;
+|        ┆     ^ This `+` needs an expression after it...
+|      6 │ a + ; 
+|      7 │ (b = 2; b + ; b);
+|      8 │ a
+|
+|  parse_errors/statement_recovery_interpreted.scd:5:7
+|      3 │ var a = 1;
+|      4 │ a = ;
+|      5 │ { 1 + ; 2 }.value;
+|        ┆       ^ ...but found `;`.
+|      6 │ a + ; 
+|      7 │ (b = 2; b + ; b);
+|      8 │ a
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Missing Expression.
+|  parse_errors/statement_recovery_interpreted.scd:6:3
+|      4 │ a = ;
+|      5 │ { 1 + ; 2 }.value;
+|      6 │ a + ; 
+|        ┆   ^ This `+` needs an expression after it...
+|      7 │ (b = 2; b + ; b);
+|      8 │ a
+|
+|  parse_errors/statement_recovery_interpreted.scd:6:5
+|      4 │ a = ;
+|      5 │ { 1 + ; 2 }.value;
+|      6 │ a + ; 
+|        ┆     ^ ...but found `;`.
+|      7 │ (b = 2; b + ; b);
+|      8 │ a
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Missing Expression.
+|  parse_errors/statement_recovery_interpreted.scd:7:11
+|      5 │ { 1 + ; 2 }.value;
+|      6 │ a + ; 
+|      7 │ (b = 2; b + ; b);
+|        ┆           ^ This `+` needs an expression after it...
+|      8 │ a
+|
+|  parse_errors/statement_recovery_interpreted.scd:7:13
+|      5 │ { 1 + ; 2 }.value;
+|      6 │ a + ; 
+|      7 │ (b = 2; b + ; b);
+|        ┆             ^ ...but found `;`.
+|      8 │ a
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCFunction (1:1)
+|  |  SCBody (1:1)
+|  |  |  SCVariableDeclare (3:5): a, prototype
+|  |  |  |  SCLiteral (3:9) = 1
+|  |  |  SCExprList (4:1)
+|  |  |  SCMessage (5:1): value
+|  |  |  |  SCFunction (5:1)
+|  |  |  |  |  SCBody (5:1)
+|  |  |  |  |  |  SCExprList (5:3)
+|  |  |  |  |  |  SCLiteral (5:9) = 2
+|  |  |  SCExprList (6:1)
+|  |  |  SCExprList (7:1)
+|  |  |  SCRead (8:1): local a = 1, declared (3:5): a = 1
+Successfully compiled 15 classes.

@@ -4,7 +4,7 @@
 IR GRAPH DUMP 
 
 
-SCInterpreted (1:1): version 3.16: parse_errors/missing_semicolon.scd
+SCInterpreted (1:1): poisoned: version 3.16: parse_errors/missing_semicolon.scd
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Warning: Region missing semi-colon.
@@ -142,6 +142,12 @@ SCInterpreted (1:1): version 3.16: parse_errors/missing_semicolon.scd
 |  |  |  |  |  |  SCCollection (17:5): Array = [7, 8]
 |  |  |  |  |  |  |  SCLiteral (17:6) = 7
 |  |  |  |  |  |  |  SCLiteral (18:2) = 8
+|  |  SCRegion (22:1)
+|  |  |  SCFunction (22:1)
+|  |  |  |  SCBody (22:1)
+|  |  |  |  |  SCFunction (22:1)
+|  |  |  |  |  |  SCBody (22:1)
+|  |  |  |  |  |  |  SCExprList (22:3)
 |  |  SCRegion (24:1)
 |  |  |  SCFunction (24:1)
 |  |  |  |  SCBody (24:1)

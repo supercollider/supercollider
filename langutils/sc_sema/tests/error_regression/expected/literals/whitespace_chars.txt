@@ -25,8 +25,8 @@ SCClass (2:1): WhitespaceChars : Object, version 3.16
 |  |  |      7 │     char_carriage_return { ^$
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (4:14)
-|  |  |  |  SCExprList (4:14)
+|  |  |  SCBody (4:16)
+|  |  |  |  SCExprList (4:16)
 |  |  SCMethod (5:5): poisoned: char_newline, version 3.16: char_newline { ^$'\n' }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -41,8 +41,8 @@ SCClass (2:1): WhitespaceChars : Object, version 3.16
 |  |  |      8 │  }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (5:18)
-|  |  |  |  SCExprList (5:18)
+|  |  |  SCBody (5:20)
+|  |  |  |  SCExprList (5:20)
 |  |  SCMethod (7:5): poisoned: char_carriage_return, version 3.16: char_carriage_return { ^$'\n' }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -57,8 +57,8 @@ SCClass (2:1): WhitespaceChars : Object, version 3.16
 |  |  |     10 │  }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (7:26)
-|  |  |  |  SCExprList (7:26)
+|  |  |  SCBody (7:28)
+|  |  |  |  SCExprList (7:28)
 |  |  SCMethod (9:5): poisoned: char_carriage_return_newline, version 3.16: char_carriage_return_newline { ^$'\n' }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -72,6 +72,6 @@ SCClass (2:1): WhitespaceChars : Object, version 3.16
 |  |  |     11 │ }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (9:34)
-|  |  |  |  SCExprList (9:34)
+|  |  |  SCBody (9:36)
+|  |  |  |  SCExprList (9:36)
 Successfully compiled 16 classes.

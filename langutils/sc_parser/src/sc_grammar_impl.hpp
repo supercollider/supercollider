@@ -147,8 +147,10 @@ void report(ParserContext&);
 // Reports a missing semicolon at the end of last_valid, see yylex.
 void region_separator(ParserContext&, sc ::src::SourceCodeRange last_valid);
 void expr(ParserContext&);
-// Reports the error and skips past the curly bracket closing the method, matching open_bracket, returning where it is.
-sc::src::SourceCodeRange method(ParserContext&, sc::src::SourceCodeRange open_bracket);
+// Reports the error and skips the rest of a statement that has one, up to its semicolon or the bracket closing the
+// block, neither of which is skipped. It returns what was dropped, from the start of error, or nothing if the parse
+// can't go on.
+std::optional<sc::src::SourceCodeRange> statement(ParserContext&, sc::src::SourceCodeRange error);
 // Reports the error and skips the rest of a class's item that has one, up to the next method, or the closing curly of
 // the class, returning what was dropped, from the start of error, or nothing if the parse can't go on.
 std::optional<sc::src::SourceCodeRange> class_item(ParserContext&, sc::src::SourceCodeRange error);
@@ -156,6 +158,10 @@ std::optional<sc::src::SourceCodeRange> class_item(ParserContext&, sc::src::Sour
 // keyword, i.e., `var`.
 std::optional<sc::src::SourceCodeRange> member(ParserContext&, sc::src::SourceCodeRange keyword,
                                                sc::src::SourceCodeRange error);
+// Reports the error and skips past the token ending an argument list, returning where it is, or nothing if the parse
+// can't go on. It stops before a closing bracket, e.g., a method's, that comes first.
+std::optional<sc::src::SourceCodeRange> arguments(ParserContext&, sc::src::SourceCodeRange error,
+                                                  sc::lex::TokenType end);
 // Reports the error and skips past the bracket matching open_bracket, returning where it is.
 sc::src::SourceCodeRange bracket(ParserContext&, sc::src::SourceCodeRange open_bracket);
 }

@@ -397,11 +397,6 @@ sc::src::SourceCodeRange bracket(ParserContext& cxt, sc::src::SourceCodeRange op
     return skip_to_match(cxt, open_bracket);
 }
 
-sc::src::SourceCodeRange method(ParserContext& cxt, sc::src::SourceCodeRange open_bracket) {
-    report(cxt);
-    return skip_to_match(cxt, open_bracket);
-}
-
 namespace {
 // Whether a method's name is at i, as the `{` after it shows. A class method's `*` is before it.
 bool starts_method(const ParserContext& cxt, std::uint32_t i) {
@@ -460,6 +455,68 @@ std::optional<sc::src::SourceCodeRange> skip_class_item(ParserContext& cxt, sc::
     const auto end = i > 0 ? cxt.tokens[i - 1].range.end : error.begin;
     return sc::src::SourceCodeRange { error.begin, error.begin < end ? end : error.begin };
 }
+}
+
+std::optional<sc::src::SourceCodeRange> arguments(ParserContext& cxt, sc::src::SourceCodeRange error,
+                                                  sc::lex::TokenType end) {
+    using T = sc::lex::TokenType;
+    report(cxt);
+    const auto is_end = [&](std::uint32_t i) {
+        return cxt.tokens[i].token == T::EndOfFile || sc::lex::is_close_bracket(cxt.tokens[i].token);
+    };
+
+    // Erroring again where it last stopped, so the token must go for it to progress.
+    const auto from = cxt.lookahead.value_or(cxt.next);
+    auto i = from;
+    if (cxt.recovered_at == from) {
+        if (is_end(from))
+            return std::nullopt;
+        i = skip_one(cxt, from);
+    }
+    while (!is_end(i) && cxt.tokens[i].token != end)
+        i = skip_one(cxt, i);
+
+    cxt.recovered_at = i;
+    cxt.separator_inserted = false;
+    if (is_end(i)) {
+        cxt.next = i;
+        return i > 0 ? cxt.tokens[i - 1].range : error;
+    }
+    cxt.next = i + 1;
+    return cxt.tokens[i].range;
+}
+
+std::optional<sc::src::SourceCodeRange> statement(ParserContext& cxt, sc::src::SourceCodeRange error) {
+    using T = sc::lex::TokenType;
+    report(cxt);
+    const auto from = cxt.lookahead.value_or(cxt.next);
+    // The bracket closing the block the statement is in, not one whose opening bracket was in the statement, e.g., the
+    // `]` of `[1 2]`, which is skipped.
+    const auto is_end = [&](std::uint32_t i) {
+        const auto& token = cxt.tokens[i];
+        if (token.token == T::EndOfFile)
+            return true;
+        if (!sc::lex::is_close_bracket(token.token))
+            return false;
+        const auto open = token.matching();
+        return !open || cxt.tokens[*open].range.begin < error.begin;
+    };
+
+    // Erroring again where it last stopped, so the token must go for it to progress.
+    auto i = from;
+    if (cxt.recovered_at == from) {
+        if (is_end(from))
+            return std::nullopt;
+        i = skip_one(cxt, from);
+    }
+    while (!is_end(i) && cxt.tokens[i].token != T::SemiColon)
+        i = skip_one(cxt, i);
+
+    cxt.recovered_at = i;
+    cxt.next = i;
+    cxt.separator_inserted = false;
+    const auto end = i > 0 ? cxt.tokens[i - 1].range.end : error.begin;
+    return sc::src::SourceCodeRange { error.begin, error.begin < end ? end : error.begin };
 }
 
 std::optional<sc::src::SourceCodeRange> class_item(ParserContext& cxt, sc::src::SourceCodeRange error) {

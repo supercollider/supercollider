@@ -1,0 +1,173 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): StatementRecovery : Object, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (6:5): poisoned: middle, version 3.16: middle { var a = 1; a = ; ^3 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/statement_recovery.sc:6:29
+|  |  |      4 │ StatementRecovery {
+|  |  |      5 │     // expect: poisoned
+|  |  |      6 │     middle { var a = 1; a = ; ^3 }
+|  |  |        ┆                             ^ Expected an expression, but found `;`.
+|  |  |      7 │     // expect: poisoned
+|  |  |      8 │     first { 1 + ; ^2 }
+|  |  |      9 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (6:14)
+|  |  |  |  SCVariableDeclare (6:18): a, prototype
+|  |  |  |  |  SCLiteral (6:22) = 1
+|  |  |  |  SCExprList (6:25)
+|  |  |  |  SCExplicitReturn (6:31)
+|  |  |  |  |  SCLiteral (6:32) = 3
+|  |  SCMethod (8:5): poisoned: first, version 3.16: first { 1 + ; ^2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/statement_recovery.sc:8:15
+|  |  |      6 │     middle { var a = 1; a = ; ^3 }
+|  |  |      7 │     // expect: poisoned
+|  |  |      8 │     first { 1 + ; ^2 }
+|  |  |        ┆               ^ This `+` needs an expression after it...
+|  |  |      9 │     // expect: poisoned
+|  |  |     10 │     last { var a = 4; ^a; 1 + }
+|  |  |     11 │     // expect: poisoned
+|  |  |
+|  |  |  parse_errors/statement_recovery.sc:8:17
+|  |  |      6 │     middle { var a = 1; a = ; ^3 }
+|  |  |      7 │     // expect: poisoned
+|  |  |      8 │     first { 1 + ; ^2 }
+|  |  |        ┆                 ^ ...but found `;`.
+|  |  |      9 │     // expect: poisoned
+|  |  |     10 │     last { var a = 4; ^a; 1 + }
+|  |  |     11 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (8:13)
+|  |  |  |  SCExprList (8:13)
+|  |  |  |  SCExplicitReturn (8:19)
+|  |  |  |  |  SCLiteral (8:20) = 2
+|  |  SCMethod (10:5): poisoned: last, version 3.16: last { var a = 4; ^a; 1 + }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/statement_recovery.sc:10:29
+|  |  |      8 │     first { 1 + ; ^2 }
+|  |  |      9 │     // expect: poisoned
+|  |  |     10 │     last { var a = 4; ^a; 1 + }
+|  |  |        ┆                             ^ This `+` needs an expression after it...
+|  |  |     11 │     // expect: poisoned
+|  |  |     12 │     nested { |x| if (x) { 1 + ; ^1 }; ^2 }
+|  |  |     13 │     // expect: poisoned
+|  |  |
+|  |  |  parse_errors/statement_recovery.sc:10:31
+|  |  |      8 │     first { 1 + ; ^2 }
+|  |  |      9 │     // expect: poisoned
+|  |  |     10 │     last { var a = 4; ^a; 1 + }
+|  |  |        ┆                               ^ ...but found `}`.
+|  |  |     11 │     // expect: poisoned
+|  |  |     12 │     nested { |x| if (x) { 1 + ; ^1 }; ^2 }
+|  |  |     13 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (10:12)
+|  |  |  |  SCVariableDeclare (10:16): a, prototype
+|  |  |  |  |  SCLiteral (10:20) = 4
+|  |  |  |  SCExplicitReturn (10:23)
+|  |  |  |  |  SCRead (10:24): local a = 4, declared (10:16): a = 4
+|  |  |  |  SCExprList (10:27)
+|  |  SCMethod (12:5): poisoned: nested, version 3.16: nested { |x| if (x) { 1 + ; ^1 }; ^2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/statement_recovery.sc:12:29
+|  |  |     10 │     last { var a = 4; ^a; 1 + }
+|  |  |     11 │     // expect: poisoned
+|  |  |     12 │     nested { |x| if (x) { 1 + ; ^1 }; ^2 }
+|  |  |        ┆                             ^ This `+` needs an expression after it...
+|  |  |     13 │     // expect: poisoned
+|  |  |     14 │     in_function { var f = { 2 * ; 3 }; ^f.value }
+|  |  |     15 │     // expect: poisoned
+|  |  |
+|  |  |  parse_errors/statement_recovery.sc:12:31
+|  |  |     10 │     last { var a = 4; ^a; 1 + }
+|  |  |     11 │     // expect: poisoned
+|  |  |     12 │     nested { |x| if (x) { 1 + ; ^1 }; ^2 }
+|  |  |        ┆                               ^ ...but found `;`.
+|  |  |     13 │     // expect: poisoned
+|  |  |     14 │     in_function { var f = { 2 * ; 3 }; ^f.value }
+|  |  |     15 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (12:15)
+|  |  |  |  SCArgumentDeclare (12:15): x
+|  |  |  SCBody (12:18)
+|  |  |  |  SCMessage (12:18): if
+|  |  |  |  |  SCRead (12:22): local x, declared (12:15): x
+|  |  |  |  |  SCPositionalArgs (12:18)
+|  |  |  |  |  |  SCFunction (12:25)
+|  |  |  |  |  |  |  SCBody (12:25)
+|  |  |  |  |  |  |  |  SCExprList (12:27)
+|  |  |  |  |  |  |  |  SCExplicitReturn (12:33)
+|  |  |  |  |  |  |  |  |  SCLiteral (12:34) = 1
+|  |  |  |  SCExplicitReturn (12:39)
+|  |  |  |  |  SCLiteral (12:40) = 2
+|  |  SCMethod (14:5): poisoned: in_function, version 3.16: in_function { var f = { 2 * ; 3 }; ^f.value }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/statement_recovery.sc:14:31
+|  |  |     12 │     nested { |x| if (x) { 1 + ; ^1 }; ^2 }
+|  |  |     13 │     // expect: poisoned
+|  |  |     14 │     in_function { var f = { 2 * ; 3 }; ^f.value }
+|  |  |        ┆                               ^ This `*` needs an expression after it...
+|  |  |     15 │     // expect: poisoned
+|  |  |     16 │     only { ) }
+|  |  |     17 │     // expect: -> 5
+|  |  |
+|  |  |  parse_errors/statement_recovery.sc:14:33
+|  |  |     12 │     nested { |x| if (x) { 1 + ; ^1 }; ^2 }
+|  |  |     13 │     // expect: poisoned
+|  |  |     14 │     in_function { var f = { 2 * ; 3 }; ^f.value }
+|  |  |        ┆                                 ^ ...but found `;`.
+|  |  |     15 │     // expect: poisoned
+|  |  |     16 │     only { ) }
+|  |  |     17 │     // expect: -> 5
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (14:19)
+|  |  |  |  SCVariableDeclare (14:23): f, computed
+|  |  |  |  |  SCFunction (14:27): f
+|  |  |  |  |  |  SCBody (14:27)
+|  |  |  |  |  |  |  SCExprList (14:29)
+|  |  |  |  |  |  |  SCLiteral (14:35) = 3
+|  |  |  |  SCExplicitReturn (14:40)
+|  |  |  |  |  SCMessage (14:41): value
+|  |  |  |  |  |  SCRead (14:41): local f, declared (14:23): f = { 2 * ; 3 }
+|  |  SCMethod (16:5): poisoned: only, version 3.16: only { ) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unmatched Bracket.
+|  |  |  parse_errors/statement_recovery.sc:16:12
+|  |  |     14 │     in_function { var f = { 2 * ; 3 }; ^f.value }
+|  |  |     15 │     // expect: poisoned
+|  |  |     16 │     only { ) }
+|  |  |        ┆            ^ This `)` has no opening bracket.
+|  |  |     17 │     // expect: -> 5
+|  |  |     18 │     after { ^5 }
+|  |  |     19 │ }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (16:14)
+|  |  SCMethod (18:5): after, version 3.16: after { ^5 } -> 5
+|  |  |  SCBody (18:13)
+|  |  |  |  SCExplicitReturn (18:13)
+|  |  |  |  |  SCLiteral (18:14) = 5
+Successfully compiled 16 classes.

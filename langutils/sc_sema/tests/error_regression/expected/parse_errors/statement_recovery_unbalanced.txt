@@ -1,0 +1,122 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): StatementUnbalanced : Object, version 3.16
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (5:5): poisoned: stray_closer, version 3.16: stray_closer { ] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unmatched Bracket.
+|  |  |  parse_errors/statement_recovery_unbalanced.sc:5:20
+|  |  |      3 │ StatementUnbalanced {
+|  |  |      4 │     // expect: poisoned
+|  |  |      5 │     stray_closer { ] }
+|  |  |        ┆                    ^ This `]` has no opening bracket.
+|  |  |      6 │ }
+|  |  |      7 │ 
+|  |  |      8 │ StatementUnbalancedCall {
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (5:22)
+SCClass (8:1): StatementUnbalancedCall : Object, version 3.16
+|  SCMemberList (8:1)
+|  SCMethodList (8:1)
+|  |  SCMethod (10:5): poisoned: mismatched_in_call, version 3.16: mismatched_in_call { foo(1 ] 2); ^3 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unmatched Bracket.
+|  |  |  parse_errors/statement_recovery_unbalanced.sc:10:32
+|  |  |      8 │ StatementUnbalancedCall {
+|  |  |      9 │     // expect: poisoned
+|  |  |     10 │     mismatched_in_call { foo(1 ] 2); ^3 }
+|  |  |        ┆                                ^ This `]` has no opening bracket.
+|  |  |     11 │ }
+|  |  |     12 │ 
+|  |  |     13 │ StatementUnbalancedOpen {
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/statement_recovery_unbalanced.sc:10:30
+|  |  |      8 │ StatementUnbalancedCall {
+|  |  |      9 │     // expect: poisoned
+|  |  |     10 │     mismatched_in_call { foo(1 ] 2); ^3 }
+|  |  |        ┆                              ^ This ends an expression...
+|  |  |     11 │ }
+|  |  |     12 │ 
+|  |  |     13 │ StatementUnbalancedOpen {
+|  |  |
+|  |  |  parse_errors/statement_recovery_unbalanced.sc:10:34
+|  |  |      8 │ StatementUnbalancedCall {
+|  |  |      9 │     // expect: poisoned
+|  |  |     10 │     mismatched_in_call { foo(1 ] 2); ^3 }
+|  |  |        ┆                                  ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `,`.
+|  |  |     11 │ }
+|  |  |     12 │ 
+|  |  |     13 │ StatementUnbalancedOpen {
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (10:26)
+|  |  |  |  SCExprList (10:26)
+|  |  |  |  SCExplicitReturn (10:38)
+|  |  |  |  |  SCLiteral (10:39) = 3
+SCClass (13:1): StatementUnbalancedOpen : Object, version 3.16
+|  SCMemberList (13:1)
+|  SCMethodList (13:1)
+|  |  SCMethod (15:5): poisoned: unclosed_in_array, version 3.16: unclosed_in_array { 1 + ; [1, 2; ^5 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/statement_recovery_unbalanced.sc:15:27
+|  |  |     13 │ StatementUnbalancedOpen {
+|  |  |     14 │     // expect: poisoned
+|  |  |     15 │     unclosed_in_array { 1 + ; [1, 2; ^5 }
+|  |  |        ┆                           ^ This `+` needs an expression after it...
+|  |  |     16 │ }
+|  |  |
+|  |  |  parse_errors/statement_recovery_unbalanced.sc:15:29
+|  |  |     13 │ StatementUnbalancedOpen {
+|  |  |     14 │     // expect: poisoned
+|  |  |     15 │     unclosed_in_array { 1 + ; [1, 2; ^5 }
+|  |  |        ┆                             ^ ...but found `;`.
+|  |  |     16 │ }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/statement_recovery_unbalanced.sc:15:38
+|  |  |     13 │ StatementUnbalancedOpen {
+|  |  |     14 │     // expect: poisoned
+|  |  |     15 │     unclosed_in_array { 1 + ; [1, 2; ^5 }
+|  |  |        ┆                                      ^ Expected an expression, `]`, `,`, or `:`, but found `^`.
+|  |  |     16 │ }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unclosed Bracket.
+|  |  |  parse_errors/statement_recovery_unbalanced.sc:15:31
+|  |  |     13 │ StatementUnbalancedOpen {
+|  |  |     14 │     // expect: poisoned
+|  |  |     15 │     unclosed_in_array { 1 + ; [1, 2; ^5 }
+|  |  |        ┆                               ^ This `[` isn't closed...
+|  |  |     16 │ }
+|  |  |
+|  |  |  parse_errors/statement_recovery_unbalanced.sc:15:41
+|  |  |     13 │ StatementUnbalancedOpen {
+|  |  |     14 │     // expect: poisoned
+|  |  |     15 │     unclosed_in_array { 1 + ; [1, 2; ^5 }
+|  |  |        ┆                                         ^ ...before this `}`, which closes the bracket around it.
+|  |  |     16 │ }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (15:25)
+|  |  |  |  SCExprList (15:25)
+|  |  |  |  SCExprList (15:31)
+Successfully compiled 18 classes.

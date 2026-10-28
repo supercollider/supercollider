@@ -125,6 +125,10 @@ using namespace sc::ast;
 %token <v_LexerToken> WHILE
 %token <v_LexerToken> LEXER_ERROR
 
+// An empty argument list loses to an error, so an error as a block's first thing is recovered from, see
+// argument_declarations.opt.
+%precedence EMPTY_ARGUMENTS
+%precedence error
 %left  <v_LexerToken> COLON
 %right <v_LexerToken> EQUALSSIGN
 %left  <v_LexerToken> BINOP KEYBINOP MINUS LESSTHAN GREATERTHAN MULTIPLY ADD PIPE READWRITEVAR
@@ -467,17 +471,6 @@ method.base
 	| method.name[name] OPENCURLY argument_declarations.opt[args] PRIMITIVENAME[prim] semicolon.opt CLOSECURLY
 		{ $$ = cxt.create(Method{}, @$, $name, $args, cxt.create(PrimitiveIdentifier{}, @prim), cxt.create(BlockContentsList{}, @5)); }
 	
-	| method.name[name] OPENCURLY[o] error[e] 
-		{
-			// Skips past the method's closing curly. The method is kept, with the error as its body, so it is
-			// poisoned rather than lost. Its arguments, if any, were discarded with the error.
-			const auto close = error_recovery::method(cxt, @o);
-			@$ = range(@name, close);
-			const auto body = cxt.create(BlockContentsList{}, range(@o, close), cxt.create_error(range(@o, close), @e));
-			$$ = cxt.create(Method{}, @$, $name, cxt.create(DeclareArgumentList{}, @o), cxt.create(Missing{}, @o), body);
-			yyclearin;
-			yyerrok; // Recovered at the closing curly, so report the next error.
-		}
 	;
 
 method
@@ -566,6 +559,17 @@ block.contents
 block.contents.item
 	: expr { $$ = $1; }
 	| variable_declarations { $$ = $1; }
+	| error[e]
+		{
+			// Skips to the statement's `;`, or the bracket closing the block, so the statements around it are kept.
+			const auto dropped = error_recovery::statement(cxt, @e);
+			if (!dropped)
+				YYABORT;
+			@$ = *dropped;
+			$$ = cxt.create_error(*dropped, @e);
+			yyclearin;
+			yyerrok; // Recovered at the next statement, so report its error.
+		}
 	;
 
 
@@ -1043,6 +1047,26 @@ argument_declarations
 				cxt.create(DeclareArgumentVariadicNode{}, @vars, $vars)
 			); 
 		}
+	| ARG error[e]
+		{
+			// Skips past the `;` ending the list. The arguments are discarded with the error.
+			const auto close = error_recovery::arguments(cxt, @e, sc::lex::TokenType::SemiColon);
+			if (!close)
+				YYABORT;
+			$$ = cxt.create(DeclareArgumentList{}, range(@ARG, *close));
+			yyclearin;
+			yyerrok; // Recovered at the end of the list, so report the next error.
+		}
+	| PIPE error[e]
+		{
+			// Skips past the `|` ending the list. The arguments are discarded with the error.
+			const auto close = error_recovery::arguments(cxt, @e, sc::lex::TokenType::Pipe);
+			if (!close)
+				YYABORT;
+			$$ = cxt.create(DeclareArgumentList{}, range(@PIPE, *close));
+			yyclearin;
+			yyerrok; // Recovered at the end of the list, so report the next error.
+		}
 	| PIPE PIPE 
 		{ $$ = cxt.create(DeclareArgumentList{}, @$); }
 	| PIPE argument_declarations.pipelist comma.opt PIPE 
@@ -1068,8 +1092,11 @@ argument_declarations
 	;
 
 argument_declarations.opt
-	: %empty { $$ = cxt.create(DeclareArgumentList{}, @$); }
+	: %empty %prec EMPTY_ARGUMENTS { $$ = cxt.create(DeclareArgumentList{}, @$); }
 	| argument_declarations { $$ = $1; }
+	// An error as the first thing in a block, which no state before the arguments can recover from. It is recovered
+	// from as the first statement, with the lookahead still there, see block.contents.item.
+	| error { $$ = cxt.create(DeclareArgumentList{}, @$); }
 	;
 
 

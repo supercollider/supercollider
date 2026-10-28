@@ -62,8 +62,13 @@ SCClass (9:1): Foo : Object
 |  |  |     18 │ }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (15:22)
-|  |  |  |  SCExprList (15:22)
+|  |  |  SCArgumentDeclareList (15:25)
+|  |  |  |  SCArgumentDeclare (15:25): a
+|  |  |  |  SCArgumentDeclare (15:28): b
+|  |  |  SCBody (15:31)
+|  |  |  |  SCExprList (15:31)
+|  |  |  |  SCExplicitReturn (15:41)
+|  |  |  |  |  SCRead (15:42): local a, declared (15:25): a
 |  |  SCMethod (17:2): fine: fine { ^1 } -> 1
 |  |  |  SCBody (17:9)
 |  |  |  |  SCExplicitReturn (17:9)

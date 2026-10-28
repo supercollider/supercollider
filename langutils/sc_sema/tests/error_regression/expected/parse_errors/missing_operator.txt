@@ -30,8 +30,8 @@ SCClass (4:1): MissingOperator : Object, version 3.16
 |  |  |     10 │     names { |a, b| ^a b }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (7:13)
-|  |  |  |  SCExprList (7:13)
+|  |  |  SCBody (7:15)
+|  |  |  |  SCExprList (7:15)
 |  |  SCMethod (10:5): poisoned: names, version 3.16: names { |a, b| ^a b }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -55,8 +55,11 @@ SCClass (4:1): MissingOperator : Object, version 3.16
 |  |  |     13 │     in_array { ^[1 2] }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (10:11)
-|  |  |  |  SCExprList (10:11)
+|  |  |  SCArgumentDeclareList (10:14)
+|  |  |  |  SCArgumentDeclare (10:14): a
+|  |  |  |  SCArgumentDeclare (10:17): b
+|  |  |  SCBody (10:20)
+|  |  |  |  SCExprList (10:20)
 |  |  SCMethod (13:5): poisoned: in_array, version 3.16: in_array { ^[1 2] }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -80,8 +83,8 @@ SCClass (4:1): MissingOperator : Object, version 3.16
 |  |  |     16 │     in_arguments { ^this.foo(1 2) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (13:14)
-|  |  |  |  SCExprList (13:14)
+|  |  |  SCBody (13:16)
+|  |  |  |  SCExprList (13:16)
 |  |  SCMethod (16:5): poisoned: in_arguments, version 3.16: in_arguments { ^this.foo(1 2) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -105,8 +108,8 @@ SCClass (4:1): MissingOperator : Object, version 3.16
 |  |  |     19 │     in_brackets { ^(1 2) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (16:18)
-|  |  |  |  SCExprList (16:18)
+|  |  |  SCBody (16:20)
+|  |  |  |  SCExprList (16:20)
 |  |  SCMethod (19:5): poisoned: in_brackets, version 3.16: in_brackets { ^(1 2) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -183,8 +186,8 @@ SCClass (4:1): MissingOperator : Object, version 3.16
 |  |  |     28 │     // expect-error: Missing Operator.
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (25:16)
-|  |  |  |  SCExprList (25:16)
+|  |  |  SCBody (25:18)
+|  |  |  |  SCExprList (25:18)
 |  |  SCMethod (29:5): poisoned: multiline, version 3.16: multiline { ^1 "first'\n'second" }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -209,8 +212,8 @@ SCClass (4:1): MissingOperator : Object, version 3.16
 |  |  |     33 │     in_nested_function { |x| if (x) { ^1 2 }; ^2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (29:15)
-|  |  |  |  SCExprList (29:15)
+|  |  |  SCBody (29:17)
+|  |  |  |  SCExprList (29:17)
 |  |  SCMethod (33:5): poisoned: in_nested_function, version 3.16: in_nested_function { |x| if (x) { ^1 2 }; ^2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -234,8 +237,17 @@ SCClass (4:1): MissingOperator : Object, version 3.16
 |  |  |     36 │     // expect-error: Missing Expression.
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (33:24)
-|  |  |  |  SCExprList (33:24)
+|  |  |  SCArgumentDeclareList (33:27)
+|  |  |  |  SCArgumentDeclare (33:27): x
+|  |  |  SCBody (33:30)
+|  |  |  |  SCMessage (33:30): if
+|  |  |  |  |  SCRead (33:34): local x, declared (33:27): x
+|  |  |  |  |  SCPositionalArgs (33:30)
+|  |  |  |  |  |  SCFunction (33:37)
+|  |  |  |  |  |  |  SCBody (33:37)
+|  |  |  |  |  |  |  |  SCExprList (33:39)
+|  |  |  |  SCExplicitReturn (33:47)
+|  |  |  |  |  SCLiteral (33:48) = 2
 |  |  SCMethod (37:5): poisoned: operand_at_end, version 3.16: operand_at_end { ^1 + }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -259,8 +271,8 @@ SCClass (4:1): MissingOperator : Object, version 3.16
 |  |  |     40 │     operand_in_brackets { ^(1 * ) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (37:20)
-|  |  |  |  SCExprList (37:20)
+|  |  |  SCBody (37:22)
+|  |  |  |  SCExprList (37:22)
 |  |  SCMethod (40:5): poisoned: operand_in_brackets, version 3.16: operand_in_brackets { ^(1 * ) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -310,8 +322,8 @@ SCClass (4:1): MissingOperator : Object, version 3.16
 |  |  |     46 │     // expect-error: Missing Expression.
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (43:22)
-|  |  |  |  SCExprList (43:22)
+|  |  |  SCBody (43:24)
+|  |  |  |  SCExprList (43:24)
 |  |  SCMethod (47:5): poisoned: keyword_argument, version 3.16: keyword_argument { ^this.foo(a: ) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -335,8 +347,8 @@ SCClass (4:1): MissingOperator : Object, version 3.16
 |  |  |     50 │     operand_in_nested_function { |x| if (x) { ^1 - }; ^2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (47:22)
-|  |  |  |  SCExprList (47:22)
+|  |  |  SCBody (47:24)
+|  |  |  |  SCExprList (47:24)
 |  |  SCMethod (50:5): poisoned: operand_in_nested_function, version 3.16: operand_in_nested_function { |x| if (x) { ^1 - }; ^2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -360,8 +372,17 @@ SCClass (4:1): MissingOperator : Object, version 3.16
 |  |  |     53 │     // expect: poisoned
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (50:32)
-|  |  |  |  SCExprList (50:32)
+|  |  |  SCArgumentDeclareList (50:35)
+|  |  |  |  SCArgumentDeclare (50:35): x
+|  |  |  SCBody (50:38)
+|  |  |  |  SCMessage (50:38): if
+|  |  |  |  |  SCRead (50:42): local x, declared (50:35): x
+|  |  |  |  |  SCPositionalArgs (50:38)
+|  |  |  |  |  |  SCFunction (50:45)
+|  |  |  |  |  |  |  SCBody (50:45)
+|  |  |  |  |  |  |  |  SCExprList (50:47)
+|  |  |  |  SCExplicitReturn (50:55)
+|  |  |  |  |  SCLiteral (50:56) = 2
 |  |  SCMethod (55:5): poisoned: after_arguments, version 3.16: after_arguments { ^{ |a| * } }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -374,6 +395,11 @@ SCClass (4:1): MissingOperator : Object, version 3.16
 |  |  |     56 │ }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (55:21)
-|  |  |  |  SCExprList (55:21)
+|  |  |  SCBody (55:23)
+|  |  |  |  SCExplicitReturn (55:23)
+|  |  |  |  |  SCFunction (55:24)
+|  |  |  |  |  |  SCArgumentDeclareList (55:27)
+|  |  |  |  |  |  |  SCArgumentDeclare (55:27): a
+|  |  |  |  |  |  SCBody (55:24)
+|  |  |  |  |  |  |  SCExprList (55:30)
 Successfully compiled 16 classes.

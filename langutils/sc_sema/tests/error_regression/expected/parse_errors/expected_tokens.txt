@@ -56,8 +56,10 @@ SCClass (4:1): ExpectedTokens : Object, version 3.16
 |  |  |     18 │     in_nested_function { |x| if (x) { ^(1 = x) }; ^2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (14:15)
-|  |  |  |  SCExprList (14:15)
+|  |  |  SCBody (14:17)
+|  |  |  |  SCExprList (14:17)
+|  |  |  |  SCExplicitReturn (15:9)
+|  |  |  |  |  SCLiteral (15:10) = 1
 |  |  SCMethod (18:5): poisoned: in_nested_function, version 3.16: in_nested_function { |x| if (x) { ^(1 = x) }; ^2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
