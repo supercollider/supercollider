@@ -13,7 +13,7 @@ namespace {
 // Functions
 ////////////////////////////////////////////////////////////////////////////////
 
-ir::OptionalSymSCSymbol function_name(const ClassLibrary& library, const ir::IRGraph& g, backend::FrameOwner_I owner) {
+ir::OptionalSymSCSymbol function_name(const ir::IRGraph& g, backend::FrameOwner_I owner) {
     if (const auto method = g.as_a<ir::SCMethod_I>(owner))
         return ir::SymSCSymbol::from(g.payload(*method).selector.value);
     if (const auto function = g.as_a<ir::SCFunction_I>(owner))
@@ -225,7 +225,7 @@ CompiledGraph finish(const ClassLibrary& library, EmittedGraph&& emitted) {
         const auto& frame = frames.frames[frame_index];
         (void)out.functions.push_back({
             g.location(frame.owner),
-            function_name(library, g, frame.owner),
+            function_name(g, frame.owner),
             frame.parent ? function_of_frame[backend::FrameIndex { *frame.parent }]
                          : backend::lir::OptionalFunctionIndex {},
             frame.has_this,

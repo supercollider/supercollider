@@ -181,11 +181,16 @@ std::unique_ptr<ClassLibrary> compile_class_library(const ClassFiles& files, std
         boost::asio::thread_pool pool { num_threads };
         for (const auto file : files.indices())
             boost::asio::post(pool, [&, file] {
-                const auto& [path, module] = files[file];
-                if (auto text = read_file(path))
-                    parsed.parse(file, { make_class_file_text(std::move(*text), path), module });
-                else
-                    parsed.logs[file] << "Could not open file" << path << "\n";
+                // An exception leaving a worker thread would terminate the process.
+                try {
+                    const auto& [path, module] = files[file];
+                    if (auto text = read_file(path))
+                        parsed.parse(file, { make_class_file_text(std::move(*text), path), module });
+                    else
+                        parsed.logs[file] << "Could not open file " << path << "\n";
+                } catch (const std::exception& e) {
+                    parsed.logs[file] << "Failed to read or parse " << files[file].path << ": " << e.what() << "\n";
+                }
             });
         pool.join();
     }
@@ -201,7 +206,11 @@ compile_class_library(const util::IndexedVector<ir::SourceEntryIndex, ClassFileS
     {
         boost::asio::thread_pool pool { num_threads };
         for (const auto i : sources.indices())
-            boost::asio::post(pool, [&, i] { parsed.parse(i, sources[i]); });
+            boost::asio::post(pool, [&, i] {
+                try {
+                    parsed.parse(i, sources[i]);
+                } catch (const std::exception& e) { parsed.logs[i] << "Failed to parse: " << e.what() << "\n"; }
+            });
         pool.join();
     }
     times.parse = seconds_since(parse_start);

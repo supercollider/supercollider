@@ -2,6 +2,7 @@
 #include "sc_lexer/tokens.hpp"
 #include "sc_source/source_utils.hpp"
 #include <filesystem>
+#include <iomanip>
 #include <sstream>
 
 
@@ -28,8 +29,11 @@ std::string diagnosticToString(Severity type, const char* generalDescription,
 
     ss << '\n';
 
-    size_t i { 0 };
+    bool first { true };
     for (const auto& loc : locations) {
+        if (!first)
+            ss << "\n";
+        first = false;
         const auto filepath = loc.text_info->file_path;
         const auto txt = loc.text_info->source.as_string().c_str();
         const auto txt_len = loc.text_info->source.as_string().size();
@@ -45,7 +49,9 @@ std::string diagnosticToString(Severity type, const char* generalDescription,
         if (filepath && relative_to) {
             const auto relative =
                 std::filesystem::absolute(*filepath).lexically_relative(std::filesystem::absolute(*relative_to));
-            ss << relative.generic_string() << ':' << starting_line + 1 << ':' << start_column + 1 << '\n';
+            // Empty when there is no relative path, e.g., on another drive on Windows.
+            ss << (relative.empty() ? std::filesystem::absolute(*filepath) : relative).generic_string() << ':'
+               << starting_line + 1 << ':' << start_column + 1 << '\n';
         } else if (filepath) {
             const auto abs = std::filesystem::absolute(*filepath).generic_string();
             // A URI path starts with a slash, which a Windows drive letter doesn't, i.e., `file:///C:/...`.
@@ -56,7 +62,7 @@ std::string diagnosticToString(Severity type, const char* generalDescription,
 
         if (!txt || txt_len == 0) {
             ss << description;
-            break; // nothing left to do
+            continue; // nothing to show for this one
         }
         const auto selection_start = txt + range.begin.absolute;
         const auto selection_end = txt + range.end.absolute;
@@ -125,12 +131,6 @@ std::string diagnosticToString(Severity type, const char* generalDescription,
                 }
             }
         }
-
-        if (i < locations.size() - 1) {
-            ss << "\n";
-        }
-
-        ++i;
     }
 
     if (!extra.empty()) {

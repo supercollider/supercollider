@@ -236,14 +236,14 @@ int main(int argc, char* argv[]) {
             const std::string count = get_path(argv[++i]).string();
             const auto [end, error] = std::from_chars(count.data(), count.data() + count.size(), num_threads);
             if (error != std::errc {} || end != count.data() + count.size() || num_threads == 0) {
-                std::cout << "ERROR: --threads expects a positive number, not '" << count << "'" << std::endl;
+                std::cerr << "ERROR: --threads expects a positive number, not '" << count << "'" << std::endl;
                 return EXIT_FAILURE;
             }
         } else if (arg == "--interpreted-version" && i + 1 < argc) {
             const std::string release = get_path(argv[++i]).string();
             const auto version = sc::ast::parse_release(release);
             if (!version) {
-                std::cout << "ERROR: --interpreted-version expects a known release, e.g., 3.16, or legacy, not '"
+                std::cerr << "ERROR: --interpreted-version expects a known release, e.g., 3.16, or legacy, not '"
                           << release << "'" << std::endl;
                 return EXIT_FAILURE;
             }
@@ -264,7 +264,7 @@ int main(int argc, char* argv[]) {
             const std::string text = get_path(argv[++i]).string();
             const auto c = parse_intrinsic(text);
             if (!c) {
-                std::cout << "ERROR: --intrinsic expects `Name : Super [slot] a b`, not '" << text << "'" << std::endl;
+                std::cerr << "ERROR: --intrinsic expects `Name : Super [slot] a b`, not '" << text << "'" << std::endl;
                 return EXIT_FAILURE;
             }
             vm.classes.push_back(*c);
@@ -272,7 +272,7 @@ int main(int argc, char* argv[]) {
             const std::string text = get_path(argv[++i]).string();
             const auto p = parse_primitive(text);
             if (!p) {
-                std::cout << "ERROR: --primitive expects `_Name 2 args kwargs`, not '" << text << "'" << std::endl;
+                std::cerr << "ERROR: --primitive expects `_Name 2 args kwargs`, not '" << text << "'" << std::endl;
                 return EXIT_FAILURE;
             }
             vm.primitives.push_back(*p);
