@@ -10,10 +10,10 @@ SCClass (5:1): FrameMembers : Object, version 3.16
 |  |  SCMember (6:19): other
 |  SCMethodList (5:1)
 |  |  SCMethod (11:5): arguments, version 3.16: arguments { |a, b ...rest| var x = a; var y = b; ^[x, y, rest] } [frame: this, a, b, ...rest | x, y]
-|  |  |  SCArgumentDeclareList (11:18)
+|  |  |  SCArgumentDeclareList (11:17)
 |  |  |  |  SCArgumentDeclare (11:18): a
 |  |  |  |  SCArgumentDeclare (11:21): b
-|  |  |  SCArgumentDeclareList (11:18)
+|  |  |  SCArgumentDeclareList (11:17)
 |  |  |  |  SCArgumentDeclare (11:26): rest
 |  |  |  SCBody (11:32)
 |  |  |  |  SCVariableDeclare (11:36): x, computed

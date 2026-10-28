@@ -60,9 +60,9 @@ SCClass (2:1): MethodArguments : Object, version 3.16
 |  |  |  |  SCExplicitReturn (15:39)
 |  |  |  |  |  SCRead (15:40): local instance_var, declared (15:25): instance_var
 |  |  SCMethod (17:5): variadic, version 3.16: variadic { |a ... rest| ^rest }
-|  |  |  SCArgumentDeclareList (17:17)
+|  |  |  SCArgumentDeclareList (17:16)
 |  |  |  |  SCArgumentDeclare (17:17): a
-|  |  |  SCArgumentDeclareList (17:17)
+|  |  |  SCArgumentDeclareList (17:16)
 |  |  |  |  SCArgumentDeclare (17:23): rest
 |  |  |  SCBody (17:29)
 |  |  |  |  SCExplicitReturn (17:29)

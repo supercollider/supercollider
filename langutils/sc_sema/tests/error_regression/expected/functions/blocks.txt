@@ -44,9 +44,9 @@ SCClass (2:1): Blocks : Object, version 3.16
 |  |  |  SCBody (13:16)
 |  |  |  |  SCExplicitReturn (13:16)
 |  |  |  |  |  SCFunction (13:17)
-|  |  |  |  |  |  SCArgumentDeclareList (13:20)
+|  |  |  |  |  |  SCArgumentDeclareList (13:19)
 |  |  |  |  |  |  |  SCArgumentDeclare (13:20): a
-|  |  |  |  |  |  SCArgumentDeclareList (13:20)
+|  |  |  |  |  |  SCArgumentDeclareList (13:19)
 |  |  |  |  |  |  |  SCArgumentDeclare (13:26): rest
 |  |  |  |  |  |  SCBody (13:17)
 |  |  |  |  |  |  |  SCRead (13:32): local rest, declared (13:26): rest

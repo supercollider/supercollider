@@ -260,7 +260,7 @@ file_as_func
 		{ $$ = cxt.create(FileAsFunction{}, @$, cxt.create(DeclareArgumentList{}, @1), cxt.graph->prepend($contents, $decls)); }
 
 	| INTERPRET variable_declarations[decls] semicolon.opt YYEOF
-		{ $$ = cxt.create(FileAsFunction{}, @$, cxt.create(DeclareArgumentList{}, @1), cxt.create(BlockContentsList{}, @3, $decls)); }
+		{ $$ = cxt.create(FileAsFunction{}, @$, cxt.create(DeclareArgumentList{}, @1), cxt.create(BlockContentsList{}, @decls, $decls)); }
 	;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -727,7 +727,7 @@ expr.base.range
 	| expr.base[receiver] OPENSQUARE[o] arguments[args] DOTDOT CLOSESQUARE[c]
 		{
 			const auto loc = range(@o, @c);
-			const auto r = cxt.create(Range{}, loc, $args, cxt.create(Missing{}, @5));
+			const auto r = cxt.create(Range{}, loc, $args, cxt.create(Missing{}, @4));
 			$$ = cxt.create(AtMessage{}, @$, $receiver, r);	
 		}
 	| expr.base[receiver] OPENSQUARE[o] DOTDOT expr_or_seq[e] CLOSESQUARE[c]
@@ -801,7 +801,7 @@ range.generator
 
 	| OPENPAREN[o] COLON expr_or_seq[s] COMMA expr_or_seq[n] DOTDOT  CLOSEPAREN[c]
 		{
-			const auto args = cxt.create(ArgumentList{}, @s, $s, $n);
+			const auto args = cxt.create(ArgumentList{}, range(@s, @n), $s, $n);
 			$$ = cxt.create(RangeGenerator{}, range(@o, @c), args, cxt.create(Missing{}, @6));
 		}
 	| OPENPAREN[o] COLON DOTDOT expr_or_seq[e] CLOSEPAREN[c]
@@ -1072,7 +1072,7 @@ argument_declarations
 	| PIPE argument_declarations.pipelist comma.opt PIPE 
 		{ $$ = $2; }
 	| PIPE argument_declarations.pipelist ELLIPSIS name PIPE 
-		{ $$ = cxt.graph->append($2, @2, cxt.create(DeclareArgumentVariadicNode{}, @4, $4)); }
+		{ $$ = cxt.graph->append($2, @$, cxt.create(DeclareArgumentVariadicNode{}, @4, $4)); }
 	| PIPE argument_declarations.pipelist ELLIPSIS name COMMA name PIPE 
 		{ $$ = cxt.graph->append($2, @$, cxt.create(DeclareArgumentVariadicNode{}, @4, $4), cxt.create(DeclareArgumentVariadicNode{}, @6, $6)); }
 	| PIPE ELLIPSIS name[args] PIPE 

@@ -681,7 +681,7 @@ namespace sc { namespace ast { namespace parser {
 
   case 10: // file_as_func: INTERPRET variable_declarations semicolon.opt $end
 #line 263 "langutils/sc_parser/src/sc_grammar.y"
-                { (yylhs.value.v_FileAsFunctionIndex) = cxt.create(FileAsFunction{}, yylhs.location, cxt.create(DeclareArgumentList{}, yystack_[3].location), cxt.create(BlockContentsList{}, yystack_[1].location, (yystack_[2].value.v_DeclareVariableListIndex))); }
+                { (yylhs.value.v_FileAsFunctionIndex) = cxt.create(FileAsFunction{}, yylhs.location, cxt.create(DeclareArgumentList{}, yystack_[3].location), cxt.create(BlockContentsList{}, yystack_[2].location, (yystack_[2].value.v_DeclareVariableListIndex))); }
 #line 686 "langutils/sc_parser/src/sc_grammar_parser.cpp"
     break;
 
@@ -1437,7 +1437,7 @@ namespace sc { namespace ast { namespace parser {
 #line 728 "langutils/sc_parser/src/sc_grammar.y"
                 {
 			const auto loc = range(yystack_[3].location, yystack_[0].location);
-			const auto r = cxt.create(Range{}, loc, (yystack_[2].value.v_ArgumentListIndex), cxt.create(Missing{}, yystack_[0].location));
+			const auto r = cxt.create(Range{}, loc, (yystack_[2].value.v_ArgumentListIndex), cxt.create(Missing{}, yystack_[1].location));
 			(yylhs.value.v_AtMessageIndex) = cxt.create(AtMessage{}, yylhs.location, (yystack_[4].value.v_AnyExprIndex), r);	
 		}
 #line 1444 "langutils/sc_parser/src/sc_grammar_parser.cpp"
@@ -1549,7 +1549,7 @@ namespace sc { namespace ast { namespace parser {
   case 130: // range.generator: OPENPAREN COLON expr_or_seq COMMA expr_or_seq DOTDOT CLOSEPAREN
 #line 803 "langutils/sc_parser/src/sc_grammar.y"
                 {
-			const auto args = cxt.create(ArgumentList{}, yystack_[4].location, (yystack_[4].value.v_AnyExprIndex), (yystack_[2].value.v_AnyExprIndex));
+			const auto args = cxt.create(ArgumentList{}, range(yystack_[4].location, yystack_[2].location), (yystack_[4].value.v_AnyExprIndex), (yystack_[2].value.v_AnyExprIndex));
 			(yylhs.value.v_RangeGeneratorIndex) = cxt.create(RangeGenerator{}, range(yystack_[6].location, yystack_[0].location), args, cxt.create(Missing{}, yystack_[1].location));
 		}
 #line 1556 "langutils/sc_parser/src/sc_grammar_parser.cpp"
@@ -2048,7 +2048,7 @@ namespace sc { namespace ast { namespace parser {
 
   case 205: // argument_declarations: PIPE argument_declarations.pipelist ELLIPSIS name PIPE
 #line 1075 "langutils/sc_parser/src/sc_grammar.y"
-                { (yylhs.value.v_DeclareArgumentListIndex) = cxt.graph->append((yystack_[3].value.v_DeclareArgumentListIndex), yystack_[3].location, cxt.create(DeclareArgumentVariadicNode{}, yystack_[1].location, (yystack_[1].value.v_NamedIdentifierIndex))); }
+                { (yylhs.value.v_DeclareArgumentListIndex) = cxt.graph->append((yystack_[3].value.v_DeclareArgumentListIndex), yylhs.location, cxt.create(DeclareArgumentVariadicNode{}, yystack_[1].location, (yystack_[1].value.v_NamedIdentifierIndex))); }
 #line 2053 "langutils/sc_parser/src/sc_grammar_parser.cpp"
     break;
 
