@@ -372,7 +372,9 @@ def compare_output(sc_file, output, output_dir, override):
     diff_file_path = output_dir / name.with_suffix('.diff')
     output_file_path.parent.mkdir(parents=True, exist_ok=True)
     output_file_path.write_text(output)
-    diff = subprocess.run(['diff', '--unified', expected_output_path, output_file_path], capture_output=True, text=True)
+    # Labelled, so the diff doesn't show where it was run, e.g., a CI runner's paths.
+    diff = subprocess.run(['diff', '--unified', '--label', f'expected/{name}.txt', '--label', f'output/{name}.txt',
+                           expected_output_path, output_file_path], capture_output=True, text=True)
     diff_file_path.write_text(diff.stdout)
     return Result(FAILED, diff_file_path)
 
@@ -477,8 +479,11 @@ def run(args, output_dir):
         result = process_file(tools, sc_file, output_dir, args.override)
         name = test_name(sc_file)
         if result.status == FAILED:
-            print(f"FAILED: {name}. To update the output file, run with --override.")
-            print(f"For the diff of the results see {result.diff}\n")
+            # The diff is printed, as ctest's log, e.g., in CI, is often all there is to read.
+            print(f"FAILED: {name}, the output changed from the expected output:\n")
+            print(result.diff.read_text())
+            print(f"The diff is also in {result.diff}")
+            print(f"To accept the new output, run: langutils/sc_sema/tests/error_regression/test.py --override {name}\n")
         elif result.status == CREATED:
             print(f"created the expected output of {name}, as it didn't exist")
         elif result.status in (UPDATED, UNCHANGED):
