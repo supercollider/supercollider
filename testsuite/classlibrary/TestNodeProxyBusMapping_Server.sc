@@ -1,3 +1,5 @@
+//# VERSION 3.16
+
 TestNodeProxyBusMapping_Server : UnitTest {
 	var server;
 
@@ -14,13 +16,11 @@ TestNodeProxyBusMapping_Server : UnitTest {
 	}
 
 	test_audiorate_mapping {
-		var proxy, inputProxy;
-		var synthValues, controlValues, defaultValues;
 
-		defaultValues = [-1.0, -2.0];
-		controlValues = [162.0, 54.0];
+		var defaultValues = [-1.0, -2.0];
+		var controlValues = [162.0, 54.0];
 
-		proxy = NodeProxy(server, \audio);
+		var proxy = NodeProxy(server, \audio);
 		proxy.reshaping = \elastic;
 		proxy.fadeTime = 0;
 
@@ -29,7 +29,7 @@ TestNodeProxyBusMapping_Server : UnitTest {
 			A2K.kr(in);
 		};
 
-		inputProxy = NodeProxy(server, \audio);
+		var inputProxy = NodeProxy(server, \audio);
 		inputProxy.source = {
 			DC.ar(controlValues)
 		};
@@ -38,7 +38,7 @@ TestNodeProxyBusMapping_Server : UnitTest {
 
 		this.assert(proxy.rate == \control, "proxy should have initialized itself to control rate");
 
-		synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
+		var synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
 
 		this.assertEquals(synthValues, defaultValues, "before mapping, synth values should be default values");
 
@@ -54,13 +54,11 @@ TestNodeProxyBusMapping_Server : UnitTest {
 	}
 
 	test_audiorate_mapping_elasticity {
-		var proxy, inputProxy;
-		var synthValues, controlValues, defaultValues;
 
-		defaultValues = [-1.0, -2.0, -3.0];
-		controlValues = [162.0, 54.0, 45.0, 87.0];
+		var defaultValues = [-1.0, -2.0, -3.0];
+		var controlValues = [162.0, 54.0, 45.0, 87.0];
 
-		proxy = NodeProxy(server, \audio, 7);
+		var proxy = NodeProxy(server, \audio, 7);
 		proxy.reshaping = \elastic;
 		proxy.fadeTime = 0.001;
 
@@ -69,7 +67,7 @@ TestNodeProxyBusMapping_Server : UnitTest {
 			A2K.kr(in);
 		};
 
-		inputProxy = NodeProxy(server, \audio, 2);
+		var inputProxy = NodeProxy(server, \audio, 2);
 		inputProxy.reshaping = \elastic;
 		inputProxy.fadeTime = 0.001;
 		inputProxy.source = {
@@ -81,7 +79,7 @@ TestNodeProxyBusMapping_Server : UnitTest {
 		this.assertEquals(proxy.rate, \control, "proxy should have initialized itself to control rate");
 		this.assertEquals(proxy.numChannels, defaultValues.size, "proxy should have initialized itself to the correct number of channels");
 
-		synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
+		var synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
 
 		this.assertEquals(synthValues.round, defaultValues.round, "before mapping, synth values should be default values");
 

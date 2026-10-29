@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestVolume_Server : UnitTest {
 
 	test_booting {
@@ -31,8 +32,8 @@ TestVolume_Server : UnitTest {
 
 	test_setVolume {
 
-		var s, ampSynthVolume;
-		s = Server(thisMethod.name);
+		var ampSynthVolume;
+		var s = Server(thisMethod.name);
 
 		this.bootServer(s);
 		s.sync;
@@ -52,8 +53,8 @@ TestVolume_Server : UnitTest {
 
 	test_numOutputs {
 
-		var s, default_numChannels;
-		s = Server(thisMethod.name);
+		var default_numChannels;
+		var s = Server(thisMethod.name);
 
 		s.options.numOutputBusChannels = 8;
 

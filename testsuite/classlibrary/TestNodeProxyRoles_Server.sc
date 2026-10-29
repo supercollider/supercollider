@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestNodeProxyRoles_Server : UnitTest {
 
 	var server, proxy;

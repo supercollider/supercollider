@@ -98,21 +98,6 @@ jobs:
     if: ${{ !cancelled() }}
     with:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
-      tests-path: testsuite/classlibrary
-      compiler-tests-path: testsuite/classlibraryCompilerErrors
-      interpreted-version: legacy
-      results-name: gha_result
-    secrets: inherit
-
-  test-linux-316:
-    needs: [version-getter, build-linux]
-    uses: ./.github/workflows/test_linux.yml
-    if: ${{ !cancelled() }}
-    with:
-      sc-version: ${{ needs.version-getter.outputs.sc-version }}
-      tests-path: testsuite/classlibrary316
-      interpreted-version: "3.16"
-      results-name: gha_result_316
     secrets: inherit
 
   test-macos:
@@ -121,10 +106,6 @@ jobs:
     if: ${{ !cancelled() }}
     with:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
-      tests-path: testsuite/classlibrary
-      compiler-tests-path: testsuite/classlibraryCompilerErrors
-      interpreted-version: legacy
-      results-name: gha_result
     secrets: inherit
 
   test-windows:
@@ -133,10 +114,6 @@ jobs:
     if: ${{ !cancelled() }}
     with:
       sc-version: ${{ needs.version-getter.outputs.sc-version }}
-      tests-path: testsuite/classlibrary
-      compiler-tests-path: testsuite/classlibraryCompilerErrors
-      interpreted-version: legacy
-      results-name: gha_result
     secrets: inherit
 
   sclang-error-regression:

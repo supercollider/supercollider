@@ -1,3 +1,4 @@
+//# VERSION 3.16
 /*
 Date.test
 UnitTest.gui
@@ -136,7 +137,6 @@ TestDate : UnitTest {
 
 	test_resolve {
 		var d = Date(2017, 9, 30, 10, 30);
-		var e;
 		var origVal = [d.dayOfWeek, d.rawSeconds];
 		d.hour = d.hour - 13; // -> Sat Sep 30 -03:30:00 2017
 		d.month = d.month + 4; // -> Sat ??? 30 -03:30:00 2017
@@ -144,7 +144,7 @@ TestDate : UnitTest {
 		this.assertEquals(origVal, [d.dayOfWeek, d.rawSeconds],
 			"dayOfWeek+rawSeconds haven't updated with property modifications");
 		d.resolve;
-		e = Date(2018, 1, 30, 0, 50);
+		var e = Date(2018, 1, 30, 0, 50);
 		this.assertEquals(d, e,
 			"use resolve to fix inconsistencies");
 		this.assertEquals(d.stamp, e.stamp,

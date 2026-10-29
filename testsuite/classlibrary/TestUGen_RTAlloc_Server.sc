@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestUGen_RTAlloc_Server : UnitTest {
 
 	var server;

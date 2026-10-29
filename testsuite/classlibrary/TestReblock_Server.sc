@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestReblockBase_Server : UnitTest {
 	var server;
 
@@ -82,7 +83,6 @@ TestReblock_Server : TestReblockBase_Server {
 		var bus = Bus.control(server);
 		var blockSizes = [ 0, 1, 2, 4, 8, 16, 32, 64 ];
 		var results = Array.fill(blockSizes.size, nil);
-		var success;
 		blockSizes.do { |blockSize, index|
 			var cond = Condition(), synth;
 			SynthDef(\testReblockConstant, { |out|
@@ -100,7 +100,7 @@ TestReblock_Server : TestReblockBase_Server {
 			synth.free;
 		};
 		this.assert(results[0] == server.options.blockSize, "Reblock with argument 0 matches Server block size");
-		success = [ blockSizes[1..], results[1..] ].flop.every { |pair| pair[0] == pair[1] };
+		var success = [ blockSizes[1..], results[1..] ].flop.every { |pair| pair[0] == pair[1] };
 		this.assert(success, "Reblock with constant argument matches BlockSize output");
 	}
 
@@ -126,7 +126,6 @@ TestReblock_Server : TestReblockBase_Server {
 		var bus = Bus.control(server);
 		var blockSizes = [ 0, 1, 2, 4, 8, 16, 32, 64 ];
 		var results = Array.fill(blockSizes.size, nil);
-		var success;
 
 		SynthDef(\testReblockControl, { |out, blockSize|
 			Reblock(blockSize);
@@ -150,7 +149,7 @@ TestReblock_Server : TestReblockBase_Server {
 		this.assert(results[0] == server.options.blockSize, "Reblock with control default argument matches Server block size");
 
 		// the remaining block sizes should be set as is.
-		success = [ blockSizes[1..], results[1..] ].flop.every { |pair| pair[0] == pair[1] };
+		var success = [ blockSizes[1..], results[1..] ].flop.every { |pair| pair[0] == pair[1] };
 		this.assert(success, "Reblock with control argument matches BlockSize output");
 	}
 
@@ -161,7 +160,6 @@ TestReblock_Server : TestReblockBase_Server {
 		var upsampleFactor = 4;
 		var blockSizes = [ 0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512 ];
 		var results = Array.fill(blockSizes.size, nil);
-		var success;
 
 		SynthDef(\testReblockControl, { |out, blockSize|
 			Reblock(blockSize);
@@ -189,7 +187,7 @@ TestReblock_Server : TestReblockBase_Server {
 		this.assert(results.wrapAt(-1) == blockSizes.wrapAt(-2), "Block size larger than Server block size * upsample factor is adjusted properly");
 
 		// the remaining block sizes should be set as is.
-		success = [ blockSizes, results ].flop.drop(1).drop(-1).every { |pair| pair[0] == pair[1] };
+		var success = [ blockSizes, results ].flop.drop(1).drop(-1).every { |pair| pair[0] == pair[1] };
 		this.assert(success, "Reblock with argument + upsampling matches BlockSize output");
 	}
 
@@ -198,7 +196,6 @@ TestReblock_Server : TestReblockBase_Server {
 		// Note: the block size can not exceed Server block size * upsample factor (here: 1)
 		var blockSizes = [ -1, 3, 7, server.options.blockSize * 2 ];
 		var results = Array.fill(blockSizes.size, nil);
-		var success;
 		SynthDef(\testReblockControlFail, { |out, blockSize|
 			Reblock(blockSize);
 			Out.kr(out, BlockSize.ir);
@@ -215,7 +212,7 @@ TestReblock_Server : TestReblockBase_Server {
 			cond.wait;
 			synth.free;
 		};
-		success = results.every { |x| x == server.options.blockSize };
+		var success = results.every { |x| x == server.options.blockSize };
 		this.assert(success, "Reblock with bad control argument falls back to Server block size");
 	}
 
@@ -238,7 +235,7 @@ TestReblock_Server : TestReblockBase_Server {
 	}
 
 	test_IOUGensWithReblocking {
-		var arTestSig, krTestSig, simpleAB;
+		var simpleAB;
 		var trigBusA = Bus.control(server, 2);
 		var trigBusB = Bus.control(server, 2);
 		var arTestBus = Bus.audio(server, 2);
@@ -255,9 +252,9 @@ TestReblock_Server : TestReblockBase_Server {
 			}
 		};
 
-		arTestSig = { Out.ar(arTestBus, SinOsc.ar([220, 440])) }.play(server);
+		var arTestSig = { Out.ar(arTestBus, SinOsc.ar([220, 440])) }.play(server);
 
-		krTestSig = { Out.kr(krTestBus, SinOsc.kr([220, 440])) }.play(server);
+		var krTestSig = { Out.kr(krTestBus, SinOsc.kr([220, 440])) }.play(server);
 
 		server.sync;
 

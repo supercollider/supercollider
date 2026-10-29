@@ -1,24 +1,25 @@
+//# VERSION 3.16
 TestUnitCommand_Server : UnitTest {
 	synchronousUnitCommand { arg serverName;
-		var bus, cond = CondVar();
-		var busValue = 0.0, synthIndex, u;
+		var cond = CondVar();
+		var busValue = 0.0;
 		var server = Server(thisMethod.name ++ "_" ++ serverName);
 
 		this.bootServer(server);
 
-		bus = Bus.control(server, 1);
+		var bus = Bus.control(server, 1);
 
 		SynthDef(\u_cmd_test, { |bus|
 			Out.kr(bus, UnitCmdDemo.kr);
 		}).add;
 		// UnitCmdDemo has index 1
-		synthIndex = 1;
+		var synthIndex = 1;
 
 		server.sync;
 
 		// 1. test queued unit command
 
-		u = Synth(\u_cmd_test, [ bus: bus ], server);
+		var u = Synth(\u_cmd_test, [ bus: bus ], server);
 
 		// send command
 		server.sendMsg('/u_cmd', u.nodeID, synthIndex, \setValue, 4.0);
@@ -65,14 +66,14 @@ TestUnitCommand_Server : UnitTest {
 	}
 
 	asynchronousUnitCommand { arg serverName;
-		var bus, cond = CondVar();
+		var cond = CondVar();
 		var done = false;
-		var value = 1.0, busValue = 0.0, nodeID = 900, synthIndex, u;
+		var value = 1.0, busValue = 0.0, nodeID = 900;
 		var server = Server(thisMethod.name ++ "_" ++ serverName);
 
 		this.bootServer(server);
 
-		bus = Bus.control(server, 1);
+		var bus = Bus.control(server, 1);
 
 		SynthDef(\number, { |bus|
 			Out.kr(bus, value);
@@ -82,7 +83,7 @@ TestUnitCommand_Server : UnitTest {
 			Out.kr(bus, UnitCmdDemo.kr);
 		}).add;
 		// UnitCmdDemo has index 1
-		synthIndex = 1;
+		var synthIndex = 1;
 
 		server.sync;
 
@@ -95,7 +96,7 @@ TestUnitCommand_Server : UnitTest {
 
 		// 1. test unit command success
 
-		u = Synth(\u_cmd_test, nil, server);
+		var u = Synth(\u_cmd_test, nil, server);
 
 		// send command
 		server.sendMsg('/u_cmd', u.nodeID, synthIndex, \testCommand, 48000, 1.0, ['/s_new', \number, nodeID, 0, 0, bus.index]);

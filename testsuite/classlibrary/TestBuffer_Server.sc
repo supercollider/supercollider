@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestBuffer_Server : UnitTest {
 
 	var server;
@@ -29,10 +30,9 @@ TestBuffer_Server : UnitTest {
 	test_serverlang_dataexchange {
 		var condition = CondVar.new;
 		var data = Array.fill(512, { 1.0.rand }), data2;
-		var buffer;
 
 		// send then load
-		buffer = Buffer.sendCollection(server, data);
+		var buffer = Buffer.sendCollection(server, data);
 		server.sync;
 		fork {
 			buffer.loadToFloatArray(action: { |array|
@@ -106,12 +106,11 @@ TestBuffer_Server : UnitTest {
 
 	test_cheby {
 		var condition = CondVar.new;
-		var buffer, size = 512;
+		var size = 512;
 		var fromBuffer;
-		var calcVal;
 
-		calcVal = cos(2 * acos((size - 1) / (size >> 1) - 1)) + 1;
-		buffer = Buffer.alloc(server, size, completionMessage: { |buf| buf.chebyMsg([0, 1], normalize: false, asWavetable: false) });
+		var calcVal = cos(2 * acos((size - 1) / (size >> 1) - 1)) + 1;
+		var buffer = Buffer.alloc(server, size, completionMessage: { |buf| buf.chebyMsg([0, 1], normalize: false, asWavetable: false) });
 		server.sync;
 
 		fork {
@@ -191,11 +190,10 @@ TestBuffer_Server : UnitTest {
 
 	test_get {
 		var condition = CondVar.new;
-		var buffer, collection;
 		var get_value;
 
-		collection = [88.88, 8, 888.8, 8.88];
-		buffer = Buffer.sendCollection(server, collection);
+		var collection = [88.88, 8, 888.8, 8.88];
+		var buffer = Buffer.sendCollection(server, collection);
 		server.sync;
 
 		buffer.get(2, { |value|
@@ -209,11 +207,10 @@ TestBuffer_Server : UnitTest {
 
 	test_getn {
 		var condition = CondVar.new;
-		var buffer, collection;
 		var getn_values;
 
-		collection = [88.88, 8, 888.8, 8.88];
-		buffer = Buffer.sendCollection(server, collection);
+		var collection = [88.88, 8, 888.8, 8.88];
+		var buffer = Buffer.sendCollection(server, collection);
 		server.sync;
 
 		buffer.getn(2, 2, { |values|
@@ -227,11 +224,10 @@ TestBuffer_Server : UnitTest {
 
 	test_regression_getn_float {
 		var condition = CondVar.new;
-		var buffer, collection;
 		var getn_values;
 
-		collection = [88.88, 8, 888.8, 8.88];
-		buffer = Buffer.sendCollection(server, collection);
+		var collection = [88.88, 8, 888.8, 8.88];
+		var buffer = Buffer.sendCollection(server, collection);
 		server.sync;
 
 		// Using a float as the index should still work
@@ -246,11 +242,10 @@ TestBuffer_Server : UnitTest {
 
 	test_getToFloatArray {
 		var condition = CondVar.new;
-		var buffer, collection;
 		var floats;
 
-		collection = [88.88, 8, 888.8, 8.88];
-		buffer = Buffer.sendCollection(server, collection);
+		var collection = [88.88, 8, 888.8, 8.88];
+		var buffer = Buffer.sendCollection(server, collection);
 		server.sync;
 
 		buffer.getToFloatArray(action: { |array|

@@ -1,14 +1,15 @@
+//# VERSION 3.16
 TestPluginCommand_Server : UnitTest {
 
 	asyncPluginCommand { arg serverName;
-		var bus, cond = CondVar();
+		var cond = CondVar();
 		var done = false;
 		var value = 1.0, busValue = 0.0, nodeID = 900;
 		var server = Server(thisMethod.name ++ "_" ++ serverName);
 
 		this.bootServer(server);
 
-		bus = Bus.control(server, 1);
+		var bus = Bus.control(server, 1);
 
 		SynthDef(\number, { |bus|
 			Out.kr(bus, value);

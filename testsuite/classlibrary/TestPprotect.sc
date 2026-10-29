@@ -1,14 +1,15 @@
+//# VERSION 3.16
 TestPprotect : UnitTest {
 
 	test_resetExceptionHandler_onError {
-		var routine, stream;
+		var stream;
 		var condvar = CondVar();
 		var success = false;
 
 		// Note that this must be a Stream, not a Pattern (x.asStream --> x).
 		// If it's a pattern, then we don't have access to the routine
 		// to check its exceptionHandler below.
-		routine = Routine { 0.0.wait; 1 + nil };  // throw an error
+		var routine = Routine { 0.0.wait; 1 + nil };  // throw an error
 		stream = Pprotect(
 			routine,
 			{
@@ -51,11 +52,11 @@ TestPprotect : UnitTest {
 	}
 
 	test_task_proxy_play_after_error {
-		var proxy, redefine, hasRun;
+		var redefine, hasRun;
 		var condvar = CondVar();
 		var didPlay = false;
 
-		proxy = TaskProxy.new;
+		var proxy = TaskProxy.new;
 		proxy.quant = 0;
 		proxy.play;
 

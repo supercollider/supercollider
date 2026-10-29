@@ -1,3 +1,4 @@
+//# VERSION 3.16
 /*
 s.boot;
 UnitTest.gui
@@ -29,8 +30,8 @@ TestCoreUGens_Server : UnitTest {
 		var cond = CondVar();
 		var completed = 0;
 		var blockSize, sampleRate;
-		var n, v, tests, testDur, numTests, testsFinished;
-		var sampleDursToTest; // for Env/Line equivalence tests
+		var n, v, tests;
+ // for Env/Line equivalence tests
 
 		// These pairs should generate the same shapes, so subtracting should give zero.
 		// Of course there's some rounding error due to floating-point accuracy.
@@ -244,10 +245,9 @@ TestCoreUGens_Server : UnitTest {
 		[\ar, \kr].do{ |rate|
 			tests.add(
 				("Delay1." ++ rate ++ " first frame is 0 at .ar and matches the input at .kr") -> {
-					var dc, imp, target;
-					dc = DC.perform(rate, 1);       // all 1's
-					imp = Impulse.perform(rate, 0); // single impulse on first sample
-					target = switch(rate,
+					var dc = DC.perform(rate, 1);       // all 1's
+					var imp = Impulse.perform(rate, 0); // single impulse on first sample
+					var target = switch(rate,
 						\ar, dc - imp,              // subtracted impulse zeros out the the first sample of DC(1)
 						\kr, dc
 					);
@@ -259,11 +259,10 @@ TestCoreUGens_Server : UnitTest {
 				("Delay2." ++ rate ++ " first 2 frames are 0 at .ar and match the input at .kr") -> {
 					// as Delay1, but with two consecutive impulses
 					// to cancel the first two samples of DC(1)
-					var dc, imp, delimp, target;
-					dc = DC.perform(rate, 1);           // all 1's
-					imp = Impulse.perform(rate, 0);     // single impulse on first sample
-					delimp = Delay1.perform(rate, imp); // single impulse on second sample
-					target = switch(rate,
+					var dc = DC.perform(rate, 1);           // all 1's
+					var imp = Impulse.perform(rate, 0);     // single impulse on first sample
+					var delimp = Delay1.perform(rate, imp); // single impulse on second sample
+					var target = switch(rate,
 						\ar, dc - imp - delimp,         // subtracted impulse zeros out the the first sample of DC(1)
 						\kr, dc
 					);
@@ -325,8 +324,8 @@ TestCoreUGens_Server : UnitTest {
 		server.bootSync;
 		blockSize = server.options.blockSize;
 		sampleRate = server.sampleRate;
-		testDur = defaultNumBlocksToTest * blockSize / sampleRate;
-		numTests = tests.size;
+		var testDur = defaultNumBlocksToTest * blockSize / sampleRate;
+		var numTests = tests.size;
 
 		tests.keysValuesDo { |name, func, i|
 			func.loadToFloatArray(testDur, server, { |data|
@@ -339,7 +338,7 @@ TestCoreUGens_Server : UnitTest {
 			server.sync;
 		};
 
-		testsFinished = cond.waitFor((1.5 * numTests * testDur).max(minTimeOut), { completed == numTests });
+		var testsFinished = cond.waitFor((1.5 * numTests * testDur).max(minTimeOut), { completed == numTests });
 		this.assert(testsFinished, "TIMEOUT: ugen_generator_equivalences tests", report: false);
 
 
@@ -349,7 +348,7 @@ TestCoreUGens_Server : UnitTest {
 		// Equivalence of linear Env, Line and XLine, with short duration and fast phase change.
 		// In response to errors found in "m_grow" (step size) calculation in EnvGen,
 		// in particular with small env segment sizes.
-		sampleDursToTest = (2 .. 15);
+		var sampleDursToTest = (2 .. 15);
 		numTests = sampleDursToTest.size * 4; // * 4: tests performed on Line and XLine, at ar and kr
 		completed = 0; // reset counter
 
@@ -406,10 +405,10 @@ TestCoreUGens_Server : UnitTest {
 	test_exact_convergence {
 		var cond = CondVar();
 		var completed = 0;
-		var n, v, tests, testDur, testsFinished;
+		var n, v;
 
 		// Tests for things that should converge exactly to zero
-		tests = Dictionary[
+		var tests = Dictionary[
 
 			//////////////////////////////////////////
 			// Pan2 amplitude convergence to zero test, unearthed by JH on sc-dev 2009-10-19.
@@ -421,7 +420,7 @@ TestCoreUGens_Server : UnitTest {
 		];
 
 		server.bootSync;
-		testDur = defaultNumBlocksToTest * server.options.blockSize / server.sampleRate;
+		var testDur = defaultNumBlocksToTest * server.options.blockSize / server.sampleRate;
 
 		tests.keysValuesDo{ |text, func|
 			func.loadToFloatArray(testDur, server, { |data|
@@ -432,7 +431,7 @@ TestCoreUGens_Server : UnitTest {
 			server.sync;
 		};
 
-		testsFinished = cond.waitFor((1.5 * tests.size * testDur).max(minTimeOut), { completed == tests.size });
+		var testsFinished = cond.waitFor((1.5 * tests.size * testDur).max(minTimeOut), { completed == tests.size });
 		this.assert(testsFinished, "TIMEOUT: exact_convergence tests", report: false);
 	}
 
@@ -440,16 +439,16 @@ TestCoreUGens_Server : UnitTest {
 	test_muladd {
 		var cond = CondVar();
 		var completed = 0;
-		var n, v, tests, testDur, testsFinished;
+		var n, v;
 
-		tests = Dictionary[];
+		var tests = Dictionary[];
 		[[\ar,\kr], [2,0,5], [\ar,\kr], [2,0,5], [\ar,\kr], [2,0,5]].allTuples.do{|tup|
 			tests["%%.madd(%%, %%)".format(*tup)] =
 			"{DC.%(%).madd(DC.%(%), DC.%(%)) - (% * % + %)}".format(*(tup ++ tup[1,3..])).interpret;
 		};
 
 		server.bootSync;
-		testDur = defaultNumBlocksToTest * server.options.blockSize / server.sampleRate;
+		var testDur = defaultNumBlocksToTest * server.options.blockSize / server.sampleRate;
 
 		tests.keysValuesDo{|name, func|
 			func.loadToFloatArray(testDur, server, { |data|
@@ -460,13 +459,12 @@ TestCoreUGens_Server : UnitTest {
 			server.sync;
 		};
 
-		testsFinished = cond.waitFor((1.5 * tests.size * testDur).max(minTimeOut), { completed == tests.size });
+		var testsFinished = cond.waitFor((1.5 * tests.size * testDur).max(minTimeOut), { completed == tests.size });
 		this.assert(testsFinished, "TIMEOUT: muladd tests", report: false);
 	}
 
 
 	test_bufugens {
-		var testsFinished;
 		var tests = [1, 2, 8, 16, 32, 33];
 		var cond = CondVar();
 		var completed = 0;
@@ -506,21 +504,21 @@ TestCoreUGens_Server : UnitTest {
 			};
 		};
 
-		testsFinished = cond.waitFor((1.5 * tests.size * bufDur).max(minTimeOut), { completed == tests.size });
+		var testsFinished = cond.waitFor((1.5 * tests.size * bufDur).max(minTimeOut), { completed == tests.size });
 		this.assert(completed == tests.size, "TIMEOUT: bufugens tests", report: false);
 	}
 
 	test_impulse {
-		var blockRate, funcs, results, frq, phs, testDur, testsFinished;
+		var funcs, results, testDur, testsFinished;
 		var rates = [\kr,\ar];
 		var cond = CondVar();
 		var numBlocksToTest = 5;
 
 		server.bootSync;
 
-		blockRate = server.sampleRate / server.options.blockSize;
-		frq = blockRate * 2.123; // impulses per block
-		phs = 0;
+		var blockRate = server.sampleRate / server.options.blockSize;
+		var frq = blockRate * 2.123; // impulses per block
+		var phs = 0;
 
 		rates.do{ |rate|
 			var completed = 0;
@@ -612,11 +610,9 @@ TestCoreUGens_Server : UnitTest {
 
 	test_demand {
 		var cond = CondVar();
-		var nodesToFree, tests, testNaN;
-		var dutyDur, seq;
 
 		server.bootSync;
-		nodesToFree = [];
+		var nodesToFree = [];
 
 		OSCFunc({ |message|
 			if(nodesToFree.indexOf(message[1]).notNil) {
@@ -625,9 +621,9 @@ TestCoreUGens_Server : UnitTest {
 			nodesToFree.postln;
 		}, \n_end, server.addr).oneShot;
 
-		dutyDur = 0.05;
-		seq = (1..5);
-		tests = [
+		var dutyDur = 0.05;
+		var seq = (1..5);
+		var tests = [
 			{LPF.ar(LeakDC.ar(Duty.ar(dutyDur, 0, Dseq(seq), doneAction: 2)))}
 		];
 
@@ -640,7 +636,7 @@ TestCoreUGens_Server : UnitTest {
 		this.assert(nodesToFree.size == 0, "Duty should free itself after a limited sequence");
 
 		// Test for nil - reference: "cmake build system: don't enable -ffast-math for gcc-4.0"
-		testNaN = false;
+		var testNaN = false;
 
 		OSCFunc({ |message|
 			switch(message[2],
@@ -660,7 +656,7 @@ TestCoreUGens_Server : UnitTest {
 	}
 
 	test_pitchtrackers {
-		var tests, testsFinished;
+		var tests;
 		var cond = CondVar();
 		var completed = 0;
 		var fromFreq = 100;
@@ -706,7 +702,7 @@ TestCoreUGens_Server : UnitTest {
 			server.sync;
 		};
 
-		testsFinished = cond.waitFor((1.5 * testDur * tests.size).max(minTimeOut), { completed == tests.size });
+		var testsFinished = cond.waitFor((1.5 * testDur * tests.size).max(minTimeOut), { completed == tests.size });
 		this.assert(testsFinished, "TIMEOUT: pitchtrackers tests", report: false);
 	}
 
@@ -783,9 +779,8 @@ TestCoreUGens_Server : UnitTest {
 	test_delay1_2_predelayValues {
 		var tolerance = -100.dbamp;
 		var dcInputVal = 0.4;
-		var testParams, testDur;
 
-		testParams = [
+		var testParams = [
 			// [ugen, inputVal, x1 (, x2)]
 			[Delay1, dcInputVal],       // default: no x1 arg specified
 			[Delay1, dcInputVal, 0.5],
@@ -796,7 +791,7 @@ TestCoreUGens_Server : UnitTest {
 		];
 
 		server.bootSync;
-		testDur = defaultNumBlocksToTest * server.options.blockSize / server.sampleRate;
+		var testDur = defaultNumBlocksToTest * server.options.blockSize / server.sampleRate;
 
 		testParams.do{ |params|
 			var ugen, inVal, xArgs, numPredelaySamples;
@@ -854,10 +849,9 @@ TestCoreUGens_Server : UnitTest {
 		var to = [1, 0, 0, 1, 0, 0];
 		var text = ["positive", "negative", "zero", "positive valued function", "negative valued function", "zero valued function"];
 		var cond = CondVar();
-		var testDur;
 
 		server.bootSync;
-		testDur = defaultNumBlocksToTest * server.options.blockSize / server.sampleRate;
+		var testDur = defaultNumBlocksToTest * server.options.blockSize / server.sampleRate;
 
 		from.size.do { |i|
 			this.assert(from[i].binaryValue.value == to[i], "% should correspond to %".format(text[i], to[i]));

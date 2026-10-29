@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestPathName : UnitTest {
 	test_isAbsolutePath_Windows {
 		if (thisProcess.platform.name == \windows) {

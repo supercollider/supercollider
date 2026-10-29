@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestQuery_Server : UnitTest {
 
 	var server;
@@ -32,10 +33,9 @@ TestQuery_Server : UnitTest {
 
 		var responses = Array(3);
 		var buffers = 3.collect { Buffer.alloc(server, 512) };
-		var bufnums;
 		server.sync;
 
-		bufnums = buffers.collect { |buf| buf.bufnum };
+		var bufnums = buffers.collect { |buf| buf.bufnum };
 		buffers.do { |buf| buf.query({ |...args| responses.add(args[1]) }) };
 		server.sync;
 
@@ -71,10 +71,9 @@ TestQuery_Server : UnitTest {
 
 		var responses = Array(4);
 		var nodes = 4.collect { |i| if (i%2 == 0) { Synth(\default, target:server) } { Group(server) } };
-		var nodeIDs;
 		server.sync;
 
-		nodeIDs = nodes.collect { |node| node.nodeID };
+		var nodeIDs = nodes.collect { |node| node.nodeID };
 		nodes.do { |node| node.query({ |...args| responses.add(args[1]) }) };
 		server.sync;
 

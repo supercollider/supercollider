@@ -1,3 +1,4 @@
+//# VERSION 3.16
 /*
 TestPV_ChainUGen.run
 UnitTest.gui
@@ -7,10 +8,9 @@ TestPV_ChainUGen_Server : UnitTest {
 	// This test manually creates an FFT frame equivalent to pure white noise,
 	// on which certain ugens' action should be a no-op
 	test_whiteframe_noop {
-		var fakeframe;
 
 		// Every real is 1.0, every imag is 0.0. same as every mag is 1.0, every phase is 0.0.
-		fakeframe = ([1,1] ++ {[1,0]}.dup(511)).flat;
+		var fakeframe = ([1,1] ++ {[1,0]}.dup(511)).flat;
 
 		// All of these should be no-ops when applied to a faked frame with reals all 1 and imags all 0:
 		this.pv_equivalencetests_common(fakeframe,
@@ -46,12 +46,11 @@ TestPV_ChainUGen_Server : UnitTest {
 
 	// Various ugens have parameter settings which are supposed to zero the data
 	test_whiteframe_zeroing {
-		var fakeframe;
 
 		// Every real is 1.0, every imag is 0.0. same as every mag is 1.0, every phase is 0.0.
 		// NOTE: Here we actually set the DC and nyqquist to zero, not one,
 		//  because many ugens simply don't bother to touch them.
-		fakeframe = ([0,0] ++ {[1,0]}.dup(511)).flat;
+		var fakeframe = ([0,0] ++ {[1,0]}.dup(511)).flat;
 
 		// All of these should be no-ops when applied to a faked frame with reals all 1 and imags all 0:
 		this.pv_equivalencetests_common(fakeframe,
@@ -75,7 +74,7 @@ TestPV_ChainUGen_Server : UnitTest {
 		tests.keysValuesDo{|name, func|
 			b = Buffer.sendCollection(s, fakeframe);
 			s.sync;
-			synth = {var f; f = FFTTrigger(b); func.value(f); Line.ar(0, 0, 0.05, doneAction: Done.freeSelf)}.play(s);
+			synth = { var f = FFTTrigger(b); func.value(f); Line.ar(0, 0, 0.05, doneAction: Done.freeSelf)}.play(s);
 			synth.waitForFree;
 			b.loadToFloatArray(action: { |data|
 				this.assertArrayFloatEquals(data, equaltothis, message.format(name), within: 0.001, report: true);

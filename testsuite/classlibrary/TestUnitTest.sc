@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestUnitTest : UnitTest {
 
 	var setUpHappened = false;

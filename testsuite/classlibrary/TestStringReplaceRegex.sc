@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestStringReplaceRegex : UnitTest {
 	test_replace_simple {
 		this.assertEquals(

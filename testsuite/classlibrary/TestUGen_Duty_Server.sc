@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestUGen_Duty_Server : UnitTest {
 
 	var server;
@@ -16,14 +17,13 @@ TestUGen_Duty_Server : UnitTest {
 	*/
 	callAudioRateTestForFirstNFrames { |numFrames, func|
 		var values;
-		var dt, dur, action;
 		var cond = Condition();
 
 		values = [1, 0.15, 1.1, 0.25, 2, 0.5];
 
-		dt = numFrames / server.sampleRate;
-		dur = values.size * dt;
-		action = { |ugenOutput|
+		var dt = numFrames / server.sampleRate;
+		var dur = values.size * dt;
+		var action = { |ugenOutput|
 			this.assertArrayFloatEquals(
 				ugenOutput,
 				values.dupEach(numFrames),

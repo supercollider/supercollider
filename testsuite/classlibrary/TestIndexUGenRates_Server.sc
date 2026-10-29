@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestIndexUGenRates_Server : UnitTest {
 
 	var server, numFrames, floats;
@@ -85,18 +86,18 @@ TestIndexUGenRates_Server : UnitTest {
 
 	test_indexRates {
 
-		var index, writeBuf, value, synth;
+		var value;
 
 		numFrames = server.options.blockSize;
-		index = (numFrames/2).asInteger;
+		var index = (numFrames/2).asInteger;
 		floats = Array.fill(numFrames, { |i| (numFrames-i)/numFrames });
 		floats = Buffer.loadCollection(server, floats);
-		writeBuf = Buffer.alloc(server, numFrames);
+		var writeBuf = Buffer.alloc(server, numFrames);
 
 		this.addSynthDefs;
 		server.sync;
 
-		synth = Synth(\indexArPhaseAr, [\buf, writeBuf], target: server);
+		var synth = Synth(\indexArPhaseAr, [\buf, writeBuf], target: server);
 		synth.waitForFree;
 		writeBuf.get(index, { |i| value = i});
 		server.sync;

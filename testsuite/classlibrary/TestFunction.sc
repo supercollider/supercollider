@@ -1,22 +1,22 @@
+//# VERSION 3.16
 TestFunction : UnitTest {
 
 	test_function_scope {
-		var generator, list, result, a;
+		var generator, a;
 		generator = {
 			var x = 0;
 			{ |y| a = x = x + y }
 		};
-		list = 10.collect(generator);
-		result = list.collect { |each, i| each.value(i) };
+		var list = 10.collect(generator);
+		var result = list.collect { |each, i| each.value(i) };
 		this.assert(result == (0..9), "lexical function scope should be independent");
 		this.assert(a == 9, "outer lexical function scope should recieve side-effect");
 	}
 
 	test_classmethod_scope {
-		var obj, func;
-		obj = CommonTestClass;
+		var obj = CommonTestClass;
 		obj.x = 5;
-		func = obj.returnLexicalScopeGetterFunc;
+		var func = obj.returnLexicalScopeGetterFunc;
 		this.assert(func.value == [5, 7], "function scope should be able to access class variables");
 		func = obj.returnLexicalScopeSetterFunc;
 		func.value(42);
@@ -25,10 +25,9 @@ TestFunction : UnitTest {
 	}
 
 	test_instancemethod_scope {
-		var obj, func;
-		obj = CommonTestClass.new;
+		var obj = CommonTestClass.new;
 		obj.a = 5;
-		func = obj.returnLexicalScopeGetterFunc;
+		var func = obj.returnLexicalScopeGetterFunc;
 		this.assert(func.value == [5, 3], "function scope should be able to access instance variables");
 		func = obj.returnLexicalScopeSetterFunc;
 		func.value(42);
@@ -168,17 +167,17 @@ TestFunction : UnitTest {
 
 	test_flop_inEnvir {
 		var envir = Environment.new;
-		var function, flopFunction, result, directResult;
+		var result;
 		envir.use {
 			~x = [1, 10];
 			~y = [2, 20, 200];
 		};
-		function = { |x, y| x + y };
-		flopFunction = function.flop;
+		var function = { |x, y| x + y };
+		var flopFunction = function.flop;
 		envir.use {
 			result = flopFunction.valueEnvir;
 		};
-		directResult = [ 3, 30, 201 ];
+		var directResult = [ 3, 30, 201 ];
 		this.assertEquals(result, directResult, "envirFlop should work in environment")
 
 	}
@@ -276,49 +275,44 @@ TestFunction : UnitTest {
 	}
 
 	test_unaryOpFunc_with_kwargs {
-		var f, g, result;
-		f = { |x, z, y| x + y };
-		g = f.neg;
-		result = g.(x:1, y:2);
+		var f = { |x, z, y| x + y };
+		var g = f.neg;
+		var result = g.(x:1, y:2);
 		this.assertEquals(result, -3, "unary op functions should pass on the correct keyword arguments");
 	}
 
 	test_binaryOpFunc_with_kwargs {
-		var f, g, result;
-		f = { |x, z, y| x + y };
-		g = f * 4;
-		result = g.(x:1, y:2);
+		var f = { |x, z, y| x + y };
+		var g = f * 4;
+		var result = g.(x:1, y:2);
 		this.assertEquals(result,  12, "binary op functions should pass on the correct keyword arguments");
 	}
 
 	test_naryOpFunc_with_kwargs {
-		var f, g, result;
-		f = { |x, z, y| x + y };
-		g = f.linlin(0, 10, 0, -10);
-		result = g.(x:1, y:2);
+		var f = { |x, z, y| x + y };
+		var g = f.linlin(0, 10, 0, -10);
+		var result = g.(x:1, y:2);
 		this.assertEquals(result, -3, "nary op functions should pass on the correct keyword arguments");
 	}
 
 	test_naryOpFunc_kwargs_with_kwargs {
-		var f, g, result;
-		f = { |x, z, y| x + y };
-		g = f.linlin(0, 10, outMin: 0, outMax: -10);
-		result = g.(x:1, y:2);
+		var f = { |x, z, y| x + y };
+		var g = f.linlin(0, 10, outMin: 0, outMax: -10);
+		var result = g.(x:1, y:2);
 		this.assertEquals(result, -3, "nary op functions built with keyword args should pass on the correct keyword arguments");
 	}
 
 	test_naryOpFunc_kwargs_valueArray {
-		var f, g, result;
-		f = { |x, z, y| x + y };
-		g = f.linlin(0, 10, outMin: 0, outMax: -10);
-		result = g.valueArray([1,0,2]);
+		var f = { |x, z, y| x + y };
+		var g = f.linlin(0, 10, outMin: 0, outMax: -10);
+		var result = g.valueArray([1,0,2]);
 		this.assertEquals(result, -3, "nary op functions built with keyword args should work correctly with valueArray");
 	}
 
 	test_naryOpFunc_kwargs_valueArrayEnvir {
-		var f, g, result;
-		f = { |x, z, y| x + y };
-		g = f.linlin(0, 10, outMin: 0, outMax: -10);
+		var result;
+		var f = { |x, z, y| x + y };
+		var g = f.linlin(0, 10, outMin: 0, outMax: -10);
 		result = Environment.use {
 			~y = 2;
 			g.valueArrayEnvir([1,0]);

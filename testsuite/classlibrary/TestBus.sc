@@ -1,14 +1,14 @@
+//# VERSION 3.16
 
 TestBus : UnitTest {
 
 	ignore_test_free {
-		var s,busses,numBusses;
-		s = Server(thisMethod.name);
+		var s = Server(thisMethod.name);
 		s.newAllocators;
 
-		numBusses = s.options.numAudioBusChannels - (s.options.numOutputBusChannels + s.options.numInputBusChannels);
+		var numBusses = s.options.numAudioBusChannels - (s.options.numOutputBusChannels + s.options.numInputBusChannels);
 
-		busses = Array.fill( numBusses,{
+		var busses = Array.fill( numBusses,{
 									Bus.audio(s,1);
 							});
 		this.assert(busses.every(_.notNil),"should be able to allocate all busses");
@@ -26,12 +26,11 @@ TestBus : UnitTest {
 		s.remove;
 	}
 	test_controlFree {
-		var s,busses;
-		s = Server(thisMethod.name);
+		var s = Server(thisMethod.name);
 		s.options.numControlBusChannels = 10;
 		s.newAllocators;
 
-		busses = Array.fill( s.options.numControlBusChannels,{
+		var busses = Array.fill( s.options.numControlBusChannels,{
 									Bus.control(s,1);
 							});
 		this.assertEquals( busses.select(_.notNil).size, s.options.numControlBusChannels," should be numControlBusChannels busses");

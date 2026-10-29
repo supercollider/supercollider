@@ -1,9 +1,10 @@
+//# VERSION 3.16
 TestResample_Server : TestReblockBase_Server {
 	test_resampleWithConstantFactorWorks {
 		var bus = Bus.control(server);
 		var factors = [ 0, 1, 2, 4, 8 ];
 		var results = Array.fill(factors.size, nil);
-		var success, sr = server.options.sampleRate;
+		var sr = server.options.sampleRate;
 		sr.postln;
 
 		factors.do { |factor, index|
@@ -23,7 +24,7 @@ TestResample_Server : TestReblockBase_Server {
 			synth.free;
 		};
 		this.assert(results[0] == sr, "Resample with argument 0.0 matches Server sample rate");
-		success = [ factors[1..], results[1..] ].flop.every { |pair|
+		var success = [ factors[1..], results[1..] ].flop.every { |pair|
 			(pair[0] * sr) == pair[1]
 		};
 		this.assert(success, "Resample with constant argument matches SampleRate output");
@@ -51,7 +52,7 @@ TestResample_Server : TestReblockBase_Server {
 		var bus = Bus.control(server);
 		var factors = [ 0, 1, 2, 4, 8 ];
 		var results = Array.fill(factors.size, nil);
-		var success, sr = server.options.sampleRate;
+		var sr = server.options.sampleRate;
 
 		SynthDef(\testResampleControl, { |out, resample|
 			Resample(resample);
@@ -71,7 +72,7 @@ TestResample_Server : TestReblockBase_Server {
 			synth.free;
 		};
 		this.assert(results[0] == sr, "Resample with control default argument matches Server sample rate");
-		success = [ factors[1..], results[1..] ].flop.every { |pair| (pair[0] * sr) == pair[1] };
+		var success = [ factors[1..], results[1..] ].flop.every { |pair| (pair[0] * sr) == pair[1] };
 		this.assert(success, "Resample with control argument matches SampleRate output");
 	}
 
@@ -79,7 +80,7 @@ TestResample_Server : TestReblockBase_Server {
 		var bus = Bus.control(server);
 		var factors = [ -1, 0.9, 3, 7 ];
 		var results = Array.fill(factors.size, nil);
-		var success, sr = server.options.sampleRate;
+		var sr = server.options.sampleRate;
 		SynthDef(\testResampleControlFail, { |out, resample|
 			Resample(resample);
 			Out.kr(out, SampleRate.ir);
@@ -96,16 +97,16 @@ TestResample_Server : TestReblockBase_Server {
 			cond.wait;
 			synth.free;
 		};
-		success = results.every { |x| x == sr };
+		var success = results.every { |x| x == sr };
 		this.assert(success, "Resample with bad control argument falls back to Server sample rate");
 	}
 
 	test_resampleIgnoresDuplicates {
 		var bus = Bus.control(server);
 		var factors = [ 1, 2, 4, 8 ];
-		var cond = Condition(), value, synth;
+		var cond = Condition(), value;
 		var sr = server.options.sampleRate;
-		synth = {
+		var synth = {
 			factors.do { |x| Resample(x) };
 			Out.kr(bus, SampleRate.ir);
 		}.play(server);
@@ -120,14 +121,13 @@ TestResample_Server : TestReblockBase_Server {
 	}
 
 	test_IOUGensWithResampling {
-		var arTestSig, krTestSig, simpleAB;
 		var trigBusA = Bus.control(server, 2);
 		var trigBusB = Bus.control(server, 2);
 		var arTestBus = Bus.audio(server, 2);
 		var krTestBus = Bus.control(server, 2);
 		var testFactor = 4;
 
-		simpleAB = { |defName|
+		var simpleAB = { |defName|
 			{ |busA, busB|
 				[
 					Synth(defName, [ out: busA, resample: testFactor ], server, \addToTail),
@@ -136,9 +136,9 @@ TestResample_Server : TestReblockBase_Server {
 			}
 		};
 
-		arTestSig = { Out.ar(arTestBus, SinOsc.ar([220, 440])) }.play(server);
+		var arTestSig = { Out.ar(arTestBus, SinOsc.ar([220, 440])) }.play(server);
 
-		krTestSig = { Out.kr(krTestBus, SinOsc.kr([220, 440])) }.play(server);
+		var krTestSig = { Out.kr(krTestBus, SinOsc.kr([220, 440])) }.play(server);
 
 		server.sync;
 

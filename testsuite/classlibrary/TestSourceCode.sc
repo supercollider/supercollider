@@ -1,10 +1,10 @@
+//# VERSION 3.16
 // Formatting is on purpose here to catch edge cases.
 // Don't change it.
 TestSourceCode : UnitTest {
 	test_fn {
-		var f;
 
-		f = { 1 + 1 };
+		var f = { 1 + 1 };
 		this.assertEquals(f.def.sourceCode.quote, "{ 1 + 1 }".quote);
 
 		f = {1+1};
@@ -28,9 +28,8 @@ TestSourceCode : UnitTest {
 	}
 
 	test_partial {
- 		var f;
 
- 		f = _    + 1;
+ 		var f = _    + 1;
  		this.assertEquals(f.def.sourceCode.quote, "_    + 1".quote);
 
  		f = (_ + 1)

@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestMixedBundleTester_Server : UnitTest {
 
 	var server, tester;
@@ -51,7 +52,6 @@ TestMixedBundleTester_Server : UnitTest {
 
 	// test that after sending that the bundle gets put in bundlesSent
 	test_send {
-		var sent;
 		var numDefs = 100;
 		var condvar = CondVar();
 
@@ -64,7 +64,7 @@ TestMixedBundleTester_Server : UnitTest {
 		// should be 100 in preparationMessages
 		this.assertEquals(MixedBundleTester.bundlesSent.size, 1, "should be 1 bundle sent");
 
-		sent = MixedBundleTester.bundlesSent.first;
+		var sent = MixedBundleTester.bundlesSent.first;
 		this.assertEquals(sent, tester, "it should be our bundle");
 		this.assertEquals(sent.preparationMessages.size, numDefs, "should be 100 in preparationMessages");
 	}
@@ -84,8 +84,7 @@ TestMixedBundleTester_Server : UnitTest {
 	}
 
 	test_defNames {
-		var def, names;
-		def = [
+		var def = [
 			"/d_recv",
 			Int8Array[83, 67, 103, 102, 0, 0, 0, 1, 0, 1, 7, 100, 105, 115, 107,
 			73, 110, 52, 0, 5, 0, 0, 0, 0, 63, -128, 0, 0, 64, 0, 0, 0, 64, 64, 0, 0, -62,
@@ -127,7 +126,7 @@ TestMixedBundleTester_Server : UnitTest {
 
 		tester.addPrepare(def);
 
-		names = tester.defNames;
+		var names = tester.defNames;
 
 		this.assertEquals(names[0], "diskIn4");
 		this.assert(tester.includesDefName("diskIn4"));

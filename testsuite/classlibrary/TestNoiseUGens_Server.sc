@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestNoiseUGens_Server : UnitTest {
 	var server;
 
@@ -13,7 +14,6 @@ TestNoiseUGens_Server : UnitTest {
 	test_RandSeed_sets_seed {
 		var synth;
 		var cond = CondVar.new;
-		var buffer;
 		var ok = false;
 		var err;
 
@@ -26,7 +26,7 @@ TestNoiseUGens_Server : UnitTest {
 
 		server.bootSync;
 
-		buffer = Buffer.alloc(server, size, 1);
+		var buffer = Buffer.alloc(server, size, 1);
 		server.sync;
 
 		try {

@@ -1,11 +1,11 @@
+//# VERSION 3.16
 
 TestControlSpec : UnitTest {
 
 	test_equals {
-		var a,b,c;
-		a = ControlSpec(0, 1, 'linear', 0, 0.0, "");
-		b = ControlSpec(0, 1, 'linear', 0, 0.0, "");
-		c = ControlSpec(0, 2, 'linear', 0, 0.0, "");
+		var a = ControlSpec(0, 1, 'linear', 0, 0.0, "");
+		var b = ControlSpec(0, 1, 'linear', 0, 0.0, "");
+		var c = ControlSpec(0, 2, 'linear', 0, 0.0, "");
 
 		// no really, this failed !
 		this.assert( a == b, "2 identical control specs should be equal");
@@ -15,12 +15,11 @@ TestControlSpec : UnitTest {
 
 	}
 	test_copy {
-		var z,w;
 
-		z = ControlSpec(50,100);
+		var z = ControlSpec(50,100);
 		this.assert(z.warp.spec === z,"the spec's warp's spec should be the spec");
 
-		w = z.copy;
+		var w = z.copy;
 		this.assert(z.warp !== w.warp,"should not copy the warp object when you copy a control spec");
 		this.assert( w.warp.spec === w,"the copied spec's warp should be the copied spec");
 
@@ -34,10 +33,9 @@ TestControlSpec : UnitTest {
 	}
 
 	test_setFrom {
-		var a, b;
 
-		a = ControlSpec(1, 2, \lin, 0.1, 1.5, "test units");
-		b = ControlSpec().setFrom(a);
+		var a = ControlSpec(1, 2, \lin, 0.1, 1.5, "test units");
+		var b = ControlSpec().setFrom(a);
 
 		this.assertEquals(b.minval, 1, "set minval");
 		this.assertEquals(b.maxval, 2, "set maxval");
@@ -50,9 +48,9 @@ TestControlSpec : UnitTest {
 	}
 
 	test_defcontrols_args {
-		var def, spec;
+		var def;
 
-		spec = ControlSpec(100, 1000, \exp, 1, 440);
+		var spec = ControlSpec(100, 1000, \exp, 1, 440);
 
 		def = SynthDef(\__unittest_controlspec_namedcontrols, {
 			|freq=123|
@@ -64,17 +62,16 @@ TestControlSpec : UnitTest {
 	}
 
 	test_defcontrols_symbols {
-		var def, spec;
+		var def;
 
-		spec = ControlSpec(100, 1000, \exp, 1, 440);
+		var spec = ControlSpec(100, 1000, \exp, 1, 440);
 
 		def = SynthDef(\__unittest_controlspec_namedcontrols, {
-			var freq, input, gate, dur;
 
-			dur = \dur.ir(spec:spec);
-			freq = \freq.kr(spec:spec);
-			input = \input.ar(spec:spec);
-			gate = \gate.tr(spec:spec);
+			var dur = \dur.ir(spec:spec);
+			var freq = \freq.kr(spec:spec);
+			var input = \input.ar(spec:spec);
+			var gate = \gate.tr(spec:spec);
 
 			Out.ar(0, SinOsc.ar(freq));
 		}).add;
@@ -86,11 +83,10 @@ TestControlSpec : UnitTest {
 	}
 
 	test_defcontrols_metadata {
-		var def, spec;
 
-		spec = ControlSpec(100, 1000, \exp, 1, 440);
+		var spec = ControlSpec(100, 1000, \exp, 1, 440);
 
-		def = SynthDef(\__unittest_controlspec_namedcontrols, {
+		var def = SynthDef(\__unittest_controlspec_namedcontrols, {
 			|freq|
 			Out.ar(0, SinOsc.ar(freq));
 		}, metadata: ( specs: ( freq: spec ))).add;
@@ -99,11 +95,10 @@ TestControlSpec : UnitTest {
 	}
 
 	test_defcontrols_nodeproxy {
-		var proxy, spec;
 
-		spec = ControlSpec(100, 1000, \exp, 1, 440);
+		var spec = ControlSpec(100, 1000, \exp, 1, 440);
 
-		proxy = NodeProxy.audio(Server.default, 2);
+		var proxy = NodeProxy.audio(Server.default, 2);
 		proxy.source = {
 			SinOsc.ar(\freq.kr(spec:spec));
 		};
@@ -115,8 +110,7 @@ TestControlSpec : UnitTest {
 		var def;
 
 		def = SynthDef(\__unittest_controlspec_namedcontrols_c, {
-			var freq;
-			freq = \freq.kr(spec:ControlSpec(0, 10000, default:123));
+			var freq = \freq.kr(spec:ControlSpec(0, 10000, default:123));
 		}).add;
 
 		this.assertEquals(def.desc.controls[0].defaultValue, 123, "set default correctly from SynthDef");
@@ -128,11 +122,10 @@ TestControlSpec : UnitTest {
 TestCurveWarp :UnitTest {
 
 	test_equals {
-		var s,c,d,e;
-		s = ControlSpec(0.3,10.0);
-		c = CurveWarp(s,-2);
-		d = CurveWarp(s,-2);
-		e = CurveWarp(s,-3);
+		var s = ControlSpec(0.3,10.0);
+		var c = CurveWarp(s,-2);
+		var d = CurveWarp(s,-2);
+		var e = CurveWarp(s,-3);
 
 		this.assert( c == d, "CurveWarp should be equal");
 		this.assert( c != e, "CurveWarp should not be equal");

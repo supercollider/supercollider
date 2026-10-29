@@ -1,3 +1,4 @@
+//# VERSION 3.16
 // see also TestServer_clientID
 /*
 TestServer_clientID_booted.run;
@@ -38,13 +39,13 @@ TestServer_clientID_booted : UnitTest {
 	// TODO: find a better home for this test
 	test_nodeIDAlloc_ServerTree {
 		var s = Server(this.class.name);
-		var synth1, synth2;
+		var synth1;
 		var func = { synth1 = Synth("default"); };
 
 		ServerTree.add(func, s);
 		this.bootServer(s);
 
-		synth2 = Synth("default", [\freq, 330]);
+		var synth2 = Synth("default", [\freq, 330]);
 		this.assert(synth1.nodeID != synth2.nodeID,
 			"first nodeID after booting should not repeat nodeID created in ServerTree.");
 
@@ -58,10 +59,9 @@ TestServer_clientID_booted : UnitTest {
 	test_lockedWhileRunning {
 		var options = ServerOptions.new.maxLogins_(4);
 		var s = Server(this.class.name, nil, options, 1);
-		var lockedID;
 
 		this.bootServer(s);
-		lockedID = s.clientID;
+		var lockedID = s.clientID;
 
 		s.clientID = 3;
 		this.assertEquals(s.clientID, lockedID,
@@ -74,16 +74,15 @@ TestServer_clientID_booted : UnitTest {
 	// test that repeated login from the same server object to a running server process
 	// ends with correct server status, and keeps clientID and allocators  as is.
 	test_repeatedLogin {
-		var server, cond, timer, lastNodeID;
 
-		server = Server(thisMethod.name.asSymbol);
+		var server = Server(thisMethod.name.asSymbol);
 		server.options.maxLogins = 4;
 		server.clientID = 3;
 		this.bootServer(server);
 
 		// use some nodeIDs so we know whether nodeID allocator is reset
 		10.do { server.nextNodeID };
-		lastNodeID = server.nextNodeID;
+		var lastNodeID = server.nextNodeID;
 
 		// simulate losing network contact by turning off watcher,
 		// but actually leave the server process running
@@ -97,9 +96,9 @@ TestServer_clientID_booted : UnitTest {
 		// should get "This seems to be a login after loss of network ... all is well" post.
 		server.startAliveThread;
 
-		cond = Condition.new;
+		var cond = Condition.new;
 
-		timer = fork { 10.wait; cond.unhang };
+		var timer = fork { 10.wait; cond.unhang };
 		server.doWhenBooted {
 			"% - server login timed out.\n".postf(thisMethod);
 			timer.stop;
@@ -129,19 +128,18 @@ TestServer_clientID_booted : UnitTest {
 	// first login initializes fully,
 	// second login from same address gets the same clientID, and sets running state.
 	test_remoteLogin {
-		var options, serverPid, remote1, cond, timer, exitCond, testsFinished;
 
-		options = ServerOptions.new;
+		var options = ServerOptions.new;
 		options.maxLogins = 4;
 
-		exitCond = CondVar.new;
+		var exitCond = CondVar.new;
 		// simulate a remote server process by starting a server process independently of SC
-		serverPid = unixCmd(Server.program + options.asOptionsString, { exitCond.signalOne });
+		var serverPid = unixCmd(Server.program + options.asOptionsString, { exitCond.signalOne });
 
 		// login with standard Server.remote method to test for
-		remote1 = Server.remote(\remoteLogin1, options: options, clientID: 3);
-		cond = Condition.new;
-		timer = fork { 10.wait; cond.unhang };
+		var remote1 = Server.remote(\remoteLogin1, options: options, clientID: 3);
+		var cond = Condition.new;
+		var timer = fork { 10.wait; cond.unhang };
 
 		remote1.doWhenBooted {
 			"% - server first login timed out.\n".postf(thisMethod);
@@ -160,25 +158,24 @@ TestServer_clientID_booted : UnitTest {
 
 		remote1.stopAliveThread.remove;
 		thisProcess.platform.killProcessByID(serverPid);
-		testsFinished = exitCond.waitFor(10); // wait for the server process to exit
+		var testsFinished = exitCond.waitFor(10); // wait for the server process to exit
 		this.assert(testsFinished, "TIMEOUT: server process did not quit");
 	}
 
 	test_repeatedRemoteLogin {
 
-		var options, serverPid, remote1, remote2, cond, timer, exitCond, testsFinished;
 
-		options = ServerOptions.new;
+		var options = ServerOptions.new;
 		options.maxLogins = 4;
 
-		exitCond = CondVar.new;
+		var exitCond = CondVar.new;
 		// simulate a remote server process by starting a server process independently of SC
-		serverPid = unixCmd(Server.program + options.asOptionsString, { exitCond.signalOne });
+		var serverPid = unixCmd(Server.program + options.asOptionsString, { exitCond.signalOne });
 
 		// login with standard Server.remote method to test for
-		remote1 = Server.remote(\remoteLogin1, options: options, clientID: 3);
-		cond = Condition.new;
-		timer = fork { 10.wait; cond.unhang };
+		var remote1 = Server.remote(\remoteLogin1, options: options, clientID: 3);
+		var cond = Condition.new;
+		var timer = fork { 10.wait; cond.unhang };
 
 		remote1.doWhenBooted {
 			"% - server first login timed out.\n".postf(thisMethod);
@@ -195,7 +192,7 @@ TestServer_clientID_booted : UnitTest {
 		// Because client netaddr is already registered in the server process,
 		// the response goes thru prHandleNotifyFailString, and prHandleLoginWhenAlreadyRegistered
 
-		remote2 = Server.remote(\remoteLogin2, options: options);
+		var remote2 = Server.remote(\remoteLogin2, options: options);
 		cond = Condition.new;
 		timer = fork { 10.wait; cond.unhang };
 
@@ -219,7 +216,7 @@ TestServer_clientID_booted : UnitTest {
 		remote1.stopAliveThread.remove;
 		remote2.stopAliveThread.remove;
 		thisProcess.platform.killProcessByID(serverPid);
-		testsFinished = exitCond.waitFor(10); // wait for the server process to exit
+		var testsFinished = exitCond.waitFor(10); // wait for the server process to exit
 		this.assert(testsFinished, "TIMEOUT: server process did not quit")
 	}
 }

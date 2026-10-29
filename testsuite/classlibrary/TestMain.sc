@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestMain : UnitTest {
 	test_versionAtMost_equal_returnsTrue {
 		this.assert(Main.versionAtMost(Main.scVersionMajor, Main.scVersionMinor, Main.scVersionPatch))

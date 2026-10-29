@@ -1,22 +1,22 @@
+//# VERSION 3.16
 TestPatternProxy : UnitTest {
 
 	test_transparency {
 
 		var runTest = { |f, source, firstSource|
 			var n = 16;
-			var a, b, proxy, pattern, errorString;
-			var resultA, resultB;
-			proxy = PatternProxy.new;
-			a = f.(proxy).asStream;
+			var pattern;
+			var proxy = PatternProxy.new;
+			var a = f.(proxy).asStream;
 			if(firstSource.notNil) {
 				proxy.source = firstSource;
 				n.do { a.next }
 			};
 			proxy.source = source;
-			b = f.(source).asStream;
-			resultA = Array.fill(n, { a.next });
-			resultB = Array.fill(n, { b.next });
-			errorString = "The function % should behave the same for a PatternProxy and its source:\n%\n".format(f.cs, source.cs);
+			var b = f.(source).asStream;
+			var resultA = Array.fill(n, { a.next });
+			var resultB = Array.fill(n, { b.next });
+			var errorString = "The function % should behave the same for a PatternProxy and its source:\n%\n".format(f.cs, source.cs);
 			if(firstSource.notNil) { errorString = errorString ++ "firstSource: " ++ firstSource.cs };
 			errorString = errorString ++ "\ncompare results:\n%\n%\n\n".format(resultA, resultB);
 
@@ -60,17 +60,16 @@ TestPatternProxy : UnitTest {
 
 		var runTest = { |f, source|
 			var n = 16;
-			var a, b, proxy, pattern, errorString;
-			var resultA, resultB;
+			var pattern;
 			var removeCleanup = { |event| event !? { event.removeAt(\addToCleanup) }; event };
 
-			proxy = EventPatternProxy.new;
+			var proxy = EventPatternProxy.new;
 			proxy.source = source;
-			a = Pevent(f.(proxy), Event.default).asStream;
-			b = Pevent(f.(proxy.source), Event.default).asStream;
-			resultA = Array.fill(n, { a.next }).collect(removeCleanup);
-			resultB = Array.fill(n, { b.next }).collect(removeCleanup);
-			errorString = "The function % should behave the same for a PatternProxy and its source:\n%\n".format(f.cs, source.cs);
+			var a = Pevent(f.(proxy), Event.default).asStream;
+			var b = Pevent(f.(proxy.source), Event.default).asStream;
+			var resultA = Array.fill(n, { a.next }).collect(removeCleanup);
+			var resultB = Array.fill(n, { b.next }).collect(removeCleanup);
+			var errorString = "The function % should behave the same for a PatternProxy and its source:\n%\n".format(f.cs, source.cs);
 			errorString = errorString ++ "\ncompare results:\n%\n%\n\n".format(resultA, resultB);
 
 			this.assert(resultA == resultB, errorString, false)
@@ -185,7 +184,7 @@ TestPatternProxy : UnitTest {
 
 	test_update_withEvents {
 
-		var x, a;
+		var a;
 		var removeCleanup = { |event| event !? { event.removeAt(\addToCleanup) }; event };
 		var assert = { |a, b, which|
 			//a = a.collect(removeCleanup);
@@ -266,7 +265,7 @@ TestPatternProxy : UnitTest {
 			"Pdef default value should be Event.silent", false);
 		Pdef(\x, (freq: 800));
 
-		x = Pdef(\x).endless.asStream;
+		var x = Pdef(\x).endless.asStream;
 		a = Pdef.defaultValue;
 
 		assert.(x.nextN(3, ()), [(freq: 800), a, a], 4.1);

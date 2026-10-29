@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestPerformArgs_O {
 	foo { |a, b, c, d, e, f... args, kwargs |
 		^(a: a, b: b, c: c, d: d, e: e, f: f, args: args, kwargs: kwargs)

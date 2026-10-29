@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestFilterUGens_Server : UnitTest {
 	var server;
 
@@ -132,13 +133,13 @@ TestFilterUGens_Server : UnitTest {
 	}
 
 	test_Integrator_add_presample_once_only {
-		var buffer;  // use a buffer to guarantee exactly 1 input value of 1
+  // use a buffer to guarantee exactly 1 input value of 1
 		var synth;
 		var testResp;
 		var result;
 		var cond = CondVar.new;
 
-		buffer = Buffer.alloc(server, 500, 1, { |buf| buf.zeroMsg });
+		var buffer = Buffer.alloc(server, 500, 1, { |buf| buf.zeroMsg });
 		server.sync;
 		buffer.set(0, 1);
 		server.sync;

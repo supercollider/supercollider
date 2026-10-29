@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestEnvironmentVars : UnitTest {
     test_set_and_get {
 		this.assertNoException(

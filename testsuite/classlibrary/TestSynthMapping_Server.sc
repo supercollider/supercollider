@@ -1,3 +1,4 @@
+//# VERSION 3.16
 /*
 
 make sure audio rate mapping doesn't require ordered nodes
@@ -43,12 +44,11 @@ TestSynthAudioMapping_Server : UnitTest {
 
 
 	test_map_normal_order {
-		var controlSynth, value;
 		this.sendSynthDef(1, 1);
 		server.sync;
-		value = 6561;
+		var value = 6561;
 		synth = Synth(\testNode);
-		controlSynth = Synth.before(synth, \valueNode, [\out, mapBus, \input, value]);
+		var controlSynth = Synth.before(synth, \valueNode, [\out, mapBus, \input, value]);
 		synth.set(\input, "a" ++ mapBus);
 		server.latency.wait;
 		synth.set(\trig, 1);
@@ -59,12 +59,11 @@ TestSynthAudioMapping_Server : UnitTest {
 	}
 
 	test_map_reverse_order {
-		var controlSynth, value;
 		this.sendSynthDef(1, 1);
 		server.sync;
-		value = 6561;
+		var value = 6561;
 		synth = Synth(\testNode);
-		controlSynth = Synth.after(synth, \valueNode, [\out, mapBus, \input, value]);
+		var controlSynth = Synth.after(synth, \valueNode, [\out, mapBus, \input, value]);
 		synth.set(\input, "a" ++ mapBus);
 		server.latency.wait;
 		synth.set(\trig, 1);
@@ -75,14 +74,13 @@ TestSynthAudioMapping_Server : UnitTest {
 	}
 
 	test_map_with_too_many_channels {
-		var controlSynth, value, ctlNumChannels, synthNumChannels;
-		ctlNumChannels = 5;
-		synthNumChannels = 2;
+		var ctlNumChannels = 5;
+		var synthNumChannels = 2;
 		this.sendSynthDef(synthNumChannels, ctlNumChannels);
 		server.sync;
-		value = { 6561.rand } ! ctlNumChannels;
+		var value = { 6561.rand } ! ctlNumChannels;
 		synth = Synth(\testNode);
-		controlSynth = Synth.after(synth, \valueNode, [\out, mapBus, \input, value]);
+		var controlSynth = Synth.after(synth, \valueNode, [\out, mapBus, \input, value]);
 		synth.set(\input, ctlNumChannels.collect { |i| "a" ++ (mapBus + i) });
 		server.latency.wait;
 		synth.set(\trig, 1);
@@ -93,14 +91,13 @@ TestSynthAudioMapping_Server : UnitTest {
 	}
 
 	test_map_with_too_few_channels {
-		var controlSynth, value, ctlNumChannels, synthNumChannels;
-		ctlNumChannels = 2;
-		synthNumChannels = 5;
+		var ctlNumChannels = 2;
+		var synthNumChannels = 5;
 		this.sendSynthDef(synthNumChannels, ctlNumChannels);
 		server.sync;
-		value = { 6561.rand } ! ctlNumChannels;
+		var value = { 6561.rand } ! ctlNumChannels;
 		synth = Synth(\testNode);
-		controlSynth = Synth.after(synth, \valueNode, [\out, mapBus, \input, value]);
+		var controlSynth = Synth.after(synth, \valueNode, [\out, mapBus, \input, value]);
 		synth.set(\input, ctlNumChannels.collect { |i| "a" ++ (mapBus + i) });
 		server.latency.wait;
 		synth.set(\trig, 1);
@@ -111,12 +108,12 @@ TestSynthAudioMapping_Server : UnitTest {
 	}
 
 	test_map_with_control_rate {
-		var controlSynth, value, ctlNumChannels, synthNumChannels, krBus;
-		ctlNumChannels = 2;
-		synthNumChannels = 5;
+		var controlSynth;
+		var ctlNumChannels = 2;
+		var synthNumChannels = 5;
 		this.sendSynthDef(synthNumChannels, ctlNumChannels);
-		krBus = Bus.control(server, ctlNumChannels);
-		value = { 6561.rand } ! ctlNumChannels;
+		var krBus = Bus.control(server, ctlNumChannels);
+		var value = { 6561.rand } ! ctlNumChannels;
 		krBus.setn(value);
 		server.sync;
 		synth = Synth(\testNode);

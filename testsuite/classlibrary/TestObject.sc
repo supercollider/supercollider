@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestObject : UnitTest {
 
 	// not testing Object().writeDefFile("") because it behaves differently

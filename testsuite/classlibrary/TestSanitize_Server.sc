@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestSanitize_Server : UnitTest {
 
 	var server;
@@ -13,7 +14,6 @@ TestSanitize_Server : UnitTest {
 	}
 
 	test_sanitize {
-		var tests;
 		var duration = 256 / server.sampleRate;
 		var expected = 8888.0;
 		var condvar = CondVar();
@@ -21,7 +21,7 @@ TestSanitize_Server : UnitTest {
 
 
 		// Not using a Dictionary here to retain order
-		tests = [
+		var tests = [
 			"Sanitize.kr(8888)" -> { Sanitize.kr(expected, 0) },
 			"Sanitize.kr(inf)" -> { Sanitize.kr(inf, expected) },
 			"Sanitize.kr(-inf)" -> { Sanitize.kr(inf, expected) },

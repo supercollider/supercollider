@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestOSCBundle_Server : UnitTest {
 
 	var server;
@@ -13,11 +14,11 @@ TestOSCBundle_Server : UnitTest {
 	}
 
 	test_doPrepare {
-		var synthDef, bundle;
+		var synthDef;
 		var condvar = CondVar();
 		var completed = false;
 
-		bundle = OSCBundle.new;
+		var bundle = OSCBundle.new;
 		synthDef = Array.fill(100, { |i|
 			var def = SynthDef("TestOSCBundle" ++ i, { Silent.ar });
 			bundle.addPrepare(["/d_recv", def.asBytes])

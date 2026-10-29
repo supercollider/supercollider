@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestDoneActions_Server : UnitTest {
 	var server;
 
@@ -21,9 +22,8 @@ TestDoneActions_Server : UnitTest {
 	}
 
 	test_freeSelfAndResumeNext {
-		var synths, allPlaying, allEnded;
 
-		synths = Array.fill(4, {
+		var synths = Array.fill(4, {
 			Synth.newPaused(
 				this.class.name,
 				[\doneAction, Done.freeSelfResumeNext],
@@ -33,12 +33,12 @@ TestDoneActions_Server : UnitTest {
 		});
 
 		0.2.wait;
-		allPlaying = synths.every { |x| x.isPlaying };
+		var allPlaying = synths.every { |x| x.isPlaying };
 
 		synths.first.run(true);
 
 		0.2.wait;
-		allEnded = synths.every { |x| x.isPlaying.not };
+		var allEnded = synths.every { |x| x.isPlaying.not };
 
 		this.assert(allPlaying, "the chain of synths should first be playing");
 		this.assert(allEnded, "the chain of synths should have freed itself");

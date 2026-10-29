@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestProxySpace_Server : UnitTest {
 	var server;
 
@@ -12,7 +13,7 @@ TestProxySpace_Server : UnitTest {
 	}
 
 	test_storeOn_recoversState {
-		var psA, psB, stream, bValue, bNodeMap, aMapString, bMapString;
+		var psA, stream, bValue, bNodeMap, aMapString, bMapString;
 
 		psA = ProxySpace(server).make {
 			~out = { \in.ar(0!2) };
@@ -27,7 +28,7 @@ TestProxySpace_Server : UnitTest {
 			currentEnvironment.storeOn(stream);
 		};
 
-		psB = ProxySpace(server).make {
+		var psB = ProxySpace(server).make {
 			stream.collection.interpret;
 		};
 
@@ -63,9 +64,7 @@ TestProxySpace_Server : UnitTest {
 
 		var environment = currentEnvironment;
 		var proxySpace = ProxySpace(server);
-		var copySpace;
 		var family = IdentitySet.new;
-		var commonProxies;
 
 		this.bootServer(server);
 
@@ -76,7 +75,7 @@ TestProxySpace_Server : UnitTest {
 
 		0.1.wait;
 
-		copySpace = proxySpace.copy;
+		var copySpace = proxySpace.copy;
 
 		proxySpace.pop;
 		proxySpace.end;
@@ -85,7 +84,7 @@ TestProxySpace_Server : UnitTest {
 		copySpace[\hpf].getFamily(family);
 		this.assert(family.size == 2, "there should be one parent in this case", report: true); // sanity check
 
-		commonProxies = proxySpace.envir.values.as(IdentitySet) sect: family;
+		var commonProxies = proxySpace.envir.values.as(IdentitySet) sect: family;
 		this.assert(commonProxies.isEmpty, "proxyspace copying should refresh local environment crossreferences");
 
 		proxySpace.clear;

@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestClockScheduling : UnitTest {
 
 	test_immediate_sched {

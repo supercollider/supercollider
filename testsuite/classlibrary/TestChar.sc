@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestChar : UnitTest {
 
     test_asCompileString_roundTrips {
