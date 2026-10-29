@@ -10,6 +10,7 @@
 #include "sc_parser/sc_parser.hpp"
 #include "sc_sema/intrinsic_constraint.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <chrono>
 #include <fstream>
@@ -17,6 +18,7 @@
 #include <sstream>
 #include <system_error>
 #include <variant>
+#include <vector>
 
 namespace sc::compiler {
 
@@ -125,9 +127,16 @@ ClassFiles find_class_files(const util::IndexedVector<ir::ModuleIndex, std::file
         const auto& path = module_paths[module_index];
         std::error_code ec;
         if (std::filesystem::is_directory(path, ec)) {
-            for (const auto& entry : std::filesystem::recursive_directory_iterator { path })
-                if (entry.is_regular_file() && entry.path().extension() == ".sc")
-                    (void)files.push_back({ entry.path(), module_index });
+            // Directory iteration order depends on the filesystem, sort so that dumps are the same everywhere.
+            std::vector<std::filesystem::path> found;
+            std::filesystem::recursive_directory_iterator it { path, ec }, end;
+            for (; !ec && it != end; it.increment(ec))
+                if (it->is_regular_file(ec) && it->path().extension() == ".sc"
+                    && it->path().filename().string()[0] != '.')
+                    found.push_back(it->path());
+            std::sort(found.begin(), found.end());
+            for (auto& file : found)
+                (void)files.push_back({ std::move(file), module_index });
         } else if (std::filesystem::is_regular_file(path) && path.extension() == ".sc") {
             (void)files.push_back({ path, module_index });
         }
