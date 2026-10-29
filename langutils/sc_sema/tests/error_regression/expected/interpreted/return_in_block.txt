@@ -14,7 +14,7 @@ SCInterpreted (1:1): poisoned: version 3.16: interpreted/return_in_block.scd
 |      3 │ (var a = 1; ^a)
 |        ┆             ^^ there is no method to return from.
 |
-|  `^` returns from the method the code is written in, but interpreted code isn't in a method, so this includes the functions it defines. The value of interpreted code is its last expression, so remove the `^`.
+|  `^` returns from the method the code is written in, but interpreted code isn't in a method. The value of interpreted code is its last expression, so remove the `^`.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCRegionList (1:1)
 |  |  SCRegion (3:1)

@@ -69,7 +69,7 @@ SCClass (2:1): Arrays : Object, version 3.16
 |  |  |     11 │     immutable_nested { ^#[[a, 1], b] }
 |  |  |     12 │ }
 |  |  |
-|  |  |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  |  |  This is required to be a constant, this is the usual literals and a few compiler known operations.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (10:29)
 |  |  |  |  SCExplicitReturn (10:29)

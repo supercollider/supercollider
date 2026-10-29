@@ -31,7 +31,7 @@ SCClass (2:1): VariadicOrder : Object, version 3.16
 |  |  |      8 │     keyword_after { ^1.foo(*2, bar: 3) }
 |  |  |      9 │     prefix { ^foo(1, *2, 3) }
 |  |  |
-|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
+|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed after the 'v'.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (6:22)
 |  |  |  |  SCExplicitReturn (6:22)
@@ -55,7 +55,7 @@ SCClass (2:1): VariadicOrder : Object, version 3.16
 |  |  |      9 │     prefix { ^foo(1, *2, 3) }
 |  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
 |  |  |
-|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
+|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed after the 'v'.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (7:17)
 |  |  |  |  SCExplicitReturn (7:17)
@@ -90,7 +90,7 @@ SCClass (2:1): VariadicOrder : Object, version 3.16
 |  |  |     11 │     array_after { ^1.foo(*2, [3]) }
 |  |  |     12 │     put_variadic { instance_var[*0] = 1 }
 |  |  |
-|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
+|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed after the 'v'.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (9:14)
 |  |  |  |  SCExplicitReturn (9:14)
@@ -114,7 +114,7 @@ SCClass (2:1): VariadicOrder : Object, version 3.16
 |  |  |     12 │     put_variadic { instance_var[*0] = 1 }
 |  |  |     13 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
 |  |  |
-|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
+|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed after the 'v'.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (10:32)
 |  |  |  |  SCExplicitReturn (10:32)
@@ -136,7 +136,7 @@ SCClass (2:1): VariadicOrder : Object, version 3.16
 |  |  |     13 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
 |  |  |     14 │     after_errors { ^5 }
 |  |  |
-|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
+|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed after the 'v'.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (11:19)
 |  |  |  |  SCExplicitReturn (11:19)
@@ -161,7 +161,7 @@ SCClass (2:1): VariadicOrder : Object, version 3.16
 |  |  |     14 │     after_errors { ^5 }
 |  |  |     15 │ }
 |  |  |
-|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
+|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed after the 'v'.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (12:20)
 |  |  |  |  SCMessage (12:20): put
@@ -183,7 +183,7 @@ SCClass (2:1): VariadicOrder : Object, version 3.16
 |  |  |     14 │     after_errors { ^5 }
 |  |  |     15 │ }
 |  |  |
-|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
+|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed after the 'v'.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (13:28)
 |  |  |  |  SCMessage (13:28): put

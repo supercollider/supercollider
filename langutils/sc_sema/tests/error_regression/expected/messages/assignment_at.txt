@@ -66,7 +66,7 @@ SCClass (2:1): AssignmentAt : Object, version 3.16
 |  |  |     13 │     nested_value { instance_var[0] = instance_var[1] = 2 }
 |  |  |     14 │     as_argument { ^3.bar(instance_var[0] = 1) }
 |  |  |
-|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
+|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed after the 'v'.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (11:16)
 |  |  |  |  SCMessage (11:16): put

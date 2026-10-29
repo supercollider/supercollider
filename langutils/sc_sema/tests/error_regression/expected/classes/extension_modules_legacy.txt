@@ -29,7 +29,7 @@ SCClass (2:1): Foo : Object
 |  |  |      9 │     // expect: -> 2
 |  |  |     10 │     conflicting { ^2 }
 |  |  |
-|  |  |  In the legacy version, as in the old compiler, the extension from the module given last is used. From 3.16 this is an error, as which is used depends on the order the modules are given.
+|  |  |  In the old compiler the extension from the module given last is used. From 3.16 this is an error, as which is used depends on the order the modules are given.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (7:19)
 |  |  |  |  SCExplicitReturn (7:19)
@@ -55,7 +55,7 @@ SCClass (2:1): Foo : Object
 |  |  |     12 │     // expect: no diagnostics
 |  |  |     13 │     // expect: -> 2
 |  |  |
-|  |  |  In the legacy version, as in the old compiler, the extension from the module given last is used. From 3.16 this is an error, as which is used depends on the order the modules are given.
+|  |  |  In the old compiler the extension from the module given last is used. From 3.16 this is an error, as which is used depends on the order the modules are given.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (10:19)
 |  |  |  |  SCExplicitReturn (10:19)
@@ -108,7 +108,7 @@ SCClass (2:1): Meta_Foo : Meta_Object
 |  |  |     19 │     // Within one module, the order isn't defined, so neither is used, in any version.
 |  |  |     20 │     // expect-error: Duplicate extension
 |  |  |
-|  |  |  In the legacy version, as in the old compiler, the extension from the module given last is used. From 3.16 this is an error, as which is used depends on the order the modules are given.
+|  |  |  In the old compiler the extension from the module given last is used. From 3.16 this is an error, as which is used depends on the order the modules are given.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (17:26)
 |  |  |  |  SCExplicitReturn (17:26)

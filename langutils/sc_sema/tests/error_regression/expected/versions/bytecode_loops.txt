@@ -190,12 +190,12 @@ SCClass (34:1): Integer : Object
 |  |  |    136 │ + Integer {
 |  |  |    137 │     // expect-warning: Extension of a hard coded method is ignored
 |  |  |    138 │     do { arg function;
-|  |  |        ┆     ^^ this extension's code is replaced by a loop, as the method it replaces is.
+|  |  |        ┆     ^^ this extension's code is replaced by a loop.
 |  |  |    139 │         var i = 0;
 |  |  |    140 │         function.value(i);
 |  |  |    141 │     }
 |  |  |
-|  |  |  The compiler replaces the code of some loop methods, e.g., `Integer:do` and `ArrayedCollection:do`, with special bytecode. Before 3.16 this also happens to an extension method replacing one of them, so the extension's code never runs. Add `//# VERSION 3.16` to the extension to compile its own code.
+|  |  |  The compiler replaces the code of some loop methods, e.g., `Integer:do` and `ArrayedCollection:do`, with special bytecode. Before 3.16 this also happens to an extension method replacing one of them, so the extension's code never runs. Add `//# VERSION 3.16` to the extension to fix this.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (138:14)
 |  |  |  |  SCArgumentDeclare (138:14): function

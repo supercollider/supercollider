@@ -17,7 +17,7 @@ SCClass (2:1): NotConstant : Object, version 3.16
 |      9 │     var environment = ~env;
 |     10 │     var reference = `1;
 |
-|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
@@ -31,7 +31,7 @@ SCClass (2:1): NotConstant : Object, version 3.16
 |     10 │     var reference = `1;
 |     11 │     var unknown_name = other;
 |
-|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
@@ -45,7 +45,7 @@ SCClass (2:1): NotConstant : Object, version 3.16
 |     11 │     var unknown_name = other;
 |     12 │     var curry = _;
 |
-|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
@@ -59,7 +59,7 @@ SCClass (2:1): NotConstant : Object, version 3.16
 |     12 │     var curry = _;
 |     13 │ 
 |
-|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
@@ -73,7 +73,7 @@ SCClass (2:1): NotConstant : Object, version 3.16
 |     13 │ 
 |     14 │     immutable_array { ^#[1, 2.foo, ~env] }
 |
-|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
@@ -87,7 +87,7 @@ SCClass (2:1): NotConstant : Object, version 3.16
 |     14 │     immutable_array { ^#[1, 2.foo, ~env] }
 |     15 │ }
 |
-|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCMemberList (2:1)
 |  |  SCMember (5:9): refers_to_const = 1
@@ -103,7 +103,7 @@ SCClass (2:1): NotConstant : Object, version 3.16
 |  |  |        ┆                             ^^^^^ this can't be evaluated when compiling.
 |  |  |     15 │ }
 |  |  |
-|  |  |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  |  |  This is required to be a constant, this is the usual literals and a few compiler known operations.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -115,7 +115,7 @@ SCClass (2:1): NotConstant : Object, version 3.16
 |  |  |        ┆                                    ^^^^ this can't be evaluated when compiling.
 |  |  |     15 │ }
 |  |  |
-|  |  |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  |  |  This is required to be a constant, this is the usual literals and a few compiler known operations.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (14:23)
 |  |  |  |  SCExplicitReturn (14:23)

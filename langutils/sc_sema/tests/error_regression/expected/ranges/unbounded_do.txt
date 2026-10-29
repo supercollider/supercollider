@@ -20,7 +20,7 @@ SCClass (3:1): UnboundedDo : Object
 |  |  |      6 │     noFunction { ^(0..).do }
 |  |  |      7 │     keyword { |f| ^(0..).do(function: f) }
 |  |  |
-|  |  |  Before 3.16, `(1..).do(f)` calls f with each number from 1 forever, without making the range. From 3.16 a range without an end is an error outside a generator. Use a generator, e.g., `{; f.(i), i <- (1..) }`, or add an end.
+|  |  |  Before 3.16, `(1..).do(f)` calls f with each number from 1 forever, without making the range. From 3.16 a range without an end is an error outside a generator. Try `do((:1..)) {...}`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (4:16)
 |  |  |  |  SCArgumentDeclare (4:16): n (captured)
@@ -60,7 +60,7 @@ SCClass (3:1): UnboundedDo : Object
 |  |  |      7 │     keyword { |f| ^(0..).do(function: f) }
 |  |  |      8 │     variadic { |f| ^(0..).do(*f) }
 |  |  |
-|  |  |  Before 3.16, `(1..).do(f)` calls f with each number from 1 forever, without making the range. From 3.16 a range without an end is an error outside a generator. Use a generator, e.g., `{; f.(i), i <- (1..) }`, or add an end.
+|  |  |  Before 3.16, `(1..).do(f)` calls f with each number from 1 forever, without making the range. From 3.16 a range without an end is an error outside a generator. Try `do((:1..)) {...}`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (5:15)
 |  |  |  |  SCArgumentDeclare (5:15): n

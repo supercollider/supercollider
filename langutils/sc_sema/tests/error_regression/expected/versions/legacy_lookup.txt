@@ -221,7 +221,7 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |     85 │     // expect-error: Variable not defined
 |  |  |     86 │     generator_function_in_value_undefined { ^{: y, var y = { y } } }
 |  |  |
-|  |  |  In the legacy version, as in the old compiler, the value is outside the qualifier, so this is what the name refers to there instead. From 3.16 a function in a qualifier's value refers to the qualifier's variable. Rename one of them to keep this meaning.
+|  |  |  Rename one of them to keep this meaning.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (83:35)
 |  |  |  |  SCVariableDeclare (83:39): y (captured), prototype
@@ -248,7 +248,7 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |     88 │     // expect: no diagnostics
 |  |  |     89 │     // expect-reads: foo -> foo = foo + 1; foo = foo + 1
 |  |  |
-|  |  |  In the legacy version, as in the old compiler, the value is outside the qualifier, so this is what the name refers to there instead. From 3.16 a function in a qualifier's value refers to the qualifier's variable. Rename one of them to keep this meaning.
+|  |  |  Rename one of them to keep this meaning.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────

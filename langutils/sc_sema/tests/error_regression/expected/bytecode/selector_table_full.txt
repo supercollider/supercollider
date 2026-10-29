@@ -20,7 +20,7 @@ SCClass (4:1): BytecodeSelectorTableFull : Object, version 3.16
 |  |  |      8 │     few { |a| ^a.s0 }
 |  |  |      9 │ }
 |  |  |
-|  |  |  A method or function's bytecode refers to the selectors it sends, the class names it uses and the functions written in it through a table of at most 255 entries. Split the code into smaller methods or functions.
+|  |  |  Split the code into smaller functions.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (6:13)
 |  |  |  |  SCArgumentDeclare (6:13): a

@@ -17,7 +17,7 @@ SCClass (2:1): RangeInitialisers : Object, version 3.16
 |     12 │     var not_constant = (1..2.foo);
 |     13 │     var too_large = (1..2000);
 |
-|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
@@ -44,7 +44,7 @@ SCClass (2:1): RangeInitialisers : Object, version 3.16
 |     13 │     var too_large = (1..2000);
 |     14 │ }
 |
-|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
@@ -56,7 +56,7 @@ SCClass (2:1): RangeInitialisers : Object, version 3.16
 |        ┆                     ^^^^^^^^^ this can't be evaluated when compiling.
 |     14 │ }
 |
-|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCMemberList (2:1)
 |  |  SCMember (6:9): instance_range = [0, 1, 2]

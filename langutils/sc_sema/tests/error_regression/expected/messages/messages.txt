@@ -59,7 +59,7 @@ SCClass (2:1): Messages : Object, version 3.16
 |  |  |     10 │     binary_keyword { ^1 max: 2 }
 |  |  |     11 │     binary_adverb_name { ^1 +.x 2 }
 |  |  |
-|  |  |  Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
+|  |  |  This message has no receiver. Either write 'a.foo', 'foo(a)', or a 'foo: b'.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (8:26)
 |  |  |  |  SCExplicitReturn (8:26)

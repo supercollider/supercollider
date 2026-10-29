@@ -81,7 +81,7 @@ SCClass (2:1): Setters : Object, version 3.16
 |  |  |     15 │     functional_variadic_receiver { foo(*x) = 2 }
 |  |  |     16 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
 |  |  |
-|  |  |  Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
+|  |  |  This message has no receiver. Either write 'a.foo', 'foo(a)', or a 'foo: b'.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (13:30)
 |  |  |  |  SCExprList (13:30)
@@ -99,7 +99,7 @@ SCClass (2:1): Setters : Object, version 3.16
 |  |  |     16 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
 |  |  |     17 │ }
 |  |  |
-|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
+|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed after the 'v'.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (14:27)
 |  |  |  |  SCMessage (14:27): foo_
@@ -120,7 +120,7 @@ SCClass (2:1): Setters : Object, version 3.16
 |  |  |     16 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
 |  |  |     17 │ }
 |  |  |
-|  |  |  Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
+|  |  |  This message has no receiver. Either write 'a.foo', 'foo(a)', or a 'foo: b'.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (15:36)
 |  |  |  |  SCExprList (15:36)
@@ -136,7 +136,7 @@ SCClass (2:1): Setters : Object, version 3.16
 |  |  |        ┆                                                     └ the elements of this are passed after...
 |  |  |     17 │ }
 |  |  |
-|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.
+|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed after the 'v'.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (16:43)
 |  |  |  |  SCMessage (16:43): foo_

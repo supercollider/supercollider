@@ -17,7 +17,7 @@ SCClass (3:1): ImmutableArrayScope : Object, version 3.16
 |      9 │     var event_after = (x: #[a], y: c);
 |     10 │ 
 |
-|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCMemberList (3:1)
 |  |  SCMember (5:9): inside = [\a, [\b]]

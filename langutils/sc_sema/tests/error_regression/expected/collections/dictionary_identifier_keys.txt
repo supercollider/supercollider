@@ -62,7 +62,7 @@ SCClass (12:1): Initialisers : Object, version 3.16
 |     22 │     var value_not_constant = (a: 1.foo);
 |     23 │ }
 |
-|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
@@ -74,7 +74,7 @@ SCClass (12:1): Initialisers : Object, version 3.16
 |        ┆                                  ^^^^^ this can't be evaluated when compiling.
 |     23 │ }
 |
-|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCMemberList (12:1)
 |  |  SCMember (16:9): instance_event = (a: (b: 2))

@@ -17,7 +17,7 @@ SCClass (2:1): SliceFolding : Object, version 3.16
 |     10 │     const const_array = [10, 20, 30, 40];
 |     11 │     var const_array_slice = const_array[2..];
 |
-|  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  SCMemberList (2:1)
 |  |  SCMember (3:9): x

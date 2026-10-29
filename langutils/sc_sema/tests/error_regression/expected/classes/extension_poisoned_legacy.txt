@@ -44,7 +44,7 @@ SCClass (2:1): Poisoned : Object
 |  |  |        ┆     ^^^^^^^^^^ ...but is replaced by this one, from a later module.
 |  |  |      8 │ }
 |  |  |
-|  |  |  In the legacy version, as in the old compiler, the extension from the module given last is used. From 3.16 this is an error, as which is used depends on the order the modules are given.
+|  |  |  In the old compiler the extension from the module given last is used. From 3.16 this is an error, as which is used depends on the order the modules are given.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (7:18)
 |  |  |  |  SCExplicitReturn (7:18)

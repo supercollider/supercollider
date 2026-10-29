@@ -24,7 +24,7 @@ SCClass (4:1): OutOfRange : Object, version 3.16
 |  |  |     11 │     // expect: -> -2147483648
 |  |  |     12 │     int_smallest { ^-2147483648 }
 |  |  |
-|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. A hexadecimal literal is the 32 bits, from 0x0 to 0xFFFFFFFF, where those from 0x80000000 are negative. Use a Float for larger numbers, e.g., `2147483648.0`.
+|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. Use a Float for larger numbers, e.g.,`2147483648.0`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (9:21)
 |  |  |  |  SCExplicitReturn (9:21)
@@ -46,7 +46,7 @@ SCClass (4:1): OutOfRange : Object, version 3.16
 |  |  |     16 │     int_many_digits { ^99999999999999999999 }
 |  |  |     17 │ 
 |  |  |
-|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. A hexadecimal literal is the 32 bits, from 0x0 to 0xFFFFFFFF, where those from 0x80000000 are negative. Use a Float for larger numbers, e.g., `2147483648.0`.
+|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. Use a Float for larger numbers, e.g.,`2147483648.0`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (14:21)
 |  |  |  |  SCExplicitReturn (14:21)
@@ -64,7 +64,7 @@ SCClass (4:1): OutOfRange : Object, version 3.16
 |  |  |     18 │     // expect: -> 2147483647
 |  |  |     19 │     hex_largest_positive { ^0x7FFFFFFF }
 |  |  |
-|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. A hexadecimal literal is the 32 bits, from 0x0 to 0xFFFFFFFF, where those from 0x80000000 are negative. Use a Float for larger numbers, e.g., `2147483648.0`.
+|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. Use a Float for larger numbers, e.g.,`2147483648.0`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (16:23)
 |  |  |  |  SCExplicitReturn (16:23)
@@ -90,7 +90,7 @@ SCClass (4:1): OutOfRange : Object, version 3.16
 |  |  |     26 │     // expect: -> 2147483647
 |  |  |     27 │     radix_largest { ^16r7FFFFFFF }
 |  |  |
-|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. A hexadecimal literal is the 32 bits, from 0x0 to 0xFFFFFFFF, where those from 0x80000000 are negative. Use a Float for larger numbers, e.g., `2147483648.0`.
+|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. Use a Float for larger numbers, e.g.,`2147483648.0`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (24:25)
 |  |  |  |  SCExplicitReturn (24:25)
@@ -112,7 +112,7 @@ SCClass (4:1): OutOfRange : Object, version 3.16
 |  |  |     32 │     radix_base_too_large { ^99999999999999999999999r1 }
 |  |  |     33 │     // Every radix from 36 up accepts the same digits, which is where the lexer stops reading the radix.
 |  |  |
-|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. A hexadecimal literal is the 32 bits, from 0x0 to 0xFFFFFFFF, where those from 0x80000000 are negative. Use a Float for larger numbers, e.g., `2147483648.0`.
+|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. Use a Float for larger numbers, e.g.,`2147483648.0`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (30:23)
 |  |  |  |  SCExplicitReturn (30:23)
@@ -130,7 +130,7 @@ SCClass (4:1): OutOfRange : Object, version 3.16
 |  |  |     34 │     // expect: -> 35
 |  |  |     35 │     radix_36 { ^36rZ }
 |  |  |
-|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. A hexadecimal literal is the 32 bits, from 0x0 to 0xFFFFFFFF, where those from 0x80000000 are negative. Use a Float for larger numbers, e.g., `2147483648.0`.
+|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. Use a Float for larger numbers, e.g.,`2147483648.0`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (32:28)
 |  |  |  |  SCExplicitReturn (32:28)
@@ -278,7 +278,7 @@ SCClass (4:1): OutOfRange : Object, version 3.16
 |  |  |     75 │     // In an array, the method is poisoned. A nested return's literal is checked too.
 |  |  |     76 │     // expect-error: Literal out of range
 |  |  |
-|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. A hexadecimal literal is the 32 bits, from 0x0 to 0xFFFFFFFF, where those from 0x80000000 are negative. Use a Float for larger numbers, e.g., `2147483648.0`.
+|  |  |  Integers are 32 bit, from -2147483648 to 2147483647. Use a Float for larger numbers, e.g.,`2147483648.0`.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (73:34)
 |  |  |  |  SCExplicitReturn (73:34)

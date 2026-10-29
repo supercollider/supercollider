@@ -49,7 +49,7 @@ SCClass (2:1): Poisoning : Object, version 3.16
 |  |  |     11 │     error_in_array { ^#[1, 2.foo] }
 |  |  |     12 │     two_errors { undefined_var = 5; ^foo(bar: 1) }
 |  |  |
-|  |  |  Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
+|  |  |  This message has no receiver. Either write 'a.foo', 'foo(a)', or a 'foo: b'.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (9:19)
 |  |  |  |  SCExplicitReturn (9:19)
@@ -88,7 +88,7 @@ SCClass (2:1): Poisoning : Object, version 3.16
 |  |  |     13 │     after_errors { ^6 }
 |  |  |     14 │ 
 |  |  |
-|  |  |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  |  |  This is required to be a constant, this is the usual literals and a few compiler known operations.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (11:22)
 |  |  |  |  SCExplicitReturn (11:22)
@@ -123,7 +123,7 @@ SCClass (2:1): Poisoning : Object, version 3.16
 |  |  |     14 │ 
 |  |  |     15 │     *good { ^1 + 2 }
 |  |  |
-|  |  |  Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
+|  |  |  This message has no receiver. Either write 'a.foo', 'foo(a)', or a 'foo: b'.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (12:18)
 |  |  |  |  SCLiteral (12:34) = 5
@@ -191,7 +191,7 @@ SCClass (2:1): Meta_Poisoning : Meta_Object, version 3.16
 |  |  |     20 │     *error_in_array { ^#[1, 2.foo] }
 |  |  |     21 │     *two_errors { undefined_var = 5; ^foo(bar: 1) }
 |  |  |
-|  |  |  Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
+|  |  |  This message has no receiver. Either write 'a.foo', 'foo(a)', or a 'foo: b'.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (18:20)
 |  |  |  |  SCExplicitReturn (18:20)
@@ -230,7 +230,7 @@ SCClass (2:1): Meta_Poisoning : Meta_Object, version 3.16
 |  |  |     22 │     *after_errors { ^6 }
 |  |  |     23 │     *good_class_assignment { class_var = 3 }
 |  |  |
-|  |  |  This must be known when the class library is compiled, e.g., a variable's initial value, or an element of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used.
+|  |  |  This is required to be a constant, this is the usual literals and a few compiler known operations.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (20:23)
 |  |  |  |  SCExplicitReturn (20:23)
@@ -265,7 +265,7 @@ SCClass (2:1): Meta_Poisoning : Meta_Object, version 3.16
 |  |  |     23 │     *good_class_assignment { class_var = 3 }
 |  |  |     24 │ }
 |  |  |
-|  |  |  Functional notation sends the message to its first argument, `foo(a, b)` is the same as `a.foo(b)`. Add a positional argument, e.g., `foo(a)`, or use `a.foo`.
+|  |  |  This message has no receiver. Either write 'a.foo', 'foo(a)', or a 'foo: b'.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (21:19)
 |  |  |  |  SCLiteral (21:35) = 5
