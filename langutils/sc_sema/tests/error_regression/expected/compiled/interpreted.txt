@@ -4,7 +4,7 @@
 IR GRAPH DUMP 
 
 
-SCInterpreted (1:1): compiled/interpreted.scd
+SCInterpreted (1:1): version 3.16: compiled/interpreted.scd
 |  SCRegionList (1:1)
 |  |  SCRegion (4:1)
 |  |  |  SCFunction (4:1)
@@ -17,7 +17,7 @@ SCInterpreted (1:1): compiled/interpreted.scd
 |  |  |  |  |  SCVariableDeclare (5:7): b, prototype
 |  |  |  |  |  |  SCLiteral (5:11) = 2
 |  |  |  |  |  SCVariableDeclare (5:14): c, computed
-|  |  |  |  |  |  SCCollection (5:18): Array
+|  |  |  |  |  |  SCCollection (5:18): Array = [2]
 |  |  |  |  |  |  |  SCRead (5:19): local b = 2, declared (5:7): b = 2
 |  |  |  |  |  SCMessage (5:23): +
 |  |  |  |  |  |  SCRead (5:23): local b = 2, declared (5:7): b = 2
@@ -30,7 +30,7 @@ SCInterpreted (1:1): compiled/interpreted.scd
 |  |  |  |  |  |  SCRoutineGenerator (6:5)
 |  |  |  |  |  |  |  SCGenQualList (6:11)
 |  |  |  |  |  |  |  |  SCGenQualIterate (6:11): x
-|  |  |  |  |  |  |  |  |  SCCollection (6:16): Array
+|  |  |  |  |  |  |  |  |  SCCollection (6:16): Array = [1, 2]
 |  |  |  |  |  |  |  |  |  |  SCLiteral (6:17) = 1
 |  |  |  |  |  |  |  |  |  |  SCLiteral (6:20) = 2
 |  |  |  |  |  |  |  |  SCGenQualIf (6:24)
@@ -62,11 +62,11 @@ Interpreted
 |  |  code: 4 bytes, 0 selectors, 0 constants
 |  function 1 (5:1)
 |  |  variables: b = 2, c,
-|  |  code: 15 bytes, 0 selectors, 0 constants
+|  |  code: 10 bytes, 0 selectors, 1 constants
 |  function 2 (6:1)
 |  |  code: 7 bytes, 2 selectors, 0 constants
 |  function 3 (6:5), in function 2
-|  |  code: 17 bytes, 1 selectors, 0 constants
+|  |  code: 9 bytes, 1 selectors, 1 constants
 |  function 4 (6:11), in function 3
 |  |  arguments: x,
 |  |  code: 11 bytes, 1 selectors, 0 constants

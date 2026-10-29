@@ -31,9 +31,9 @@ An scd file is a test of interpreted code, compiled as if written inside Interpr
 assertions apply to all of it, wherever they are, as long as each is alone on its line, e.g.,
     // expect: -> 2
     a = 1; a + 1
-It is compiled as the legacy version, unless its first lines say which release, as interpreted code has no version
+It is compiled as 3.16, as sclang does, unless its first lines say which release, as interpreted code has no version
 comment, e.g.,
-    // interpreted-version: 3.16
+    // interpreted-version: legacy
 It is parsed as an scd file's regions, unless its first lines say `// interpreted-function`, which parses it as the VM
 does, one function, see sc_inspect's --interpreted-function.
 The first lines can also be `// no-prelude`, to compile it without the shared prelude.sc, and any number of

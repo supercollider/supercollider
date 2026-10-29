@@ -201,8 +201,8 @@ int main(int argc, char* argv[]) {
     // The output is in source order, so it is the same however many threads compile it, --threads sets how many, all
     // of them by default.
     // Interpreted code, the scd files, is compiled as the release after --interpreted-version, e.g., 3.16, as it has no
-    // version comment, legacy by default. They are lists of regions, unless --interpreted-function parses each as the
-    // VM's interpreted code, one function, see sc::src::TextKind.
+    // version comment, 3.16 by default, as sclang does. They are lists of regions, unless --interpreted-function
+    // parses each as the VM's interpreted code, one function, see sc::src::TextKind.
     // --no-dump only compiles, printing how many diagnostics and classes there are, e.g., to time the compiler, as
     // writing the dump takes longer than compiling.
     // --frames adds the backend's frame layout, each frame's slots, and where each variable read or assigned is.
@@ -221,7 +221,7 @@ int main(int argc, char* argv[]) {
     std::vector<std::filesystem::path> prelude_paths;
     std::optional<std::filesystem::path> relative_to;
     size_t num_threads = std::max(1u, std::thread::hardware_concurrency());
-    auto interpreted_version = sc::ast::LanguageVersion::Legacy;
+    auto interpreted_version = sc::ast::LanguageVersion::V3_16;
     auto interpreted_kind = sc::src::TextKind::ScdFile;
     bool dump = true;
     bool show_frames = false;

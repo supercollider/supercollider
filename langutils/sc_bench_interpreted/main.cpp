@@ -319,7 +319,7 @@ int main(int argc, char* argv[]) {
     std::vector<Snippet> snippets;
     std::size_t num_runs = 1000;
     std::size_t num_threads = std::max(1u, std::thread::hardware_concurrency());
-    auto version = sc::ast::LanguageVersion::Legacy;
+    auto version = sc::ast::LanguageVersion::V3_16;
     for (int i { 1 }; i < argc; ++i) {
         const std::string arg = argv[i];
         if (arg == "--runs" && i + 1 < argc) {

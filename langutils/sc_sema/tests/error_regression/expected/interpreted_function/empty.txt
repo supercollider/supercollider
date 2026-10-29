@@ -4,7 +4,7 @@
 IR GRAPH DUMP 
 
 
-SCInterpreted (1:1): interpreted_function/empty.scd
+SCInterpreted (1:1): version 3.16: interpreted_function/empty.scd
 |  SCFunction (1:1) -> nil
 |  |  SCBody (1:1)
 
