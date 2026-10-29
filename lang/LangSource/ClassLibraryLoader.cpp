@@ -74,8 +74,13 @@ struct ClassFileFinder {
             post("\texcluding file: '%s'\n", SC_Codecvt::path_to_utf8_str(path).c_str());
             return;
         }
-        if (path.filename().string().front() != '.' && path.extension() == ".sc")
+        if (path.filename().string().front() == '.')
+            return;
+        if (path.extension() == ".sc")
             (void)files.push_back({ path, module });
+        else if (path.extension() == ".rtf" && path.stem().extension() == ".sc")
+            post("WARNING: skipping '%s', .sc.rtf class files are no longer supported\n",
+                 SC_Codecvt::path_to_utf8_str(path).c_str());
     }
 
     bool addDirectory(const fs::path& dir, ir::ModuleIndex module) {
