@@ -934,8 +934,8 @@ a.fts_show_more {
     margin-top: 0.4em;
     font-size: 9pt;
 }
-/* search terms in results and on pages opened from the results */
+/* search terms in results and on pages opened from the results; themes can set the colors */
 mark {
-    background: var(--color-cm-evaluated);
-    color: #000;
+    background: var(--color-highlight-bg, #ffd54a);
+    color: var(--color-highlight-fg, #000);
 }
