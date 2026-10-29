@@ -2,7 +2,6 @@
   // see https://vector-of-bool.github.io/docs/vscode-cmake-tools/debugging.html
   "version": "0.2.0",
   "configurations": [
-
     // lldb/macOS configurations
     {
       "name": "lldb: attach",

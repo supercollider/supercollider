@@ -49,6 +49,10 @@ def make_handler(backend, preludes):
             if self.path != '/compile':
                 self.send_error(HTTPStatus.NOT_FOUND)
                 return
+            if self.headers.get('Host', '').split(':')[0] not in ('127.0.0.1', 'localhost') \
+                    or self.headers.get('Origin') not in (None, f'http://{self.headers["Host"]}'):
+                self.send_error(HTTPStatus.FORBIDDEN)
+                return
             request = json.loads(self.rfile.read(int(self.headers.get('Content-Length', 0))))
             body = json.dumps(compile_source(backend, preludes, request['source'], request['mode'])).encode('utf-8')
             self.send_response(HTTPStatus.OK)
