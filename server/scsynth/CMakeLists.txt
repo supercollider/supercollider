@@ -98,6 +98,7 @@ set(scsynth_sources
         ${CMAKE_SOURCE_DIR}/common/Samp.cpp
         ${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
         ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
+        ${CMAKE_SOURCE_DIR}/common/SC_Codecvt.cpp # needed on Windows
 )
 
 if(APPLE)

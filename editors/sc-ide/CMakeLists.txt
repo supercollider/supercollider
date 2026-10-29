@@ -165,6 +165,7 @@ set ( ide_src
     widgets/style/style.cpp
 
     ${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_Codecvt.cpp # needed on Windows
     ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_win.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_unix.cpp

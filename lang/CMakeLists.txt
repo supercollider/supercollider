@@ -78,6 +78,7 @@ set(sclang_sources
     ${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_Codecvt.cpp # needed on Windows
     ${LOCALSOCK_UTIL_FILE}
 
     ${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
