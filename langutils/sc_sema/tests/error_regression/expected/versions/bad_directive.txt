@@ -12,7 +12,7 @@ SCClass (3:1): BadMalformed : Object
 |      2 │ // in a method, no method is poisoned. Something that only looks like a version is a comment, as code already has them.
 |      3 │ BadMalformed {
 |      4 │     //# VERSION 3
-|        ┆     ^^^^^^^^^^^^^ expected a version, e.g., `//# VERSION 3.16`.
+|        ┆     ^^^^^^^^^^^^^ expected a version, e.g., `//# VERSION 3.16`, or `//# VERSION legacy`.
 |      5 │     // expect: not poisoned
 |      6 │     one { ^1 }
 |      7 │ }
@@ -33,7 +33,7 @@ SCClass (9:1): BadTrailing : Object
 |      8 │ 
 |      9 │ BadTrailing {
 |     10 │     //# VERSION 3.16 // a comment after it
-|        ┆     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected a version, e.g., `//# VERSION 3.16`.
+|        ┆     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected a version, e.g., `//# VERSION 3.16`, or `//# VERSION legacy`.
 |     11 │     one { ^1 }
 |     12 │ }
 |     13 │ 

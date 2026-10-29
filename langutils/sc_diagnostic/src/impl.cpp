@@ -967,7 +967,7 @@ Diagnostic Diagnostic::qualifier_hidden_from_value(TextInfoPtr declaration_t, sc
 Diagnostic Diagnostic::malformed_version(TextInfoPtr t, sc::src::SourceCodeRange l) {
     return { "Malformed version",
              Severity::Error,
-             { { std::move(t), l, "expected a version, e.g., `//# VERSION 3.16`." } },
+             { { std::move(t), l, "expected a version, e.g., `//# VERSION 3.16`, or `//# VERSION legacy`." } },
              "The classes it applies to are compiled as the legacy version." };
 }
 

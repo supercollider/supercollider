@@ -481,6 +481,11 @@ BOOST_AUTO_TEST_CASE(versions_placed) {
 }
 
 BOOST_AUTO_TEST_CASE(versions_invalid) {
+    check_versions("//# VERSION legacy\nFoo {}\nBar {}", { V::Legacy, V::Legacy }, {});
+    check_versions("Foo {\n    //# VERSION legacy \t\n}", { V::Legacy }, {});
+    check_versions("//# VERSION 3.16\nFoo {\n    //# VERSION legacy\n}\nBar {}", { V::Legacy, V::V3_16 }, {});
+    check_versions("Foo {\n    //# VERSION legacyx\n}", { V::Legacy }, { "Malformed version" });
+    check_versions("Foo {\n    //# VERSION legacy 3.16\n}", { V::Legacy }, { "Malformed version" });
     check_versions("Foo {\n    //# VERSION 3\n}", { V::Legacy }, { "Malformed version" });
     check_versions("Foo {\n    //# VERSION 3.16x\n}", { V::Legacy }, { "Malformed version" });
     check_versions("Foo {\n    //# VERSION abc\n}", { V::Legacy }, { "Malformed version" });

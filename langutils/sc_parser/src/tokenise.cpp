@@ -29,7 +29,8 @@ struct Action {
     }
 };
 
-// The version in a version comment, `//# VERSION 3.16`, reporting it if it isn't `major.minor` or is unknown.
+// The version in a version comment, `//# VERSION 3.16` or `//# VERSION legacy`, reporting it if it isn't `major.minor`
+// or is unknown.
 std::optional<LanguageVersion> parse_version(const std::shared_ptr<const sc::src::TextInfo>& text_info, ASTGraph& graph,
                                              SourceCodeRange r) {
     auto text = text_info->read(r);
@@ -48,6 +49,14 @@ std::optional<LanguageVersion> parse_version(const std::shared_ptr<const sc::src
     };
 
     skip_blank();
+    if (text.substr(0, 6) == "legacy") {
+        text.remove_prefix(6);
+        skip_blank();
+        if (text.empty())
+            return LanguageVersion::Legacy;
+        graph.add_diagnostic(diag::Diagnostic::malformed_version(text_info, r));
+        return std::nullopt;
+    }
     const auto major = number();
     const bool dot = !text.empty() && text.front() == '.';
     if (dot)
