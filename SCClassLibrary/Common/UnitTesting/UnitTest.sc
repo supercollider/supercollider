@@ -377,9 +377,11 @@ UnitTest {
 	}
 
 	// whom I am testing
-	// removing "Test" by copyToEnd(4)
+	// removing "Test" by copyToEnd(4), and the "_Server" suffix of tests that need a server
 	*findTestedClass {
-		^this.name.asString.copyToEnd(4).asSymbol.asClass
+		var name = this.name.asString.copyToEnd(4);
+		if (name.endsWith("_Server")) { name = name.drop(-7) };
+		^name.asSymbol.asClass
 	}
 
 	// methods in the tested class that do not have test_ methods written

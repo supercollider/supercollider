@@ -49,6 +49,10 @@ TestUnitTest : UnitTest {
 		this.assertEquals(TestObject.findTestedClass, Object)
 	}
 
+	test_findTestedClass_serverSuffix {
+		this.assertEquals(TestBus_Server.findTestedClass, Bus)
+	}
+
 	test_assertException_implicitThrow {
 		this.assertException({ 1789.monarchy }, DoesNotUnderstandError, "assertException should return true for any error")
 	}
