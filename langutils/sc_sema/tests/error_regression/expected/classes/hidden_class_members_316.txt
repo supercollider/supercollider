@@ -108,16 +108,12 @@ SCClass (29:1): Hidden316Instance : Hidden316InstanceBase, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Duplicate member with base class.
-|  classes/hidden_class_members_316.sc:26:9
+|  classes/hidden_class_members_316.sc:30:9
 |     24 │ 
 |     25 │ Hidden316InstanceBase {
 |     26 │     var a;
 |        ┆         ^ First declared here...
 |     27 │ }
-|     28 │ 
-|     29 │ Hidden316Instance : Hidden316InstanceBase {
-|
-|  classes/hidden_class_members_316.sc:30:9
 |     28 │ 
 |     29 │ Hidden316Instance : Hidden316InstanceBase {
 |     30 │     var a;

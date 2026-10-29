@@ -31,20 +31,12 @@ SCClass (4:1): Brackets : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Mismatched Bracket.
-|  |  |  parse_errors/brackets.sc:12:19
-|  |  |     10 │     // expect: poisoned
-|  |  |     11 │     // expect-error: Mismatched Bracket.
-|  |  |     12 │     wrong_kind { ^(1 + 2] }
-|  |  |        ┆                   ^ This `(`...
-|  |  |     13 │     // An unclosed bracket is closed before the bracket around it closes.
-|  |  |     14 │     // expect: poisoned
-|  |  |     15 │     // expect-error: Unclosed Bracket.
-|  |  |
 |  |  |  parse_errors/brackets.sc:12:25
 |  |  |     10 │     // expect: poisoned
 |  |  |     11 │     // expect-error: Mismatched Bracket.
 |  |  |     12 │     wrong_kind { ^(1 + 2] }
-|  |  |        ┆                         ^ ...is closed with `]`, rather than `)`.
+|  |  |        ┆                   ^     ^ ...is closed with `]`, rather than `)`.
+|  |  |        ┆                   └ This `(`...
 |  |  |     13 │     // An unclosed bracket is closed before the bracket around it closes.
 |  |  |     14 │     // expect: poisoned
 |  |  |     15 │     // expect-error: Unclosed Bracket.
@@ -60,20 +52,12 @@ SCClass (4:1): Brackets : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Unclosed Bracket.
-|  |  |  parse_errors/brackets.sc:16:17
-|  |  |     14 │     // expect: poisoned
-|  |  |     15 │     // expect-error: Unclosed Bracket.
-|  |  |     16 │     unclosed { ^(1 + 2 }
-|  |  |        ┆                 ^ This `(` isn't closed...
-|  |  |     17 │     // expect: poisoned
-|  |  |     18 │     // expect-error: Unclosed Bracket.
-|  |  |     19 │     unclosed_nested { |x| if (x) { ^[1, (2 }; ^3 }
-|  |  |
 |  |  |  parse_errors/brackets.sc:16:24
 |  |  |     14 │     // expect: poisoned
 |  |  |     15 │     // expect-error: Unclosed Bracket.
 |  |  |     16 │     unclosed { ^(1 + 2 }
-|  |  |        ┆                        ^ ...before this `}`, which closes the bracket around it.
+|  |  |        ┆                 ^      ^ ...before this `}`, which closes the bracket around it.
+|  |  |        ┆                 └ This `(` isn't closed...
 |  |  |     17 │     // expect: poisoned
 |  |  |     18 │     // expect-error: Unclosed Bracket.
 |  |  |     19 │     unclosed_nested { |x| if (x) { ^[1, (2 }; ^3 }
@@ -89,20 +73,12 @@ SCClass (4:1): Brackets : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Unclosed Bracket.
-|  |  |  parse_errors/brackets.sc:19:37
-|  |  |     17 │     // expect: poisoned
-|  |  |     18 │     // expect-error: Unclosed Bracket.
-|  |  |     19 │     unclosed_nested { |x| if (x) { ^[1, (2 }; ^3 }
-|  |  |        ┆                                     ^ This `[` isn't closed...
-|  |  |     20 │     // expect: poisoned
-|  |  |     21 │     // expect-error: Mismatched Bracket.
-|  |  |     22 │     wrong_kind_nested { |x| if (x) { ^(1] }; ^2 }
-|  |  |
 |  |  |  parse_errors/brackets.sc:19:44
 |  |  |     17 │     // expect: poisoned
 |  |  |     18 │     // expect-error: Unclosed Bracket.
 |  |  |     19 │     unclosed_nested { |x| if (x) { ^[1, (2 }; ^3 }
-|  |  |        ┆                                            ^ ...before this `}`, which closes the bracket around it.
+|  |  |        ┆                                     ^      ^ ...before this `}`, which closes the bracket around it.
+|  |  |        ┆                                     └ This `[` isn't closed...
 |  |  |     20 │     // expect: poisoned
 |  |  |     21 │     // expect-error: Mismatched Bracket.
 |  |  |     22 │     wrong_kind_nested { |x| if (x) { ^(1] }; ^2 }
@@ -111,20 +87,12 @@ SCClass (4:1): Brackets : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Unclosed Bracket.
-|  |  |  parse_errors/brackets.sc:19:41
-|  |  |     17 │     // expect: poisoned
-|  |  |     18 │     // expect-error: Unclosed Bracket.
-|  |  |     19 │     unclosed_nested { |x| if (x) { ^[1, (2 }; ^3 }
-|  |  |        ┆                                         ^ This `(` isn't closed...
-|  |  |     20 │     // expect: poisoned
-|  |  |     21 │     // expect-error: Mismatched Bracket.
-|  |  |     22 │     wrong_kind_nested { |x| if (x) { ^(1] }; ^2 }
-|  |  |
 |  |  |  parse_errors/brackets.sc:19:44
 |  |  |     17 │     // expect: poisoned
 |  |  |     18 │     // expect-error: Unclosed Bracket.
 |  |  |     19 │     unclosed_nested { |x| if (x) { ^[1, (2 }; ^3 }
-|  |  |        ┆                                            ^ ...before this `}`, which closes the bracket around it.
+|  |  |        ┆                                         ^  ^ ...before this `}`, which closes the bracket around it.
+|  |  |        ┆                                         └ This `(` isn't closed...
 |  |  |     20 │     // expect: poisoned
 |  |  |     21 │     // expect-error: Mismatched Bracket.
 |  |  |     22 │     wrong_kind_nested { |x| if (x) { ^(1] }; ^2 }
@@ -148,20 +116,12 @@ SCClass (4:1): Brackets : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Mismatched Bracket.
-|  |  |  parse_errors/brackets.sc:22:39
-|  |  |     20 │     // expect: poisoned
-|  |  |     21 │     // expect-error: Mismatched Bracket.
-|  |  |     22 │     wrong_kind_nested { |x| if (x) { ^(1] }; ^2 }
-|  |  |        ┆                                       ^ This `(`...
-|  |  |     23 │     // A syntax error inside the repaired bracket is still reported.
-|  |  |     24 │     // expect: poisoned
-|  |  |     25 │     // expect-error: Unclosed Bracket.
-|  |  |
 |  |  |  parse_errors/brackets.sc:22:41
 |  |  |     20 │     // expect: poisoned
 |  |  |     21 │     // expect-error: Mismatched Bracket.
 |  |  |     22 │     wrong_kind_nested { |x| if (x) { ^(1] }; ^2 }
-|  |  |        ┆                                         ^ ...is closed with `]`, rather than `)`.
+|  |  |        ┆                                       ^ ^ ...is closed with `]`, rather than `)`.
+|  |  |        ┆                                       └ This `(`...
 |  |  |     23 │     // A syntax error inside the repaired bracket is still reported.
 |  |  |     24 │     // expect: poisoned
 |  |  |     25 │     // expect-error: Unclosed Bracket.
@@ -183,20 +143,12 @@ SCClass (4:1): Brackets : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
-|  |  |  parse_errors/brackets.sc:27:29
-|  |  |     25 │     // expect-error: Unclosed Bracket.
-|  |  |     26 │     // expect-error: Missing Operator.
-|  |  |     27 │     unclosed_with_error { ^(1 2 }
-|  |  |        ┆                             ^ This ends an expression...
-|  |  |     28 │     // Parsed as written.
-|  |  |     29 │     // expect: -> 3
-|  |  |     30 │     after { ^3 }
-|  |  |
 |  |  |  parse_errors/brackets.sc:27:31
 |  |  |     25 │     // expect-error: Unclosed Bracket.
 |  |  |     26 │     // expect-error: Missing Operator.
 |  |  |     27 │     unclosed_with_error { ^(1 2 }
-|  |  |        ┆                               ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |        ┆                             ^ ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |        ┆                             └ This ends an expression...
 |  |  |     28 │     // Parsed as written.
 |  |  |     29 │     // expect: -> 3
 |  |  |     30 │     after { ^3 }
@@ -205,20 +157,12 @@ SCClass (4:1): Brackets : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Unclosed Bracket.
-|  |  |  parse_errors/brackets.sc:27:28
-|  |  |     25 │     // expect-error: Unclosed Bracket.
-|  |  |     26 │     // expect-error: Missing Operator.
-|  |  |     27 │     unclosed_with_error { ^(1 2 }
-|  |  |        ┆                            ^ This `(` isn't closed...
-|  |  |     28 │     // Parsed as written.
-|  |  |     29 │     // expect: -> 3
-|  |  |     30 │     after { ^3 }
-|  |  |
 |  |  |  parse_errors/brackets.sc:27:33
 |  |  |     25 │     // expect-error: Unclosed Bracket.
 |  |  |     26 │     // expect-error: Missing Operator.
 |  |  |     27 │     unclosed_with_error { ^(1 2 }
-|  |  |        ┆                                 ^ ...before this `}`, which closes the bracket around it.
+|  |  |        ┆                            ^    ^ ...before this `}`, which closes the bracket around it.
+|  |  |        ┆                            └ This `(` isn't closed...
 |  |  |     28 │     // Parsed as written.
 |  |  |     29 │     // expect: -> 3
 |  |  |     30 │     after { ^3 }

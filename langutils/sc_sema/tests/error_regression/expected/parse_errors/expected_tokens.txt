@@ -46,14 +46,14 @@ SCClass (4:1): ExpectedTokens : Object, version 3.16
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Unexpected Token.
 |  |  |  parse_errors/expected_tokens.sc:14:21
-|  |  |     12 │     // expect: poisoned
-|  |  |     13 │     // expect-error: Unexpected Token.
-|  |  |     14*│     multiline { var "first
-|  |  |     15*│ second"; ^1 }
-|  |  |       >│ ^ Expected `#`, a name, or `while`, but found `"first...`.
-|  |  |     16 │     // expect: poisoned
-|  |  |     17 │     // expect-error: Unexpected Token.
-|  |  |     18 │     in_nested_function { |x| if (x) { ^(1 = x) }; ^2 }
+|  |  |     12 │       // expect: poisoned
+|  |  |     13 │       // expect-error: Unexpected Token.
+|  |  |     14 │ ╭     multiline { var "first
+|  |  |     15 │ │ second"; ^1 }
+|  |  |        ┆ ╰───────^ Expected `#`, a name, or `while`, but found `"first...`.
+|  |  |     16 │       // expect: poisoned
+|  |  |     17 │       // expect-error: Unexpected Token.
+|  |  |     18 │       in_nested_function { |x| if (x) { ^(1 = x) }; ^2 }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (14:17)

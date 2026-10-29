@@ -8,17 +8,12 @@ SCInterpreted (1:1): poisoned: version 3.16: closed_functions/interpreted_lookup
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Variable outside closed function
-|  closed_functions/interpreted_lookup.scd:5:6
-|      3 │ // expect-error: Variable outside closed function
-|      4 │ // expect-reads: a -> a
-|      5 │ (var foo = 1; #{ a + foo })
-|        ┆      ^^^^^^^ This is declared outside the closed function...
-|
 |  closed_functions/interpreted_lookup.scd:5:22
 |      3 │ // expect-error: Variable outside closed function
 |      4 │ // expect-reads: a -> a
 |      5 │ (var foo = 1; #{ a + foo })
-|        ┆                      ^^^ ...so it can't be used inside it.
+|        ┆      ^^^^^^^         ^^^ ...so it can't be used inside it.
+|        ┆      └ This is declared outside the closed function...
 |
 |  A closed function, `#{ }`, is compiled as if it were written inside the Interpreter, so it can only use its own arguments and variables, and the Interpreter's members, e.g., `a` to `z`. Pass the value in as an argument, or use `{ }` instead of `#{ }`.
 |  ──────────────────────────────────────────────────────────────────────────────────

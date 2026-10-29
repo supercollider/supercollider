@@ -211,20 +211,12 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Qualifier's variable used in its own value
-|  |  |  versions/legacy_lookup.sc:83:58
-|  |  |     81 │     // expect-warning: Qualifier's variable used in its own value
-|  |  |     82 │     // expect-reads: y -> var y = { y }; y = \outer
-|  |  |     83 │     generator_function_in_value { var y = \outer; ^{: y, var y = { y } } }
-|  |  |        ┆                                                          ^^^^^^^^^^^^^ This qualifier declares it...
-|  |  |     84 │     // With nothing outside, it isn't defined, the old compiler read the Interpreter's `y` in interpreted code.
-|  |  |     85 │     // expect-error: Variable not defined
-|  |  |     86 │     generator_function_in_value_undefined { ^{: y, var y = { y } } }
-|  |  |
 |  |  |  versions/legacy_lookup.sc:83:68
 |  |  |     81 │     // expect-warning: Qualifier's variable used in its own value
 |  |  |     82 │     // expect-reads: y -> var y = { y }; y = \outer
 |  |  |     83 │     generator_function_in_value { var y = \outer; ^{: y, var y = { y } } }
-|  |  |        ┆                                                                    ^ ...but this function in its value can't see it.
+|  |  |        ┆                                                          ^^^^^^^^^^^^^^ ...but this function in its value can't see it.
+|  |  |        ┆                                                          └ This qualifier declares it...
 |  |  |     84 │     // With nothing outside, it isn't defined, the old compiler read the Interpreter's `y` in interpreted code.
 |  |  |     85 │     // expect-error: Variable not defined
 |  |  |     86 │     generator_function_in_value_undefined { ^{: y, var y = { y } } }
@@ -246,20 +238,12 @@ SCClass (5:1): LegacyLookup : Object
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Warning: Qualifier's variable used in its own value
-|  |  |  versions/legacy_lookup.sc:86:52
-|  |  |     84 │     // With nothing outside, it isn't defined, the old compiler read the Interpreter's `y` in interpreted code.
-|  |  |     85 │     // expect-error: Variable not defined
-|  |  |     86 │     generator_function_in_value_undefined { ^{: y, var y = { y } } }
-|  |  |        ┆                                                    ^^^^^^^^^^^^^ This qualifier declares it...
-|  |  |     87 │     // The frame's `foo` is nil while its initial value runs, so this is `nil + 1`, unlike 3.16.
-|  |  |     88 │     // expect: no diagnostics
-|  |  |     89 │     // expect-reads: foo -> foo = foo + 1; foo = foo + 1
-|  |  |
 |  |  |  versions/legacy_lookup.sc:86:62
 |  |  |     84 │     // With nothing outside, it isn't defined, the old compiler read the Interpreter's `y` in interpreted code.
 |  |  |     85 │     // expect-error: Variable not defined
 |  |  |     86 │     generator_function_in_value_undefined { ^{: y, var y = { y } } }
-|  |  |        ┆                                                              ^ ...but this function in its value can't see it.
+|  |  |        ┆                                                    ^^^^^^^^^^^^^^ ...but this function in its value can't see it.
+|  |  |        ┆                                                    └ This qualifier declares it...
 |  |  |     87 │     // The frame's `foo` is nil while its initial value runs, so this is `nil + 1`, unlike 3.16.
 |  |  |     88 │     // expect: no diagnostics
 |  |  |     89 │     // expect-reads: foo -> foo = foo + 1; foo = foo + 1

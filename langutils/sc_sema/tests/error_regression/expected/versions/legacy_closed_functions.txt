@@ -18,20 +18,12 @@ SCClass (3:1): LegacyClosedFunctions : Object
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable outside closed function
-|  |  |  versions/legacy_closed_functions.sc:9:26
-|  |  |      7 │     interpreter_member { ^#{ a } }
-|  |  |      8 │     // expect-error: Variable outside closed function
-|  |  |      9 │     outer_variable { var foo = 10; ^#{ foo } }
-|  |  |        ┆                          ^^^^^^^^ This is declared outside the closed function...
-|  |  |     10 │     // expect-error: Variable outside closed function
-|  |  |     11 │     instance_variable { ^#{ instance_var } }
-|  |  |     12 │     // Legacy code's frame holds `later` from the start, but a closed function can't see it.
-|  |  |
 |  |  |  versions/legacy_closed_functions.sc:9:40
 |  |  |      7 │     interpreter_member { ^#{ a } }
 |  |  |      8 │     // expect-error: Variable outside closed function
 |  |  |      9 │     outer_variable { var foo = 10; ^#{ foo } }
-|  |  |        ┆                                        ^^^ ...so it can't be used inside it.
+|  |  |        ┆                          ^^^^^^^^      ^^^ ...so it can't be used inside it.
+|  |  |        ┆                          └ This is declared outside the closed function...
 |  |  |     10 │     // expect-error: Variable outside closed function
 |  |  |     11 │     instance_variable { ^#{ instance_var } }
 |  |  |     12 │     // Legacy code's frame holds `later` from the start, but a closed function can't see it.
@@ -78,20 +70,12 @@ SCClass (3:1): LegacyClosedFunctions : Object
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable outside closed function
-|  |  |  versions/legacy_closed_functions.sc:14:42
-|  |  |     12 │     // Legacy code's frame holds `later` from the start, but a closed function can't see it.
-|  |  |     13 │     // expect-error: Variable outside closed function
-|  |  |     14 │     frame_variable { var f = #{ later }, later = 1; ^f }
-|  |  |        ┆                                          ^^^^^^^^^ This is declared outside the closed function...
-|  |  |     15 │     // expect-warning: Return in closed function
-|  |  |     16 │     // expect: not poisoned
-|  |  |     17 │     returns { ^#{ ^1 } }
-|  |  |
 |  |  |  versions/legacy_closed_functions.sc:14:33
 |  |  |     12 │     // Legacy code's frame holds `later` from the start, but a closed function can't see it.
 |  |  |     13 │     // expect-error: Variable outside closed function
 |  |  |     14 │     frame_variable { var f = #{ later }, later = 1; ^f }
-|  |  |        ┆                                 ^^^^^ ...so it can't be used inside it.
+|  |  |        ┆                                 ^^^^^    ^^^^^^^^^ This is declared outside the closed function...
+|  |  |        ┆                                 └ ...so it can't be used inside it.
 |  |  |     15 │     // expect-warning: Return in closed function
 |  |  |     16 │     // expect: not poisoned
 |  |  |     17 │     returns { ^#{ ^1 } }

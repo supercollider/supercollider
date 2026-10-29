@@ -11,18 +11,12 @@ SCClass (3:1): FoundTextUtf8 : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
-|  |  |  parse_errors/found_text_utf8.sc:6:20
-|  |  |      4 │     // expect: poisoned
-|  |  |      5 │     // expect-error: Missing Operator.
-|  |  |      6 │     long_string { ^1 "éééééééééééééééééééé" }
-|  |  |        ┆                    ^ This ends an expression...
-|  |  |      7 │ }
-|  |  |
 |  |  |  parse_errors/found_text_utf8.sc:6:22
 |  |  |      4 │     // expect: poisoned
 |  |  |      5 │     // expect-error: Missing Operator.
 |  |  |      6 │     long_string { ^1 "éééééééééééééééééééé" }
-|  |  |        ┆                      ^^^^^^^^^^^^^^^^^^^^^^ ...and `"ééééééééé...` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |        ┆                    ^ ^^^^^^^^^^^^^^^^^^^^^^ ...and `"ééééééééé...` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |        ┆                    └ This ends an expression...
 |  |  |      7 │ }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────

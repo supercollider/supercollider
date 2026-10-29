@@ -31,20 +31,12 @@ SCClass (2:1): StatementLegacy : Object
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
-|  |  |  parse_errors/statement_recovery_legacy.sc:6:29
-|  |  |      4 │     middle { var a = 1; a = ; ^3 }
-|  |  |      5 │     // expect: poisoned
-|  |  |      6 │     nested { |x| if (x) { 1 + ; ^1 }; ^2 }
-|  |  |        ┆                             ^ This `+` needs an expression after it...
-|  |  |      7 │     // expect: -> 4
-|  |  |      8 │     good { ^4 }
-|  |  |      9 │ }
-|  |  |
 |  |  |  parse_errors/statement_recovery_legacy.sc:6:31
 |  |  |      4 │     middle { var a = 1; a = ; ^3 }
 |  |  |      5 │     // expect: poisoned
 |  |  |      6 │     nested { |x| if (x) { 1 + ; ^1 }; ^2 }
-|  |  |        ┆                               ^ ...but found `;`.
+|  |  |        ┆                             ^ ^ ...but found `;`.
+|  |  |        ┆                             └ This `+` needs an expression after it...
 |  |  |      7 │     // expect: -> 4
 |  |  |      8 │     good { ^4 }
 |  |  |      9 │ }

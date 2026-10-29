@@ -15,20 +15,13 @@ SCClass (4:1): UnclosedByIndentation : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Unclosed Bracket.
-|  |  |  parse_errors/unclosed_by_indentation.sc:9:19
+|  |  |  parse_errors/unclosed_by_indentation.sc:10:11
 |  |  |      7 │     // expect: poisoned
 |  |  |      8 │     // expect-error: Unclosed Bracket.
 |  |  |      9 │     missing_close {
 |  |  |        ┆                   ^ This `{` isn't closed...
 |  |  |     10 │         ^2
-|  |  |     11 │ 
-|  |  |     12 │     // expect: -> 3
-|  |  |
-|  |  |  parse_errors/unclosed_by_indentation.sc:10:11
-|  |  |      8 │     // expect-error: Unclosed Bracket.
-|  |  |      9 │     missing_close {
-|  |  |     10 │         ^2
-|  |  |        ┆            ...judging by the indentation, it ends here, as the next line is indented no further than the line it is on. Add `}`.
+|  |  |        ┆           ^ ...judging by the indentation, it ends here, as the next line is indented no further than the line it is on. Add `}`.
 |  |  |     11 │ 
 |  |  |     12 │     // expect: -> 3
 |  |  |     13 │     after { ^3 }
@@ -45,20 +38,13 @@ SCClass (4:1): UnclosedByIndentation : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Unclosed Bracket.
-|  |  |  parse_errors/unclosed_by_indentation.sc:17:16
+|  |  |  parse_errors/unclosed_by_indentation.sc:18:15
 |  |  |     15 │     // expect-error: Unclosed Bracket.
 |  |  |     16 │     missing_nested_close { |x|
 |  |  |     17 │         if (x) {
 |  |  |        ┆                ^ This `{` isn't closed...
 |  |  |     18 │             ^4
-|  |  |     19 │         // The method's own `}` is next.
-|  |  |     20 │     }
-|  |  |
-|  |  |  parse_errors/unclosed_by_indentation.sc:18:15
-|  |  |     16 │     missing_nested_close { |x|
-|  |  |     17 │         if (x) {
-|  |  |     18 │             ^4
-|  |  |        ┆                ...judging by the indentation, it ends here, as the next line is indented no further than the line it is on. Add `}`.
+|  |  |        ┆               ^ ...judging by the indentation, it ends here, as the next line is indented no further than the line it is on. Add `}`.
 |  |  |     19 │         // The method's own `}` is next.
 |  |  |     20 │     }
 |  |  |     21 │     // expect: -> 5

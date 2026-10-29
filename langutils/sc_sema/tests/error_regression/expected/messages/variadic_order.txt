@@ -21,20 +21,12 @@ SCClass (2:1): VariadicOrder : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
-|  |  |  messages/variadic_order.sc:6:29
-|  |  |      4 │ 
-|  |  |      5 │     variadic_last { ^1.foo(2, *3) }
-|  |  |      6 │     variadic_first { ^1.foo(*2, 3) }
-|  |  |        ┆                             ^^ the elements of this are passed after...
-|  |  |      7 │     two_after { ^1.foo(*2, 3, 4) }
-|  |  |      8 │     keyword_after { ^1.foo(*2, bar: 3) }
-|  |  |      9 │     prefix { ^foo(1, *2, 3) }
-|  |  |
 |  |  |  messages/variadic_order.sc:6:33
 |  |  |      4 │ 
 |  |  |      5 │     variadic_last { ^1.foo(2, *3) }
 |  |  |      6 │     variadic_first { ^1.foo(*2, 3) }
-|  |  |        ┆                                 ^ ...this argument, which is written after it.
+|  |  |        ┆                             ^^  ^ ...this argument, which is written after it.
+|  |  |        ┆                             └ the elements of this are passed after...
 |  |  |      7 │     two_after { ^1.foo(*2, 3, 4) }
 |  |  |      8 │     keyword_after { ^1.foo(*2, bar: 3) }
 |  |  |      9 │     prefix { ^foo(1, *2, 3) }
@@ -53,20 +45,12 @@ SCClass (2:1): VariadicOrder : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
-|  |  |  messages/variadic_order.sc:7:24
-|  |  |      5 │     variadic_last { ^1.foo(2, *3) }
-|  |  |      6 │     variadic_first { ^1.foo(*2, 3) }
-|  |  |      7 │     two_after { ^1.foo(*2, 3, 4) }
-|  |  |        ┆                        ^^ the elements of this are passed after...
-|  |  |      8 │     keyword_after { ^1.foo(*2, bar: 3) }
-|  |  |      9 │     prefix { ^foo(1, *2, 3) }
-|  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
-|  |  |
 |  |  |  messages/variadic_order.sc:7:28
 |  |  |      5 │     variadic_last { ^1.foo(2, *3) }
 |  |  |      6 │     variadic_first { ^1.foo(*2, 3) }
 |  |  |      7 │     two_after { ^1.foo(*2, 3, 4) }
-|  |  |        ┆                            ^ ...this argument, which is written after it.
+|  |  |        ┆                        ^^  ^ ...this argument, which is written after it.
+|  |  |        ┆                        └ the elements of this are passed after...
 |  |  |      8 │     keyword_after { ^1.foo(*2, bar: 3) }
 |  |  |      9 │     prefix { ^foo(1, *2, 3) }
 |  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
@@ -96,20 +80,12 @@ SCClass (2:1): VariadicOrder : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
-|  |  |  messages/variadic_order.sc:9:22
-|  |  |      7 │     two_after { ^1.foo(*2, 3, 4) }
-|  |  |      8 │     keyword_after { ^1.foo(*2, bar: 3) }
-|  |  |      9 │     prefix { ^foo(1, *2, 3) }
-|  |  |        ┆                      ^^ the elements of this are passed after...
-|  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
-|  |  |     11 │     array_after { ^1.foo(*2, [3]) }
-|  |  |     12 │     put_variadic { instance_var[*0] = 1 }
-|  |  |
 |  |  |  messages/variadic_order.sc:9:26
 |  |  |      7 │     two_after { ^1.foo(*2, 3, 4) }
 |  |  |      8 │     keyword_after { ^1.foo(*2, bar: 3) }
 |  |  |      9 │     prefix { ^foo(1, *2, 3) }
-|  |  |        ┆                          ^ ...this argument, which is written after it.
+|  |  |        ┆                      ^^  ^ ...this argument, which is written after it.
+|  |  |        ┆                      └ the elements of this are passed after...
 |  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
 |  |  |     11 │     array_after { ^1.foo(*2, [3]) }
 |  |  |     12 │     put_variadic { instance_var[*0] = 1 }
@@ -128,20 +104,12 @@ SCClass (2:1): VariadicOrder : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
-|  |  |  messages/variadic_order.sc:10:37
-|  |  |      8 │     keyword_after { ^1.foo(*2, bar: 3) }
-|  |  |      9 │     prefix { ^foo(1, *2, 3) }
-|  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
-|  |  |        ┆                                     ^^ the elements of this are passed after...
-|  |  |     11 │     array_after { ^1.foo(*2, [3]) }
-|  |  |     12 │     put_variadic { instance_var[*0] = 1 }
-|  |  |     13 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
-|  |  |
 |  |  |  messages/variadic_order.sc:10:41
 |  |  |      8 │     keyword_after { ^1.foo(*2, bar: 3) }
 |  |  |      9 │     prefix { ^foo(1, *2, 3) }
 |  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
-|  |  |        ┆                                         ^ ...this argument, which is written after it.
+|  |  |        ┆                                     ^^  ^ ...this argument, which is written after it.
+|  |  |        ┆                                     └ the elements of this are passed after...
 |  |  |     11 │     array_after { ^1.foo(*2, [3]) }
 |  |  |     12 │     put_variadic { instance_var[*0] = 1 }
 |  |  |     13 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
@@ -158,20 +126,12 @@ SCClass (2:1): VariadicOrder : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
-|  |  |  messages/variadic_order.sc:11:26
-|  |  |      9 │     prefix { ^foo(1, *2, 3) }
-|  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
-|  |  |     11 │     array_after { ^1.foo(*2, [3]) }
-|  |  |        ┆                          ^^ the elements of this are passed after...
-|  |  |     12 │     put_variadic { instance_var[*0] = 1 }
-|  |  |     13 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
-|  |  |     14 │     after_errors { ^5 }
-|  |  |
 |  |  |  messages/variadic_order.sc:11:30
 |  |  |      9 │     prefix { ^foo(1, *2, 3) }
 |  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
 |  |  |     11 │     array_after { ^1.foo(*2, [3]) }
-|  |  |        ┆                              ^^^ ...this argument, which is written after it.
+|  |  |        ┆                          ^^  ^^^ ...this argument, which is written after it.
+|  |  |        ┆                          └ the elements of this are passed after...
 |  |  |     12 │     put_variadic { instance_var[*0] = 1 }
 |  |  |     13 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
 |  |  |     14 │     after_errors { ^5 }
@@ -191,20 +151,12 @@ SCClass (2:1): VariadicOrder : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
-|  |  |  messages/variadic_order.sc:12:33
-|  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
-|  |  |     11 │     array_after { ^1.foo(*2, [3]) }
-|  |  |     12 │     put_variadic { instance_var[*0] = 1 }
-|  |  |        ┆                                 ^^ the elements of this are passed after...
-|  |  |     13 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
-|  |  |     14 │     after_errors { ^5 }
-|  |  |     15 │ }
-|  |  |
 |  |  |  messages/variadic_order.sc:12:39
 |  |  |     10 │     prefix_variadic_receiver { ^foo(*1, 2) }
 |  |  |     11 │     array_after { ^1.foo(*2, [3]) }
 |  |  |     12 │     put_variadic { instance_var[*0] = 1 }
-|  |  |        ┆                                       ^ ...this argument, which is written after it.
+|  |  |        ┆                                 ^^    ^ ...this argument, which is written after it.
+|  |  |        ┆                                 └ the elements of this are passed after...
 |  |  |     13 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
 |  |  |     14 │     after_errors { ^5 }
 |  |  |     15 │ }
@@ -222,19 +174,12 @@ SCClass (2:1): VariadicOrder : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
-|  |  |  messages/variadic_order.sc:13:41
-|  |  |     11 │     array_after { ^1.foo(*2, [3]) }
-|  |  |     12 │     put_variadic { instance_var[*0] = 1 }
-|  |  |     13 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
-|  |  |        ┆                                         ^^ the elements of this are passed after...
-|  |  |     14 │     after_errors { ^5 }
-|  |  |     15 │ }
-|  |  |
 |  |  |  messages/variadic_order.sc:13:53
 |  |  |     11 │     array_after { ^1.foo(*2, [3]) }
 |  |  |     12 │     put_variadic { instance_var[*0] = 1 }
 |  |  |     13 │     put_variadic_keyword { instance_var[*0, b: 1] = 2 }
-|  |  |        ┆                                                     ^ ...this argument, which is written after it.
+|  |  |        ┆                                         ^^          ^ ...this argument, which is written after it.
+|  |  |        ┆                                         └ the elements of this are passed after...
 |  |  |     14 │     after_errors { ^5 }
 |  |  |     15 │ }
 |  |  |

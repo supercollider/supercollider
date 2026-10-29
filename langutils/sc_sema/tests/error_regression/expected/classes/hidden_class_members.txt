@@ -62,16 +62,12 @@ SCClass (28:1): HiddenInstance : HiddenInstanceBase
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Duplicate member with base class.
-|  classes/hidden_class_members.sc:25:9
+|  classes/hidden_class_members.sc:29:9
 |     23 │ 
 |     24 │ HiddenInstanceBase {
 |     25 │     var a;
 |        ┆         ^ First declared here...
 |     26 │ }
-|     27 │ 
-|     28 │ HiddenInstance : HiddenInstanceBase {
-|
-|  classes/hidden_class_members.sc:29:9
 |     27 │ 
 |     28 │ HiddenInstance : HiddenInstanceBase {
 |     29 │     var a;

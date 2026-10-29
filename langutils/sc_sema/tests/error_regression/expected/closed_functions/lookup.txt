@@ -88,20 +88,12 @@ SCClass (3:1): ClosedLookup : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable outside closed function
-|  |  |  closed_functions/lookup.sc:28:26
-|  |  |     26 │ 
-|  |  |     27 │     // expect-error: Variable outside closed function
-|  |  |     28 │     outer_variable { var foo = 10; ^#{ foo } }
-|  |  |        ┆                          ^^^^^^^^ This is declared outside the closed function...
-|  |  |     29 │     // expect-error: Variable outside closed function
-|  |  |     30 │     outer_argument { |foo| ^#{ foo } }
-|  |  |     31 │     // expect-error: Variable outside closed function
-|  |  |
 |  |  |  closed_functions/lookup.sc:28:40
 |  |  |     26 │ 
 |  |  |     27 │     // expect-error: Variable outside closed function
 |  |  |     28 │     outer_variable { var foo = 10; ^#{ foo } }
-|  |  |        ┆                                        ^^^ ...so it can't be used inside it.
+|  |  |        ┆                          ^^^^^^^^      ^^^ ...so it can't be used inside it.
+|  |  |        ┆                          └ This is declared outside the closed function...
 |  |  |     29 │     // expect-error: Variable outside closed function
 |  |  |     30 │     outer_argument { |foo| ^#{ foo } }
 |  |  |     31 │     // expect-error: Variable outside closed function
@@ -119,20 +111,12 @@ SCClass (3:1): ClosedLookup : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable outside closed function
-|  |  |  closed_functions/lookup.sc:30:23
-|  |  |     28 │     outer_variable { var foo = 10; ^#{ foo } }
-|  |  |     29 │     // expect-error: Variable outside closed function
-|  |  |     30 │     outer_argument { |foo| ^#{ foo } }
-|  |  |        ┆                       ^^^ This is declared outside the closed function...
-|  |  |     31 │     // expect-error: Variable outside closed function
-|  |  |     32 │     instance_variable { ^#{ instance_var } }
-|  |  |     33 │     // expect-error: Variable outside closed function
-|  |  |
 |  |  |  closed_functions/lookup.sc:30:32
 |  |  |     28 │     outer_variable { var foo = 10; ^#{ foo } }
 |  |  |     29 │     // expect-error: Variable outside closed function
 |  |  |     30 │     outer_argument { |foo| ^#{ foo } }
-|  |  |        ┆                                ^^^ ...so it can't be used inside it.
+|  |  |        ┆                       ^^^      ^^^ ...so it can't be used inside it.
+|  |  |        ┆                       └ This is declared outside the closed function...
 |  |  |     31 │     // expect-error: Variable outside closed function
 |  |  |     32 │     instance_variable { ^#{ instance_var } }
 |  |  |     33 │     // expect-error: Variable outside closed function
@@ -208,20 +192,12 @@ SCClass (3:1): ClosedLookup : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable outside closed function
-|  |  |  closed_functions/lookup.sc:36:25
-|  |  |     34 │     class_variable { ^#{ class_var } }
-|  |  |     35 │     // expect-error: Variable outside closed function
-|  |  |     36 │     assigns_outer { var foo; ^#{ foo = 1 } }
-|  |  |        ┆                         ^^^ This is declared outside the closed function...
-|  |  |     37 │     // expect-error: Variable outside closed function
-|  |  |     38 │     pack_assigns_outer { var foo; ^#{ #foo, a = [1, 2] } }
-|  |  |     39 │     // expect-error: Variable outside closed function
-|  |  |
 |  |  |  closed_functions/lookup.sc:36:34
 |  |  |     34 │     class_variable { ^#{ class_var } }
 |  |  |     35 │     // expect-error: Variable outside closed function
 |  |  |     36 │     assigns_outer { var foo; ^#{ foo = 1 } }
-|  |  |        ┆                                  ^^^ ...so it can't be used inside it.
+|  |  |        ┆                         ^^^      ^^^ ...so it can't be used inside it.
+|  |  |        ┆                         └ This is declared outside the closed function...
 |  |  |     37 │     // expect-error: Variable outside closed function
 |  |  |     38 │     pack_assigns_outer { var foo; ^#{ #foo, a = [1, 2] } }
 |  |  |     39 │     // expect-error: Variable outside closed function
@@ -238,20 +214,12 @@ SCClass (3:1): ClosedLookup : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable outside closed function
-|  |  |  closed_functions/lookup.sc:38:30
-|  |  |     36 │     assigns_outer { var foo; ^#{ foo = 1 } }
-|  |  |     37 │     // expect-error: Variable outside closed function
-|  |  |     38 │     pack_assigns_outer { var foo; ^#{ #foo, a = [1, 2] } }
-|  |  |        ┆                              ^^^ This is declared outside the closed function...
-|  |  |     39 │     // expect-error: Variable outside closed function
-|  |  |     40 │     outer_function_variable { ^{ |foo| #{ foo } } }
-|  |  |     41 │     // expect-error: Variable outside closed function
-|  |  |
 |  |  |  closed_functions/lookup.sc:38:40
 |  |  |     36 │     assigns_outer { var foo; ^#{ foo = 1 } }
 |  |  |     37 │     // expect-error: Variable outside closed function
 |  |  |     38 │     pack_assigns_outer { var foo; ^#{ #foo, a = [1, 2] } }
-|  |  |        ┆                                        ^^^ ...so it can't be used inside it.
+|  |  |        ┆                              ^^^       ^^^ ...so it can't be used inside it.
+|  |  |        ┆                              └ This is declared outside the closed function...
 |  |  |     39 │     // expect-error: Variable outside closed function
 |  |  |     40 │     outer_function_variable { ^{ |foo| #{ foo } } }
 |  |  |     41 │     // expect-error: Variable outside closed function
@@ -273,20 +241,12 @@ SCClass (3:1): ClosedLookup : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable outside closed function
-|  |  |  closed_functions/lookup.sc:40:35
-|  |  |     38 │     pack_assigns_outer { var foo; ^#{ #foo, a = [1, 2] } }
-|  |  |     39 │     // expect-error: Variable outside closed function
-|  |  |     40 │     outer_function_variable { ^{ |foo| #{ foo } } }
-|  |  |        ┆                                   ^^^ This is declared outside the closed function...
-|  |  |     41 │     // expect-error: Variable outside closed function
-|  |  |     42 │     outer_closed_variable { ^#{ |foo| #{ foo } } }
-|  |  |     43 │     // A function in its own initial value could see it, a closed one can't.
-|  |  |
 |  |  |  closed_functions/lookup.sc:40:43
 |  |  |     38 │     pack_assigns_outer { var foo; ^#{ #foo, a = [1, 2] } }
 |  |  |     39 │     // expect-error: Variable outside closed function
 |  |  |     40 │     outer_function_variable { ^{ |foo| #{ foo } } }
-|  |  |        ┆                                           ^^^ ...so it can't be used inside it.
+|  |  |        ┆                                   ^^^     ^^^ ...so it can't be used inside it.
+|  |  |        ┆                                   └ This is declared outside the closed function...
 |  |  |     41 │     // expect-error: Variable outside closed function
 |  |  |     42 │     outer_closed_variable { ^#{ |foo| #{ foo } } }
 |  |  |     43 │     // A function in its own initial value could see it, a closed one can't.
@@ -306,20 +266,12 @@ SCClass (3:1): ClosedLookup : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable outside closed function
-|  |  |  closed_functions/lookup.sc:42:34
-|  |  |     40 │     outer_function_variable { ^{ |foo| #{ foo } } }
-|  |  |     41 │     // expect-error: Variable outside closed function
-|  |  |     42 │     outer_closed_variable { ^#{ |foo| #{ foo } } }
-|  |  |        ┆                                  ^^^ This is declared outside the closed function...
-|  |  |     43 │     // A function in its own initial value could see it, a closed one can't.
-|  |  |     44 │     // expect-error: Variable outside closed function
-|  |  |     45 │     own_initial_value { var foo = #{ foo }; ^foo }
-|  |  |
 |  |  |  closed_functions/lookup.sc:42:42
 |  |  |     40 │     outer_function_variable { ^{ |foo| #{ foo } } }
 |  |  |     41 │     // expect-error: Variable outside closed function
 |  |  |     42 │     outer_closed_variable { ^#{ |foo| #{ foo } } }
-|  |  |        ┆                                          ^^^ ...so it can't be used inside it.
+|  |  |        ┆                                  ^^^     ^^^ ...so it can't be used inside it.
+|  |  |        ┆                                  └ This is declared outside the closed function...
 |  |  |     43 │     // A function in its own initial value could see it, a closed one can't.
 |  |  |     44 │     // expect-error: Variable outside closed function
 |  |  |     45 │     own_initial_value { var foo = #{ foo }; ^foo }
@@ -339,20 +291,12 @@ SCClass (3:1): ClosedLookup : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable outside closed function
-|  |  |  closed_functions/lookup.sc:45:29
-|  |  |     43 │     // A function in its own initial value could see it, a closed one can't.
-|  |  |     44 │     // expect-error: Variable outside closed function
-|  |  |     45 │     own_initial_value { var foo = #{ foo }; ^foo }
-|  |  |        ┆                             ^^^^^^^^^^^^^^ This is declared outside the closed function...
-|  |  |     46 │     // `f` is also the Interpreter's member, which is what the closed function reads.
-|  |  |     47 │     // expect-reads: f -> f; f = #{ f }
-|  |  |     48 │     own_initial_value_interpreter_name { var f = #{ f }; ^f }
-|  |  |
 |  |  |  closed_functions/lookup.sc:45:38
 |  |  |     43 │     // A function in its own initial value could see it, a closed one can't.
 |  |  |     44 │     // expect-error: Variable outside closed function
 |  |  |     45 │     own_initial_value { var foo = #{ foo }; ^foo }
-|  |  |        ┆                                      ^^^ ...so it can't be used inside it.
+|  |  |        ┆                             ^^^^^^^^^^^^^^^ ...so it can't be used inside it.
+|  |  |        ┆                             └ This is declared outside the closed function...
 |  |  |     46 │     // `f` is also the Interpreter's member, which is what the closed function reads.
 |  |  |     47 │     // expect-reads: f -> f; f = #{ f }
 |  |  |     48 │     own_initial_value_interpreter_name { var f = #{ f }; ^f }

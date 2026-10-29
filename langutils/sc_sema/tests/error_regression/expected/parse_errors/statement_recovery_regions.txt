@@ -8,18 +8,12 @@ SCInterpreted (1:1): poisoned: version 3.16: parse_errors/statement_recovery_reg
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Missing Expression.
-|  parse_errors/statement_recovery_regions.scd:3:17
-|      1 │ // interpreted-version: 3.16
-|      2 │ // An error in a function is recovered from inside it, and the region carries on.
-|      3 │ var f = { |x| x + ; x * 2 };
-|        ┆                 ^ This `+` needs an expression after it...
-|      4 │ f.value(3)
-|
 |  parse_errors/statement_recovery_regions.scd:3:19
 |      1 │ // interpreted-version: 3.16
 |      2 │ // An error in a function is recovered from inside it, and the region carries on.
 |      3 │ var f = { |x| x + ; x * 2 };
-|        ┆                   ^ ...but found `;`.
+|        ┆                 ^ ^ ...but found `;`.
+|        ┆                 └ This `+` needs an expression after it...
 |      4 │ f.value(3)
 |
 |  ──────────────────────────────────────────────────────────────────────────────────

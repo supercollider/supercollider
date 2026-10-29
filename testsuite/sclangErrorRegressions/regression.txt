@@ -566,13 +566,6 @@ ERROR: BadClass1:foo was not compiled, as it has an error in its source.
 		│         1 +
 		┆           ^ This `+` needs an expression after it...
 		│     }
-		│ }
-		│ 
-    
-		file:/
-		│     foo {
-		│         1 +
-		│     }
 		┆     ^ ...but found `}`.
 		│ }
 		│ 
@@ -602,15 +595,15 @@ ERROR: BadClass1:foo was not compiled, as it has an error in its source.
 1   : Method Name: 'BadClass1-foo'
        args: this=BadClass1()
 		file:/
-		│ 
-		│ BadClass1 {
-		*│     foo {
-		*│         1 +
-		*│     }
-              >│ ^ 
-		│ }
-		│ 
-		│ BadClass2  {
+		│   
+		│   BadClass1 {
+		│ ╭     foo {
+		│ │         1 +
+		│ │     }
+		┆ ╰─────^ 
+		│   }
+		│   
+		│   BadClass2  {
 BadClass1:foo was not compiled, as it has an error in its source.
 
 ────────────────────────────────────────────────────────────────────────────────
@@ -624,16 +617,8 @@ ERROR: BadClass2:foo was not compiled, as it has an error in its source.
 		│ 
 		│ BadClass2  {
 		│     foo { 1 + }
-		┆             ^ This `+` needs an expression after it...
-		│ 
-		│     bar { 10  + { )}
-		│ }
-    
-		file:/
-		│ 
-		│ BadClass2  {
-		│     foo { 1 + }
-		┆               ^ ...but found `}`.
+		┆             ^ ^ ...but found `}`.
+		┆             └ This `+` needs an expression after it...
 		│ 
 		│     bar { 10  + { )}
 		│ }
@@ -709,11 +694,11 @@ ERROR: BadClass2:bar was not compiled, as it has an error in its source.
 1   : Method Name: 'BadClass2-bar'
        args: this=BadClass2()
 		file:/
-		│     foo { 1 + }
-		│ 
-		*│     bar { 10  + { )}
-		*│ }
-              >│ ^ 
+		│       foo { 1 + }
+		│   
+		│ ╭     bar { 10  + { )}
+		│ │ }
+		┆ ╰─^ 
 BadClass2:bar was not compiled, as it has an error in its source.
 
 ────────────────────────────────────────────────────────────────────────────────

@@ -160,20 +160,12 @@ SCClass (3:1): StatementDeclarations : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
-|  |  |  parse_errors/statement_recovery_declarations.sc:20:21
-|  |  |     18 │     // expect: poisoned
-|  |  |     19 │     // expect-error: Variable not defined
-|  |  |     20 │     later_error { 1 + ; ^undefined_variable }
-|  |  |        ┆                     ^ This `+` needs an expression after it...
-|  |  |     21 │     // expect: poisoned
-|  |  |     22 │     // expect-error: Variable already declared
-|  |  |     23 │     duplicate { var a; 1 + ; var a; ^a }
-|  |  |
 |  |  |  parse_errors/statement_recovery_declarations.sc:20:23
 |  |  |     18 │     // expect: poisoned
 |  |  |     19 │     // expect-error: Variable not defined
 |  |  |     20 │     later_error { 1 + ; ^undefined_variable }
-|  |  |        ┆                       ^ ...but found `;`.
+|  |  |        ┆                     ^ ^ ...but found `;`.
+|  |  |        ┆                     └ This `+` needs an expression after it...
 |  |  |     21 │     // expect: poisoned
 |  |  |     22 │     // expect-error: Variable already declared
 |  |  |     23 │     duplicate { var a; 1 + ; var a; ^a }
@@ -201,20 +193,12 @@ SCClass (3:1): StatementDeclarations : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
-|  |  |  parse_errors/statement_recovery_declarations.sc:23:26
-|  |  |     21 │     // expect: poisoned
-|  |  |     22 │     // expect-error: Variable already declared
-|  |  |     23 │     duplicate { var a; 1 + ; var a; ^a }
-|  |  |        ┆                          ^ This `+` needs an expression after it...
-|  |  |     24 │     // A good method after all of them.
-|  |  |     25 │     // expect: -> 7
-|  |  |     26 │     good { ^7 }
-|  |  |
 |  |  |  parse_errors/statement_recovery_declarations.sc:23:28
 |  |  |     21 │     // expect: poisoned
 |  |  |     22 │     // expect-error: Variable already declared
 |  |  |     23 │     duplicate { var a; 1 + ; var a; ^a }
-|  |  |        ┆                            ^ ...but found `;`.
+|  |  |        ┆                          ^ ^ ...but found `;`.
+|  |  |        ┆                          └ This `+` needs an expression after it...
 |  |  |     24 │     // A good method after all of them.
 |  |  |     25 │     // expect: -> 7
 |  |  |     26 │     good { ^7 }
@@ -223,20 +207,12 @@ SCClass (3:1): StatementDeclarations : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable already declared
-|  |  |  parse_errors/statement_recovery_declarations.sc:23:21
-|  |  |     21 │     // expect: poisoned
-|  |  |     22 │     // expect-error: Variable already declared
-|  |  |     23 │     duplicate { var a; 1 + ; var a; ^a }
-|  |  |        ┆                     ^ First declared here...
-|  |  |     24 │     // A good method after all of them.
-|  |  |     25 │     // expect: -> 7
-|  |  |     26 │     good { ^7 }
-|  |  |
 |  |  |  parse_errors/statement_recovery_declarations.sc:23:34
 |  |  |     21 │     // expect: poisoned
 |  |  |     22 │     // expect-error: Variable already declared
 |  |  |     23 │     duplicate { var a; 1 + ; var a; ^a }
-|  |  |        ┆                                  ^ ...declared again here.
+|  |  |        ┆                     ^            ^ ...declared again here.
+|  |  |        ┆                     └ First declared here...
 |  |  |     24 │     // A good method after all of them.
 |  |  |     25 │     // expect: -> 7
 |  |  |     26 │     good { ^7 }

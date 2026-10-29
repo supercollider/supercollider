@@ -56,20 +56,12 @@ SCClass (2:1): AssignmentAt : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
-|  |  |  messages/assignment_at.sc:11:29
-|  |  |      9 │     multiple { instance_var[0, 1] = 2 }
-|  |  |     10 │     keyword { instance_var[0, b: 1] = 2 }
-|  |  |     11 │     variadic { instance_var[*0] = 1 }
-|  |  |        ┆                             ^^ the elements of this are passed after...
-|  |  |     12 │     expression_receiver { 1.foo[0] = 2 }
-|  |  |     13 │     nested_value { instance_var[0] = instance_var[1] = 2 }
-|  |  |     14 │     as_argument { ^3.bar(instance_var[0] = 1) }
-|  |  |
 |  |  |  messages/assignment_at.sc:11:35
 |  |  |      9 │     multiple { instance_var[0, 1] = 2 }
 |  |  |     10 │     keyword { instance_var[0, b: 1] = 2 }
 |  |  |     11 │     variadic { instance_var[*0] = 1 }
-|  |  |        ┆                                   ^ ...this argument, which is written after it.
+|  |  |        ┆                             ^^    ^ ...this argument, which is written after it.
+|  |  |        ┆                             └ the elements of this are passed after...
 |  |  |     12 │     expression_receiver { 1.foo[0] = 2 }
 |  |  |     13 │     nested_value { instance_var[0] = instance_var[1] = 2 }
 |  |  |     14 │     as_argument { ^3.bar(instance_var[0] = 1) }

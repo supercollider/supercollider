@@ -21,20 +21,12 @@ SCInterpreted (1:1): poisoned: version 3.16: parse_errors/statement_recovery_int
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Missing Expression.
-|  parse_errors/statement_recovery_interpreted.scd:5:5
-|      3 │ var a = 1;
-|      4 │ a = ;
-|      5 │ { 1 + ; 2 }.value;
-|        ┆     ^ This `+` needs an expression after it...
-|      6 │ a + ; 
-|      7 │ (b = 2; b + ; b);
-|      8 │ a
-|
 |  parse_errors/statement_recovery_interpreted.scd:5:7
 |      3 │ var a = 1;
 |      4 │ a = ;
 |      5 │ { 1 + ; 2 }.value;
-|        ┆       ^ ...but found `;`.
+|        ┆     ^ ^ ...but found `;`.
+|        ┆     └ This `+` needs an expression after it...
 |      6 │ a + ; 
 |      7 │ (b = 2; b + ; b);
 |      8 │ a
@@ -43,19 +35,12 @@ SCInterpreted (1:1): poisoned: version 3.16: parse_errors/statement_recovery_int
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Missing Expression.
-|  parse_errors/statement_recovery_interpreted.scd:6:3
-|      4 │ a = ;
-|      5 │ { 1 + ; 2 }.value;
-|      6 │ a + ; 
-|        ┆   ^ This `+` needs an expression after it...
-|      7 │ (b = 2; b + ; b);
-|      8 │ a
-|
 |  parse_errors/statement_recovery_interpreted.scd:6:5
 |      4 │ a = ;
 |      5 │ { 1 + ; 2 }.value;
 |      6 │ a + ; 
-|        ┆     ^ ...but found `;`.
+|        ┆   ^ ^ ...but found `;`.
+|        ┆   └ This `+` needs an expression after it...
 |      7 │ (b = 2; b + ; b);
 |      8 │ a
 |
@@ -63,18 +48,12 @@ SCInterpreted (1:1): poisoned: version 3.16: parse_errors/statement_recovery_int
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Missing Expression.
-|  parse_errors/statement_recovery_interpreted.scd:7:11
-|      5 │ { 1 + ; 2 }.value;
-|      6 │ a + ; 
-|      7 │ (b = 2; b + ; b);
-|        ┆           ^ This `+` needs an expression after it...
-|      8 │ a
-|
 |  parse_errors/statement_recovery_interpreted.scd:7:13
 |      5 │ { 1 + ; 2 }.value;
 |      6 │ a + ; 
 |      7 │ (b = 2; b + ; b);
-|        ┆             ^ ...but found `;`.
+|        ┆           ^ ^ ...but found `;`.
+|        ┆           └ This `+` needs an expression after it...
 |      8 │ a
 |
 |  ──────────────────────────────────────────────────────────────────────────────────

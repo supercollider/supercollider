@@ -48,20 +48,12 @@ SCClass (2:1): Generators : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable already declared
-|  |  |  generators/generators.sc:15:30
-|  |  |     13 │     // expect-error: Variable already declared
-|  |  |     14 │     // expect-reads: x -> x x <- [1, 2, 3]
-|  |  |     15 │     duplicate_index { ^{: x, x x <- [1, 2, 3] } }
-|  |  |        ┆                              ^ First declared here...
-|  |  |     16 │     // expect-reads: x -> x <- [1, 2]
-|  |  |     17 │     // expect-reads: y -> y <- [x, 3]
-|  |  |     18 │     nested_iterate { ^{: [x, y], x <- [1, 2], y <- [x, 3] } }
-|  |  |
 |  |  |  generators/generators.sc:15:32
 |  |  |     13 │     // expect-error: Variable already declared
 |  |  |     14 │     // expect-reads: x -> x x <- [1, 2, 3]
 |  |  |     15 │     duplicate_index { ^{: x, x x <- [1, 2, 3] } }
-|  |  |        ┆                                ^ ...declared again here.
+|  |  |        ┆                              ^ ^ ...declared again here.
+|  |  |        ┆                              └ First declared here...
 |  |  |     16 │     // expect-reads: x -> x <- [1, 2]
 |  |  |     17 │     // expect-reads: y -> y <- [x, 3]
 |  |  |     18 │     nested_iterate { ^{: [x, y], x <- [1, 2], y <- [x, 3] } }

@@ -284,20 +284,12 @@ SCClass (2:1): PackAssign : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variable already declared
-|  |  |  variables/pack_assignment.sc:48:30
-|  |  |     46 │     declare_environment { var #a, ~b = [1, 2]; ^a }
-|  |  |     47 │     // expect-error: Variable already declared
-|  |  |     48 │     declare_duplicate { var #a, a = [1, 2]; ^a }
-|  |  |        ┆                              ^ First declared here...
-|  |  |     49 │     // expect-error: Variable not defined
-|  |  |     50 │     declare_refers_to_itself { var #a, b = [a]; ^b }
-|  |  |     51 │     // expect-reads: x -> x = 1
-|  |  |
 |  |  |  variables/pack_assignment.sc:48:33
 |  |  |     46 │     declare_environment { var #a, ~b = [1, 2]; ^a }
 |  |  |     47 │     // expect-error: Variable already declared
 |  |  |     48 │     declare_duplicate { var #a, a = [1, 2]; ^a }
-|  |  |        ┆                                 ^ ...declared again here.
+|  |  |        ┆                              ^  ^ ...declared again here.
+|  |  |        ┆                              └ First declared here...
 |  |  |     49 │     // expect-error: Variable not defined
 |  |  |     50 │     declare_refers_to_itself { var #a, b = [a]; ^b }
 |  |  |     51 │     // expect-reads: x -> x = 1

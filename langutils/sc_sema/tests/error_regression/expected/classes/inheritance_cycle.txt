@@ -1,18 +1,11 @@
 
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Inheritance cycle detected.
-classes/inheritance_cycle.sc:4:10
+classes/inheritance_cycle.sc:5:10
     2 │ // Classes in an inheritance cycle, or under a superclass that isn't defined, are poisoned, so aren't compiled. The
     3 │ // diagnostics, and the order of the classes in them, are the same every time, by name.
     4 │ CycleB : CycleA {}
       ┆          ^^^^^^ cycle detected
-    5 │ CycleA : CycleB {}
-    6 │ 
-    7 │ ItsOwnSuper : ItsOwnSuper {}
-
-classes/inheritance_cycle.sc:5:10
-    3 │ // diagnostics, and the order of the classes in them, are the same every time, by name.
-    4 │ CycleB : CycleA {}
     5 │ CycleA : CycleB {}
       ┆          ^^^^^^ cycle detected
     6 │ 
@@ -36,23 +29,16 @@ classes/inheritance_cycle.sc:7:15
 
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Super class not defined.
-classes/inheritance_cycle.sc:10:10
-    8 │ 
-    9 │ ChildZ : NotDefined {}
-   10 │ ChildY : NotDefined {}
-      ┆          ^^^^^^^^^^ super class not defined.
-   11 │ 
-   12 │ Fine {
-   13 │     // expect: no diagnostics
-
 classes/inheritance_cycle.sc:9:10
     7 │ ItsOwnSuper : ItsOwnSuper {}
     8 │ 
     9 │ ChildZ : NotDefined {}
       ┆          ^^^^^^^^^^ super class not defined.
    10 │ ChildY : NotDefined {}
+      ┆          ^^^^^^^^^^ super class not defined.
    11 │ 
    12 │ Fine {
+   13 │     // expect: no diagnostics
 
 The class NotDefined was not defined.
 ──────────────────────────────────────────────────────────────────────────────────

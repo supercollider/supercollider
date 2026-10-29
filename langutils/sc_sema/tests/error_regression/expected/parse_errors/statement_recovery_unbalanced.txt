@@ -42,20 +42,12 @@ SCClass (8:1): StatementUnbalancedCall : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
-|  |  |  parse_errors/statement_recovery_unbalanced.sc:10:30
-|  |  |      8 │ StatementUnbalancedCall {
-|  |  |      9 │     // expect: poisoned
-|  |  |     10 │     mismatched_in_call { foo(1 ] 2); ^3 }
-|  |  |        ┆                              ^ This ends an expression...
-|  |  |     11 │ }
-|  |  |     12 │ 
-|  |  |     13 │ StatementUnbalancedOpen {
-|  |  |
 |  |  |  parse_errors/statement_recovery_unbalanced.sc:10:34
 |  |  |      8 │ StatementUnbalancedCall {
 |  |  |      9 │     // expect: poisoned
 |  |  |     10 │     mismatched_in_call { foo(1 ] 2); ^3 }
-|  |  |        ┆                                  ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `,`.
+|  |  |        ┆                              ^   ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `,`.
+|  |  |        ┆                              └ This ends an expression...
 |  |  |     11 │ }
 |  |  |     12 │ 
 |  |  |     13 │ StatementUnbalancedOpen {
@@ -72,18 +64,12 @@ SCClass (13:1): StatementUnbalancedOpen : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
-|  |  |  parse_errors/statement_recovery_unbalanced.sc:15:27
-|  |  |     13 │ StatementUnbalancedOpen {
-|  |  |     14 │     // expect: poisoned
-|  |  |     15 │     unclosed_in_array { 1 + ; [1, 2; ^5 }
-|  |  |        ┆                           ^ This `+` needs an expression after it...
-|  |  |     16 │ }
-|  |  |
 |  |  |  parse_errors/statement_recovery_unbalanced.sc:15:29
 |  |  |     13 │ StatementUnbalancedOpen {
 |  |  |     14 │     // expect: poisoned
 |  |  |     15 │     unclosed_in_array { 1 + ; [1, 2; ^5 }
-|  |  |        ┆                             ^ ...but found `;`.
+|  |  |        ┆                           ^ ^ ...but found `;`.
+|  |  |        ┆                           └ This `+` needs an expression after it...
 |  |  |     16 │ }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
@@ -101,18 +87,12 @@ SCClass (13:1): StatementUnbalancedOpen : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Unclosed Bracket.
-|  |  |  parse_errors/statement_recovery_unbalanced.sc:15:31
-|  |  |     13 │ StatementUnbalancedOpen {
-|  |  |     14 │     // expect: poisoned
-|  |  |     15 │     unclosed_in_array { 1 + ; [1, 2; ^5 }
-|  |  |        ┆                               ^ This `[` isn't closed...
-|  |  |     16 │ }
-|  |  |
 |  |  |  parse_errors/statement_recovery_unbalanced.sc:15:41
 |  |  |     13 │ StatementUnbalancedOpen {
 |  |  |     14 │     // expect: poisoned
 |  |  |     15 │     unclosed_in_array { 1 + ; [1, 2; ^5 }
-|  |  |        ┆                                         ^ ...before this `}`, which closes the bracket around it.
+|  |  |        ┆                               ^         ^ ...before this `}`, which closes the bracket around it.
+|  |  |        ┆                               └ This `[` isn't closed...
 |  |  |     16 │ }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────

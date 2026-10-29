@@ -53,13 +53,6 @@ SCClass (24:1): Foo : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Duplicate extension
-|  |  |  classes/duplicate_extension.sc:27:5
-|  |  |     25 │ 
-|  |  |     26 │ +Foo {
-|  |  |     27 │     bar {}
-|  |  |        ┆     ^^^ This extension defines the method...
-|  |  |     28 │ }
-|  |  |
 |  |  |  classes/duplicate_extension.sc:21:5
 |  |  |     19 │ 
 |  |  |     20 │ +Foo {
@@ -68,6 +61,13 @@ SCClass (24:1): Foo : Object, version 3.16
 |  |  |     22 │ }
 |  |  |     23 │ 
 |  |  |     24 │ Foo { }
+|  |  |
+|  |  |  classes/duplicate_extension.sc:27:5
+|  |  |     25 │ 
+|  |  |     26 │ +Foo {
+|  |  |     27 │     bar {}
+|  |  |        ┆     ^^^ This extension defines the method...
+|  |  |     28 │ }
 |  |  |
 |  |  |  The order of the files in a module isn't defined, so neither can be chosen, and the method can't be used. Delete one.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────

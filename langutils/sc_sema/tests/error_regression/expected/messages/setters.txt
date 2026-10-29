@@ -89,20 +89,12 @@ SCClass (2:1): Setters : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
-|  |  |  messages/setters.sc:14:34
-|  |  |     12 │     functional_keyword { foo(x, b: 1) = 2 }
-|  |  |     13 │     functional_no_receiver { foo(b: 1) = 2 }
-|  |  |     14 │     functional_variadic { foo(x, *x) = 2 }
-|  |  |        ┆                                  ^^ the elements of this are passed after...
-|  |  |     15 │     functional_variadic_receiver { foo(*x) = 2 }
-|  |  |     16 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
-|  |  |     17 │ }
-|  |  |
 |  |  |  messages/setters.sc:14:40
 |  |  |     12 │     functional_keyword { foo(x, b: 1) = 2 }
 |  |  |     13 │     functional_no_receiver { foo(b: 1) = 2 }
 |  |  |     14 │     functional_variadic { foo(x, *x) = 2 }
-|  |  |        ┆                                        ^ ...this argument, which is written after it.
+|  |  |        ┆                                  ^^    ^ ...this argument, which is written after it.
+|  |  |        ┆                                  └ the elements of this are passed after...
 |  |  |     15 │     functional_variadic_receiver { foo(*x) = 2 }
 |  |  |     16 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
 |  |  |     17 │ }
@@ -136,18 +128,12 @@ SCClass (2:1): Setters : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Variadic argument is not last
-|  |  |  messages/setters.sc:16:53
-|  |  |     14 │     functional_variadic { foo(x, *x) = 2 }
-|  |  |     15 │     functional_variadic_receiver { foo(*x) = 2 }
-|  |  |     16 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
-|  |  |        ┆                                                     ^^ the elements of this are passed after...
-|  |  |     17 │ }
-|  |  |
 |  |  |  messages/setters.sc:16:59
 |  |  |     14 │     functional_variadic { foo(x, *x) = 2 }
 |  |  |     15 │     functional_variadic_receiver { foo(*x) = 2 }
 |  |  |     16 │     functional_variadic_after_arguments { foo(x, 1, *x) = 2 }
-|  |  |        ┆                                                           ^ ...this argument, which is written after it.
+|  |  |        ┆                                                     ^^    ^ ...this argument, which is written after it.
+|  |  |        ┆                                                     └ the elements of this are passed after...
 |  |  |     17 │ }
 |  |  |
 |  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed last.

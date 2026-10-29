@@ -26,20 +26,12 @@ SCClass (9:1): Foo : Object
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
-|  |  |  parse_errors/poisoned_method_stub.sc:12:15
-|  |  |     10 │ 	// expect: poisoned
-|  |  |     11 │ 	// expect-error: Missing Expression.
-|  |  |     12 │ 	broken { ^(1 + ) }
-|  |  |        ┆ 	             ^ This `+` needs an expression after it...
-|  |  |     13 │ 	// expect: poisoned
-|  |  |     14 │ 	// expect-error: Unexpected Token.
-|  |  |     15 │ 	brokenWithArguments { |a, b| var x = ; ^a }
-|  |  |
 |  |  |  parse_errors/poisoned_method_stub.sc:12:17
 |  |  |     10 │ 	// expect: poisoned
 |  |  |     11 │ 	// expect-error: Missing Expression.
 |  |  |     12 │ 	broken { ^(1 + ) }
-|  |  |        ┆ 	               ^ ...but found `)`.
+|  |  |        ┆ 	             ^ ^ ...but found `)`.
+|  |  |        ┆ 	             └ This `+` needs an expression after it...
 |  |  |     13 │ 	// expect: poisoned
 |  |  |     14 │ 	// expect-error: Unexpected Token.
 |  |  |     15 │ 	brokenWithArguments { |a, b| var x = ; ^a }
@@ -94,7 +86,7 @@ Foo
 |  |  body 0
 |  |  |  PushClass PoisonedMethodError
 |  |  |  PushSpecial thisMethod
-|  |  |  PushConstant "──────────────────────────────────────────────────────────────────────────────────\nError: Missing Expression.\nparse_errors/poisoned_method_stub.sc:12:15\n   10 │ \t// expect: poisoned\n   11 │ \t// expect-error: Missing Expression.\n   12 │ \tbroken { ^(1 + ) }\n      ┆ \t             ^ This `+` needs an expression after it...\n   13 │ \t// expect: poisoned\n   14 │ \t// expect-error: Unexpected Token.\n   15 │ \tbrokenWithArguments { |a, b| var x = ; ^a }\n\nparse_errors/poisoned_method_stub.sc:12:17\n   10 │ \t// expect: poisoned\n   11 │ \t// expect-error: Missing Expression.\n   12 │ \tbroken { ^(1 + ) }\n      ┆ \t               ^ ...but found `)`.\n   13 │ \t// expect: poisoned\n   14 │ \t// expect-error: Unexpected Token.\n   15 │ \tbrokenWithArguments { |a, b| var x = ; ^a }\n\n──────────────────────────────────────────────────────────────────────────────────\n"
+|  |  |  PushConstant "──────────────────────────────────────────────────────────────────────────────────\nError: Missing Expression.\nparse_errors/poisoned_method_stub.sc:12:17\n   10 │ \t// expect: poisoned\n   11 │ \t// expect-error: Missing Expression.\n   12 │ \tbroken { ^(1 + ) }\n      ┆ \t             ^ ^ ...but found `)`.\n      ┆ \t             └ This `+` needs an expression after it...\n   13 │ \t// expect: poisoned\n   14 │ \t// expect-error: Unexpected Token.\n   15 │ \tbrokenWithArguments { |a, b| var x = ; ^a }\n\n──────────────────────────────────────────────────────────────────────────────────\n"
 |  |  |  Send new (positional 2)
 |  |  |  Send throw (positional 0)
 |  |  |  Drop
@@ -136,7 +128,7 @@ Foo
 |  function 0 (12:2): method broken
 |  |  properties:
 |  |  selectors: throw, PoisonedMethodError,
-|  |  constants: "──────────────────────────────────────────────────────────────────────────────────\nError: Missing Expression.\nparse_errors/poisoned_method_stub.sc:12:15\n   10 │ \t// expect: poisoned\n   11 │ \t// expect-error: Missing Expression.\n   12 │ \tbroken { ^(1 + ) }\n      ┆ \t             ^ This `+` needs an expression after it...\n   13 │ \t// expect: poisoned\n   14 │ \t// expect-error: Unexpected Token.\n   15 │ \tbrokenWithArguments { |a, b| var x = ; ^a }\n\nparse_errors/poisoned_method_stub.sc:12:17\n   10 │ \t// expect: poisoned\n   11 │ \t// expect-error: Missing Expression.\n   12 │ \tbroken { ^(1 + ) }\n      ┆ \t               ^ ...but found `)`.\n   13 │ \t// expect: poisoned\n   14 │ \t// expect-error: Unexpected Token.\n   15 │ \tbrokenWithArguments { |a, b| var x = ; ^a }\n\n──────────────────────────────────────────────────────────────────────────────────\n",
+|  |  constants: "──────────────────────────────────────────────────────────────────────────────────\nError: Missing Expression.\nparse_errors/poisoned_method_stub.sc:12:17\n   10 │ \t// expect: poisoned\n   11 │ \t// expect-error: Missing Expression.\n   12 │ \tbroken { ^(1 + ) }\n      ┆ \t             ^ ^ ...but found `)`.\n      ┆ \t             └ This `+` needs an expression after it...\n   13 │ \t// expect: poisoned\n   14 │ \t// expect-error: Unexpected Token.\n   15 │ \tbrokenWithArguments { |a, b| var x = ; ^a }\n\n──────────────────────────────────────────────────────────────────────────────────\n",
 |  |  0    00 01           PushClassX
 |  |  2    0F 01           SpecialOpcode
 |  |  4    40              PushLiteral

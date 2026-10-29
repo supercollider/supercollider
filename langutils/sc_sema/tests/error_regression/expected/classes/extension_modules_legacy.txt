@@ -68,13 +68,6 @@ SCClass (2:1): Foo : Object
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Duplicate extension
-|  |  |  classes/extension_modules_legacy.sc:26:5
-|  |  |     24 │ 
-|  |  |     25 │ +Foo {
-|  |  |     26 │     duplicated { ^2 }
-|  |  |        ┆     ^^^^^^^^^^ This extension defines the method...
-|  |  |     27 │ }
-|  |  |
 |  |  |  classes/extension_modules_legacy.sc:22:5
 |  |  |     20 │     // expect-error: Duplicate extension
 |  |  |     21 │     // expect: poisoned
@@ -83,6 +76,9 @@ SCClass (2:1): Foo : Object
 |  |  |     23 │ }
 |  |  |     24 │ 
 |  |  |     25 │ +Foo {
+|  |  |     26 │     duplicated { ^2 }
+|  |  |        ┆     ^^^^^^^^^^ This extension defines the method...
+|  |  |     27 │ }
 |  |  |
 |  |  |  The order of the files in a module isn't defined, so neither can be chosen, and the method can't be used. Delete one.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────

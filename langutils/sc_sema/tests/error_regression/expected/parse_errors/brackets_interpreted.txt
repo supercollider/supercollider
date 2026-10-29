@@ -34,19 +34,12 @@ SCInterpreted (1:1): poisoned: version 3.16: parse_errors/brackets_interpreted.s
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Mismatched Bracket.
-|  parse_errors/brackets_interpreted.scd:4:5
-|      2 │ // The repaired brackets in interpreted code.
-|      3 │ a = 1 + 2]);
-|      4 │ b = (3 + 4];
-|        ┆     ^ This `(`...
-|      5 │ c = { (5 };
-|      6 │ d = 6;
-|
 |  parse_errors/brackets_interpreted.scd:4:11
 |      2 │ // The repaired brackets in interpreted code.
 |      3 │ a = 1 + 2]);
 |      4 │ b = (3 + 4];
-|        ┆           ^ ...is closed with `]`, rather than `)`.
+|        ┆     ^     ^ ...is closed with `]`, rather than `)`.
+|        ┆     └ This `(`...
 |      5 │ c = { (5 };
 |      6 │ d = 6;
 |
@@ -54,18 +47,12 @@ SCInterpreted (1:1): poisoned: version 3.16: parse_errors/brackets_interpreted.s
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Unclosed Bracket.
-|  parse_errors/brackets_interpreted.scd:5:7
-|      3 │ a = 1 + 2]);
-|      4 │ b = (3 + 4];
-|      5 │ c = { (5 };
-|        ┆       ^ This `(` isn't closed...
-|      6 │ d = 6;
-|
 |  parse_errors/brackets_interpreted.scd:5:10
 |      3 │ a = 1 + 2]);
 |      4 │ b = (3 + 4];
 |      5 │ c = { (5 };
-|        ┆          ^ ...before this `}`, which closes the bracket around it.
+|        ┆       ^  ^ ...before this `}`, which closes the bracket around it.
+|        ┆       └ This `(` isn't closed...
 |      6 │ d = 6;
 |
 |  ──────────────────────────────────────────────────────────────────────────────────

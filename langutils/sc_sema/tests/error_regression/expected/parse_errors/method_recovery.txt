@@ -15,20 +15,12 @@ SCClass (4:1): MethodRecovery : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
-|  |  |  parse_errors/method_recovery.sc:9:25
-|  |  |      7 │     // expect: poisoned
-|  |  |      8 │     // expect-error: Missing Operator.
-|  |  |      9 │     missing_operator { ^1 2 }
-|  |  |        ┆                         ^ This ends an expression...
-|  |  |     10 │     // expect: poisoned
-|  |  |     11 │     // expect-error: Missing Expression.
-|  |  |     12 │     missing_operand { ^1 + }
-|  |  |
 |  |  |  parse_errors/method_recovery.sc:9:27
 |  |  |      7 │     // expect: poisoned
 |  |  |      8 │     // expect-error: Missing Operator.
 |  |  |      9 │     missing_operator { ^1 2 }
-|  |  |        ┆                           ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |        ┆                         ^ ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |        ┆                         └ This ends an expression...
 |  |  |     10 │     // expect: poisoned
 |  |  |     11 │     // expect-error: Missing Expression.
 |  |  |     12 │     missing_operand { ^1 + }
@@ -40,20 +32,12 @@ SCClass (4:1): MethodRecovery : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
-|  |  |  parse_errors/method_recovery.sc:12:26
-|  |  |     10 │     // expect: poisoned
-|  |  |     11 │     // expect-error: Missing Expression.
-|  |  |     12 │     missing_operand { ^1 + }
-|  |  |        ┆                          ^ This `+` needs an expression after it...
-|  |  |     13 │     // expect: poisoned
-|  |  |     14 │     // expect-error: Missing Operator.
-|  |  |     15 │     with_arguments { |a, b| ^a b }
-|  |  |
 |  |  |  parse_errors/method_recovery.sc:12:28
 |  |  |     10 │     // expect: poisoned
 |  |  |     11 │     // expect-error: Missing Expression.
 |  |  |     12 │     missing_operand { ^1 + }
-|  |  |        ┆                            ^ ...but found `}`.
+|  |  |        ┆                          ^ ^ ...but found `}`.
+|  |  |        ┆                          └ This `+` needs an expression after it...
 |  |  |     13 │     // expect: poisoned
 |  |  |     14 │     // expect-error: Missing Operator.
 |  |  |     15 │     with_arguments { |a, b| ^a b }
@@ -65,20 +49,12 @@ SCClass (4:1): MethodRecovery : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
-|  |  |  parse_errors/method_recovery.sc:15:30
-|  |  |     13 │     // expect: poisoned
-|  |  |     14 │     // expect-error: Missing Operator.
-|  |  |     15 │     with_arguments { |a, b| ^a b }
-|  |  |        ┆                              ^ This ends an expression...
-|  |  |     16 │     // expect: poisoned
-|  |  |     17 │     // expect-error: Unexpected Token.
-|  |  |     18 │     in_immutable_array { ^#[1, ^2] }
-|  |  |
 |  |  |  parse_errors/method_recovery.sc:15:32
 |  |  |     13 │     // expect: poisoned
 |  |  |     14 │     // expect-error: Missing Operator.
 |  |  |     15 │     with_arguments { |a, b| ^a b }
-|  |  |        ┆                                ^ ...and `b` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |        ┆                              ^ ^ ...and `b` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |        ┆                              └ This ends an expression...
 |  |  |     16 │     // expect: poisoned
 |  |  |     17 │     // expect-error: Unexpected Token.
 |  |  |     18 │     in_immutable_array { ^#[1, ^2] }
@@ -109,20 +85,12 @@ SCClass (4:1): MethodRecovery : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
-|  |  |  parse_errors/method_recovery.sc:21:46
-|  |  |     19 │     // expect: poisoned
-|  |  |     20 │     // expect-error: Missing Operator.
-|  |  |     21 │     in_nested_function { |x| if (x) { ^1 }; ^x 2 }
-|  |  |        ┆                                              ^ This ends an expression...
-|  |  |     22 │     // expect: poisoned
-|  |  |     23 │     // expect-error: Missing Operator.
-|  |  |     24 │     *class_method { ^1 2 }
-|  |  |
 |  |  |  parse_errors/method_recovery.sc:21:48
 |  |  |     19 │     // expect: poisoned
 |  |  |     20 │     // expect-error: Missing Operator.
 |  |  |     21 │     in_nested_function { |x| if (x) { ^1 }; ^x 2 }
-|  |  |        ┆                                                ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |        ┆                                              ^ ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |        ┆                                              └ This ends an expression...
 |  |  |     22 │     // expect: poisoned
 |  |  |     23 │     // expect-error: Missing Operator.
 |  |  |     24 │     *class_method { ^1 2 }
@@ -150,20 +118,12 @@ SCClass (4:1): Meta_MethodRecovery : Meta_Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Operator.
-|  |  |  parse_errors/method_recovery.sc:24:22
-|  |  |     22 │     // expect: poisoned
-|  |  |     23 │     // expect-error: Missing Operator.
-|  |  |     24 │     *class_method { ^1 2 }
-|  |  |        ┆                      ^ This ends an expression...
-|  |  |     25 │     // expect: -> 3
-|  |  |     26 │     after { ^3 }
-|  |  |     27 │ }
-|  |  |
 |  |  |  parse_errors/method_recovery.sc:24:24
 |  |  |     22 │     // expect: poisoned
 |  |  |     23 │     // expect-error: Missing Operator.
 |  |  |     24 │     *class_method { ^1 2 }
-|  |  |        ┆                        ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |        ┆                      ^ ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |        ┆                      └ This ends an expression...
 |  |  |     25 │     // expect: -> 3
 |  |  |     26 │     after { ^3 }
 |  |  |     27 │ }

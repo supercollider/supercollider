@@ -29,17 +29,13 @@ std::string diagnosticToString(Severity type, const char* generalDescription,
 
     ss << '\n';
 
-    bool first { true };
+    std::vector<Highlight> highlights;
     for (const auto& loc : locations) {
-        if (!first)
-            ss << "\n";
-        first = false;
         const auto& file_path = loc.text_info->file_path;
-        streamHighlight(ss,
-                        { file_path ? &*file_path : nullptr, loc.text_info->source.as_string(), loc.range,
-                          loc.text_info->source_start_in_file, loc.msg },
-                        true, {}, relative_to);
+        highlights.push_back({ file_path ? &*file_path : nullptr, loc.text_info->source.as_string(), loc.range,
+                               loc.text_info->source_start_in_file, loc.msg });
     }
+    streamHighlights(ss, highlights, true, {}, relative_to);
 
     if (!extra.empty()) {
         ss << "\n" << extra;
@@ -375,8 +371,9 @@ Diagnostic Diagnostic::primitive_needs_keyword_arguments(TextInfoPtr t, sc::src:
     return { "Duplicate method name.",
              Severity::Error,
              {
-                 { std::move(first_t), first_l, "This method was duplicated..." },
-                 { std::move(second_t), second_l, "...here." },
+                 // The listing is in source order, so the earlier method, the second one given, reads first.
+                 { std::move(second_t), second_l, "This method was duplicated..." },
+                 { std::move(first_t), first_l, "...here." },
              } };
 }
 

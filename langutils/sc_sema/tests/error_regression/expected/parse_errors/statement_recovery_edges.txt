@@ -57,20 +57,12 @@ SCClass (3:1): StatementEdges : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
-|  |  |  parse_errors/statement_recovery_edges.sc:7:28
-|  |  |      5 │     consecutive { a = ; ; b = ; ^1 }
-|  |  |      6 │     // expect: poisoned
-|  |  |      7 │     consecutive_at_end { 1 + ; 2 + ; 3 + }
-|  |  |        ┆                            ^ This `+` needs an expression after it...
-|  |  |      8 │     // expect: poisoned
-|  |  |      9 │     only_error { + }
-|  |  |     10 │     // expect: poisoned
-|  |  |
 |  |  |  parse_errors/statement_recovery_edges.sc:7:30
 |  |  |      5 │     consecutive { a = ; ; b = ; ^1 }
 |  |  |      6 │     // expect: poisoned
 |  |  |      7 │     consecutive_at_end { 1 + ; 2 + ; 3 + }
-|  |  |        ┆                              ^ ...but found `;`.
+|  |  |        ┆                            ^ ^ ...but found `;`.
+|  |  |        ┆                            └ This `+` needs an expression after it...
 |  |  |      8 │     // expect: poisoned
 |  |  |      9 │     only_error { + }
 |  |  |     10 │     // expect: poisoned
@@ -79,20 +71,12 @@ SCClass (3:1): StatementEdges : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
-|  |  |  parse_errors/statement_recovery_edges.sc:7:34
-|  |  |      5 │     consecutive { a = ; ; b = ; ^1 }
-|  |  |      6 │     // expect: poisoned
-|  |  |      7 │     consecutive_at_end { 1 + ; 2 + ; 3 + }
-|  |  |        ┆                                  ^ This `+` needs an expression after it...
-|  |  |      8 │     // expect: poisoned
-|  |  |      9 │     only_error { + }
-|  |  |     10 │     // expect: poisoned
-|  |  |
 |  |  |  parse_errors/statement_recovery_edges.sc:7:36
 |  |  |      5 │     consecutive { a = ; ; b = ; ^1 }
 |  |  |      6 │     // expect: poisoned
 |  |  |      7 │     consecutive_at_end { 1 + ; 2 + ; 3 + }
-|  |  |        ┆                                    ^ ...but found `;`.
+|  |  |        ┆                                  ^ ^ ...but found `;`.
+|  |  |        ┆                                  └ This `+` needs an expression after it...
 |  |  |      8 │     // expect: poisoned
 |  |  |      9 │     only_error { + }
 |  |  |     10 │     // expect: poisoned
@@ -101,20 +85,12 @@ SCClass (3:1): StatementEdges : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
-|  |  |  parse_errors/statement_recovery_edges.sc:7:40
-|  |  |      5 │     consecutive { a = ; ; b = ; ^1 }
-|  |  |      6 │     // expect: poisoned
-|  |  |      7 │     consecutive_at_end { 1 + ; 2 + ; 3 + }
-|  |  |        ┆                                        ^ This `+` needs an expression after it...
-|  |  |      8 │     // expect: poisoned
-|  |  |      9 │     only_error { + }
-|  |  |     10 │     // expect: poisoned
-|  |  |
 |  |  |  parse_errors/statement_recovery_edges.sc:7:42
 |  |  |      5 │     consecutive { a = ; ; b = ; ^1 }
 |  |  |      6 │     // expect: poisoned
 |  |  |      7 │     consecutive_at_end { 1 + ; 2 + ; 3 + }
-|  |  |        ┆                                          ^ ...but found `}`.
+|  |  |        ┆                                        ^ ^ ...but found `}`.
+|  |  |        ┆                                        └ This `+` needs an expression after it...
 |  |  |      8 │     // expect: poisoned
 |  |  |      9 │     only_error { + }
 |  |  |     10 │     // expect: poisoned
@@ -173,20 +149,12 @@ SCClass (3:1): StatementEdges : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
-|  |  |  parse_errors/statement_recovery_edges.sc:13:27
-|  |  |     11 │     in_immediately_evaluated { (var a = 1; 1 + ; ^a) }
-|  |  |     12 │     // expect: poisoned
-|  |  |     13 │     in_closure { ^{ |x| x + ; x * 2 }.value(3) }
-|  |  |        ┆                           ^ This `+` needs an expression after it...
-|  |  |     14 │     // expect: poisoned
-|  |  |     15 │     in_call_function { ^[1, 2].collect { |x| x + ; x } }
-|  |  |     16 │     // expect: poisoned
-|  |  |
 |  |  |  parse_errors/statement_recovery_edges.sc:13:29
 |  |  |     11 │     in_immediately_evaluated { (var a = 1; 1 + ; ^a) }
 |  |  |     12 │     // expect: poisoned
 |  |  |     13 │     in_closure { ^{ |x| x + ; x * 2 }.value(3) }
-|  |  |        ┆                             ^ ...but found `;`.
+|  |  |        ┆                           ^ ^ ...but found `;`.
+|  |  |        ┆                           └ This `+` needs an expression after it...
 |  |  |     14 │     // expect: poisoned
 |  |  |     15 │     in_call_function { ^[1, 2].collect { |x| x + ; x } }
 |  |  |     16 │     // expect: poisoned
@@ -210,20 +178,12 @@ SCClass (3:1): StatementEdges : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
-|  |  |  parse_errors/statement_recovery_edges.sc:15:48
-|  |  |     13 │     in_closure { ^{ |x| x + ; x * 2 }.value(3) }
-|  |  |     14 │     // expect: poisoned
-|  |  |     15 │     in_call_function { ^[1, 2].collect { |x| x + ; x } }
-|  |  |        ┆                                                ^ This `+` needs an expression after it...
-|  |  |     16 │     // expect: poisoned
-|  |  |     17 │     in_nested_functions { { { 1 + ; ^1 }.value ; ^2 }.value ; ^3 }
-|  |  |     18 │     // expect: poisoned
-|  |  |
 |  |  |  parse_errors/statement_recovery_edges.sc:15:50
 |  |  |     13 │     in_closure { ^{ |x| x + ; x * 2 }.value(3) }
 |  |  |     14 │     // expect: poisoned
 |  |  |     15 │     in_call_function { ^[1, 2].collect { |x| x + ; x } }
-|  |  |        ┆                                                  ^ ...but found `;`.
+|  |  |        ┆                                                ^ ^ ...but found `;`.
+|  |  |        ┆                                                └ This `+` needs an expression after it...
 |  |  |     16 │     // expect: poisoned
 |  |  |     17 │     in_nested_functions { { { 1 + ; ^1 }.value ; ^2 }.value ; ^3 }
 |  |  |     18 │     // expect: poisoned
@@ -246,20 +206,12 @@ SCClass (3:1): StatementEdges : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
-|  |  |  parse_errors/statement_recovery_edges.sc:17:33
-|  |  |     15 │     in_call_function { ^[1, 2].collect { |x| x + ; x } }
-|  |  |     16 │     // expect: poisoned
-|  |  |     17 │     in_nested_functions { { { 1 + ; ^1 }.value ; ^2 }.value ; ^3 }
-|  |  |        ┆                                 ^ This `+` needs an expression after it...
-|  |  |     18 │     // expect: poisoned
-|  |  |     19 │     non_local_return { if (true) { 1 + ; ^1 }; if (false) { ^2 }; ^3 }
-|  |  |     20 │     // expect: poisoned
-|  |  |
 |  |  |  parse_errors/statement_recovery_edges.sc:17:35
 |  |  |     15 │     in_call_function { ^[1, 2].collect { |x| x + ; x } }
 |  |  |     16 │     // expect: poisoned
 |  |  |     17 │     in_nested_functions { { { 1 + ; ^1 }.value ; ^2 }.value ; ^3 }
-|  |  |        ┆                                   ^ ...but found `;`.
+|  |  |        ┆                                 ^ ^ ...but found `;`.
+|  |  |        ┆                                 └ This `+` needs an expression after it...
 |  |  |     18 │     // expect: poisoned
 |  |  |     19 │     non_local_return { if (true) { 1 + ; ^1 }; if (false) { ^2 }; ^3 }
 |  |  |     20 │     // expect: poisoned
@@ -283,20 +235,12 @@ SCClass (3:1): StatementEdges : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
-|  |  |  parse_errors/statement_recovery_edges.sc:19:38
-|  |  |     17 │     in_nested_functions { { { 1 + ; ^1 }.value ; ^2 }.value ; ^3 }
-|  |  |     18 │     // expect: poisoned
-|  |  |     19 │     non_local_return { if (true) { 1 + ; ^1 }; if (false) { ^2 }; ^3 }
-|  |  |        ┆                                      ^ This `+` needs an expression after it...
-|  |  |     20 │     // expect: poisoned
-|  |  |     21 │     primitive { _Prim ; 1 + ; ^1 }
-|  |  |     22 │     // expect: poisoned
-|  |  |
 |  |  |  parse_errors/statement_recovery_edges.sc:19:40
 |  |  |     17 │     in_nested_functions { { { 1 + ; ^1 }.value ; ^2 }.value ; ^3 }
 |  |  |     18 │     // expect: poisoned
 |  |  |     19 │     non_local_return { if (true) { 1 + ; ^1 }; if (false) { ^2 }; ^3 }
-|  |  |        ┆                                        ^ ...but found `;`.
+|  |  |        ┆                                      ^ ^ ...but found `;`.
+|  |  |        ┆                                      └ This `+` needs an expression after it...
 |  |  |     20 │     // expect: poisoned
 |  |  |     21 │     primitive { _Prim ; 1 + ; ^1 }
 |  |  |     22 │     // expect: poisoned
@@ -324,20 +268,12 @@ SCClass (3:1): StatementEdges : Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
-|  |  |  parse_errors/statement_recovery_edges.sc:21:27
-|  |  |     19 │     non_local_return { if (true) { 1 + ; ^1 }; if (false) { ^2 }; ^3 }
-|  |  |     20 │     // expect: poisoned
-|  |  |     21 │     primitive { _Prim ; 1 + ; ^1 }
-|  |  |        ┆                           ^ This `+` needs an expression after it...
-|  |  |     22 │     // expect: poisoned
-|  |  |     23 │     *class_method { 1 + ; ^1 }
-|  |  |     24 │     // expect: -> 8
-|  |  |
 |  |  |  parse_errors/statement_recovery_edges.sc:21:29
 |  |  |     19 │     non_local_return { if (true) { 1 + ; ^1 }; if (false) { ^2 }; ^3 }
 |  |  |     20 │     // expect: poisoned
 |  |  |     21 │     primitive { _Prim ; 1 + ; ^1 }
-|  |  |        ┆                             ^ ...but found `;`.
+|  |  |        ┆                           ^ ^ ...but found `;`.
+|  |  |        ┆                           └ This `+` needs an expression after it...
 |  |  |     22 │     // expect: poisoned
 |  |  |     23 │     *class_method { 1 + ; ^1 }
 |  |  |     24 │     // expect: -> 8
@@ -358,20 +294,12 @@ SCClass (3:1): Meta_StatementEdges : Meta_Object, version 3.16
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Missing Expression.
-|  |  |  parse_errors/statement_recovery_edges.sc:23:23
-|  |  |     21 │     primitive { _Prim ; 1 + ; ^1 }
-|  |  |     22 │     // expect: poisoned
-|  |  |     23 │     *class_method { 1 + ; ^1 }
-|  |  |        ┆                       ^ This `+` needs an expression after it...
-|  |  |     24 │     // expect: -> 8
-|  |  |     25 │     good { ^8 }
-|  |  |     26 │ }
-|  |  |
 |  |  |  parse_errors/statement_recovery_edges.sc:23:25
 |  |  |     21 │     primitive { _Prim ; 1 + ; ^1 }
 |  |  |     22 │     // expect: poisoned
 |  |  |     23 │     *class_method { 1 + ; ^1 }
-|  |  |        ┆                         ^ ...but found `;`.
+|  |  |        ┆                       ^ ^ ...but found `;`.
+|  |  |        ┆                       └ This `+` needs an expression after it...
 |  |  |     24 │     // expect: -> 8
 |  |  |     25 │     good { ^8 }
 |  |  |     26 │ }

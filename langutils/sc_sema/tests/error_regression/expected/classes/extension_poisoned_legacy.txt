@@ -1,13 +1,6 @@
 
 ──────────────────────────────────────────────────────────────────────────────────
 Error: Duplicate extension
-../modules/extension_poisoned_legacy.sc:10:5
-    8 │ 
-    9 │ +Poisoned {
-   10 │     duplicated { ^2 }
-      ┆     ^^^^^^^^^^ This extension defines the method...
-   11 │ }
-
 ../modules/extension_poisoned_legacy.sc:6:5
     4 │ // Within one module, the order isn't defined, so neither is used.
     5 │ +Poisoned {
@@ -16,6 +9,9 @@ Error: Duplicate extension
     7 │ }
     8 │ 
     9 │ +Poisoned {
+   10 │     duplicated { ^2 }
+      ┆     ^^^^^^^^^^ This extension defines the method...
+   11 │ }
 
 The order of the files in a module isn't defined, so neither can be chosen, and the method can't be used. Delete one.
 ──────────────────────────────────────────────────────────────────────────────────

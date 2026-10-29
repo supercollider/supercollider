@@ -18,20 +18,12 @@ SCClass (7:1): PrimitiveSignatures : Object
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Primitive argument mismatch
-|  |  |  methods/primitive_signatures.sc:12:5
-|  |  |     10 │     // expect: poisoned
-|  |  |     11 │     // expect-error: Primitive argument mismatch
-|  |  |     12 │     oneMissing { _PrimOne ^this.primitiveFailed }
-|  |  |        ┆     ^^^^^^^^^^ The method takes 0 arguments...
-|  |  |     13 │     // expect: poisoned
-|  |  |     14 │     // expect-error: Primitive argument mismatch
-|  |  |     15 │     oneExtra { |a, b| _PrimOne ^this.primitiveFailed }
-|  |  |
 |  |  |  methods/primitive_signatures.sc:12:18
 |  |  |     10 │     // expect: poisoned
 |  |  |     11 │     // expect-error: Primitive argument mismatch
 |  |  |     12 │     oneMissing { _PrimOne ^this.primitiveFailed }
-|  |  |        ┆                  ^^^^^^^^ ...but this primitive takes 1 argument.
+|  |  |        ┆     ^^^^^^^^^^   ^^^^^^^^ ...but this primitive takes 1 argument.
+|  |  |        ┆     └ The method takes 0 arguments...
 |  |  |     13 │     // expect: poisoned
 |  |  |     14 │     // expect-error: Primitive argument mismatch
 |  |  |     15 │     oneExtra { |a, b| _PrimOne ^this.primitiveFailed }
@@ -45,20 +37,12 @@ SCClass (7:1): PrimitiveSignatures : Object
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Primitive argument mismatch
-|  |  |  methods/primitive_signatures.sc:15:17
-|  |  |     13 │     // expect: poisoned
-|  |  |     14 │     // expect-error: Primitive argument mismatch
-|  |  |     15 │     oneExtra { |a, b| _PrimOne ^this.primitiveFailed }
-|  |  |        ┆                 ^^^^ The method takes 2 arguments...
-|  |  |     16 │     // expect: no diagnostics
-|  |  |     17 │     args { |...rest| _PrimArgs ^this.primitiveFailed }
-|  |  |     18 │     // expect: poisoned
-|  |  |
 |  |  |  methods/primitive_signatures.sc:15:23
 |  |  |     13 │     // expect: poisoned
 |  |  |     14 │     // expect-error: Primitive argument mismatch
 |  |  |     15 │     oneExtra { |a, b| _PrimOne ^this.primitiveFailed }
-|  |  |        ┆                       ^^^^^^^^ ...but this primitive takes 1 argument.
+|  |  |        ┆                 ^^^^  ^^^^^^^^ ...but this primitive takes 1 argument.
+|  |  |        ┆                 └ The method takes 2 arguments...
 |  |  |     16 │     // expect: no diagnostics
 |  |  |     17 │     args { |...rest| _PrimArgs ^this.primitiveFailed }
 |  |  |     18 │     // expect: poisoned
@@ -82,20 +66,12 @@ SCClass (7:1): PrimitiveSignatures : Object
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Primitive argument mismatch
-|  |  |  methods/primitive_signatures.sc:20:5
-|  |  |     18 │     // expect: poisoned
-|  |  |     19 │     // expect-error: Primitive argument mismatch
-|  |  |     20 │     argsMissing { _PrimArgs ^this.primitiveFailed }
-|  |  |        ┆     ^^^^^^^^^^^ Insert variadic positional arguments, `...args`...
-|  |  |     21 │     // expect: no diagnostics
-|  |  |     22 │     kwargs { |...rest, kwargs| _PrimKwargs ^this.primitiveFailed }
-|  |  |     23 │     // expect: poisoned
-|  |  |
 |  |  |  methods/primitive_signatures.sc:20:19
 |  |  |     18 │     // expect: poisoned
 |  |  |     19 │     // expect-error: Primitive argument mismatch
 |  |  |     20 │     argsMissing { _PrimArgs ^this.primitiveFailed }
-|  |  |        ┆                   ^^^^^^^^^ ...as this primitive takes them.
+|  |  |        ┆     ^^^^^^^^^^^   ^^^^^^^^^ ...as this primitive takes them.
+|  |  |        ┆     └ Insert variadic positional arguments, `...args`...
 |  |  |     21 │     // expect: no diagnostics
 |  |  |     22 │     kwargs { |...rest, kwargs| _PrimKwargs ^this.primitiveFailed }
 |  |  |     23 │     // expect: poisoned
@@ -117,20 +93,12 @@ SCClass (7:1): PrimitiveSignatures : Object
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  Error: Primitive argument mismatch
-|  |  |  methods/primitive_signatures.sc:25:21
-|  |  |     23 │     // expect: poisoned
-|  |  |     24 │     // expect-error: Primitive argument mismatch
-|  |  |     25 │     kwargsMissing { |...rest| _PrimKwargs ^this.primitiveFailed }
-|  |  |        ┆                     ^^^^^^^^^ Insert variadic keyword arguments, `...args, kwargs`...
-|  |  |     26 │     // expect: no diagnostics
-|  |  |     27 │     unknown { |a, b, c| _NotInTheTable ^this.primitiveFailed }
-|  |  |     28 │ }
-|  |  |
 |  |  |  methods/primitive_signatures.sc:25:31
 |  |  |     23 │     // expect: poisoned
 |  |  |     24 │     // expect-error: Primitive argument mismatch
 |  |  |     25 │     kwargsMissing { |...rest| _PrimKwargs ^this.primitiveFailed }
-|  |  |        ┆                               ^^^^^^^^^^^ ...as this primitive takes them.
+|  |  |        ┆                     ^^^^^^^^^ ^^^^^^^^^^^ ...as this primitive takes them.
+|  |  |        ┆                     └ Insert variadic keyword arguments, `...args, kwargs`...
 |  |  |     26 │     // expect: no diagnostics
 |  |  |     27 │     unknown { |a, b, c| _NotInTheTable ^this.primitiveFailed }
 |  |  |     28 │ }

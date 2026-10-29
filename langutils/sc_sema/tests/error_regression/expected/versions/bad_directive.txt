@@ -71,18 +71,11 @@ SCClass (20:1): BadDuplicate : Object, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Warning: Duplicate version
-|  versions/bad_directive.sc:21:5
+|  versions/bad_directive.sc:22:5
 |     19 │ // The last of two is used.
 |     20 │ BadDuplicate {
 |     21 │     //# VERSION 3.13
 |        ┆     ^^^^^^^^^^^^^^^^ This version is ignored...
-|     22 │     //# VERSION 3.16
-|     23 │     one { ^1 }
-|     24 │ }
-|
-|  versions/bad_directive.sc:22:5
-|     20 │ BadDuplicate {
-|     21 │     //# VERSION 3.13
 |     22 │     //# VERSION 3.16
 |        ┆     ^^^^^^^^^^^^^^^^ ...as this one is used.
 |     23 │     one { ^1 }

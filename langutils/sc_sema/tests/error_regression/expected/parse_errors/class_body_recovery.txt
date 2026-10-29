@@ -136,20 +136,12 @@ SCClass (25:1): BrokenMembers : Object, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Missing Expression.
-|  parse_errors/class_body_recovery.sc:28:17
-|     26 │     var a = , b;
-|     27 │     classvar c, ;
-|     28 │     const d = 1 +;
-|        ┆                 ^ This `+` needs an expression after it...
-|     29 │     var e;
-|     30 │     // expect: -> 1
-|     31 │     method { ^1 }
-|
 |  parse_errors/class_body_recovery.sc:28:18
 |     26 │     var a = , b;
 |     27 │     classvar c, ;
 |     28 │     const d = 1 +;
-|        ┆                  ^ ...but found `;`.
+|        ┆                 ^^ ...but found `;`.
+|        ┆                 └ This `+` needs an expression after it...
 |     29 │     var e;
 |     30 │     // expect: -> 1
 |     31 │     method { ^1 }
