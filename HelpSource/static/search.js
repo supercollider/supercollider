@@ -1,5 +1,4 @@
 var input = "";
-var newinput = "";
 var checkboxes;
 var fields = ["title","summary","categories"];
 var filter;
@@ -50,18 +49,18 @@ function getQuerystring(key)
         return qs[1];
 }
 
-function onLoad() {
-    helpRoot="."; fixTOC();
-    newinput = document.getElementById("search_input").value;
-
+// search for titles, summaries, categories and methods in docmap.js (lookup in
+// Search.html). the query, the filter and include extensions are shared with the full-text
+// search and handled by searchpage.js, which calls lookupSearch() and lookupPrint().
+function lookupInit(onSearch) {
     checkboxes = [];
     for(var i=0;i<fields.length;i++) {
         checkboxes[i] = document.getElementById("check_"+fields[i]);
     }
 
-    var x = ["check_extensions", "check_methods","ignore_case","check_word","check_prefix","check_suffix","check_title","check_summary","check_categories"];
+    var x = ["check_methods","ignore_case","check_word","check_prefix","check_suffix","check_title","check_summary","check_categories"];
     for(var i=0;i<x.length;i++) {
-        document.getElementById(x[i]).onchange = doSearch;
+        document.getElementById(x[i]).onchange = onSearch;
     }
 
     for(var i=0;i<x.length;i++) {
@@ -78,44 +77,27 @@ function onLoad() {
         for(var i=0;i<x.length;i++) {
             x[i].disabled = e.target.checked;
         }
-        doSearch();
+        onSearch();
     }
 
-    document.getElementById("search_input").focus();
-
-    node = document.getElementById("search_results");
-
-    checkHash();
+    node = document.getElementById("lookup_results");
+    filter = document.getElementById("menu_filter");
 
     buildMethodList();
-
-    filter = document.getElementById("menu_filter");
-    filter.onchange = doSearch;
-
-    setInterval(delayed_update,250);
 }
 
-function checkHash() {
-    var x = decodeURIComponent(window.location.hash.slice(1));
-    if(x!="" && newinput!=x) {
-        document.getElementById("search_input").value = x;
-        newinput = x;
-//        window.location.hash = "";
-    }
+// searches for the query and returns the number of results, which are shown via lookupPrint()
+function lookupSearch(query) {
+    input = query;
+    return doSearch();
 }
 
-function SearchKeyPressed(e) {
-    newinput = e.value;
-    if(newinput != input) {
-        document.getElementById("search_results").innerHTML = "Searching...";
-    }
+// shows the results of the last search, in chunks so that the page stays responsive
+function lookupPrint() {
+    if(printed) return;
+    printed = true;
+    doPrint();
 }
-
-/*function updateHash() {
-    if(window.location.hash != input)
-        window.location.hash = input;
-    return true;
-}*/
 
 function matchDoc(doc,file,folder,re) {
     doc.matched_kw = null;
@@ -163,6 +145,8 @@ var mets;
 var docs;
 var re;
 var node;
+var printed = true; // whether the results of the last search are shown
+var printTimer;
 var subclassCache = {};
 
 function strCmp(a,b) {
@@ -239,6 +223,7 @@ function doPrint() {
 
             if(Date.now()-now > 200) {
                 inProgress = true;
+                printTimer = setTimeout(doPrint, 0);
                 return;
             }
 
@@ -366,6 +351,7 @@ function doPrint() {
 
             if(Date.now()-now > 200) {
                 inProgress = true;
+                printTimer = setTimeout(doPrint, 0);
                 return;
             }
         }
@@ -373,6 +359,7 @@ function doPrint() {
 }
 
 function randomDoc() {
+    clearTimeout(printTimer);
     while(node.hasChildNodes())
         node.removeChild(node.lastChild);
 
@@ -383,6 +370,7 @@ function randomDoc() {
     mets = [];
 
     document.getElementById("search_input").value = "";
+    spShowRandom();
 
     var list = [];
     for(var k in docmap) {
@@ -398,13 +386,16 @@ function randomDoc() {
         }
     }
 
+    printed = true;
     doPrint();
 
-    document.getElementById("search_count").innerHTML = "random document";
+    document.getElementById("lookup_count").innerHTML = "random document";
 }
 
 function doSearch() {
     var count = 0;
+    clearTimeout(printTimer);
+    printed = true;
 
     while(node.hasChildNodes())
         node.removeChild(node.lastChild);
@@ -432,9 +423,10 @@ function doSearch() {
             }
             re = RegExp(str,document.getElementById("ignore_case").checked?"i":"");
         } catch(err) {
-            document.getElementById("search_count").innerHTML = "Invalid regexp";
-            document.getElementById("search_results").innerHTML = err;
-            return;
+            document.getElementById("lookup_count").innerHTML = "Invalid regexp";
+            node.innerHTML = err;
+            printed = true;
+            return 0;
         }
 
         // search docmap
@@ -495,18 +487,9 @@ function doSearch() {
             });
         }
 
-        doPrint();
+        printed = false;
     }
 
-    document.getElementById("search_count").innerHTML = count+" results";
+    document.getElementById("lookup_count").innerHTML = count+" results";
+    return count;
 }
-
-function delayed_update() {
-    if(input != newinput) {
-        input = newinput;
-        doSearch();
-    } else if(inProgress) {
-        doPrint();
-    }
-}
-window.onhashchange = checkHash;
