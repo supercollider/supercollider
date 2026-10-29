@@ -1,6 +1,7 @@
 include(${CMAKE_SOURCE_DIR}/cmake_modules/CompilerWarnings.cmake)
 
 add_library(sc_diagnostic STATIC 
+    src/highlight.cpp
     src/impl.cpp
 )
 

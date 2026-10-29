@@ -59,7 +59,6 @@ set(sclang_sources
     LangSource/SC_LanguageClient.cpp
     LangSource/SC_LanguageConfig.cpp
     LangSource/SimpleStack.cpp
-    LangSource/SourceHighlight.cpp
     LangSource/SpecialSelectorsOperatorsAndClasses.cpp
     LangSource/dumpByteCodes.cpp
     LangSource/ClassLibraryInfo.cpp
@@ -206,7 +205,7 @@ endif()
 
 target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
 
-target_link_libraries(libsclang sc_lexer sc_bytecode sc_compiler)
+target_link_libraries(libsclang sc_lexer sc_bytecode sc_compiler sc_diagnostic)
 
 if(SC_QT OR SC_IDE)
     get_target_property(QtCore_location Qt${QT_VERSION_MAJOR}::Core LOCATION)

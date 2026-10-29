@@ -1,8 +1,8 @@
 #include "sc_diagnostic/sc_diagnostic.hpp"
+#include "sc_diagnostic/highlight.hpp"
 #include "sc_lexer/tokens.hpp"
 #include "sc_source/source_utils.hpp"
 #include <filesystem>
-#include <iomanip>
 #include <sstream>
 
 
@@ -34,103 +34,11 @@ std::string diagnosticToString(Severity type, const char* generalDescription,
         if (!first)
             ss << "\n";
         first = false;
-        const auto filepath = loc.text_info->file_path;
-        const auto txt = loc.text_info->source.as_string().c_str();
-        const auto txt_len = loc.text_info->source.as_string().size();
-        const auto range = loc.range;
-        const auto source_line = loc.text_info->source_start_in_file.line_number;
-        const auto source_column = loc.text_info->source_start_in_file.column;
-        const auto& description = loc.msg;
-
-        const auto starting_line = source_line + range.begin.line_number;
-        // Where the range starts, counting from zero. The text's start column only applies to its first line.
-        const auto start_column = (range.begin.line_number == 0 ? source_column : 0) + range.begin.column;
-
-        if (filepath && relative_to) {
-            const auto relative =
-                std::filesystem::absolute(*filepath).lexically_relative(std::filesystem::absolute(*relative_to));
-            // Empty when there is no relative path, e.g., on another drive on Windows.
-            ss << (relative.empty() ? std::filesystem::absolute(*filepath) : relative).generic_string() << ':'
-               << starting_line + 1 << ':' << start_column + 1 << '\n';
-        } else if (filepath) {
-            const auto abs = std::filesystem::absolute(*filepath).generic_string();
-            // A URI path starts with a slash, which a Windows drive letter doesn't, i.e., `file:///C:/...`.
-            ss << "file://" << (abs.front() == '/' ? "" : "/") << abs << ':' << starting_line + 1 << ':'
-               << start_column + 1 << '\n';
-        } else
-            ss << "unknown file:" << starting_line + 1 << ':' << start_column + 1 << '\n';
-
-        if (!txt || txt_len == 0) {
-            ss << description;
-            continue; // nothing to show for this one
-        }
-        const auto selection_start = txt + range.begin.absolute;
-        const auto selection_end = txt + range.end.absolute;
-
-        auto maybe_iter = sc::src::utils::LineIter::make(txt, txt + txt_len, range.begin);
-        if (!maybe_iter.has_value())
-            continue;
-
-        auto iter = std::move(*maybe_iter);
-
-        if (range.line_count() <= 4) {
-            iter.backwards();
-            iter.backwards();
-        }
-
-        const auto single_line_error = range.line_count() == 1;
-
-        for (auto line = iter.forwards(); line; line = iter.forwards()) {
-            const auto [ptr, sz, line_number, ends_in_newline_char] = *line;
-            const auto real_line_number = line_number + 1 + source_line;
-
-            // If is outside of the highlight range
-            if (line_number < range.begin.line_number || line_number > range.end.line_number) {
-                ss << std::setfill(' ') << std::setw(5) << real_line_number << " │ ";
-                ss.write(ptr, sz);
-                if (!ends_in_newline_char)
-                    ss << '\n';
-                if (line_number > range.end.line_number + 2)
-                    break;
-                else
-                    continue;
-            }
-            // Otherwise...
-
-            if (single_line_error) {
-                ss << std::setfill(' ') << std::setw(5) << real_line_number << " │ ";
-                ss.write(ptr, sz);
-
-                if (!ends_in_newline_char)
-                    ss << '\n';
-
-                ss << "      ┆ ";
-                auto cp_iter = sc::src::utils::CodePointIterator::make(ptr, ptr + sz, ptr).value();
-
-                for (auto cp = cp_iter.forwards(); cp; cp = cp_iter.forwards()) {
-                    if (cp_iter.current_location() <= selection_start) {
-                        ss << sc::src::codepoint_as_whitespace(*cp);
-                    } else if (cp_iter.current_location() <= selection_end) {
-                        const auto w { sc::src::codepoint_width(*cp) };
-                        for (size_t i { 0 }; i < w; ++i)
-                            ss << '^';
-                    } else
-                        break;
-                }
-
-                ss << " " << description << '\n';
-            } else {
-                ss << std::setfill(' ') << std::setw(5) << real_line_number << "*│ ";
-                ss.write(ptr, sz);
-
-                if (!ends_in_newline_char)
-                    ss << '\n';
-
-                if (line_number == range.end.line_number) {
-                    ss << "     >│ ^ " << description << '\n';
-                }
-            }
-        }
+        const auto& file_path = loc.text_info->file_path;
+        streamHighlight(ss,
+                        { file_path ? &*file_path : nullptr, loc.text_info->source.as_string(), loc.range,
+                          loc.text_info->source_start_in_file, loc.msg },
+                        true, {}, relative_to);
     }
 
     if (!extra.empty()) {

@@ -24,7 +24,7 @@
 #include "PyrObjectHdr.h"
 #include "PyrSymbolTable.h"
 #include "SC_Version.hpp"
-#include "SourceHighlight.hpp"
+#include "sc_diagnostic/highlight.hpp"
 #include "PyrErrors.h"
 #include "PyrKernel.h"
 #include "PyrObject.h"
@@ -2026,17 +2026,20 @@ int debugFrame_AsErrorString(VMGlobals* g, int) {
             prefixForDiag.append(prefixPtr, prefixSz);
             prefixForDiag += "    ";
 
-            const DiagnosticHighlight d { block->filePath.isSymbol() ? block->filePath.getSymbol()->name : nullptr,
-                                          block->sourceCodeFileOrSnippet.getPyrObjType<PyrString>()->s,
-                                          static_cast<size_t>(
-                                              block->sourceCodeFileOrSnippet.getPyrObjType<PyrString>()->size),
-                                          loc,
-                                          file_line,
-                                          file_column,
-                                          annotationStr };
+            const auto* sourceString = block->sourceCodeFileOrSnippet.getPyrObjType<PyrString>();
+            std::filesystem::path filePath;
+            if (block->filePath.isSymbol())
+                filePath = block->filePath.getSymbol()->name;
 
             ss.write(prefixPtr, prefixSz);
-            streamSourceCodeWithHighlight(ss, d, printSource, prefixForDiag.c_str(), prefixForDiag.size());
+            sc::diag::streamHighlight(
+                ss,
+                { block->filePath.isSymbol() ? &filePath : nullptr,
+                  std::string_view { sourceString->s, static_cast<size_t>(sourceString->size) },
+                  loc,
+                  { 0, static_cast<std::uint32_t>(file_line), static_cast<std::uint32_t>(file_column) },
+                  annotationStr },
+                printSource, prefixForDiag);
         }
 
         const auto string = std::move(ss).str();
