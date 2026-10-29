@@ -384,7 +384,7 @@ SCDocNode {
 SCDoc {
 
 	// Increment this whenever we make a change to the SCDoc system or its static files so that all help-files should be processed again
-	classvar version = 80;
+	classvar version = 81;
 
 	classvar <helpTargetDir;
 	classvar <helpTargetUrl;
@@ -509,6 +509,7 @@ SCDoc {
 		};
 		this.postMsg("Exporting docmap.js...",1);
 		this.exportDocMapJS(this.helpTargetDir +/+ "docmap.js");
+		this.exportDocTextJS(this.helpTargetDir +/+ "doctext.js");
 		this.postMsg("Indexed % documents in % seconds".format(documents.size,round(Main.elapsedTime-now,0.01)),0);
 		NotificationCenter.notify(SCDoc, \didIndexAllDocs);
 	}
@@ -564,6 +565,36 @@ SCDoc {
 		};
 		f << "}\n";
 		f.close;
+	}
+
+	*exportDocTextJS {|path|
+		var docs;
+		var count;
+		var now = Main.elapsedTime;
+		this.postMsg("Exporting doctext.js...", 1);
+		docs = this.documents.values.select({|doc|
+			(doc.isUndocumentedClass.not).and({ doc.oldHelp.isNil }).and({ doc.fullPath.notNil });
+		}).collect({|doc|
+			// keep this in sync w/ the primitive prBuildSearchIndex
+			[doc.path, doc.fullPath, doc.title, doc.summary, doc.isExtension, doc.additions]
+		});
+		count = this.prBuildSearchIndex(path, docs);
+		if(count.isNil) {
+			warn("SCDoc: could not write search index to %".format(path));
+		} {
+			this.postMsg("Exported % entries to JS search index in % seconds".format(count, (Main.elapsedTime-now).round(0.01)),1);
+		};
+	}
+
+	// the search index is a json file, which requires escaping.
+	// since string manipulations are expensive, this is handled by a primitive to provide a speedup of around 30x.
+	// detail: this is not building the actual index, but only provides the text data. we build the index within
+	// javascript (i.e. every time the search page is visited) b/c otherwise we would have to replicate
+	// the index logic (stemmer...) in C++. building the index is rather fast (<1 sec), but can not be made
+	// persistent due to JS sandbox restrictions on the FS.
+	*prBuildSearchIndex {|path, docs|
+		_SCDoc_BuildSearchIndex
+		^this.primitiveFailed
 	}
 
 	*helpSourceDir_ {|path|
@@ -928,7 +959,7 @@ SCDoc {
 
 		if(str.last == $_) { str = str.drop(-1) };
 		^pfx ++ if("^[a-z][a-zA-Z0-9_]*$|^[-<>@|&%*+/!?=]+$".matchRegexp(str))
-		{ "/Overviews/Methods.html#" } { "/Search.html#" } ++ str;
+		{ "/Overviews/Methods.html#" } { "/Search.html?view=lookup#" } ++ str;
 	}
 
 	*getOldWrapUrl {|url|

@@ -16,11 +16,14 @@
     </script>
     <script src="./static/scdoc.js" type="text/javascript"></script>
     <script src="./docmap.js" type="text/javascript"></script>
-    <script src="./static/search.js"></script>
+    <script src="./static/lib/elasticlunr-0.9.5.min.js" type="text/javascript"></script>
+    <script src="./static/search.js" type="text/javascript"></script>
+    <script src="./static/fulltextsearch.js" type="text/javascript"></script>
+    <script src="./static/searchpage.js" type="text/javascript"></script>
     <script src="frontend.js"></script>
 </head>
 
-<body onload="onLoad()">
+<body onload="spOnLoad()">
     <noscript>
         <p>The search page needs JavaScript.</p>
     </noscript>
@@ -31,6 +34,17 @@
             <h1>Search</h1>
             <div id='summary'>Search all documents</div>
         </div>
+
+        <div id="search_box">
+            Search text:
+            <input type="text" id="search_input" value="" size="40" />
+        </div>
+
+        <div id="search_tabs" role="tablist">
+            <button type="button" role="tab" data-view="text">Full text <span class="search_tab_count" id="text_tab_count"></span></button>
+            <button type="button" role="tab" data-view="lookup">Lookup <span class="search_tab_count" id="lookup_tab_count"></span></button>
+        </div>
+
         <div id="search_checks0">
             Filter:
             <select id="menu_filter">
@@ -42,15 +56,11 @@
                 <option value="overviews">Overviews only</option>
                 <option value="other">Other only</option>
             </select>
-            <input type="checkbox" id="check_extensions" checked="true">Include extensions</input>
+            <label><input type="checkbox" id="check_extensions" checked> Include extensions</label>
+            <label class="search_view_text"><input type="checkbox" id="check_code"> Include code examples</label>
         </div>
 
-        <div id="search_box">
-            Search text:
-            <input type="text" id="search_input" value="" size="40" onkeyup="SearchKeyPressed(this)" />
-        </div>
-
-        <table id="search_settings">
+        <table id="search_settings" class="search_view_lookup">
             <td>Options:
                 <td>
                     <div id="search_checks">
@@ -70,11 +80,19 @@
                                     <input type="checkbox" id="check_methods" checked="true">Methods</input>
                                 </div>
         </table>
-        <div id="random">
+        <div id="random" class="search_view_lookup">
             <a href="javascript:randomDoc()">random page</a>
         </div>
-        <div id="search_count">0 results</div>
-        <div id="search_results"></div>
+
+        <div class="search_view_text">
+            <div id="search_status">Loading documents&hellip;</div>
+            <div id="text_count" class="search_count"></div>
+            <div id="text_results"></div>
+        </div>
+        <div class="search_view_lookup">
+            <div id="lookup_count" class="search_count"></div>
+            <div id="lookup_results"></div>
+        </div>
         <div id="js_error"></div>
     </div>
 </body>
