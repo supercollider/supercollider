@@ -410,7 +410,7 @@ Diagnostic Diagnostic::primitive_needs_keyword_arguments(TextInfoPtr t, sc::src:
                  { std::move(first_t), first_l, "This extension defines the method..." },
                  { std::move(second_t), second_l, "...but is replaced by this one, from a later module." },
              },
-             "In the legacy version, as in the old compiler, the extension from the module given last is used. From "
+             "In the old compiler the extension from the module given last is used. From "
              "3.16 this is an error, as which is used depends on the order the modules are given." };
 }
 [[nodiscard]] Diagnostic Diagnostic::extension_of_undefined_class(TextInfoPtr t, sc::src::SourceCodeRange l) {
@@ -438,7 +438,7 @@ Diagnostic Diagnostic::primitive_needs_keyword_arguments(TextInfoPtr t, sc::src:
              {
                  { std::move(first_t), first_l, "Remove this super class." },
              },
-             "The root objec is the highest node in the class heirachy, it should not inherit from another class or "
+             "The root object is the highest node in the class heirachy, it should not inherit from another class or "
              "there will be a cycle." };
 }
 
@@ -558,18 +558,14 @@ Diagnostic Diagnostic::message_without_receiver(TextInfoPtr first_t, sc::src::So
     return { "Message has no receiver",
              Severity::Error,
              { { std::move(first_t), first_l, "there is nothing to send this message to." } },
-             "Functional notation sends the message to its first "
-             "argument, `foo(a, b)` is the same as `a.foo(b)`. "
-             "Add a positional argument, e.g., `foo(a)`, or use "
-             "`a.foo`." };
+             "This message has no receiver. Either write 'a.foo', 'foo(a)', or a 'foo: b'." };
 }
 
 Diagnostic Diagnostic::not_constant(TextInfoPtr first_t, sc::src::SourceCodeRange first_l) {
     return { "Not a constant",
              Severity::Error,
              { { std::move(first_t), first_l, "this can't be evaluated when compiling." } },
-             "This must be known when the class library is compiled, e.g., a variable's initial value, or an element "
-             "of a literal array `#[...]`. Only literals, constants, and arrays and events of them, can be used." };
+             "This is required to be a constant, this is the usual literals and a few compiler known operations." };
 }
 
 Diagnostic Diagnostic::nested_too_deeply(TextInfoPtr t, sc::src::SourceCodeRange l, std::size_t limit) {
@@ -621,9 +617,7 @@ Diagnostic Diagnostic::selector_table_full(TextInfoPtr t, sc::src::SourceCodeRan
              { { std::move(t), l,
                  "this uses more than " + std::to_string(limit)
                      + " different selectors, class names and functions." } },
-             "A method or function's bytecode refers to the selectors it sends, the class names it uses and the "
-             "functions written in it through a table of at most "
-                 + std::to_string(limit) + " entries. Split the code into smaller methods or functions." };
+             "Split the code into smaller functions." };
 }
 
 Diagnostic Diagnostic::jump_too_long(TextInfoPtr t, sc::src::SourceCodeRange l, std::size_t length, std::size_t limit) {
@@ -633,7 +627,7 @@ Diagnostic Diagnostic::jump_too_long(TextInfoPtr t, sc::src::SourceCodeRange l, 
                  "this has " + std::to_string(length) + " bytes of bytecode to jump over, more than "
                      + std::to_string(limit) + "." } },
              "The VM can jump over at most " + std::to_string(limit)
-                 + " bytes of bytecode, e.g., to skip an argument's default when it is passed. Move the code into a "
+                 + " bytes of bytecode. Move the code into a "
                    "method or function." };
 }
 
@@ -665,10 +659,10 @@ Diagnostic Diagnostic::hard_coded_loop_signature(TextInfoPtr t, sc::src::SourceC
 Diagnostic Diagnostic::hard_coded_loop_extension_ignored(TextInfoPtr t, sc::src::SourceCodeRange l) {
     return { "Extension of a hard coded method is ignored",
              Severity::Warning,
-             { { std::move(t), l, "this extension's code is replaced by a loop, as the method it replaces is." } },
+             { { std::move(t), l, "this extension's code is replaced by a loop." } },
              "The compiler replaces the code of some loop methods, e.g., `Integer:do` and `ArrayedCollection:do`, with "
              "special bytecode. Before 3.16 this also happens to an extension method replacing one of them, so the "
-             "extension's code never runs. Add `//# VERSION 3.16` to the extension to compile its own code." };
+             "extension's code never runs. Add `//# VERSION 3.16` to the extension to fix this." };
 }
 
 Diagnostic Diagnostic::hard_coded_loop_computed_value(TextInfoPtr t, sc::src::SourceCodeRange l) {
@@ -689,9 +683,8 @@ Diagnostic Diagnostic::literal_out_of_range(TextInfoPtr t, sc::src::SourceCodeRa
     return { "Literal out of range",
              Severity::Error,
              { { std::move(t), l, "this is outside the range of a 32 bit Integer." } },
-             "Integers are 32 bit, from -2147483648 to 2147483647. A hexadecimal literal is the 32 bits, from 0x0 to "
-             "0xFFFFFFFF, where those from 0x80000000 are negative. Use a Float for larger numbers, e.g., "
-             "`2147483648.0`." };
+             "Integers are 32 bit, from -2147483648 to 2147483647. "
+             "Use a Float for larger numbers, e.g.,`2147483648.0`." };
 }
 
 Diagnostic Diagnostic::variadic_argument_not_last(TextInfoPtr variadic_t, sc::src::SourceCodeRange variadic_l,
@@ -703,7 +696,7 @@ Diagnostic Diagnostic::variadic_argument_not_last(TextInfoPtr variadic_t, sc::sr
                  { std::move(positional_t), positional_l, "...this argument, which is written after it." },
              },
              "A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. "
-             "This includes the value of `a[*i] = v`, which is passed last." };
+             "This includes the value of `a[*i] = v`, which is passed after the 'v'." };
 }
 
 Diagnostic Diagnostic::event_key_without_value(TextInfoPtr first_t, sc::src::SourceCodeRange first_l) {
@@ -727,8 +720,7 @@ Diagnostic Diagnostic::unbounded_range_do(TextInfoPtr t, sc::src::SourceCodeRang
              Severity::Warning,
              { { std::move(t), l, "this counts up forever." } },
              "Before 3.16, `(1..).do(f)` calls f with each number from 1 forever, without making the range. From "
-             "3.16 a range without an end is an error outside a generator. Use a generator, e.g., "
-             "`{; f.(i), i <- (1..) }`, or add an end." };
+             "3.16 a range without an end is an error outside a generator. Try `do((:1..)) {...}`." };
 }
 
 Diagnostic Diagnostic::range_too_many_arguments(TextInfoPtr first_t, sc::src::SourceCodeRange first_l) {
@@ -818,13 +810,11 @@ Diagnostic Diagnostic::outside_closed_function(TextInfoPtr declaration_t, sc::sr
 }
 
 Diagnostic Diagnostic::return_in_interpreted_code(TextInfoPtr t, sc::src::SourceCodeRange l) {
-    return {
-        "Return in interpreted code",
-        Severity::Error,
-        { { std::move(t), l, "there is no method to return from." } },
-        "`^` returns from the method the code is written in, but interpreted code isn't in a method, so this includes "
-        "the functions it defines. The value of interpreted code is its last expression, so remove the `^`."
-    };
+    return { "Return in interpreted code",
+             Severity::Error,
+             { { std::move(t), l, "there is no method to return from." } },
+             "`^` returns from the method the code is written in, but interpreted code isn't in a method. "
+             "The value of interpreted code is its last expression, so remove the `^`." };
 }
 
 Diagnostic Diagnostic::qualifier_hidden_from_value(TextInfoPtr declaration_t, sc::src::SourceCodeRange declaration,
@@ -833,9 +823,7 @@ Diagnostic Diagnostic::qualifier_hidden_from_value(TextInfoPtr declaration_t, sc
              Severity::Warning,
              { { std::move(declaration_t), declaration, "This qualifier declares it..." },
                { std::move(use_t), use, "...but this function in its value can't see it." } },
-             "In the legacy version, as in the old compiler, the value is outside the qualifier, so this is what the "
-             "name refers to there instead. From 3.16 a function in a qualifier's value refers to the qualifier's "
-             "variable. Rename one of them to keep this meaning." };
+             "Rename one of them to keep this meaning." };
 }
 
 Diagnostic Diagnostic::malformed_version(TextInfoPtr t, sc::src::SourceCodeRange l) {
