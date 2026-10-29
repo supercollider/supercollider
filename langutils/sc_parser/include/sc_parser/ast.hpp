@@ -143,7 +143,7 @@ struct ASTGraph : private sc::util::typed_graph::GraphImplementation<OptionalInd
 
 public:
     ASTGraph(std::shared_ptr<const src::TextInfo> text_info): m_text_info(std::move(text_info)) {}
-    ASTGraph(const ASTGraph&) = default;
+    ASTGraph(const ASTGraph&) = delete;
     ASTGraph(ASTGraph&&) noexcept = default;
     ASTGraph& operator=(const ASTGraph&) = delete;
     ASTGraph& operator=(ASTGraph&&) = delete;
