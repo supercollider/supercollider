@@ -1,5 +1,5 @@
 add_executable(sc_diagnostic_test tests.cpp)
 target_link_libraries(sc_diagnostic_test boost_test sc_diagnostic)
 target_include_directories(sc_diagnostic_test PUBLIC ${boost_include_dirs})
-add_test(sc_diagnostic_test_run sc_diagnostic_test)
+add_test(langutils.sc_diagnostic_test_run sc_diagnostic_test)
 set_property(TARGET sc_diagnostic_test PROPERTY FOLDER Test/Diagnostic)

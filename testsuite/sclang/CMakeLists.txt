@@ -1,13 +1,13 @@
 file(GLOB tests *.scd)
 
 # Makes the tests depend on sclang being built
-add_test(NAME build_sclang
+add_test(NAME sclang.build_sclang
         COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target sclang --config $<CONFIG>)
-set_tests_properties(build_sclang PROPERTIES FIXTURES_SETUP sclang_fixture)
+set_tests_properties(sclang.build_sclang PROPERTIES FIXTURES_SETUP sclang_fixture)
 
 foreach(test ${tests})
     get_filename_component(test_name ${test} NAME_WE)
-    set(test_target sclang__${test_name}_run)
+    set(test_target sclang.crash.${test_name}_run)
     add_test(NAME ${test_target} COMMAND $<TARGET_FILE:sclang> -l ${CMAKE_BINARY_DIR}/build_sclang.cfg ${test})
     set_tests_properties(${test_target} PROPERTIES FIXTURES_REQUIRED sclang_fixture)
 endforeach()
@@ -20,15 +20,15 @@ file(GLOB legacy_only_tests interpreted_versions/legacy_only/*.scd)
 foreach(test ${both_tests})
     get_filename_component(test_name ${test} NAME_WE)
     foreach(version legacy 3.16)
-        add_test(NAME sclang__interpreted_${version}_${test_name}_run
+        add_test(NAME sclang.interpreted.${version}.${test_name}_run
             COMMAND $<TARGET_FILE:sclang> -l ${CMAKE_BINARY_DIR}/build_sclang.cfg --interpreted-version ${version} ${test})
-        set_tests_properties(sclang__interpreted_${version}_${test_name}_run PROPERTIES FIXTURES_REQUIRED sclang_fixture)
+        set_tests_properties(sclang.interpreted.${version}.${test_name}_run PROPERTIES FIXTURES_REQUIRED sclang_fixture)
     endforeach()
 endforeach()
 
 foreach(test ${legacy_only_tests})
     get_filename_component(test_name ${test} NAME_WE)
-    add_test(NAME sclang__interpreted_legacy_${test_name}_run
+    add_test(NAME sclang.interpreted.legacy.${test_name}_run
         COMMAND $<TARGET_FILE:sclang> -l ${CMAKE_BINARY_DIR}/build_sclang.cfg --interpreted-version legacy ${test})
-    set_tests_properties(sclang__interpreted_legacy_${test_name}_run PROPERTIES FIXTURES_REQUIRED sclang_fixture)
+    set_tests_properties(sclang.interpreted.legacy.${test_name}_run PROPERTIES FIXTURES_REQUIRED sclang_fixture)
 endforeach()

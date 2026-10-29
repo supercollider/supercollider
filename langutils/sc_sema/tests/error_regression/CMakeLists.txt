@@ -5,14 +5,14 @@ add_subdirectory(find_assertions)
 file(GLOB_RECURSE tests RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/input CONFIGURE_DEPENDS input/*.sc input/*.scd)
 
 # This is how we make tests depends on executables
-add_test(NAME build_sc_inspect
+add_test(NAME langutils.sc_sema.build_sc_inspect
         COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target sc_inspect find_assertions --config $<CONFIG>)
-set_tests_properties(build_sc_inspect PROPERTIES FIXTURES_SETUP sc_inspect_fixture)
+set_tests_properties(langutils.sc_sema.build_sc_inspect PROPERTIES FIXTURES_SETUP sc_inspect_fixture)
 
 foreach(test ${tests})
     string(REGEX REPLACE "\\.scd?$" "" test_name ${test})
     string(REPLACE "/" "." test_name ${test_name})
-    set(test_target sc_sema_regression__${test_name})
+    set(test_target sc_sema.regression.${test_name})
 
     add_test(
         NAME ${test_target} 
