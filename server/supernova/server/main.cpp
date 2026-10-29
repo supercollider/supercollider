@@ -61,10 +61,10 @@
 #endif
 
 #include "SC_Filesystem.hpp"
-#ifndef _WIN32
-const char pathSeparator[] = ":";
-#else
+#ifdef _WIN32
 const char pathSeparator[] = ";";
+#else
+const char pathSeparator[] = ":";
 #endif
 
 using DirName = SC_Filesystem::DirName;
@@ -218,37 +218,6 @@ void start_audio_backend(server_arguments const& args) {}
 
 #endif
 
-void set_plugin_paths(server_arguments const& args, nova::sc_ugen_factory* factory) {
-    if (!args.ugen_paths.empty()) {
-        for (auto const& path1 : args.ugen_paths) {
-            std::vector<std::string> directories;
-            boost::split(directories, path1, boost::is_any_of(pathSeparator));
-            for (auto const& path : directories) {
-                factory->load_plugin_folder(path);
-            }
-        }
-    } else {
-#ifdef SC_PLUGIN_DIR
-        factory->load_plugin_folder(SC_PLUGIN_DIR);
-#endif
-        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::Resource) / SC_PLUGIN_DIR_NAME);
-        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::SystemExtension));
-        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::UserExtension));
-        const char* env_plugin_path = getenv("SC_PLUGIN_PATH");
-        if (env_plugin_path) {
-            std::vector<std::string> directories;
-            boost::split(directories, env_plugin_path, boost::is_any_of(pathSeparator));
-            for (auto const& path : directories) {
-                factory->load_plugin_folder(path);
-            }
-        }
-    }
-
-#ifndef NDEBUG
-    std::cout << "Unit Generators initialized" << std::endl;
-#endif
-}
-
 void load_synthdef_folder(nova_server& server, fs::path const& folder, bool verbose) {
     if (verbose)
         std::cout << "Loading synthdefs from path: " << folder.string() << std::endl;
@@ -368,7 +337,8 @@ int supernova_main(int argc, char* argv[]) {
         nova_server server(args);
         register_signal_handler();
 
-        set_plugin_paths(args, sc_factory.get());
+        sc_factory->load_plugins(args);
+
         load_synthdefs(server, args);
 
         if (!args.non_rt) {

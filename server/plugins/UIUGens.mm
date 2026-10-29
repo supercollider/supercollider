@@ -206,6 +206,7 @@ PluginLoad(UIUGens) {
 }
 
 PluginUnload(UIUGens) {
-    inputThreadRunning = false;
-    uiListenThread.join();
+    inputThreadRunning.store(false);
+    if (uiListenThread.joinable())
+        uiListenThread.join();
 }

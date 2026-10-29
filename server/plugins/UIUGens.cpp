@@ -273,8 +273,10 @@ PluginLoad(UIUGens) {
 
 
 PluginUnload(UIUGens) {
-    inputThreadRunning = false;
-    uiListenThread.join();
+    inputThreadRunning.store(false);
+
+    if (uiListenThread.joinable())
+        uiListenThread.join();
 
 #ifndef _WIN32
     if (d)
