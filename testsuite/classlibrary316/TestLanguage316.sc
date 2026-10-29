@@ -17,6 +17,7 @@ TestLanguage316Holder {
 	*setCvSecond { |a, b| cv2 = b }
 	*setCvDefault { |a, b = 9| cv2 = b }
 	*getCv { ^cv }
+	*deadReturn { ^1; ^2 }
 }
 
 TestLanguage316 : UnitTest {
@@ -335,6 +336,36 @@ TestLanguage316 : UnitTest {
 	test_literal_is_shared {
 		var f = { #[1, 2] };
 		this.assert(f.value === f.value, "a literal array is the same object");
+	}
+
+	test_folded_event_mutable_key {
+		var f = { ([1, 2]: 3) };
+		var a = f.value, b = f.value;
+		this.assertEquals(a.size, 1, "one entry, not a copy of the key next to the shared one");
+		this.assert(a.keys.asArray[0] !== b.keys.asArray[0], "each call gets a new key");
+		this.assertEquals(a.at([1, 2]), nil, "and keys compare by identity");
+		this.assertEquals(a.keys.asArray[0], [1, 2]);
+	}
+
+	test_folded_slice_empty {
+		this.assertEquals(#[10, 20, 30, 40, 50][5..], []);
+		this.assertEquals(#[10, 20, 30, 40, 50][7..], []);
+		this.assertEquals(#[10, 20, 30, 40, 50][6, 5..], []);
+		this.assertEquals(#[10, 20, 30, 40, 50][..-1], []);
+		this.assertEquals(#[10, 20, 30, 40, 50][..-7], []);
+		this.assertEquals("abcde"[5..], "");
+		this.assertEquals("abcde"[..-2], "");
+	}
+
+	test_folded_slice_not_empty {
+		this.assertEquals(#[10, 20, 30, 40, 50][4..], [50]);
+		this.assertEquals(#[10, 20, 30, 40, 50][..0], [10]);
+		this.assertEquals("abcde"[3..], "de");
+	}
+
+	test_dead_code_after_return {
+		this.assertEquals(TestLanguage316Holder.deadReturn, 1);
+		this.assertEquals(TestLanguage316Holder.deadReturn + 1, 2);
 	}
 
 	test_known_nil_variable {
