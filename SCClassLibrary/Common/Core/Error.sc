@@ -317,10 +317,16 @@ CompileError : Error {
 PoisonedMethodError : ErrorWrapper {
 	var <>method;
 
+	// With no errors, the compiler couldn't compile the method, as it doesn't support something in it yet.
 	*new { |method, errors, callFrameAnnotations, methodBeforeBacktraceStart, methodBacktraceEnd|
+		var unsupported = errors.isNil;
 		^super.new(
-			CompileError(errors),
-			"% was not compiled, as it has an error in its source.".format(method.asString),
+			CompileError(errors ? "The compiler doesn't support something in this method yet."),
+			if (unsupported) {
+				"% was not compiled, as the compiler doesn't support something in it yet.".format(method.asString)
+			} {
+				"% was not compiled, as it has an error in its source.".format(method.asString)
+			},
 			callFrameAnnotations, methodBeforeBacktraceStart, methodBacktraceEnd
 		).method_(method)
 	}

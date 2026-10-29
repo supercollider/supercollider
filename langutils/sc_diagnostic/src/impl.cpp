@@ -902,7 +902,7 @@ Diagnostic Diagnostic::not_compiled(TextInfoPtr t, sc::src::SourceCodeRange l) {
     return { "Not compiled",
              Severity::Error,
              { { std::move(t), l, "the compiler can't compile this yet." } },
-             "The backend doesn't support something in this code yet, so it is left out. Sending it will fail." };
+             "The backend doesn't support something in this code yet, so calling it throws a PoisonedMethodError." };
 }
 
 Diagnostic Diagnostic::unsupported_environment_pack(TextInfoPtr t, sc::src::SourceCodeRange l) {

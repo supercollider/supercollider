@@ -32,3 +32,14 @@ foreach(test ${legacy_only_tests})
         COMMAND $<TARGET_FILE:sclang> -l ${CMAKE_BINARY_DIR}/build_sclang.cfg --interpreted-version legacy ${test})
     set_tests_properties(sclang.interpreted.legacy.${test_name}_run PROPERTIES FIXTURES_REQUIRED sclang_fixture)
 endforeach()
+
+# Class files with a method the compiler can't compile yet, which the library is booted with to check it throws when called.
+configure_file(poisoned_methods/sclang.cfg.in ${CMAKE_BINARY_DIR}/build_sclang_poisoned_methods.cfg @ONLY)
+file(GLOB poisoned_method_tests poisoned_methods/*.scd)
+
+foreach(test ${poisoned_method_tests})
+    get_filename_component(test_name ${test} NAME_WE)
+    add_test(NAME sclang.poisoned_methods.${test_name}_run
+        COMMAND $<TARGET_FILE:sclang> -l ${CMAKE_BINARY_DIR}/build_sclang_poisoned_methods.cfg ${test})
+    set_tests_properties(sclang.poisoned_methods.${test_name}_run PROPERTIES FIXTURES_REQUIRED sclang_fixture)
+endforeach()

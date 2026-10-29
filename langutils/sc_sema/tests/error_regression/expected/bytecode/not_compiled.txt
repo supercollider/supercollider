@@ -20,7 +20,7 @@ SCClass (4:1): NotCompiled : Object, version 3.16
 |  |  |      8 │     fine { ^1 }
 |  |  |      9 │ }
 |  |  |
-|  |  |  The backend doesn't support something in this code yet, so it is left out. Sending it will fail.
+|  |  |  The backend doesn't support something in this code yet, so calling it throws a PoisonedMethodError.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCArgumentDeclareList (6:21)
 |  |  |  |  SCArgumentDeclare (6:21): a

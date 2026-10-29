@@ -7,6 +7,7 @@
 
 #include <cassert>
 #include <limits>
+#include <type_traits>
 #include <vector>
 
 namespace sc::backend {
@@ -1012,7 +1013,8 @@ struct Lowerer {
         }
     }
 
-    // A root's functions are kept when it fails, for debugging, but it isn't complete.
+    // A root's functions are kept when it fails, for debugging, but it isn't complete. A method that fails is followed
+    // by one that throws, as a poisoned method does, as it has nothing to run, see poisoned_method.
     template <typename Function> void root(Function f, bool is_method) {
         const ir::NodeIndex i { *f };
         const auto started = cursor.enter(i);
@@ -1022,10 +1024,14 @@ struct Lowerer {
         end_function();
         (void)cursor.exit(i);
         out.functions[index].complete = !failed;
+        if constexpr (std::is_same_v<Function, ir::SCMethod_I>) {
+            if (failed && ctx.poisoned_method_error)
+                poisoned_method(*ctx.poisoned_method_error, *started, f);
+        }
     }
 
     // `^PoisonedMethodError(thisMethod, errors).throw`, in place of a method that has an error. Its arguments aren't
-    // read, so however many it was called with are fine.
+    // read, so however many it was called with are fine. A method the backend can't lower has no errors to show.
     void poisoned_method(ir::SymSCClassName error, FrameIndex frame, ir::SCMethod_I m) {
         const auto index = begin_function(frame, m);
         emit(lir::PushClass { error }, m);
