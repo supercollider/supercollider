@@ -37,10 +37,6 @@ struct MessageArguments {
     // Functional notation, e.g., `foo(a, b)`, where the first positional argument is the receiver.
     bool first_positional_is_receiver;
     std::optional<SCAnyExpr_I> receiver {};
-    /// f.perform(\a, 1) => a(f, 1).
-    /// This means the second argument (after receiver) is actually the selector.
-    bool is_performing;
-    std::optional<OptionallyLocatable<SymSCSelector>> performed_selector {};
     // Positional arguments must come before any variadic argument, as that is the order they are passed in.
     std::optional<ast::VariadicArgIndex> first_variadic {};
     bool reported_variadic_not_last { false };
@@ -82,18 +78,14 @@ Return<SCAnyExpr_I> receiver_expr(MessageContext& msg_ctx, ast::AnyExprIndex rec
     return msg_ctx.expr(receiver);
 }
 
-MessageArguments make_arguments(MessageContext& msg_ctx, ast::Index message_i, const Selector& selector,
+MessageArguments make_arguments(MessageContext& msg_ctx, ast::Index message_i,
                                 bool first_positional_is_receiver = false) {
     const auto location = location_of(msg_ctx.ir, *msg_ctx.ast_graph, message_i);
-    // The rewrite assumes what perform does, so it is skipped if any class implements it differently.
-    const bool is_perform = rewrites_perform(msg_ctx.expr.version)
-        && *selector.name == msg_ctx.ctx.common_symbols.perform && msg_ctx.ctx.known_methods.perform_is_known();
     return { msg_ctx.ir.create(SCPositionalArgs {}, location),
              msg_ctx.ir.create(SCKwArgs {}, location),
              msg_ctx.ir.create(SCVariadicArgs {}, location),
              first_positional_is_receiver,
-             {},
-             is_perform };
+             {} };
 }
 
 void append_positional(MessageContext& msg_ctx, MessageArguments& args, const Return<SCAnyExpr_I>& arg) {
@@ -108,29 +100,6 @@ void append_positional(MessageContext& msg_ctx, MessageArguments& args, const Re
     if (args.first_positional_is_receiver && !args.receiver) {
         args.receiver = arg.ir_node;
         return;
-    }
-    if (args.is_performing) {
-        args.is_performing = false;
-        if (arg.const_index) {
-            if (const auto symbol = msg_ctx.ctx.constant_table(*arg.const_index).get_if<SymSCSymbol>()) {
-                const auto name = std::string { msg_ctx.ctx.symbol_table(*symbol) };
-                args.performed_selector = { msg_ctx.ir.location(arg.ir_node),
-                                            msg_ctx.ctx.symbol_table.get_selector(name) };
-                return;
-            }
-            // Any other constant can never name a method. Something that isn't constant might evaluate to a symbol,
-            // so it is left for when the code runs.
-            const auto location = msg_ctx.ir.location(arg.ir_node);
-            const auto& text_info = msg_ctx.ir.text_info(location.source);
-            const auto range = IRGraph::range(location);
-            const auto& constant = msg_ctx.ctx.constant_table(*arg.const_index);
-            if (const auto string = constant.get_if<SymSCString>()) {
-                msg_ctx.expr.sink(sc::diag::Diagnostic::perform_selector_not_symbol(text_info, range,
-                                                                                    msg_ctx.ctx.symbol_table(*string)));
-            } else {
-                msg_ctx.expr.sink(sc::diag::Diagnostic::perform_selector_not_symbol(text_info, range));
-            }
-        }
     }
     msg_ctx.ir.append(args.positional, arg.ir_node);
     ++msg_ctx.ir.payload(args.positional).size;
@@ -272,7 +241,7 @@ Return<SCAnyExpr_I> create_message(MessageContext& msg_ctx, ast::Index message_i
         ? maybe<SCAnyExpr_I> { *selector.adverb }
         : maybe<SCAnyExpr_I> { msg_ctx.ir.create(SCMissing {}, location) };
 
-    const auto name = args.performed_selector.value_or(selector.name);
+    const auto name = selector.name;
     // A setter names its positional arguments, `a.meow = { }` and `a.meow_({ })` are both `meow`. The old compiler also
     // named the receiver, `{ }.meow_(a)`, which was a bug.
     const auto selector_text = msg_ctx.ctx.symbol_table(name.value);
@@ -292,7 +261,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::PostfixMessageIndex i) {
     const auto receiver_r = receiver_expr(msg_ctx, ast::AnyExprIndex { receiver },
                                           iterates_range(*ast_graph, selector_i, arg_list, blocks, false));
     const auto sel = selector(msg_ctx, selector_i);
-    auto args = make_arguments(msg_ctx, { *i }, sel);
+    auto args = make_arguments(msg_ctx, { *i });
     append_arguments(msg_ctx, args, arg_list);
     append_blocks(msg_ctx, args, blocks);
     return create_message(msg_ctx, { *i }, receiver_r.ir_node, sel, args);
@@ -303,7 +272,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::PrefixMessageIndex i) {
     const auto [selector_i, arg_list, blocks] = ast_graph->children(i);
     const auto sel = selector(msg_ctx, selector_i);
     // Functional notation, `foo(a, b)` is `a.foo(b)`.
-    auto args = make_arguments(msg_ctx, { *i }, sel, true);
+    auto args = make_arguments(msg_ctx, { *i }, true);
     args.unbounded_receiver = iterates_range(*ast_graph, selector_i, arg_list, blocks, true);
     append_arguments(msg_ctx, args, arg_list);
     append_blocks(msg_ctx, args, blocks);
@@ -320,7 +289,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::BinaryMessageIndex i) {
     const auto [selector_i, lhs, rhs] = ast_graph->children(i);
     const auto lhs_r = msg_ctx.expr(ast::AnyExprIndex { lhs });
     const auto sel = selector(msg_ctx, selector_i);
-    auto args = make_arguments(msg_ctx, { *i }, sel);
+    auto args = make_arguments(msg_ctx, { *i });
     const auto rhs_r = msg_ctx.expr(ast::AnyExprIndex { rhs });
     append_positional(msg_ctx, args, rhs_r);
     const auto message = create_message(msg_ctx, { *i }, lhs_r.ir_node, sel, args, SCMessage::Form::Binary);
@@ -341,7 +310,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::ValueMessageIndex i) {
     const auto [receiver, arg_list, blocks] = ast_graph->children(i);
     const auto receiver_r = (*this)(ast::AnyExprIndex { receiver });
     const auto sel = implicit_selector(ctx.common_symbols.value);
-    auto args = make_arguments(msg_ctx, { *i }, sel);
+    auto args = make_arguments(msg_ctx, { *i });
     append_arguments(msg_ctx, args, arg_list);
     append_blocks(msg_ctx, args, blocks);
     return create_message(msg_ctx, { *i }, receiver_r.ir_node, sel, args);
@@ -355,7 +324,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::ReferenceIndex i) {
     const auto receiver = ir.create(SCLiteral { ref_class }, location({ *i }));
     ir.register_node_as_consteval(receiver, ref_class);
     const auto sel = implicit_selector(ctx.common_symbols.new_);
-    auto args = make_arguments(msg_ctx, { *i }, sel);
+    auto args = make_arguments(msg_ctx, { *i });
     append_positional(msg_ctx, args, (*this)(ast::AnyExprIndex { expr }));
     return create_message(msg_ctx, { *i }, receiver, sel, args);
 }
@@ -365,7 +334,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::NewMessageIndex i) {
     const auto [class_name, arg_list, blocks] = ast_graph->children(i);
     const auto receiver_r = (*this)(class_name);
     const auto sel = implicit_selector(ctx.common_symbols.new_);
-    auto args = make_arguments(msg_ctx, { *i }, sel);
+    auto args = make_arguments(msg_ctx, { *i });
     append_arguments(msg_ctx, args, arg_list);
     append_blocks(msg_ctx, args, blocks);
     return create_message(msg_ctx, { *i }, receiver_r.ir_node, sel, args);
@@ -380,7 +349,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AtMessageIndex i) {
     // TODO: later this should be rewritten as a visitor using the index type set.
     if (const auto range = ast_graph->as_a<ast::RangeIndex>(arg)) {
         const auto sel = implicit_selector(ctx.common_symbols.copy_series);
-        auto args = make_arguments(msg_ctx, { *i }, sel);
+        auto args = make_arguments(msg_ctx, { *i });
         const auto bounds = append_range(msg_ctx, args, *range);
         const auto message = create_message(msg_ctx, { *i }, receiver_r.ir_node, sel, args);
         if (!can_fold_constants() || !bounds || !receiver_r.const_index)
@@ -400,7 +369,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AtMessageIndex i) {
     }
 
     const auto sel = implicit_selector(ctx.common_symbols.at);
-    auto args = make_arguments(msg_ctx, { *i }, sel);
+    auto args = make_arguments(msg_ctx, { *i });
     append_arguments(msg_ctx, args, ast::ArgumentListIndex { *arg });
     return create_message(msg_ctx, { *i }, receiver_r.ir_node, sel, args);
 }
@@ -411,7 +380,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentAtIndex i) {
     const auto [receiver, arg_list, value] = ast_graph->children(i);
     const auto receiver_r = msg_ctx.expr(ast::AnyExprIndex { receiver });
     const auto sel = implicit_selector(ctx.common_symbols.put);
-    auto args = make_arguments(msg_ctx, { *i }, sel);
+    auto args = make_arguments(msg_ctx, { *i });
     append_arguments(msg_ctx, args, arg_list);
     append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { value }));
     return create_message(msg_ctx, { *i }, receiver_r.ir_node, sel, args);
@@ -422,7 +391,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::RangeAssignIndex i) {
     const auto [receiver, range, value] = ast_graph->children(i);
     const auto receiver_r = msg_ctx.expr(ast::AnyExprIndex { receiver });
     const auto sel = implicit_selector(ctx.common_symbols.put_series);
-    auto args = make_arguments(msg_ctx, { *i }, sel);
+    auto args = make_arguments(msg_ctx, { *i });
     append_range(msg_ctx, args, range);
     append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { value }));
     return create_message(msg_ctx, { *i }, receiver_r.ir_node, sel, args);
@@ -436,7 +405,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::SetterIndex i) {
     const Selector sel { { location({ *name }), ctx.symbol_table.get_selector(setter_name) }, std::nullopt };
 
     if (const auto arg_list = ast_graph->as_a<ast::ArgumentListIndex>(thing)) {
-        auto args = make_arguments(msg_ctx, { *i }, sel, true);
+        auto args = make_arguments(msg_ctx, { *i }, true);
         append_arguments(msg_ctx, args, *arg_list);
         // Checked before the value is appended, so the value can't become the receiver.
         if (!args.receiver) {
@@ -449,7 +418,7 @@ Return<SCAnyExpr_I> Expr::operator()(ast::SetterIndex i) {
     }
 
     const auto receiver_r = msg_ctx.expr(ast::AnyExprIndex { *thing });
-    auto args = make_arguments(msg_ctx, { *i }, sel);
+    auto args = make_arguments(msg_ctx, { *i });
     append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { value }));
     return create_message(msg_ctx, { *i }, receiver_r.ir_node, sel, args, SCMessage::Form::Setter);
 }

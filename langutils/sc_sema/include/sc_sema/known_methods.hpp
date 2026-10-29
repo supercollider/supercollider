@@ -29,13 +29,9 @@ struct KnownMethods {
             == m_overridden.end();
     }
 
-    // `a.perform(\foo)` is rewritten to `a.foo`, which assumes no class implements perform differently to Object.
-    [[nodiscard]] bool perform_is_known() const { return m_perform_is_known; }
-
 private:
     // There are only a few known methods, so a search is fine.
     std::vector<std::pair<SymSCClassName, SymSCSelector>> m_overridden {};
-    bool m_perform_is_known { true };
 };
 
 }

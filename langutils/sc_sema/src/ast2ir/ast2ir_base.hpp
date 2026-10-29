@@ -50,7 +50,6 @@ using ir::allows_closed_function_return;
 using ir::can_fold_constants;
 using ir::is_frame_scoped;
 using ir::requires_predeclared_variables;
-using ir::rewrites_perform;
 
 // Collects the diagnostics of one unit of compilation, e.g., a method, so it knows whether it should be poisoned.
 // This is NOT thread safe.

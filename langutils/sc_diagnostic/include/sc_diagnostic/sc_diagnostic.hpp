@@ -194,11 +194,6 @@ public:
                                                                TextInfoPtr positional_t,
                                                                sc::src::SourceCodeRange positional_l);
 
-    [[nodiscard]] static Diagnostic perform_selector_not_symbol(TextInfoPtr first_t, sc::src::SourceCodeRange first_l);
-
-    [[nodiscard]] static Diagnostic perform_selector_not_symbol(TextInfoPtr first_t, sc::src::SourceCodeRange first_l,
-                                                                std::string_view string);
-
     [[nodiscard]] static Diagnostic duplicate_variable(TextInfoPtr first_t, sc::src::SourceCodeRange first_l,
                                                        TextInfoPtr second_t, sc::src::SourceCodeRange second_l);
 

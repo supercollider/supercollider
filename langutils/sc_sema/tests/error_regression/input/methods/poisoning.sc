@@ -7,7 +7,7 @@ Poisoning {
     good_assignment { instance_var = 3 }
     undefined { undefined_var = 4 }
     no_receiver { ^foo(bar: 1) }
-    nested_error { ^1.foo(2.perform(3)) }
+    nested_error { ^1.foo(undefined_var) }
     error_in_array { ^#[1, 2.foo] }
     two_errors { undefined_var = 5; ^foo(bar: 1) }
     after_errors { ^6 }
@@ -16,7 +16,7 @@ Poisoning {
     *cannot_assign { instance_var = 3 }
     *undefined { undefined_var = 4 }
     *no_receiver { ^foo(bar: 1) }
-    *nested_error { ^1.foo(2.perform(3)) }
+    *nested_error { ^1.foo(undefined_var) }
     *error_in_array { ^#[1, 2.foo] }
     *two_errors { undefined_var = 5; ^foo(bar: 1) }
     *after_errors { ^6 }

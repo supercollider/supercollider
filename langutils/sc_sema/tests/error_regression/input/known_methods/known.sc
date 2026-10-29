@@ -4,7 +4,6 @@ AbstractObjectExperimental {}
 
 Object : AbstractObjectExperimental {
     classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;
-    perform { ^nil }
 }
 
 Class {}
@@ -50,5 +49,4 @@ KnownMethods {
     string_slice { ^"hello"[1..3] }
     array_collection { ^Array[1, 2] }
     event_collection { ^Event[a: 1] }
-    perform_rewrite { ^1.perform(\foo) }
 }

@@ -66,14 +66,5 @@ void KnownMethods::check(ClassDeclarations& declarations, const CommonClasses& c
         if (const auto* method = lookup(declarations, k.receiver, k.selector);
             method && !method->compiler_known_implementation)
             m_overridden.push_back({ k.receiver, k.selector });
-
-    // perform can be sent to anything, so only Object's may exist.
-    if (auto* decl = declarations.get_unsafe(symbols.object))
-        if (auto* method = decl->find_method(symbols.perform); method && !method->is_extention)
-            method->compiler_known_implementation = true;
-    for (auto it = declarations.unsafe_begin(); it != declarations.unsafe_end(); ++it)
-        if (const auto* method = it->second.find_method(symbols.perform);
-            method && !method->compiler_known_implementation)
-            m_perform_is_known = false;
 }
 }

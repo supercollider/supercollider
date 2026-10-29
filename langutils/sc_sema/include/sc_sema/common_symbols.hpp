@@ -23,8 +23,6 @@ struct CommonSymbols {
     SymSCSelector series;
     // `Array[1, 2]` adds each element.
     SymSCSelector add;
-    // `a.perform(\foo)` is `a.foo`.
-    SymSCSelector perform;
     // Arithmetic on constant numbers is folded, e.g., `1 + 2` is `3`.
     SymSCSelector plus;
     SymSCSelector minus;
@@ -35,8 +33,6 @@ struct CommonSymbols {
     SymSCClassName simple_number;
     SymSCClassName arrayed_collection;
     SymSCClassName dictionary;
-    // Where perform is defined. This is the class named Object, not the default inheritor, which can change.
-    SymSCClassName object;
     // The classes of the typed arrays a constant can be, e.g., `FloatArray[1, 2]`.
     SymSCClassName double_array;
     SymSCClassName float_array;
