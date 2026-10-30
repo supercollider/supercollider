@@ -46,12 +46,12 @@ using DirName = SC_Filesystem::DirName;
 #include <boost/algorithm/string.hpp>
 
 #include "sc_ugen_factory.hpp"
-#include "../server/server_args.hpp"
 
 #include "SC_World.h"
 #include "SC_Wire.h"
 #include "ErrorMessage.hpp"
 #include "SC_Filesystem.hpp" // SC_PLUGIN_EXT
+#include "SC_ServerProgramOptions.hpp"
 
 // The generic .so extension has been deprecated in SC 3.15 so developers can ship shared libraries
 // along their plugins. We do the following to provide a smooth upgrade path:
@@ -237,7 +237,7 @@ bool sc_plugin_container::run_cmd_plugin(World* world, const char* name, sc_msg_
 
 sc_ugen_factory::~sc_ugen_factory() { unloadStaticPlugins(); }
 
-void sc_ugen_factory::load_plugins(server_arguments const& args) {
+void sc_ugen_factory::load_plugins(ServerProgramOptions const& args) {
     loadStaticPlugins(&sc_interface);
 
 #    ifndef NDEBUG
@@ -249,14 +249,12 @@ void sc_ugen_factory::load_plugins(server_arguments const& args) {
 
 sc_ugen_factory::~sc_ugen_factory() { close_handles(); }
 
-void sc_ugen_factory::load_plugins(server_arguments const& args) {
-    if (!args.ugen_paths.empty()) {
-        for (auto const& path1 : args.ugen_paths) {
-            std::vector<std::string> directories;
-            boost::split(directories, path1, boost::is_any_of(pathSeparator));
-            for (auto const& path : directories) {
-                load_plugin_folder(path);
-            }
+void sc_ugen_factory::load_plugins(ServerProgramOptions const& args) {
+    if (args.mUGensPluginPath != nullptr) {
+        std::vector<std::string> directories;
+        boost::split(directories, args.mUGensPluginPath, boost::is_any_of(pathSeparator));
+        for (auto const& path : directories) {
+            load_plugin_folder(path);
         }
     } else {
 #    ifdef SC_PLUGIN_DIR

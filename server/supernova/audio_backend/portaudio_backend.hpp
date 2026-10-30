@@ -18,9 +18,10 @@
 
 #pragma once
 
-#include <cstdio>
-#include <string>
 #include <algorithm>
+#include <cstdio>
+#include <iostream>
+#include <string>
 
 #include "portaudio.h"
 #ifdef HAVE_PORTAUDIO_CONFIG_H
@@ -298,16 +299,19 @@ private:
             super::fetch_inputs(inputs, blocksize_, input_channels);
             engine_functor::run_tick();
             super::deliver_outputs(outputs, blocksize_, m_hwOutputChannels);
-            if (IsClipping)
-                for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
+            if (IsClipping) {
+                for (uint16_t i = 0; i != m_hwOutputChannels; ++i) {
                     if (super::is_aligned(out[i]))
                         clip2_vec_simd(out[i], out[i], safety_clip_threshold_, blocksize_);
                     else
                         clip2_vec(out[i], out[i], safety_clip_threshold_, blocksize_);
+                }
+            }
             processed += blocksize_;
         }
 
         cpu_time_accumulator.update(Pa_GetStreamCpuLoad(stream) * 100.0);
+
         return paContinue;
     }
 

@@ -232,9 +232,15 @@ public:
         return 0;
     }
 
-    int max_realtime_priority() const { return jack_client_max_real_time_priority(client); }
+    int max_realtime_priority() const {
+        assert(client != nullptr);
+        return jack_client_max_real_time_priority(client);
+    }
 
-    int realtime_priority() const { return jack_client_real_time_priority(client); }
+    int realtime_priority() const {
+        assert(client != nullptr);
+        return jack_client_real_time_priority(client);
+    }
 
 private:
     static void jack_thread_init_callback(void* arg) {

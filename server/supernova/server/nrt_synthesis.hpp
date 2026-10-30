@@ -26,11 +26,11 @@
 // NOTE: replace with std::format once we switch to C++20
 #include <boost/format.hpp>
 
-#include "server_args.hpp"
 #include "server.hpp"
 #include "audio_backend/sndfile_backend.hpp"
 
 #include "../../common/SC_SndFileHelpers.hpp"
+#include "../../common/SC_ServerProgramOptions.hpp"
 #include "../../include/plugin_interface/SC_InlineUnaryOp.h"
 
 namespace nova {
@@ -46,30 +46,29 @@ struct non_rt_functor {
 };
 
 struct non_realtime_synthesis_engine {
-    non_realtime_synthesis_engine(server_arguments const& args) {
-        int format =
-            headerFormatFromString(args.header_format.c_str()) | sampleFormatFromString(args.sample_format.c_str());
+    non_realtime_synthesis_engine(ServerProgramOptions const& args) {
+        int format = headerFormatFromString(args.mNonRealTimeOutputHeaderFormat)
+            | sampleFormatFromString(args.mNonRealTimeOutputSampleFormat);
 
-        std::string input_file = args.input_file;
-        if (input_file == "_")
-            input_file.clear();
+        backend.open_client(args.mNonRealTimeInputFilename, args.mNonRealTimeOutputFilename, args.mPreferredSampleRate,
+                            format, args.mNumOutputBusChannels, args.mBufLength);
 
-        backend.open_client(input_file, args.output_file, args.samplerate, format, args.output_channels,
-                            args.blocksize);
-
-        command_stream.open(args.command_file.c_str(), std::fstream::in | std::fstream::binary);
+        assert(args.mNonRealTimeCmdFilename != nullptr);
+        command_stream.open(args.mNonRealTimeCmdFilename, std::fstream::in | std::fstream::binary);
         if (!command_stream) {
             throw std::runtime_error("cannot open OSC command file");
         }
 
-        has_inputs = !input_file.empty();
-        samples_per_block = args.blocksize;
+        has_inputs = args.mNonRealTimeInputFilename != nullptr;
+        samples_per_block = args.mBufLength;
 
-        prepare_backend(args.blocksize, args.input_channels, args.output_channels);
+        prepare_backend(args.mBufLength, args.mNumInputBusChannels, args.mNumOutputBusChannels);
     }
 
     /** setup the mapping between input/output buses and the input/output file buffers */
     void prepare_backend(int blocksize, int input_bus_channels, int output_bus_channels) {
+        assert(blocksize > 0 && input_bus_channels > 0 && output_bus_channels > 0);
+
         auto& world = sc_factory->world;
 
         std::vector<sample*> inputs, outputs;

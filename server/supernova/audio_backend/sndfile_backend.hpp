@@ -66,15 +66,21 @@ public:
     std::vector<sample_type> const& get_peaks() const { return max_peaks; }
 
 public:
-    void open_client(std::string const& input_file_name, std::string const& output_file_name, float samplerate,
-                     int format, uint32_t output_channel_count, size_t block_size) {
+    /** open the sndfile backend. `input_file_name` is optional. */
+    void open_client(const char* input_file_name, const char* output_file_name, float samplerate, int format,
+                     uint32_t output_channel_count, size_t block_size) {
         output_channels = output_channel_count;
         max_peaks.assign(output_channels, 0);
-        samplerate_ = samplerate = std::floor(samplerate);
+
+        samplerate = std::floor(samplerate);
+        assert(samplerate > 0);
+        samplerate_ = samplerate;
+
+        assert(block_size > 0);
         block_size_ = block_size;
 
-        if (!input_file_name.empty()) {
-            input_file = makeSndfileHandle(input_file_name.c_str(), SFM_READ);
+        if (input_file_name) {
+            input_file = makeSndfileHandle(input_file_name, SFM_READ);
             if (input_file.rawHandle() == nullptr)
                 throw std::runtime_error(std::string("input file: ") + input_file.strError());
 
@@ -87,7 +93,8 @@ public:
         } else
             input_channels = 0;
 
-        output_file = makeSndfileHandle(output_file_name.c_str(), SFM_WRITE, format, output_channel_count, samplerate);
+        assert(output_file_name != nullptr);
+        output_file = makeSndfileHandle(output_file_name, SFM_WRITE, format, output_channel_count, samplerate);
         if (output_file.rawHandle() == nullptr)
             throw std::runtime_error(std::string("output file: ") + output_file.strError());
 
