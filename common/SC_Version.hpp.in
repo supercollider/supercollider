@@ -27,7 +27,7 @@
 
 // Does not support tweaks.
 // Useful for branches in the code as this inherits tuple's lexigraphical comparisons.
-// Initialise with {Major, Minor, Patch}.
+// Initialise with { Major, Minor, Patch }.
 struct SemanticVersion : public std::tuple<uint32_t, uint32_t, uint32_t> {
     using std::tuple<uint32_t, uint32_t, uint32_t>::tuple;
 
@@ -50,7 +50,7 @@ static constexpr char SC_RefType[] = "@GIT_REF_TYPE@";
 static constexpr char SC_BranchOrTag[] = "@GIT_BRANCH_OR_TAG@";
 static constexpr char SC_CommitHash[] = "@GIT_COMMIT_HASH@";
 
-static constexpr SemanticVersion SC_Version {SC_VersionMajor, SC_VersionMinor, SC_VersionPatch};
+static constexpr SemanticVersion SC_Version { SC_VersionMajor, SC_VersionMinor, SC_VersionPatch };
 
 
 // For backward compatibility in scsynth and supernova only.

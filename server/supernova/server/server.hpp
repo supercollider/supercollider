@@ -23,7 +23,6 @@
 #include "memory_pool.hpp"
 #include "node_graph.hpp"
 #include "../sc/sc_osc_handler.hpp"
-#include "server_args.hpp"
 #include "server_scheduler.hpp"
 #include "synth_factory.hpp"
 #include "../sc/sc_ugen_factory.hpp"
@@ -40,6 +39,7 @@
 
 #include "../../scsynth/SC_TimeDLL.hpp"
 #include "../../scsynth/SC_Time.hpp"
+
 namespace nova {
 
 struct realtime_engine_functor {
@@ -136,7 +136,7 @@ public:
     typedef detail::audio_backend audio_backend;
 
     /* main nova_server function */
-    nova_server(server_arguments const& args);
+    nova_server(ServerProgramOptions const& args);
 
     ~nova_server();
 
@@ -167,7 +167,7 @@ public:
     /* @} */
 
     /** non-rt synthesis */
-    void run_nonrt_synthesis(server_arguments const& arguments);
+    void run_nonrt_synthesis(ServerProgramOptions const& args);
 
 public:
     /* @{ */

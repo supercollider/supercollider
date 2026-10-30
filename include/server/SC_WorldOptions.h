@@ -35,57 +35,61 @@ typedef int (*PrintFunc)(const char* format, va_list ap);
 struct WorldOptions {
     WorldOptions() {}
 
-    const char* mPassword = nullptr;
+    // general options
+    int mVerbosity = 0;
+    const char* mUGensPluginPath = nullptr;
+    const char* mRestrictedPath = nullptr;
+    bool mLoadGraphDefs = true;
+
+    // synth options
+    uint32 mBufLength = 64;
+    uint32 mNumControlBusChannels = 16384;
+    uint32 mNumAudioBusChannels = 1024;
     uint32 mNumBuffers = 1024;
-    uint32 mMaxLogins = 64;
     uint32 mMaxNodes = 1024;
     uint32 mMaxGraphDefs = 1024;
     uint32 mMaxWireBufs = 64;
-    uint32 mNumAudioBusChannels = 1024;
-    uint32 mNumInputBusChannels = 8;
-    uint32 mNumOutputBusChannels = 8;
-    uint32 mNumControlBusChannels = 16384;
-    uint32 mBufLength = 64;
+    uint32 mNumRGens = 64;
     uint32 mRealTimeMemorySize = 8192; // in kilobytes
 
-    int mNumSharedControls = 0;
-    float* mSharedControls = nullptr;
-
-    bool mRealTime = true;
-    bool mMemoryLocking = false;
+    // audio options
+    uint32 mNumInputBusChannels = 8;
+    uint32 mNumOutputBusChannels = 8;
+    uint32 mPreferredSampleRate = 0;
+    uint32 mPreferredHardwareBufferFrameSize = 0;
+    const char* mInDeviceName = nullptr;
+    const char* mOutDeviceName = nullptr;
+#ifdef __APPLE__
+    const char* mInputStreamsEnabled = nullptr;
+    const char* mOutputStreamsEnabled = nullptr;
+    /** @brief Absolute amplitude value outputs will be clipped to.
+     *  Set to <= 0 or inf to completely disable clipping. */
     float mSafetyClipThreshold = 1.26; // ca. 2 dB
+#else
+    float mSafetyClipThreshold = 0; // no clipping
+#endif
 
+    // networking options
+    const char* mPassword = nullptr;
+    uint32 mMaxLogins = 64;
+    bool mRendezvous = true;
+
+    // NRT synthesis options
+    bool mRealTime = true;
     const char* mNonRealTimeCmdFilename = nullptr;
     const char* mNonRealTimeInputFilename = nullptr;
     const char* mNonRealTimeOutputFilename = nullptr;
     const char* mNonRealTimeOutputHeaderFormat = nullptr;
     const char* mNonRealTimeOutputSampleFormat = nullptr;
 
-    uint32 mPreferredSampleRate = 0;
-
-    uint32 mNumRGens = 64;
-
-    uint32 mPreferredHardwareBufferFrameSize = 0;
-
-    uint32 mLoadGraphDefs = 1;
-
-    const char* mInputStreamsEnabled = nullptr;
-    const char* mOutputStreamsEnabled = nullptr;
-    const char* mInDeviceName = nullptr;
-
-    int mVerbosity = 0;
-
-    bool mRendezvous = true;
-
-    const char* mUGensPluginPath = nullptr;
-
-    const char* mOutDeviceName = nullptr;
-
-    const char* mRestrictedPath = nullptr;
-
+    // advanced options
+    bool mMemoryLocking = false;
     int mSharedMemoryID = 0;
+    int mNumSharedControls = 0;
+    float* mSharedControls = nullptr;
 
 #ifdef SC_BELA
+    // Bela options
     uint32 mBelaAnalogInputChannels;
     uint32 mBelaAnalogOutputChannels;
     uint32 mBelaDigitalChannels;

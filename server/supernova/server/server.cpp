@@ -36,6 +36,7 @@
 
 #include "sc/sc_synth_definition.hpp"
 #include "sc/sc_ugen_factory.hpp"
+#include "../../common/SC_ServerProgramOptions.hpp"
 
 #ifdef __APPLE__
 #    include <AvailabilityMacros.h>
@@ -49,22 +50,25 @@ namespace nova {
 
 class nova_server* instance = nullptr;
 
-nova_server::nova_server(server_arguments const& args):
+nova_server::nova_server(ServerProgramOptions const& args):
     // FIXME: In case of multiple supernova instances on the same port (e.g. when running on
     // different interfaces), they can end up using the same shmem location.
-    server_shared_memory_creator(args.port(), args.control_busses),
+    server_shared_memory_creator(args.mSharedMemoryID, args.mNumControlBusChannels),
 
-    scheduler<thread_init_functor>(args.threads, !args.non_rt, args.thread_pinning),
+    scheduler<thread_init_functor>(args.mNumThreads, args.mRealTime, args.mThreadPinning),
     sc_osc_handler(args) {
     assert(instance == 0);
     instance = this;
 
-    use_system_clock = (args.use_system_clock == 1);
-    non_rt = args.non_rt;
-    pin_threads = args.thread_pinning;
-    smooth_samplerate = args.samplerate;
+    use_system_clock = args.mUseSystemClock;
+    non_rt = !args.mRealTime;
+    pin_threads = args.mThreadPinning;
 
-    if (!args.non_rt) {
+    // TODO: is this ok?
+    const auto samplerate = args.mPreferredSampleRate ? args.mPreferredSampleRate : 44100;
+    smooth_samplerate = samplerate;
+
+    if (args.mRealTime) {
         audio_backend::initialize();
         io_interpreter.start_thread();
     }
@@ -73,9 +77,9 @@ nova_server::nova_server(server_arguments const& args):
     sc_factory->initialize(args, server_shared_memory_creator::shm->get_control_busses());
 
     /** first guess: needs to be updated, once the backend is started */
-    time_per_tick = time_tag::from_samples(args.blocksize, args.samplerate ? args.samplerate : 44100);
+    time_per_tick = time_tag::from_samples(args.mBufLength, samplerate);
 
-    if (!args.non_rt)
+    if (args.mRealTime)
         start_receive_thread();
 }
 
@@ -196,10 +200,10 @@ void nova_server::group_free_deep(abstract_group* group) {
 }
 
 
-void nova_server::run_nonrt_synthesis(server_arguments const& args) {
+void nova_server::run_nonrt_synthesis(ServerProgramOptions const& args) {
 #ifndef NO_LIBSNDFILE
-    start_dsp_threads();
     non_realtime_synthesis_engine engine(args);
+    start_dsp_threads();
     engine.run();
 #else
     std::cout << "Warning: Non-RT synthesis not supported as supernova was compiled without libsndfile" << std::endl;
@@ -237,25 +241,30 @@ static bool set_realtime_priority(int thread_index) {
     bool success = false;
 
 #ifdef NOVA_TT_PRIORITY_PERIOD_COMPUTATION_CONSTRAINT
-    double blocksize = server_arguments::instance().blocksize;
-    double samplerate = server_arguments::instance().samplerate ? server_arguments::instance().samplerate : 44100;
-
-    double ns_per_block = 1e9 / samplerate * blocksize;
+    // set_realtime_priority() is called by the audio callback and DSP helper threads
+    // *after* the audio backend has been initialized, which means that the blocksize
+    // and samplerate are supposed to valid.
+    double blocksize = instance->get_audio_blocksize();
+    double samplerate = instance->get_samplerate();
+    if (blocksize > 0 && samplerate > 0) {
+        double ns_per_block = 1e9 / samplerate * blocksize;
 
 #    ifdef __APPLE__
 
-    success = thread_set_priority_rt(0, AudioConvertNanosToHostTime(ns_per_block - 5000),
-                                     AudioConvertNanosToHostTime(ns_per_block), true);
+        success = thread_set_priority_rt(0, AudioConvertNanosToHostTime(ns_per_block - 5000),
+                                         AudioConvertNanosToHostTime(ns_per_block), true);
 
 #    else
 
-    success = thread_set_priority_rt(ns_per_block, ns_per_block - 2, ns_per_block - 1, false);
+        success = thread_set_priority_rt(ns_per_block, ns_per_block - 2, ns_per_block - 1, false);
 
 #    endif
 
-    if (!success)
-        std::cout << "Warning: initialize deadline scheduling" << std::endl;
-
+        if (!success)
+            std::cout << "Warning: initialize deadline scheduling" << std::endl;
+    } else {
+        std::cout << "Error: deadline scheduling requires that the audio backend is initialized!" << std::endl;
+    }
 #endif
 
     if (!success) {
@@ -311,6 +320,9 @@ static bool pin_thread_to_cpu(int thread_index) {
 void thread_init_functor::operator()(int thread_index) {
     set_daz_ftz();
 
+    // Only call set_realtime_priority() in realtime mode because some
+    // implementations require that the (realtime) audio backend is initialized.
+    // We don't really need realtime priority for non-rt synthesis anyway.
     if (rt)
         set_realtime_priority(thread_index);
 
