@@ -49,9 +49,10 @@ Primitives for Unix.
 #include <thread>
 
 #ifdef _WIN32
-#    include "SC_Win32Utils.h"
-#else
-#    include <libgen.h>
+#    ifndef NOMINMAX
+#        define NOMINMAX
+#    endif
+#    include <windows.h>
 #endif
 
 extern ClassLibraryInfo gClassLibraryInfo;
@@ -73,38 +74,104 @@ int prString_System(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+static bool isSeparator(char c) {
+#ifdef _WIN32
+    return c == '/' || c == '\\';
+#else
+    return c == '/';
+#endif
+}
+
+static const fs::path unixRoot("/");
+
+// follows the behavior of POSIX basename().
+// See https://man7.org/linux/man-pages/man3/basename.3.html
 int prString_Basename(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
-    char path[PATH_MAX];
-    int err = slotStrVal(a, path, PATH_MAX);
+    auto [err, path] = slotStdStrVal(a);
     if (err)
         return err;
 
-    char* basename0 = basename(path);
+    std::string result;
+    if (path.empty()) {
+        // an empty path shall return '.'
+        result = ".";
+    } else {
+        fs::path p(path);
+        // first strip trailing separators. Root paths are preserved.
+        if (!p.has_filename())
+            p = p.parent_path();
+        if (p.has_filename()) {
+            // return the filename component
+            result = p.filename().u8string();
+        } else if (!p.empty() && *p.begin() == unixRoot) {
+            // a Unix-style root path shall return a single slash
+            result = p.u8string().front();
+        } else {
+            // otherwise return '.', e.g. for "C:/" or "//host" on Windows
+            result = ".";
+        }
+    }
 
-    int size = strlen(basename0);
-    PyrString* strobj = newPyrStringN(g->gc, size, 0, true);
-    memcpy(strobj->s, basename0, size);
+    PyrString* strobj = newPyrStringN(g->gc, result.size(), 0, true);
+    memcpy(strobj->s, result.data(), result.size());
 
     SetObject(a, strobj);
 
     return errNone;
 }
 
+// follows the behavior of POSIX dirname().
+// See https://man7.org/linux/man-pages/man3/basename.3.html
 int prString_Dirname(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
-    char path[PATH_MAX];
-    int err = slotStrVal(a, path, PATH_MAX);
+    auto [err, path] = slotStdStrVal(a);
     if (err)
         return err;
 
-    char* dirname0 = dirname(path);
+    std::string result;
+    if (path.empty()) {
+        // an empty path shall return '.'
+        result = ".";
+    } else {
+        fs::path p(path);
+        // first strip trailing separators. Root paths are preserved.
+        if (!p.has_filename())
+            p = p.parent_path();
+        // now return the directory component. This also works for root paths.
+        p = p.parent_path();
+        if (p.has_filename()) {
+            // 'normal' directory
+            result = p.u8string();
+        } else if (p.empty()) {
+            // an empty directory shall return '.'
+            result = ".";
+        } else if (*p.begin() == unixRoot) {
+            // a Unix-style root path shall return a single slash
+            result = p.u8string().front();
+        } else {
+            // non-Unix root, e.g. "C:/" or "//host" on Windows
+            result = p.u8string();
+#ifdef _WIN32
+            // special cases for Windows
+            if (result.size() > 3) {
+                if (std::isalpha((int)result[0]) && result[1] == ':' && isSeparator(result[2])) {
+                    // full drive path -> only keep the first separator
+                    result.resize(3);
+                } else if (isSeparator(result[0]) && isSeparator(result[1]) && std::isalnum((int)result[2])) {
+                    // UNC path -> remove all trailing separators
+                    while (isSeparator(result.back()))
+                        result.pop_back();
+                }
+            }
+#endif
+        }
+    }
 
-    int size = strlen(dirname0);
-    PyrString* strobj = newPyrStringN(g->gc, size, 0, true);
-    memcpy(strobj->s, dirname0, size);
+    PyrString* strobj = newPyrStringN(g->gc, result.size(), 0, true);
+    memcpy(strobj->s, result.data(), result.size());
 
     SetObject(a, strobj);
 

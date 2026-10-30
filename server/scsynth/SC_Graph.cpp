@@ -19,7 +19,6 @@
 */
 
 
-#include "SC_Win32Utils.h"
 #include "SC_Graph.h"
 #include "SC_GraphDef.h"
 #include "SC_Unit.h"
@@ -785,13 +784,13 @@ void Graph_CalcTrace(Graph* inGraph) {
             Unit* unit = calcUnits[i];
             scprintf("  unit %d %s\n    in ", i, (char*)unit->mUnitDef->mUnitDefName);
             for (uint32 j = 0; j < unit->mNumInputs; ++j) {
-                scprintf(" %g", ZIN0(j));
+                scprintf(" %g", unit->mInBuf[j][0]);
             }
             scprintf("\n");
             (unit->mCalcFunc)(unit, unit->mBufLength);
             scprintf("    out");
             for (uint32 j = 0; j < unit->mNumOutputs; ++j) {
-                scprintf(" %g", ZOUT0(j));
+                scprintf(" %g", unit->mOutBuf[j][0]);
             }
             scprintf("\n");
         }

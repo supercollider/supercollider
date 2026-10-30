@@ -289,8 +289,8 @@ For the final step, you can also build from within Visual Studio:
 Dependencies and `vcpkg` support
 --------------------------------
 
-SuperCollider uses vcpkg to install its dependencies: `libsndfile`, `fftw`, `readline`.
-`vcpkg` instalation will be picked up automatcally when `VCPKG_ROOT` environment variable is set, either through the `Edit the system environment variables` GUI, or via command prompt (cmd): `SET VCPKG_ROOT=c:\path\to\vcpkg`.
+SuperCollider uses vcpkg to install its dependencies: `libsndfile` (>= 1.1), `fftw`, `readline`.
+`vcpkg` installation will be picked up automatically when `VCPKG_ROOT` environment variable is set, either through the `Edit the system environment variables` GUI, or via command prompt (cmd): `SET VCPKG_ROOT=c:\path\to\vcpkg`.
 The latter is only valid within the current command prompt session.
 
 ### Manifest mode

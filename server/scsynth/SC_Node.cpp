@@ -21,15 +21,13 @@
 
 #include "SC_Group.h"
 #include "SC_SynthDef.h"
+#include "SC_Unit.h"
 #include "SC_World.h"
 #include "SC_WorldOptions.h"
 #include "SC_Errors.h"
-#include <stdio.h>
-#include <stdexcept>
-#include <limits.h>
 #include "SC_Prototypes.h"
 #include "SC_HiddenWorld.h"
-#include "Unroll.h"
+
 
 void Node_StateMsg(Node* inNode, int inState);
 
@@ -375,8 +373,6 @@ void Node_StateMsg(Node* inNode, int inState) {
     msg.mState = inState;
     world->hw->mNodeEnds.Write(msg);
 }
-
-#include "SC_Unit.h"
 
 void Unit_DoneAction(int doneAction, Unit* unit) {
     switch (doneAction) {

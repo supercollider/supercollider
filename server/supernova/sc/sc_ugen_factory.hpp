@@ -191,7 +191,7 @@ class sc_ugen_factory : public sc_plugin_interface, public sc_plugin_container {
 public:
     sc_ugen_factory() = default;
 
-    ~sc_ugen_factory() { close_handles(); }
+    ~sc_ugen_factory();
 
     /* @{ */
     /** ugen count handling */
@@ -202,16 +202,19 @@ public:
     uint32_t ugen_count() const { return ugen_count_; }
     /* @} */
 
-    void load_plugin_folder(std::filesystem::path const& dir);
-    void load_plugin(std::filesystem::path const& path);
+    void load_plugins(server_arguments const& args);
 
 private:
+#ifndef STATIC_PLUGINS
+    void load_plugin_folder(std::filesystem::path const& dir);
+    void load_plugin(std::filesystem::path const& path);
     void load_plugin_folder(std::filesystem::path const& dir, bool is_top_level, bool found_scx_file);
 
     void close_handles();
 
-    uint32_t ugen_count_ = 0;
     std::vector<void*> open_handles;
+#endif
+    uint32_t ugen_count_ = 0;
 };
 
 extern std::unique_ptr<sc_ugen_factory> sc_factory;

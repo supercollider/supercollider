@@ -1,7 +1,10 @@
 #pragma once
 
-#include <WinSock2.h> // for timeval struct
+#ifndef NOMINMAX
+#    define NOMINMAX
+#endif
 #include <windows.h>
+#include <WinSock2.h> // for timeval struct
 
 /*
 Implementation as per:

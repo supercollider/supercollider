@@ -10,7 +10,6 @@
 #endif
 
 #ifdef _WIN32
-#    include "SC_Win32Utils.h"
 /*
  *	Signal stuff
  *	For WIN32, there is no wait() call so there are no wait() macros
@@ -27,6 +26,10 @@
 #    define WIFSIGNALED(w) (!WIFEXITED(w))
 #    define WEXITSTATUS(w) (w)
 #    define WTERMSIG(w) (w)
+
+#    ifdef _MSC_VER
+using pid_t = int;
+#    endif
 
 std::tuple<pid_t, FILE*> sc_popen_c(const char* utf8_cmd, const char* mode);
 std::string quoteWindowsArg(const std::string& arg);

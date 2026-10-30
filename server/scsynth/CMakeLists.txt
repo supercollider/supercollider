@@ -123,8 +123,8 @@ if(AUDIOAPI STREQUAL bela)
     list(APPEND scsynth_sources ../../common/XenomaiLock.cpp)
 endif()
 
-include_directories(${CMAKE_SOURCE_DIR}/include/common
-        ${CMAKE_SOURCE_DIR}/common
+include_directories(${CMAKE_SOURCE_DIR}/common
+        ${CMAKE_SOURCE_DIR}/include/common
         ${CMAKE_SOURCE_DIR}/include/server
         ${CMAKE_SOURCE_DIR}/include/plugin_interface
         .
@@ -147,16 +147,6 @@ elseif (AUDIOAPI STREQUAL webaudio)
     )
 endif()
 
-if(STATIC_PLUGINS)
-    # the plugins are linked statically, their sources must be included
-    set(plugin_sources_abs "")
-    foreach(plugin ${all_plugin_sources})
-        string(CONCAT plugin_abs ${CMAKE_SOURCE_DIR}/server/plugins/ ${plugin} )
-        list(APPEND plugin_sources_abs ${plugin_abs})
-    endforeach(plugin)
-    list(APPEND scsynth_sources ${plugin_sources_abs})
-endif()
-
 set (FINAL_BUILD 0) # disable final build for scsynth
 
 if (LIBSCSYNTH)
@@ -173,7 +163,6 @@ if (FINAL_BUILD)
 else()
     add_library(libscsynth ${LIBSCSYNTH_TYPE} ${scsynth_sources} ${all_headers})
 endif()
-
 
 # FFT definitions
 if (APPLE)
@@ -200,18 +189,17 @@ elseif (AUDIOAPI STREQUAL webaudio)
     target_compile_definitions(libscsynth PRIVATE "SC_AUDIO_API=SC_AUDIO_API_WEBAUDIO")
 endif()
 
-if(LIBSCSYNTH)
-    target_compile_definitions(libscsynth PRIVATE   BUILDING_SCSYNTH)
-    target_compile_definitions(libscsynth INTERFACE BUILDING_SCSYNTH)
-endif()
+# Used in SC_Export.h and SC_Unit.h. Must be PRIVATE because we
+# do not want libscsynth clients to see this definition.
+target_compile_definitions(libscsynth PRIVATE BUILDING_SCSYNTH)
 
-target_compile_definitions(libscsynth PUBLIC  SC_MEMORY_ALIGNMENT=32)
+target_compile_definitions(libscsynth PUBLIC SC_MEMORY_ALIGNMENT=32)
 
-target_link_libraries(libscsynth tlsf Boost::sync)
+target_link_libraries(libscsynth PRIVATE tlsf Boost::sync)
 
 find_library(DL NAMES dl)
 if(DL)
-    target_link_libraries(libscsynth ${DL})
+    target_link_libraries(libscsynth PRIVATE ${DL})
 endif()
 
 if(NOVA_SIMD)
@@ -230,7 +218,7 @@ if(NOT NO_LIBSNDFILE)
         if(SNDFILE_HAS_MPEG)
             target_compile_definitions(libscsynth PRIVATE SNDFILE_HAS_MPEG)
         endif()
-        target_link_libraries(libscsynth ${SNDFILE_LIBRARIES})
+        target_link_libraries(libscsynth PRIVATE ${SNDFILE_LIBRARIES})
         target_include_directories(libscsynth SYSTEM PRIVATE ${SNDFILE_INCLUDE_DIR})
     else()
         message(SEND_ERROR "Cannot find libsndfile")
@@ -245,7 +233,10 @@ endif()
 
 if(STATIC_PLUGINS)
     target_compile_definitions(libscsynth PRIVATE "-DSTATIC_PLUGINS")
+    # add plugin archives
+    target_link_libraries(libscsynth PRIVATE ${static_plugins})
 endif()
+
 if(NO_X11)
     target_compile_definitions(libscsynth PRIVATE "-DNO_X11")
 endif()
@@ -257,7 +248,7 @@ if(NOT NO_AVAHI)
         find_package(Avahi)
         if(AVAHI_FOUND)
             target_compile_definitions(libscsynth PUBLIC USE_RENDEZVOUS=1 HAVE_AVAHI=1)
-            target_link_libraries(libscsynth ${AVAHI_LIBRARIES})
+            target_link_libraries(libscsynth PRIVATE ${AVAHI_LIBRARIES})
             target_include_directories(libscsynth PUBLIC ${AVAHI_INCLUDE_DIRS})
         endif()
     endif()
@@ -265,21 +256,20 @@ endif()
 
 
 if (AUDIOAPI STREQUAL jack)
-    target_link_libraries(libscsynth ${JACK_LINK_LIBRARIES})
+    target_link_libraries(libscsynth PRIVATE ${JACK_LINK_LIBRARIES})
 elseif(AUDIOAPI STREQUAL portaudio)
-    target_link_libraries(libscsynth PortAudio::PortAudio)
+    target_link_libraries(libscsynth PRIVATE PortAudio::PortAudio)
 elseif(AUDIOAPI STREQUAL bela)
-    target_link_libraries(libscsynth ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES} belaextra)
+    target_link_libraries(libscsynth PRIVATE ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES} belaextra)
 elseif(AUDIOAPI STREQUAL coreaudio)
-    target_link_libraries(libscsynth "-framework CoreAudio")
+    target_link_libraries(libscsynth PRIVATE "-framework CoreAudio")
 elseif(AUDIOAPI STREQUAL webaudio)
-    target_link_libraries(libscsynth webosc)
+    target_link_libraries(libscsynth PRIVATE webosc)
 endif()
 
-
 if (WIN32)
-    target_link_libraries(libscsynth wsock32 ws2_32 winmm)
-    target_compile_definitions(libscsynth PUBLIC UNICODE _UNICODE)
+    target_link_libraries(libscsynth PRIVATE ws2_32 mswsock winmm)
+    target_compile_definitions(libscsynth PRIVATE UNICODE _UNICODE)
 endif()
 
 if(NOT WIN32)
@@ -294,16 +284,17 @@ endif()
 
 if (FFTW3F_FOUND)
     target_include_directories(libscsynth PUBLIC ${FFTW3F_INCLUDE_DIR})
-    target_link_libraries(libscsynth ${FFTW3F_LIBRARY})
+    target_link_libraries(libscsynth PRIVATE ${FFTW3F_LIBRARY})
 endif()
 
 if (APPLE)
-    target_link_libraries(libscsynth "-framework Accelerate -framework CoreServices"
-            "-framework Foundation -framework AppKit")
+    target_link_libraries(libscsynth PRIVATE
+        "-framework Accelerate" "-framework CoreServices" "-framework Foundation"
+    )
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    target_link_libraries(libscsynth rt)
+    target_link_libraries(libscsynth PRIVATE rt)
 endif()
 
 add_executable(scsynth
@@ -313,58 +304,62 @@ add_executable(scsynth
         ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
         $<$<BOOL:${APPLE}>: ${CMAKE_SOURCE_DIR}/common/SC_AppleEventLoop.mm >
 )
-target_link_libraries(scsynth libscsynth)
+target_link_libraries(scsynth PRIVATE libscsynth)
+if (WIN32)
+    # if libscsynth is a shared library, scsynth.exe does not automatically link to ws2_32
+    target_link_libraries(scsynth PRIVATE ws2_32)
+    target_compile_definitions(scsynth PRIVATE UNICODE _UNICODE)
+endif()
+if (APPLE)
+    target_link_libraries(scsynth PRIVATE "-framework AppKit")
+endif()
 
 if(AUDIOAPI STREQUAL bela)
-    target_link_libraries(scsynth ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES} belaextra)
+    target_link_libraries(scsynth PRIVATE ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES} belaextra)
 elseif(AUDIOAPI STREQUAL webaudio)
     target_compile_options(libscsynth PUBLIC -pthread)
     target_compile_options(scsynth PRIVATE -pthread)
-    set_target_properties(scsynth PROPERTIES LINK_FLAGS "\
-        -sAUDIO_WORKLET -sWASM_WORKERS -sUSE_PTHREADS -pthread \
-        --bind \
-        -sMODULARIZE=1 \
-        -sEXPORT_ES6=1 \
-        -sEXPORT_NAME='ScSynth' \
-        --pre-js ${CMAKE_SOURCE_DIR}/platform/wasm/scsynth.pre.js \
-        -sEXPORTED_FUNCTIONS=['_malloc','_free','_webOscBindingAnchor'] \
-        -sEXPORTED_RUNTIME_METHODS=['ccall','cwrap','HEAPU8','UTF8ToString'] \
-    ")
+    target_link_options(scsynth PRIVATE
+        -sAUDIO_WORKLET -sWASM_WORKERS -sUSE_PTHREADS -pthread
+        --bind -sMODULARIZE=1 -sEXPORT_ES6=1 -sEXPORT_NAME='ScSynth'
+        --pre-js "${CMAKE_SOURCE_DIR}/platform/wasm/scsynth.pre.js"
+        -sEXPORTED_FUNCTIONS=['_malloc','_free','_webOscBindingAnchor']
+        -sEXPORTED_RUNTIME_METHODS=['ccall','cwrap','HEAPU8','UTF8ToString']
+    )
     if(WASM_DEBUG)
-        target_compile_options(scsynth PUBLIC -pthread -g)
+        target_compile_options(scsynth PRIVATE -pthread -g)
         target_compile_options(libscsynth PRIVATE -pthread -g)
         # see https://developer.chrome.com/blog/wasm-debugging-2020
         # -ASSERTIONS=1 is omitted
-        set_property(TARGET scsynth APPEND_STRING PROPERTY LINK_FLAGS "
-                -g \
-                -sNO_DISABLE_EXCEPTION_CATCHING \
-                -fdebug-compilation-dir='../..' \
-                -sNO_DISABLE_EXCEPTION_CATCHING \
-        ")
+        target_link_options(scsynth PRIVATE
+                -sNO_DISABLE_EXCEPTION_CATCHING
+                -fdebug-compilation-dir='../..'
+                -sNO_DISABLE_EXCEPTION_CATCHING
+        )
     endif()
     # create sub-folder in order to separate build files from cmake cache files
     set_target_properties(scsynth PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY ${WASM_DIST_DIR}/scsynth
     )
     set(WASM_ASSET_DIR ${CMAKE_SOURCE_DIR}/platform/wasm)
-    set(SCSYNTH_WEB_FILES
-            ${WASM_ASSET_DIR}/scsynth/index.html
-            ${WASM_ASSET_DIR}/LICENSE
-            ${WASM_ASSET_DIR}/dev_server.py
-            ${WASM_ASSET_DIR}/scsynth/init.js
-            ${CMAKE_SOURCE_DIR}/README_WASM.md
-            ${WASM_ASSET_DIR}/scsynth/index.html
-            ${WASM_ASSET_DIR}/dev_server.py
-            ${WASM_ASSET_DIR}/scsynth/init.js
+    set(scsynth_web_files
+            "${WASM_ASSET_DIR}/scsynth/index.html"
+            "${WASM_ASSET_DIR}/LICENSE"
+            "${WASM_ASSET_DIR}/dev_server.py"
+            "${WASM_ASSET_DIR}/scsynth/init.js"
+            "${CMAKE_SOURCE_DIR}/README_WASM.md"
+            "${WASM_ASSET_DIR}/scsynth/index.html"
+            "${WASM_ASSET_DIR}/dev_server.py"
+            "${WASM_ASSET_DIR}/scsynth/init.js"
     )
     add_custom_command(TARGET scsynth POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${SCSYNTH_WEB_FILES} $<TARGET_FILE_DIR:scsynth>
+            ${scsynth_web_files} $<TARGET_FILE_DIR:scsynth>
     )
 endif()
 
 if (PTHREADS_FOUND)
-    target_link_libraries(scsynth ${PTHREADS_LIBRARIES})
+    target_link_libraries(scsynth PRIVATE ${PTHREADS_LIBRARIES})
 endif()
 
 if(LTO)
@@ -393,7 +388,7 @@ if(APPLE)
     endif()
 elseif(WIN32)
     if(NOT MSVC)
-        target_link_libraries(scsynth "-municode")
+        target_link_libraries(scsynth PRIVATE -municode)
     endif(NOT MSVC)
     if(NOT CMAKE_GENERATOR MATCHES "Visual Studio")
         set_target_properties(scsynth libscsynth PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")

@@ -38,8 +38,10 @@ Primitives for String.
 #include "SC_Codecvt.hpp" // path_to_utf8_str
 #include "SC_TextUtils.hpp"
 #ifdef _WIN32
-#    include <direct.h>
-#    include "SC_Win32Utils.h"
+#    ifndef NOMINMAX
+#        define NOMINMAX
+#    endif
+#    include <windows.h>
 #else
 #    include <sys/param.h>
 #endif

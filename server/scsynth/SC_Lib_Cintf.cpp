@@ -29,42 +29,85 @@
 #include "SC_InterfaceTable.h"
 #include "SC_Filesystem.hpp"
 #include "ErrorMessage.hpp" // for apiVersionMismatch, apiVersionMissing
-#include <stdexcept>
 #include <iostream>
 
-#ifndef _MSC_VER
-#    include <dirent.h>
-#endif // _MSC_VER
-
-#ifdef _WIN32
-#    include <windows.h>
-#    include "SC_Win32Utils.h"
-#    include "SC_Codecvt.hpp"
+#ifdef STATIC_PLUGINS
+#    include "../plugins/SC_StaticPlugins.h"
 #else
-#    include <dlfcn.h>
-#    include <libgen.h>
-#    include <sys/param.h>
-#endif // _WIN32
+#    ifdef _WIN32
+#        ifndef NOMINMAX
+#            define NOMINMAX
+#        endif
+#        include <windows.h>
+#        include "SC_Codecvt.hpp"
+#    else
+#        include <dlfcn.h>
+#        include <sys/param.h>
+#    endif // _WIN32
 
-#include <filesystem>
-
-#ifdef __APPLE__
+#    ifdef __APPLE__
 extern "C" {
-#    include <mach-o/dyld.h>
-#    include <mach-o/getsect.h>
+#        include <mach-o/dyld.h>
+#        include <mach-o/getsect.h>
 }
 char gTempVal;
-#endif // __APPLE__
+#    endif // __APPLE__
+
+#endif // STATIC_PLUGINS
+
+#include <filesystem>
 
 namespace fs = std::filesystem;
 
 Malloc gMalloc;
-HashTable<SC_LibCmd, Malloc>* gCmdLib;
+HashTable<SC_LibCmd, Malloc>* gCmdLib = nullptr;
 HashTable<struct UnitDef, Malloc>* gUnitDefLib = nullptr;
 HashTable<struct BufGen, Malloc>* gBufGenLib = nullptr;
 HashTable<struct PlugInCmd, Malloc>* gPlugInCmds = nullptr;
 extern struct InterfaceTable gInterfaceTable;
+// numeric plugin commands. The SC_LibCmd entries are owned by gCmdLib.
 SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
+
+void initMiscCommands();
+void loadUGenPlugins(const char* ugensPluginPath);
+void unloadUGenPlugins();
+
+void deinitializeLibrary(bool unloadPlugins) {
+    if (unloadPlugins) {
+#ifdef STATIC_PLUGINS
+        unloadStaticPlugins();
+#else
+        unloadUGenPlugins();
+#endif
+        delete gCmdLib;
+        gCmdLib = nullptr;
+        delete gUnitDefLib;
+        gUnitDefLib = nullptr;
+        delete gBufGenLib;
+        gBufGenLib = nullptr;
+        delete gPlugInCmds;
+        gPlugInCmds = nullptr;
+    }
+}
+
+void initializeLibrary(const char* ugensPluginPath) {
+    gCmdLib = new HashTable<SC_LibCmd, Malloc>(&gMalloc, 64, true);
+    gUnitDefLib = new HashTable<UnitDef, Malloc>(&gMalloc, 512, true);
+    gBufGenLib = new HashTable<BufGen, Malloc>(&gMalloc, 512, true);
+    gPlugInCmds = new HashTable<PlugInCmd, Malloc>(&gMalloc, 64, true);
+
+    initMiscCommands();
+
+#ifdef STATIC_PLUGINS
+    loadStaticPlugins(&gInterfaceTable);
+#else
+    loadUGenPlugins(ugensPluginPath);
+#endif // STATIC_PLUGINS
+}
+
+/////////////////////////////// load/unload plugins /////////////////////////////
+
+#ifndef STATIC_PLUGINS
 
 // The generic .so extension has been deprecated in SC 3.15 so developers can ship shared libraries
 // along their plugins. We do the following to provide a smooth upgrade path:
@@ -75,18 +118,19 @@ SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
 // plugin binaries in the same directory as the core plugins. Since the latter already use the new extension,
 // any plugins that still use the old .so extension would be skipped silently.
 // NOTE: we should remove this workaround in the future!
-#ifdef __linux__
-#    define LINUX_PLUGIN_WORKAROUND
-#endif
+#    ifdef __linux__
+#        define LINUX_PLUGIN_WORKAROUND
+#    endif
 
-void initMiscCommands();
-#ifdef LINUX_PLUGIN_WORKAROUND
+#    ifdef LINUX_PLUGIN_WORKAROUND
 static bool PlugIn_LoadDir(const fs::path& dir, bool reportError, bool isTopLevel = true, bool foundScxFile = false);
-#else
+#    else
 static bool PlugIn_LoadDir(const fs::path& dir, bool reportError);
-#endif
+#    endif
+
 std::vector<void*> open_handles;
-#ifdef __APPLE__
+
+#    ifdef __APPLE__
 void read_section(const struct mach_header* mhp, unsigned long slide, const char* segname, const char* sectname) {
     u_int32_t size;
     char* sect = getsectdatafromheader(mhp, segname, sectname, &size);
@@ -101,52 +145,10 @@ void read_section(const struct mach_header* mhp, unsigned long slide, const char
         start++;
     }
 }
-#endif
+#    endif
 
-#ifdef STATIC_PLUGINS
-extern void IO_Load(InterfaceTable* table);
-extern void Osc_Load(InterfaceTable* table);
-extern void Delay_Load(InterfaceTable* table);
-extern void BinaryOp_Load(InterfaceTable* table);
-extern void Filter_Load(InterfaceTable* table);
-extern void Gendyn_Load(InterfaceTable* table);
-extern void LF_Load(InterfaceTable* table);
-extern void Noise_Load(InterfaceTable* table);
-extern void MulAdd_Load(InterfaceTable* table);
-extern void Grain_Load(InterfaceTable* table);
-extern void Pan_Load(InterfaceTable* table);
-extern void Reverb_Load(InterfaceTable* table);
-extern void Trigger_Load(InterfaceTable* table);
-extern void UnaryOp_Load(InterfaceTable* table);
-#    ifndef NO_LIBSNDFILE
-extern void DiskIO_Load(InterfaceTable* table);
-#    endif
-extern void Test_Load(InterfaceTable* table);
-extern void PhysicalModeling_Load(InterfaceTable* table);
-extern void Demand_Load(InterfaceTable* table);
-extern void DynNoise_Load(InterfaceTable* table);
-extern void FFT_UGens_Load(InterfaceTable* table);
-extern void iPhone_Load(InterfaceTable* table);
-
-#    ifndef NO_LIBSNDFILE
-extern void DiskIO_Unload();
-#    endif
-#    ifndef NO_X11
-extern void UIUGens_Unload();
-#    endif
-#endif // STATIC_PLUGINS
-
-void deinitialize_library() {
-#ifdef STATIC_PLUGINS
-#    ifndef NO_LIBSNDFILE
-    DiskIO_Unload();
-#    endif
-#    ifndef NO_X11
-    UIUGens_Unload();
-#    endif
-#endif // STATIC_PLUGINS
-
-#ifdef _WIN32
+void unloadUGenPlugins() {
+#    ifdef _WIN32
     for (void* ptrhinstance : open_handles) {
         HINSTANCE hinstance = (HINSTANCE)ptrhinstance;
         void* ptr = (void*)GetProcAddress(hinstance, "unload");
@@ -156,7 +158,7 @@ void deinitialize_library() {
         }
         FreeLibrary(hinstance);
     }
-#else
+#    else
     for (void* handle : open_handles) {
         void* ptr = dlsym(handle, "unload");
         if (ptr) {
@@ -165,62 +167,26 @@ void deinitialize_library() {
         }
         dlclose(handle);
     }
-#endif
+#    endif
     open_handles.clear();
 }
 
-void initialize_library(const char* uGensPluginPath) {
-    gCmdLib = new HashTable<SC_LibCmd, Malloc>(&gMalloc, 64, true);
-    gUnitDefLib = new HashTable<UnitDef, Malloc>(&gMalloc, 512, true);
-    gBufGenLib = new HashTable<BufGen, Malloc>(&gMalloc, 512, true);
-    gPlugInCmds = new HashTable<PlugInCmd, Malloc>(&gMalloc, 64, true);
-
-    initMiscCommands();
-
-#ifdef STATIC_PLUGINS
-    IO_Load(&gInterfaceTable);
-    Osc_Load(&gInterfaceTable);
-    Delay_Load(&gInterfaceTable);
-    BinaryOp_Load(&gInterfaceTable);
-    Filter_Load(&gInterfaceTable);
-    Gendyn_Load(&gInterfaceTable);
-    LF_Load(&gInterfaceTable);
-    Noise_Load(&gInterfaceTable);
-    MulAdd_Load(&gInterfaceTable);
-    Grain_Load(&gInterfaceTable);
-    Pan_Load(&gInterfaceTable);
-    Reverb_Load(&gInterfaceTable);
-    Trigger_Load(&gInterfaceTable);
-    UnaryOp_Load(&gInterfaceTable);
-#    ifndef NO_LIBSNDFILE
-    DiskIO_Load(&gInterfaceTable);
-#    endif
-    PhysicalModeling_Load(&gInterfaceTable);
-    Test_Load(&gInterfaceTable);
-    Demand_Load(&gInterfaceTable);
-    DynNoise_Load(&gInterfaceTable);
-#    if defined(SC_IPHONE) && !TARGET_IPHONE_SIMULATOR
-    iPhone_Load(&gInterfaceTable);
-#    endif
-    FFT_UGens_Load(&gInterfaceTable);
-    return;
-#endif // STATIC_PLUGINS
-
-    // If uGensPluginPath is supplied, it is exclusive.
-    if (uGensPluginPath) {
-        SC_StringParser sp(uGensPluginPath, SC_STRPARSE_PATHDELIMITER);
+void loadUGenPlugins(const char* ugensPluginPath) {
+    // If ugensPluginPath is supplied, it is exclusive.
+    if (ugensPluginPath) {
+        SC_StringParser sp(ugensPluginPath, SC_STRPARSE_PATHDELIMITER);
         while (!sp.AtEnd()) {
             PlugIn_LoadDir(const_cast<char*>(sp.NextToken()), true);
         }
     } else {
         using DirName = SC_Filesystem::DirName;
 
-#ifdef SC_PLUGIN_DIR
+#    ifdef SC_PLUGIN_DIR
         // load globally installed plugins
         if (fs::is_directory(SC_PLUGIN_DIR)) {
             PlugIn_LoadDir(SC_PLUGIN_DIR, true);
         }
-#endif // SC_PLUGIN_DIR
+#    endif // SC_PLUGIN_DIR
 
         // load default plugin directory
         const fs::path pluginDir = SC_Filesystem::instance().getDirectory(DirName::Resource) / SC_PLUGIN_DIR_NAME;
@@ -243,12 +209,12 @@ void initialize_library(const char* uGensPluginPath) {
             PlugIn_LoadDir(sp.NextToken(), true);
         }
     }
-#ifdef __APPLE__
+#    ifdef __APPLE__
     /* on darwin plugins are lazily loaded (dlopen uses mmap internally), which can produce audible
         glitches when UGens have to be paged-in. to work around this we preload all the plugins by
         iterating through their memory space. */
 
-#    ifndef __x86_64__
+#        ifndef __x86_64__
     /* seems to cause a stack corruption on llvm-gcc-4.2, sdk 10.5 on 10.6 */
 
     unsigned long images = _dyld_image_count();
@@ -282,9 +248,9 @@ void initialize_library(const char* uGensPluginPath) {
             read_section(hdr, slide, "__IMPORT", "__pointers");
         }
     }
-#    endif // __x86_64__
+#        endif // __x86_64__
 
-#endif // ifdef __APPLE__
+#    endif // ifdef __APPLE__
 }
 
 typedef int (*InfoFunction)();
@@ -316,7 +282,7 @@ bool checkServerVersion(void* f, const char* filename) {
 }
 
 static bool PlugIn_Load(const fs::path& filename) {
-#ifdef _WIN32
+#    ifdef _WIN32
     // This allows plugins to place DLL dependencies in the same directory.
     SetDllDirectoryW(filename.parent_path().c_str());
     HINSTANCE hinstance = LoadLibraryW(filename.c_str());
@@ -366,7 +332,7 @@ static bool PlugIn_Load(const fs::path& filename) {
     open_handles.push_back(hinstance);
     return true;
 
-#else // (ifndef _WIN32)
+#    else // (ifndef _WIN32)
     void* handle = dlopen(filename.c_str(), RTLD_NOW);
 
     if (!handle) {
@@ -399,16 +365,16 @@ static bool PlugIn_Load(const fs::path& filename) {
     open_handles.push_back(handle);
     return true;
 
-#endif // _WIN32
+#    endif // _WIN32
 }
 
-#ifndef LINUX_PLUGIN_WORKAROUND
+#    ifndef LINUX_PLUGIN_WORKAROUND
 static bool PlugIn_LoadDir(const fs::path& dir, bool reportError) {
-#else
+#    else
 // if 'foundScxFile' is true, it means that we have alredy found a .scx file in one of the parent
 // directories. In this case, we treat all .so files as shared libraries and ignore them.
 static bool PlugIn_LoadDir(const fs::path& dir, bool reportError, bool isTopLevel, bool foundScxFile) {
-#endif
+#    endif
     std::error_code ec;
     fs::directory_iterator iter(dir, fs::directory_options::follow_directory_symlink, ec);
     fs::directory_iterator end;
@@ -426,7 +392,7 @@ static bool PlugIn_LoadDir(const fs::path& dir, bool reportError, bool isTopLeve
         return true;
     }
 
-#ifndef LINUX_PLUGIN_WORKAROUND
+#    ifndef LINUX_PLUGIN_WORKAROUND
     while (iter != end) {
         const fs::path path = *iter;
 
@@ -446,7 +412,7 @@ static bool PlugIn_LoadDir(const fs::path& dir, bool reportError, bool isTopLeve
             return false;
         }
     }
-#else
+#    else
     // first only iterate over .scx files
     while (iter != end) {
         const fs::path path = *iter; // copy!
@@ -495,7 +461,9 @@ static bool PlugIn_LoadDir(const fs::path& dir, bool reportError, bool isTopLeve
             }
         }
     } catch (...) {}
-#endif
+#    endif
 
     return true;
 }
+
+#endif // ifndef STATIC_PLUGINS

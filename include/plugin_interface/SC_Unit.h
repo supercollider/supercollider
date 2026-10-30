@@ -18,7 +18,6 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-
 #pragma once
 
 #include "SC_Types.h"
@@ -62,16 +61,24 @@ typedef struct Unit Unit;
 
 enum { kUnitDef_CantAliasInputsToOutputs = 1 };
 
-#ifdef _WIN32
+// Only define IN and OUT macros if the header is consumed by a plugin
+// to avoid problems with Windows header includes.
+// If a plugin author needs Windows headers, they must include them
+// *before* all SC headers!
+#ifndef BUILDING_SCSYNTH
+
+#    ifdef _WIN32
 // Win32 headers (included by C std library headers) define IN and OUT macros
 // for their own purposes.
-#    undef IN
-#    undef OUT
-#endif
+#        undef IN
+#        undef OUT
+#    endif
 
 // These return float* pointers to input and output buffers.
-#define IN(index) (unit->mInBuf[index])
-#define OUT(index) (unit->mOutBuf[index])
+#    define IN(index) (unit->mInBuf[index])
+#    define OUT(index) (unit->mOutBuf[index])
+
+#endif // BUILDING_SCSYNTH
 
 // These return a float value. Used for control rate inputs and outputs.
 #define IN0(index) (IN(index)[0])

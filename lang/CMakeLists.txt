@@ -342,7 +342,7 @@ if (FFTW3F_FOUND)
 endif()
 
 if(WIN32)
-    target_link_libraries(libsclang wsock32 ws2_32 portmidi iphlpapi)
+    target_link_libraries(libsclang ws2_32 mswsock portmidi iphlpapi)
     target_compile_definitions(libsclang PRIVATE HAVE_PORTMIDI)
 endif()
 

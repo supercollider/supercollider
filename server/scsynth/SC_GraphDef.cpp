@@ -18,11 +18,6 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-
-#ifdef _WIN32
-#    include "SC_Win32Utils.h"
-#endif
-
 #include "clz.h"
 #include "SC_Graph.h"
 #include "SC_GraphDef.h"

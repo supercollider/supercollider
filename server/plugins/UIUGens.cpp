@@ -26,10 +26,8 @@
 #ifndef _WIN32
 #    include <X11/Intrinsic.h>
 #else
-#    include "SC_Win32Utils.h"
 #    include <windows.h>
 #endif
-
 
 #include "SC_PlugIn.h"
 
@@ -275,8 +273,10 @@ PluginLoad(UIUGens) {
 
 
 PluginUnload(UIUGens) {
-    inputThreadRunning = false;
-    uiListenThread.join();
+    inputThreadRunning.store(false);
+
+    if (uiListenThread.joinable())
+        uiListenThread.join();
 
 #ifndef _WIN32
     if (d)

@@ -106,12 +106,12 @@ struct World;
 
 SCSYNTH_DLLEXPORT_C void SetPrintFunc(PrintFunc func);
 SCSYNTH_DLLEXPORT_C World* World_New(WorldOptions* inOptions);
-SCSYNTH_DLLEXPORT_C void World_Cleanup(World* inWorld, bool unload_plugins = false);
+SCSYNTH_DLLEXPORT_C void World_Cleanup(World* inWorld, bool unloadPlugins = false);
 SCSYNTH_DLLEXPORT_C void World_NonRealTimeSynthesis(World* inWorld, struct WorldOptions* inOptions);
 SCSYNTH_DLLEXPORT_C int World_OpenUDP(World* inWorld, const char* bindTo, int inPort);
 SCSYNTH_DLLEXPORT_C int World_OpenTCP(World* inWorld, const char* bindTo, int inPort, int inMaxConnections,
                                       int inBacklog);
-SCSYNTH_DLLEXPORT_C void World_WaitForQuit(World* inWorld, bool unload_plugins = false);
+SCSYNTH_DLLEXPORT_C void World_WaitForQuit(World* inWorld, bool unloadPlugins = false);
 SCSYNTH_DLLEXPORT_C bool World_SendPacket(World* inWorld, int inSize, char* inData, ReplyFunc inFunc);
 SCSYNTH_DLLEXPORT_C bool World_SendPacketWithContext(World* inWorld, int inSize, char* inData, ReplyFunc inFunc,
                                                      void* inContext);

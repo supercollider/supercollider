@@ -914,14 +914,63 @@ Removes a trailing path separator if one is present.
 
 method::basename
 Return the filename from a filesystem path.
+
+The behavior matches that of POSIX' code::basename:::
+list::
+## Trailing slashes are ignored (except for the root)
+## "/" is returned as is.
+## An empty path returns "."
+::
 code::
-"Imaginary/Directory/fish.rtf".basename;
+"Imaginary/Directory/fish.rtf".basename; // -> fish.rft
+"Imaginary/Directory/SubDirectory".basename; // -> SubDirectory
+// trailing slashes are ignored:
+"Imaginary/Directory/SubDirectory/".basename; // -> SubDirectory
+// special cases:
+"/".basename; // -> /
+"".basename; // -> .
+::
+Windows:
+code::
+// both forward and backward slashes are supported
+"Imaginary/Directory\\fish.rtf".basename; // -> fish.rft
+// a drive without filename:
+"C:/".basename; // -> .
+// this is actually a UNC path (without a filename):
+"//Imaginary".basename; // -> .
 ::
 
 method::dirname
 Return the directory name from a filesystem path.
+
+The behavior matches that of POSIX' code::dirname:::
+list::
+## Trailing slashes are ignored.
+## "/" is returned as is.
+## An empty directory returns "."
+::
 code::
-"Imaginary/Directory/fish.rtf".dirname;
+"Imaginary/Directory/fish.rtf".dirname; // -> Imaginary/Directory
+"Imaginary/Directory/SubDirectory".dirname; // -> Imaginary/Directory
+// trailing slashes are ignored:
+"Imaginary/Directory/SubDirectory/".dirname; // -> Imaginary/Directory
+// empty directory:
+"fish.rtf".dirname; // -> .
+// special cases:
+"/".dirname; // -> /
+"".dirname; // -> .
+::
+Windows:
+code::
+// both forward and backward slashes are supported and preserved
+"Imaginary/Directory\\SubDirectory/fish.rtf".dirname; // -> Imaginary/Directory\SubDirectory
+// a drive path (without further components) is returned with a single slash
+"C:/fish.rft".dirname; // -> C:/
+"C:\\///fish.rft".dirname; // -> C:\
+// a drive without filename:
+"C:/".dirname; // -> C:/
+// this is actually a UNC path (without a filename):
+"//Imaginary".dirname; // -> //Imaginary
 ::
 
 method::splitext

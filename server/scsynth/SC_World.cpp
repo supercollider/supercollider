@@ -18,10 +18,6 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifdef _WIN32
-#    include "SC_Win32Utils.h"
-#endif
-
 #ifdef __APPLE__
 #    include "../../common/SC_Apple.hpp"
 #endif
@@ -262,7 +258,6 @@ void InterfaceTable_Init() {
     ft->fReleaseScopeBuffer = &releaseScopeBuffer;
 }
 
-void initialize_library(const char* mUGensPluginPath);
 void initializeScheduler();
 
 static void World_LoadGraphDefs(World* world);
@@ -326,7 +321,7 @@ World* World_New(WorldOptions* inOptions) {
         static bool gLibInitted = false;
         if (!gLibInitted) {
             InterfaceTable_Init();
-            initialize_library(inOptions->mUGensPluginPath);
+            initializeLibrary(inOptions->mUGensPluginPath);
             initializeScheduler();
             gLibInitted = true;
         }
@@ -803,10 +798,10 @@ void World_NonRealTimeSynthesis(World* world, WorldOptions* inOptions) {
 }
 #endif // !NO_LIBSNDFILE
 
-void World_WaitForQuit(World* inWorld, bool unload_plugins) {
+void World_WaitForQuit(World* inWorld, bool unloadPlugins) {
     try {
         inWorld->hw->mQuitProgram->wait();
-        World_Cleanup(inWorld, unload_plugins);
+        World_Cleanup(inWorld, unloadPlugins);
     } catch (std::exception& exc) { scprintf("Exception in World_WaitForQuit: %s\n", exc.what()); } catch (...) {
     }
 }
@@ -989,7 +984,7 @@ void World_Start(World* inWorld) {
     inWorld->mRunning = true;
 }
 
-void World_Cleanup(World* world, bool unload_plugins) {
+void World_Cleanup(World* world, bool unloadPlugins) {
     if (!world)
         return;
 
@@ -1010,8 +1005,7 @@ void World_Cleanup(World* world, bool unload_plugins) {
 
     // NOTE: only unload plugins after all Nodes have been destroyed,
     // but before the World is cleaned up!
-    if (unload_plugins)
-        deinitialize_library();
+    deinitializeLibrary(unloadPlugins);
 
     reinterpret_cast<SC_Lock*>(world->mDriverLock)->lock();
     if (hw) {

@@ -19,16 +19,34 @@
 /* \todo for now we use dlopen, later we want to become cross-platform
  */
 
-#ifdef DLOPEN
-#    include <dlfcn.h>
-#elif defined(_WIN32)
-#    include "SC_Win32Utils.h"
-#    include "SC_Codecvt.hpp"
+#ifdef STATIC_PLUGINS
+#    include "../../plugins/SC_StaticPlugins.h"
+#else
+#    ifdef DLOPEN
+#        include <dlfcn.h>
+#    elif defined(_WIN32)
+#        ifndef NOMINMAX
+#            define NOMINMAX
+#        endif
+#        include <windows.h>
+#        include "SC_Codecvt.hpp"
+#    endif
+#endif // STATIC_PLUGINS
+
+#include "SC_Filesystem.hpp"
+#ifdef _WIN32
+const char pathSeparator[] = ";";
+#else
+const char pathSeparator[] = ":";
 #endif
 
+using DirName = SC_Filesystem::DirName;
+
 #include <filesystem>
+#include <boost/algorithm/string.hpp>
 
 #include "sc_ugen_factory.hpp"
+#include "../server/server_args.hpp"
 
 #include "SC_World.h"
 #include "SC_Wire.h"
@@ -215,10 +233,57 @@ bool sc_plugin_container::run_cmd_plugin(World* world, const char* name, sc_msg_
     return true;
 }
 
-void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir) {
-#ifdef LINUX_PLUGIN_WORKAROUND
-    load_plugin_folder(dir, true, false);
+#ifdef STATIC_PLUGINS
+
+sc_ugen_factory::~sc_ugen_factory() { unloadStaticPlugins(); }
+
+void sc_ugen_factory::load_plugins(server_arguments const& args) {
+    loadStaticPlugins(&sc_interface);
+
+#    ifndef NDEBUG
+    std::cout << "Unit Generators initialized" << std::endl;
+#    endif
+}
+
 #else
+
+sc_ugen_factory::~sc_ugen_factory() { close_handles(); }
+
+void sc_ugen_factory::load_plugins(server_arguments const& args) {
+    if (!args.ugen_paths.empty()) {
+        for (auto const& path1 : args.ugen_paths) {
+            std::vector<std::string> directories;
+            boost::split(directories, path1, boost::is_any_of(pathSeparator));
+            for (auto const& path : directories) {
+                load_plugin_folder(path);
+            }
+        }
+    } else {
+#    ifdef SC_PLUGIN_DIR
+        load_plugin_folder(SC_PLUGIN_DIR);
+#    endif
+        load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::Resource) / SC_PLUGIN_DIR_NAME);
+        load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::SystemExtension));
+        load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::UserExtension));
+        const char* env_plugin_path = getenv("SC_PLUGIN_PATH");
+        if (env_plugin_path) {
+            std::vector<std::string> directories;
+            boost::split(directories, env_plugin_path, boost::is_any_of(pathSeparator));
+            for (auto const& path : directories) {
+                load_plugin_folder(path);
+            }
+        }
+    }
+
+#    ifndef NDEBUG
+    std::cout << "Unit Generators initialized" << std::endl;
+#    endif
+}
+
+void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir) {
+#    ifdef LINUX_PLUGIN_WORKAROUND
+    load_plugin_folder(dir, true, false);
+#    else
     namespace fs = std::filesystem;
 
     fs::directory_iterator end;
@@ -241,10 +306,10 @@ void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir) {
             load_plugin_folder(entry.path());
         }
     }
-#endif
+#    endif
 }
 
-#ifdef LINUX_PLUGIN_WORKAROUND
+#    ifdef LINUX_PLUGIN_WORKAROUND
 // if 'found_scx_file' is true, it means that we have alredy found a .scx file in one of the parent
 // directories. In this case, we treat all .so files as shared libraries and ignore them.
 void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir, bool is_top_level, bool found_scx_file) {
@@ -292,7 +357,7 @@ void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir, bool 
         }
     }
 }
-#endif // LINUX_PLUGIN_WORKAROUND
+#    endif // LINUX_PLUGIN_WORKAROUND
 
 static bool check_api_version(int (*api_version)(), std::string const& filename) {
     using namespace scsynth;
@@ -310,7 +375,7 @@ static bool check_api_version(int (*api_version)(), std::string const& filename)
     return false;
 }
 
-#ifdef DLOPEN
+#    ifdef DLOPEN
 void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
     void* handle = dlopen(path.string().c_str(), RTLD_NOW | RTLD_LOCAL);
     if (handle == nullptr)
@@ -358,7 +423,7 @@ void sc_ugen_factory::close_handles() {
     }
 }
 
-#elif defined(_WIN32)
+#    elif defined(_WIN32)
 
 void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
     // This allows plugins to place DLL dependencies in the same directory.
@@ -429,8 +494,10 @@ void sc_ugen_factory::close_handles() {
         FreeLibrary(hinstance);
     }
 }
-#else
+#    else
+#        error "platform does not support dynamic plugin loading"
+#    endif
 
-#endif
+#endif // STATIC_PLUGINS
 
 } /* namespace nova */

@@ -18,8 +18,6 @@
 
 #include <cstdio>
 
-#include "SC_Win32Utils.h"
-
 #include <boost/align/align_up.hpp>
 
 #include "sc_msg_iter.h"

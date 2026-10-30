@@ -158,7 +158,7 @@ struct DiskIOThread {
     DiskIOThread(): mRunning(false) {}
 
     ~DiskIOThread() {
-        if (mRunning) {
+        if (mRunning.load()) {
             mRunning.store(false);
             mDiskFifoHasData.Signal();
             mThread.join();
