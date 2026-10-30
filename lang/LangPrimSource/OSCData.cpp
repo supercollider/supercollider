@@ -1234,7 +1234,7 @@ int prBootInProcessServer(VMGlobals* g, int numArgsPushed) {
         PyrObject* optionsObj = slotRawObject(a);
         PyrSlot* optionsSlots = optionsObj->slots;
 
-        static char mInputStreamsEnabled[512], mOutputStreamsEnabled[512], mDeviceName[512];
+        static char inputStreamsEnabled[512], outputStreamsEnabled[512], deviceName[512];
         int err;
 
         err = slotIntVal(optionsSlots + 0, (int*)&options.mNumAudioBusChannels);
@@ -1296,24 +1296,24 @@ int prBootInProcessServer(VMGlobals* g, int numArgsPushed) {
         options.mLoadGraphDefs = IsTrue(optionsSlots + 14) ? 1 : 0;
 
 #    ifdef __APPLE__
-        err = slotStrVal(optionsSlots + 15, mInputStreamsEnabled, 512);
+        err = slotStrVal(optionsSlots + 15, inputStreamsEnabled, 512);
         if (err)
             options.mInputStreamsEnabled = NULL;
         else
-            options.mInputStreamsEnabled = mInputStreamsEnabled;
+            options.mInputStreamsEnabled = inputStreamsEnabled;
 
-        err = slotStrVal(optionsSlots + 16, mOutputStreamsEnabled, 512);
+        err = slotStrVal(optionsSlots + 16, outputStreamsEnabled, 512);
         if (err)
             options.mOutputStreamsEnabled = NULL;
         else
-            options.mOutputStreamsEnabled = mOutputStreamsEnabled;
+            options.mOutputStreamsEnabled = outputStreamsEnabled;
 #    endif
 
-        err = slotStrVal(optionsSlots + 17, mDeviceName, 512);
+        err = slotStrVal(optionsSlots + 17, deviceName, 512);
         if (err)
             options.mInDeviceName = options.mOutDeviceName = nullptr;
         else
-            options.mInDeviceName = options.mOutDeviceName = mDeviceName;
+            options.mInDeviceName = options.mOutDeviceName = deviceName;
 
         options.mNumSharedControls = gInternalSynthServer.mNumSharedControls;
         options.mSharedControls = gInternalSynthServer.mSharedControls;

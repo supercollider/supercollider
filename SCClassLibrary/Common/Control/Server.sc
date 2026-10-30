@@ -101,7 +101,6 @@ ServerOptions {
 		o = o ++ " -l " ++ maxLogins.asInteger;
 		o = o ++ if (loadDefs) { " -D 1" } { " -D 0" };
 		o = o ++ if (zeroConf) { " -R 1" } { " -R 0" };
-		o = o ++ if (useSystemClock) { " -C 1" } { " -C 0" };
 
 		// No way to explicitly specify false.
 		if (memoryLocking) { o = o ++ " -L" };
@@ -113,12 +112,15 @@ ServerOptions {
 
 		if (inDevice == outDevice) {
 			if (inDevice.notNil) {
+				// same device for input and output
 				o = o ++ " -H %".format(inDevice.quote)
 			} {
 				// default value impossible to specify
 			}
 		} {
-			o = o ++ " -H % %".format((inDevice ? "").asString.quote, (outDevice ? "").asString.quote)
+			// different input and output devices
+			if (inDevice.notNil) { o = o ++ " --indevice " ++ inDevice.quote };
+			if (outDevice.notNil) { o = o ++ " --outdevice " ++ outDevice.quote };
 		};
 
 		if (ugenPluginsPath.notNil) {
@@ -131,6 +133,7 @@ ServerOptions {
 		};
 
 		if (Server.program.asString.contains("supernova")) {
+			o = o ++ if (useSystemClock) { " -C 1" } { " -C 0" };
 			if (threads.notNil) { o = o ++ " -T " ++ threads.asInteger };
 			if (threadPinning.notNil) { o = o ++ " -y " ++ threadPinning.asBoolean.asInteger };
 		};

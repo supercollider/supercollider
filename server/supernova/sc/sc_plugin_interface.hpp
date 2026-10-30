@@ -28,6 +28,8 @@
 #include "SC_InterfaceTable.h"
 #include "SC_World.h"
 
+class ServerProgramOptions;
+
 namespace nova {
 
 void initialize_rate(Rate& rate, double sample_rate, int blocksize);
@@ -81,7 +83,9 @@ private:
 
 class sc_plugin_interface : public sc_done_action_handler {
 public:
-    void initialize(class server_arguments const& args, float* control_busses);
+    void initialize(ServerProgramOptions const& args, float* control_busses);
+
+    /** called by the audio backend once it knows the actual sample rate. */
     void reset_sampling_rate(int sr);
 
     sc_plugin_interface() = default;

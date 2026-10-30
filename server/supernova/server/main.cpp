@@ -28,10 +28,9 @@
 #include <boost/algorithm/string.hpp>
 
 #include "server.hpp"
-#include "server_args.hpp"
 
-#include "SC_Version.hpp"
 #include "SC_EventLoop.hpp"
+#include "SC_ServerProgramOptions.hpp"
 
 #include "../sc/sc_ugen_factory.hpp"
 #include "../sc/sc_synth_definition.hpp"
@@ -114,16 +113,18 @@ void connect_jack_ports() {
     }
 }
 
-void get_jack_names(server_arguments const& args, std::string& server_name, std::string& client_name) {
+void get_jack_names(ServerProgramOptions const& args, std::string& server_name, std::string& client_name) {
     client_name = "supernova";
 
-    if (!args.hw_name.empty() && !args.hw_name[0].empty()) {
+    if (auto devname = args.mInDeviceName; devname && devname[0] != '\0') {
         std::vector<std::string> names;
-        boost::split(names, args.hw_name[0], boost::algorithm::is_any_of(":"));
+        boost::split(names, devname, boost::algorithm::is_any_of(":"));
 
         if (names.size() == 1) {
+            // <server>
             server_name = names[0];
         } else if (names.size() == 2) {
+            // <server:client>
             server_name = names[0];
             client_name = names[1];
         } else {
@@ -132,23 +133,23 @@ void get_jack_names(server_arguments const& args, std::string& server_name, std:
     }
 }
 
-void start_audio_backend(server_arguments const& args) {
+void start_audio_backend(ServerProgramOptions const& args) {
     std::string server_name, client_name;
     get_jack_names(args, server_name, client_name);
 
-    instance->open_client(server_name, client_name, args.input_channels, args.output_channels, args.blocksize);
+    instance->open_client(server_name, client_name, args.mNumInputBusChannels, args.mNumOutputBusChannels,
+                          args.mBufLength);
     instance->prepare_backend();
     instance->activate_audio();
 
     unsigned int real_sampling_rate = instance->get_samplerate();
 
-    if (args.samplerate != real_sampling_rate) {
-        if (args.samplerate) {
-            std::cout << "Samplerate mismatch between command line argument and jack" << std::endl;
-            std::cout << "Forcing samplerate of " << real_sampling_rate << "Hz" << std::endl;
+    if (args.mPreferredSampleRate != real_sampling_rate) {
+        if (args.mPreferredSampleRate) {
+            std::cout << "Samplerate mismatch between command line argument and jack." << std::endl;
+            std::cout << "Forcing samplerate of " << real_sampling_rate << "Hz." << std::endl;
         }
 
-        server_arguments::set_samplerate((uint32_t)real_sampling_rate);
         sc_factory->reset_sampling_rate(real_sampling_rate);
     }
 
@@ -157,18 +158,25 @@ void start_audio_backend(server_arguments const& args) {
 
 #elif defined(PORTAUDIO_BACKEND)
 
-void start_audio_backend(server_arguments const& args) {
-    int input_channels = args.input_channels;
-    int output_channels = args.output_channels;
+void start_audio_backend(ServerProgramOptions const& args) {
+    int input_channels = args.mNumInputBusChannels;
+    int output_channels = args.mNumOutputBusChannels;
 
     std::string input_device, output_device;
     // if input_device/output_device are empty, default audio device will be chosen
-    if (!args.hw_name.empty()) {
-        if (args.hw_name.size() == 1) {
-            input_device = output_device = args.hw_name[0];
-        } else {
-            input_device = args.hw_name[0];
-            output_device = args.hw_name[1];
+    if (args.mInDeviceName || args.mOutDeviceName) {
+        if (args.mInDeviceName)
+            input_device = args.mInDeviceName;
+        if (args.mOutDeviceName)
+            output_device = args.mOutDeviceName;
+
+        if (!args.mInDeviceName) {
+            assert(!output_device.empty());
+            input_device = output_device;
+        }
+        if (!args.mOutDeviceName) {
+            assert(!input_device.empty());
+            output_device = input_device;
         }
     }
 
@@ -182,22 +190,23 @@ void start_audio_backend(server_arguments const& args) {
         std::cout << "  In: " << (input_device.empty() ? "(default)" : input_device) << std::endl;
     if (output_channels)
         std::cout << "  Out: " << (output_device.empty() ? "(default)" : output_device) << std::endl;
-#    ifdef __APPLE__
-    bool success = instance->open_stream(input_device, input_channels, output_device, output_channels, args.samplerate,
-                                         args.blocksize, args.hardware_buffer_size, args.safety_clip_threshold);
-#    else
-    bool success = instance->open_stream(input_device, input_channels, output_device, output_channels, args.samplerate,
-                                         args.blocksize, args.hardware_buffer_size, 0);
-#    endif
+    bool success =
+        instance->open_stream(input_device, input_channels, output_device, output_channels, args.mPreferredSampleRate,
+                              args.mBufLength, args.mPreferredHardwareBufferFrameSize, args.mSafetyClipThreshold);
     if (!success) {
         std::cout << "*** ERROR: could not open audio devices." << std::endl;
         exit(1);
     }
 
+    // get real sample rate from audio backend
     unsigned int real_sampling_rate = instance->get_samplerate();
 
-    if (args.samplerate != real_sampling_rate) {
-        server_arguments::set_samplerate((uint32_t)real_sampling_rate);
+    if (args.mPreferredSampleRate != real_sampling_rate) {
+        if (args.mPreferredSampleRate) {
+            std::cout << "Samplerate mismatch between command line argument and audio device." << std::endl;
+            std::cout << "Forcing samplerate of " << real_sampling_rate << "Hz." << std::endl;
+        }
+
         sc_factory->reset_sampling_rate(real_sampling_rate);
     }
 
@@ -211,7 +220,7 @@ void start_audio_backend(server_arguments const& args) {
 
 #else
 
-void start_audio_backend(server_arguments const& args) {}
+void start_audio_backend(ServerProgramOptions const& args) {}
 
 #endif
 
@@ -222,12 +231,12 @@ void load_synthdef_folder(nova_server& server, fs::path const& folder, bool verb
     register_synthdefs(server, sc_read_synthdefs_dir(folder));
 }
 
-void load_synthdefs(nova_server& server, server_arguments const& args) {
+void load_synthdefs(nova_server& server, ServerProgramOptions const& args) {
 #ifndef NDEBUG
     auto start_time = std::chrono::high_resolution_clock::now();
 #endif
 
-    if (args.load_synthdefs) {
+    if (args.mLoadGraphDefs) {
         const char* env_synthdef_path = getenv("SC_SYNTHDEF_PATH");
         std::vector<fs::path> directories;
         if (env_synthdef_path) {
@@ -238,7 +247,7 @@ void load_synthdefs(nova_server& server, server_arguments const& args) {
         }
 
         for (auto const& directory : directories)
-            load_synthdef_folder(server, directory, args.verbosity > 0);
+            load_synthdef_folder(server, directory, args.mVerbosity > 0);
     }
 #ifndef NDEBUG
     auto end_time = std::chrono::high_resolution_clock::now();
@@ -266,9 +275,9 @@ void enable_core_dumps() {
 #endif
 }
 
-void lock_memory(server_arguments const& args) {
+void lock_memory(ServerProgramOptions const& args) {
 #if (_POSIX_MEMLOCK - 0) >= 200112L
-    if (args.memory_locking) {
+    if (args.mMemoryLocking) {
         bool lock_memory = false;
 
         rlimit limit;
@@ -297,15 +306,19 @@ int supernova_main(int argc, char* argv[]) {
     drop_rt_scheduling(); // when being called from sclang, we inherit a low rt-scheduling priority.
                           // but we don't want it!
     enable_core_dumps();
-    parse_hardware_topology();
 
-    server_arguments::initialize(argc, argv);
-    server_arguments const& args = server_arguments::instance();
+    ServerProgramOptions args;
 
-    if (args.dump_version) {
-        std::cout << "supernova " << SC_VersionString() << " (" << SC_BuildString() << ")" << std::endl;
-        return 0;
+    try {
+        if (!args.parse(argc, argv))
+            return 0;
+    } catch (std::runtime_error const& e) {
+        std::cout << "Error parsing command line arguments:" << std::endl << e.what() << std::endl << std::endl;
+        std::cout << "Use the -h/--help option for help." << std::endl;
+        return EXIT_FAILURE;
     }
+
+    parse_hardware_topology();
 
     EventLoop::setup();
 #ifdef __APPLE__
@@ -317,7 +330,7 @@ int supernova_main(int argc, char* argv[]) {
     SC::Apple::disableAppNap();
 #endif
 
-    rt_pool.init(args.rt_pool_size * 1024, args.memory_locking);
+    rt_pool.init(args.mRealTimeMemorySize * 1024, args.mMemoryLocking);
     lock_memory(args);
 
     std::cout << "Supernova booting" << std::endl;
@@ -330,7 +343,8 @@ int supernova_main(int argc, char* argv[]) {
 
     // FIXME should have more granular error handling
     try {
-        server_shared_memory_creator::cleanup(args.port());
+        server_shared_memory_creator::cleanup(args.mSharedMemoryID);
+
         nova_server server(args);
         register_signal_handler();
 
@@ -338,7 +352,7 @@ int supernova_main(int argc, char* argv[]) {
 
         load_synthdefs(server, args);
 
-        if (!args.non_rt) {
+        if (args.mRealTime) {
             try {
                 start_audio_backend(args);
                 // Server is ready!
@@ -346,7 +360,7 @@ int supernova_main(int argc, char* argv[]) {
                 std::cout << "Supernova ready" << std::endl;
             } catch (std::exception const& e) {
                 std::cout << "\n*** ERROR: could not start audio backend: " << e.what() << std::endl;
-                exit(1);
+                exit(EXIT_FAILURE);
             }
             EventLoop::run([&server]() { server.run(); });
         } else {
@@ -356,15 +370,15 @@ int supernova_main(int argc, char* argv[]) {
                 server.run_nonrt_synthesis(args);
             } catch (std::exception const& e) {
                 std::cout << "Non-rt synthesis failed: " << e.what() << std::endl;
-                exit(1);
+                exit(EXIT_FAILURE);
             }
         }
     } catch (std::exception const& exc) {
         std::cout << "\n*** ERROR: in main(): " << exc.what() << std::endl;
-        exit(1);
+        exit(EXIT_FAILURE);
     } catch (...) {
         std::cout << "\n*** ERROR: unknown error in main()" << std::endl;
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     return 0;
