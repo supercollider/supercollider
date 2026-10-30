@@ -51,6 +51,7 @@ enum {
     kSCErr_UnsupportedSampleFormat,
 
     kSCErr_BufGenNotFound,
+    kSCErr_CommandQueueFull,
 
     kSCErr_NumErrors
 };

@@ -83,13 +83,7 @@ static void Graph_Dtor(Graph* inGraph) {
     world->mNumUnits -= numUnits;
     world->mNumGraphs--;
 
-    GraphDef* def = GRAPHDEF(inGraph);
-    if (--def->mRefCount <= 0) {
-        if (world->mRealTime)
-            GraphDef_DeleteMsg(world, def);
-        else
-            GraphDef_Free(def);
-    }
+    GraphDef_Release(world, GRAPHDEF(inGraph));
 
     Node_Dtor(&inGraph->mNode);
     // scprintf("<-Graph_Dtor\n");

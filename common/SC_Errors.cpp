@@ -100,6 +100,10 @@ void SC_ErrorString(SCErr err, char returnString[]) {
         sprintf(returnString, "buf gen routine not found");
         break;
 
+    case kSCErr_CommandQueueFull:
+        sprintf(returnString, "command queue full");
+        break;
+
     default:
         sprintf(returnString, "unknown error");
     }

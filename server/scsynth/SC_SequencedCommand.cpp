@@ -28,18 +28,22 @@
 #include "scsynthsend.h"
 #include "SC_Prototypes.h"
 #include "SC_HiddenWorld.h"
-#include "SC_Filesystem.hpp"
-#include "SC_StringParser.h"
-#include "../../common/SC_SndFileHelpers.hpp"
+#include "SC_Codecvt.hpp"
+#include "SC_SndFileHelpers.hpp"
+#include "sc_msg_iter.h"
 #include "SC_WorldOptions.h"
 
+#include <cstring>
 #include <filesystem>
 
-const size_t ERR_BUF_SIZE(512);
+namespace fs = std::filesystem;
+
+constexpr size_t ERR_BUF_SIZE = 512;
 
 #define ReturnSCErrIfNil(ptr)                                                                                          \
     if (!ptr)                                                                                                          \
     return kSCErr_OutOfRealTimeMemory
+
 #define ThrowIfNil(ptr)                                                                                                \
     if (!ptr)                                                                                                          \
         throw std::runtime_error(                                                                                      \
@@ -55,8 +59,6 @@ const size_t ERR_BUF_SIZE(512);
         msg.geti(0);                                                                                                   \
     }
 
-void PerformCompletionMsg(World* inWorld, OSC_Packet* inPacket);
-
 #define SEND_COMPLETION_MSG                                                                                            \
     if (mMsgSize) {                                                                                                    \
         OSC_Packet packet;                                                                                             \
@@ -71,7 +73,6 @@ void PerformCompletionMsg(World* inWorld, OSC_Packet* inPacket);
         }                                                                                                              \
     }
 
-void SndBuf_Init(SndBuf* buf);
 void SndBuf_Init(SndBuf* buf) {
     buf->data = nullptr;
     buf->channels = 0;
@@ -83,55 +84,48 @@ void SndBuf_Init(SndBuf* buf) {
     buf->sndfile = nullptr;
 }
 
-char* allocAndRestrictPath(World* mWorld, const char* inPath, const char* restrictBase);
-char* allocAndRestrictPath(World* mWorld, const char* inPath, const char* restrictBase) {
-    char strbuf[PATH_MAX];
-    int offset = 0;
-    int remain = PATH_MAX;
+/** @brief converts a path name to a std::filesystem::path,
+ *  optionally restricting it to the given base directory.
+ *  @param pathName The file path as a UTF-8 encoded C-string
+ *  @param restrictBase (optional) base directory as UTF-8 encoded C-string
+ *  @return a std::filesystem::path
+ *  @throw std::runtime_error if the path is not inside the given base directory.
+ */
+fs::path createRestrictedPathFromCStr(const char* pathName, const char* restrictBase = nullptr) {
+    assert(pathName != nullptr);
+    auto path = SC_Codecvt::utf8_str_to_path(pathName);
 
-    // Ensure begins with the base
-    if (strncmp(inPath, restrictBase, strlen(restrictBase)) != 0) {
-        strcpy(strbuf, restrictBase);
-        offset = strlen(restrictBase);
-        remain -= offset;
-        if (inPath[0] != '/' && strbuf[strlen(strbuf) - 1] != '/') {
-            strbuf[offset] = '/';
-            ++offset;
-            --remain;
-        }
+    if (restrictBase != nullptr) {
+        auto base = SC_Codecvt::utf8_str_to_path(restrictBase);
+        auto relPath = fs::relative(path, base);
+        if (!relPath.empty() && *relPath.begin() == "..")
+            throw std::runtime_error(path.u8string() + " is outside of " + base.u8string() + "\n");
     }
 
-    // Now copy string, but discard any ".." (which could be benign, but easy to abuse)
-    SC_StringParser sp(inPath, '/');
-    size_t tokenlen;
-    while (!sp.AtEnd()) {
-        const char* token = const_cast<char*>(sp.NextToken());
-        tokenlen = strlen(token);
-        // now add the new token, then a slash, as long as token is neither dodgy nor overflows
-        if (strcmp(token, "..") != 0 && remain > tokenlen) {
-            strcpy(strbuf + offset, token);
-            offset += tokenlen;
-            remain -= tokenlen;
-            if (!sp.AtEnd()) {
-                strbuf[offset] = '/';
-                ++offset;
-                --remain;
-            }
-        }
-    }
-
-    // Now we can make a long-term home for the string and return it
-    char* saferPath = (char*)World_Alloc(mWorld, strlen(strbuf) + 1);
-    ThrowIfNil(saferPath);
-    strcpy(saferPath, strbuf);
-    return saferPath;
+    return path;
 }
 
-SC_SequencedCommand::SC_SequencedCommand(World* inWorld, ReplyAddress* inReplyAddress):
-    mNextStage(1),
-    mWorld(inWorld),
-    mMsgSize(0),
-    mMsgData(nullptr) {
+#ifndef NO_LIBSNDFILE
+
+/** @brief try to open a sound file from an (optionally restricted) path.
+ *  @throw std::runtime_error if the sound file could not be opened.
+ */
+SNDFILE* tryOpenSndfile(const char* pathName, int mode, SF_INFO* sfinfo, const char* restrictBase = nullptr) {
+    auto path = createRestrictedPathFromCStr(pathName, restrictBase);
+    SNDFILE* sf = sndfileOpenFromPath(path, mode, sfinfo);
+    if (!sf) {
+        char str[ERR_BUF_SIZE];
+        snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opend: %s\n", pathName, sf_strerror(nullptr));
+        throw std::runtime_error(str);
+    }
+    return sf;
+}
+
+#endif // NO_LIBSNDFILE
+
+///////////////////////////////////////////////////////////////////////////
+
+SC_SequencedCommand::SC_SequencedCommand(World* inWorld, const ReplyAddress* inReplyAddress): mWorld(inWorld) {
     if (inReplyAddress)
         mReplyAddress = *inReplyAddress;
     else
@@ -143,13 +137,21 @@ SC_SequencedCommand::~SC_SequencedCommand() {
         World_Free(mWorld, mMsgData);
 }
 
-int SC_SequencedCommand::Init(char* /*inData*/, int /*inSize*/) { return kSCErr_None; }
+int SC_SequencedCommand::Init(const char* /*inData*/, int /*inSize*/) { return kSCErr_None; }
 
 void SC_SequencedCommand::SendDone(const char* inCommandName) { ::SendDone(&mReplyAddress, inCommandName); };
 
 void SC_SequencedCommand::SendDoneWithIntValue(const char* inCommandName, int value) {
     ::SendDoneWithIntValue(&mReplyAddress, inCommandName, value);
-};
+}
+
+void SC_SequencedCommand::SendFailure(const char* inCommandName, const char* errString) {
+    ::SendFailure(&mReplyAddress, inCommandName, errString);
+}
+
+void SC_SequencedCommand::SendFailureWithIntValue(const char* inCommandName, const char* errString, int value) {
+    ::SendFailureWithIntValue(&mReplyAddress, inCommandName, errString, value);
+}
 
 void SC_SequencedCommand::CallEveryStage() {
     switch (mNextStage) {
@@ -172,13 +174,11 @@ void SC_SequencedCommand::CallEveryStage() {
     Delete();
 }
 
-void DoSequencedCommand(FifoMsg* inMsg);
 void DoSequencedCommand(FifoMsg* inMsg) {
     SC_SequencedCommand* cmd = (SC_SequencedCommand*)inMsg->mData;
     cmd->CallNextStage();
 }
 
-void FreeSequencedCommand(FifoMsg* inMsg);
 void FreeSequencedCommand(FifoMsg* inMsg) {
     SC_SequencedCommand* cmd = (SC_SequencedCommand*)inMsg->mData;
     cmd->Delete();
@@ -228,8 +228,8 @@ void SC_SequencedCommand::CallNextStage() {
 }
 
 void SC_SequencedCommand::Delete() {
-    CallDestructor();
-    World_Free(mWorld, this);
+    std::destroy_at(this); // call (virtual) destructor
+    World_Free(mWorld, this); // free memory
 }
 
 bool SC_SequencedCommand::Stage1() { return true; }
@@ -243,18 +243,13 @@ void SC_SequencedCommand::Stage4() {}
 
 ///////////////////////////////////////////////////////////////////////////
 
-#include "sc_msg_iter.h"
-#include <string.h>
+SyncCmd::SyncCmd(World* inWorld, const ReplyAddress* inReplyAddress): SC_SequencedCommand(inWorld, inReplyAddress) {}
 
-SyncCmd::SyncCmd(World* inWorld, ReplyAddress* inReplyAddress): SC_SequencedCommand(inWorld, inReplyAddress) {}
-
-int SyncCmd::Init(char* inData, int inSize) {
+int SyncCmd::Init(const char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
     mID = msg.geti();
     return kSCErr_None;
 }
-
-void SyncCmd::CallDestructor() { this->~SyncCmd(); }
 
 bool SyncCmd::Stage2() { return true; }
 
@@ -274,9 +269,10 @@ void SyncCmd::Stage4() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-BufAllocCmd::BufAllocCmd(World* inWorld, ReplyAddress* inReplyAddress): SC_SequencedCommand(inWorld, inReplyAddress) {}
+BufAllocCmd::BufAllocCmd(World* inWorld, const ReplyAddress* inReplyAddress):
+    SC_SequencedCommand(inWorld, inReplyAddress) {}
 
-int BufAllocCmd::Init(char* inData, int inSize) {
+int BufAllocCmd::Init(const char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
     mBufIndex = msg.geti();
     mNumFrames = msg.geti();
@@ -289,8 +285,6 @@ int BufAllocCmd::Init(char* inData, int inSize) {
 
     return kSCErr_None;
 }
-
-void BufAllocCmd::CallDestructor() { this->~BufAllocCmd(); }
 
 bool BufAllocCmd::Stage2() {
     SndBuf* buf = World_GetNRTBuf(mWorld, mBufIndex);
@@ -319,16 +313,12 @@ void BufAllocCmd::Stage4() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-#include "sc_msg_iter.h"
-#include <string.h>
-
-BufGenCmd::BufGenCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress),
-    mData(nullptr) {}
+BufGenCmd::BufGenCmd(World* inWorld, const ReplyAddress* inReplyAddress):
+    SC_SequencedCommand(inWorld, inReplyAddress) {}
 
 BufGenCmd::~BufGenCmd() { World_Free(mWorld, mData); }
 
-int BufGenCmd::Init(char* inData, int inSize) {
+int BufGenCmd::Init(const char* inData, int inSize) {
     mSize = inSize;
     mData = (char*)World_Alloc(mWorld, mSize);
     ReturnSCErrIfNil(mData);
@@ -349,8 +339,6 @@ int BufGenCmd::Init(char* inData, int inSize) {
 
     return kSCErr_None;
 }
-
-void BufGenCmd::CallDestructor() { this->~BufGenCmd(); }
 
 bool BufGenCmd::Stage2() {
     SndBuf* buf = World_GetNRTBuf(mWorld, mBufIndex);
@@ -375,16 +363,13 @@ void BufGenCmd::Stage4() {
     SendDoneWithIntValue("/b_gen", mBufIndex);
 }
 
-
 ///////////////////////////////////////////////////////////////////////////
 
 
-///////////////////////////////////////////////////////////////////////////
+BufFreeCmd::BufFreeCmd(World* inWorld, const ReplyAddress* inReplyAddress):
+    SC_SequencedCommand(inWorld, inReplyAddress) {}
 
-
-BufFreeCmd::BufFreeCmd(World* inWorld, ReplyAddress* inReplyAddress): SC_SequencedCommand(inWorld, inReplyAddress) {}
-
-int BufFreeCmd::Init(char* inData, int inSize) {
+int BufFreeCmd::Init(const char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
     mBufIndex = msg.geti();
 
@@ -392,8 +377,6 @@ int BufFreeCmd::Init(char* inData, int inSize) {
 
     return kSCErr_None;
 }
-
-void BufFreeCmd::CallDestructor() { this->~BufFreeCmd(); }
 
 bool BufFreeCmd::Stage2() {
     SndBuf* buf = World_GetNRTBuf(mWorld, mBufIndex);
@@ -423,9 +406,10 @@ void BufFreeCmd::Stage4() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-BufZeroCmd::BufZeroCmd(World* inWorld, ReplyAddress* inReplyAddress): SC_SequencedCommand(inWorld, inReplyAddress) {}
+BufZeroCmd::BufZeroCmd(World* inWorld, const ReplyAddress* inReplyAddress):
+    SC_SequencedCommand(inWorld, inReplyAddress) {}
 
-int BufZeroCmd::Init(char* inData, int inSize) {
+int BufZeroCmd::Init(const char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
     mBufIndex = msg.geti();
 
@@ -434,11 +418,9 @@ int BufZeroCmd::Init(char* inData, int inSize) {
     return kSCErr_None;
 }
 
-void BufZeroCmd::CallDestructor() { this->~BufZeroCmd(); }
-
 bool BufZeroCmd::Stage2() {
     SndBuf* buf = World_GetNRTBuf(mWorld, mBufIndex);
-    memset(buf->data, 0, buf->samples * sizeof(float));
+    std::fill_n(buf->data, buf->samples, 0);
     return true;
 }
 
@@ -452,12 +434,10 @@ void BufZeroCmd::Stage4() { SendDoneWithIntValue("/b_zero", mBufIndex); }
 
 ///////////////////////////////////////////////////////////////////////////
 
-BufAllocReadCmd::BufAllocReadCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress),
-    mFreeData(nullptr),
-    mFilename(nullptr) {}
+BufAllocReadCmd::BufAllocReadCmd(World* inWorld, const ReplyAddress* inReplyAddress):
+    SC_SequencedCommand(inWorld, inReplyAddress) {}
 
-int BufAllocReadCmd::Init(char* inData, int inSize) {
+int BufAllocReadCmd::Init(const char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
     mBufIndex = msg.geti();
 
@@ -465,13 +445,10 @@ int BufAllocReadCmd::Init(char* inData, int inSize) {
     if (!filename)
         return kSCErr_WrongArgType;
 
-    if (mWorld->mRestrictedPath) {
-        mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
-    } else {
-        mFilename = (char*)World_Alloc(mWorld, strlen(filename) + 1);
-        ReturnSCErrIfNil(mFilename);
-        strcpy(mFilename, filename);
-    }
+    auto size = strlen(filename) + 1; // include null-terminator
+    mFilename = (char*)World_Alloc(mWorld, size);
+    ReturnSCErrIfNil(mFilename);
+    memcpy(mFilename, filename, size);
 
     mFileOffset = msg.geti();
     mNumFrames = msg.geti();
@@ -483,26 +460,24 @@ int BufAllocReadCmd::Init(char* inData, int inSize) {
 
 BufAllocReadCmd::~BufAllocReadCmd() { World_Free(mWorld, mFilename); }
 
-void BufAllocReadCmd::CallDestructor() { this->~BufAllocReadCmd(); }
-
 bool BufAllocReadCmd::Stage2() {
 #ifdef NO_LIBSNDFILE
-    SendFailure(&mReplyAddress, "/b_allocRead", "scsynth compiled without libsndfile\n");
+    SendFailure("/b_allocRead", "scsynth compiled without libsndfile\n");
     scprintf("scsynth compiled without libsndfile\n");
     return false;
 #else
     SndBuf* buf = World_GetNRTBuf(mWorld, mBufIndex);
-    SF_INFO fileinfo;
-    memset(&fileinfo, 0, sizeof(fileinfo));
-    SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_READ, &fileinfo);
-    if (!sf) {
-        char str[ERR_BUF_SIZE];
-        snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(nullptr));
-        SendFailureWithIntValue(&mReplyAddress, "/b_allocRead", str,
-                                mBufIndex); // SendFailure(&mReplyAddress, "/b_allocRead", str);
-        scprintf(str);
+    SNDFILE* sf = nullptr;
+    SF_INFO fileinfo {}; // zero-initialize
+
+    try {
+        sf = tryOpenSndfile(mFilename, SFM_READ, &fileinfo, mWorld->mRestrictedPath);
+    } catch (const std::exception& e) {
+        SendFailureWithIntValue("/b_allocRead", e.what(), mBufIndex);
+        scprintf(e.what());
         return false;
     }
+
     if (mFileOffset < 0)
         mFileOffset = 0;
     else if (mFileOffset > fileinfo.frames)
@@ -543,11 +518,10 @@ void BufAllocReadCmd::Stage4() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-BufReadCmd::BufReadCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress),
-    mFilename(nullptr) {}
+BufReadCmd::BufReadCmd(World* inWorld, const ReplyAddress* inReplyAddress):
+    SC_SequencedCommand(inWorld, inReplyAddress) {}
 
-int BufReadCmd::Init(char* inData, int inSize) {
+int BufReadCmd::Init(const char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
     mBufIndex = msg.geti();
 
@@ -555,13 +529,10 @@ int BufReadCmd::Init(char* inData, int inSize) {
     if (!filename)
         return kSCErr_WrongArgType;
 
-    if (mWorld->mRestrictedPath) {
-        mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
-    } else {
-        mFilename = (char*)World_Alloc(mWorld, strlen(filename) + 1);
-        ReturnSCErrIfNil(mFilename);
-        strcpy(mFilename, filename);
-    }
+    auto size = strlen(filename) + 1; // include null-terminator
+    mFilename = (char*)World_Alloc(mWorld, size);
+    ReturnSCErrIfNil(mFilename);
+    memcpy(mFilename, filename, size);
 
     mFileOffset = msg.geti();
     mNumFrames = msg.geti(-1);
@@ -575,38 +546,34 @@ int BufReadCmd::Init(char* inData, int inSize) {
 
 BufReadCmd::~BufReadCmd() { World_Free(mWorld, mFilename); }
 
-void BufReadCmd::CallDestructor() { this->~BufReadCmd(); }
-
 bool BufReadCmd::Stage2() {
 #ifdef NO_LIBSNDFILE
-    SendFailure(&mReplyAddress, "/b_read", "scsynth compiled without libsndfile\n");
+    SendFailure("/b_read", "scsynth compiled without libsndfile\n");
     scprintf("scsynth compiled without libsndfile\n");
     return false;
 #else
-    SF_INFO fileinfo;
-    memset(&fileinfo, 0, sizeof(fileinfo));
+    SNDFILE* sf = nullptr;
+    SF_INFO fileinfo {}; // zero-initialize
 
     SndBuf* buf = World_GetNRTBuf(mWorld, mBufIndex);
     int framesToEnd = buf->frames - mBufOffset;
     if (framesToEnd <= 0)
         return true;
 
-    SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_READ, &fileinfo);
-    if (!sf) {
-        char str[ERR_BUF_SIZE];
-        snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(nullptr));
-        SendFailureWithIntValue(&mReplyAddress, "/b_read", str,
-                                mBufIndex); // SendFailure(&mReplyAddress, "/b_read", str);
-        scprintf(str);
+    try {
+        sf = tryOpenSndfile(mFilename, SFM_READ, &fileinfo, mWorld->mRestrictedPath);
+    } catch (const std::exception& e) {
+        SendFailureWithIntValue("/b_read", e.what(), mBufIndex);
+        scprintf(e.what());
         return false;
     }
+
     if (fileinfo.channels != buf->channels) {
         char str[ERR_BUF_SIZE];
         sf_close(sf);
         snprintf(str, ERR_BUF_SIZE, "Channel mismatch. File '%s' has %d channels. Buffer has %d channels.\n", mFilename,
                  fileinfo.channels, buf->channels);
-        SendFailureWithIntValue(&mReplyAddress, "/b_read", str,
-                                mBufIndex); // SendFailure(&mReplyAddress, "/b_read", str);
+        SendFailureWithIntValue("/b_read", str, mBufIndex);
         scprintf(str);
         return false;
     }
@@ -657,30 +624,42 @@ void BufReadCmd::Stage4() { SendDoneWithIntValue("/b_read", mBufIndex); }
 
 ///////////////////////////////////////////////////////////////////////////
 
-SC_BufReadCommand::SC_BufReadCommand(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress),
-    mNumChannels(0) {}
+BufChannelCommand::BufChannelCommand(World* inWorld, const ReplyAddress* inReplyAddress):
+    SC_SequencedCommand(inWorld, inReplyAddress) {}
 
-void SC_BufReadCommand::InitChannels(sc_msg_iter& msg) {
-    mNumChannels = 0;
+BufChannelCommand::~BufChannelCommand() { World_Free(mWorld, mChannels); }
+
+void BufChannelCommand::InitChannels(sc_msg_iter& msg) {
+    assert(mNumChannels == 0 && mChannelCapacity == 0);
+
     while (msg.nextTag(0) == 'i') {
         int c = msg.geti();
-        if (mNumChannels <= kMaxNumChannels) {
-            mChannels[mNumChannels++] = c;
+        if (mNumChannels >= mChannelCapacity) {
+            if (mChannelCapacity == 0) {
+                // first allocation
+                mChannelCapacity = 8; // initial capacity
+                mChannels = (int*)World_Alloc(mWorld, mChannelCapacity * sizeof(int));
+            } else {
+                // grow capacity and reallocate
+                mChannelCapacity *= 2;
+                mChannels = (int*)World_Realloc(mWorld, mChannels, mChannelCapacity * sizeof(int));
+            }
+            ThrowIfNil(mChannels);
         }
+        mChannels[mNumChannels++] = c;
     }
 }
 
-bool SC_BufReadCommand::CheckChannels(int inNumChannels) {
+bool BufChannelCommand::CheckChannels(int inNumChannels) const {
     for (int i = 0; i < mNumChannels; ++i) {
-        if (mChannels[i] >= inNumChannels) {
+        if (mChannels[i] < 0 || mChannels[i] >= inNumChannels) {
             return false;
         }
     }
     return true;
 }
 
-void SC_BufReadCommand::CopyChannels(float* dst, float* src, size_t srcChannels, size_t numFrames) {
+void BufChannelCommand::CopyChannels(const float* src, size_t srcChannels, float* dst, size_t numFrames) const {
     for (int ci = 0; ci < mNumChannels; ++ci) {
         int c = mChannels[ci];
         if (c >= 0 && c < srcChannels) {
@@ -697,12 +676,10 @@ void SC_BufReadCommand::CopyChannels(float* dst, float* src, size_t srcChannels,
 
 ///////////////////////////////////////////////////////////////////////////
 
-BufAllocReadChannelCmd::BufAllocReadChannelCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_BufReadCommand(inWorld, inReplyAddress),
-    mFreeData(nullptr),
-    mFilename(nullptr) {}
+BufAllocReadChannelCmd::BufAllocReadChannelCmd(World* inWorld, const ReplyAddress* inReplyAddress):
+    BufChannelCommand(inWorld, inReplyAddress) {}
 
-int BufAllocReadChannelCmd::Init(char* inData, int inSize) {
+int BufAllocReadChannelCmd::Init(const char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
     mBufIndex = msg.geti();
 
@@ -710,13 +687,10 @@ int BufAllocReadChannelCmd::Init(char* inData, int inSize) {
     if (!filename)
         return kSCErr_WrongArgType;
 
-    if (mWorld->mRestrictedPath) {
-        mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
-    } else {
-        mFilename = (char*)World_Alloc(mWorld, strlen(filename) + 1);
-        ReturnSCErrIfNil(mFilename);
-        strcpy(mFilename, filename);
-    }
+    auto size = strlen(filename) + 1; // include null-terminator
+    mFilename = (char*)World_Alloc(mWorld, size);
+    ReturnSCErrIfNil(mFilename);
+    memcpy(mFilename, filename, size);
 
     mFileOffset = msg.geti();
     mNumFrames = msg.geti();
@@ -730,27 +704,24 @@ int BufAllocReadChannelCmd::Init(char* inData, int inSize) {
 
 BufAllocReadChannelCmd::~BufAllocReadChannelCmd() { World_Free(mWorld, mFilename); }
 
-void BufAllocReadChannelCmd::CallDestructor() { this->~BufAllocReadChannelCmd(); }
-
 bool BufAllocReadChannelCmd::Stage2() {
 #ifdef NO_LIBSNDFILE
-    SendFailure(&mReplyAddress, "/b_allocReadChannel", "scsynth compiled without libsndfile\n");
+    SendFailure("/b_allocReadChannel", "scsynth compiled without libsndfile\n");
     scprintf("scsynth compiled without libsndfile\n");
     return false;
 #else
     SndBuf* buf = World_GetNRTBuf(mWorld, mBufIndex);
+    SNDFILE* sf = nullptr;
+    SF_INFO fileinfo {}; // zero-initialize
 
-    SF_INFO fileinfo;
-    memset(&fileinfo, 0, sizeof(fileinfo));
-    SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_READ, &fileinfo);
-    if (!sf) {
-        char str[ERR_BUF_SIZE];
-        snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(nullptr));
-        SendFailureWithIntValue(&mReplyAddress, "/b_allocReadChannel", str,
-                                mBufIndex); // SendFailure(&mReplyAddress, "/b_allocRead", str);
-        scprintf(str);
+    try {
+        sf = tryOpenSndfile(mFilename, SFM_READ, &fileinfo, mWorld->mRestrictedPath);
+    } catch (const std::exception& e) {
+        SendFailureWithIntValue("/b_allocReadChannel", e.what(), mBufIndex);
+        scprintf(e.what());
         return false;
     }
+
     if (mFileOffset < 0)
         mFileOffset = 0;
     else if (mFileOffset > fileinfo.frames)
@@ -770,9 +741,8 @@ bool BufAllocReadChannelCmd::Stage2() {
     } else {
         // verify channel indexes
         if (!CheckChannels(fileinfo.channels)) {
-            const char* str = "Channel index out of range.\n";
-            SendFailureWithIntValue(&mReplyAddress, "/b_allocReadChannel", str,
-                                    mBufIndex); // SendFailure(&mReplyAddress, "/b_allocRead", str);
+            const char* str = "Channel index(es) out of range.\n";
+            SendFailureWithIntValue("/b_allocReadChannel", str, mBufIndex);
             scprintf(str);
             sf_close(sf);
             return false;
@@ -789,7 +759,7 @@ bool BufAllocReadChannelCmd::Stage2() {
         // read some channels
         sf_seek(sf, mFileOffset, SEEK_SET);
         sf_readf_float(sf, data, mNumFrames);
-        CopyChannels(buf->data, data, fileinfo.channels, mNumFrames);
+        CopyChannels(data, fileinfo.channels, buf->data, mNumFrames);
         // free temp buffer
         free(data);
     }
@@ -818,11 +788,10 @@ void BufAllocReadChannelCmd::Stage4() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-BufReadChannelCmd::BufReadChannelCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_BufReadCommand(inWorld, inReplyAddress),
-    mFilename(nullptr) {}
+BufReadChannelCmd::BufReadChannelCmd(World* inWorld, const ReplyAddress* inReplyAddress):
+    BufChannelCommand(inWorld, inReplyAddress) {}
 
-int BufReadChannelCmd::Init(char* inData, int inSize) {
+int BufReadChannelCmd::Init(const char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
     mBufIndex = msg.geti();
 
@@ -830,13 +799,10 @@ int BufReadChannelCmd::Init(char* inData, int inSize) {
     if (!filename)
         return kSCErr_WrongArgType;
 
-    if (mWorld->mRestrictedPath) {
-        mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
-    } else {
-        mFilename = (char*)World_Alloc(mWorld, strlen(filename) + 1);
-        ReturnSCErrIfNil(mFilename);
-        strcpy(mFilename, filename);
-    }
+    auto size = strlen(filename) + 1; // include null-terminator
+    mFilename = (char*)World_Alloc(mWorld, size);
+    ReturnSCErrIfNil(mFilename);
+    memcpy(mFilename, filename, size);
 
     mFileOffset = msg.geti();
     mNumFrames = msg.geti(-1);
@@ -852,52 +818,56 @@ int BufReadChannelCmd::Init(char* inData, int inSize) {
 
 BufReadChannelCmd::~BufReadChannelCmd() { World_Free(mWorld, mFilename); }
 
-void BufReadChannelCmd::CallDestructor() { this->~BufReadChannelCmd(); }
-
 bool BufReadChannelCmd::Stage2() {
 #ifdef NO_LIBSNDFILE
-    SendFailure(&mReplyAddress, "/b_readChannel", "scsynth compiled without libsndfile\n");
+    SendFailure("/b_readChannel", "scsynth compiled without libsndfile\n");
     scprintf("scsynth compiled without libsndfile\n");
     return false;
 #else
-    SF_INFO fileinfo;
-    memset(&fileinfo, 0, sizeof(fileinfo));
-
     SndBuf* buf = World_GetNRTBuf(mWorld, mBufIndex);
     int framesToEnd = buf->frames - mBufOffset;
     if (framesToEnd <= 0)
         return true;
 
-    SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_READ, &fileinfo);
-    if (!sf) {
+    // the size of the channel array (if provided) must match the number of buffer channels!
+    if (mNumChannels > 0 && mNumChannels != buf->channels) {
         char str[ERR_BUF_SIZE];
-        snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(nullptr));
-        SendFailureWithIntValue(&mReplyAddress, "/b_readChannel", str,
-                                mBufIndex); // SendFailure(&mReplyAddress, "/b_read", str);
+        snprintf(str, ERR_BUF_SIZE, "Channel mismatch. %d channels provided. Buffer has %d channels.\n", mNumChannels,
+                 buf->channels);
+        SendFailureWithIntValue("/b_readChannel", str, mBufIndex);
         scprintf(str);
+        return false;
+    }
+
+    SNDFILE* sf = nullptr;
+    SF_INFO fileinfo {}; // zero-initialize
+
+    try {
+        sf = tryOpenSndfile(mFilename, SFM_READ, &fileinfo, mWorld->mRestrictedPath);
+    } catch (const std::exception& e) {
+        SendFailureWithIntValue("/b_readChannel", e.what(), mBufIndex);
+        scprintf(e.what());
         return false;
     }
 
     if (mNumChannels > 0) {
         // verify channel indexes
-        if (!(CheckChannels(fileinfo.channels))) { // nescivi:  && CheckChannels(buf->channels) (should not check here
-                                                   // for buf->channels)
+        if (!(CheckChannels(fileinfo.channels))) {
             const char* str = "Channel index out of range.\n";
-            SendFailureWithIntValue(&mReplyAddress, "/b_readChannel", str,
-                                    mBufIndex); // SendFailure(&mReplyAddress, "/b_allocRead", str);
+            SendFailureWithIntValue("/b_readChannel", str, mBufIndex);
             scprintf(str);
             sf_close(sf);
             return false;
         }
-        // nescivi: this also seems out of place: we want to read from a file with more channels than are in the buffer
-        // 	} else if (fileinfo.channels != buf->channels) {
-        // 		char str[256];
-        // 		sf_close(sf);
-        // 		sprintf(str, "Channel mismatch. File '%s' has %d channels. Buffer has %d channels.\n",
-        // 				mFilename, fileinfo.channels, buf->channels);
-        // 		SendFailure(&mReplyAddress, "/b_read", str);
-        // 		scprintf(str);
-        // 		return false;
+    } else if (fileinfo.channels != buf->channels) {
+        // read all channels -> check for channel mismatch. Same as in BufReadCmd.
+        char str[ERR_BUF_SIZE];
+        sf_close(sf);
+        snprintf(str, ERR_BUF_SIZE, "Channel mismatch. File '%s' has %d channels. Buffer has %d channels.\n", mFilename,
+                 fileinfo.channels, buf->channels);
+        SendFailureWithIntValue("/b_readChannel", str, mBufIndex);
+        scprintf(str);
+        return false;
     }
 
     if (mFileOffset < 0)
@@ -922,7 +892,7 @@ bool BufReadChannelCmd::Stage2() {
             // read some channels
             sf_seek(sf, mFileOffset, SEEK_SET);
             sf_readf_float(sf, data, mNumFrames);
-            CopyChannels(buf->data + (mBufOffset * mNumChannels), data, fileinfo.channels, mNumFrames);
+            CopyChannels(data, fileinfo.channels, buf->data + (mBufOffset * mNumChannels), mNumFrames);
             // free temp buffer
             free(data);
         }
@@ -960,17 +930,12 @@ void BufReadChannelCmd::Stage4() { SendDoneWithIntValue("/b_readChannel", mBufIn
 
 ///////////////////////////////////////////////////////////////////////////
 
-BufWriteCmd::BufWriteCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress),
-    mFilename(nullptr) {}
+BufWriteCmd::BufWriteCmd(World* inWorld, const ReplyAddress* inReplyAddress):
+    SC_SequencedCommand(inWorld, inReplyAddress) {}
 
+int BufWriteCmd::Init(const char* inData, int inSize) {
 #ifdef NO_LIBSNDFILE
-struct SF_INFO {};
-#endif
-
-int BufWriteCmd::Init(char* inData, int inSize) {
-#ifdef NO_LIBSNDFILE
-    SendFailure(&mReplyAddress, "/b_write", "scsynth compiled without libsndfile\n");
+    SendFailure("/b_write", "scsynth compiled without libsndfile\n");
     scprintf("scsynth compiled without libsndfile\n");
     return false;
 #else
@@ -981,13 +946,10 @@ int BufWriteCmd::Init(char* inData, int inSize) {
     if (!filename)
         return kSCErr_WrongArgType;
 
-    if (mWorld->mRestrictedPath) {
-        mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
-    } else {
-        mFilename = (char*)World_Alloc(mWorld, strlen(filename) + 1);
-        ReturnSCErrIfNil(mFilename);
-        strcpy(mFilename, filename);
-    }
+    auto size = strlen(filename) + 1; // include null-terminator
+    mFilename = (char*)World_Alloc(mWorld, size);
+    ReturnSCErrIfNil(mFilename);
+    memcpy(mFilename, filename, size);
 
     const char* headerFormatString = msg.gets("aiff");
     const char* sampleFormatString = msg.gets("int16");
@@ -998,14 +960,11 @@ int BufWriteCmd::Init(char* inData, int inSize) {
 
     GET_COMPLETION_MSG(msg);
 
-    memset(&mFileInfo, 0, sizeof(mFileInfo));
-    return sndfileFormatInfoFromStrings(&mFileInfo, headerFormatString, sampleFormatString);
+    return sndfileFormatInfoFromStrings(mFileInfo, headerFormatString, sampleFormatString);
 #endif
 }
 
 BufWriteCmd::~BufWriteCmd() { World_Free(mWorld, mFilename); }
-
-void BufWriteCmd::CallDestructor() { this->~BufWriteCmd(); }
 
 bool BufWriteCmd::Stage2() {
 #ifdef NO_LIBSNDFILE
@@ -1018,13 +977,12 @@ bool BufWriteCmd::Stage2() {
     mFileInfo.samplerate = (int)buf->samplerate;
     mFileInfo.channels = buf->channels;
 
-    SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_WRITE, &mFileInfo);
-    if (!sf) {
-        char str[ERR_BUF_SIZE];
-        snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(nullptr));
-        SendFailureWithIntValue(&mReplyAddress, "/b_write", str,
-                                mBufIndex); // SendFailure(&mReplyAddress, "/b_write", str);
-        scprintf(str);
+    SNDFILE* sf = nullptr;
+    try {
+        sf = tryOpenSndfile(mFilename, SFM_WRITE, &mFileInfo, mWorld->mRestrictedPath);
+    } catch (const std::exception& e) {
+        SendFailureWithIntValue("/b_write", e.what(), mBufIndex);
+        scprintf(e.what());
         return false;
     }
 
@@ -1064,9 +1022,10 @@ void BufWriteCmd::Stage4() { SendDoneWithIntValue("/b_write", mBufIndex); }
 
 ///////////////////////////////////////////////////////////////////////////
 
-BufCloseCmd::BufCloseCmd(World* inWorld, ReplyAddress* inReplyAddress): SC_SequencedCommand(inWorld, inReplyAddress) {}
+BufCloseCmd::BufCloseCmd(World* inWorld, const ReplyAddress* inReplyAddress):
+    SC_SequencedCommand(inWorld, inReplyAddress) {}
 
-int BufCloseCmd::Init(char* inData, int inSize) {
+int BufCloseCmd::Init(const char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
     mBufIndex = msg.geti();
 
@@ -1075,11 +1034,9 @@ int BufCloseCmd::Init(char* inData, int inSize) {
     return kSCErr_None;
 }
 
-void BufCloseCmd::CallDestructor() { this->~BufCloseCmd(); }
-
 bool BufCloseCmd::Stage2() {
 #ifdef NO_LIBSNDFILE
-    SendFailure(&mReplyAddress, "/b_close", "scsynth compiled without libsndfile\n");
+    SendFailure("/b_close", "scsynth compiled without libsndfile\n");
     scprintf("scsynth compiled without libsndfile\n");
     return false;
 #else
@@ -1101,116 +1058,54 @@ void BufCloseCmd::Stage4() { SendDoneWithIntValue("/b_close", mBufIndex); }
 
 ///////////////////////////////////////////////////////////////////////////
 
-AudioQuitCmd::AudioQuitCmd(World* inWorld, ReplyAddress* inReplyAddress):
+AudioQuitCmd::AudioQuitCmd(World* inWorld, const ReplyAddress* inReplyAddress):
     SC_SequencedCommand(inWorld, inReplyAddress) {}
 
-void AudioQuitCmd::CallDestructor() { this->~AudioQuitCmd(); }
+#if SC_AUDIO_API == SC_AUDIO_API_AUDIOUNITS
+
+bool AudioQuitCmd::Stage1() { return true; }
 
 bool AudioQuitCmd::Stage2() {
-    mWorld->hw->mTerminating = true;
-    return true;
-}
-
-bool AudioQuitCmd::Stage3() {
-#if SC_AUDIO_API == SC_AUDIO_API_AUDIOUNITS
-    SendFailure(&mReplyAddress, "/quit", "not allowed in AU host\n");
+    SendFailure("/quit", "not allowed in AU host\n");
     scprintf("/quit : quit not allowed in AU host\n");
     return false;
+}
+
 #else
-    if (mWorld->hw->mShmem)
-        mWorld->hw->mShmem->disconnect();
+
+bool AudioQuitCmd::Stage1() {
+    if (!mWorld->hw->mTerminating) {
+        mWorld->hw->mTerminating = true;
+        mDidQuit = true;
+    }
     return true;
+}
+
+bool AudioQuitCmd::Stage2() {
+    if (mDidQuit) {
+        SendDone("/quit");
+        mWorld->hw->mQuitProgram->post();
+    } else {
+        scprintf("/quit: already quitting\n");
+        SendFailure("/quit", "already quitting\n");
+    }
+    return false;
+}
+
 #endif
-}
-
-void AudioQuitCmd::Stage4() {
-    SendDone("/quit");
-    mWorld->hw->mQuitProgram->post();
-}
 
 ///////////////////////////////////////////////////////////////////////////
 
-AudioStatusCmd::AudioStatusCmd(World* inWorld, ReplyAddress* inReplyAddress):
+NotifyCmd::NotifyCmd(World* inWorld, const ReplyAddress* inReplyAddress):
     SC_SequencedCommand(inWorld, inReplyAddress) {}
 
-void AudioStatusCmd::CallDestructor() { this->~AudioStatusCmd(); }
-
-bool AudioStatusCmd::Stage2() {
-    // we stop replying to status requests after receiving /quit
-    if (mWorld->hw->mTerminating == true)
-        return false;
-
-    small_scpacket packet;
-    packet.adds("/status.reply");
-    packet.maketags(10);
-    packet.addtag(',');
-    packet.addtag('i');
-    packet.addtag('i');
-    packet.addtag('i');
-    packet.addtag('i');
-    packet.addtag('i');
-    packet.addtag('f');
-    packet.addtag('f');
-    packet.addtag('d');
-    packet.addtag('d');
-
-    packet.addi(1); // audio is always active now.
-    packet.addi(mWorld->mNumUnits);
-    packet.addi(mWorld->mNumGraphs);
-    packet.addi(mWorld->mNumGroups);
-    packet.addi(mWorld->hw->mGraphDefLib->NumItems());
-
-    SC_AudioDriver* driver = mWorld->hw->mAudioDriver;
-    packet.addf(driver->GetAvgCPU());
-    packet.addf(driver->GetPeakCPU());
-    packet.addd(driver->GetSampleRate());
-    packet.addd(driver->GetActualSampleRate());
-
-    SendReply(&mReplyAddress, packet.data(), packet.size());
-
-    return false;
-}
-
-///////////////////////////////////////////////////////////////////////////
-
-RTMemStatusCmd::RTMemStatusCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress) {}
-
-void RTMemStatusCmd::CallDestructor() { this->~RTMemStatusCmd(); }
-
-bool RTMemStatusCmd::Stage2() {
-    // we stop replying to status requests after receiving /quit
-    if (mWorld->hw->mTerminating == true)
-        return false;
-
-    small_scpacket packet;
-    packet.adds("/rtMemoryStatus.reply");
-    packet.maketags(3);
-    packet.addtag(',');
-    packet.addtag('i');
-    packet.addtag('i');
-
-    packet.addi(World_TotalFree(mWorld));
-    packet.addi(World_LargestFreeChunk(mWorld));
-
-    SendReply(&mReplyAddress, packet.data(), packet.size());
-
-    return false;
-}
-
-///////////////////////////////////////////////////////////////////////////
-
-NotifyCmd::NotifyCmd(World* inWorld, ReplyAddress* inReplyAddress): SC_SequencedCommand(inWorld, inReplyAddress) {}
-
-int NotifyCmd::Init(char* inData, int inSize) {
+int NotifyCmd::Init(const char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
     mOnOff = msg.geti();
     mID = msg.geti(-1);
 
     return kSCErr_None;
 }
-
-void NotifyCmd::CallDestructor() { this->~NotifyCmd(); }
 
 /** \brief Attempts to find and remove the requested \c id from \c availableIDs.
  *
@@ -1246,15 +1141,15 @@ bool NotifyCmd::Stage2() {
         for (auto addr : *hw->mUsers) {
             if (mReplyAddress == addr) {
                 // already in table - don't fail though..
-                SendFailureWithIntValue(&mReplyAddress, "/notify", "already registered\n",
-                                        hw->mClientIDdict->at(mReplyAddress));
+                int id = hw->mClientIDdict->at(mReplyAddress);
+                SendFailureWithIntValue("/notify", "already registered\n", id);
                 scprintf("/notify: already registered\n");
                 return false;
             }
         }
 
         if (hw->mUsers->size() >= hw->mMaxUsers) {
-            SendFailure(&mReplyAddress, "/notify", "too many users\n");
+            SendFailure("/notify", "too many users\n");
             scprintf("/notify: too many users\n");
             return false;
         }
@@ -1277,7 +1172,7 @@ bool NotifyCmd::Stage2() {
             return false;
         }
 
-        SendFailure(&mReplyAddress, "/notify", "not registered\n");
+        SendFailure("/notify", "not registered\n");
         scprintf("/notify: not registered\n");
     }
     return false;
@@ -1285,18 +1180,9 @@ bool NotifyCmd::Stage2() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-SendFailureCmd::SendFailureCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress),
-    mCmdName(nullptr),
-    mErrString(nullptr) {}
-
-SendFailureCmd::~SendFailureCmd() {
-    World_Free(mWorld, mCmdName);
-    World_Free(mWorld, mErrString);
-}
-
-
-void SendFailureCmd::InitSendFailureCmd(const char* inCmdName, const char* inErrString) {
+SendFailureCmd::SendFailureCmd(World* inWorld, const ReplyAddress* inReplyAddress, const char* inCmdName,
+                               const char* inErrString):
+    SC_SequencedCommand(inWorld, inReplyAddress) {
     mCmdName = (char*)World_Alloc(mWorld, strlen(inCmdName) + 1);
     ThrowIfNil(mCmdName);
     strcpy(mCmdName, inCmdName);
@@ -1306,21 +1192,22 @@ void SendFailureCmd::InitSendFailureCmd(const char* inCmdName, const char* inErr
     strcpy(mErrString, inErrString);
 }
 
-void SendFailureCmd::CallDestructor() { this->~SendFailureCmd(); }
+SendFailureCmd::~SendFailureCmd() {
+    World_Free(mWorld, mCmdName);
+    World_Free(mWorld, mErrString);
+}
 
 bool SendFailureCmd::Stage2() {
-    SendFailure(&mReplyAddress, mCmdName, mErrString);
+    SendFailure(mCmdName, mErrString);
     return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////
 
-RecvSynthDefCmd::RecvSynthDefCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress),
-    mBuffer(nullptr),
-    mSize(0) {}
+RecvSynthDefCmd::RecvSynthDefCmd(World* inWorld, const ReplyAddress* inReplyAddress):
+    SC_SequencedCommand(inWorld, inReplyAddress) {}
 
-int RecvSynthDefCmd::Init(char* inData, int inSize) {
+int RecvSynthDefCmd::Init(const char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
 
     mSize = msg.getbsize();
@@ -1339,8 +1226,6 @@ int RecvSynthDefCmd::Init(char* inData, int inSize) {
 
 RecvSynthDefCmd::~RecvSynthDefCmd() { World_Free(mWorld, mBuffer); }
 
-void RecvSynthDefCmd::CallDestructor() { this->~RecvSynthDefCmd(); }
-
 bool RecvSynthDefCmd::Stage2() {
     mDefs = GraphDef_Recv(mWorld, mBuffer, mSize, mDefs);
 
@@ -1357,24 +1242,20 @@ void RecvSynthDefCmd::Stage4() { SendDone("/d_recv"); }
 
 ///////////////////////////////////////////////////////////////////////////
 
-LoadSynthDefCmd::LoadSynthDefCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress),
-    mFilename(nullptr) {}
+LoadSynthDefCmd::LoadSynthDefCmd(World* inWorld, const ReplyAddress* inReplyAddress):
+    SC_SequencedCommand(inWorld, inReplyAddress) {}
 
-int LoadSynthDefCmd::Init(char* inData, int inSize) {
+int LoadSynthDefCmd::Init(const char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
 
     const char* filename = msg.gets();
     if (!filename)
         return kSCErr_WrongArgType;
 
-    if (mWorld->mRestrictedPath) {
-        mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
-    } else {
-        mFilename = (char*)World_Alloc(mWorld, strlen(filename) + 1);
-        ReturnSCErrIfNil(mFilename);
-        strcpy(mFilename, filename);
-    }
+    auto size = strlen(filename) + 1; // include null-terminator
+    mFilename = (char*)World_Alloc(mWorld, size);
+    ReturnSCErrIfNil(mFilename);
+    memcpy(mFilename, filename, size);
 
     GET_COMPLETION_MSG(msg);
 
@@ -1384,21 +1265,22 @@ int LoadSynthDefCmd::Init(char* inData, int inSize) {
 
 LoadSynthDefCmd::~LoadSynthDefCmd() { World_Free(mWorld, mFilename); }
 
-void LoadSynthDefCmd::CallDestructor() { this->~LoadSynthDefCmd(); }
-
 bool LoadSynthDefCmd::Stage2() {
-    char* fname = mFilename;
-    mDefs = GraphDef_LoadGlob(mWorld, fname, mDefs);
-    if (mDefs) {
-        return true;
-    }
-    {
-        char str[ERR_BUF_SIZE];
-        snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened\n", mFilename);
-        SendFailure(&mReplyAddress, "/d_load", mFilename);
-        scprintf(str);
+    try {
+        auto path = createRestrictedPathFromCStr(mFilename, mWorld->mRestrictedPath);
+        mDefs = GraphDef_LoadGlob(mWorld, path.u8string().c_str(), mDefs);
+        if (!mDefs) {
+            char str[ERR_BUF_SIZE];
+            snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened\n", mFilename);
+            throw std::runtime_error(str);
+        }
+    } catch (const std::exception& e) {
+        SendFailure("/d_load", e.what());
+        scprintf(e.what());
         return false;
     }
+
+    return true;
 }
 
 bool LoadSynthDefCmd::Stage3() {
@@ -1411,24 +1293,20 @@ void LoadSynthDefCmd::Stage4() { SendDone("/d_load"); }
 
 ///////////////////////////////////////////////////////////////////////////
 
-LoadSynthDefDirCmd::LoadSynthDefDirCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress),
-    mFilename(nullptr) {}
+LoadSynthDefDirCmd::LoadSynthDefDirCmd(World* inWorld, const ReplyAddress* inReplyAddress):
+    SC_SequencedCommand(inWorld, inReplyAddress) {}
 
-int LoadSynthDefDirCmd::Init(char* inData, int inSize) {
+int LoadSynthDefDirCmd::Init(const char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
 
     const char* filename = msg.gets();
     if (!filename)
         return kSCErr_WrongArgType;
 
-    if (mWorld->mRestrictedPath) {
-        mFilename = allocAndRestrictPath(mWorld, filename, mWorld->mRestrictedPath);
-    } else {
-        mFilename = (char*)World_Alloc(mWorld, strlen(filename) + 1);
-        ReturnSCErrIfNil(mFilename);
-        strcpy(mFilename, filename);
-    }
+    auto size = strlen(filename) + 1; // include null-terminator
+    mFilename = (char*)World_Alloc(mWorld, size);
+    ReturnSCErrIfNil(mFilename);
+    memcpy(mFilename, filename, size);
 
     GET_COMPLETION_MSG(msg);
 
@@ -1438,27 +1316,29 @@ int LoadSynthDefDirCmd::Init(char* inData, int inSize) {
 
 LoadSynthDefDirCmd::~LoadSynthDefDirCmd() { World_Free(mWorld, mFilename); }
 
-void LoadSynthDefDirCmd::CallDestructor() { this->~LoadSynthDefDirCmd(); }
-
 bool LoadSynthDefDirCmd::Stage2() {
-    if (!std::filesystem::exists(mFilename)) {
-        char str[ERR_BUF_SIZE];
-        snprintf(str, ERR_BUF_SIZE, "Could not load synthdefs. Directory '%s' does not exist\n", mFilename);
-        SendFailure(&mReplyAddress, "/d_loadDir", mFilename);
-        scprintf(str);
+    try {
+        if (!std::filesystem::exists(mFilename)) {
+            char str[ERR_BUF_SIZE];
+            snprintf(str, ERR_BUF_SIZE, "Could not load synthdefs. Directory '%s' does not exist\n", mFilename);
+            throw std::runtime_error(str);
+        }
+
+        auto path = createRestrictedPathFromCStr(mFilename, mWorld->mRestrictedPath);
+        mDefs = GraphDef_LoadDir(mWorld, path, mDefs);
+        if (!mDefs) {
+            // QUESTION: should this really be an error or could this be a warning?
+            char str[ERR_BUF_SIZE];
+            snprintf(str, ERR_BUF_SIZE, "No synthdefs found in directory: '%s'\n", mFilename);
+            throw std::runtime_error(str);
+        }
+    } catch (const std::exception& e) {
+        SendFailure("/d_loadDir", e.what());
+        scprintf(e.what());
         return false;
     }
-    mDefs = GraphDef_LoadDir(mWorld, mFilename, mDefs);
-    if (mDefs) {
-        return true;
-    }
-    {
-        char str[ERR_BUF_SIZE];
-        snprintf(str, ERR_BUF_SIZE, "No synthdefs found in directory: '%s'\n", mFilename);
-        SendFailure(&mReplyAddress, "/d_loadDir", mFilename);
-        scprintf(str);
-        return false;
-    }
+
+    return true;
 }
 
 bool LoadSynthDefDirCmd::Stage3() {
@@ -1471,18 +1351,17 @@ void LoadSynthDefDirCmd::Stage4() { SendDone("/d_loadDir"); }
 
 ///////////////////////////////////////////////////////////////////////////
 
-SendReplyCmd::SendReplyCmd(World* inWorld, ReplyAddress* inReplyAddress):
+SendReplyCmd::SendReplyCmd(World* inWorld, const ReplyAddress* inReplyAddress):
     SC_SequencedCommand(inWorld, inReplyAddress) {}
 
-int SendReplyCmd::Init(char* inData, int inSize) {
+int SendReplyCmd::Init(const char* inData, int inSize) {
+    // the message data will be deallocated in ~SC_SequencedCommand.
     mMsgSize = inSize;
     mMsgData = (char*)World_Alloc(mWorld, mMsgSize);
     ReturnSCErrIfNil(mMsgData);
     memcpy(mMsgData, inData, inSize);
     return kSCErr_None;
 }
-
-void SendReplyCmd::CallDestructor() { this->~SendReplyCmd(); }
 
 bool SendReplyCmd::Stage2() {
     SendReply(&mReplyAddress, mMsgData, mMsgSize);
@@ -1535,7 +1414,7 @@ SCErr PerformAsynchronousCommandEx(
 
 template <typename StageFn>
 AsyncPlugInCmd_<StageFn>::AsyncPlugInCmd_(
-    World* inWorld, ReplyAddress* inReplyAddress, const char* cmdName, void* cmdData,
+    World* inWorld, const ReplyAddress* inReplyAddress, const char* cmdName, void* cmdData,
     StageFn stage2, // stage2 is non real time
     StageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
     StageFn stage4, // stage4 is non real time - sends done if stage4 returns true
@@ -1561,8 +1440,6 @@ template <typename StageFn> AsyncPlugInCmd_<StageFn>::~AsyncPlugInCmd_() {
     if (mCleanup)
         mCleanup(mWorld, mCmdData);
 }
-
-template <typename StageFn> void AsyncPlugInCmd_<StageFn>::CallDestructor() { this->~AsyncPlugInCmd_(); }
 
 template <typename StageFn> bool AsyncPlugInCmd_<StageFn>::Stage2() {
     bool result;
@@ -1627,7 +1504,7 @@ SCErr PerformAsyncUnitCommand(
 ///////////////////////////////////////////////////////////////////////////
 
 AsyncUnitCmd::AsyncUnitCmd(
-    Unit* inUnit, ReplyAddress* inReplyAddress, const char* cmdName, void* cmdData,
+    Unit* inUnit, const ReplyAddress* inReplyAddress, const char* cmdName, void* cmdData,
     AsyncUnitStageFn stage2, // stage2 is non real time
     AsyncUnitStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
     AsyncUnitStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
@@ -1640,8 +1517,7 @@ AsyncUnitCmd::AsyncUnitCmd(
     mStage2(stage2),
     mStage3(stage3),
     mStage4(stage4),
-    mCleanup(cleanup),
-    mAlive(true) {
+    mCleanup(cleanup) {
     // make sure that the owning Graph is kept alive for the whole duration of the command!
     Graph_AddRef(inUnit->mParent);
 
@@ -1659,8 +1535,6 @@ AsyncUnitCmd::~AsyncUnitCmd() {
     // finally release the owning Graph
     Graph_Release(mUnit->mParent);
 }
-
-void AsyncUnitCmd::CallDestructor() { this->~AsyncUnitCmd(); }
 
 bool AsyncUnitCmd::Stage2() {
     bool result = !mStage2 || (mStage2)(mUnit, mCmdData, &mReplyAddress);

@@ -1697,7 +1697,7 @@ int prSFOpenWrite(struct VMGlobals* g, int numArgsPushed) {
     memcpy(sampleFormat, slotRawString(formatSlot)->s, slotRawObject(formatSlot)->size);
     sampleFormat[slotRawString(formatSlot)->size] = 0;
 
-    error = sndfileFormatInfoFromStrings(&info, headerFormat, sampleFormat);
+    error = sndfileFormatInfoFromStrings(info, headerFormat, sampleFormat);
     if (error) {
 #    ifdef _WIN32
         free(sampleFormat);
