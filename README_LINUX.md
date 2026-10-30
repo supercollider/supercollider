@@ -35,6 +35,33 @@ alias supernova="flatpak run --command=supernova online.supercollider.SuperColli
 
 To build the flatpak file locally, follow the build instructions from the CI, see [.github/workflows/build_flatpak.yaml](.github/workflows/build_flatpak.yaml).
 
+## Distribution packages
+
+Several Linux distributions ship SuperCollider in their package
+repositories, which is the quickest way to get a working installation.
+Note that the packaged version can lag behind the
+[latest upstream release](https://github.com/supercollider/supercollider/releases):
+as of October 2026, Debian 13 (trixie), Ubuntu 24.04 and Fedora 42
+provide 3.13.0, while Debian testing and unstable already provide 3.14.1.
+
+```shell
+# Debian / Ubuntu (universe repository)
+sudo apt install supercollider
+# Fedora
+sudo dnf install supercollider
+```
+
+See the package overviews for
+[Debian](https://packages.debian.org/supercollider) and
+[Fedora](https://packages.fedoraproject.org/pkgs/supercollider/supercollider/)
+for the version available in each release.
+
+The [SuperCollider PPA](https://launchpad.net/~supercollider/+archive/ubuntu/ppa)
+for Ubuntu has not seen an upload since 2018 (its newest build is 3.9.1
+for Ubuntu 18.04) and does not support current Ubuntu releases — prefer
+the distribution package, the experimental [Flatpak](#flatpak) build,
+or [building from source](#build-requirements).
+
 ## Build requirements
 
 These are strict requirements for scsynth and supernova:
@@ -418,6 +445,32 @@ The most up-to-date Debian packaging rules are maintained by the
 Debian Multimedia team. Repository (with debian/ folder):
 
 <https://salsa.debian.org/multimedia-team/supercollider>
+
+## Installing sc3-plugins
+
+The [sc3-plugins](https://github.com/supercollider/sc3-plugins) are an
+optional collection of third-party UGen extensions for the synthesis
+servers. They are maintained in a separate repository and have to be
+built separately; refer to the
+[sc3-plugins README](https://github.com/supercollider/sc3-plugins#compile-from-source)
+for the full instructions. In short:
+
+```shell
+git clone --recursive https://github.com/supercollider/sc3-plugins.git
+cd sc3-plugins
+mkdir build && cd build
+# build for scsynth and supernova; set -DSUPERNOVA=OFF for scsynth only
+cmake -DSC_PATH=/path/to/supercollider/source -DCMAKE_BUILD_TYPE=Release -DSUPERNOVA=ON ..
+cmake --build . --config Release
+# install the plugins; on Linux this usually requires sudo
+sudo cmake --build . --config Release --target install
+```
+
+If `SC_PATH` is not given, the build system searches the standard
+system locations for the SuperCollider headers, e.g.
+`/usr/include/SuperCollider` after installing the `supercollider-dev`
+package on Debian or Ubuntu, or `/usr/local/include/SuperCollider`
+after a source build with the default install prefix.
 
 ## Running scsynth or supernova (standalone)
 
