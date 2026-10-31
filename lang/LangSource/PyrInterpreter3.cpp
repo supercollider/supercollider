@@ -19,6 +19,7 @@
 */
 
 
+#include "ClassLibraryInfo.hpp"
 #include "GC.h"
 #include "Opcodes.h"
 #include "PyrInterpreter.h"
@@ -299,9 +300,8 @@ static void handleSigUsr1(int param) {
 #endif
 
 template <typename F> void ifTailCallOptimise(F&& f) {
-#if TAILCALLOPTIMIZE
-    std::forward<F>(f)();
-#endif
+    if (gClassLibraryInfo.generateTailCalls)
+        std::forward<F>(f)();
 }
 
 void initRuntime(VMGlobals* g, int poolSize, AllocPool* inPool) {
