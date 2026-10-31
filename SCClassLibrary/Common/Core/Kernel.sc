@@ -822,6 +822,7 @@ RawPointer {
 Interpreter {
 	// The interpreter defines a context in which interactive commands
 	// are compiled.
+	classvar <>interpretThrows = false;
 
 
 	// NOTE: all instance variables defined here (or in Object) will be accessible from every single function evaluated in the repl,
@@ -845,7 +846,11 @@ Interpreter {
 
 	var <>codeDump, <>preProcessor;
 
+
 	*new { ^this.shouldNotImplement(thisMethod) }
+	*initClass {
+		interpretThrows = Main.scVersionMinor > 15;
+	}
 
 	interpretCmdLine {
 		^this.prCompileUsingMembers.()
@@ -854,7 +859,14 @@ Interpreter {
 	interpretPrintCmdLine {
 		var res, func, code = cmdLine, doc, ideClass = \ScIDE.asClass;
 		preProcessor !? { cmdLine = preProcessor.value(cmdLine, this) };
-		func = this.prCompileUsingMembers;
+		// Here we do throw because this method is called by the ide when the user runs code.
+		try {
+			func = this.prCompileUsingMembers;
+		} { |er|
+			er.showBacktrace = false;
+			er.reportError;
+			^this
+		};
 		if (ideClass.notNil) {
 			thisProcess.nowExecutingPath = ideClass.currentPath
 		} {
@@ -891,17 +903,26 @@ Interpreter {
 		filePath = filePath_;
 		lineNumber = lineNumber_;
 		column = column_;
-		^this.prCompileUsingMembers
+		if (Interpreter.interpretThrows) {
+			^this.prCompileUsingMembers
+		} {
+			^try {
+				this.prCompileUsingMembers
+			} { |er|
+				er.reportError(Post);
+				"From version 3.16 this error will throw an exception instead. To enable this now run `Interpreter.interpretThrows = true`".warn;
+				nil
+			}
+		}
 	}
 
 	prCompileUsingMembers {
 		^this.prCompile(cmdLine, filePath, lineNumber, column)
 	}
 
-	prCompile { |string, filePath, lineNumber, column|
-		_CompileExpression
-		// TODO: this is rather bad, returning nil if the compilation fails means we can't tell if it failed because returning nil is valid.
-		^nil
+	prCompile { |string, filePath, lineNumber, column, primitiveReturnedErrorText|
+		_CompileExpression;
+		CompilerError(primitiveReturnedErrorText).throw;
 	}
 
 	clearAll {
