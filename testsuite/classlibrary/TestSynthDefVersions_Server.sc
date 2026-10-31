@@ -1,31 +1,32 @@
+//# VERSION 3.16
 TestSynthDefVersions_Server : UnitTest {
 	var compiledDefs;
 
 	setUp {
-		var defArray1, defArray2, defArray3, stream, graphFunc, variants;
+		var graphFunc;
 
 		graphFunc = { |out, value=1| Out.kr(out, value) };
-		variants = (a: [ value: 2 ], b: [ value: 3 ], c: [ value: 4 ]);
+		var variants = (a: [ value: 2 ], b: [ value: 3 ], c: [ value: 4 ]);
 
 		// test with multiple SynthDefs per message. Also include variants.
-		defArray1 = [
+		var defArray1 = [
 			SynthDefOld(\test_v1_1, graphFunc, variants: variants),
 			SynthDefOld(\test_v1_2, graphFunc, variants: variants)
 		];
 
-		defArray2 = [
+		var defArray2 = [
 			SynthDef(\test_v2_1, graphFunc, variants: variants),
 			SynthDef(\test_v2_2, graphFunc, variants: variants)
 		];
 
-		defArray3 = [
+		var defArray3 = [
 			SynthDef(\test_v3_1, graphFunc, variants: variants),
 			SynthDef(\test_v3_2, graphFunc, variants: variants)
 		];
 
 		compiledDefs = [];
 		// write version 1
-		stream = CollStream.on(Int8Array.new(256));
+		var stream = CollStream.on(Int8Array.new(256));
 		defArray1.writeDefOld(stream);
 		compiledDefs = compiledDefs.add(1).add(stream.collection);
 		// write version 2
@@ -48,7 +49,6 @@ TestSynthDefVersions_Server : UnitTest {
 			var cond = Condition();
 			// use a fresh pair of control busses for each def
 			var ctlBus = Bus.control(server, 2);
-			var defName;
 
 			server.sendMsg('/d_recv', bytes);
 
@@ -58,7 +58,7 @@ TestSynthDefVersions_Server : UnitTest {
 
 			this.assert(server.serverRunning, "synthdef v% should not crash %".format(version, serverName));
 
-			defName = ("test_v"++version++"_1").asSymbol;
+			var defName = ("test_v"++version++"_1").asSymbol;
 			Synth(defName, [ out: ctlBus.index, value: 5 ], server);
 
 			defName = ("test_v"++version++"_2").asSymbol;

@@ -1,3 +1,4 @@
+//# VERSION 3.16
 /*
 TestEvent.run
 UnitTest.gui
@@ -8,7 +9,7 @@ TestEvent : UnitTest {
 
 	test_equality {
 
-		var a,b,c, x, y, keys, values;
+		var a, b, c, y, keys;
 
 		a = (a: 100, b: 200, c: [1, 2, 3]);
 		b = (a: 100, b: 200, c: [1, 2, 3]);
@@ -20,9 +21,9 @@ TestEvent : UnitTest {
 
 		this.assert( a == a, "an Events should equal itself");
 
-		x = ().putPairs([{ |i| ("key_" ++ i).asSymbol }.dup(80), 0].flop.flat);
+		var x = ().putPairs([{ |i| ("key_" ++ i).asSymbol }.dup(80), 0].flop.flat);
 		keys = x.keys.asArray;
-		values = keys.collect { |key| x.at(key) };
+		var values = keys.collect { |key| x.at(key) };
 
 		this.assert(values.includes(nil).not, "an Event responds to all its keys");
 
@@ -103,12 +104,12 @@ TestEvent : UnitTest {
 	}
 
 	test_event_addParentType {
-		var event, noError = true;
+		var noError = true;
 		Event.addEventType(\testType, {
 			~calculated = ~given;
 		}, (given: 1));
 		// must play to attach parent event
-		event = (type: \testType).play;
+		var event = (type: \testType).play;
 		this.assert(event[\calculated] == 1, "parentType values should be accessible during event play");
 		// cleanup eventTypes:
 		Event.addEventType(\testType, nil);
@@ -207,6 +208,8 @@ TestEvent : UnitTest {
 
 	test_server_messages_type_note {
 		// type note
+		// 3.16: a variable can't be used before it is declared, so finishTest is declared first.
+		var finishTest = false;
 		var event = (
 			type: \note,
 			instrument: \xxx_test,
@@ -218,7 +221,6 @@ TestEvent : UnitTest {
 			latency: 0,
 			finish: { finishTest = true }
 		);
-		var i, msg1, finishTest = false;
 		var isPlaying;
 
 		SynthDef(\xxx_test, { |freq, zzzz, gate = 1|
@@ -238,8 +240,8 @@ TestEvent : UnitTest {
 		event.play;
 		0.5.wait;
 
-		msg1 = prevMsg[0];
-		i = msg1.indexOf(\freq);
+		var msg1 = prevMsg[0];
+		var i = msg1.indexOf(\freq);
 		this.assert(msg1[i+1].cpsmidi == 73, "note 0 octave 6 ctranspose 1 equals midinote 73");
 		this.assert(msg1[4] == 1, "synth created in root node");
 		this.assert(msg1.includes(\zzzz), "SynthDesc provides parameters to send in message");

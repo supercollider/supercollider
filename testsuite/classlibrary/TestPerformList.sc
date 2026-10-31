@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestPerformListObj {
     f1 {|a, b, c| ^(a: a, b: b, c: c) }
     f2 {|a, b, c, selector| ^(selector: selector, a: a, b: b, c: c) }

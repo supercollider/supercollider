@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestClass : UnitTest {
 
 	test_respondingMethods_no_duplicates {

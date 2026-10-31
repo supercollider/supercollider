@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestNode_Server : UnitTest {
 
 	var server;
@@ -12,16 +13,15 @@ TestNode_Server : UnitTest {
 	}
 
 	test_get {
-		var setValue, getValue, node;
 		var condition = Condition.new;
 
 		SynthDef(\test_get, { |control = 8| }).add;
 		server.sync;
-		setValue = 888;
-		node = Synth(\test_get, [control: setValue]);
+		var setValue = 888;
+		var node = Synth(\test_get, [control: setValue]);
 		server.sync;
 
-		getValue = 0;
+		var getValue = 0;
 		node.get(\control, { |value|
 			getValue = value;
 			condition.unhang;
@@ -34,20 +34,19 @@ TestNode_Server : UnitTest {
 
 	// this one currently fails with supernova (3.9.3)
 	test_getn {
-		var setnValues, getnValues, node;
 		var condvar = CondVar();
 
 		SynthDef(\test_getn, { |control1 = 2, control2 = 22.2, control3 = 222| }).add;
 		server.sync;
-		setnValues = [888, 88.8, 8.88];
-		node = Synth(\test_getn, [
+		var setnValues = [888, 88.8, 8.88];
+		var node = Synth(\test_getn, [
 			control1: setnValues[0],
 			control2: setnValues[1],
 			control3: setnValues[2]
 		]);
 		server.sync;
 
-		getnValues = 0;
+		var getnValues = 0;
 		node.getn(0, 3, { |values|
 			getnValues = values;
 			condvar.signalOne;

@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestOpcodeReciever {
 	meow { |...args| ^args }
 	reciprocal { |...args| ^args }

@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestReadableNodeIDAllocator : UnitTest {
 
 	// test proper creation from Server

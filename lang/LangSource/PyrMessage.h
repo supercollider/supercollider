@@ -27,8 +27,9 @@ static constexpr size_t temporaryKeywordStackCapacity = 128;
 extern PyrSlot temporaryKeywordStack[temporaryKeywordStackCapacity];
 extern bool gKeywordError;
 extern PyrMethod** gRowTable;
+extern std::int64_t cvxCurrentEnvironment;
 
-void initUniqueMethods();
+void initClassVarOffsets();
 
 void prepareArgsForExecute(VMGlobals* g, PyrBlock* block, PyrFrame* callFrame, std::int64_t totalSuppliedArgs,
                            std::int64_t numKwArgsSupplied, bool isMethod, PyrObject* optionalEnvirLookup = nullptr);
@@ -47,3 +48,6 @@ void returnFromMethod(VMGlobals* g);
 
 int keywordFixStack(VMGlobals* g, PyrMethod* meth, PyrMethodRaw* methraw, std::int64_t allArgsPushed,
                     std::int64_t numKeyArgsPushed);
+
+PyrSlot shortcutMethAssign(VMGlobals* g, PyrMethod* meth, PyrMethodRaw* methraw, std::int64_t allArgsPushed,
+                           std::int64_t numKeyArgsPushed);

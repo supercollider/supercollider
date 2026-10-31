@@ -66,7 +66,7 @@ Float : SimpleNumber {
 
 	archiveAsCompileString { ^true }
 
-	// the correct place to implement compileString for Float is in DumpParseNode.cpp
+	// the correct place to implement compileString for Float is in PyrSlot.cpp
 	// int asCompileString(PyrSlot *slot, char *str)
 	// for now, solve it here.
 

@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestInteger : UnitTest {
 	test_forBy_positiveIntegerArguments {
 		var forByArguments = List.new;

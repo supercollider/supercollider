@@ -84,8 +84,9 @@ SCLANG_DLLEXPORT_C void runLibrary(struct PyrSymbol* selector,
                                    const bool runsInMainThread = LANG_THREAD_IS_MAIN_THREAD);
 SCLANG_DLLEXPORT_C void runInterpreter(struct VMGlobals* g, struct PyrSymbol* selector, int numArgsPushed);
 SCLANG_DLLEXPORT_C void shutdownLibrary(bool wasCompiledPreviously);
+// The version is the language version the text is compiled as, e.g., "3.16", or null for the one on its line 1.
 SCLANG_DLLEXPORT_C void setCommandLine(const char* txt, size_t txtSize, const char* filePath, int lineNumber = 0,
-                                       int column = 0);
+                                       int column = 0, const char* version = nullptr);
 
 
 SCLANG_DLLEXPORT_C struct VMGlobals* scGlobals();

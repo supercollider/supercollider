@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestExtension_Base {
 	*foo { ^\foo }
 	*bar { ^\bar }

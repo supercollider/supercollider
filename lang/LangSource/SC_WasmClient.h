@@ -20,7 +20,6 @@ SuperCollider real time audio synthesis system wasm binding
 #pragma once
 #include <ostream>
 
-#include "PyrLexer.h"
 #include "PyrObject.h"
 #include "SC_LanguageClient.h"
 

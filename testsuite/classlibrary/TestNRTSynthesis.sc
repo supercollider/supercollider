@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestNRTSynthesis : UnitTest {
 	setUp {}
 
@@ -10,15 +11,15 @@ TestNRTSynthesis : UnitTest {
 	// helper method
 	performInputTest { |serverType|
 		var server, score, condVar = CondVar(), exitCode;
-		var inputFile, inputData, outputFile, outputData, sampleRate, sizeDiff;
+		var sampleRate;
 		var outputFilePath = Platform.defaultTempDir +/+ "nrt_test_%.wav".format(serverType);
 
-		inputFile = SoundFile.openRead(ExampleFiles.child);
+		var inputFile = SoundFile.openRead(ExampleFiles.child);
 		if (inputFile.numChannels != 1) {
 			Error("input file is supposed to be a mono file").throw;
 		};
 		sampleRate = inputFile.sampleRate;
-		inputData = FloatArray.newClear(inputFile.numFrames);
+		var inputData = FloatArray.newClear(inputFile.numFrames);
 		inputFile.readData(inputData);
 		if (inputData.size != inputFile.numFrames) {
 			Error("could not read input file data").throw;
@@ -63,7 +64,7 @@ TestNRTSynthesis : UnitTest {
 		};
 		this.assertEquals(exitCode, 0, serverType ++ ": NRT synthesis completes without errors");
 
-		outputFile = SoundFile.openRead(outputFilePath);
+		var outputFile = SoundFile.openRead(outputFilePath);
 		if (outputFile.isNil) {
 			Error("no output file").throw;
 		};
@@ -85,7 +86,7 @@ TestNRTSynthesis : UnitTest {
 		this.assertEquals(1, outputFile.numChannels,
 			serverType ++ ": the output file has the correct number of channels");
 
-		sizeDiff = outputFile.numFrames - inputFile.numFrames;
+		var sizeDiff = outputFile.numFrames - inputFile.numFrames;
 
 		this.assert(sizeDiff >= 0,
 			serverType ++ ": the output file must not be shorter than the input file.");
@@ -93,7 +94,7 @@ TestNRTSynthesis : UnitTest {
 		this.assert(sizeDiff < server.options.blockSize,
 			serverType ++ ": the size difference between input and output file must be smaller than the Server block size.");
 
-		outputData = FloatArray.newClear(outputFile.numFrames);
+		var outputData = FloatArray.newClear(outputFile.numFrames);
 		outputFile.readData(outputData);
 		if (outputData.size != outputFile.numFrames) {
 			Error(serverType ++ ": could not read output file data").throw;
@@ -124,9 +125,8 @@ TestNRTSynthesis : UnitTest {
 	// helper method
 	performInputChannelMismatchTest { |serverType|
 		var server, score, condVar = CondVar(), exitCode;
-		var inputFile, inputData, outputFile, outputData;
 		var outputFilePath = Platform.defaultTempDir +/+ "nrt_test_%.wav".format(serverType);
-		var sampleRate, audioBus;
+		var sampleRate;
 		var getChannel = { |data, channel, numChannels|
 			var result = [];
 			forBy(channel, data.size - 1, numChannels) { |i|
@@ -135,12 +135,12 @@ TestNRTSynthesis : UnitTest {
 			result;
 		};
 
-		inputFile = SoundFile.openRead(ExampleFiles.child);
+		var inputFile = SoundFile.openRead(ExampleFiles.child);
 		if (inputFile.numChannels != 1) {
 			Error("input file is supposed to be a mono file").throw;
 		};
 		sampleRate = inputFile.sampleRate;
-		inputData = FloatArray.newClear(inputFile.numFrames);
+		var inputData = FloatArray.newClear(inputFile.numFrames);
 		inputFile.readData(inputData);
 		if (inputData.size != inputFile.numFrames) {
 			Error("could not read input file data").throw;
@@ -158,7 +158,7 @@ TestNRTSynthesis : UnitTest {
 		);
 
 		// the bus should start after the last input channel
-		audioBus = Bus.audio(server);
+		var audioBus = Bus.audio(server);
 		if (audioBus.index != server.options.firstPrivateBus) {
 			Error("audio bus should be the first private bus").throw;
 		};
@@ -198,14 +198,14 @@ TestNRTSynthesis : UnitTest {
 		};
 		this.assertEquals(exitCode, 0, serverType ++ ": NRT synthesis completes without errors");
 
-		outputFile = SoundFile.openRead(outputFilePath);
+		var outputFile = SoundFile.openRead(outputFilePath);
 		if (outputFile.isNil) {
 			Error("no output file").throw;
 		};
 		if (outputFile.numFrames == 0) {
 			Error("output file is empty").throw;
 		};
-		outputData = FloatArray.newClear(outputFile.numFrames * outputFile.numChannels);
+		var outputData = FloatArray.newClear(outputFile.numFrames * outputFile.numChannels);
 		outputFile.readData(outputData);
 		if (outputData.size != (outputFile.numFrames * outputFile.numChannels)) {
 			Error(serverType ++ ": could not read output file data").throw;
@@ -248,11 +248,11 @@ TestNRTSynthesis : UnitTest {
 		// At 48 kHz, a 1 second sound file should produce exactly 48000 samples.
 		// (48000 is a multiple of the Server block size.)
 		var sampleRate = 48000, duration = 1.0, numFrames = (sampleRate * duration).asInteger;
-		var inputFile, inputFilePath = Platform.defaultTempDir +/+ "nrt_test_in_%.wav".format(serverType);
-		var outputFile, outputFilePath = Platform.defaultTempDir +/+ "nrt_test_out_%.wav".format(serverType);
+		var inputFilePath = Platform.defaultTempDir +/+ "nrt_test_in_%.wav".format(serverType);
+		var outputFilePath = Platform.defaultTempDir +/+ "nrt_test_out_%.wav".format(serverType);
 
 		// create an input file with the appropriate sample rate.
-		inputFile = SoundFile.openWrite(inputFilePath, "wav", "int16", 1, sampleRate);
+		var inputFile = SoundFile.openWrite(inputFilePath, "wav", "int16", 1, sampleRate);
 		// the input file is supposed to be longer than the given duration, so we can
 		// test that NRT synthesis honors the score duration and not the input file length.
 		inputFile.writeData(FloatArray.newClear((duration * 1.5 * sampleRate).asInteger));
@@ -302,7 +302,7 @@ TestNRTSynthesis : UnitTest {
 		};
 		this.assertEquals(exitCode, 0, serverType ++ ": NRT synthesis completes without errors");
 
-		outputFile = SoundFile.openRead(outputFilePath);
+		var outputFile = SoundFile.openRead(outputFilePath);
 		if (outputFile.isNil) {
 			Error("no output file").throw;
 		};

@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestKwargs_Obj {
 	foo { |a, b...args, kwargs|
 		var x = 100;

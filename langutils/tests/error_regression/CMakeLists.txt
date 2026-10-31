@@ -22,3 +22,17 @@ foreach(test ${tests})
     # Makes sure sc_inspect and find_assertions are built before.
     set_tests_properties(${test_target} PROPERTIES FIXTURES_REQUIRED sc_inspect_fixture)
 endforeach()
+
+
+add_custom_target(
+    langutils_regression_test_override
+    COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/test.py --cmd=$<TARGET_FILE:sc_inspect> --find-assertions=$<TARGET_FILE:find_assertions> --override  
+    DEPENDS sc_inspect find_assertions
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "override the expected results of the resgression tests"
+)
+
+set_property(
+    TARGET langutils_regression_test_override
+    PROPERTY FOLDER Util 
+)

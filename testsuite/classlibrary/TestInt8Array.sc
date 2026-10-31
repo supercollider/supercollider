@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestInt8Array : UnitTest {
 	test_parseOSC_convertMsg {
 		var msg = [ '/foo', 1, 1.5, 2, 'bar' ];

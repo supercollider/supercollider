@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestSynthDefVersions : UnitTest {
 	compareSynthDescs { |a, b|
 		(a.name + b.name);
@@ -77,7 +78,6 @@ TestSynthDefVersions : UnitTest {
 		var defClass = if (version > 1) { SynthDef } { SynthDefOld };
 		var graphFunc = { |in, out, freq=440, amp=1.0| Out.ar(out, (SinOsc.ar(freq) * In.ar(in)) * amp) };
 		var variants = (a: [ freq: 220 ], b: [ freq: 100 ], c: [ freq: 600 ]);
-		var didReadStream;
 		// test with multiple SynthDefs per message. Also include variants.
 		defArray = [
 			defClass.new(("test_v"++version++"_1").asSymbol, graphFunc, variants: variants),
@@ -95,7 +95,7 @@ TestSynthDefVersions : UnitTest {
 		data = data.extend(data.size - 4);
 		// now try to read the corrupted SynthDef.
 		// on every iteration, slice off half of the data.
-		didReadStream = false;
+		var didReadStream = false;
 		while { data.size > 1 } {
 			stream = CollStream(data);
 			try {

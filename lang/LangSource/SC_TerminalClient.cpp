@@ -28,8 +28,10 @@
 
 #include "SC_CLIOptions.hpp"
 #include "SC_LanguageClient.h"
+#include "sc_diagnostic/style.hpp"
 
 #include <cstdlib>
+#include <string_view>
 #include <charconv>
 
 #ifdef SC_QT
@@ -43,6 +45,10 @@
 
 #ifdef __APPLE__
 #    include "../../common/SC_Apple.hpp"
+#endif
+
+#ifndef _WIN32
+#    include <unistd.h>
 #endif
 
 #ifdef HAVE_READLINE
@@ -96,6 +102,23 @@ void SC_TerminalClient::postError(const char* str, size_t len) {
 }
 
 void SC_TerminalClient::flush() { fflush(gPostDest); }
+
+// Colour only on Linux and macOS, when the post output is a terminal that hasn't opted out (https://no-color.org).
+// Decided once, so it never reads the environment while the language thread is changing it with String:setenv.
+const sc::diag::Style& SC_TerminalClient::diagnosticStyle() const {
+    static const sc::diag::Style& style = []() -> const sc::diag::Style& {
+#ifndef _WIN32
+        static const sc::diag::AnsiStyle ansi;
+        const auto* term = std::getenv("TERM");
+        const auto* no_color = std::getenv("NO_COLOR");
+        const auto is_terminal = isatty(fileno(gPostDest)) && term && std::string_view { term } != "dumb";
+        if (is_terminal && !(no_color && *no_color))
+            return ansi;
+#endif
+        return sc::diag::plain_style();
+    }();
+    return style;
+}
 
 int SC_TerminalClient::run(int argc, char** argv) {
     Options& opt = mOptions;
@@ -158,6 +181,11 @@ static PyrSymbol* resolveMethodSymbol(bool silent) {
         return s_interpretPrintCmdLine;
 }
 
+// The input is the text to evaluate, ended by InterpretCmdLine or InterpretPrintCmdLine (prints the result). An
+// optional header before the text says where it came from, with each record separated by RecordDelimiter:
+//   StartOfHeader file RecordDelimiter line RecordDelimiter column [RecordDelimiter version] StartOfText
+// The line and column are 0 based. The version is a language release, e.g., 3.16 or legacy, read by an editor from
+// line 1 of the file. Without it, the text's own line 1 sets the version. Later records may be added, and are ignored.
 void SC_TerminalClient::interpretInput() {
     std::string cmdLine;
     if (!tryPopCmdLine(cmdLine)) {
@@ -178,6 +206,7 @@ void SC_TerminalClient::interpretInput() {
     std::string fileName;
     int lineNumber = 0;
     int column = 0;
+    std::string version;
 
     size_t startOfText = 0;
     size_t endOfText = cmdLine.size() - 1; // exclude control character
@@ -228,13 +257,21 @@ void SC_TerminalClient::interpretInput() {
             return;
         }
 
+        // 4. version, optional, checked when the text is compiled
+        if (endpos < header.size()) {
+            startpos = endpos + 1;
+            endpos = std::min<size_t>(header.find(RecordDelimiter, startpos), header.size());
+            version = header.substr(startpos, endpos - startpos);
+        }
+
         // exclude StartOfText character
         startOfText = endOfHeader + 1;
     }
 
     std::string_view text(cmdLine.data() + startOfText, endOfText - startOfText);
 
-    setCmdLine(text.data(), text.size(), !fileName.empty() ? fileName.c_str() : nullptr, lineNumber, column);
+    setCmdLine(text.data(), text.size(), !fileName.empty() ? fileName.c_str() : nullptr, lineNumber, column,
+               !version.empty() ? version.c_str() : nullptr);
 
     runLibrary(resolveMethodSymbol(silent));
 

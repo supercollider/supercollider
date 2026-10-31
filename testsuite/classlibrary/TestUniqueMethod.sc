@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestUniqueMethod : UnitTest {
 	test_simple {
 		var a = 5;

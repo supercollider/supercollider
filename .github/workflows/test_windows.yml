@@ -61,7 +61,7 @@ jobs:
         shell: bash
         continue-on-error: true
         run: |
-          timeout 20m $SCLANG --include-path $TESTS_PATH --include-path $COMPILER_TESTS_PATH $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT
+          timeout 30m $SCLANG --include-path $TESTS_PATH --include-path $COMPILER_TESTS_PATH $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT
 
       - name: Post test results
         shell: bash
