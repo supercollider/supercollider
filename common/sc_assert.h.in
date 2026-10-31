@@ -1,0 +1,38 @@
+#pragma once
+
+#cmakedefine01 SCLANG_SAFETY_SLOT_CHECK
+#cmakedefine01 SCLANG_SAFETY_STACK_OVERFLOW
+
+
+// In debug mode
+#ifndef NDEBUG
+#    define SCLANG_SAFETY_ENABLE_ALL 1
+#else
+#    cmakedefine01 SCLANG_SAFETY_ALL
+#endif
+
+
+// Lists all possible safety checks here.
+#if SCLANG_SAFETY_ENABLE_ALL || SCLANG_SAFETY_STACK_OVERFLOW || SCLANG_SAFETY_SLOT_CHECK
+#    define SCLANG_HAS_SOME_SAFETY_FLAGS 1
+#else
+#    define SCLANG_HAS_SOME_SAFETY_FLAGS 0
+#endif
+
+#if SCLANG_HAS_SOME_SAFETY_FLAGS
+
+#    include <iostream>
+
+#    define sc_assert(condition, msg, expr)                                                                            \
+        do {                                                                                                           \
+            if constexpr ((condition) || SCLANG_SAFETY_ENABLE_ALL) {                                                   \
+                if (!(expr)) {                                                                                         \
+                    std::cerr << msg << std::endl;                                                                     \
+                    std::terminate();                                                                                  \
+                }                                                                                                      \
+            }                                                                                                          \
+        } while (0)
+#else
+// Does nothing.
+#    define sc_assert(condition, msg, expr)
+#endif

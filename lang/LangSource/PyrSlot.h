@@ -20,6 +20,8 @@
 
 #pragma once
 
+
+#include "sc_assert.h"
 #include <functional>
 #include <algorithm>
 #include <string>
@@ -280,7 +282,7 @@ private:
     PyrSlot(PrivateTag, uint64_t tag, uint64_t raw) noexcept: u_raw(tag | raw) {}
     /// Requires a valid double or the safe nan value.
     PyrSlot(PrivateTag, double d) noexcept: u_double(d) {
-        assert([&]() -> bool {
+        sc_assert(SCLANG_SAFETY_SLOT_CHECK, "Cannot construct a slot with a nan double.", [&]() -> bool {
             if (std::isnan(d)) {
                 const auto bits = details::bit_cast<uint64_t>(d);
                 const auto t = PyrSlot(PrivateTag {}, bits);
@@ -412,42 +414,42 @@ public:
     [[nodiscard]] inline bool isFalse() const noexcept { return u_raw == Tags::falseTag; }
 
     [[nodiscard]] inline double getDouble() const noexcept {
-        assert(isDouble());
+        sc_assert(SCLANG_SAFETY_SLOT_CHECK, "Expected double.", isDouble());
         return u_double;
     }
     [[nodiscard]] inline char getChar() const noexcept {
+        sc_assert(SCLANG_SAFETY_SLOT_CHECK, "Expected char.", isChar());
         assert(isChar());
         return u_char.value;
     }
     [[nodiscard]] inline int32_t getInt() const noexcept {
-        assert(isInt());
+        sc_assert(SCLANG_SAFETY_STACK_OVERFLOW, "Expected int.", isInt());
         return u_int.value;
     }
     [[nodiscard]] inline void* getPtr() const noexcept {
         if (isPtr())
             return u_ptr.getPtr();
-        assert(isNil() || (isInt() && getInt() == 0));
+        sc_assert(SCLANG_SAFETY_STACK_OVERFLOW, "Expected a ptr or nil/zero",
+                  isNil() || (isInt() && getInt() == 0 || (isDouble() && getDouble() == 0)));
         return nullptr;
     }
     [[nodiscard]] inline struct PyrObjectHdr* getObjectHdr() const noexcept {
-        assert(isObjectHdr());
+        sc_assert(SCLANG_SAFETY_SLOT_CHECK, "Expected object hdr", isObjectHdr());
         return u_objectHeader.getPtr();
     }
     [[nodiscard]] inline struct PyrSymbol* getSymbol() const noexcept {
-        if (isSymbol())
-            return u_symbol.getPtr();
-        assert(isNil() || (isInt() && getInt() == 0) || (isDouble() && getDouble() == 0));
-        return nullptr;
+        sc_assert(SCLANG_SAFETY_SLOT_CHECK, "Expected a symbol", isSymbol());
+        return u_symbol.getPtr();
     }
     template <typename T> [[nodiscard]] inline T* getPyrObjType() const noexcept {
         // types are incomplete here so can't check...
         // static_assert(std::is_base_of<PyrObjectHdr, T>::value, "Type must derive from PyrObjectHeader");
-        assert(isBoxed());
         if (isObjectHdr())
             return reinterpret_cast<T*>(u_objectHeader.getPtr());
         // Previously, these values have all been used to mean nullptr. This is quite confusing, but would be a large
         // breaking change that affected the langauge, so they remain.
-        assert(isNil() || (isInt() && getInt() == 0) || (isDouble() && getDouble() == 0));
+        sc_assert(SCLANG_SAFETY_SLOT_CHECK, "Expected a boxed value or nil/zero.",
+                  isBoxed() || isNil() || (isInt() && getInt() == 0) || (isDouble() && getDouble() == 0));
         return nullptr;
     }
 
