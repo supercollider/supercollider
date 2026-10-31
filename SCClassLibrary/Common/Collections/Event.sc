@@ -1074,4 +1074,26 @@ Event : Environment {
 
 		defaultParentEvent = parentEvents.default;
 	}
+
+	getQuotient {
+		^if (
+			(this.keys == Set[\numerator, \denominator]) && (this[\denominator] != 0)
+		) {
+			(this[\numerator] / this[\denominator])
+		} {
+			"Two numbers required: first = numerator, second = denominator (not 0).".warn;
+			nil
+		}
+	}
+	
+	getModulus {
+		^if (
+			(this.keys == Set[\numerator, \denominator]) && (this[\denominator] != 0)
+		) {
+			(this[\numerator] % this[\denominator])
+		} {
+			"Two numbers required: first = numerator, second = denominator (not 0).".warn;
+			nil
+		}
+	}
 }
