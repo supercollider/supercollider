@@ -1,0 +1,425 @@
+// Messages. Every form is lowered to a single SCMessage, receiver.selector(positional, keyword: value, *variadic).
+// Trailing blocks are appended to the positional arguments.
+// Needs the ast graph for the children and payloads, and the symbol table for the selectors.
+#include "ast2ir/consteval.hpp"
+#include "ast2ir/expr.hpp"
+#include "ast2ir/expr/ranges.hpp"
+#include "ast2ir/literal_synthesis.hpp"
+#include "sc_parser/ast.hpp"
+#include "sc_parser/ast_untyped.hpp"
+#include "sc_sema/const_expr.hpp"
+#include "sc_sema/context.hpp"
+#include "sc_sema/ir.hpp"
+#include "sc_sema/symbol_table.hpp"
+
+namespace sc::ir::ast2ir {
+
+namespace {
+
+// Expr's graph and context are private, so its members pass them in.
+struct MessageContext {
+    Expr& expr;
+    Context& ctx;
+    IRGraph& ir;
+    const std::shared_ptr<const ast::ASTGraph>& ast_graph;
+};
+
+struct Selector {
+    OptionallyLocatable<SymSCSelector> name;
+    std::optional<SCAnyExpr_I> adverb;
+};
+
+// The argument lists are created up front, so arguments are appended to them as they are compiled.
+struct MessageArguments {
+    SCPosArgList_I positional;
+    SCKwArgList_I keyword;
+    SCVariadicArgList_I variadic;
+    // Functional notation, e.g., `foo(a, b)`, where the first positional argument is the receiver.
+    bool first_positional_is_receiver;
+    std::optional<SCAnyExpr_I> receiver {};
+    // Positional arguments must come before any variadic argument, as that is the order they are passed in.
+    std::optional<ast::VariadicArgIndex> first_variadic {};
+    bool reported_variadic_not_last { false };
+    // The receiver is a range that is only iterated, see iterates_range.
+    bool unbounded_receiver { false };
+};
+
+// `(a..).do(f)` is sent as `a.forSeries(nil, nil, f)`, so the range is never made and can be unbounded, with a warning
+// as it is removed in 3.16. Like the old compiler, only a plain `do` with positional arguments, at most 15 including
+// the receiver, is sent that way.
+bool iterates_range(const ast::ASTGraph& g, ast::SelectorMaybeAdverbIndex selector_i, ast::ArgumentListIndex arg_list,
+                    ast::BlockListIndex blocks, bool receiver_in_arguments) {
+    if (g.as_a<ast::SelectorWAdverbIndex>(selector_i) || get_string_view(g, selector_i) != "do")
+        return false;
+    int num_args { 1 };
+    for (auto it = g.children(arg_list).iter(); it; ++it) {
+        const ast::ArgumentEntryIndex entry = *it;
+        if (g.as_a<ast::KwArgIndex>(entry) || g.as_a<ast::VariadicArgIndex>(entry))
+            return false;
+        if (const auto inner = g.as_a<ast::BlockListIndex>(entry)) {
+            for (auto b = g.children(*inner).iter(); b; ++b)
+                ++num_args;
+        } else {
+            ++num_args;
+        }
+    }
+    for (auto it = g.children(blocks).iter(); it; ++it)
+        ++num_args;
+    if (receiver_in_arguments)
+        --num_args;
+    return num_args > 1 && num_args <= 15;
+}
+
+// The receiver, which can be an unbounded range before 3.16 if it is only iterated.
+Return<SCAnyExpr_I> receiver_expr(MessageContext& msg_ctx, ast::AnyExprIndex receiver, bool unbounded) {
+    if (const auto range = msg_ctx.ast_graph->as_a<ast::RangeIndex>(receiver);
+        range && unbounded && allows_unbounded_range_do(msg_ctx.expr.version))
+        return compile_range(msg_ctx.expr, msg_ctx.ir, msg_ctx.ast_graph, msg_ctx.ctx, *range, RangeEnd::Deprecated);
+    return msg_ctx.expr(receiver);
+}
+
+MessageArguments make_arguments(MessageContext& msg_ctx, ast::Index message_i,
+                                bool first_positional_is_receiver = false) {
+    const auto location = location_of(msg_ctx.ir, *msg_ctx.ast_graph, message_i);
+    return { msg_ctx.ir.create(SCPositionalArgs {}, location),
+             msg_ctx.ir.create(SCKwArgs {}, location),
+             msg_ctx.ir.create(SCVariadicArgs {}, location),
+             first_positional_is_receiver,
+             {} };
+}
+
+void append_positional(MessageContext& msg_ctx, MessageArguments& args, const Return<SCAnyExpr_I>& arg) {
+    if (args.first_variadic && !args.reported_variadic_not_last) {
+        args.reported_variadic_not_last = true;
+        const auto& g = *msg_ctx.ast_graph;
+        const auto arg_location = msg_ctx.ir.location(arg.ir_node);
+        msg_ctx.expr.sink(sc::diag::Diagnostic::variadic_argument_not_last(
+            get_text_info(g), get_location(g, *args.first_variadic), msg_ctx.ir.text_info(arg_location.source),
+            IRGraph::range(arg_location)));
+    }
+    if (args.first_positional_is_receiver && !args.receiver) {
+        args.receiver = arg.ir_node;
+        return;
+    }
+    msg_ctx.ir.append(args.positional, arg.ir_node);
+    ++msg_ctx.ir.payload(args.positional).size;
+}
+
+void append_blocks(MessageContext& msg_ctx, MessageArguments& args, ast::BlockListIndex i) {
+    for (auto it = msg_ctx.ast_graph->children(i).iter(); it; ++it)
+        append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { *it }));
+}
+
+void append_arguments(MessageContext& msg_ctx, MessageArguments& args, ast::ArgumentListIndex i) {
+    const auto& g = *msg_ctx.ast_graph;
+    for (auto it = g.children(i).iter(); it; ++it) {
+        const ast::ArgumentEntryIndex entry = *it;
+        if (const auto kw = g.as_a<ast::KwArgIndex>(entry)) {
+            const auto [keyword, value] = g.children(*kw);
+            const auto name = msg_ctx.ctx.symbol_table.get_identifier(
+                std::string { synthesize_literal(g.payload(keyword), get_string_view(g, keyword)) });
+            const auto value_r = msg_ctx.expr(ast::AnyExprIndex { value });
+            const Locatable<SymSCIdentifier> located_name { location_of(msg_ctx.ir, *msg_ctx.ast_graph, { *keyword }),
+                                                            name };
+            msg_ctx.ir.append(args.keyword,
+                              msg_ctx.ir.create(SCKwArg { located_name },
+                                                location_of(msg_ctx.ir, *msg_ctx.ast_graph, { *entry }),
+                                                value_r.ir_node));
+        } else if (const auto variadic = g.as_a<ast::VariadicArgIndex>(entry)) {
+            if (!args.first_variadic)
+                args.first_variadic = *variadic;
+            const auto [expr] = g.children(*variadic);
+            msg_ctx.ir.append(args.variadic, msg_ctx.expr(ast::AnyExprIndex { expr }).ir_node);
+        } else if (const auto blocks = g.as_a<ast::BlockListIndex>(entry)) {
+            append_blocks(msg_ctx, args, *blocks);
+        } else if (args.first_positional_is_receiver && !args.receiver) {
+            append_positional(msg_ctx, args,
+                              receiver_expr(msg_ctx, ast::AnyExprIndex { *entry }, args.unbounded_receiver));
+        } else {
+            append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { *entry }));
+        }
+    }
+}
+
+SCAnyExpr_I adverb(MessageContext& msg_ctx, ast::AdverbIndex i) {
+    const auto& g = *msg_ctx.ast_graph;
+    if (const auto e = g.as_a<ast::AdverbExprIndex>(i)) {
+        const auto [expr] = g.children(*e);
+        return msg_ctx.expr(ast::AnyExprIndex { expr }).ir_node;
+    }
+    if (const auto n = g.as_a<ast::IntLitIndex>(i))
+        return msg_ctx.expr(*n).ir_node;
+
+    // A name, e.g., `a +.x b`, is a symbol.
+    const auto sym = msg_ctx.ctx.symbol_table.get_symbol(std::string { get_string_view(g, i) });
+    const auto const_i = msg_ctx.ctx.constant_table.register_constexpr({ sym });
+    const auto lit = msg_ctx.ir.create(SCLiteral { const_i }, location_of(msg_ctx.ir, *msg_ctx.ast_graph, { *i }));
+    msg_ctx.ir.register_node_as_consteval(lit, const_i);
+    return lit;
+}
+
+Selector selector(MessageContext& msg_ctx, ast::SelectorMaybeAdverbIndex i) {
+    const auto& g = *msg_ctx.ast_graph;
+    std::optional<SCAnyExpr_I> adverb_i;
+    const ast::SelectorIndex name_i = [&]() -> ast::SelectorIndex {
+        const auto with_adverb = g.as_a<ast::SelectorWAdverbIndex>(i);
+        if (!with_adverb)
+            return ast::SelectorIndex { *i };
+        const auto [name, adv] = g.children(*with_adverb);
+        adverb_i = adverb(msg_ctx, adv);
+        return name;
+    }();
+
+    auto name = std::string { get_string_view(g, name_i) };
+    // Infix keywords, e.g., `a max: b`, include the colon.
+    using SelectorLiteralIndex = ast::TypedIndex<ast::NodeFlag::SelectorLiteral>;
+    if (const auto literal_i = g.as_a<SelectorLiteralIndex>(name_i);
+        literal_i && g.payload(*literal_i).is_infix_keyword) {
+        assert(name.back() == ':');
+        name.pop_back();
+    }
+
+    return { { location_of(msg_ctx.ir, *msg_ctx.ast_graph, { *name_i }),
+               msg_ctx.ctx.symbol_table.get_selector(std::move(name)) },
+             adverb_i };
+}
+
+// For messages whose selector isn't written, e.g., `a.()` is `a.value()`.
+Selector implicit_selector(SymSCSelector name) { return { { std::nullopt, name }, std::nullopt }; }
+
+Return<SCAnyExpr_I> nil_literal(MessageContext& msg_ctx, ast::Index at) {
+    const auto const_i = msg_ctx.ctx.constant_table.register_constexpr({ Nil {} });
+    const auto lit = msg_ctx.ir.create(SCLiteral { const_i }, location_of(msg_ctx.ir, *msg_ctx.ast_graph, at));
+    msg_ctx.ir.register_node_as_consteval(lit, const_i);
+    return { lit, const_i, TypeInfo { msg_ctx.ctx.common_classes.nil, TypeConfidence::Absolute } };
+}
+
+// A range's first, second and last, when the ones given are all integer constants. Missing ones are nullopt.
+struct RangeConstants {
+    std::optional<std::int32_t> first;
+    std::optional<std::int32_t> second;
+    std::optional<std::int32_t> last;
+};
+
+// Appends a range's first, second and last as positional arguments, missing ones are nil.
+// e.g., `a[1..3]` is `a.copySeries(1, nil, 3)`, and `a[..3]` is `a.copySeries(nil, nil, 3)`.
+// Returns their values if they can be used for folding.
+std::optional<RangeConstants> append_range(MessageContext& msg_ctx, MessageArguments& args, ast::RangeIndex range) {
+    auto parts = ConstEval::range_parts(*msg_ctx.ast_graph, range);
+    if (parts.error)
+        msg_ctx.expr.sink(*std::move(parts.error));
+
+    RangeConstants constants;
+    bool all_integers = !parts.error;
+    const auto append = [&](const std::optional<ast::AnyExprIndex>& part, std::optional<std::int32_t>& value) {
+        if (!part) {
+            append_positional(msg_ctx, args, nil_literal(msg_ctx, { *range }));
+            return;
+        }
+        const auto r = msg_ctx.expr(*part);
+        const auto* v = r.const_index ? msg_ctx.ctx.constant_table(*r.const_index).get_if<std::int32_t>() : nullptr;
+        if (v)
+            value = *v;
+        else
+            all_integers = false;
+        append_positional(msg_ctx, args, r);
+    };
+    append(parts.first, constants.first);
+    append(parts.second, constants.second);
+    append(parts.last, constants.last);
+
+    if (!all_integers)
+        return std::nullopt;
+    return constants;
+}
+
+Return<SCAnyExpr_I> create_message(MessageContext& msg_ctx, ast::Index message_i, SCAnyExpr_I receiver,
+                                   const Selector& selector, const MessageArguments& args,
+                                   SCMessage::Form form = SCMessage::Form::Call) {
+    const auto location = location_of(msg_ctx.ir, *msg_ctx.ast_graph, message_i);
+    const maybe<SCAnyExpr_I> adverb_i = selector.adverb
+        ? maybe<SCAnyExpr_I> { *selector.adverb }
+        : maybe<SCAnyExpr_I> { msg_ctx.ir.create(SCMissing {}, location) };
+
+    const auto name = selector.name;
+    // A setter names its positional arguments, `a.meow = { }` and `a.meow_({ })` are both `meow`. The old compiler also
+    // named the receiver, `{ }.meow_(a)`, which was a bug.
+    const auto selector_text = msg_ctx.ctx.symbol_table(name.value);
+    if (form != SCMessage::Form::Binary && selector_text.size() > 1 && selector_text.back() == '_') {
+        const auto getter = msg_ctx.ctx.symbol_table.get_symbol(selector_text.substr(0, selector_text.size() - 1));
+        for (auto it = msg_ctx.ir.children(args.positional).iter(); it; ++it)
+            try_name_expr(msg_ctx.ir, *it, getter);
+    }
+    return { msg_ctx.ir.create(SCMessage { name, form }, location, receiver, args.positional, args.keyword,
+                               args.variadic, adverb_i) };
+}
+}
+
+Return<SCAnyExpr_I> Expr::operator()(ast::PostfixMessageIndex i) {
+    MessageContext msg_ctx { *this, ctx, ir, ast_graph };
+    const auto [receiver, selector_i, arg_list, blocks] = ast_graph->children(i);
+    const auto receiver_r = receiver_expr(msg_ctx, ast::AnyExprIndex { receiver },
+                                          iterates_range(*ast_graph, selector_i, arg_list, blocks, false));
+    const auto sel = selector(msg_ctx, selector_i);
+    auto args = make_arguments(msg_ctx, { *i });
+    append_arguments(msg_ctx, args, arg_list);
+    append_blocks(msg_ctx, args, blocks);
+    return create_message(msg_ctx, { *i }, receiver_r.ir_node, sel, args);
+}
+
+Return<SCAnyExpr_I> Expr::operator()(ast::PrefixMessageIndex i) {
+    MessageContext msg_ctx { *this, ctx, ir, ast_graph };
+    const auto [selector_i, arg_list, blocks] = ast_graph->children(i);
+    const auto sel = selector(msg_ctx, selector_i);
+    // Functional notation, `foo(a, b)` is `a.foo(b)`.
+    auto args = make_arguments(msg_ctx, { *i }, true);
+    args.unbounded_receiver = iterates_range(*ast_graph, selector_i, arg_list, blocks, true);
+    append_arguments(msg_ctx, args, arg_list);
+    append_blocks(msg_ctx, args, blocks);
+
+    if (!args.receiver) {
+        sink(sc::diag::Diagnostic::message_without_receiver(get_text_info(*ast_graph), get_location(*ast_graph, i)));
+        return { ir.create(SCExprList {}, location({ *i })) };
+    }
+    return create_message(msg_ctx, { *i }, *args.receiver, sel, args);
+}
+
+Return<SCAnyExpr_I> Expr::operator()(ast::BinaryMessageIndex i) {
+    MessageContext msg_ctx { *this, ctx, ir, ast_graph };
+    const auto [selector_i, lhs, rhs] = ast_graph->children(i);
+    const auto lhs_r = msg_ctx.expr(ast::AnyExprIndex { lhs });
+    const auto sel = selector(msg_ctx, selector_i);
+    auto args = make_arguments(msg_ctx, { *i });
+    const auto rhs_r = msg_ctx.expr(ast::AnyExprIndex { rhs });
+    append_positional(msg_ctx, args, rhs_r);
+    const auto message = create_message(msg_ctx, { *i }, lhs_r.ir_node, sel, args, SCMessage::Form::Binary);
+    // Arithmetic on constant numbers is folded, unless an adverb changes what it does.
+    if (!can_fold_constants() || sel.adverb || !lhs_r.const_index || !rhs_r.const_index)
+        return message;
+    auto folded = ConstEval::fold_arithmetic(ctx, *sel.name, ctx.constant_table(*lhs_r.const_index),
+                                             ctx.constant_table(*rhs_r.const_index));
+    if (!folded)
+        return message;
+    const auto const_i = ctx.constant_table.register_constexpr(std::move(folded->first));
+    ir.register_node_as_consteval(message.ir_node, const_i);
+    return { message.ir_node, const_i, folded->second };
+}
+
+Return<SCAnyExpr_I> Expr::operator()(ast::ValueMessageIndex i) {
+    MessageContext msg_ctx { *this, ctx, ir, ast_graph };
+    const auto [receiver, arg_list, blocks] = ast_graph->children(i);
+    const auto receiver_r = (*this)(ast::AnyExprIndex { receiver });
+    const auto sel = implicit_selector(ctx.common_symbols.value);
+    auto args = make_arguments(msg_ctx, { *i });
+    append_arguments(msg_ctx, args, arg_list);
+    append_blocks(msg_ctx, args, blocks);
+    return create_message(msg_ctx, { *i }, receiver_r.ir_node, sel, args);
+}
+
+// `` `x `` is `Ref.new(x)`, as in the old compiler. Ref is a common class, so it always exists.
+Return<SCAnyExpr_I> Expr::operator()(ast::ReferenceIndex i) {
+    MessageContext msg_ctx { *this, ctx, ir, ast_graph };
+    const auto [expr] = ast_graph->children(i);
+    const auto ref_class = ctx.constant_table.register_constexpr({ ctx.common_classes.ref });
+    const auto receiver = ir.create(SCLiteral { ref_class }, location({ *i }));
+    ir.register_node_as_consteval(receiver, ref_class);
+    const auto sel = implicit_selector(ctx.common_symbols.new_);
+    auto args = make_arguments(msg_ctx, { *i });
+    append_positional(msg_ctx, args, (*this)(ast::AnyExprIndex { expr }));
+    return create_message(msg_ctx, { *i }, receiver, sel, args);
+}
+
+Return<SCAnyExpr_I> Expr::operator()(ast::NewMessageIndex i) {
+    MessageContext msg_ctx { *this, ctx, ir, ast_graph };
+    const auto [class_name, arg_list, blocks] = ast_graph->children(i);
+    const auto receiver_r = (*this)(class_name);
+    const auto sel = implicit_selector(ctx.common_symbols.new_);
+    auto args = make_arguments(msg_ctx, { *i });
+    append_arguments(msg_ctx, args, arg_list);
+    append_blocks(msg_ctx, args, blocks);
+    return create_message(msg_ctx, { *i }, receiver_r.ir_node, sel, args);
+}
+
+Return<SCAnyExpr_I> Expr::operator()(ast::AtMessageIndex i) {
+    MessageContext msg_ctx { *this, ctx, ir, ast_graph };
+    const auto [receiver, arg] = ast_graph->children(i);
+    const auto receiver_r = (*this)(ast::AnyExprIndex { receiver });
+
+    // `a[1..3]` is a slice, `a.copySeries(1, nil, 3)`.
+    // TODO: later this should be rewritten as a visitor using the index type set.
+    if (const auto range = ast_graph->as_a<ast::RangeIndex>(arg)) {
+        const auto sel = implicit_selector(ctx.common_symbols.copy_series);
+        auto args = make_arguments(msg_ctx, { *i });
+        const auto bounds = append_range(msg_ctx, args, *range);
+        const auto message = create_message(msg_ctx, { *i }, receiver_r.ir_node, sel, args);
+        if (!can_fold_constants() || !bounds || !receiver_r.const_index)
+            return message;
+
+        // A constant array or string sliced with constant bounds is folded, if copySeries is known.
+        const auto& value = ctx.constant_table(*receiver_r.const_index);
+        const auto receiver_class = value.get_if<SymSCString>() ? ctx.common_classes.string : ctx.common_classes.array;
+        if (!ctx.known_methods.is_known(receiver_class, ctx.common_symbols.copy_series))
+            return message;
+        auto folded = ConstEval::fold_copy_series(value, bounds->first, bounds->second, bounds->last, ctx.symbol_table);
+        if (!folded)
+            return message;
+        const auto const_i = ctx.constant_table.register_constexpr(std::move(*folded));
+        ir.register_node_as_consteval(message.ir_node, const_i);
+        return { message.ir_node, const_i, TypeInfo { receiver_class, TypeConfidence::Absolute } };
+    }
+
+    const auto sel = implicit_selector(ctx.common_symbols.at);
+    auto args = make_arguments(msg_ctx, { *i });
+    append_arguments(msg_ctx, args, ast::ArgumentListIndex { *arg });
+    return create_message(msg_ctx, { *i }, receiver_r.ir_node, sel, args);
+}
+
+// `a[i] = v` is `a.put(i, v)`, the value is the last positional argument.
+Return<SCAnyExpr_I> Expr::operator()(ast::AssignmentAtIndex i) {
+    MessageContext msg_ctx { *this, ctx, ir, ast_graph };
+    const auto [receiver, arg_list, value] = ast_graph->children(i);
+    const auto receiver_r = msg_ctx.expr(ast::AnyExprIndex { receiver });
+    const auto sel = implicit_selector(ctx.common_symbols.put);
+    auto args = make_arguments(msg_ctx, { *i });
+    append_arguments(msg_ctx, args, arg_list);
+    append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { value }));
+    return create_message(msg_ctx, { *i }, receiver_r.ir_node, sel, args);
+}
+// `a[1..3] = v` is `a.putSeries(1, nil, 3, v)`.
+Return<SCAnyExpr_I> Expr::operator()(ast::RangeAssignIndex i) {
+    MessageContext msg_ctx { *this, ctx, ir, ast_graph };
+    const auto [receiver, range, value] = ast_graph->children(i);
+    const auto receiver_r = msg_ctx.expr(ast::AnyExprIndex { receiver });
+    const auto sel = implicit_selector(ctx.common_symbols.put_series);
+    auto args = make_arguments(msg_ctx, { *i });
+    append_range(msg_ctx, args, range);
+    append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { value }));
+    return create_message(msg_ctx, { *i }, receiver_r.ir_node, sel, args);
+}
+
+// `a.foo = v` is `a.foo_(v)`, and the functional form `foo(a, b) = v` is `a.foo_(b, v)`.
+Return<SCAnyExpr_I> Expr::operator()(ast::SetterIndex i) {
+    MessageContext msg_ctx { *this, ctx, ir, ast_graph };
+    const auto [thing, name, value] = ast_graph->children(i);
+    const auto setter_name = std::string { get_string_view(*ast_graph, name) } + "_";
+    const Selector sel { { location({ *name }), ctx.symbol_table.get_selector(setter_name) }, std::nullopt };
+
+    if (const auto arg_list = ast_graph->as_a<ast::ArgumentListIndex>(thing)) {
+        auto args = make_arguments(msg_ctx, { *i }, true);
+        append_arguments(msg_ctx, args, *arg_list);
+        // Checked before the value is appended, so the value can't become the receiver.
+        if (!args.receiver) {
+            sink(
+                sc::diag::Diagnostic::message_without_receiver(get_text_info(*ast_graph), get_location(*ast_graph, i)));
+            return { ir.create(SCExprList {}, location({ *i })) };
+        }
+        append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { value }));
+        return create_message(msg_ctx, { *i }, *args.receiver, sel, args, SCMessage::Form::Setter);
+    }
+
+    const auto receiver_r = msg_ctx.expr(ast::AnyExprIndex { *thing });
+    auto args = make_arguments(msg_ctx, { *i });
+    append_positional(msg_ctx, args, msg_ctx.expr(ast::AnyExprIndex { value }));
+    return create_message(msg_ctx, { *i }, receiver_r.ir_node, sel, args, SCMessage::Form::Setter);
+}
+}

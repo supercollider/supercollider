@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestDocumentEnvironment : UnitTest {
 
 	var doc, envir1, envir2, envir0;
@@ -82,8 +83,9 @@ TestDocumentEnvironment : UnitTest {
 	}
 
 	test_onClose {
-		var test = { this.assertEquals(count, 1, "onClose should be called not more than once") };
+		// 3.16: a variable can't be used before it is declared, so count is declared first.
 		var count = 0;
+		var test = { this.assertEquals(count, 1, "onClose should be called not more than once") };
 		var counter = { count = count + 1; test.value; };
 		doc.onClose = counter;
 		doc.close;
@@ -92,8 +94,9 @@ TestDocumentEnvironment : UnitTest {
 
 	test_endFront_on_close {
 
-		var test = { this.assertEquals(count, 1, "endFrontAction should be called not more than once") };
+		// 3.16: a variable can't be used before it is declared, so count is declared first.
 		var count = 0;
+		var test = { this.assertEquals(count, 1, "endFrontAction should be called not more than once") };
 		var counter = { count = count + 1; test.value; };
 		doc.endFrontAction = counter;
 		doc.close;

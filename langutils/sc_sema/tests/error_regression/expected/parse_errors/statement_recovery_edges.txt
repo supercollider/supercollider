@@ -1,0 +1,312 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): StatementEdges : Object, version 3.16
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (5:5): poisoned: consecutive, version 3.16: consecutive { a = ; ; b = ; ^1 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/statement_recovery_edges.sc:5:23
+|  |  |      3 │ StatementEdges {
+|  |  |      4 │     // expect: poisoned
+|  |  |      5 │     consecutive { a = ; ; b = ; ^1 }
+|  |  |        ┆                       ^ Expected an expression, but found `;`.
+|  |  |      6 │     // expect: poisoned
+|  |  |      7 │     consecutive_at_end { 1 + ; 2 + ; 3 + }
+|  |  |      8 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/statement_recovery_edges.sc:5:25
+|  |  |      3 │ StatementEdges {
+|  |  |      4 │     // expect: poisoned
+|  |  |      5 │     consecutive { a = ; ; b = ; ^1 }
+|  |  |        ┆                         ^ Expected an expression, `}`, `^`, or `var`, but found `;`.
+|  |  |      6 │     // expect: poisoned
+|  |  |      7 │     consecutive_at_end { 1 + ; 2 + ; 3 + }
+|  |  |      8 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/statement_recovery_edges.sc:5:31
+|  |  |      3 │ StatementEdges {
+|  |  |      4 │     // expect: poisoned
+|  |  |      5 │     consecutive { a = ; ; b = ; ^1 }
+|  |  |        ┆                               ^ Expected an expression, but found `;`.
+|  |  |      6 │     // expect: poisoned
+|  |  |      7 │     consecutive_at_end { 1 + ; 2 + ; 3 + }
+|  |  |      8 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (5:19)
+|  |  |  |  SCExprList (5:19)
+|  |  |  |  SCExprList (5:25)
+|  |  |  |  SCExprList (5:27)
+|  |  |  |  SCExplicitReturn (5:33)
+|  |  |  |  |  SCLiteral (5:34) = 1
+|  |  SCMethod (7:5): poisoned: consecutive_at_end, version 3.16: consecutive_at_end { 1 + ; 2 + ; 3 + }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/statement_recovery_edges.sc:7:30
+|  |  |      5 │     consecutive { a = ; ; b = ; ^1 }
+|  |  |      6 │     // expect: poisoned
+|  |  |      7 │     consecutive_at_end { 1 + ; 2 + ; 3 + }
+|  |  |        ┆                            ^ ^ ...but found `;`.
+|  |  |        ┆                            └ This `+` needs an expression after it...
+|  |  |      8 │     // expect: poisoned
+|  |  |      9 │     only_error { + }
+|  |  |     10 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/statement_recovery_edges.sc:7:36
+|  |  |      5 │     consecutive { a = ; ; b = ; ^1 }
+|  |  |      6 │     // expect: poisoned
+|  |  |      7 │     consecutive_at_end { 1 + ; 2 + ; 3 + }
+|  |  |        ┆                                  ^ ^ ...but found `;`.
+|  |  |        ┆                                  └ This `+` needs an expression after it...
+|  |  |      8 │     // expect: poisoned
+|  |  |      9 │     only_error { + }
+|  |  |     10 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/statement_recovery_edges.sc:7:42
+|  |  |      5 │     consecutive { a = ; ; b = ; ^1 }
+|  |  |      6 │     // expect: poisoned
+|  |  |      7 │     consecutive_at_end { 1 + ; 2 + ; 3 + }
+|  |  |        ┆                                        ^ ^ ...but found `}`.
+|  |  |        ┆                                        └ This `+` needs an expression after it...
+|  |  |      8 │     // expect: poisoned
+|  |  |      9 │     only_error { + }
+|  |  |     10 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (7:26)
+|  |  |  |  SCExprList (7:26)
+|  |  |  |  SCExprList (7:32)
+|  |  |  |  SCExprList (7:38)
+|  |  SCMethod (9:5): poisoned: only_error, version 3.16: only_error { + }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/statement_recovery_edges.sc:9:18
+|  |  |      7 │     consecutive_at_end { 1 + ; 2 + ; 3 + }
+|  |  |      8 │     // expect: poisoned
+|  |  |      9 │     only_error { + }
+|  |  |        ┆                  ^ Expected an expression, `}`, `^`, a primitive, `var`, `arg`, or `|`, but found `+`.
+|  |  |     10 │     // expect: poisoned
+|  |  |     11 │     in_immediately_evaluated { (var a = 1; 1 + ; ^a) }
+|  |  |     12 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Nested too deeply
+|  |  |  parse_errors/statement_recovery_edges.sc:9:18
+|  |  |      7 │     consecutive_at_end { 1 + ; 2 + ; 3 + }
+|  |  |      8 │     // expect: poisoned
+|  |  |      9 │     only_error { + }
+|  |  |        ┆                  ^ this is nested more than 4096 deep.
+|  |  |     10 │     // expect: poisoned
+|  |  |     11 │     in_immediately_evaluated { (var a = 1; 1 + ; ^a) }
+|  |  |     12 │     // expect: poisoned
+|  |  |
+|  |  |  The compiler can't compile code nested this deeply, e.g., brackets inside brackets, or a long chain of binary operators, `a + b + c ...`, which is as deep as it is long. Split it up, e.g., into variables.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (9:18)
+|  |  SCMethod (11:5): poisoned: in_immediately_evaluated, version 3.16: in_immediately_evaluated { (var a = 1; 1 + ; ^a) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/statement_recovery_edges.sc:11:33
+|  |  |      9 │     only_error { + }
+|  |  |     10 │     // expect: poisoned
+|  |  |     11 │     in_immediately_evaluated { (var a = 1; 1 + ; ^a) }
+|  |  |        ┆                                 ^^^ Expected an expression, a binary operator, `)`, `,`, `..`, or `:`, but found `var`.
+|  |  |     12 │     // expect: poisoned
+|  |  |     13 │     in_closure { ^{ |x| x + ; x * 2 }.value(3) }
+|  |  |     14 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (11:32)
+|  |  |  |  SCExprList (11:32)
+|  |  SCMethod (13:5): poisoned: in_closure, version 3.16: in_closure { ^{ |x| x + ; x * 2 }.value(3) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/statement_recovery_edges.sc:13:29
+|  |  |     11 │     in_immediately_evaluated { (var a = 1; 1 + ; ^a) }
+|  |  |     12 │     // expect: poisoned
+|  |  |     13 │     in_closure { ^{ |x| x + ; x * 2 }.value(3) }
+|  |  |        ┆                           ^ ^ ...but found `;`.
+|  |  |        ┆                           └ This `+` needs an expression after it...
+|  |  |     14 │     // expect: poisoned
+|  |  |     15 │     in_call_function { ^[1, 2].collect { |x| x + ; x } }
+|  |  |     16 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (13:18)
+|  |  |  |  SCExplicitReturn (13:18)
+|  |  |  |  |  SCMessage (13:19): value
+|  |  |  |  |  |  SCFunction (13:19)
+|  |  |  |  |  |  |  SCArgumentDeclareList (13:22)
+|  |  |  |  |  |  |  |  SCArgumentDeclare (13:22): x
+|  |  |  |  |  |  |  SCBody (13:19)
+|  |  |  |  |  |  |  |  SCExprList (13:25)
+|  |  |  |  |  |  |  |  SCMessage (13:31): *
+|  |  |  |  |  |  |  |  |  SCRead (13:31): local x, declared (13:22): x
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (13:31)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (13:35) = 2
+|  |  |  |  |  |  SCPositionalArgs (13:19)
+|  |  |  |  |  |  |  SCLiteral (13:45) = 3
+|  |  SCMethod (15:5): poisoned: in_call_function, version 3.16: in_call_function { ^[1, 2].collect { |x| x + ; x } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/statement_recovery_edges.sc:15:50
+|  |  |     13 │     in_closure { ^{ |x| x + ; x * 2 }.value(3) }
+|  |  |     14 │     // expect: poisoned
+|  |  |     15 │     in_call_function { ^[1, 2].collect { |x| x + ; x } }
+|  |  |        ┆                                                ^ ^ ...but found `;`.
+|  |  |        ┆                                                └ This `+` needs an expression after it...
+|  |  |     16 │     // expect: poisoned
+|  |  |     17 │     in_nested_functions { { { 1 + ; ^1 }.value ; ^2 }.value ; ^3 }
+|  |  |     18 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (15:24)
+|  |  |  |  SCExplicitReturn (15:24)
+|  |  |  |  |  SCMessage (15:25): collect
+|  |  |  |  |  |  SCCollection (15:25): Array = [1, 2]
+|  |  |  |  |  |  |  SCLiteral (15:26) = 1
+|  |  |  |  |  |  |  SCLiteral (15:29) = 2
+|  |  |  |  |  |  SCPositionalArgs (15:25)
+|  |  |  |  |  |  |  SCFunction (15:40)
+|  |  |  |  |  |  |  |  SCArgumentDeclareList (15:43)
+|  |  |  |  |  |  |  |  |  SCArgumentDeclare (15:43): x
+|  |  |  |  |  |  |  |  SCBody (15:40)
+|  |  |  |  |  |  |  |  |  SCExprList (15:46)
+|  |  |  |  |  |  |  |  |  SCRead (15:52): local x, declared (15:43): x
+|  |  SCMethod (17:5): poisoned: in_nested_functions, version 3.16: in_nested_functions { { { 1 + ; ^1 }.value ; ^2 }.value ; ^3 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/statement_recovery_edges.sc:17:35
+|  |  |     15 │     in_call_function { ^[1, 2].collect { |x| x + ; x } }
+|  |  |     16 │     // expect: poisoned
+|  |  |     17 │     in_nested_functions { { { 1 + ; ^1 }.value ; ^2 }.value ; ^3 }
+|  |  |        ┆                                 ^ ^ ...but found `;`.
+|  |  |        ┆                                 └ This `+` needs an expression after it...
+|  |  |     18 │     // expect: poisoned
+|  |  |     19 │     non_local_return { if (true) { 1 + ; ^1 }; if (false) { ^2 }; ^3 }
+|  |  |     20 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (17:27)
+|  |  |  |  SCMessage (17:27): value
+|  |  |  |  |  SCFunction (17:27)
+|  |  |  |  |  |  SCBody (17:27)
+|  |  |  |  |  |  |  SCMessage (17:29): value
+|  |  |  |  |  |  |  |  SCFunction (17:29)
+|  |  |  |  |  |  |  |  |  SCBody (17:29)
+|  |  |  |  |  |  |  |  |  |  SCExprList (17:31)
+|  |  |  |  |  |  |  |  |  |  SCExplicitReturn (17:37)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (17:38) = 1
+|  |  |  |  |  |  |  SCExplicitReturn (17:50)
+|  |  |  |  |  |  |  |  SCLiteral (17:51) = 2
+|  |  |  |  SCExplicitReturn (17:63)
+|  |  |  |  |  SCLiteral (17:64) = 3
+|  |  SCMethod (19:5): poisoned: non_local_return, version 3.16: non_local_return { if (true) { 1 + ; ^1 }; if (false) { ^2 }; ^3 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/statement_recovery_edges.sc:19:40
+|  |  |     17 │     in_nested_functions { { { 1 + ; ^1 }.value ; ^2 }.value ; ^3 }
+|  |  |     18 │     // expect: poisoned
+|  |  |     19 │     non_local_return { if (true) { 1 + ; ^1 }; if (false) { ^2 }; ^3 }
+|  |  |        ┆                                      ^ ^ ...but found `;`.
+|  |  |        ┆                                      └ This `+` needs an expression after it...
+|  |  |     20 │     // expect: poisoned
+|  |  |     21 │     primitive { _Prim ; 1 + ; ^1 }
+|  |  |     22 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (19:24)
+|  |  |  |  SCMessage (19:24): if
+|  |  |  |  |  SCLiteral (19:28) = true
+|  |  |  |  |  SCPositionalArgs (19:24)
+|  |  |  |  |  |  SCFunction (19:34)
+|  |  |  |  |  |  |  SCBody (19:34)
+|  |  |  |  |  |  |  |  SCExprList (19:36)
+|  |  |  |  |  |  |  |  SCExplicitReturn (19:42)
+|  |  |  |  |  |  |  |  |  SCLiteral (19:43) = 1
+|  |  |  |  SCMessage (19:48): if
+|  |  |  |  |  SCLiteral (19:52) = false
+|  |  |  |  |  SCPositionalArgs (19:48)
+|  |  |  |  |  |  SCFunction (19:59)
+|  |  |  |  |  |  |  SCBody (19:59)
+|  |  |  |  |  |  |  |  SCExplicitReturn (19:61)
+|  |  |  |  |  |  |  |  |  SCLiteral (19:62) = 2
+|  |  |  |  SCExplicitReturn (19:67)
+|  |  |  |  |  SCLiteral (19:68) = 3
+|  |  SCMethod (21:5): poisoned: primitive, version 3.16: primitive { _Prim ; 1 + ; ^1 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/statement_recovery_edges.sc:21:29
+|  |  |     19 │     non_local_return { if (true) { 1 + ; ^1 }; if (false) { ^2 }; ^3 }
+|  |  |     20 │     // expect: poisoned
+|  |  |     21 │     primitive { _Prim ; 1 + ; ^1 }
+|  |  |        ┆                           ^ ^ ...but found `;`.
+|  |  |        ┆                           └ This `+` needs an expression after it...
+|  |  |     22 │     // expect: poisoned
+|  |  |     23 │     *class_method { 1 + ; ^1 }
+|  |  |     24 │     // expect: -> 8
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (21:25)
+|  |  |  |  SCExprList (21:25)
+|  |  |  |  SCExplicitReturn (21:31)
+|  |  |  |  |  SCLiteral (21:32) = 1
+|  |  SCMethod (25:5): good, version 3.16: good { ^8 } -> 8
+|  |  |  SCBody (25:12)
+|  |  |  |  SCExplicitReturn (25:12)
+|  |  |  |  |  SCLiteral (25:13) = 8
+SCClass (3:1): Meta_StatementEdges : Meta_Object, version 3.16
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (23:5): poisoned: class_method, version 3.16: *class_method { 1 + ; ^1 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/statement_recovery_edges.sc:23:25
+|  |  |     21 │     primitive { _Prim ; 1 + ; ^1 }
+|  |  |     22 │     // expect: poisoned
+|  |  |     23 │     *class_method { 1 + ; ^1 }
+|  |  |        ┆                       ^ ^ ...but found `;`.
+|  |  |        ┆                       └ This `+` needs an expression after it...
+|  |  |     24 │     // expect: -> 8
+|  |  |     25 │     good { ^8 }
+|  |  |     26 │ }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (23:21)
+|  |  |  |  SCExprList (23:21)
+|  |  |  |  SCExplicitReturn (23:27)
+|  |  |  |  |  SCLiteral (23:28) = 1
+Successfully compiled 16 classes.

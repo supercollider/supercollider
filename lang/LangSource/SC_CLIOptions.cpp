@@ -7,6 +7,7 @@
 #include <SC_Filesystem.hpp>
 #include <SC_LanguageConfig.hpp>
 #include <SC_Version.hpp>
+#include "sc_parser/sc_grammar_shared.hpp"
 
 namespace po = boost::program_options;
 
@@ -88,7 +89,8 @@ std::optional<int> CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::
     // for the language config we don't use the notifier of program options because
     // we want to fill the config with a provided yaml file or their default values.
     // as po does not allow to specify the "notify order", we parse the config manually
-    parseLanguageConfig(vm);
+    if (!parseLanguageConfig(vm))
+        return 1;
 
     return std::nullopt;
 }
@@ -199,13 +201,18 @@ po::options_description CLIOptions::buildLanguageConfigDescription() {
             po::bool_switch()->default_value(false),
             "Boolean flag to turn on warnings about missing inline opportunities."
         )
+        (
+            "interpreted-version",
+            po::value<std::string>(),
+            "What language version interpreted code should be ran in, 'legacy' or a version number e.g., '3.16'."
+        )
         // exclude-default-paths is not included as this behavior is set via the `--standalone` flag
     ;
     // clang-format on
     return description;
 }
 
-void CLIOptions::parseLanguageConfig(po::variables_map& vm) {
+bool CLIOptions::parseLanguageConfig(po::variables_map& vm) {
     // see HelpSource/Classes/LanguageConfig.schelp
     if (vm.at("post-inline-warnings").as<bool>()) {
         gLanguageConfig->setPostInlineWarnings(true);
@@ -221,6 +228,16 @@ void CLIOptions::parseLanguageConfig(po::variables_map& vm) {
             gLanguageConfig->addExcludedDirectory(SC_Codecvt::utf8_str_to_path(excludePath));
         }
     }
+    if (vm.count("interpreted-version")) {
+        const auto& release = vm["interpreted-version"].as<std::string>();
+        if (!sc::ast::parse_release(release)) {
+            std::cerr << "--interpreted-version expects a known release, e.g., '3.16', or 'legacy', not '" << release
+                      << "'" << std::endl;
+            return false;
+        }
+        gLanguageConfig->setInterpretedVersion(release);
+    }
+    return true;
 }
 
 // converts e.g. 1k to 1024

@@ -1,3 +1,4 @@
+//# VERSION 3.16
 /*
 
 TestNoOps.run
@@ -9,23 +10,22 @@ UnitTest.gui
 TestNoOps : UnitTest {
 
 	test_array {
-		var ops, check, n = 300;
-		var a, b, r1, r2;
+		var n = 300;
 
 
-		check = { |func, inval|
+		var check = { |func, inval|
 			func.value(func.value(inval)) == inval
 		};
 
-		a = Array.series(300, 0, 1);
-		b = a.clump(10);
+		var a = Array.series(300, 0, 1);
+		var b = a.clump(10);
 
-		r1 = 7;
-		r2 = 9;
+		var r1 = 7;
+		var r2 = 9;
 
 		this.assert(n.even, "for this test, array must have even number of elements");
 
-		ops = (
+		var ops = (
 			\reverse: { |x| x.reverse },
 			\rotate: { |x| x.rotate(x.size div: 2) },
 			\swap: {|x| x.swap(r1, r2) },

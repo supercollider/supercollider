@@ -1,0 +1,29 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): poisoned: versions/legacy_leading_declarations_interpreted.scd
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Variable declared after an expression
+|  versions/legacy_leading_declarations_interpreted.scd:4:20
+|      2 │ // Legacy interpreted code, a region's variables are also declared at its start.
+|      3 │ // expect-error: Variable declared after an expression
+|      4 │ (var a = 1; a; var b = 2; b)
+|        ┆                    ^^^^^ this isn't at the start of the body.
+|
+|  In the legacy version, as in the old compiler, a function's or method's variables must be declared at the start of its body, before any other expression. From 3.16 they can be declared anywhere. Move the declaration to the start, or add `//# VERSION 3.16`.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCRegionList (1:1)
+|  |  SCRegion (4:1)
+|  |  |  SCFunction (4:1)
+|  |  |  |  SCBody (4:1)
+|  |  |  |  |  SCVariableDeclare (4:6): a, prototype
+|  |  |  |  |  |  SCLiteral (4:10) = 1
+|  |  |  |  |  SCRead (4:13): local a = 1, declared (4:6): a = 1
+|  |  |  |  |  SCVariableDeclare (4:20): b, prototype
+|  |  |  |  |  |  SCLiteral (4:24) = 2
+|  |  |  |  |  SCRead (4:27): local b = 2, declared (4:20): b = 2
+Successfully compiled 15 classes.

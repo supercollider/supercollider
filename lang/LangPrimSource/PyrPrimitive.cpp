@@ -19,11 +19,12 @@
 */
 
 #include "ClassLibraryInfo.hpp"
-#include "CompilerContext.hpp"
+#include "ClassLibraryLoader.hpp"
 #include "PyrErrors.h"
 #include "PyrObjectHdr.h"
 #include "PyrSymbolTable.h"
 #include "SC_Version.hpp"
+#include "sc_diagnostic/highlight.hpp"
 #include "PyrErrors.h"
 #include "PyrKernel.h"
 #include "PyrObject.h"
@@ -34,7 +35,7 @@
 #include "PyrListPrim.h"
 #include "PyrSlot.h"
 #include "PyrMessage.h"
-#include "PyrParseNode.h"
+#include "SpecialSelectorsOperatorsAndClasses.h"
 #include "PyrKernelProto.h"
 #include "PyrInterpreter.h"
 #include "PyrDeepCopier.h"
@@ -44,8 +45,7 @@
 #include "SC_LanguageConfig.hpp"
 #include "SC_Filesystem.hpp"
 #include "VMGlobals.h"
-#include "normalise_source.hpp"
-#include "text_location.hpp"
+#include "sc_source/text_location.hpp"
 
 #include <cstddef>
 #include <iterator>
@@ -75,8 +75,6 @@
 #endif
 
 namespace fs = std::filesystem;
-
-int yyparse();
 
 extern bool gTraceInterpreter;
 PyrSymbol* s_recvmsg;
@@ -1027,7 +1025,7 @@ int blockValueEnvirWithKeys(VMGlobals* g, int allArgsPushed, int numKeyArgsPushe
 
     auto [frame, block] = buildFrameForBlockPrims(g, args);
 
-    auto curEnvirSlot = &g->classvars->slots[1]; // currentEnvironment is the second class var.
+    auto curEnvirSlot = &g->classvars->slots[cvxCurrentEnvironment];
     auto maybeEnvirObj =
         isKindOfSlot(curEnvirSlot, s_identitydictionary->u.classobj) ? slotRawObject(curEnvirSlot) : nullptr;
 
@@ -1989,7 +1987,7 @@ int debugFrame_AsErrorString(VMGlobals* g, int) {
             const auto strSize = src.size;
 
             // Loop to build location data.
-            sc::lex::SourceCodeRange loc;
+            sc::src::SourceCodeRange loc;
             const uint32_t start = block->codeLocations.getPyrObjType<PyrInt32Array>()->i[ipIndex * 2];
             const uint32_t end = block->codeLocations.getPyrObjType<PyrInt32Array>()->i[(ipIndex * 2) + 1];
 
@@ -2028,17 +2026,20 @@ int debugFrame_AsErrorString(VMGlobals* g, int) {
             prefixForDiag.append(prefixPtr, prefixSz);
             prefixForDiag += "    ";
 
-            const DiagnosticHighlight d { block->filePath.isSymbol() ? block->filePath.getSymbol()->name : nullptr,
-                                          block->sourceCodeFileOrSnippet.getPyrObjType<PyrString>()->s,
-                                          static_cast<size_t>(
-                                              block->sourceCodeFileOrSnippet.getPyrObjType<PyrString>()->size),
-                                          loc,
-                                          file_line,
-                                          file_column,
-                                          annotationStr };
+            const auto* sourceString = block->sourceCodeFileOrSnippet.getPyrObjType<PyrString>();
+            std::filesystem::path filePath;
+            if (block->filePath.isSymbol())
+                filePath = block->filePath.getSymbol()->name;
 
             ss.write(prefixPtr, prefixSz);
-            streamSourceCodeWithHighlight(ss, d, printSource, prefixForDiag.c_str(), prefixForDiag.size());
+            sc::diag::streamHighlight(
+                ss,
+                { block->filePath.isSymbol() ? &filePath : nullptr,
+                  std::string_view { sourceString->s, static_cast<size_t>(sourceString->size) },
+                  loc,
+                  { 0, static_cast<std::uint32_t>(file_line), static_cast<std::uint32_t>(file_column) },
+                  annotationStr },
+                printSource, prefixForDiag);
         }
 
         const auto string = std::move(ss).str();
@@ -2240,6 +2241,10 @@ int prObjectCopySeries(struct VMGlobals* g, int numArgsPushed) {
         length = (first - last) / -step + 1;
     } else
         return errFailed;
+
+    // A step pointing away from last has no elements, and a negative size corrupts the heap.
+    if (length < 0)
+        length = 0;
 
     int numbytes = length * elemsize;
 
@@ -2521,32 +2526,18 @@ int prInstancesOfClassRespondTo(struct VMGlobals* g, int numArgsPushed) {
 }
 
 
-PyrMethod* GetFunctionCompileContext(VMGlobals* g, CompilerContext& cxt) {
-    PyrClass* classobj;
-    PyrSymbol *classsym, *contextsym;
-    PyrMethod* meth;
-    // lookup interpreter class
-    classsym = getsym("Interpreter");
-    classobj = classsym->u.classobj;
-    if (!classobj) {
-        error("There is no Interpreter class.\n");
-        return nullptr;
-    }
-    // lookup functionCompileContext method
-    contextsym = getsym("functionCompileContext");
-    int index = slotRawInt(&classobj->classIndex) + contextsym->u.index;
-    meth = gRowTable[index];
-    if (!meth || slotRawSymbol(&meth->name) != contextsym) {
-        error("compile context method 'functionCompileContext' not found.\n");
-        return nullptr;
-    }
-    cxt.compilingClass = classobj;
-    cxt.compilingMethod = meth;
-    cxt.compilingBlock = meth;
-    return meth;
+#if !SCPLAYER
+// A closure over the interpreter's frame.
+static PyrClosure* InterpretedClosure(VMGlobals* g, PyrBlock* block) {
+    constexpr auto closure_size = (sizeof(PyrClosure) - sizeof(PyrObjectHdr)) / sizeof(PyrSlot);
+    auto closure = reinterpret_cast<PyrClosure*>(g->gc->New(closure_size, 0, obj_notindexed, false));
+    closure->classptr = class_func;
+    closure->size = 2;
+    closure->block = PyrSlot::make(block);
+    closure->context = g->process->interpreter.getPyrObjType<PyrInterpreter>()->context;
+    return closure;
 }
 
-#if !SCPLAYER
 int prCompileString(struct VMGlobals* g, int numArgsPushed) {
     auto stackStart = g->sp - 4;
     auto interpreter = stackStart[0];
@@ -2560,79 +2551,19 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
         return errWrongType;
     auto string = stringSlot.getPyrObjType<PyrString>();
 
-
-    sc::lex::NormalisedSource src { string->s, static_cast<size_t>(string->size) };
-    const auto& srcStr = src.as_string();
-    auto* strPyr = newPyrString(g->gc, srcStr.c_str(), 0, false);
-
-    auto fileSym = fileName.isSymbol() ? fileName.getSymbol() : getsym("interpreted_text");
-
-    const auto offset = sc::lex::FileCodeLocation {
+    const auto start = sc::src::FileCodeLocation {
         0,
-        static_cast<size_t>(lineNumber.isInt() ? lineNumber.getInt() : 0),
-        static_cast<size_t>(column.isInt() ? column.getInt() : 0),
+        static_cast<std::uint32_t>(lineNumber.isInt() ? lineNumber.getInt() : 0),
+        static_cast<std::uint32_t>(column.isInt() ? column.getInt() : 0),
     };
-
-
-    auto textInfo = std::make_shared<TextInfo>(std::move(src), *strPyr, *fileSym, offset);
-
-    CompilerContext cxt { textInfo, g };
-    // This is the only place where this can be set.
-    // In the future we should consider removing this.
-    cxt.generateTailCallByteCodes = gClassLibraryInfo.generateTailCalls;
-
-    const auto on_parse_failure = [&](const std::vector<CompilerContext::ParseErrorInCurFile>& errors,
-                                      int error_code) -> int {
-        for (const auto& er : errors) {
-            const auto hg = textInfo->createDiagnosticHighlight(er.location, std::string { er.msg });
-            const auto str = diagnosticToCompilerError(ErrorType::Error, "parsing error", &hg, 1);
-            cxt.postError(str);
-        }
+    auto block = compileInterpreted(g, { string->s, static_cast<size_t>(string->size) },
+                                    fileName.isSymbol() ? fileName.getSymbol() : nullptr, start);
+    if (!block) {
         stackStart[0] = PyrSlot {};
         return errFailed;
-    };
-
-    const auto on_parse_sucess = [&](PyrRootNode& root) -> int {
-        auto meth = GetFunctionCompileContext(g, cxt);
-        assert(meth); // Should be impossible.
-        if (!meth)
-            return errFailed;
-
-        auto& children = *root.children;
-        auto blockNode = nodeCast<PyrBlockNode>(&children);
-
-        // All cmd line code should return a block.
-        assert(blockNode);
-        if (!blockNode)
-            return errFailed;
-
-        // Should be only one top level block.
-        assert(blockNode->mNext == nullptr);
-
-        blockNode->mIsExplicitlyClosed = true;
-
-        PyrSlot compileResult {};
-        compileNode(cxt, blockNode, &compileResult, true);
-
-        if (cxt.errors > 0) {
-            stackStart[0] = PyrSlot {};
-            return errFailed;
-        }
-
-        // Compiler should always write a pyrblock to the result when compiling a blocknode.
-        assert(compileResult.isObjectHdr() && compileResult.getPyrObjType<PyrObject>()->classptr == class_fundef);
-        auto block = compileResult.getPyrObjType<PyrBlock>();
-        constexpr auto closure_size = (sizeof(PyrClosure) - sizeof(PyrObjectHdr)) / sizeof(PyrSlot);
-        auto closure = reinterpret_cast<PyrClosure*>(g->gc->New(closure_size, 0, obj_notindexed, false));
-        closure->classptr = class_func;
-        closure->size = 2;
-        closure->block = PyrSlot::make(block);
-        closure->context = g->process->interpreter.getPyrObjType<PyrInterpreter>()->context;
-        stackStart[0] = PyrSlot::make(closure);
-        return errNone;
-    };
-
-    return parse(cxt, on_parse_sucess, on_parse_failure);
+    }
+    stackStart[0] = PyrSlot::make(InterpretedClosure(g, block));
+    return errNone;
 }
 #endif
 
@@ -2823,7 +2754,7 @@ void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numAr
     gc = g->gc;
 
     // save environment in oldthread
-    PyrSlot* currentEnvironmentSlot = &g->classvars->slots[1];
+    PyrSlot* currentEnvironmentSlot = &g->classvars->slots[cvxCurrentEnvironment];
     slotCopy(&oldthread->environment, currentEnvironmentSlot);
     gc->GCWrite(oldthread, currentEnvironmentSlot);
 
@@ -2978,7 +2909,7 @@ void initPyrThread(VMGlobals* g, PyrThread* thread, PyrSlot* func, int stacksize
         gc->GCWrite(thread, clock);
     }
 
-    PyrSlot* currentEnvironmentSlot = &g->classvars->slots[1];
+    PyrSlot* currentEnvironmentSlot = &g->classvars->slots[cvxCurrentEnvironment];
     slotCopy(&thread->environment, currentEnvironmentSlot);
     gc->GCWrite(thread, currentEnvironmentSlot);
 

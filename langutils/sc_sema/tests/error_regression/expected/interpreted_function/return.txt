@@ -1,0 +1,24 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): poisoned: version 3.16: interpreted_function/return.scd
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Return in interpreted code
+|  interpreted_function/return.scd:4:8
+|      2 │ // There is no method to return from, as for a region.
+|      3 │ // expect-error: Return in interpreted code
+|      4 │ a = 1; ^a
+|        ┆        ^^ there is no method to return from.
+|
+|  `^` returns from the method the code is written in, but interpreted code isn't in a method. The value of interpreted code is its last expression, so remove the `^`.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCFunction (1:1)
+|  |  SCBody (1:1)
+|  |  |  SCAssign (4:1): instance a, declared (37:11): a
+|  |  |  |  SCLiteral (4:5) = 1
+|  |  |  SCRead (4:9): instance a, declared (37:11): a
+Successfully compiled 15 classes.

@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestDocument : UnitTest {
 	// autorun doesn't have access to this object's scope
 	// need a public place to communicate the result

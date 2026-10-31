@@ -1,0 +1,76 @@
+#pragma once
+
+#include "sc_sema/symbols.hpp"
+namespace sc::ir {
+
+struct SymbolTable;
+
+// Symbols the compiler refers to by name. They are made once, before compiling, so they aren't looked up in the symbol
+// table, which locks, while compiling.
+struct CommonSymbols {
+    explicit CommonSymbols(SymbolTable& table);
+
+    // Selectors of messages that aren't written, e.g., `a.()` is `a.value()`.
+    SymSCSelector value;
+    SymSCSelector new_;
+    SymSCSelector at;
+    // `a[i] = v` is `a.put(i, v)`.
+    SymSCSelector put;
+    // `a[1..3]` is `a.copySeries(1, nil, 3)`, and `a[1..3] = v` is `a.putSeries(1, nil, 3, v)`.
+    SymSCSelector copy_series;
+    SymSCSelector put_series;
+    // `(1..5)` is `1.series(nil, 5)`.
+    SymSCSelector series;
+    // `Array[1, 2]` adds each element.
+    SymSCSelector add;
+    // Arithmetic on constant numbers is folded, e.g., `1 + 2` is `3`.
+    SymSCSelector plus;
+    SymSCSelector minus;
+    SymSCSelector multiply;
+    SymSCSelector divide;
+
+    // Classes whose methods the compiler assumes the implementation of, see KnownMethods.
+    SymSCClassName simple_number;
+    SymSCClassName arrayed_collection;
+    SymSCClassName dictionary;
+    // The classes of the typed arrays a constant can be, e.g., `FloatArray[1, 2]`.
+    SymSCClassName double_array;
+    SymSCClassName float_array;
+    SymSCClassName int32_array;
+    SymSCClassName int16_array;
+    SymSCClassName int8_array;
+    SymSCClassName symbol_array;
+    // Interpreted code is compiled as if it were written inside `Interpreter:functionCompileContext`. Unlike the
+    // common classes, it is only needed to compile interpreted code, so a class library may omit it.
+    SymSCClassName interpreter;
+    SymSCSelector function_compile_context;
+
+    // `this`, `super`, and the pseudo variables, see SCSpecial. They can't be declared or assigned.
+    SymSCIdentifier this_;
+    SymSCIdentifier super_;
+    SymSCIdentifier this_process;
+    SymSCIdentifier this_thread;
+    SymSCIdentifier this_method;
+    SymSCIdentifier this_function_def;
+    SymSCIdentifier this_function;
+    [[nodiscard]] bool is_special(SymSCIdentifier name) const {
+        return name == this_ || name == super_ || name == this_process || name == this_thread || name == this_method
+            || name == this_function_def || name == this_function;
+    }
+
+    // The slot types a class can be declared with, e.g., `Foo[float] {}`.
+    SymSCIdentifier slot;
+    SymSCIdentifier double_;
+    SymSCIdentifier float_;
+    SymSCIdentifier int32;
+    SymSCIdentifier int16;
+    SymSCIdentifier int8;
+    SymSCIdentifier char_;
+    SymSCIdentifier symbol;
+    [[nodiscard]] bool is_slot_type(SymSCIdentifier name) const {
+        return name == slot || name == double_ || name == float_ || name == int32 || name == int16 || name == int8
+            || name == char_ || name == symbol;
+    }
+};
+
+}

@@ -25,7 +25,7 @@ This file contains the definitions of the core objects that implement the class 
 
 #pragma once
 
-#include "OpcodeOperands.h"
+#include "sc_bytecode/OpcodeOperands.h"
 #include "PyrObject.h"
 #include "PyrObjectHdr.h"
 #include "VMGlobals.h"

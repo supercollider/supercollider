@@ -1,0 +1,35 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): version 3.16: interpreted_function/arguments_defaults.scd
+|  SCFunction (1:1)
+|  |  SCArgumentDeclareList (3:2)
+|  |  |  SCArgumentDeclare (3:2): x, prototype
+|  |  |  |  SCLiteral (3:6) = 1
+|  |  |  SCArgumentDeclare (3:9): y, prototype
+|  |  |  |  SCLiteral (3:13) = 2
+|  |  SCBody (1:1)
+|  |  |  SCVariableDeclare (3:20): z (captured), computed
+|  |  |  |  SCMessage (3:24): +
+|  |  |  |  |  SCRead (3:24): local x, declared (3:2): x = 1
+|  |  |  |  |  SCPositionalArgs (3:24)
+|  |  |  |  |  |  SCRead (3:28): local y, declared (3:9): y = 2
+|  |  |  SCMessage (3:31): if
+|  |  |  |  SCMessage (3:35): >
+|  |  |  |  |  SCRead (3:35): local z, declared (3:20): z = x + y
+|  |  |  |  |  SCPositionalArgs (3:35)
+|  |  |  |  |  |  SCLiteral (3:39) = 2
+|  |  |  |  SCPositionalArgs (3:31)
+|  |  |  |  |  SCFunction (3:42)
+|  |  |  |  |  |  SCBody (3:42)
+|  |  |  |  |  |  |  SCMessage (3:44): *
+|  |  |  |  |  |  |  |  SCRead (3:44): local z, declared (3:20): z = x + y
+|  |  |  |  |  |  |  |  SCPositionalArgs (3:44)
+|  |  |  |  |  |  |  |  |  SCLiteral (3:48) = 2
+|  |  |  |  |  SCFunction (3:52)
+|  |  |  |  |  |  SCBody (3:52)
+|  |  |  |  |  |  |  SCRead (3:54): local z, declared (3:20): z = x + y
+Successfully compiled 15 classes.

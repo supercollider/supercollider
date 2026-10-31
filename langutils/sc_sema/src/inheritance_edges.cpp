@@ -1,0 +1,122 @@
+#include "sc_sema/context.hpp"
+#include "sc_sema/symbol_table.hpp"
+#include <algorithm>
+#include <unordered_set>
+
+namespace sc::ir {
+
+void InheritanceEdges::insert(SymSCClassName parent, SymSCClassName child) {
+    std::scoped_lock l { m_lock };
+    m_sub_classes[parent].push_back(child);
+    // ensure child exists
+    const auto& _ = m_sub_classes[child];
+
+    // This means we
+    assert(m_super_class.count(child) == 0);
+    m_super_class.insert({ child, parent });
+}
+
+void InheritanceEdges::insert(SymSCClassName none) {
+    // Classes are declared on several threads, so this locks too.
+    std::scoped_lock l { m_lock };
+    m_sub_classes[none];
+}
+
+std::vector<std::vector<SymSCClassName>> InheritanceEdges::cycle_check(SymSCClassName root,
+                                                                       std::vector<SymSCClassName>& topo_order,
+                                                                       const SymbolTable& symbols) {
+    topo_order.clear();
+    assert(!m_sub_classes.empty());
+    std::scoped_lock l { m_lock };
+
+    const auto by_name = [&](SymSCClassName a, SymSCClassName b) { return symbols(a) < symbols(b); };
+    for (auto& [_, children] : m_sub_classes)
+        std::sort(children.begin(), children.end(), by_name);
+
+    // Because root is empty, and we have single inheritance, it is impossible to create cycles that are attached to
+    // root.
+    std::unordered_set<SymSCClassName, std::hash<Symbol>> not_visited, visited;
+
+    const auto dfs = [&](auto&& self, SymSCClassName n) -> void {
+        assert(visited.count(n) == 0);
+        not_visited.erase(n);
+        visited.insert(n);
+
+        for (const SymSCClassName child : m_sub_classes.at(n))
+            self(self, child);
+        topo_order.push_back(n);
+    };
+
+    for (const auto& [k, v] : m_sub_classes) {
+        not_visited.insert(k);
+    }
+
+    dfs(dfs, root);
+
+    std::reverse(topo_order.begin(), topo_order.end());
+    assert(topo_order.front() == root);
+
+    std::vector<std::vector<SymSCClassName>> loops;
+
+    const auto loop_maker = [&](auto&& self, SymSCClassName n, std::vector<SymSCClassName>& current_cycle) -> void {
+        // This is the end of a loop.
+        assert(not_visited.count(n));
+        current_cycle.push_back(n);
+        not_visited.erase(n);
+
+        for (const SymSCClassName child : m_sub_classes.at(n)) {
+            if (not_visited.count(child) == 0)
+                continue;
+            self(self, child, current_cycle);
+        }
+    };
+
+    // Takes the first class by name that isn't reachable from the root, and returns the cycle it is connected to.
+    // Repeats until there are no more.
+    while (!not_visited.empty()) {
+        std::vector<SymSCClassName> cycles;
+        SymSCClassName n = *std::min_element(not_visited.begin(), not_visited.end(), by_name);
+        std::unordered_set<SymSCClassName, std::hash<Symbol>> parent_visited;
+        parent_visited.insert(n);
+
+        while (true) {
+            auto fnd = m_super_class.find(n);
+            if (fnd == m_super_class.end())
+                break;
+            SymSCClassName s = fnd->second;
+            if (parent_visited.count(s)) {
+                break;
+            }
+            parent_visited.insert(s);
+            n = s;
+        }
+
+        loop_maker(loop_maker, n, cycles);
+        loops.push_back(std::move(cycles));
+    }
+
+    return loops;
+}
+
+const std::vector<SymSCClassName>& InheritanceEdges::get_unsafe(SymSCClassName n) const {
+    assert(m_sub_classes.count(n));
+    return m_sub_classes.at(n);
+}
+
+void ClassNames::define(SymSCClassName n, std::shared_ptr<const ast::ASTGraph> g, ast::ClassNameIdentifierIndex i) {
+    std::scoped_lock lk { m_lock };
+    m_class_locations.insert({ n, std::pair { std::move(g), i } });
+}
+
+[[nodiscard]] std::optional<ClassNames::V> ClassNames::defined_elsewhere(SymSCClassName n,
+                                                                         const std::shared_ptr<const ast::ASTGraph>& g,
+                                                                         ast::ClassNameIdentifierIndex i) const {
+    std::scoped_lock lk { m_lock };
+    const auto fnd = m_class_locations.find(n);
+    assert(fnd != m_class_locations.end());
+    const auto& [first_g, first_i] = fnd->second;
+    if (first_g == g && first_i == i)
+        return std::nullopt;
+    return { fnd->second };
+}
+}

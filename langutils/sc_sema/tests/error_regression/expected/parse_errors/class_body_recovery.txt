@@ -1,0 +1,195 @@
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Unexpected Token.
+parse_errors/class_body_recovery.sc:42:5
+   40 │ +Object {
+   41 │     fine { ^1 }
+   42 │     junk
+      ┆     ^^^^ Expected `{`, but found `other`.
+   43 │     other { ^2 }
+   44 │ }
+
+──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): JunkBetweenMethods : Object, version 3.16
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unexpected Token.
+|  parse_errors/class_body_recovery.sc:8:5
+|      6 │     before { ^1 }
+|      7 │     // A name with no `{`.
+|      8 │     incomplete
+|        ┆     ^^^^^^^^^^ Expected `{`, but found `after`.
+|      9 │     // expect: -> 2
+|     10 │     after { ^2 }
+|     11 │     ;
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unexpected Token.
+|  parse_errors/class_body_recovery.sc:11:5
+|      9 │     // expect: -> 2
+|     10 │     after { ^2 }
+|     11 │     ;
+|        ┆     ^ Expected a binary operator, `}`, a name, or `while`, but found `;`.
+|     12 │     // expect: -> 3
+|     13 │     *class_method { ^3 }
+|     14 │     + 3
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unexpected Token.
+|  parse_errors/class_body_recovery.sc:14:7
+|     12 │     // expect: -> 3
+|     13 │     *class_method { ^3 }
+|     14 │     + 3
+|        ┆       ^ Expected `{`, but found `3`.
+|     15 │     // expect: no result
+|     16 │     last { |x| if (x) { ^4 }; ^5 }
+|     17 │ }
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (6:5): before, version 3.16: before { ^1 } -> 1
+|  |  |  SCBody (6:14)
+|  |  |  |  SCExplicitReturn (6:14)
+|  |  |  |  |  SCLiteral (6:15) = 1
+|  |  SCMethod (10:5): after, version 3.16: after { ^2 } -> 2
+|  |  |  SCBody (10:13)
+|  |  |  |  SCExplicitReturn (10:13)
+|  |  |  |  |  SCLiteral (10:14) = 2
+|  |  SCMethod (16:5): last, version 3.16: last { |x| if (x) { ^4 }; ^5 }
+|  |  |  SCArgumentDeclareList (16:13)
+|  |  |  |  SCArgumentDeclare (16:13): x
+|  |  |  SCBody (16:16)
+|  |  |  |  SCMessage (16:16): if
+|  |  |  |  |  SCRead (16:20): local x, declared (16:13): x
+|  |  |  |  |  SCPositionalArgs (16:16)
+|  |  |  |  |  |  SCFunction (16:23)
+|  |  |  |  |  |  |  SCBody (16:23)
+|  |  |  |  |  |  |  |  SCExplicitReturn (16:25)
+|  |  |  |  |  |  |  |  |  SCLiteral (16:26) = 4
+|  |  |  |  SCExplicitReturn (16:31)
+|  |  |  |  |  SCLiteral (16:32) = 5
+SCClass (4:1): Meta_JunkBetweenMethods : Meta_Object, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (13:5): class_method, version 3.16: *class_method { ^3 } -> 3
+|  |  |  SCBody (13:21)
+|  |  |  |  SCExplicitReturn (13:21)
+|  |  |  |  |  SCLiteral (13:22) = 3
+SCClass (20:1): StrayFirst : Object, version 3.16
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unexpected Token.
+|  parse_errors/class_body_recovery.sc:20:13
+|     18 │ 
+|     19 │ // An error right after the class's `{`, before any members.
+|     20 │ StrayFirst {;
+|        ┆             ^ Expected a binary operator, `}`, a name, `var`, `classvar`, `const`, or `while`, but found `;`.
+|     21 │     // expect: -> 1
+|     22 │     method { ^1 }
+|     23 │ }
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (20:1)
+|  SCMethodList (20:1)
+|  |  SCMethod (22:5): method, version 3.16: method { ^1 } -> 1
+|  |  |  SCBody (22:14)
+|  |  |  |  SCExplicitReturn (22:14)
+|  |  |  |  |  SCLiteral (22:15) = 1
+SCClass (25:1): BrokenMembers : Object, version 3.16
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unexpected Token.
+|  parse_errors/class_body_recovery.sc:26:13
+|     24 │ 
+|     25 │ BrokenMembers {
+|     26 │     var a = , b;
+|        ┆             ^ Expected an expression, but found `,`.
+|     27 │     classvar c, ;
+|     28 │     const d = 1 +;
+|     29 │     var e;
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unexpected Token.
+|  parse_errors/class_body_recovery.sc:27:17
+|     25 │ BrokenMembers {
+|     26 │     var a = , b;
+|     27 │     classvar c, ;
+|        ┆                 ^ Expected `#`, a name, `while`, `<`, `>`, or `<>`, but found `;`.
+|     28 │     const d = 1 +;
+|     29 │     var e;
+|     30 │     // expect: -> 1
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Missing Expression.
+|  parse_errors/class_body_recovery.sc:28:18
+|     26 │     var a = , b;
+|     27 │     classvar c, ;
+|     28 │     const d = 1 +;
+|        ┆                 ^^ ...but found `;`.
+|        ┆                 └ This `+` needs an expression after it...
+|     29 │     var e;
+|     30 │     // expect: -> 1
+|     31 │     method { ^1 }
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (25:1)
+|  |  SCMember (29:9): e
+|  SCMethodList (25:1)
+|  |  SCMethod (31:5): method, version 3.16: method { ^1 } -> 1
+|  |  |  SCBody (31:14)
+|  |  |  |  SCExplicitReturn (31:14)
+|  |  |  |  |  SCLiteral (31:15) = 1
+|  |  SCMethod (34:5): poisoned: uses_dropped, version 3.16: uses_dropped { ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  parse_errors/class_body_recovery.sc:34:21
+|  |  |     32 │     // expect: no result
+|  |  |     33 │     // expect-error: Variable not defined
+|  |  |     34 │     uses_dropped { ^a }
+|  |  |        ┆                     ^ this is not defined.
+|  |  |     35 │ }
+|  |  |     36 │ 
+|  |  |     37 │ // The class's own `}` ends the skipping.
+|  |  |
+|  |  |  Declare it with 'var', or use '~a' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (34:20)
+|  |  |  |  SCExplicitReturn (34:20)
+|  |  |  |  |  SCExprList (34:21)
+SCClass (38:1): MissingMethodBody : Object, version 3.16
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unexpected Token.
+|  parse_errors/class_body_recovery.sc:38:32
+|     36 │ 
+|     37 │ // The class's own `}` ends the skipping.
+|     38 │ MissingMethodBody { x { ^1 } y }
+|        ┆                                ^ Expected `{`, but found `}`.
+|     39 │ 
+|     40 │ +Object {
+|     41 │     fine { ^1 }
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (38:1)
+|  SCMethodList (38:1)
+|  |  SCMethod (38:21): x, version 3.16: x { ^1 } -> 1
+|  |  |  SCBody (38:25)
+|  |  |  |  SCExplicitReturn (38:25)
+|  |  |  |  |  SCLiteral (38:26) = 1
+Successfully compiled 19 classes.

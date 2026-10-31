@@ -1,0 +1,62 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (2:1): StatementLegacy : Object
+|  SCMemberList (2:1)
+|  SCMethodList (2:1)
+|  |  SCMethod (4:5): poisoned: middle: middle { var a = 1; a = ; ^3 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/statement_recovery_legacy.sc:4:29
+|  |  |      2 │ StatementLegacy {
+|  |  |      3 │     // expect: poisoned
+|  |  |      4 │     middle { var a = 1; a = ; ^3 }
+|  |  |        ┆                             ^ Expected an expression, but found `;`.
+|  |  |      5 │     // expect: poisoned
+|  |  |      6 │     nested { |x| if (x) { 1 + ; ^1 }; ^2 }
+|  |  |      7 │     // expect: -> 4
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (4:14)
+|  |  |  |  SCVariableDeclare (4:18): a, prototype
+|  |  |  |  |  SCLiteral (4:22) = 1
+|  |  |  |  SCExprList (4:25)
+|  |  |  |  SCExplicitReturn (4:31)
+|  |  |  |  |  SCLiteral (4:32) = 3
+|  |  SCMethod (6:5): poisoned: nested: nested { |x| if (x) { 1 + ; ^1 }; ^2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/statement_recovery_legacy.sc:6:31
+|  |  |      4 │     middle { var a = 1; a = ; ^3 }
+|  |  |      5 │     // expect: poisoned
+|  |  |      6 │     nested { |x| if (x) { 1 + ; ^1 }; ^2 }
+|  |  |        ┆                             ^ ^ ...but found `;`.
+|  |  |        ┆                             └ This `+` needs an expression after it...
+|  |  |      7 │     // expect: -> 4
+|  |  |      8 │     good { ^4 }
+|  |  |      9 │ }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (6:15)
+|  |  |  |  SCArgumentDeclare (6:15): x
+|  |  |  SCBody (6:18)
+|  |  |  |  SCMessage (6:18): if
+|  |  |  |  |  SCRead (6:22): local x, declared (6:15): x
+|  |  |  |  |  SCPositionalArgs (6:18)
+|  |  |  |  |  |  SCFunction (6:25)
+|  |  |  |  |  |  |  SCBody (6:25)
+|  |  |  |  |  |  |  |  SCExprList (6:27)
+|  |  |  |  |  |  |  |  SCExplicitReturn (6:33)
+|  |  |  |  |  |  |  |  |  SCLiteral (6:34) = 1
+|  |  |  |  SCExplicitReturn (6:39)
+|  |  |  |  |  SCLiteral (6:40) = 2
+|  |  SCMethod (8:5): good: good { ^4 } -> 4
+|  |  |  SCBody (8:12)
+|  |  |  |  SCExplicitReturn (8:12)
+|  |  |  |  |  SCLiteral (8:13) = 4
+Successfully compiled 16 classes.

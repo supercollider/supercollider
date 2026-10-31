@@ -1,0 +1,28 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): version 3.16: versions/interpreted_version.scd
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Warning: Version in interpreted code
+|  versions/interpreted_version.scd:6:1
+|      4 │ // expect: -> 2
+|      5 │ // expect-warning: Version in interpreted code
+|      6 │ //# VERSION 3.13
+|        ┆ ^^^^^^^^^^^^^^^^ this version is ignored.
+|      7 │ 1 + 1
+|
+|  Interpreted code is given its version when it is compiled.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCRegionList (1:1) -> 2
+|  |  SCRegion (7:1)
+|  |  |  SCFunction (7:1) -> 2
+|  |  |  |  SCBody (7:1)
+|  |  |  |  |  SCMessage (7:1): + = 2
+|  |  |  |  |  |  SCLiteral (7:1) = 1
+|  |  |  |  |  |  SCPositionalArgs (7:1)
+|  |  |  |  |  |  |  SCLiteral (7:5) = 1
+Successfully compiled 15 classes.

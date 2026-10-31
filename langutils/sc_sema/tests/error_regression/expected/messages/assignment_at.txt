@@ -1,0 +1,127 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (2:1): AssignmentAt : Object, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (3:9): instance_var
+|  SCMethodList (2:1)
+|  |  SCMethod (5:5): single, version 3.16: single { instance_var[0] = 1 }
+|  |  |  SCBody (5:14)
+|  |  |  |  SCMessage (5:14): put
+|  |  |  |  |  SCRead (5:14): instance instance_var, declared (3:9): instance_var
+|  |  |  |  |  SCPositionalArgs (5:14)
+|  |  |  |  |  |  SCLiteral (5:27) = 0
+|  |  |  |  |  |  SCLiteral (5:32) = 1
+|  |  SCMethod (6:5): empty, version 3.16: empty { instance_var[] = 1 }
+|  |  |  SCBody (6:13)
+|  |  |  |  SCMessage (6:13): put
+|  |  |  |  |  SCRead (6:13): instance instance_var, declared (3:9): instance_var
+|  |  |  |  |  SCPositionalArgs (6:13)
+|  |  |  |  |  |  SCLiteral (6:30) = 1
+|  |  SCMethod (7:5): dot, version 3.16: dot { instance_var.[0] = 1 }
+|  |  |  SCBody (7:11)
+|  |  |  |  SCMessage (7:11): put
+|  |  |  |  |  SCRead (7:11): instance instance_var, declared (3:9): instance_var
+|  |  |  |  |  SCPositionalArgs (7:11)
+|  |  |  |  |  |  SCLiteral (7:25) = 0
+|  |  |  |  |  |  SCLiteral (7:30) = 1
+|  |  SCMethod (8:5): dot_empty, version 3.16: dot_empty { instance_var.[] = 1 }
+|  |  |  SCBody (8:17)
+|  |  |  |  SCMessage (8:17): put
+|  |  |  |  |  SCRead (8:17): instance instance_var, declared (3:9): instance_var
+|  |  |  |  |  SCPositionalArgs (8:17)
+|  |  |  |  |  |  SCLiteral (8:35) = 1
+|  |  SCMethod (9:5): multiple, version 3.16: multiple { instance_var[0, 1] = 2 }
+|  |  |  SCBody (9:16)
+|  |  |  |  SCMessage (9:16): put
+|  |  |  |  |  SCRead (9:16): instance instance_var, declared (3:9): instance_var
+|  |  |  |  |  SCPositionalArgs (9:16)
+|  |  |  |  |  |  SCLiteral (9:29) = 0
+|  |  |  |  |  |  SCLiteral (9:32) = 1
+|  |  |  |  |  |  SCLiteral (9:37) = 2
+|  |  SCMethod (10:5): keyword, version 3.16: keyword { instance_var[0, b: 1] = 2 }
+|  |  |  SCBody (10:15)
+|  |  |  |  SCMessage (10:15): put
+|  |  |  |  |  SCRead (10:15): instance instance_var, declared (3:9): instance_var
+|  |  |  |  |  SCPositionalArgs (10:15)
+|  |  |  |  |  |  SCLiteral (10:28) = 0
+|  |  |  |  |  |  SCLiteral (10:39) = 2
+|  |  |  |  |  SCKwArgs (10:15)
+|  |  |  |  |  |  SCKwArg (10:31): b
+|  |  |  |  |  |  |  SCLiteral (10:34) = 1
+|  |  SCMethod (11:5): poisoned: variadic, version 3.16: variadic { instance_var[*0] = 1 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variadic argument is not last
+|  |  |  messages/assignment_at.sc:11:35
+|  |  |      9 │     multiple { instance_var[0, 1] = 2 }
+|  |  |     10 │     keyword { instance_var[0, b: 1] = 2 }
+|  |  |     11 │     variadic { instance_var[*0] = 1 }
+|  |  |        ┆                             ^^    ^ ...this argument, which is written after it.
+|  |  |        ┆                             └ the elements of this are passed after...
+|  |  |     12 │     expression_receiver { 1.foo[0] = 2 }
+|  |  |     13 │     nested_value { instance_var[0] = instance_var[1] = 2 }
+|  |  |     14 │     as_argument { ^3.bar(instance_var[0] = 1) }
+|  |  |
+|  |  |  A variadic argument, e.g., `*a`, must come after all the positional arguments, e.g., `foo(1, *a)`. This includes the value of `a[*i] = v`, which is passed after the 'v'.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (11:16)
+|  |  |  |  SCMessage (11:16): put
+|  |  |  |  |  SCRead (11:16): instance instance_var, declared (3:9): instance_var
+|  |  |  |  |  SCPositionalArgs (11:16)
+|  |  |  |  |  |  SCLiteral (11:35) = 1
+|  |  |  |  |  SCVariadicArgs (11:16)
+|  |  |  |  |  |  SCLiteral (11:30) = 0
+|  |  SCMethod (12:5): expression_receiver, version 3.16: expression_receiver { 1.foo[0] = 2 }
+|  |  |  SCBody (12:27)
+|  |  |  |  SCMessage (12:27): put
+|  |  |  |  |  SCMessage (12:27): foo
+|  |  |  |  |  |  SCLiteral (12:27) = 1
+|  |  |  |  |  SCPositionalArgs (12:27)
+|  |  |  |  |  |  SCLiteral (12:33) = 0
+|  |  |  |  |  |  SCLiteral (12:38) = 2
+|  |  SCMethod (13:5): nested_value, version 3.16: nested_value { instance_var[0] = instance_var[1] = 2 }
+|  |  |  SCBody (13:20)
+|  |  |  |  SCMessage (13:20): put
+|  |  |  |  |  SCRead (13:20): instance instance_var, declared (3:9): instance_var
+|  |  |  |  |  SCPositionalArgs (13:20)
+|  |  |  |  |  |  SCLiteral (13:33) = 0
+|  |  |  |  |  |  SCMessage (13:38): put
+|  |  |  |  |  |  |  SCRead (13:38): instance instance_var, declared (3:9): instance_var
+|  |  |  |  |  |  |  SCPositionalArgs (13:38)
+|  |  |  |  |  |  |  |  SCLiteral (13:51) = 1
+|  |  |  |  |  |  |  |  SCLiteral (13:56) = 2
+|  |  SCMethod (14:5): as_argument, version 3.16: as_argument { ^3.bar(instance_var[0] = 1) }
+|  |  |  SCBody (14:19)
+|  |  |  |  SCExplicitReturn (14:19)
+|  |  |  |  |  SCMessage (14:20): bar
+|  |  |  |  |  |  SCLiteral (14:20) = 3
+|  |  |  |  |  |  SCPositionalArgs (14:20)
+|  |  |  |  |  |  |  SCMessage (14:26): put
+|  |  |  |  |  |  |  |  SCRead (14:26): instance instance_var, declared (3:9): instance_var
+|  |  |  |  |  |  |  |  SCPositionalArgs (14:26)
+|  |  |  |  |  |  |  |  |  SCLiteral (14:39) = 0
+|  |  |  |  |  |  |  |  |  SCLiteral (14:44) = 1
+|  |  SCMethod (15:5): poisoned: undefined_value, version 3.16: undefined_value { instance_var[0] = undefined_var }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  messages/assignment_at.sc:15:41
+|  |  |     13 │     nested_value { instance_var[0] = instance_var[1] = 2 }
+|  |  |     14 │     as_argument { ^3.bar(instance_var[0] = 1) }
+|  |  |     15 │     undefined_value { instance_var[0] = undefined_var }
+|  |  |        ┆                                         ^^^^^^^^^^^^^ this is not defined.
+|  |  |     16 │ }
+|  |  |
+|  |  |  Declare it with 'var', or use '~undefined_var' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (15:23)
+|  |  |  |  SCMessage (15:23): put
+|  |  |  |  |  SCRead (15:23): instance instance_var, declared (3:9): instance_var
+|  |  |  |  |  SCPositionalArgs (15:23)
+|  |  |  |  |  |  SCLiteral (15:36) = 0
+|  |  |  |  |  |  SCExprList (15:41)
+Successfully compiled 16 classes.

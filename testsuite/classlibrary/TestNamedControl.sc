@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestNamedControl : UnitTest {
 
 	test_defaultValue_inSingleInstance_isZero {

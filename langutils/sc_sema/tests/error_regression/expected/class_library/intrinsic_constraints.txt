@@ -1,0 +1,21 @@
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Intrinsic has incorrect super class
+class_library/intrinsic_constraints.sc:12:10
+   10 │ 
+   11 │ AbstractObjectExperimental {}
+   12 │ Object : Class {}
+      ┆          ^^^^^ Should be 'AbstractObjectExperimental'.
+   13 │ Class {}
+   14 │ String {}
+   15 │ True {}
+
+Intrinsic classes are a part of the compiler and cannot be changed.
+──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
+Successfully compiled 0 classes.

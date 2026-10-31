@@ -1,0 +1,184 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (6:1): Hidden316Base : Object, version 3.16
+|  SCMemberList (6:1)
+|  SCMethodList (6:1)
+SCClass (6:1): Meta_Hidden316Base : Meta_Object, version 3.16
+|  SCMemberList (6:1)
+|  |  SCMember (8:11): nl = "\n"
+|  |  SCMember (7:15): delim = $ 
+|  SCMethodList (6:1)
+|  |  SCMethod (9:5): baseDelim, version 3.16: *baseDelim { ^delim }
+|  |  |  SCBody (9:18)
+|  |  |  |  SCExplicitReturn (9:18)
+|  |  |  |  |  SCRead (9:19): instance delim, declared (7:15): delim
+|  |  SCMethod (10:5): baseNl, version 3.16: *baseNl { ^nl }
+|  |  |  SCBody (10:15)
+|  |  |  |  SCExplicitReturn (10:15)
+|  |  |  |  |  SCRead (10:16): instance nl, declared (8:11): nl
+SCClass (13:1): Hidden316Sub : Hidden316Base, version 3.16
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Warning: Class member hides the superclass's
+|  classes/hidden_class_members_316.sc:7:15
+|      5 │ // An instance variable needs its own slot, so that is still an error, see duplicate_members.sc.
+|      6 │ Hidden316Base {
+|      7 │     classvar <delim = $ ;
+|        ┆               ^^^^^ Declared in a superclass here...
+|      8 │     const nl = "\n";
+|      9 │     *baseDelim { ^delim }
+|     10 │     *baseNl { ^nl }
+|
+|  classes/hidden_class_members_316.sc:14:15
+|     12 │ 
+|     13 │ Hidden316Sub : Hidden316Base {
+|     14 │     classvar <delim = $,;
+|        ┆               ^^^^^ ...and again here, which hides it.
+|     15 │     const <nl = $\n;
+|     16 │     *subDelim { ^delim }
+|     17 │     *subNl { ^nl }
+|
+|  This class and its subclasses use this one, the superclass's own methods still use theirs. Rename one unless that is what you meant.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Warning: Class member hides the superclass's
+|  classes/hidden_class_members_316.sc:8:11
+|      6 │ Hidden316Base {
+|      7 │     classvar <delim = $ ;
+|      8 │     const nl = "\n";
+|        ┆           ^^ Declared in a superclass here...
+|      9 │     *baseDelim { ^delim }
+|     10 │     *baseNl { ^nl }
+|     11 │ }
+|
+|  classes/hidden_class_members_316.sc:15:12
+|     13 │ Hidden316Sub : Hidden316Base {
+|     14 │     classvar <delim = $,;
+|     15 │     const <nl = $\n;
+|        ┆            ^^ ...and again here, which hides it.
+|     16 │     *subDelim { ^delim }
+|     17 │     *subNl { ^nl }
+|     18 │     *setDelim { |d| delim = d; ^d }
+|
+|  This class and its subclasses use this one, the superclass's own methods still use theirs. Rename one unless that is what you meant.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (13:1)
+|  SCMethodList (13:1)
+SCClass (13:1): Meta_Hidden316Sub : Meta_Hidden316Base, version 3.16
+|  SCMemberList (13:1)
+|  |  SCMember (15:12): nl = $\n
+|  |  SCMember (14:15): delim = $,
+|  SCMethodList (13:1)
+|  |  SCMethod (16:5): subDelim, version 3.16: *subDelim { ^delim }
+|  |  |  SCBody (16:17)
+|  |  |  |  SCExplicitReturn (16:17)
+|  |  |  |  |  SCRead (16:18): instance delim, declared (14:15): delim
+|  |  SCMethod (17:5): subNl, version 3.16: *subNl { ^nl }
+|  |  |  SCBody (17:14)
+|  |  |  |  SCExplicitReturn (17:14)
+|  |  |  |  |  SCRead (17:15): instance nl, declared (15:12): nl
+|  |  SCMethod (18:5): setDelim, version 3.16: *setDelim { |d| delim = d; ^d }
+|  |  |  SCArgumentDeclareList (18:18)
+|  |  |  |  SCArgumentDeclare (18:18): d
+|  |  |  SCBody (18:21)
+|  |  |  |  SCAssign (18:21): instance delim, declared (14:15): delim
+|  |  |  |  |  SCRead (18:29): local d, declared (18:18): d
+|  |  |  |  SCExplicitReturn (18:32)
+|  |  |  |  |  SCRead (18:33): local d, declared (18:18): d
+SCClass (21:1): Hidden316SubSub : Hidden316Sub, version 3.16
+|  SCMemberList (21:1)
+|  SCMethodList (21:1)
+SCClass (21:1): Meta_Hidden316SubSub : Meta_Hidden316Sub, version 3.16
+|  SCMemberList (21:1)
+|  SCMethodList (21:1)
+|  |  SCMethod (22:5): subSubDelim, version 3.16: *subSubDelim { ^delim }
+|  |  |  SCBody (22:20)
+|  |  |  |  SCExplicitReturn (22:20)
+|  |  |  |  |  SCRead (22:21): instance delim, declared (14:15): delim
+SCClass (25:1): Hidden316InstanceBase : Object, version 3.16
+|  SCMemberList (25:1)
+|  |  SCMember (26:9): a
+|  SCMethodList (25:1)
+SCClass (29:1): Hidden316Instance : Hidden316InstanceBase, version 3.16
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Duplicate member with base class.
+|  classes/hidden_class_members_316.sc:30:9
+|     24 │ 
+|     25 │ Hidden316InstanceBase {
+|     26 │     var a;
+|        ┆         ^ First declared here...
+|     27 │ }
+|     28 │ 
+|     29 │ Hidden316Instance : Hidden316InstanceBase {
+|     30 │     var a;
+|        ┆         ^  ...duplicated here.
+|     31 │ }
+|
+|  Duplicate members are not allowed within a class hierarchy. Please delete one.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (29:1)
+|  SCMethodList (29:1)
+
+
+
+COMPILED DUMP 
+
+
+Hidden316Base
+|  class (6:1): superclass Object, not indexed
+Meta_Hidden316Base
+|  class (6:1): superclass Meta_Object, not indexed
+|  class variables from 0
+|  class variables: delim = $ ,
+|  constants: nl = "\n",
+|  accessor delim (7:15): shortcut: return class variable 0
+|  method baseDelim: function 0
+|  method baseNl: function 1
+|  function 0 (9:5): baseDelim
+|  |  arguments: this,
+|  |  shortcut: return class variable 0
+|  function 1 (10:5): baseNl
+|  |  arguments: this,
+|  |  code: 2 bytes, 0 selectors, 1 constants
+Hidden316Sub
+|  class (13:1): superclass Hidden316Base, not indexed
+Meta_Hidden316Sub
+|  class (13:1): superclass Meta_Hidden316Base, not indexed
+|  class variables from 1
+|  class variables: delim = $,,
+|  constants: nl = $\n,
+|  accessor nl (15:12): shortcut: return literal $\n
+|  accessor delim (14:15): shortcut: return class variable 1
+|  method subDelim: function 0
+|  method subNl: function 1
+|  method setDelim: function 2
+|  function 0 (16:5): subDelim
+|  |  arguments: this,
+|  |  shortcut: return class variable 1
+|  function 1 (17:5): subNl
+|  |  arguments: this,
+|  |  shortcut: return literal $\n
+|  function 2 (18:5): setDelim
+|  |  arguments: this, d = nil,
+|  |  code: 5 bytes, 0 selectors, 0 constants
+Hidden316SubSub
+|  class (21:1): superclass Hidden316Sub, not indexed
+Meta_Hidden316SubSub
+|  class (21:1): superclass Meta_Hidden316Sub, not indexed
+|  method subSubDelim: function 0
+|  function 0 (22:5): subSubDelim
+|  |  arguments: this,
+|  |  shortcut: return class variable 1
+Hidden316InstanceBase
+|  class (25:1): superclass Object, not indexed
+|  instance variables: a,
+Hidden316Instance
+|  class (29:1): superclass Hidden316InstanceBase, not indexed
+|  instance variables: a,
+Successfully compiled 20 classes.

@@ -1,0 +1,16 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): version 3.16: interpreted_function/arguments.scd
+|  SCFunction (1:1)
+|  |  SCArgumentDeclareList (3:2)
+|  |  |  SCArgumentDeclare (3:2): x
+|  |  SCBody (1:1)
+|  |  |  SCMessage (3:5): +
+|  |  |  |  SCRead (3:5): local x, declared (3:2): x
+|  |  |  |  SCPositionalArgs (3:5)
+|  |  |  |  |  SCLiteral (3:9) = 1
+Successfully compiled 15 classes.

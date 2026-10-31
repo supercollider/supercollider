@@ -1,9 +1,10 @@
+//# VERSION 3.16
 TestStream : UnitTest {
 
 	test_funcStream {
-		var str, envir;
+		var str;
 
-		envir = Environment.new;
+		var envir = Environment.new;
 		envir.use {
 			~count = 0;
 			str = FuncStream({ ~count = ~count + 1 }, { ~count = 0 });

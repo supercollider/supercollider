@@ -1,0 +1,20 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): version 3.16: interpreted_function/empty.scd
+|  SCFunction (1:1) -> nil
+|  |  SCBody (1:1)
+
+
+
+COMPILED DUMP 
+
+
+Interpreted
+|  interpreted: function 0,
+|  function 0 (1:1)
+|  |  code: 2 bytes, 0 selectors, 0 constants
+Successfully compiled 15 classes.

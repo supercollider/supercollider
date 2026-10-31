@@ -40,7 +40,7 @@
 		'skipReason': "UnitTest has unknown issues when run in GHA (FIXME)",
 	),
 	(
-		'suite': "TestNodeProxyRoles",
+		'suite': "TestNodeProxyRoles_Server",
 		'test': "test_proxyroles_xfade_smoothly",
 		'skipReason': "UnitTest fails in GHA (FIXME)",
 		'skip': true,
@@ -64,7 +64,7 @@
 		'skip': true,
 	),
 	(
-		'suite': "TestVolume",
+		'suite': "TestVolume_Server",
 		'test': "test_booting",
 		'skip': true,
 		'skipReason': "Multiple Volume synths are created when running test inside the suite",

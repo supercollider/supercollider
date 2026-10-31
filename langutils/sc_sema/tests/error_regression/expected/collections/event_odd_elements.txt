@@ -1,0 +1,87 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (2:1): EventKeyWithoutValue : Object, version 3.16
+|  SCMemberList (2:1)
+|  SCMethodList (2:1)
+|  |  SCMethod (3:5): odd_constant, version 3.16: odd_constant { ^Event[a: 1, \b] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Warning: Event key without a value
+|  |  |  collections/event_odd_elements.sc:3:33
+|  |  |      1 │ //# VERSION 3.16
+|  |  |      2 │ EventKeyWithoutValue {
+|  |  |      3 │     odd_constant { ^Event[a: 1, \b] }
+|  |  |        ┆                                 ^^ this key has no value.
+|  |  |      4 │     odd_not_constant { ^Event[a: 1.foo, \b] }
+|  |  |      5 │     single { ^Event[\a] }
+|  |  |      6 │     even { ^Event[a: 1, b: 2] }
+|  |  |
+|  |  |  The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (3:20)
+|  |  |  |  SCExplicitReturn (3:20)
+|  |  |  |  |  SCCollection (3:21): Event
+|  |  |  |  |  |  SCLiteral (3:27) = \a
+|  |  |  |  |  |  SCLiteral (3:30) = 1
+|  |  |  |  |  |  SCLiteral (3:33) = \b
+|  |  SCMethod (4:5): odd_not_constant, version 3.16: odd_not_constant { ^Event[a: 1.foo, \b] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Warning: Event key without a value
+|  |  |  collections/event_odd_elements.sc:4:41
+|  |  |      2 │ EventKeyWithoutValue {
+|  |  |      3 │     odd_constant { ^Event[a: 1, \b] }
+|  |  |      4 │     odd_not_constant { ^Event[a: 1.foo, \b] }
+|  |  |        ┆                                         ^^ this key has no value.
+|  |  |      5 │     single { ^Event[\a] }
+|  |  |      6 │     even { ^Event[a: 1, b: 2] }
+|  |  |      7 │     array_odd_is_fine { ^Array[1, 2, 3] }
+|  |  |
+|  |  |  The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (4:24)
+|  |  |  |  SCExplicitReturn (4:24)
+|  |  |  |  |  SCCollection (4:25): Event
+|  |  |  |  |  |  SCLiteral (4:31) = \a
+|  |  |  |  |  |  SCMessage (4:34): foo
+|  |  |  |  |  |  |  SCLiteral (4:34) = 1
+|  |  |  |  |  |  SCLiteral (4:41) = \b
+|  |  SCMethod (5:5): single, version 3.16: single { ^Event[\a] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Warning: Event key without a value
+|  |  |  collections/event_odd_elements.sc:5:21
+|  |  |      3 │     odd_constant { ^Event[a: 1, \b] }
+|  |  |      4 │     odd_not_constant { ^Event[a: 1.foo, \b] }
+|  |  |      5 │     single { ^Event[\a] }
+|  |  |        ┆                     ^^ this key has no value.
+|  |  |      6 │     even { ^Event[a: 1, b: 2] }
+|  |  |      7 │     array_odd_is_fine { ^Array[1, 2, 3] }
+|  |  |      8 │ }
+|  |  |
+|  |  |  The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (5:14)
+|  |  |  |  SCExplicitReturn (5:14)
+|  |  |  |  |  SCCollection (5:15): Event
+|  |  |  |  |  |  SCLiteral (5:21) = \a
+|  |  SCMethod (6:5): even, version 3.16: even { ^Event[a: 1, b: 2] } -> (a: 1, b: 2)
+|  |  |  SCBody (6:12)
+|  |  |  |  SCExplicitReturn (6:12)
+|  |  |  |  |  SCCollection (6:13): Event = (a: 1, b: 2)
+|  |  |  |  |  |  SCLiteral (6:19) = \a
+|  |  |  |  |  |  SCLiteral (6:22) = 1
+|  |  |  |  |  |  SCLiteral (6:25) = \b
+|  |  |  |  |  |  SCLiteral (6:28) = 2
+|  |  SCMethod (7:5): array_odd_is_fine, version 3.16: array_odd_is_fine { ^Array[1, 2, 3] } -> [1, 2, 3]
+|  |  |  SCBody (7:25)
+|  |  |  |  SCExplicitReturn (7:25)
+|  |  |  |  |  SCCollection (7:26): Array = [1, 2, 3]
+|  |  |  |  |  |  SCLiteral (7:32) = 1
+|  |  |  |  |  |  SCLiteral (7:35) = 2
+|  |  |  |  |  |  SCLiteral (7:38) = 3
+Successfully compiled 16 classes.

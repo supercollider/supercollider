@@ -1,0 +1,32 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): version 3.16: compiled/interpreted_function.scd
+|  SCFunction (1:1)
+|  |  SCArgumentDeclareList (3:2)
+|  |  |  SCArgumentDeclare (3:2): a
+|  |  |  SCArgumentDeclare (3:5): b, prototype
+|  |  |  |  SCLiteral (3:9) = 1
+|  |  SCBody (1:1)
+|  |  |  SCVariableDeclare (4:5): c, computed
+|  |  |  |  SCMessage (4:9): +
+|  |  |  |  |  SCRead (4:9): local a, declared (3:2): a
+|  |  |  |  |  SCPositionalArgs (4:9)
+|  |  |  |  |  |  SCRead (4:13): local b, declared (3:5): b = 1
+|  |  |  SCRead (5:1): local c, declared (4:5): c = a + b
+
+
+
+COMPILED DUMP 
+
+
+Interpreted
+|  interpreted: function 0,
+|  function 0 (1:1)
+|  |  arguments: a = nil, b = 1,
+|  |  variables: c,
+|  |  code: 7 bytes, 0 selectors, 0 constants
+Successfully compiled 15 classes.

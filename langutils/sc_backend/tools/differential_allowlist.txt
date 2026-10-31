@@ -1,0 +1,20 @@
+# The methods whose Legacy bytecode deliberately differs from old sclang's, or that only one compiler compiles, for
+# differential_test.py. One per line, `Class:method` then the reason. Any other difference fails the test, and so does
+# an entry here that no longer differs.
+
+# Fixed: an empty body is nil, the old compiler left the stack without a value.
+BytecodeInliningFixes:andEmpty  empty `and:` body
+BytecodeInliningFixes:whileEmptyCondition  empty `while` condition
+BytecodeInliningFixes:loopEmpty  empty `loop` body
+BytecodeInliningFixes:caseEmptyCondition  empty `case` condition
+# Fixed: a closed function is compiled in the Interpreter, so it isn't inlined.
+BytecodeInliningFixes:closed  `#{ }` given to `if`
+# Fixed: the first of equal switch keys is used, as Object:switch does, the old compiler used the last and left the
+# first's jump unpatched.
+BytecodeInliningFixes:switchDuplicateKeys  duplicate `switch` keys
+# Fixed: the old compiler's ReturnInstVar shortcut returned the instance variable that a local hides.
+BytecodeShortcuts:hiddenReturn  `var other; ^other` hides an instance variable
+
+# Shorter: a sequence ending in `nil` returns with ReturnNil, the old compiler only used it for a plain `^nil`.
+BytecodeDifferences:returnSequenceNil  `^(a; nil)`
+

@@ -1,0 +1,92 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (2:1): IdentifierKeys : Object, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (3:9): instance_var
+|  SCMethodList (2:1)
+|  |  SCMethod (6:5): identifier_key, version 3.16: identifier_key { ^(instance_var : 1) }
+|  |  |  SCBody (6:22)
+|  |  |  |  SCExplicitReturn (6:22)
+|  |  |  |  |  SCCollection (6:23): Event
+|  |  |  |  |  |  SCRead (6:24): instance instance_var, declared (3:9): instance_var
+|  |  |  |  |  |  SCLiteral (6:39) = 1
+|  |  SCMethod (7:5): keyword_key, version 3.16: keyword_key { ^(instance_var: 1) } -> (instance_var: 1)
+|  |  |  SCBody (7:19)
+|  |  |  |  SCExplicitReturn (7:19)
+|  |  |  |  |  SCCollection (7:20): Event = (instance_var: 1)
+|  |  |  |  |  |  SCLiteral (7:21) = \instance_var
+|  |  |  |  |  |  SCLiteral (7:35) = 1
+|  |  SCMethod (8:5): poisoned: identifier_key_undefined, version 3.16: identifier_key_undefined { ^(undefined_var : 1) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  collections/dictionary_identifier_keys.sc:8:34
+|  |  |      6 │     identifier_key { ^(instance_var : 1) }
+|  |  |      7 │     keyword_key { ^(instance_var: 1) }
+|  |  |      8 │     identifier_key_undefined { ^(undefined_var : 1) }
+|  |  |        ┆                                  ^^^^^^^^^^^^^ this is not defined.
+|  |  |      9 │     *class_identifier_key { ^(class_var : 1) }
+|  |  |     10 │ }
+|  |  |     11 │ 
+|  |  |
+|  |  |  Declare it with 'var', or use '~undefined_var' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (8:32)
+|  |  |  |  SCExplicitReturn (8:32)
+|  |  |  |  |  SCCollection (8:33): Event
+|  |  |  |  |  |  SCExprList (8:34)
+|  |  |  |  |  |  SCLiteral (8:50) = 1
+SCClass (2:1): Meta_IdentifierKeys : Meta_Object, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (4:14): class_var
+|  SCMethodList (2:1)
+|  |  SCMethod (9:5): class_identifier_key, version 3.16: *class_identifier_key { ^(class_var : 1) }
+|  |  |  SCBody (9:29)
+|  |  |  |  SCExplicitReturn (9:29)
+|  |  |  |  |  SCCollection (9:30): Event
+|  |  |  |  |  |  SCRead (9:31): instance class_var, declared (4:14): class_var
+|  |  |  |  |  |  SCLiteral (9:43) = 1
+SCClass (12:1): Initialisers : Object, version 3.16
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Not a constant
+|  collections/dictionary_identifier_keys.sc:21:37
+|     19 │     var instance_array = #[x, y];
+|     20 │     var identifier_key_const = (const_key : 1);
+|     21 │     var identifier_key_not_const = (other : 1);
+|        ┆                                     ^^^^^ this can't be evaluated when compiling.
+|     22 │     var value_not_constant = (a: 1.foo);
+|     23 │ }
+|
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Not a constant
+|  collections/dictionary_identifier_keys.sc:22:34
+|     20 │     var identifier_key_const = (const_key : 1);
+|     21 │     var identifier_key_not_const = (other : 1);
+|     22 │     var value_not_constant = (a: 1.foo);
+|        ┆                                  ^^^^^ this can't be evaluated when compiling.
+|     23 │ }
+|
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (12:1)
+|  |  SCMember (16:9): instance_event = (a: (b: 2))
+|  |  SCMember (19:9): instance_array = [\x, \y]
+|  |  SCMember (20:9): identifier_key_const = (k: 1)
+|  SCMethodList (12:1)
+SCClass (12:1): Meta_Initialisers : Meta_Object, version 3.16
+|  SCMemberList (12:1)
+|  |  SCMember (13:11): const_key = \k
+|  |  SCMember (14:11): constant_event = (a: 1, b: [2, 3])
+|  |  SCMember (17:11): constant_array = [1, (a: 2)]
+|  |  SCMember (15:14): class_event = (a: 1)
+|  |  SCMember (18:14): class_array = [1, 2]
+|  SCMethodList (12:1)
+Successfully compiled 17 classes.

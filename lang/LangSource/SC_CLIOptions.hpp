@@ -24,7 +24,8 @@ private:
     po::options_description buildTerminalDescription(SC_TerminalClient::Options& terminalOptions);
     static po::options_description buildLanguageConfigDescription();
 
-    static void parseLanguageConfig(po::variables_map& vm);
+    // False if an option's value is invalid.
+    static bool parseLanguageConfig(po::variables_map& vm);
 
     static int parseMemoryString(const std::string& input);
     static std::string convertMemoryInteger(int memSize);

@@ -1,0 +1,89 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (2:1): MethodArguments : Object, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (3:9): instance_var
+|  SCMethodList (2:1)
+|  |  SCMethod (7:5): read_argument, version 3.16: read_argument { |a| ^a }
+|  |  |  SCArgumentDeclareList (7:22)
+|  |  |  |  SCArgumentDeclare (7:22): a
+|  |  |  SCBody (7:25)
+|  |  |  |  SCExplicitReturn (7:25)
+|  |  |  |  |  SCRead (7:26): local a, declared (7:22): a
+|  |  SCMethod (8:5): assign_argument, version 3.16: assign_argument { |a| a = 1 }
+|  |  |  SCArgumentDeclareList (8:24)
+|  |  |  |  SCArgumentDeclare (8:24): a (assigned)
+|  |  |  SCBody (8:27)
+|  |  |  |  SCAssign (8:27): local a, declared (8:24): a
+|  |  |  |  |  SCLiteral (8:31) = 1
+|  |  SCMethod (11:5): earlier_argument, version 3.16: earlier_argument { |a, b = (a + 1)| ^b }
+|  |  |  SCArgumentDeclareList (11:25)
+|  |  |  |  SCArgumentDeclare (11:25): a
+|  |  |  |  SCArgumentDeclare (11:28): b, computed
+|  |  |  |  |  SCMessage (11:33): +
+|  |  |  |  |  |  SCRead (11:33): local a, declared (11:25): a
+|  |  |  |  |  |  SCPositionalArgs (11:33)
+|  |  |  |  |  |  |  SCLiteral (11:37) = 1
+|  |  |  SCBody (11:41)
+|  |  |  |  SCExplicitReturn (11:41)
+|  |  |  |  |  SCRead (11:42): local b, declared (11:28): b = (a + 1)
+|  |  SCMethod (13:5): poisoned: later_argument, version 3.16: later_argument { |a = (b), b| ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  methods/arguments.sc:13:28
+|  |  |     11 │     earlier_argument { |a, b = (a + 1)| ^b }
+|  |  |     12 │     // expect-error: Variable not defined
+|  |  |     13 │     later_argument { |a = (b), b| ^a }
+|  |  |        ┆                            ^ this is not defined.
+|  |  |     14 │     // expect-reads: instance_var -> instance_var
+|  |  |     15 │     shadows_instance { |instance_var| ^instance_var }
+|  |  |     16 │     // expect-reads: rest -> rest
+|  |  |
+|  |  |  Declare it with 'var', or use '~b' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (13:23)
+|  |  |  |  SCArgumentDeclare (13:23): a, computed
+|  |  |  |  |  SCExprList (13:28)
+|  |  |  |  SCArgumentDeclare (13:32): b
+|  |  |  SCBody (13:35)
+|  |  |  |  SCExplicitReturn (13:35)
+|  |  |  |  |  SCRead (13:36): local a, declared (13:23): a = (b)
+|  |  SCMethod (15:5): shadows_instance, version 3.16: shadows_instance { |instance_var| ^instance_var }
+|  |  |  SCArgumentDeclareList (15:25)
+|  |  |  |  SCArgumentDeclare (15:25): instance_var
+|  |  |  SCBody (15:39)
+|  |  |  |  SCExplicitReturn (15:39)
+|  |  |  |  |  SCRead (15:40): local instance_var, declared (15:25): instance_var
+|  |  SCMethod (17:5): variadic, version 3.16: variadic { |a ... rest| ^rest }
+|  |  |  SCArgumentDeclareList (17:16)
+|  |  |  |  SCArgumentDeclare (17:17): a
+|  |  |  SCArgumentDeclareList (17:16)
+|  |  |  |  SCArgumentDeclare (17:23): rest
+|  |  |  SCBody (17:29)
+|  |  |  |  SCExplicitReturn (17:29)
+|  |  |  |  |  SCRead (17:30): local rest, declared (17:23): rest
+|  |  SCMethod (19:5): block_uses_argument, version 3.16: block_uses_argument { |a| ^{ a } }
+|  |  |  SCArgumentDeclareList (19:28)
+|  |  |  |  SCArgumentDeclare (19:28): a (captured)
+|  |  |  SCBody (19:31)
+|  |  |  |  SCExplicitReturn (19:31)
+|  |  |  |  |  SCFunction (19:32)
+|  |  |  |  |  |  SCBody (19:32)
+|  |  |  |  |  |  |  SCRead (19:34): local a, declared (19:28): a
+SCClass (2:1): Meta_MethodArguments : Meta_Object, version 3.16
+|  SCMemberList (2:1)
+|  SCMethodList (2:1)
+|  |  SCMethod (23:5): class_read_argument, version 3.16: *class_read_argument { |a, b = (a)| ^b }
+|  |  |  SCArgumentDeclareList (23:29)
+|  |  |  |  SCArgumentDeclare (23:29): a
+|  |  |  |  SCArgumentDeclare (23:32): b, computed
+|  |  |  |  |  SCRead (23:37): local a, declared (23:29): a
+|  |  |  SCBody (23:41)
+|  |  |  |  SCExplicitReturn (23:41)
+|  |  |  |  |  SCRead (23:42): local b, declared (23:32): b = (a)
+Successfully compiled 16 classes.

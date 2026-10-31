@@ -1,0 +1,23 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): poisoned: version 3.16: interpreted_function/missing_semicolon.scd
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Missing Operator.
+|  interpreted_function/missing_semicolon.scd:4:1
+|      1 │ // interpreted-function
+|      2 │ // Unlike an scd file's regions, no semicolon is inserted between lines.
+|      3 │ a = 1
+|        ┆     ^ This ends an expression...
+|      4 │ b = 2
+|        ┆ ^ ...and `b` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCFunction (1:1)
+|  |  SCBody (1:1)
+|  |  |  SCExprList (3:1)
+Successfully compiled 15 classes.

@@ -78,6 +78,10 @@ public:
         return true;
     }
 
+    // The release interpreted code is compiled as by the new compiler, e.g., `3.16` or `legacy`, empty for 3.16.
+    const std::string& getInterpretedVersion() const { return mInterpretedVersion; }
+    void setInterpretedVersion(const std::string& release) { mInterpretedVersion = release; }
+
     bool getExcludeDefaultPaths() const { return mExcludeDefaultPaths; }
     void setExcludeDefaultPaths(bool value);
 
@@ -101,6 +105,7 @@ private:
     DirVector mExcludedDirectories;
     DirVector mDefaultClassLibraryDirectories;
     bool mExcludeDefaultPaths = true;
+    std::string mInterpretedVersion;
     static Path gConfigFile;
     static bool gPostInlineWarnings;
 };

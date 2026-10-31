@@ -1,0 +1,122 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (7:1): PrimitiveSignatures : Object
+|  SCMemberList (7:1)
+|  SCMethodList (7:1)
+|  |  SCMethod (9:5): one: one { |a| _PrimOne ^this.primitiveFailed }
+|  |  |  SCArgumentDeclareList (9:12)
+|  |  |  |  SCArgumentDeclare (9:12): a
+|  |  |  SCBody (9:24)
+|  |  |  |  SCExplicitReturn (9:24)
+|  |  |  |  |  SCMessage (9:25): primitiveFailed
+|  |  |  |  |  |  SCSpecial (9:25): this
+|  |  SCMethod (12:5): poisoned: oneMissing: oneMissing { _PrimOne ^this.primitiveFailed }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Primitive argument mismatch
+|  |  |  methods/primitive_signatures.sc:12:18
+|  |  |     10 │     // expect: poisoned
+|  |  |     11 │     // expect-error: Primitive argument mismatch
+|  |  |     12 │     oneMissing { _PrimOne ^this.primitiveFailed }
+|  |  |        ┆     ^^^^^^^^^^   ^^^^^^^^ ...but this primitive takes 1 argument.
+|  |  |        ┆     └ The method takes 0 arguments...
+|  |  |     13 │     // expect: poisoned
+|  |  |     14 │     // expect-error: Primitive argument mismatch
+|  |  |     15 │     oneExtra { |a, b| _PrimOne ^this.primitiveFailed }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (12:27)
+|  |  |  |  SCExplicitReturn (12:27)
+|  |  |  |  |  SCMessage (12:28): primitiveFailed
+|  |  |  |  |  |  SCSpecial (12:28): this
+|  |  SCMethod (15:5): poisoned: oneExtra: oneExtra { |a, b| _PrimOne ^this.primitiveFailed }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Primitive argument mismatch
+|  |  |  methods/primitive_signatures.sc:15:23
+|  |  |     13 │     // expect: poisoned
+|  |  |     14 │     // expect-error: Primitive argument mismatch
+|  |  |     15 │     oneExtra { |a, b| _PrimOne ^this.primitiveFailed }
+|  |  |        ┆                 ^^^^  ^^^^^^^^ ...but this primitive takes 1 argument.
+|  |  |        ┆                 └ The method takes 2 arguments...
+|  |  |     16 │     // expect: no diagnostics
+|  |  |     17 │     args { |...rest| _PrimArgs ^this.primitiveFailed }
+|  |  |     18 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (15:17)
+|  |  |  |  SCArgumentDeclare (15:17): a
+|  |  |  |  SCArgumentDeclare (15:20): b
+|  |  |  SCBody (15:32)
+|  |  |  |  SCExplicitReturn (15:32)
+|  |  |  |  |  SCMessage (15:33): primitiveFailed
+|  |  |  |  |  |  SCSpecial (15:33): this
+|  |  SCMethod (17:5): args: args { |...rest| _PrimArgs ^this.primitiveFailed }
+|  |  |  SCArgumentDeclareList (17:12)
+|  |  |  |  SCArgumentDeclare (17:16): rest
+|  |  |  SCBody (17:32)
+|  |  |  |  SCExplicitReturn (17:32)
+|  |  |  |  |  SCMessage (17:33): primitiveFailed
+|  |  |  |  |  |  SCSpecial (17:33): this
+|  |  SCMethod (20:5): poisoned: argsMissing: argsMissing { _PrimArgs ^this.primitiveFailed }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Primitive argument mismatch
+|  |  |  methods/primitive_signatures.sc:20:19
+|  |  |     18 │     // expect: poisoned
+|  |  |     19 │     // expect-error: Primitive argument mismatch
+|  |  |     20 │     argsMissing { _PrimArgs ^this.primitiveFailed }
+|  |  |        ┆     ^^^^^^^^^^^   ^^^^^^^^^ ...as this primitive takes them.
+|  |  |        ┆     └ Insert variadic positional arguments, `...args`...
+|  |  |     21 │     // expect: no diagnostics
+|  |  |     22 │     kwargs { |...rest, kwargs| _PrimKwargs ^this.primitiveFailed }
+|  |  |     23 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (20:29)
+|  |  |  |  SCExplicitReturn (20:29)
+|  |  |  |  |  SCMessage (20:30): primitiveFailed
+|  |  |  |  |  |  SCSpecial (20:30): this
+|  |  SCMethod (22:5): kwargs: kwargs { |...rest, kwargs| _PrimKwargs ^this.primitiveFailed }
+|  |  |  SCArgumentDeclareList (22:14)
+|  |  |  |  SCArgumentDeclare (22:18): rest
+|  |  |  |  SCArgumentDeclare (22:24): kwargs
+|  |  |  SCBody (22:44)
+|  |  |  |  SCExplicitReturn (22:44)
+|  |  |  |  |  SCMessage (22:45): primitiveFailed
+|  |  |  |  |  |  SCSpecial (22:45): this
+|  |  SCMethod (25:5): poisoned: kwargsMissing: kwargsMissing { |...rest| _PrimKwargs ^this.primitiveFailed }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Primitive argument mismatch
+|  |  |  methods/primitive_signatures.sc:25:31
+|  |  |     23 │     // expect: poisoned
+|  |  |     24 │     // expect-error: Primitive argument mismatch
+|  |  |     25 │     kwargsMissing { |...rest| _PrimKwargs ^this.primitiveFailed }
+|  |  |        ┆                     ^^^^^^^^^ ^^^^^^^^^^^ ...as this primitive takes them.
+|  |  |        ┆                     └ Insert variadic keyword arguments, `...args, kwargs`...
+|  |  |     26 │     // expect: no diagnostics
+|  |  |     27 │     unknown { |a, b, c| _NotInTheTable ^this.primitiveFailed }
+|  |  |     28 │ }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (25:21)
+|  |  |  |  SCArgumentDeclare (25:25): rest
+|  |  |  SCBody (25:43)
+|  |  |  |  SCExplicitReturn (25:43)
+|  |  |  |  |  SCMessage (25:44): primitiveFailed
+|  |  |  |  |  |  SCSpecial (25:44): this
+|  |  SCMethod (27:5): unknown: unknown { |a, b, c| _NotInTheTable ^this.primitiveFailed }
+|  |  |  SCArgumentDeclareList (27:16)
+|  |  |  |  SCArgumentDeclare (27:16): a
+|  |  |  |  SCArgumentDeclare (27:19): b
+|  |  |  |  SCArgumentDeclare (27:22): c
+|  |  |  SCBody (27:40)
+|  |  |  |  SCExplicitReturn (27:40)
+|  |  |  |  |  SCMessage (27:41): primitiveFailed
+|  |  |  |  |  |  SCSpecial (27:41): this
+Successfully compiled 16 classes.

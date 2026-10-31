@@ -1,0 +1,44 @@
+// Copyright Jordan Henderson 2026
+#pragma once
+
+#include "sc_source/normalise_source.hpp"
+#include "sc_source/text_location.hpp"
+#include <cassert>
+#include <cstdint>
+#include <filesystem>
+#include <optional>
+#include <stdexcept>
+#include <string>
+
+namespace sc::src {
+
+// How the text is parsed. An scd file is a list of regions, which only tools see, as the VM runs interpreted code,
+// including an executed scd file, as one function, as the old grammar did.
+enum struct TextKind : std::uint8_t { ClassFile, ScdFile, InterpretedFunction };
+
+struct TextInfo {
+    // Throws std::length_error if the source is larger than max_source_size, as positions are 32 bit.
+    TextInfo(NormalisedSource src, FileCodeLocation start_in_file, std::optional<std::filesystem::path> path,
+             TextKind kind):
+        source(std::move(src)),
+        source_start_in_file(start_in_file),
+        file_path(std::move(path)),
+        kind(kind) {
+        if (source.as_string().size() > max_source_size)
+            throw std::length_error { "source is larger than the " + std::to_string(max_source_size)
+                                      + " bytes supported" };
+    }
+
+    NormalisedSource source;
+    FileCodeLocation source_start_in_file;
+    std::optional<std::filesystem::path> file_path; // empty when the text has no file;
+    TextKind kind;
+
+    [[nodiscard]] std::string_view read(SourceCodeRange r) const noexcept {
+        const char* str = source.as_string().c_str();
+        assert(r.begin.absolute <= r.end.absolute);
+        return { str + r.begin.absolute, r.size() };
+    }
+};
+
+}

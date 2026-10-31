@@ -1,0 +1,4 @@
+includePaths:
+@BUILD_CLASSLIBRARYPATH@
+  - @CMAKE_CURRENT_SOURCE_DIR@/poisoned_methods/classes
+excludeDefaultPaths: true

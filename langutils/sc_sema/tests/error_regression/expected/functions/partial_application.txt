@@ -1,0 +1,375 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (2:1): PartialApplication : Object, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (3:9): member
+|  SCMethodList (2:1)
+|  |  SCMethod (6:5): binary_one, version 3.16: binary_one { ^_ + 1 }
+|  |  |  SCBody (6:18)
+|  |  |  |  SCExplicitReturn (6:18)
+|  |  |  |  |  SCFunction (6:19)
+|  |  |  |  |  |  SCArgumentDeclareList (6:19)
+|  |  |  |  |  |  |  SCArgumentDeclare (6:19): _
+|  |  |  |  |  |  SCBody (6:19)
+|  |  |  |  |  |  |  SCMessage (6:19): +
+|  |  |  |  |  |  |  |  SCRead (6:19): local _, declared (6:19): _
+|  |  |  |  |  |  |  |  SCPositionalArgs (6:19)
+|  |  |  |  |  |  |  |  |  SCLiteral (6:23) = 1
+|  |  SCMethod (7:5): binary_two, version 3.16: binary_two { ^_ + _ }
+|  |  |  SCBody (7:18)
+|  |  |  |  SCExplicitReturn (7:18)
+|  |  |  |  |  SCFunction (7:19)
+|  |  |  |  |  |  SCArgumentDeclareList (7:19)
+|  |  |  |  |  |  |  SCArgumentDeclare (7:19): _
+|  |  |  |  |  |  |  SCArgumentDeclare (7:23): _
+|  |  |  |  |  |  SCBody (7:19)
+|  |  |  |  |  |  |  SCMessage (7:19): +
+|  |  |  |  |  |  |  |  SCRead (7:19): local _1, declared (7:19): _
+|  |  |  |  |  |  |  |  SCPositionalArgs (7:19)
+|  |  |  |  |  |  |  |  |  SCRead (7:23): local _2, declared (7:23): _
+|  |  SCMethod (8:5): receiver, version 3.16: receiver { ^_.foo }
+|  |  |  SCBody (8:16)
+|  |  |  |  SCExplicitReturn (8:16)
+|  |  |  |  |  SCFunction (8:17)
+|  |  |  |  |  |  SCArgumentDeclareList (8:17)
+|  |  |  |  |  |  |  SCArgumentDeclare (8:17): _
+|  |  |  |  |  |  SCBody (8:17)
+|  |  |  |  |  |  |  SCMessage (8:17): foo
+|  |  |  |  |  |  |  |  SCRead (8:17): local _, declared (8:17): _
+|  |  SCMethod (9:5): arguments, version 3.16: arguments { ^member.foo(_, _, _) }
+|  |  |  SCBody (9:17)
+|  |  |  |  SCExplicitReturn (9:17)
+|  |  |  |  |  SCFunction (9:18)
+|  |  |  |  |  |  SCArgumentDeclareList (9:18)
+|  |  |  |  |  |  |  SCArgumentDeclare (9:29): _
+|  |  |  |  |  |  |  SCArgumentDeclare (9:32): _
+|  |  |  |  |  |  |  SCArgumentDeclare (9:35): _
+|  |  |  |  |  |  SCBody (9:18)
+|  |  |  |  |  |  |  SCMessage (9:18): foo
+|  |  |  |  |  |  |  |  SCRead (9:18): instance member, declared (3:9): member
+|  |  |  |  |  |  |  |  SCPositionalArgs (9:18)
+|  |  |  |  |  |  |  |  |  SCRead (9:29): local _1, declared (9:29): _
+|  |  |  |  |  |  |  |  |  SCRead (9:32): local _2, declared (9:32): _
+|  |  |  |  |  |  |  |  |  SCRead (9:35): local _3, declared (9:35): _
+|  |  SCMethod (10:5): receiver_and_arguments, version 3.16: receiver_and_arguments { ^_.foo(_) }
+|  |  |  SCBody (10:30)
+|  |  |  |  SCExplicitReturn (10:30)
+|  |  |  |  |  SCFunction (10:31)
+|  |  |  |  |  |  SCArgumentDeclareList (10:31)
+|  |  |  |  |  |  |  SCArgumentDeclare (10:31): _
+|  |  |  |  |  |  |  SCArgumentDeclare (10:37): _
+|  |  |  |  |  |  SCBody (10:31)
+|  |  |  |  |  |  |  SCMessage (10:31): foo
+|  |  |  |  |  |  |  |  SCRead (10:31): local _1, declared (10:31): _
+|  |  |  |  |  |  |  |  SCPositionalArgs (10:31)
+|  |  |  |  |  |  |  |  |  SCRead (10:37): local _2, declared (10:37): _
+|  |  SCMethod (11:5): prefix, version 3.16: prefix { ^foo(_, 1) }
+|  |  |  SCBody (11:14)
+|  |  |  |  SCExplicitReturn (11:14)
+|  |  |  |  |  SCFunction (11:15)
+|  |  |  |  |  |  SCArgumentDeclareList (11:15)
+|  |  |  |  |  |  |  SCArgumentDeclare (11:19): _
+|  |  |  |  |  |  SCBody (11:15)
+|  |  |  |  |  |  |  SCMessage (11:15): foo
+|  |  |  |  |  |  |  |  SCRead (11:19): local _, declared (11:19): _
+|  |  |  |  |  |  |  |  SCPositionalArgs (11:15)
+|  |  |  |  |  |  |  |  |  SCLiteral (11:22) = 1
+|  |  SCMethod (12:5): keyword, version 3.16: keyword { ^member.foo(1, a: _) }
+|  |  |  SCBody (12:15)
+|  |  |  |  SCExplicitReturn (12:15)
+|  |  |  |  |  SCFunction (12:16)
+|  |  |  |  |  |  SCArgumentDeclareList (12:16)
+|  |  |  |  |  |  |  SCArgumentDeclare (12:33): _
+|  |  |  |  |  |  SCBody (12:16)
+|  |  |  |  |  |  |  SCMessage (12:16): foo
+|  |  |  |  |  |  |  |  SCRead (12:16): instance member, declared (3:9): member
+|  |  |  |  |  |  |  |  SCPositionalArgs (12:16)
+|  |  |  |  |  |  |  |  |  SCLiteral (12:27) = 1
+|  |  |  |  |  |  |  |  SCKwArgs (12:16)
+|  |  |  |  |  |  |  |  |  SCKwArg (12:30): a
+|  |  |  |  |  |  |  |  |  |  SCRead (12:33): local _, declared (12:33): _
+|  |  SCMethod (13:5): variadic, version 3.16: variadic { ^member.foo(*_) }
+|  |  |  SCBody (13:16)
+|  |  |  |  SCExplicitReturn (13:16)
+|  |  |  |  |  SCFunction (13:17)
+|  |  |  |  |  |  SCArgumentDeclareList (13:17)
+|  |  |  |  |  |  |  SCArgumentDeclare (13:29): _
+|  |  |  |  |  |  SCBody (13:17)
+|  |  |  |  |  |  |  SCMessage (13:17): foo
+|  |  |  |  |  |  |  |  SCRead (13:17): instance member, declared (3:9): member
+|  |  |  |  |  |  |  |  SCVariadicArgs (13:17)
+|  |  |  |  |  |  |  |  |  SCRead (13:29): local _, declared (13:29): _
+|  |  SCMethod (14:5): value_message, version 3.16: value_message { ^_.(1) }
+|  |  |  SCBody (14:21)
+|  |  |  |  SCExplicitReturn (14:21)
+|  |  |  |  |  SCFunction (14:22)
+|  |  |  |  |  |  SCArgumentDeclareList (14:22)
+|  |  |  |  |  |  |  SCArgumentDeclare (14:22): _
+|  |  |  |  |  |  SCBody (14:22)
+|  |  |  |  |  |  |  SCMessage (14:22): value
+|  |  |  |  |  |  |  |  SCRead (14:22): local _, declared (14:22): _
+|  |  |  |  |  |  |  |  SCPositionalArgs (14:22)
+|  |  |  |  |  |  |  |  |  SCLiteral (14:25) = 1
+|  |  SCMethod (15:5): new_message, version 3.16: new_message { ^Array(_) }
+|  |  |  SCBody (15:19)
+|  |  |  |  SCExplicitReturn (15:19)
+|  |  |  |  |  SCFunction (15:20)
+|  |  |  |  |  |  SCArgumentDeclareList (15:20)
+|  |  |  |  |  |  |  SCArgumentDeclare (15:26): _
+|  |  |  |  |  |  SCBody (15:20)
+|  |  |  |  |  |  |  SCMessage (15:20): new
+|  |  |  |  |  |  |  |  SCLiteral (15:20) = Array
+|  |  |  |  |  |  |  |  SCPositionalArgs (15:20)
+|  |  |  |  |  |  |  |  |  SCRead (15:26): local _, declared (15:26): _
+|  |  SCMethod (16:5): at, version 3.16: at { ^member[_] }
+|  |  |  SCBody (16:10)
+|  |  |  |  SCExplicitReturn (16:10)
+|  |  |  |  |  SCFunction (16:11)
+|  |  |  |  |  |  SCArgumentDeclareList (16:11)
+|  |  |  |  |  |  |  SCArgumentDeclare (16:18): _
+|  |  |  |  |  |  SCBody (16:11)
+|  |  |  |  |  |  |  SCMessage (16:11): at
+|  |  |  |  |  |  |  |  SCRead (16:11): instance member, declared (3:9): member
+|  |  |  |  |  |  |  |  SCPositionalArgs (16:11)
+|  |  |  |  |  |  |  |  |  SCRead (16:18): local _, declared (16:18): _
+|  |  SCMethod (17:5): at_receiver, version 3.16: at_receiver { ^_[0] }
+|  |  |  SCBody (17:19)
+|  |  |  |  SCExplicitReturn (17:19)
+|  |  |  |  |  SCFunction (17:20)
+|  |  |  |  |  |  SCArgumentDeclareList (17:20)
+|  |  |  |  |  |  |  SCArgumentDeclare (17:20): _
+|  |  |  |  |  |  SCBody (17:20)
+|  |  |  |  |  |  |  SCMessage (17:20): at
+|  |  |  |  |  |  |  |  SCRead (17:20): local _, declared (17:20): _
+|  |  |  |  |  |  |  |  SCPositionalArgs (17:20)
+|  |  |  |  |  |  |  |  |  SCLiteral (17:22) = 0
+|  |  SCMethod (18:5): slice, version 3.16: slice { ^member[1.._] }
+|  |  |  SCBody (18:13)
+|  |  |  |  SCExplicitReturn (18:13)
+|  |  |  |  |  SCFunction (18:14)
+|  |  |  |  |  |  SCArgumentDeclareList (18:14)
+|  |  |  |  |  |  |  SCArgumentDeclare (18:24): _
+|  |  |  |  |  |  SCBody (18:14)
+|  |  |  |  |  |  |  SCMessage (18:14): copySeries
+|  |  |  |  |  |  |  |  SCRead (18:14): instance member, declared (3:9): member
+|  |  |  |  |  |  |  |  SCPositionalArgs (18:14)
+|  |  |  |  |  |  |  |  |  SCLiteral (18:21) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (18:20) = nil
+|  |  |  |  |  |  |  |  |  SCRead (18:24): local _, declared (18:24): _
+|  |  SCMethod (19:5): put, version 3.16: put { ^member[_] = _ }
+|  |  |  SCBody (19:11)
+|  |  |  |  SCExplicitReturn (19:11)
+|  |  |  |  |  SCFunction (19:12)
+|  |  |  |  |  |  SCArgumentDeclareList (19:12)
+|  |  |  |  |  |  |  SCArgumentDeclare (19:19): _
+|  |  |  |  |  |  |  SCArgumentDeclare (19:24): _
+|  |  |  |  |  |  SCBody (19:12)
+|  |  |  |  |  |  |  SCMessage (19:12): put
+|  |  |  |  |  |  |  |  SCRead (19:12): instance member, declared (3:9): member
+|  |  |  |  |  |  |  |  SCPositionalArgs (19:12)
+|  |  |  |  |  |  |  |  |  SCRead (19:19): local _1, declared (19:19): _
+|  |  |  |  |  |  |  |  |  SCRead (19:24): local _2, declared (19:24): _
+|  |  SCMethod (20:5): setter, version 3.16: setter { ^_.foo = 1 }
+|  |  |  SCBody (20:14)
+|  |  |  |  SCExplicitReturn (20:14)
+|  |  |  |  |  SCFunction (20:15)
+|  |  |  |  |  |  SCArgumentDeclareList (20:15)
+|  |  |  |  |  |  |  SCArgumentDeclare (20:15): _
+|  |  |  |  |  |  SCBody (20:15)
+|  |  |  |  |  |  |  SCMessage (20:15): foo_
+|  |  |  |  |  |  |  |  SCRead (20:15): local _, declared (20:15): _
+|  |  |  |  |  |  |  |  SCPositionalArgs (20:15)
+|  |  |  |  |  |  |  |  |  SCLiteral (20:23) = 1
+|  |  SCMethod (21:5): range, version 3.16: range { ^(1.._) }
+|  |  |  SCBody (21:13)
+|  |  |  |  SCExplicitReturn (21:13)
+|  |  |  |  |  SCFunction (21:14)
+|  |  |  |  |  |  SCArgumentDeclareList (21:14)
+|  |  |  |  |  |  |  SCArgumentDeclare (21:18): _
+|  |  |  |  |  |  SCBody (21:14)
+|  |  |  |  |  |  |  SCRange (21:14)
+|  |  |  |  |  |  |  |  SCLiteral (21:15) = 1
+|  |  |  |  |  |  |  |  SCMissing (21:14)
+|  |  |  |  |  |  |  |  SCRead (21:18): local _, declared (21:18): _
+|  |  SCMethod (22:5): array, version 3.16: array { ^[_, 1] }
+|  |  |  SCBody (22:13)
+|  |  |  |  SCExplicitReturn (22:13)
+|  |  |  |  |  SCFunction (22:14)
+|  |  |  |  |  |  SCArgumentDeclareList (22:14)
+|  |  |  |  |  |  |  SCArgumentDeclare (22:15): _
+|  |  |  |  |  |  SCBody (22:14)
+|  |  |  |  |  |  |  SCCollection (22:14): Array
+|  |  |  |  |  |  |  |  SCRead (22:15): local _, declared (22:15): _
+|  |  |  |  |  |  |  |  SCLiteral (22:18) = 1
+|  |  SCMethod (23:5): collection, version 3.16: collection { ^Array[_, 2] }
+|  |  |  SCBody (23:18)
+|  |  |  |  SCExplicitReturn (23:18)
+|  |  |  |  |  SCFunction (23:19)
+|  |  |  |  |  |  SCArgumentDeclareList (23:19)
+|  |  |  |  |  |  |  SCArgumentDeclare (23:25): _
+|  |  |  |  |  |  SCBody (23:19)
+|  |  |  |  |  |  |  SCCollection (23:19): Array
+|  |  |  |  |  |  |  |  SCRead (23:25): local _, declared (23:25): _
+|  |  |  |  |  |  |  |  SCLiteral (23:28) = 2
+|  |  SCMethod (24:5): dictionary, version 3.16: dictionary { ^(a: _) }
+|  |  |  SCBody (24:18)
+|  |  |  |  SCExplicitReturn (24:18)
+|  |  |  |  |  SCFunction (24:19)
+|  |  |  |  |  |  SCArgumentDeclareList (24:19)
+|  |  |  |  |  |  |  SCArgumentDeclare (24:23): _
+|  |  |  |  |  |  SCBody (24:19)
+|  |  |  |  |  |  |  SCCollection (24:19): Event
+|  |  |  |  |  |  |  |  SCLiteral (24:20) = \a
+|  |  |  |  |  |  |  |  SCRead (24:23): local _, declared (24:23): _
+|  |  SCMethod (26:5): reference, version 3.16: reference { ^`_ }
+|  |  |  SCBody (26:17)
+|  |  |  |  SCExplicitReturn (26:17)
+|  |  |  |  |  SCFunction (26:18)
+|  |  |  |  |  |  SCArgumentDeclareList (26:18)
+|  |  |  |  |  |  |  SCArgumentDeclare (26:19): _
+|  |  |  |  |  |  SCBody (26:18)
+|  |  |  |  |  |  |  SCMessage (26:18): new
+|  |  |  |  |  |  |  |  SCLiteral (26:18) = Ref
+|  |  |  |  |  |  |  |  SCPositionalArgs (26:18)
+|  |  |  |  |  |  |  |  |  SCRead (26:19): local _, declared (26:19): _
+|  |  SCMethod (28:5): nested_calls_are_separate, version 3.16: nested_calls_are_separate { ^member.foo(_, member.bar(_)) }
+|  |  |  SCBody (28:33)
+|  |  |  |  SCExplicitReturn (28:33)
+|  |  |  |  |  SCFunction (28:34)
+|  |  |  |  |  |  SCArgumentDeclareList (28:34)
+|  |  |  |  |  |  |  SCArgumentDeclare (28:45): _
+|  |  |  |  |  |  SCBody (28:34)
+|  |  |  |  |  |  |  SCMessage (28:34): foo
+|  |  |  |  |  |  |  |  SCRead (28:34): instance member, declared (3:9): member
+|  |  |  |  |  |  |  |  SCPositionalArgs (28:34)
+|  |  |  |  |  |  |  |  |  SCRead (28:45): local _, declared (28:45): _
+|  |  |  |  |  |  |  |  |  SCFunction (28:48)
+|  |  |  |  |  |  |  |  |  |  SCArgumentDeclareList (28:48)
+|  |  |  |  |  |  |  |  |  |  |  SCArgumentDeclare (28:59): _
+|  |  |  |  |  |  |  |  |  |  SCBody (28:48)
+|  |  |  |  |  |  |  |  |  |  |  SCMessage (28:48): bar
+|  |  |  |  |  |  |  |  |  |  |  |  SCRead (28:48): instance member, declared (3:9): member
+|  |  |  |  |  |  |  |  |  |  |  |  SCPositionalArgs (28:48)
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (28:59): local _, declared (28:59): _
+|  |  SCMethod (29:5): brackets_end_it, version 3.16: brackets_end_it { ^(_ + 1) * 2 }
+|  |  |  SCBody (29:23)
+|  |  |  |  SCExplicitReturn (29:23)
+|  |  |  |  |  SCMessage (29:24): *
+|  |  |  |  |  |  SCFunction (29:25)
+|  |  |  |  |  |  |  SCArgumentDeclareList (29:25)
+|  |  |  |  |  |  |  |  SCArgumentDeclare (29:25): _
+|  |  |  |  |  |  |  SCBody (29:25)
+|  |  |  |  |  |  |  |  SCMessage (29:25): +
+|  |  |  |  |  |  |  |  |  SCRead (29:25): local _, declared (29:25): _
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (29:25)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (29:29) = 1
+|  |  |  |  |  |  SCPositionalArgs (29:24)
+|  |  |  |  |  |  |  SCLiteral (29:34) = 2
+|  |  SCMethod (32:5): captures_local, version 3.16: captures_local { var a = 1; ^a + _ }
+|  |  |  SCBody (32:22)
+|  |  |  |  SCVariableDeclare (32:26): a (captured), prototype
+|  |  |  |  |  SCLiteral (32:30) = 1
+|  |  |  |  SCExplicitReturn (32:33)
+|  |  |  |  |  SCFunction (32:34)
+|  |  |  |  |  |  SCArgumentDeclareList (32:34)
+|  |  |  |  |  |  |  SCArgumentDeclare (32:38): _
+|  |  |  |  |  |  SCBody (32:34)
+|  |  |  |  |  |  |  SCMessage (32:34): +
+|  |  |  |  |  |  |  |  SCRead (32:34): local a, declared (32:26): a = 1
+|  |  |  |  |  |  |  |  SCPositionalArgs (32:34)
+|  |  |  |  |  |  |  |  |  SCRead (32:38): local _, declared (32:38): _
+|  |  SCMethod (34:5): in_block, version 3.16: in_block { ^{ |x| x + _ } }
+|  |  |  SCBody (34:16)
+|  |  |  |  SCExplicitReturn (34:16)
+|  |  |  |  |  SCFunction (34:17)
+|  |  |  |  |  |  SCArgumentDeclareList (34:20)
+|  |  |  |  |  |  |  SCArgumentDeclare (34:20): x (captured)
+|  |  |  |  |  |  SCBody (34:17)
+|  |  |  |  |  |  |  SCFunction (34:23)
+|  |  |  |  |  |  |  |  SCArgumentDeclareList (34:23)
+|  |  |  |  |  |  |  |  |  SCArgumentDeclare (34:27): _
+|  |  |  |  |  |  |  |  SCBody (34:23)
+|  |  |  |  |  |  |  |  |  SCMessage (34:23): +
+|  |  |  |  |  |  |  |  |  |  SCRead (34:23): local x, declared (34:20): x
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (34:23)
+|  |  |  |  |  |  |  |  |  |  |  SCRead (34:27): local _, declared (34:27): _
+|  |  SCMethod (35:5): nested_non_local_return, version 3.16: nested_non_local_return { ^_.collect { |x| ^x } }
+|  |  |  SCBody (35:31)
+|  |  |  |  SCExplicitReturn (35:31)
+|  |  |  |  |  SCFunction (35:32)
+|  |  |  |  |  |  SCArgumentDeclareList (35:32)
+|  |  |  |  |  |  |  SCArgumentDeclare (35:32): _
+|  |  |  |  |  |  SCBody (35:32)
+|  |  |  |  |  |  |  SCMessage (35:32): collect
+|  |  |  |  |  |  |  |  SCRead (35:32): local _, declared (35:32): _
+|  |  |  |  |  |  |  |  SCPositionalArgs (35:32)
+|  |  |  |  |  |  |  |  |  SCFunction (35:42)
+|  |  |  |  |  |  |  |  |  |  SCArgumentDeclareList (35:45)
+|  |  |  |  |  |  |  |  |  |  |  SCArgumentDeclare (35:45): x
+|  |  |  |  |  |  |  |  |  |  SCBody (35:42)
+|  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (35:48)
+|  |  |  |  |  |  |  |  |  |  |  |  SCRead (35:49): local x, declared (35:45): x
+|  |  SCMethod (39:5): poisoned: alone, version 3.16: alone { ^_ }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Partial application outside of a call
+|  |  |  functions/partial_application.sc:39:14
+|  |  |     37 │     // expect-error: Partial application outside of a call
+|  |  |     38 │     // expect: poisoned
+|  |  |     39 │     alone { ^_ }
+|  |  |        ┆              ^ this isn't an argument of a call.
+|  |  |     40 │     // expect-error: Partial application outside of a call
+|  |  |     41 │     assigned { var a = _; ^a }
+|  |  |     42 │     // expect-error: Partial application outside of a call
+|  |  |
+|  |  |  `_` makes a function from the call it is in, e.g., `_ + 1` is `{ |x| x + 1 }`. It must be the receiver or an argument of a message, or an element of an array or dictionary, not inside another expression.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (39:13)
+|  |  |  |  SCExplicitReturn (39:13)
+|  |  |  |  |  SCExprList (39:14)
+|  |  SCMethod (41:5): poisoned: assigned, version 3.16: assigned { var a = _; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Partial application outside of a call
+|  |  |  functions/partial_application.sc:41:24
+|  |  |     39 │     alone { ^_ }
+|  |  |     40 │     // expect-error: Partial application outside of a call
+|  |  |     41 │     assigned { var a = _; ^a }
+|  |  |        ┆                        ^ this isn't an argument of a call.
+|  |  |     42 │     // expect-error: Partial application outside of a call
+|  |  |     43 │     inside_other_expression { ^member.foo({ _ }) }
+|  |  |     44 │ }
+|  |  |
+|  |  |  `_` makes a function from the call it is in, e.g., `_ + 1` is `{ |x| x + 1 }`. It must be the receiver or an argument of a message, or an element of an array or dictionary, not inside another expression.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (41:16)
+|  |  |  |  SCVariableDeclare (41:20): a, computed
+|  |  |  |  |  SCExprList (41:24)
+|  |  |  |  SCExplicitReturn (41:27)
+|  |  |  |  |  SCRead (41:28): local a, declared (41:20): a = _
+|  |  SCMethod (43:5): poisoned: inside_other_expression, version 3.16: inside_other_expression { ^member.foo({ _ }) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Partial application outside of a call
+|  |  |  functions/partial_application.sc:43:45
+|  |  |     41 │     assigned { var a = _; ^a }
+|  |  |     42 │     // expect-error: Partial application outside of a call
+|  |  |     43 │     inside_other_expression { ^member.foo({ _ }) }
+|  |  |        ┆                                             ^ this isn't an argument of a call.
+|  |  |     44 │ }
+|  |  |
+|  |  |  `_` makes a function from the call it is in, e.g., `_ + 1` is `{ |x| x + 1 }`. It must be the receiver or an argument of a message, or an element of an array or dictionary, not inside another expression.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (43:31)
+|  |  |  |  SCExplicitReturn (43:31)
+|  |  |  |  |  SCMessage (43:32): foo
+|  |  |  |  |  |  SCRead (43:32): instance member, declared (3:9): member
+|  |  |  |  |  |  SCPositionalArgs (43:32)
+|  |  |  |  |  |  |  SCFunction (43:43)
+|  |  |  |  |  |  |  |  SCBody (43:43)
+|  |  |  |  |  |  |  |  |  SCExprList (43:45)
+Successfully compiled 16 classes.

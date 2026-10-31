@@ -1,0 +1,61 @@
+// Copyright Jordan Henderson 2026
+#include "sc_parser/sc_parser.hpp"
+#include "sc_lexer/codepoint_stream.hpp"
+
+
+#include "parser_context.hpp"
+#include <memory>
+
+#include "sc_grammar_impl.hpp"
+#include "sc_grammar_parser.hpp"
+#include "sc_source/text_info.hpp"
+#include "sc_source/text_location.hpp"
+#include "sc_parser/ast.hpp"
+
+namespace sc::ast {
+
+[[nodiscard]] std::tuple<std::shared_ptr<ASTGraph>, bool> parse(std::shared_ptr<const src::TextInfo> text_info,
+                                                                ::sc::lex::CodePointStream cps) {
+    const auto mode = [&] {
+        using Mode = parser::ParserContext::Mode;
+        switch (text_info->kind) {
+        case src::TextKind::ClassFile:
+            return Mode::ClassLibrary;
+        case src::TextKind::ScdFile:
+            return Mode::CommandInitial;
+        case src::TextKind::InterpretedFunction:
+            return Mode::FunctionInitial;
+        }
+        return Mode::CommandInitial;
+    }();
+    parser::ParserContext ctx { text_info, mode };
+    parser::tokenise(ctx, std::move(cps));
+    ctx.claim_file_version();
+
+    parser::parser p { ctx };
+    ctx.owner = &p;
+
+    // Bison's result, 0 if it accepted the input, otherwise it aborted or ran out of memory.
+    const auto ret = p();
+    // The parse can end on an error without recovering from it.
+    parser::error_recovery::report(ctx);
+    ctx.report_misplaced_versions();
+    const bool accepted = ret == 0 && ctx.graph;
+    return { std::move(ctx.graph), accepted };
+}
+
+
+std::tuple<std::shared_ptr<ASTGraph>, bool> parse(std::shared_ptr<const src::TextInfo> text_info,
+                                                  sc::src::SourceCodeRange r) {
+    return parse(text_info, sc::lex::CodePointStream { text_info->source, text_info->source_start_in_file, r });
+};
+
+std::tuple<std::shared_ptr<ASTGraph>, bool> parse(std::shared_ptr<const src::TextInfo> text_info,
+                                                  sc::src::SourceCodeLocation r) {
+    return parse(text_info, { text_info->source, text_info->source_start_in_file, r });
+};
+
+std::tuple<std::shared_ptr<ASTGraph>, bool> parse(std::shared_ptr<const sc::src::TextInfo> text_info) {
+    return parse(text_info, { text_info->source, text_info->source_start_in_file });
+}
+}

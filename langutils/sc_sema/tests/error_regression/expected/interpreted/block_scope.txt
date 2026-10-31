@@ -1,0 +1,19 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): version 3.16: interpreted/block_scope.scd
+|  SCRegionList (1:1)
+|  |  SCRegion (5:1)
+|  |  |  SCFunction (5:1) -> 1
+|  |  |  |  SCBody (5:1)
+|  |  |  |  |  SCVariableDeclare (5:6): q, prototype
+|  |  |  |  |  |  SCLiteral (5:10) = 1
+|  |  |  |  |  SCRead (5:13): local q = 1, declared (5:6): q = 1
+|  |  SCRegion (5:17)
+|  |  |  SCFunction (5:17)
+|  |  |  |  SCBody (5:17)
+|  |  |  |  |  SCRead (5:17): instance q, declared (38:41): q
+Successfully compiled 15 classes.

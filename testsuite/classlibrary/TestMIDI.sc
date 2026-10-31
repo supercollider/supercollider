@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestMIDI : UnitTest {
 	test_linuxRealtimeCodesAreCorrect {
 		var in, out;

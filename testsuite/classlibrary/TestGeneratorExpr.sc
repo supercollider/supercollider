@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestGeneratorExpr : UnitTest {
 
 	test_from_docs {

@@ -1,0 +1,40 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): version 3.16: interpreted_function/bracketed_variables.scd
+|  SCFunction (1:1) -> 6
+|  |  SCBody (1:1)
+|  |  |  SCVariableDeclare (7:5): q, prototype
+|  |  |  |  SCLiteral (7:9) = 2
+|  |  |  SCMessage (8:1): * = 6
+|  |  |  |  SCRead (8:1): local q = 2, declared (7:5): q = 2
+|  |  |  |  SCPositionalArgs (8:1)
+|  |  |  |  |  SCLiteral (8:5) = 3
+
+
+
+BYTECODE DUMP 
+
+
+Interpreted
+|  function 0 (1:1)
+|  |  properties: closed,
+|  |  selectors:
+|  |  constants:
+|  |  0    2C 06           PushInteger8
+|  |  2    F2              BlockReturn
+
+
+
+COMPILED DUMP 
+
+
+Interpreted
+|  interpreted: function 0,
+|  function 0 (1:1)
+|  |  variables: q = 2,
+|  |  code: 3 bytes, 0 selectors, 0 constants
+Successfully compiled 15 classes.

@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestLinkClock : UnitTest {
 
 	classvar precision = 1e-04;
@@ -8,12 +9,11 @@ TestLinkClock : UnitTest {
 	// Test Plan - TEMPO-1
 	// Tempo changes should be transmitted between connected apps.
 	test_settingTempo_transmitsToLinkPeers {
-		var clock1, clock2;
 		var semaphore = Semaphore(0),
 		controller;
 
-		clock1 = LinkClock.new;
-		clock2 = LinkClock.new;
+		var clock1 = LinkClock.new;
+		var clock2 = LinkClock.new;
 		controller = SimpleController(clock2).put(\tempo, {
 			controller.remove;
 			semaphore.signal
@@ -39,13 +39,12 @@ TestLinkClock : UnitTest {
 	// Test Plan - TEMPO-2
 	// Opening an app with Link enabled should not change the tempo of an existing Link session.
 	test_newLinkClock_shouldNotChangeLinkTempo {
-		var clock1, clock2, sessionTempo;
 
-		clock1 = LinkClock(2.5);
+		var clock1 = LinkClock(2.5);
 		0.5.wait;
-		sessionTempo = clock1.tempo;
+		var sessionTempo = clock1.tempo;
 
-		clock2 = LinkClock(1);
+		var clock2 = LinkClock(1);
 		0.5.wait;
 
 		this.assertFloatEquals( clock2.tempo, sessionTempo,
@@ -64,15 +63,14 @@ TestLinkClock : UnitTest {
 	// Test Plan - TEMPO-4
 	// Tempo range handling.
 	test_settingTempo_maintainsSyncOver20To999BPM {
-		var clock1, clock2;
-		var semaphore = Semaphore(0), controller;
+		var semaphore = Semaphore(0);
 		var phase1 = Array.newClear(2),
 			phase2 = Array.newClear(2);
 
 		// initially, phase should disagree -- Link should bring into phase
-		clock1 = LinkClock(1).beats_(20);
-		clock2 = LinkClock(1).beats_(21);
-		controller = SimpleController(clock2).put(\tempo, {
+		var clock1 = LinkClock(1).beats_(20);
+		var clock2 = LinkClock(1).beats_(21);
+		var controller = SimpleController(clock2).put(\tempo, {
 			semaphore.signal
 		});
 
@@ -105,10 +103,9 @@ TestLinkClock : UnitTest {
 	// Test Plan - TEMPO-5
 	// Enabling Link does not change app's tempo if there is no Link session to join.
 	test_newLinkClock_usesOwnTempoIfNoSession {
-		var clock, tempo;
 
-		tempo = 5;
-		clock = LinkClock(tempo);
+		var tempo = 5;
+		var clock = LinkClock(tempo);
 		0.5.wait;
 
 		this.ifAsserts( clock.numPeers == 0,
@@ -129,11 +126,10 @@ TestLinkClock : UnitTest {
 	// Test Plan - BEATTIME-1
 	// Enabling Link does not change app's beat time if there is no Link session to join.
 	test_newLinkClock_usesOwnBeatsIfNoSession {
-		var clock, beats, secs;
 
-		clock = LinkClock(1).beats_(10);
-		secs = thisThread.clock.seconds;
-		beats = clock.secs2beats(secs);
+		var clock = LinkClock(1).beats_(10);
+		var secs = thisThread.clock.seconds;
+		var beats = clock.secs2beats(secs);
 		0.4.wait;
 
 		this.ifAsserts( clock.numPeers == 0,
@@ -155,14 +151,13 @@ TestLinkClock : UnitTest {
 	// Test Plan - BEATTIME-2
 	// App's beat time does not change if another participant joins its session.
 	test_newLinkClock_syncsBeatsToExistingLinkClock {
-		var clock1, clock2;
 		var beats;
 
-		clock1 = LinkClock(1);
+		var clock1 = LinkClock(1);
 		0.2.wait;
 
 		beats = clock1.beats;
-		clock2 = LinkClock(1);
+		var clock2 = LinkClock(1);
 
 		this.assertEquals( clock1.beats, beats,
 			"first clock's beats should not change when a participant joins its session"
@@ -206,13 +201,9 @@ TestLinkClock : UnitTest {
 	}
 
 	test_LinkClock_meter_change_beats_keep_continuity {
-		var clock1, clock2,
-		tempo = 12, beatDurThresh = 0.4 / tempo,
-		secList1 = List.new, secList2 = List.new,
-		trials = 20,
-		cond = Condition({ secList1.size == trials and: { secList2.size == trials } });
+		var clock2, tempo = 12, beatDurThresh = 0.4 / tempo, secList1 = List.new, secList2 = List.new, trials = 20, cond = Condition({ secList1.size == trials and: { secList2.size == trials } });
 
-		clock1 = LinkClock(tempo);
+		var clock1 = LinkClock(tempo);
 		{
 			// offset clock starts
 			// this is necessary because the issue manifests
@@ -258,12 +249,10 @@ TestLinkClock : UnitTest {
 	// because it takes a little time for a new LinkClock to stabilize
 	// and we have no signal to know when it's ready
 	test_LinkClock_sync_meter_aligns_barlines {
-		var numTrials = 5,
-		refClock, testClock, successCount = 0, resp,
-		cond = Condition.new, outerCond = Condition.new;
+		var numTrials = 5, testClock, successCount = 0, resp, cond = Condition.new, outerCond = Condition.new;
 		// empirically, this tempo hits a number of different offset points
 		// also for this test to be meaningful, the clocks' quantum values must differ
-		refClock = LinkClock(3).quantum_(5);
+		var refClock = LinkClock(3).quantum_(5);
 		refClock.schedAbs(1, Routine {
 			if(refClock.numPeers > 0) {
 				this.assert(false, "Make sure no other LinkClocks are running while testing");

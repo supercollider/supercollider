@@ -1,0 +1,681 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (7:1): AbstractObjectExperimental
+|  SCMemberList (7:1)
+|  SCMethodList (7:1)
+SCClass (9:1): Object : AbstractObjectExperimental
+|  SCMemberList (9:1)
+|  SCMethodList (9:1)
+SCClass (9:1): Meta_Object : Meta_AbstractObjectExperimental
+|  SCMemberList (9:1)
+|  |  SCMember (10:14): dependantsDictionary
+|  |  SCMember (10:36): currentEnvironment
+|  |  SCMember (10:56): topEnvironment
+|  |  SCMember (10:72): uniqueMethods
+|  SCMethodList (9:1)
+SCClass (13:1): Class : Object
+|  SCMemberList (13:1)
+|  SCMethodList (13:1)
+SCClass (15:1): String : Object
+|  SCMemberList (15:1)
+|  SCMethodList (15:1)
+SCClass (17:1): True : Object
+|  SCMemberList (17:1)
+|  SCMethodList (17:1)
+SCClass (19:1): False : Object
+|  SCMemberList (19:1)
+|  SCMethodList (19:1)
+SCClass (21:1): Nil : Object
+|  SCMemberList (21:1)
+|  SCMethodList (21:1)
+SCClass (23:1): Float : Object
+|  SCMemberList (23:1)
+|  SCMethodList (23:1)
+|  |  SCMethod (25:5): do: do { arg function;'\n'        var i = 0.0;'\n'        while ({ (i + 0.5) < this }, { function.value(i, i); i = i + 1.0; });'\n'    }
+|  |  |  SCArgumentDeclareList (25:14)
+|  |  |  |  SCArgumentDeclare (25:14): function (captured)
+|  |  |  SCBody (26:9)
+|  |  |  |  SCVariableDeclare (26:13): i (assigned, captured), prototype
+|  |  |  |  |  SCLiteral (26:17) = 0.0
+|  |  |  |  SCMessage (27:9): while
+|  |  |  |  |  SCFunction (27:16)
+|  |  |  |  |  |  SCBody (27:16)
+|  |  |  |  |  |  |  SCMessage (27:18): <
+|  |  |  |  |  |  |  |  SCMessage (27:19): +
+|  |  |  |  |  |  |  |  |  SCRead (27:19): local i, declared (26:13): i = 0.0
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (27:19)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (27:23) = 0.5
+|  |  |  |  |  |  |  |  SCPositionalArgs (27:18)
+|  |  |  |  |  |  |  |  |  SCSpecial (27:30): this
+|  |  |  |  |  SCPositionalArgs (27:9)
+|  |  |  |  |  |  SCFunction (27:38)
+|  |  |  |  |  |  |  SCBody (27:38)
+|  |  |  |  |  |  |  |  SCMessage (27:40): value
+|  |  |  |  |  |  |  |  |  SCRead (27:40): local function, declared (25:14): function
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (27:40)
+|  |  |  |  |  |  |  |  |  |  SCRead (27:55): local i, declared (26:13): i = 0.0
+|  |  |  |  |  |  |  |  |  |  SCRead (27:58): local i, declared (26:13): i = 0.0
+|  |  |  |  |  |  |  |  SCAssign (27:62): local i, declared (26:13): i = 0.0
+|  |  |  |  |  |  |  |  |  SCMessage (27:66): +
+|  |  |  |  |  |  |  |  |  |  SCRead (27:66): local i, declared (26:13): i = 0.0
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (27:66)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (27:70) = 1.0
+|  |  SCMethod (31:5): reverseDo: reverseDo { ^this }
+|  |  |  SCBody (31:17)
+|  |  |  |  SCExplicitReturn (31:17)
+|  |  |  |  |  SCSpecial (31:18): this
+SCClass (34:1): Integer : Object
+|  SCMemberList (34:1)
+|  SCMethodList (34:1)
+|  |  SCMethod (41:5): reverseDo: reverseDo { arg function;'\n'        var i=0, j=0;'\n'        i = this - 1;'\n'        while ({ i >= 0 }, { function.value(i, j); i = i - 1; j = j + 1; });'\n'    }
+|  |  |  SCArgumentDeclareList (41:21)
+|  |  |  |  SCArgumentDeclare (41:21): function (captured)
+|  |  |  SCBody (42:9)
+|  |  |  |  SCVariableDeclare (42:13): i (assigned, captured), prototype
+|  |  |  |  |  SCLiteral (42:15) = 0
+|  |  |  |  SCVariableDeclare (42:18): j (assigned, captured), prototype
+|  |  |  |  |  SCLiteral (42:20) = 0
+|  |  |  |  SCAssign (43:9): local i, declared (42:13): i=0
+|  |  |  |  |  SCMessage (43:13): -
+|  |  |  |  |  |  SCSpecial (43:13): this
+|  |  |  |  |  |  SCPositionalArgs (43:13)
+|  |  |  |  |  |  |  SCLiteral (43:20) = 1
+|  |  |  |  SCMessage (44:9): while
+|  |  |  |  |  SCFunction (44:16)
+|  |  |  |  |  |  SCBody (44:16)
+|  |  |  |  |  |  |  SCMessage (44:18): >=
+|  |  |  |  |  |  |  |  SCRead (44:18): local i, declared (42:13): i=0
+|  |  |  |  |  |  |  |  SCPositionalArgs (44:18)
+|  |  |  |  |  |  |  |  |  SCLiteral (44:23) = 0
+|  |  |  |  |  SCPositionalArgs (44:9)
+|  |  |  |  |  |  SCFunction (44:28)
+|  |  |  |  |  |  |  SCBody (44:28)
+|  |  |  |  |  |  |  |  SCMessage (44:30): value
+|  |  |  |  |  |  |  |  |  SCRead (44:30): local function, declared (41:21): function
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (44:30)
+|  |  |  |  |  |  |  |  |  |  SCRead (44:45): local i, declared (42:13): i=0
+|  |  |  |  |  |  |  |  |  |  SCRead (44:48): local j, declared (42:18): j=0
+|  |  |  |  |  |  |  |  SCAssign (44:52): local i, declared (42:13): i=0
+|  |  |  |  |  |  |  |  |  SCMessage (44:56): -
+|  |  |  |  |  |  |  |  |  |  SCRead (44:56): local i, declared (42:13): i=0
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (44:56)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (44:60) = 1
+|  |  |  |  |  |  |  |  SCAssign (44:63): local j, declared (42:18): j=0
+|  |  |  |  |  |  |  |  |  SCMessage (44:67): +
+|  |  |  |  |  |  |  |  |  |  SCRead (44:67): local j, declared (42:18): j=0
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (44:67)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (44:71) = 1
+|  |  SCMethod (47:5): for: for { arg endval, function;'\n'        var i, j=0, stepval=1;'\n'        i = this;'\n'        while ({ i <= endval }, { function.value(i, j); i = i + 1; j = j + 1; });'\n'    }
+|  |  |  SCArgumentDeclareList (47:15)
+|  |  |  |  SCArgumentDeclare (47:15): endval (captured)
+|  |  |  |  SCArgumentDeclare (47:23): function (captured)
+|  |  |  SCBody (48:9)
+|  |  |  |  SCVariableDeclare (48:13): i (assigned, captured)
+|  |  |  |  SCVariableDeclare (48:16): j (assigned, captured), prototype
+|  |  |  |  |  SCLiteral (48:18) = 0
+|  |  |  |  SCVariableDeclare (48:21): stepval, prototype
+|  |  |  |  |  SCLiteral (48:29) = 1
+|  |  |  |  SCAssign (49:9): local i, declared (48:13): i
+|  |  |  |  |  SCSpecial (49:13): this
+|  |  |  |  SCMessage (50:9): while
+|  |  |  |  |  SCFunction (50:16)
+|  |  |  |  |  |  SCBody (50:16)
+|  |  |  |  |  |  |  SCMessage (50:18): <=
+|  |  |  |  |  |  |  |  SCRead (50:18): local i, declared (48:13): i
+|  |  |  |  |  |  |  |  SCPositionalArgs (50:18)
+|  |  |  |  |  |  |  |  |  SCRead (50:23): local endval, declared (47:15): endval
+|  |  |  |  |  SCPositionalArgs (50:9)
+|  |  |  |  |  |  SCFunction (50:33)
+|  |  |  |  |  |  |  SCBody (50:33)
+|  |  |  |  |  |  |  |  SCMessage (50:35): value
+|  |  |  |  |  |  |  |  |  SCRead (50:35): local function, declared (47:23): function
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (50:35)
+|  |  |  |  |  |  |  |  |  |  SCRead (50:50): local i, declared (48:13): i
+|  |  |  |  |  |  |  |  |  |  SCRead (50:53): local j, declared (48:16): j=0
+|  |  |  |  |  |  |  |  SCAssign (50:57): local i, declared (48:13): i
+|  |  |  |  |  |  |  |  |  SCMessage (50:61): +
+|  |  |  |  |  |  |  |  |  |  SCRead (50:61): local i, declared (48:13): i
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (50:61)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (50:65) = 1
+|  |  |  |  |  |  |  |  SCAssign (50:68): local j, declared (48:16): j=0
+|  |  |  |  |  |  |  |  |  SCMessage (50:72): +
+|  |  |  |  |  |  |  |  |  |  SCRead (50:72): local j, declared (48:16): j=0
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (50:72)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (50:76) = 1
+|  |  SCMethod (53:5): forBy: forBy { arg endval, stepval, function;'\n'        var i, j=0;'\n'        i = this;'\n'        while ({ i <= endval }, { function.value(i, j); i = i + stepval; j = j + 1; });'\n'    }
+|  |  |  SCArgumentDeclareList (53:17)
+|  |  |  |  SCArgumentDeclare (53:17): endval (captured)
+|  |  |  |  SCArgumentDeclare (53:25): stepval (captured)
+|  |  |  |  SCArgumentDeclare (53:34): function (captured)
+|  |  |  SCBody (54:9)
+|  |  |  |  SCVariableDeclare (54:13): i (assigned, captured)
+|  |  |  |  SCVariableDeclare (54:16): j (assigned, captured), prototype
+|  |  |  |  |  SCLiteral (54:18) = 0
+|  |  |  |  SCAssign (55:9): local i, declared (54:13): i
+|  |  |  |  |  SCSpecial (55:13): this
+|  |  |  |  SCMessage (56:9): while
+|  |  |  |  |  SCFunction (56:16)
+|  |  |  |  |  |  SCBody (56:16)
+|  |  |  |  |  |  |  SCMessage (56:18): <=
+|  |  |  |  |  |  |  |  SCRead (56:18): local i, declared (54:13): i
+|  |  |  |  |  |  |  |  SCPositionalArgs (56:18)
+|  |  |  |  |  |  |  |  |  SCRead (56:23): local endval, declared (53:17): endval
+|  |  |  |  |  SCPositionalArgs (56:9)
+|  |  |  |  |  |  SCFunction (56:33)
+|  |  |  |  |  |  |  SCBody (56:33)
+|  |  |  |  |  |  |  |  SCMessage (56:35): value
+|  |  |  |  |  |  |  |  |  SCRead (56:35): local function, declared (53:34): function
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (56:35)
+|  |  |  |  |  |  |  |  |  |  SCRead (56:50): local i, declared (54:13): i
+|  |  |  |  |  |  |  |  |  |  SCRead (56:53): local j, declared (54:16): j=0
+|  |  |  |  |  |  |  |  SCAssign (56:57): local i, declared (54:13): i
+|  |  |  |  |  |  |  |  |  SCMessage (56:61): +
+|  |  |  |  |  |  |  |  |  |  SCRead (56:61): local i, declared (54:13): i
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (56:61)
+|  |  |  |  |  |  |  |  |  |  |  SCRead (56:65): local stepval, declared (53:25): stepval
+|  |  |  |  |  |  |  |  SCAssign (56:74): local j, declared (54:16): j=0
+|  |  |  |  |  |  |  |  |  SCMessage (56:78): +
+|  |  |  |  |  |  |  |  |  |  SCRead (56:78): local j, declared (54:16): j=0
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (56:78)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (56:82) = 1
+|  |  SCMethod (138:5): do: do { arg function;'\n'        var i = 0;'\n'        function.value(i);'\n'    }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Warning: Extension of a hard coded method is ignored
+|  |  |  versions/bytecode_loops.sc:138:5
+|  |  |    136 │ + Integer {
+|  |  |    137 │     // expect-warning: Extension of a hard coded method is ignored
+|  |  |    138 │     do { arg function;
+|  |  |        ┆     ^^ this extension's code is replaced by a loop.
+|  |  |    139 │         var i = 0;
+|  |  |    140 │         function.value(i);
+|  |  |    141 │     }
+|  |  |
+|  |  |  The compiler replaces the code of some loop methods, e.g., `Integer:do` and `ArrayedCollection:do`, with special bytecode. Before 3.16 this also happens to an extension method replacing one of them, so the extension's code never runs. Add `//# VERSION 3.16` to the extension to fix this.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (138:14)
+|  |  |  |  SCArgumentDeclare (138:14): function
+|  |  |  SCBody (139:9)
+|  |  |  |  SCVariableDeclare (139:13): i, prototype
+|  |  |  |  |  SCLiteral (139:17) = 0
+|  |  |  |  SCMessage (140:9): value
+|  |  |  |  |  SCRead (140:9): local function, declared (138:14): function
+|  |  |  |  |  SCPositionalArgs (140:9)
+|  |  |  |  |  |  SCRead (140:24): local i = 0, declared (139:13): i = 0
+SCClass (60:1): Char : Object
+|  SCMemberList (60:1)
+|  SCMethodList (60:1)
+SCClass (62:1): Symbol : Object
+|  SCMemberList (62:1)
+|  SCMethodList (62:1)
+SCClass (64:1): Ref : Object
+|  SCMemberList (64:1)
+|  SCMethodList (64:1)
+SCClass (66:1): Array : Object
+|  SCMemberList (66:1)
+|  SCMethodList (66:1)
+SCClass (68:1): Event : Object
+|  SCMemberList (68:1)
+|  SCMethodList (68:1)
+SCClass (71:1): Interpreter : Object
+|  SCMemberList (71:1)
+|  |  SCMember (72:10): cmdLine
+|  |  SCMember (72:19): filePath
+|  |  SCMember (72:29): lineNumber
+|  |  SCMember (72:41): column
+|  |  SCMember (72:49): context
+|  |  SCMember (73:11): a
+|  |  SCMember (73:16): b
+|  |  SCMember (73:21): c
+|  |  SCMember (73:26): d
+|  |  SCMember (73:31): e
+|  |  SCMember (73:36): f
+|  |  SCMember (73:41): g
+|  |  SCMember (73:46): h
+|  |  SCMember (73:51): i
+|  |  SCMember (73:56): j
+|  |  SCMember (74:11): k
+|  |  SCMember (74:16): l
+|  |  SCMember (74:21): m
+|  |  SCMember (74:26): n
+|  |  SCMember (74:31): o
+|  |  SCMember (74:36): p
+|  |  SCMember (74:41): q
+|  |  SCMember (74:46): r
+|  |  SCMember (74:51): s
+|  |  SCMember (74:56): t
+|  |  SCMember (75:11): u
+|  |  SCMember (75:16): v
+|  |  SCMember (75:21): w
+|  |  SCMember (75:26): x
+|  |  SCMember (75:31): y
+|  |  SCMember (75:36): z
+|  |  SCMember (76:11): codeDump
+|  |  SCMember (76:23): preProcessor
+|  SCMethodList (71:1)
+|  |  SCMethod (78:5): functionCompileContext: functionCompileContext {}
+|  |  |  SCBody (78:29)
+SCClass (81:1): Number : Object
+|  SCMemberList (81:1)
+|  SCMethodList (81:1)
+|  |  SCMethod (83:5): forSeries: forSeries { arg second, last, function;'\n'        var step, j=0;'\n'        { |x| if (x) { ^1 }; ^2 }.value(second);'\n'        ^this.forBy(last, step, function)'\n'    }
+|  |  |  SCArgumentDeclareList (83:21)
+|  |  |  |  SCArgumentDeclare (83:21): second
+|  |  |  |  SCArgumentDeclare (83:29): last
+|  |  |  |  SCArgumentDeclare (83:35): function
+|  |  |  SCBody (84:9)
+|  |  |  |  SCVariableDeclare (84:13): step
+|  |  |  |  SCVariableDeclare (84:19): j, prototype
+|  |  |  |  |  SCLiteral (84:21) = 0
+|  |  |  |  SCMessage (85:9): value
+|  |  |  |  |  SCFunction (85:9)
+|  |  |  |  |  |  SCArgumentDeclareList (85:12)
+|  |  |  |  |  |  |  SCArgumentDeclare (85:12): x
+|  |  |  |  |  |  SCBody (85:9)
+|  |  |  |  |  |  |  SCMessage (85:15): if
+|  |  |  |  |  |  |  |  SCRead (85:19): local x, declared (85:12): x
+|  |  |  |  |  |  |  |  SCPositionalArgs (85:15)
+|  |  |  |  |  |  |  |  |  SCFunction (85:22)
+|  |  |  |  |  |  |  |  |  |  SCBody (85:22)
+|  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (85:24)
+|  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (85:25) = 1
+|  |  |  |  |  |  |  SCExplicitReturn (85:30)
+|  |  |  |  |  |  |  |  SCLiteral (85:31) = 2
+|  |  |  |  |  SCPositionalArgs (85:9)
+|  |  |  |  |  |  SCRead (85:41): local second, declared (83:21): second
+|  |  |  |  SCExplicitReturn (86:9)
+|  |  |  |  |  SCMessage (86:10): forBy
+|  |  |  |  |  |  SCSpecial (86:10): this
+|  |  |  |  |  |  SCPositionalArgs (86:10)
+|  |  |  |  |  |  |  SCRead (86:21): local last, declared (83:29): last
+|  |  |  |  |  |  |  SCRead (86:27): local step = nil, declared (84:13): step
+|  |  |  |  |  |  |  SCRead (86:33): local function, declared (83:35): function
+SCClass (90:1): ArrayedCollection : Object
+|  SCMemberList (90:1)
+|  SCMethodList (90:1)
+|  |  SCMethod (92:5): do: do { arg function;'\n'        var i=0;'\n'        while ({ i < this.size }, {'\n'            function.value(this.at(i), i);'\n'            i = i + 1;'\n'        })'\n'    }
+|  |  |  SCArgumentDeclareList (92:14)
+|  |  |  |  SCArgumentDeclare (92:14): function (captured)
+|  |  |  SCBody (93:9)
+|  |  |  |  SCVariableDeclare (93:13): i (assigned, captured), prototype
+|  |  |  |  |  SCLiteral (93:15) = 0
+|  |  |  |  SCMessage (94:9): while
+|  |  |  |  |  SCFunction (94:16)
+|  |  |  |  |  |  SCBody (94:16)
+|  |  |  |  |  |  |  SCMessage (94:18): <
+|  |  |  |  |  |  |  |  SCRead (94:18): local i, declared (93:13): i=0
+|  |  |  |  |  |  |  |  SCPositionalArgs (94:18)
+|  |  |  |  |  |  |  |  |  SCMessage (94:22): size
+|  |  |  |  |  |  |  |  |  |  SCSpecial (94:22): this
+|  |  |  |  |  SCPositionalArgs (94:9)
+|  |  |  |  |  |  SCFunction (94:35)
+|  |  |  |  |  |  |  SCBody (94:35)
+|  |  |  |  |  |  |  |  SCMessage (95:13): value
+|  |  |  |  |  |  |  |  |  SCRead (95:13): local function, declared (92:14): function
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (95:13)
+|  |  |  |  |  |  |  |  |  |  SCMessage (95:28): at
+|  |  |  |  |  |  |  |  |  |  |  SCSpecial (95:28): this
+|  |  |  |  |  |  |  |  |  |  |  SCPositionalArgs (95:28)
+|  |  |  |  |  |  |  |  |  |  |  |  SCRead (95:36): local i, declared (93:13): i=0
+|  |  |  |  |  |  |  |  |  |  SCRead (95:40): local i, declared (93:13): i=0
+|  |  |  |  |  |  |  |  SCAssign (96:13): local i, declared (93:13): i=0
+|  |  |  |  |  |  |  |  |  SCMessage (96:17): +
+|  |  |  |  |  |  |  |  |  |  SCRead (96:17): local i, declared (93:13): i=0
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (96:17)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (96:21) = 1
+|  |  SCMethod (100:5): reverseDo: reverseDo { arg function;'\n'        var i=0, j=0;'\n'        i = this.size - 1;'\n'        while ({ i >= 0 },{'\n'            function.value(this.at(i), j);'\n'            i = i - 1;'\n'            j = j + 1;'\n'        })'\n'    }
+|  |  |  SCArgumentDeclareList (100:21)
+|  |  |  |  SCArgumentDeclare (100:21): function (captured)
+|  |  |  SCBody (101:9)
+|  |  |  |  SCVariableDeclare (101:13): i (assigned, captured), prototype
+|  |  |  |  |  SCLiteral (101:15) = 0
+|  |  |  |  SCVariableDeclare (101:18): j (assigned, captured), prototype
+|  |  |  |  |  SCLiteral (101:20) = 0
+|  |  |  |  SCAssign (102:9): local i, declared (101:13): i=0
+|  |  |  |  |  SCMessage (102:13): -
+|  |  |  |  |  |  SCMessage (102:13): size
+|  |  |  |  |  |  |  SCSpecial (102:13): this
+|  |  |  |  |  |  SCPositionalArgs (102:13)
+|  |  |  |  |  |  |  SCLiteral (102:25) = 1
+|  |  |  |  SCMessage (103:9): while
+|  |  |  |  |  SCFunction (103:16)
+|  |  |  |  |  |  SCBody (103:16)
+|  |  |  |  |  |  |  SCMessage (103:18): >=
+|  |  |  |  |  |  |  |  SCRead (103:18): local i, declared (101:13): i=0
+|  |  |  |  |  |  |  |  SCPositionalArgs (103:18)
+|  |  |  |  |  |  |  |  |  SCLiteral (103:23) = 0
+|  |  |  |  |  SCPositionalArgs (103:9)
+|  |  |  |  |  |  SCFunction (103:27)
+|  |  |  |  |  |  |  SCBody (103:27)
+|  |  |  |  |  |  |  |  SCMessage (104:13): value
+|  |  |  |  |  |  |  |  |  SCRead (104:13): local function, declared (100:21): function
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (104:13)
+|  |  |  |  |  |  |  |  |  |  SCMessage (104:28): at
+|  |  |  |  |  |  |  |  |  |  |  SCSpecial (104:28): this
+|  |  |  |  |  |  |  |  |  |  |  SCPositionalArgs (104:28)
+|  |  |  |  |  |  |  |  |  |  |  |  SCRead (104:36): local i, declared (101:13): i=0
+|  |  |  |  |  |  |  |  |  |  SCRead (104:40): local j, declared (101:18): j=0
+|  |  |  |  |  |  |  |  SCAssign (105:13): local i, declared (101:13): i=0
+|  |  |  |  |  |  |  |  |  SCMessage (105:17): -
+|  |  |  |  |  |  |  |  |  |  SCRead (105:17): local i, declared (101:13): i=0
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (105:17)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (105:21) = 1
+|  |  |  |  |  |  |  |  SCAssign (106:13): local j, declared (101:18): j=0
+|  |  |  |  |  |  |  |  |  SCMessage (106:17): +
+|  |  |  |  |  |  |  |  |  |  SCRead (106:17): local j, declared (101:18): j=0
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (106:17)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (106:21) = 1
+SCClass (90:1): Meta_ArrayedCollection : Meta_Object
+|  SCMemberList (90:1)
+|  SCMethodList (90:1)
+|  |  SCMethod (111:5): do: *do { arg function; function.value; ^this }
+|  |  |  SCArgumentDeclareList (111:15)
+|  |  |  |  SCArgumentDeclare (111:15): function
+|  |  |  SCBody (111:25)
+|  |  |  |  SCMessage (111:25): value
+|  |  |  |  |  SCRead (111:25): local function, declared (111:15): function
+|  |  |  |  SCExplicitReturn (111:41)
+|  |  |  |  |  SCSpecial (111:42): this
+SCClass (114:1): Dictionary : Object
+|  SCMemberList (114:1)
+|  SCMethodList (114:1)
+|  |  SCMethod (116:5): keysValuesArrayDo: keysValuesArrayDo { arg argArray, function;'\n'        var i=0, j=0, key, val;'\n'        var arraySize;'\n'        arraySize = argArray.size;'\n'        while ({ i < arraySize },{'\n'            key = argArray.at(i);'\n'            if (key.notNil, {'\n'                val = argArray.at(i+1);'\n'                function.value(key, val, j);'\n'                j = j + 1;'\n'            });'\n'            i = i + 2;'\n'        })'\n'    }
+|  |  |  SCArgumentDeclareList (116:29)
+|  |  |  |  SCArgumentDeclare (116:29): argArray (captured)
+|  |  |  |  SCArgumentDeclare (116:39): function (captured)
+|  |  |  SCBody (117:9)
+|  |  |  |  SCVariableDeclare (117:13): i (assigned, captured), prototype
+|  |  |  |  |  SCLiteral (117:15) = 0
+|  |  |  |  SCVariableDeclare (117:18): j (assigned, captured), prototype
+|  |  |  |  |  SCLiteral (117:20) = 0
+|  |  |  |  SCVariableDeclare (117:23): key (assigned, captured)
+|  |  |  |  SCVariableDeclare (117:28): val (assigned, captured)
+|  |  |  |  SCVariableDeclare (118:13): arraySize (assigned, captured)
+|  |  |  |  SCAssign (119:9): local arraySize, declared (118:13): arraySize
+|  |  |  |  |  SCMessage (119:21): size
+|  |  |  |  |  |  SCRead (119:21): local argArray, declared (116:29): argArray
+|  |  |  |  SCMessage (120:9): while
+|  |  |  |  |  SCFunction (120:16)
+|  |  |  |  |  |  SCBody (120:16)
+|  |  |  |  |  |  |  SCMessage (120:18): <
+|  |  |  |  |  |  |  |  SCRead (120:18): local i, declared (117:13): i=0
+|  |  |  |  |  |  |  |  SCPositionalArgs (120:18)
+|  |  |  |  |  |  |  |  |  SCRead (120:22): local arraySize, declared (118:13): arraySize
+|  |  |  |  |  SCPositionalArgs (120:9)
+|  |  |  |  |  |  SCFunction (120:34)
+|  |  |  |  |  |  |  SCBody (120:34)
+|  |  |  |  |  |  |  |  SCAssign (121:13): local key, declared (117:23): key
+|  |  |  |  |  |  |  |  |  SCMessage (121:19): at
+|  |  |  |  |  |  |  |  |  |  SCRead (121:19): local argArray, declared (116:29): argArray
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (121:19)
+|  |  |  |  |  |  |  |  |  |  |  SCRead (121:31): local i, declared (117:13): i=0
+|  |  |  |  |  |  |  |  SCMessage (122:13): if
+|  |  |  |  |  |  |  |  |  SCMessage (122:17): notNil
+|  |  |  |  |  |  |  |  |  |  SCRead (122:17): local key, declared (117:23): key
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (122:13)
+|  |  |  |  |  |  |  |  |  |  SCFunction (122:29)
+|  |  |  |  |  |  |  |  |  |  |  SCBody (122:29)
+|  |  |  |  |  |  |  |  |  |  |  |  SCAssign (123:17): local val, declared (117:28): val
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCMessage (123:23): at
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (123:23): local argArray, declared (116:29): argArray
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  SCPositionalArgs (123:23)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCMessage (123:35): +
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (123:35): local i, declared (117:13): i=0
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCPositionalArgs (123:35)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (123:37) = 1
+|  |  |  |  |  |  |  |  |  |  |  |  SCMessage (124:17): value
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (124:17): local function, declared (116:39): function
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCPositionalArgs (124:17)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (124:32): local key, declared (117:23): key
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (124:37): local val, declared (117:28): val
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (124:42): local j, declared (117:18): j=0
+|  |  |  |  |  |  |  |  |  |  |  |  SCAssign (125:17): local j, declared (117:18): j=0
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCMessage (125:21): +
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (125:21): local j, declared (117:18): j=0
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  SCPositionalArgs (125:21)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (125:25) = 1
+|  |  |  |  |  |  |  |  SCAssign (127:13): local i, declared (117:13): i=0
+|  |  |  |  |  |  |  |  |  SCMessage (127:17): +
+|  |  |  |  |  |  |  |  |  |  SCRead (127:17): local i, declared (117:13): i=0
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (127:17)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (127:21) = 2
+|  |  SCMethod (132:5): do: do { arg function; function.value; ^this }
+|  |  |  SCArgumentDeclareList (132:14)
+|  |  |  |  SCArgumentDeclare (132:14): function
+|  |  |  SCBody (132:24)
+|  |  |  |  SCMessage (132:24): value
+|  |  |  |  |  SCRead (132:24): local function, declared (132:14): function
+|  |  |  |  SCExplicitReturn (132:40)
+|  |  |  |  |  SCSpecial (132:41): this
+
+
+
+BYTECODE DUMP 
+
+
+AbstractObjectExperimental
+Object
+Meta_Object
+Class
+String
+True
+False
+Nil
+Float
+|  function 0 (25:5): method do
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    8F 11           ExtendedCodes
+|  |  2    8F 12           ExtendedCodes
+|  function 1 (31:5): method reverseDo
+|  |  properties:
+|  |  shortcut: return self
+|  |  selectors:
+|  |  constants:
+Integer
+|  function 0 (41:5): method reverseDo
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    8F 02           ExtendedCodes
+|  |  2    8F 03           ExtendedCodes
+|  |  4    8F 04           ExtendedCodes
+|  function 1 (47:5): method for
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    8F 05           ExtendedCodes
+|  |  2    8F 06           ExtendedCodes
+|  |  4    8F 10           ExtendedCodes
+|  function 2 (53:5): method forBy
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    8F 07           ExtendedCodes
+|  |  2    8F 08           ExtendedCodes
+|  |  4    8F 09           ExtendedCodes
+|  function 3 (138:5): method do
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    8F 00           ExtendedCodes
+|  |  2    8F 01           ExtendedCodes
+Char
+Symbol
+Ref
+Array
+Event
+Interpreter
+|  accessor (72:10): method cmdLine
+|  |  shortcut: return instance variable 0
+|  accessor (73:11): method a
+|  |  shortcut: return instance variable 5
+|  accessor (73:11): method a_
+|  |  shortcut: assign instance variable 5
+|  accessor (73:16): method b
+|  |  shortcut: return instance variable 6
+|  accessor (73:16): method b_
+|  |  shortcut: assign instance variable 6
+|  accessor (73:21): method c
+|  |  shortcut: return instance variable 7
+|  accessor (73:21): method c_
+|  |  shortcut: assign instance variable 7
+|  accessor (73:26): method d
+|  |  shortcut: return instance variable 8
+|  accessor (73:26): method d_
+|  |  shortcut: assign instance variable 8
+|  accessor (73:31): method e
+|  |  shortcut: return instance variable 9
+|  accessor (73:31): method e_
+|  |  shortcut: assign instance variable 9
+|  accessor (73:36): method f
+|  |  shortcut: return instance variable 10
+|  accessor (73:36): method f_
+|  |  shortcut: assign instance variable 10
+|  accessor (73:41): method g
+|  |  shortcut: return instance variable 11
+|  accessor (73:41): method g_
+|  |  shortcut: assign instance variable 11
+|  accessor (73:46): method h
+|  |  shortcut: return instance variable 12
+|  accessor (73:46): method h_
+|  |  shortcut: assign instance variable 12
+|  accessor (73:51): method i
+|  |  shortcut: return instance variable 13
+|  accessor (73:51): method i_
+|  |  shortcut: assign instance variable 13
+|  accessor (73:56): method j
+|  |  shortcut: return instance variable 14
+|  accessor (73:56): method j_
+|  |  shortcut: assign instance variable 14
+|  accessor (74:11): method k
+|  |  shortcut: return instance variable 15
+|  accessor (74:11): method k_
+|  |  shortcut: assign instance variable 15
+|  accessor (74:16): method l
+|  |  shortcut: return instance variable 16
+|  accessor (74:16): method l_
+|  |  shortcut: assign instance variable 16
+|  accessor (74:21): method m
+|  |  shortcut: return instance variable 17
+|  accessor (74:21): method m_
+|  |  shortcut: assign instance variable 17
+|  accessor (74:26): method n
+|  |  shortcut: return instance variable 18
+|  accessor (74:26): method n_
+|  |  shortcut: assign instance variable 18
+|  accessor (74:31): method o
+|  |  shortcut: return instance variable 19
+|  accessor (74:31): method o_
+|  |  shortcut: assign instance variable 19
+|  accessor (74:36): method p
+|  |  shortcut: return instance variable 20
+|  accessor (74:36): method p_
+|  |  shortcut: assign instance variable 20
+|  accessor (74:41): method q
+|  |  shortcut: return instance variable 21
+|  accessor (74:41): method q_
+|  |  shortcut: assign instance variable 21
+|  accessor (74:46): method r
+|  |  shortcut: return instance variable 22
+|  accessor (74:46): method r_
+|  |  shortcut: assign instance variable 22
+|  accessor (74:51): method s
+|  |  shortcut: return instance variable 23
+|  accessor (74:51): method s_
+|  |  shortcut: assign instance variable 23
+|  accessor (74:56): method t
+|  |  shortcut: return instance variable 24
+|  accessor (74:56): method t_
+|  |  shortcut: assign instance variable 24
+|  accessor (75:11): method u
+|  |  shortcut: return instance variable 25
+|  accessor (75:11): method u_
+|  |  shortcut: assign instance variable 25
+|  accessor (75:16): method v
+|  |  shortcut: return instance variable 26
+|  accessor (75:16): method v_
+|  |  shortcut: assign instance variable 26
+|  accessor (75:21): method w
+|  |  shortcut: return instance variable 27
+|  accessor (75:21): method w_
+|  |  shortcut: assign instance variable 27
+|  accessor (75:26): method x
+|  |  shortcut: return instance variable 28
+|  accessor (75:26): method x_
+|  |  shortcut: assign instance variable 28
+|  accessor (75:31): method y
+|  |  shortcut: return instance variable 29
+|  accessor (75:31): method y_
+|  |  shortcut: assign instance variable 29
+|  accessor (75:36): method z
+|  |  shortcut: return instance variable 30
+|  accessor (75:36): method z_
+|  |  shortcut: assign instance variable 30
+|  accessor (76:11): method codeDump
+|  |  shortcut: return instance variable 31
+|  accessor (76:11): method codeDump_
+|  |  shortcut: assign instance variable 31
+|  accessor (76:23): method preProcessor
+|  |  shortcut: return instance variable 32
+|  accessor (76:23): method preProcessor_
+|  |  shortcut: assign instance variable 32
+|  function 0 (78:5): method functionCompileContext
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    F4              ReturnSelf
+Number
+|  function 0 (83:5): method forSeries
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    8F 1D           ExtendedCodes
+|  |  2    8F 1E           ExtendedCodes
+|  |  4    8F 1F           ExtendedCodes
+ArrayedCollection
+|  function 0 (92:5): method do
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    8F 0A           ExtendedCodes
+|  |  2    8F 01           ExtendedCodes
+|  function 1 (100:5): method reverseDo
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    8F 0B           ExtendedCodes
+|  |  2    8F 0C           ExtendedCodes
+|  |  4    8F 04           ExtendedCodes
+Meta_ArrayedCollection
+|  function 0 (111:5): method do
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    C1 06           SendSpecialMsg
+|  |  3    F0              Drop
+|  |  4    60              PushSpecialValueThis
+|  |  5    F3              Return
+Dictionary
+|  function 0 (116:5): method keysValuesArrayDo
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    8F 0D           ExtendedCodes
+|  |  2    8F 0E           ExtendedCodes
+|  function 1 (132:5): method do
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    C1 06           SendSpecialMsg
+|  |  3    F0              Drop
+|  |  4    60              PushSpecialValueThis
+|  |  5    F3              Return
+Successfully compiled 18 classes.

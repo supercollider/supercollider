@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestNode : UnitTest {
 
 	var node;

@@ -1,0 +1,65 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): poisoned: version 3.16: parse_errors/parenthesised_interpreted.scd
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Missing Expression.
+|  parse_errors/parenthesised_interpreted.scd:3:13
+|      1 │ // interpreted-version: 3.16
+|      2 │ // expect: poisoned
+|      3 │ var a = (1 +);
+|        ┆            ^^ ...but found `)`.
+|        ┆            └ This `+` needs an expression after it...
+|      4 │ var b = [(1 2), (3 + 4)];
+|      5 │ (
+|      6 │ 	var c = 1;
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Missing Operator.
+|  parse_errors/parenthesised_interpreted.scd:4:13
+|      2 │ // expect: poisoned
+|      3 │ var a = (1 +);
+|      4 │ var b = [(1 2), (3 + 4)];
+|        ┆           ^ ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|        ┆           └ This ends an expression...
+|      5 │ (
+|      6 │ 	var c = 1;
+|      7 │ 	c + (2 3)
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Unexpected Token.
+|  parse_errors/parenthesised_interpreted.scd:6:2
+|      4 │ var b = [(1 2), (3 + 4)];
+|      5 │ (
+|      6 │ 	var c = 1;
+|        ┆ 	^^^ Expected an expression, a binary operator, `)`, `,`, `..`, or `:`, but found `var`.
+|      7 │ 	c + (2 3)
+|      8 │ );
+|      9 │ a + b
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCFunction (1:1)
+|  |  SCBody (1:1)
+|  |  |  SCVariableDeclare (3:5): a, computed
+|  |  |  |  SCExprList (3:9)
+|  |  |  SCVariableDeclare (4:5): b, computed
+|  |  |  |  SCCollection (4:9): Array
+|  |  |  |  |  SCExprList (4:10)
+|  |  |  |  |  SCMessage (4:18): + = 7
+|  |  |  |  |  |  SCLiteral (4:18) = 3
+|  |  |  |  |  |  SCPositionalArgs (4:18)
+|  |  |  |  |  |  |  SCLiteral (4:22) = 4
+|  |  |  SCExprList (5:1)
+|  |  |  SCMessage (9:1): +
+|  |  |  |  SCRead (9:1): local a, declared (3:5): a = (1 +)
+|  |  |  |  SCPositionalArgs (9:1)
+|  |  |  |  |  SCRead (9:5): local b, declared (4:5): b = [(1 2), (3 + 4)]
+Successfully compiled 15 classes.

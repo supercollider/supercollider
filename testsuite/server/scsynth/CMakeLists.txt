@@ -18,7 +18,7 @@ foreach(test_file ${test_source_files})
         target_link_libraries(${test_name} ${PTHREADS_LIBRARIES})
     endif()
 
-    add_test(${test_name}_run ${EXECUTABLE_OUTPUT_PATH}/${test_name})
+    add_test(scsynth.${test_name}_run ${EXECUTABLE_OUTPUT_PATH}/${test_name})
 
     set_property(TARGET ${test_name} PROPERTY FOLDER Test/scsynth)
 endforeach()

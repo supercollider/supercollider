@@ -1,0 +1,103 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): LirEventMutableKey : Object, version 3.16
+|  SCMemberList (5:1)
+|  SCMethodList (5:1)
+|  |  SCMethod (7:5): array_key, version 3.16: array_key { ^([1, 2]: 3) }
+|  |  |  SCBody (7:17)
+|  |  |  |  SCExplicitReturn (7:17)
+|  |  |  |  |  SCCollection (7:18): Event
+|  |  |  |  |  |  SCCollection (7:19): Array = [1, 2]
+|  |  |  |  |  |  |  SCLiteral (7:20) = 1
+|  |  |  |  |  |  |  SCLiteral (7:23) = 2
+|  |  |  |  |  |  SCLiteral (7:27) = 3
+|  |  SCMethod (9:5): string_key, version 3.16: string_key { ^("a": 3) }
+|  |  |  SCBody (9:18)
+|  |  |  |  SCExplicitReturn (9:18)
+|  |  |  |  |  SCCollection (9:19): Event
+|  |  |  |  |  |  SCLiteral (9:20) = "a"
+|  |  |  |  |  |  SCLiteral (9:25) = 3
+|  |  SCMethod (11:5): event_class, version 3.16: event_class { ^Event[[1], 2] }
+|  |  |  SCBody (11:19)
+|  |  |  |  SCExplicitReturn (11:19)
+|  |  |  |  |  SCCollection (11:20): Event
+|  |  |  |  |  |  SCCollection (11:26): Array = [1]
+|  |  |  |  |  |  |  SCLiteral (11:27) = 1
+|  |  |  |  |  |  SCLiteral (11:31) = 2
+|  |  SCMethod (13:5): mutable_value, version 3.16: mutable_value { ^(a: [4]) } -> (a: [4])
+|  |  |  SCBody (13:21)
+|  |  |  |  SCExplicitReturn (13:21)
+|  |  |  |  |  SCCollection (13:22): Event = (a: [4])
+|  |  |  |  |  |  SCLiteral (13:23) = \a
+|  |  |  |  |  |  SCCollection (13:26): Array = [4]
+|  |  |  |  |  |  |  SCLiteral (13:27) = 4
+|  |  SCMethod (15:5): symbol_key, version 3.16: symbol_key { ^(a: 3) } -> (a: 3)
+|  |  |  SCBody (15:18)
+|  |  |  |  SCExplicitReturn (15:18)
+|  |  |  |  |  SCCollection (15:19): Event = (a: 3)
+|  |  |  |  |  |  SCLiteral (15:20) = \a
+|  |  |  |  |  |  SCLiteral (15:23) = 3
+
+
+
+LIR DUMP 
+
+
+LirEventMutableKey
+|  function 0 (7:5): method array_key
+|  |  body 0
+|  |  |  PushClass Event
+|  |  |  PushInteger 1
+|  |  |  PushSpecialValue nil
+|  |  |  PushSpecialValue nil
+|  |  |  PushSpecialValue true
+|  |  |  Send new (positional 4, implicit)
+|  |  |  PushConstant [1, 2]
+|  |  |  Send copy (positional 0, implicit)
+|  |  |  PushConstant 3
+|  |  |  Send put (positional 2, implicit)
+|  |  |  Return
+|  function 1 (9:5): method string_key
+|  |  body 0
+|  |  |  PushClass Event
+|  |  |  PushInteger 1
+|  |  |  PushSpecialValue nil
+|  |  |  PushSpecialValue nil
+|  |  |  PushSpecialValue true
+|  |  |  Send new (positional 4, implicit)
+|  |  |  PushConstant "a"
+|  |  |  PushConstant 3
+|  |  |  Send put (positional 2, implicit)
+|  |  |  Return
+|  function 2 (11:5): method event_class
+|  |  body 0
+|  |  |  PushClass Event
+|  |  |  PushInteger 2
+|  |  |  Send new (positional 1, implicit)
+|  |  |  PushConstant [1]
+|  |  |  Send copy (positional 0, implicit)
+|  |  |  Send add (positional 1, implicit)
+|  |  |  PushConstant 2
+|  |  |  Send add (positional 1, implicit)
+|  |  |  Return
+|  function 3 (13:5): method mutable_value
+|  |  body 0
+|  |  |  PushConstant (a: [4])
+|  |  |  Send copy (positional 0, implicit)
+|  |  |  Dup
+|  |  |  PushConstant \a
+|  |  |  PushConstant [4]
+|  |  |  Send copy (positional 0, implicit)
+|  |  |  Send put (positional 2, implicit)
+|  |  |  Drop
+|  |  |  Return
+|  function 4 (15:5): method symbol_key
+|  |  body 0
+|  |  |  PushConstant (a: 3)
+|  |  |  Send copy (positional 0, implicit)
+|  |  |  Return
+Successfully compiled 16 classes.

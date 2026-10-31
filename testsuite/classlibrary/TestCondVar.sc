@@ -1,3 +1,4 @@
+//# VERSION 3.16
 // Custom test class for checking exceptions thrown in predicates
 TestCondVarError : Error {}
 
@@ -20,13 +21,13 @@ TestCondVar : UnitTest {
 	// wait - without predicate
 	test_wait_withoutPredicate_oneThread_signalOne {
 		var c = CondVar();
-		var waitResult, signalOneResult;
+		var signalOneResult;
 		fork {
 			signalOneResult = c.signalOne;
 		};
 
 		// will timeout if signalOne does not wake us
-		waitResult = c.wait;
+		var waitResult = c.wait;
 		this.assertEquals(waitResult, c, "wait should return CondVar");
 		this.assertEquals(signalOneResult, c, "signalOne should return CondVar");
 	}

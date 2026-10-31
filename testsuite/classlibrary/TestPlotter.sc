@@ -1,10 +1,11 @@
+//# VERSION 3.16
 TestPlotter : UnitTest {
 
 	test_set_plotColor_and_superpose {
-		var data, cols, plot;
+		var plot;
 
-		data = 3.collect{15.collect{rrand(0.0, 3.0)}};
-		cols = 3.collect{Color.rand};
+		var data = 3.collect{15.collect{rrand(0.0, 3.0)}};
+		var cols = 3.collect{Color.rand};
 
 		// set each plot to unique color, then superpose
 		plot = data.plot.plotColor_(cols);

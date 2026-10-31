@@ -1,0 +1,106 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): BracketedPrototypes : Object
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (6:5): literals: literals { |a = (false), b(""), c(#[]), d(#[1, 2]), e(-1), f(\sym)| var g = (3), h = ("x"); ^[a, b, c, d, e, f, g, h] }
+|  |  |  SCArgumentDeclareList (6:17)
+|  |  |  |  SCArgumentDeclare (6:17): a, computed
+|  |  |  |  |  SCLiteral (6:22) = false
+|  |  |  |  SCArgumentDeclare (6:30): b, computed
+|  |  |  |  |  SCLiteral (6:32) = ""
+|  |  |  |  SCArgumentDeclare (6:37): c, computed
+|  |  |  |  |  SCCollection (6:39): Array, literal = []
+|  |  |  |  SCArgumentDeclare (6:45): d, computed
+|  |  |  |  |  SCCollection (6:47): Array, literal = [1, 2]
+|  |  |  |  |  |  SCLiteral (6:49) = 1
+|  |  |  |  |  |  SCLiteral (6:52) = 2
+|  |  |  |  SCArgumentDeclare (6:57): e, computed
+|  |  |  |  |  SCLiteral (6:60) = -1
+|  |  |  |  SCArgumentDeclare (6:64): f, computed
+|  |  |  |  |  SCLiteral (6:66) = \sym
+|  |  |  SCBody (6:73)
+|  |  |  |  SCVariableDeclare (6:77): g, computed
+|  |  |  |  |  SCLiteral (6:82) = 3
+|  |  |  |  SCVariableDeclare (6:86): h, computed
+|  |  |  |  |  SCLiteral (6:91) = "x"
+|  |  |  |  SCExplicitReturn (6:97)
+|  |  |  |  |  SCCollection (6:98): Array
+|  |  |  |  |  |  SCRead (6:99): local a, declared (6:17): a = (false)
+|  |  |  |  |  |  SCRead (6:102): local b, declared (6:30): b("")
+|  |  |  |  |  |  SCRead (6:105): local c, declared (6:37): c(#[])
+|  |  |  |  |  |  SCRead (6:108): local d, declared (6:45): d(#[1, 2])
+|  |  |  |  |  |  SCRead (6:111): local e, declared (6:57): e(-1)
+|  |  |  |  |  |  SCRead (6:114): local f, declared (6:64): f(\sym)
+|  |  |  |  |  |  SCRead (6:117): local g, declared (6:77): g = (3)
+|  |  |  |  |  |  SCRead (6:120): local h, declared (6:86): h = ("x")
+|  |  SCMethod (8:5): computed: computed { |a(Object), b = ([1]), c = (1 + 2)| var d = (a.class); ^[a, b, c, d] }
+|  |  |  SCArgumentDeclareList (8:17)
+|  |  |  |  SCArgumentDeclare (8:17): a, computed
+|  |  |  |  |  SCLiteral (8:19)
+|  |  |  |  SCArgumentDeclare (8:28): b, computed
+|  |  |  |  |  SCCollection (8:33): Array
+|  |  |  |  |  |  SCLiteral (8:34) = 1
+|  |  |  |  SCArgumentDeclare (8:39): c, computed
+|  |  |  |  |  SCMessage (8:44): +
+|  |  |  |  |  |  SCLiteral (8:44) = 1
+|  |  |  |  |  |  SCPositionalArgs (8:44)
+|  |  |  |  |  |  |  SCLiteral (8:48) = 2
+|  |  |  SCBody (8:52)
+|  |  |  |  SCVariableDeclare (8:56): d, computed
+|  |  |  |  |  SCMessage (8:61): class
+|  |  |  |  |  |  SCRead (8:61): local a, declared (8:17): a(Object)
+|  |  |  |  SCExplicitReturn (8:71)
+|  |  |  |  |  SCCollection (8:72): Array
+|  |  |  |  |  |  SCRead (8:73): local a, declared (8:17): a(Object)
+|  |  |  |  |  |  SCRead (8:76): local b, declared (8:28): b = ([1])
+|  |  |  |  |  |  SCRead (8:79): local c, declared (8:39): c = (1 + 2)
+|  |  |  |  |  |  SCRead (8:82): local d, declared (8:56): d = (a.class)
+|  |  SCMethod (10:5): function: function { ^{ |x(4), y(Object)| var z = (#[5]); [x, y, z] } }
+|  |  |  SCBody (10:16)
+|  |  |  |  SCExplicitReturn (10:16)
+|  |  |  |  |  SCFunction (10:17)
+|  |  |  |  |  |  SCArgumentDeclareList (10:20)
+|  |  |  |  |  |  |  SCArgumentDeclare (10:20): x, computed
+|  |  |  |  |  |  |  |  SCLiteral (10:22) = 4
+|  |  |  |  |  |  |  SCArgumentDeclare (10:26): y, computed
+|  |  |  |  |  |  |  |  SCLiteral (10:28)
+|  |  |  |  |  |  SCBody (10:17)
+|  |  |  |  |  |  |  SCVariableDeclare (10:41): z, computed
+|  |  |  |  |  |  |  |  SCCollection (10:46): Array, literal = [5]
+|  |  |  |  |  |  |  |  |  SCLiteral (10:48) = 5
+|  |  |  |  |  |  |  SCCollection (10:53): Array
+|  |  |  |  |  |  |  |  SCRead (10:54): local x, declared (10:20): x(4)
+|  |  |  |  |  |  |  |  SCRead (10:57): local y, declared (10:26): y(Object)
+|  |  |  |  |  |  |  |  SCRead (10:60): local z, declared (10:41): z = (#[5])
+
+
+
+COMPILED DUMP 
+
+
+BracketedPrototypes
+|  class (4:1): superclass Object, not indexed
+|  method literals: function 0
+|  method computed: function 1
+|  method function: function 2
+|  function 0 (6:5): literals
+|  |  arguments: this, a = false, b = "", c = [], d = [1, 2], e = -1, f = \sym,
+|  |  variables: g = 3, h = "x",
+|  |  code: 98 bytes, 0 selectors, 5 constants
+|  function 1 (8:5): computed
+|  |  arguments: this, a, b, c,
+|  |  variables: d,
+|  |  code: 64 bytes, 0 selectors, 0 constants
+|  function 2 (10:5): function
+|  |  arguments: this,
+|  |  code: 3 bytes, 1 selectors, 0 constants
+|  function 3 (10:17), in function 2
+|  |  arguments: x = 4, y,
+|  |  variables: z = [5],
+|  |  code: 41 bytes, 0 selectors, 1 constants
+Successfully compiled 16 classes.

@@ -1,0 +1,211 @@
+#pragma once
+
+#include "sc_util/indexed_vector.hpp"
+#include "sc_util/overload.hpp"
+#include "sc_util/strong_index.hpp"
+#include "const_expr_index.hpp"
+#include "symbols.hpp"
+
+#include <cstdint>
+#include <cstring>
+#include <deque>
+#include <mutex>
+#include <ostream>
+#include <type_traits>
+#include <unordered_map>
+#include <utility>
+#include <variant>
+#include <vector>
+
+namespace sc::ir {
+
+struct ConstExpression;
+struct ConstantTable;
+struct SymbolTable;
+
+// The elements are constants in the same ConstantTable, so nesting costs an index per element rather than a copy, and
+// as every constant is only in the table once, two arrays are equal exactly when their elements' indexes are.
+using ConstArrayElementIndex = util::StrongIndex<std::uint32_t, struct ConstArrayElementIndex__>;
+using ConstExprArray = util::IndexedVector<ConstArrayElementIndex, ConstExprIndex>;
+using ConstExprEvent = std::vector<std::pair<ConstExprIndex, ConstExprIndex>>;
+// The arrays whose elements are stored unboxed, like PyrDoubleArray and friends, e.g., `FloatArray[1, 2]`.
+// The integers are signed, as that is how sclang reads their elements.
+using ConstExprDoubleArray = std::vector<double>;
+using ConstExprFloatArray = std::vector<float>;
+using ConstExprInt32Array = std::vector<std::int32_t>;
+using ConstExprInt16Array = std::vector<std::int16_t>;
+using ConstExprInt8Array = std::vector<std::int8_t>;
+using ConstExprSymbolArray = std::vector<SymSCSymbol>;
+
+
+using Nil = std::monostate;
+
+using ConstStorage = std::variant< //
+    double, //
+    std::int32_t, //
+    char, //
+    bool, //
+    Nil,
+    SymSCSymbol, //
+    SymSCString, //
+    SymSCClassName, //
+    ConstExprArray, //
+    ConstExprEvent, //
+    ConstExprDoubleArray, //
+    ConstExprFloatArray, //
+    ConstExprInt32Array, //
+    ConstExprInt16Array, //
+    ConstExprInt8Array, //
+    ConstExprSymbolArray>;
+
+struct ConstExpression {
+    constexpr ConstExpression(double d): storage(d) {}
+    constexpr ConstExpression(std::int32_t d): storage(d) {}
+    constexpr ConstExpression(char d): storage(d) {}
+    constexpr ConstExpression(bool d): storage(d) {}
+    constexpr ConstExpression(SymSCSymbol d): storage(d) {}
+    constexpr ConstExpression(SymSCString d): storage(d) {}
+    constexpr ConstExpression(SymSCClassName d): storage(d) {}
+    constexpr ConstExpression(Nil n): storage(n) {}
+    ConstExpression(ConstExprArray d) noexcept: storage(std::move(d)) {}
+    ConstExpression(ConstExprEvent d) noexcept: storage(std::move(d)) {}
+    ConstExpression(ConstExprDoubleArray d) noexcept: storage(std::move(d)) {}
+    ConstExpression(ConstExprFloatArray d) noexcept: storage(std::move(d)) {}
+    ConstExpression(ConstExprInt32Array d) noexcept: storage(std::move(d)) {}
+    ConstExpression(ConstExprInt16Array d) noexcept: storage(std::move(d)) {}
+    ConstExpression(ConstExprInt8Array d) noexcept: storage(std::move(d)) {}
+    ConstExpression(ConstExprSymbolArray d) noexcept: storage(std::move(d)) {}
+    template <typename T> ConstExpression(T) = delete;
+
+    ConstExpression(ConstExpression&&) noexcept = default;
+    ConstExpression(const ConstExpression&) = default;
+    ConstExpression& operator=(ConstExpression&&) = default;
+    ConstExpression& operator=(const ConstExpression&) = default;
+
+    ~ConstExpression() = default;
+
+
+    // Floating point values are equal when their bits are, not their values, so `0.0` and `-0.0` are different
+    // constants, and a NaN is equal to itself.
+    // This is different from the PyrSlot on purpose.
+    [[nodiscard]] friend bool operator==(const ConstExpression& lhs, const ConstExpression& rhs) {
+        if (lhs.storage.index() != rhs.storage.index())
+            return false;
+        return std::visit(
+            [&](const auto& l) {
+                using T = std::decay_t<decltype(l)>;
+                const auto& r = std::get<T>(rhs.storage);
+                if constexpr (std::is_same_v<T, double>)
+                    return ConstExpression::same_bits(&l, &r, 1);
+                else if constexpr (std::is_same_v<T, ConstExprDoubleArray> || std::is_same_v<T, ConstExprFloatArray>)
+                    return l.size() == r.size() && ConstExpression::same_bits(l.data(), r.data(), l.size());
+                else
+                    return l == r;
+            },
+            lhs.storage);
+    }
+
+    template <typename F> decltype(auto) visit(F&& f) const { return std::visit(std::forward<F>(f), storage); }
+
+    template <typename T> [[nodiscard]] const T* get_if() const { return std::get_if<T>(&storage); }
+
+    [[nodiscard]] bool is_mutable() const {
+        return !get_if<double>() && !get_if<std::int32_t>() && !get_if<char>() && !get_if<bool>() && !get_if<Nil>()
+            && !get_if<SymSCSymbol>() && !get_if<SymSCClassName>();
+    }
+
+    friend struct std::hash<ConstExpression>;
+
+    // The table holds the elements of arrays and events.
+    void to_json(std::ostream&, const SymbolTable&, const ConstantTable&) const;
+    // As SuperCollider source, e.g., `[1, \a, "b"]`, kept on one line.
+    void to_literal(std::ostream&, const SymbolTable&, const ConstantTable&) const;
+
+private:
+    template <typename T> static bool same_bits(const T* l, const T* r, std::size_t count) {
+        return std::memcmp(l, r, count * sizeof(T)) == 0;
+    }
+
+    ConstStorage storage;
+};
+
+
+}
+
+namespace sc::ir::detail {
+// Combines the hashes of a sequence's elements.
+template <typename T> std::size_t hash_elements(const std::vector<T>& vec) {
+    std::size_t seed = vec.size();
+    for (const auto& val : vec) {
+        auto x = std::hash<T>()(val);
+        x = ((x >> 16) ^ x) * 0x45d9f3b;
+        x = ((x >> 16) ^ x) * 0x45d9f3b;
+        x = (x >> 16) ^ x;
+        seed ^= x + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    }
+    return seed;
+}
+}
+
+namespace std {
+template <> struct hash<sc::ir::ConstExpression> {
+    size_t operator()(const sc::ir::ConstExpression& e) const {
+        return std::visit( //
+            sc::util::overload {
+                //
+                [](std::int32_t i) -> size_t { return std::hash<std::int32_t>()(i); },
+                [](double i) -> size_t { return std::hash<double>()(i); },
+                [](char i) -> size_t { return std::hash<char>()(i); },
+                [](bool i) -> size_t { return std::hash<bool>()(i); }, [](std::monostate) -> size_t { return 0; },
+                [](sc::ir::Symbol i) -> size_t { return std::hash<sc::ir::Symbol>()(i); },
+                [](const sc::ir::ConstExprEvent& vec) -> size_t {
+                    std::size_t seed = vec.size();
+                    for (const auto& pair : vec) {
+                        const auto key_hash = std::hash<sc::ir::ConstExprIndex>()(pair.first);
+                        const auto value_hash = std::hash<sc::ir::ConstExprIndex>()(pair.second);
+                        // Mixed, so swapping a key and its value changes the hash.
+                        auto x = key_hash ^ (value_hash * 0x9e3779b97f4a7c15ull);
+                        x = ((x >> 16) ^ x) * 0x45d9f3b;
+                        x = ((x >> 16) ^ x) * 0x45d9f3b;
+                        x = (x >> 16) ^ x;
+                        seed ^= x + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+                    }
+                    return seed;
+                },
+                [](const sc::ir::ConstExprArray& vec) -> size_t { return sc::ir::detail::hash_elements(vec.raw()); },
+                [](const sc::ir::ConstExprDoubleArray& vec) -> size_t { return sc::ir::detail::hash_elements(vec); },
+                [](const sc::ir::ConstExprFloatArray& vec) -> size_t { return sc::ir::detail::hash_elements(vec); },
+                [](const sc::ir::ConstExprInt32Array& vec) -> size_t { return sc::ir::detail::hash_elements(vec); },
+                [](const sc::ir::ConstExprInt16Array& vec) -> size_t { return sc::ir::detail::hash_elements(vec); },
+                [](const sc::ir::ConstExprInt8Array& vec) -> size_t { return sc::ir::detail::hash_elements(vec); },
+                [](const sc::ir::ConstExprSymbolArray& vec) -> size_t {
+                    std::size_t seed = vec.size();
+                    for (const sc::ir::Symbol val : vec)
+                        seed ^= std::hash<sc::ir::Symbol>()(val) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+                    return seed;
+                } //
+            },
+            e.storage);
+    }
+};
+
+}
+
+
+namespace sc::ir {
+struct ConstantTable {
+    [[nodiscard]] ConstExprIndex register_constexpr(ConstExpression&& expr);
+
+    // this is marked noexcept because you should never construct an index yourself.
+    [[nodiscard]] const ConstExpression& operator()(ConstExprIndex index) const noexcept;
+
+
+private:
+    mutable std::mutex m_lock {};
+    // Keep pointer stability. These are never removed.
+    std::deque<ConstExpression> m_constants {};
+    using ConstExprHash = std::size_t;
+    std::unordered_multimap<ConstExprHash, ConstExprIndex> m_index_hash_conversion {};
+};
+
+}

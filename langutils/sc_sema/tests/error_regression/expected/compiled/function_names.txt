@@ -1,0 +1,194 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (6:1): Names : Object
+|  SCMemberList (6:1)
+|  |  SCMember (7:9): member
+|  SCMethodList (6:1)
+|  |  SCMethod (9:5): variables: variables { var local = { 1 }, other; other = { 2 }; member = { 3 }; ~env = { 4 }; ^[local, other] }
+|  |  |  SCBody (9:17)
+|  |  |  |  SCVariableDeclare (9:21): local, computed
+|  |  |  |  |  SCFunction (9:29): local -> 1
+|  |  |  |  |  |  SCBody (9:29)
+|  |  |  |  |  |  |  SCLiteral (9:31) = 1
+|  |  |  |  SCVariableDeclare (9:36): other (assigned)
+|  |  |  |  SCAssign (9:43): local other, declared (9:36): other
+|  |  |  |  |  SCFunction (9:51): other -> 2
+|  |  |  |  |  |  SCBody (9:51)
+|  |  |  |  |  |  |  SCLiteral (9:53) = 2
+|  |  |  |  SCAssign (9:58): instance member, declared (7:9): member
+|  |  |  |  |  SCFunction (9:67): member -> 3
+|  |  |  |  |  |  SCBody (9:67)
+|  |  |  |  |  |  |  SCLiteral (9:69) = 3
+|  |  |  |  SCAssign (9:74): environment env
+|  |  |  |  |  SCFunction (9:81): env -> 4
+|  |  |  |  |  |  SCBody (9:81)
+|  |  |  |  |  |  |  SCLiteral (9:83) = 4
+|  |  |  |  SCExplicitReturn (9:88)
+|  |  |  |  |  SCCollection (9:89): Array
+|  |  |  |  |  |  SCRead (9:90): local local, declared (9:21): local = { 1 }
+|  |  |  |  |  |  SCRead (9:97): local other, declared (9:36): other
+|  |  SCMethod (11:5): argument: argument { |default = ({ 5 })| ^default }
+|  |  |  SCArgumentDeclareList (11:17)
+|  |  |  |  SCArgumentDeclare (11:17): default, computed
+|  |  |  |  |  SCFunction (11:28): default -> 5
+|  |  |  |  |  |  SCBody (11:28)
+|  |  |  |  |  |  |  SCLiteral (11:30) = 5
+|  |  |  SCBody (11:36)
+|  |  |  |  SCExplicitReturn (11:36)
+|  |  |  |  |  SCRead (11:37): local default, declared (11:17): default = ({ 5 })
+|  |  SCMethod (13:5): setters: setters { this.action_({ 6 }); this.action = { 7 }; ^this }
+|  |  |  SCBody (13:15)
+|  |  |  |  SCMessage (13:15): action_
+|  |  |  |  |  SCSpecial (13:15): this
+|  |  |  |  |  SCPositionalArgs (13:15)
+|  |  |  |  |  |  SCFunction (13:28): action -> 6
+|  |  |  |  |  |  |  SCBody (13:28)
+|  |  |  |  |  |  |  |  SCLiteral (13:30) = 6
+|  |  |  |  SCMessage (13:36): action_
+|  |  |  |  |  SCSpecial (13:36): this
+|  |  |  |  |  SCPositionalArgs (13:36)
+|  |  |  |  |  |  SCFunction (13:50): action -> 7
+|  |  |  |  |  |  |  SCBody (13:50)
+|  |  |  |  |  |  |  |  SCLiteral (13:52) = 7
+|  |  |  |  SCExplicitReturn (13:57)
+|  |  |  |  |  SCSpecial (13:58): this
+|  |  SCMethod (15:5): unnamed: unnamed { this.action({ 9 }); this.action_(key: { 10 }); { 8 }.action_(1); ^[{ 11 }, 1 + { 12 }] }
+|  |  |  SCBody (15:15)
+|  |  |  |  SCMessage (15:15): action
+|  |  |  |  |  SCSpecial (15:15): this
+|  |  |  |  |  SCPositionalArgs (15:15)
+|  |  |  |  |  |  SCFunction (15:27) -> 9
+|  |  |  |  |  |  |  SCBody (15:27)
+|  |  |  |  |  |  |  |  SCLiteral (15:29) = 9
+|  |  |  |  SCMessage (15:35): action_
+|  |  |  |  |  SCSpecial (15:35): this
+|  |  |  |  |  SCKwArgs (15:35)
+|  |  |  |  |  |  SCKwArg (15:48): key
+|  |  |  |  |  |  |  SCFunction (15:53) -> 10
+|  |  |  |  |  |  |  |  SCBody (15:53)
+|  |  |  |  |  |  |  |  |  SCLiteral (15:55) = 10
+|  |  |  |  SCMessage (15:62): action_
+|  |  |  |  |  SCFunction (15:62) -> 8
+|  |  |  |  |  |  SCBody (15:62)
+|  |  |  |  |  |  |  SCLiteral (15:64) = 8
+|  |  |  |  |  SCPositionalArgs (15:62)
+|  |  |  |  |  |  SCLiteral (15:76) = 1
+|  |  |  |  SCExplicitReturn (15:80)
+|  |  |  |  |  SCCollection (15:81): Array
+|  |  |  |  |  |  SCFunction (15:82) -> 11
+|  |  |  |  |  |  |  SCBody (15:82)
+|  |  |  |  |  |  |  |  SCLiteral (15:84) = 11
+|  |  |  |  |  |  SCMessage (15:90): +
+|  |  |  |  |  |  |  SCLiteral (15:90) = 1
+|  |  |  |  |  |  |  SCPositionalArgs (15:90)
+|  |  |  |  |  |  |  |  SCFunction (15:94) -> 12
+|  |  |  |  |  |  |  |  |  SCBody (15:94)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (15:96) = 12
+|  |  SCMethod (17:5): nested: nested { var outer = { var inner = { |x| if (x) { ^1 }; ^2 }; inner }; ^outer }
+|  |  |  SCBody (17:14)
+|  |  |  |  SCVariableDeclare (17:18): outer, computed
+|  |  |  |  |  SCFunction (17:26): outer
+|  |  |  |  |  |  SCBody (17:26)
+|  |  |  |  |  |  |  SCVariableDeclare (17:32): inner, computed
+|  |  |  |  |  |  |  |  SCFunction (17:40): inner
+|  |  |  |  |  |  |  |  |  SCArgumentDeclareList (17:43)
+|  |  |  |  |  |  |  |  |  |  SCArgumentDeclare (17:43): x
+|  |  |  |  |  |  |  |  |  SCBody (17:40)
+|  |  |  |  |  |  |  |  |  |  SCMessage (17:46): if
+|  |  |  |  |  |  |  |  |  |  |  SCRead (17:50): local x, declared (17:43): x
+|  |  |  |  |  |  |  |  |  |  |  SCPositionalArgs (17:46)
+|  |  |  |  |  |  |  |  |  |  |  |  SCFunction (17:53)
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCBody (17:53)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (17:55)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (17:56) = 1
+|  |  |  |  |  |  |  |  |  |  SCExplicitReturn (17:61)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (17:62) = 2
+|  |  |  |  |  |  |  SCRead (17:67): local inner, declared (17:32): inner = { |x| if (x) { ^1 }; ^2 }
+|  |  |  |  SCExplicitReturn (17:76)
+|  |  |  |  |  SCRead (17:77): local outer, declared (17:18): outer = { var inner = { |x| if (x) { ^1 }; ^2 }; inner }
+|  |  SCMethod (18:5): action: action { |f| ^f }
+|  |  |  SCArgumentDeclareList (18:15)
+|  |  |  |  SCArgumentDeclare (18:15): f
+|  |  |  SCBody (18:18)
+|  |  |  |  SCExplicitReturn (18:18)
+|  |  |  |  |  SCRead (18:19): local f, declared (18:15): f
+|  |  SCMethod (19:5): action_: action_ { |f| ^f }
+|  |  |  SCArgumentDeclareList (19:16)
+|  |  |  |  SCArgumentDeclare (19:16): f
+|  |  |  SCBody (19:19)
+|  |  |  |  SCExplicitReturn (19:19)
+|  |  |  |  |  SCRead (19:20): local f, declared (19:16): f
+
+
+
+COMPILED DUMP 
+
+
+Names
+|  class (6:1): superclass Object, not indexed
+|  instance variables: member,
+|  method variables: function 0
+|  method argument: function 5
+|  method setters: function 7
+|  method unnamed: function 10
+|  method nested: function 16
+|  method action: function 19
+|  method action_: function 20
+|  function 0 (9:5): variables
+|  |  arguments: this,
+|  |  variables: local, other = nil,
+|  |  code: 29 bytes, 4 selectors, 1 constants
+|  function 1 (9:29): local, in function 0
+|  |  code: 2 bytes, 0 selectors, 0 constants
+|  function 2 (9:51): other, in function 0
+|  |  code: 2 bytes, 0 selectors, 0 constants
+|  function 3 (9:67): member, in function 0
+|  |  code: 3 bytes, 0 selectors, 0 constants
+|  function 4 (9:81): env, in function 0
+|  |  code: 3 bytes, 0 selectors, 0 constants
+|  function 5 (11:5): argument
+|  |  arguments: this, default,
+|  |  code: 13 bytes, 1 selectors, 0 constants
+|  function 6 (11:28): default, in function 5
+|  |  code: 3 bytes, 0 selectors, 0 constants
+|  function 7 (13:5): setters
+|  |  arguments: this,
+|  |  code: 14 bytes, 3 selectors, 0 constants
+|  function 8 (13:28): action, in function 7
+|  |  code: 3 bytes, 0 selectors, 0 constants
+|  function 9 (13:50): action, in function 7
+|  |  code: 3 bytes, 0 selectors, 0 constants
+|  function 10 (15:5): unnamed
+|  |  arguments: this,
+|  |  code: 37 bytes, 7 selectors, 1 constants
+|  function 11 (15:27), in function 10
+|  |  code: 3 bytes, 0 selectors, 0 constants
+|  function 12 (15:53), in function 10
+|  |  code: 3 bytes, 0 selectors, 0 constants
+|  function 13 (15:62), in function 10
+|  |  code: 3 bytes, 0 selectors, 0 constants
+|  function 14 (15:82), in function 10
+|  |  code: 3 bytes, 0 selectors, 0 constants
+|  function 15 (15:94), in function 10
+|  |  code: 3 bytes, 0 selectors, 0 constants
+|  function 16 (17:5): nested
+|  |  arguments: this,
+|  |  variables: outer,
+|  |  code: 6 bytes, 1 selectors, 0 constants
+|  function 17 (17:26): outer, in function 16
+|  |  variables: inner,
+|  |  code: 6 bytes, 1 selectors, 0 constants
+|  function 18 (17:40): inner, in function 17
+|  |  arguments: x = nil,
+|  |  code: 10 bytes, 0 selectors, 0 constants
+|  function 19 (18:5): action
+|  |  arguments: this, f = nil,
+|  |  shortcut: return argument 1
+|  function 20 (19:5): action_
+|  |  arguments: this, f = nil,
+|  |  shortcut: return argument 1
+Successfully compiled 16 classes.

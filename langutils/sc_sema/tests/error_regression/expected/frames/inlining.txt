@@ -1,0 +1,99 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): FrameInlining : Object, version 3.16
+|  SCMemberList (5:1)
+|  SCMethodList (5:1)
+|  |  SCMethod (7:5): inlined, version 3.16: inlined { |a| var b = 1; ^if (a) { b } { a } } [frame: this, a | b]
+|  |  |  SCArgumentDeclareList (7:16)
+|  |  |  |  SCArgumentDeclare (7:16): a (captured)
+|  |  |  SCBody (7:19)
+|  |  |  |  SCVariableDeclare (7:23): b (captured), prototype
+|  |  |  |  |  SCLiteral (7:27) = 1
+|  |  |  |  SCExplicitReturn (7:30)
+|  |  |  |  |  SCMessage (7:31): if
+|  |  |  |  |  |  SCRead (7:35): local a, declared (7:16): a [depth 0, slot 1]
+|  |  |  |  |  |  SCPositionalArgs (7:31)
+|  |  |  |  |  |  |  SCFunction (7:38)
+|  |  |  |  |  |  |  |  SCBody (7:38)
+|  |  |  |  |  |  |  |  |  SCRead (7:40): local b, declared (7:23): b = 1 [depth 0, slot 2]
+|  |  |  |  |  |  |  SCFunction (7:44)
+|  |  |  |  |  |  |  |  SCBody (7:44)
+|  |  |  |  |  |  |  |  |  SCRead (7:46): local a, declared (7:16): a [depth 0, slot 1]
+|  |  SCMethod (9:5): insideFunction, version 3.16: insideFunction { |a| ^{ |c| while { c.notNil } { c = c.next; a } } } [frame: this, a]
+|  |  |  SCArgumentDeclareList (9:23)
+|  |  |  |  SCArgumentDeclare (9:23): a (captured)
+|  |  |  SCBody (9:26)
+|  |  |  |  SCExplicitReturn (9:26)
+|  |  |  |  |  SCFunction (9:27) [frame: c]
+|  |  |  |  |  |  SCArgumentDeclareList (9:30)
+|  |  |  |  |  |  |  SCArgumentDeclare (9:30): c (assigned, captured)
+|  |  |  |  |  |  SCBody (9:27)
+|  |  |  |  |  |  |  SCMessage (9:33): while
+|  |  |  |  |  |  |  |  SCFunction (9:39)
+|  |  |  |  |  |  |  |  |  SCBody (9:39)
+|  |  |  |  |  |  |  |  |  |  SCMessage (9:41): notNil
+|  |  |  |  |  |  |  |  |  |  |  SCRead (9:41): local c, declared (9:30): c [depth 0, slot 0]
+|  |  |  |  |  |  |  |  SCPositionalArgs (9:33)
+|  |  |  |  |  |  |  |  |  SCFunction (9:52)
+|  |  |  |  |  |  |  |  |  |  SCBody (9:52)
+|  |  |  |  |  |  |  |  |  |  |  SCAssign (9:54): local c, declared (9:30): c [depth 0, slot 0]
+|  |  |  |  |  |  |  |  |  |  |  |  SCMessage (9:58): next
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (9:58): local c, declared (9:30): c [depth 0, slot 0]
+|  |  |  |  |  |  |  |  |  |  |  SCRead (9:66): local a, declared (9:23): a [depth 1, slot 1]
+|  |  SCMethod (11:5): functionInInlined, version 3.16: functionInInlined { |a| ^if (a) { { a } } } [frame: this, a]
+|  |  |  SCArgumentDeclareList (11:26)
+|  |  |  |  SCArgumentDeclare (11:26): a (captured)
+|  |  |  SCBody (11:29)
+|  |  |  |  SCExplicitReturn (11:29)
+|  |  |  |  |  SCMessage (11:30): if
+|  |  |  |  |  |  SCRead (11:34): local a, declared (11:26): a [depth 0, slot 1]
+|  |  |  |  |  |  SCPositionalArgs (11:30)
+|  |  |  |  |  |  |  SCFunction (11:37)
+|  |  |  |  |  |  |  |  SCBody (11:37)
+|  |  |  |  |  |  |  |  |  SCFunction (11:39) [frame]
+|  |  |  |  |  |  |  |  |  |  SCBody (11:39)
+|  |  |  |  |  |  |  |  |  |  |  SCRead (11:41): local a, declared (11:26): a [depth 1, slot 1]
+|  |  SCMethod (13:5): notInlined, version 3.16: notInlined { |a| ^if (a) { |x| x } } [frame: this, a]
+|  |  |  SCArgumentDeclareList (13:19)
+|  |  |  |  SCArgumentDeclare (13:19): a
+|  |  |  SCBody (13:22)
+|  |  |  |  SCExplicitReturn (13:22)
+|  |  |  |  |  SCMessage (13:23): if
+|  |  |  |  |  |  SCRead (13:27): local a, declared (13:19): a [depth 0, slot 1]
+|  |  |  |  |  |  SCPositionalArgs (13:23)
+|  |  |  |  |  |  |  SCFunction (13:30) [frame: x]
+|  |  |  |  |  |  |  |  SCArgumentDeclareList (13:33)
+|  |  |  |  |  |  |  |  |  SCArgumentDeclare (13:33): x
+|  |  |  |  |  |  |  |  SCBody (13:30)
+|  |  |  |  |  |  |  |  |  SCRead (13:36): local x, declared (13:33): x [depth 0, slot 0]
+|  |  SCMethod (15:5): caseAndSwitch, version 3.16: caseAndSwitch { |a| ^case { a.isNil } { switch (a, 1, { a }, { 2 }) } { a } } [frame: this, a]
+|  |  |  SCArgumentDeclareList (15:22)
+|  |  |  |  SCArgumentDeclare (15:22): a (captured)
+|  |  |  SCBody (15:25)
+|  |  |  |  SCExplicitReturn (15:25)
+|  |  |  |  |  SCMessage (15:26): case
+|  |  |  |  |  |  SCFunction (15:31)
+|  |  |  |  |  |  |  SCBody (15:31)
+|  |  |  |  |  |  |  |  SCMessage (15:33): isNil
+|  |  |  |  |  |  |  |  |  SCRead (15:33): local a, declared (15:22): a [depth 0, slot 1]
+|  |  |  |  |  |  SCPositionalArgs (15:26)
+|  |  |  |  |  |  |  SCFunction (15:43)
+|  |  |  |  |  |  |  |  SCBody (15:43)
+|  |  |  |  |  |  |  |  |  SCMessage (15:45): switch
+|  |  |  |  |  |  |  |  |  |  SCRead (15:53): local a, declared (15:22): a [depth 0, slot 1]
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (15:45)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (15:56) = 1
+|  |  |  |  |  |  |  |  |  |  |  SCFunction (15:59)
+|  |  |  |  |  |  |  |  |  |  |  |  SCBody (15:59)
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (15:61): local a, declared (15:22): a [depth 0, slot 1]
+|  |  |  |  |  |  |  |  |  |  |  SCFunction (15:66) -> 2
+|  |  |  |  |  |  |  |  |  |  |  |  SCBody (15:66)
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (15:68) = 2
+|  |  |  |  |  |  |  SCFunction (15:75)
+|  |  |  |  |  |  |  |  SCBody (15:75)
+|  |  |  |  |  |  |  |  |  SCRead (15:77): local a, declared (15:22): a [depth 0, slot 1]
+Successfully compiled 16 classes.

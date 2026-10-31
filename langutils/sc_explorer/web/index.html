@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SC Explorer</title>
+<link rel="stylesheet" href="explorer.css">
+</head>
+<body>
+<header>
+  <h1>SC Explorer</h1>
+  <label>Mode
+    <select id="mode">
+      <option value="interpreted">Interpreted</option>
+      <option value="class">Class library</option>
+    </select>
+  </label>
+  <span id="status" class="status"></span>
+</header>
+<main id="panes">
+  <section class="pane source-pane">
+    <div class="pane-title">Source</div>
+    <div class="editor">
+      <pre id="backdrop" class="backdrop" aria-hidden="true"></pre>
+      <textarea id="source" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+    </div>
+    <div class="pane-title">Diagnostics <span id="diag-count" class="count"></span></div>
+    <div id="diagnostics" class="diagnostics"></div>
+  </section>
+  <section class="pane tree-pane">
+    <div class="pane-title tabs" role="tablist">
+      <button role="tab" data-tab="ast">AST</button>
+      <button role="tab" data-tab="ir">IR</button>
+      <button role="tab" data-tab="lir">LIR</button>
+      <button role="tab" data-tab="bytecode">Bytecode</button>
+      <span class="tools"><button id="expand">Expand</button><button id="collapse">Collapse</button></span>
+    </div>
+    <div id="ast" class="tree" role="tabpanel"></div>
+    <div id="ir" class="tree" role="tabpanel"></div>
+    <div id="lir" class="tree code" role="tabpanel"></div>
+    <div id="bytecode" class="tree code" role="tabpanel"></div>
+  </section>
+</main>
+<script src="explorer.js"></script>
+</body>
+</html>

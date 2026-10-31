@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestNodeProxy_Server : UnitTest {
 
 	var server, proxy;
@@ -54,13 +55,12 @@ TestNodeProxy_Server : UnitTest {
 	}
 
 	test_synthDef_isReleased_afterFree {
-		var numBefore, numAfter;
 
 		// here we have to make sure that the statusWatcher.numSynthDefs is correct
 		// before the experiment, so we force the otherwise regular update ...
 		server.sendStatusMsg;
 		server.sync;
-		numBefore = server.statusWatcher.numSynthDefs;
+		var numBefore = server.statusWatcher.numSynthDefs;
 
 		// ... then set the proxy source and remove it again ...
 		proxy.source = { Silent.ar };
@@ -70,7 +70,7 @@ TestNodeProxy_Server : UnitTest {
 		// ... and also afterwards, we force an update
 		server.sync;
 		server.sendStatusMsg;
-		numAfter = server.statusWatcher.numSynthDefs;
+		var numAfter = server.statusWatcher.numSynthDefs;
 
 		this.assertEquals(numBefore, numAfter,
 			"Removing the  NodeProxy source function should remove SynthDef from server"
@@ -156,12 +156,11 @@ TestNodeProxy_Server : UnitTest {
 
 	test_schedAfterFade_notBeforeQuant {
 		var ok = true, earlierThan = 0.05, cond = Condition();
-		var betweenFadeAndQuant;
 		proxy.source = { Silent.ar };
 		proxy.fadeTime = 0.1;
 		proxy.clock = TempoClock.new(1);
 		proxy.quant = 1.0;
-		betweenFadeAndQuant = 0.2; // fadeTime < betweenFadeAndQuant < quant
+		var betweenFadeAndQuant = 0.2; // fadeTime < betweenFadeAndQuant < quant
 		{
 			var schedOk = true;
 			betweenFadeAndQuant.wait;
@@ -194,11 +193,10 @@ TestNodeProxy_Server : UnitTest {
 	}
 
 	test_reshaping_freeOldBus_after_fadeTime {
-		var oldBus;
 		proxy.reshaping = \expanding;
 		proxy.source = { Silent.ar.dup(2) };
 		proxy.fadeTime = 0.1;
-		oldBus = proxy.bus;
+		var oldBus = proxy.bus;
 		proxy.source = { Silent.ar.dup(3) };
 		(proxy.fadeTime + server.latency).wait;
 		this.assert(oldBus.index.isNil,
@@ -207,13 +205,12 @@ TestNodeProxy_Server : UnitTest {
 	}
 
 	test_reshaping_freeOldBus_after_fadeTime_quant {
-		var oldBus;
 		proxy.reshaping = \expanding;
 		proxy.source = { Silent.ar.dup(2) };
 		proxy.fadeTime = 0.1;
 		proxy.clock = TempoClock.new(10);
 		proxy.quant = [1.0, 0.5];
-		oldBus = proxy.bus;
+		var oldBus = proxy.bus;
 		0.01.wait;
 		proxy.source = { Silent.ar.dup(3) };
 		(proxy.fadeTime + server.latency + 0.5).wait;
@@ -239,7 +236,7 @@ TestNodeProxy_Server : UnitTest {
 	}
 
 	test_control_fade {
-		var result, timeout;
+		var result;
 		var cond = Condition.new;
 		var fadeTime = 0.2;
 		var waitTime = (fadeTime + (server.latency * 2) + 1e-2);
@@ -250,7 +247,7 @@ TestNodeProxy_Server : UnitTest {
 		waitTime.wait;
 
 		OSCFunc({ cond.unhang }, '/c_set');
-		timeout = fork{ 1.wait; cond.unhang };
+		var timeout = fork{ 1.wait; cond.unhang };
 		proxy.bus.get({ |val| result = val });
 		cond.hang;
 		timeout.stop;
@@ -259,11 +256,30 @@ TestNodeProxy_Server : UnitTest {
 	}
 
 	test_stop_object_should_cancel_old_bundle {
-		var container;
 		proxy.source = { Silent.ar };
-		container = proxy.objects.first;
+		var container = proxy.objects.first;
 		proxy.free;
 		this.assert(container.instVarAt(\prevBundle).isNil, "Pending OSC message should be canceled when proxy synth is freed");
+	}
+
+	test_asCode_playState {
+		var codeString =
+		"(\n"
+		"a = NodeProxy.new(Server.fromName('TestNodeProxy_Server'));\n"
+		"a.play(\n"
+		"	out: 8, \n"
+		"	vol: 0.25\n"
+		"\n"
+		");\n"
+		");\n";
+
+		proxy.play(8, 2, vol: 0.25);
+
+		server.sync; // avoids "FAILURE IN SERVER /g_new Group 1 not found"
+
+		this.assertEquals(proxy.asCode, codeString,
+			"asCode-posting nodeproxy with settings should post these correctly."
+		);
 	}
 
 }

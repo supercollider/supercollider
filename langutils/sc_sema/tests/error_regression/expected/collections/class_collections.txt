@@ -1,0 +1,97 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (2:1): Set : Object, version 3.16
+|  SCMemberList (2:1)
+|  SCMethodList (2:1)
+SCClass (4:1): Collections : Object, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (5:5): array_constant, version 3.16: array_constant { ^Array[1, 2.5] } -> [1, 2.5]
+|  |  |  SCBody (5:22)
+|  |  |  |  SCExplicitReturn (5:22)
+|  |  |  |  |  SCCollection (5:23): Array = [1, 2.5]
+|  |  |  |  |  |  SCLiteral (5:29) = 1
+|  |  |  |  |  |  SCLiteral (5:32) = 2.5
+|  |  SCMethod (6:5): array_empty, version 3.16: array_empty { ^Array[] } -> []
+|  |  |  SCBody (6:19)
+|  |  |  |  SCExplicitReturn (6:19)
+|  |  |  |  |  SCCollection (6:20): Array = []
+|  |  SCMethod (7:5): array_not_constant, version 3.16: array_not_constant { ^Array[1, 2.foo] }
+|  |  |  SCBody (7:26)
+|  |  |  |  SCExplicitReturn (7:26)
+|  |  |  |  |  SCCollection (7:27): Array
+|  |  |  |  |  |  SCLiteral (7:33) = 1
+|  |  |  |  |  |  SCMessage (7:36): foo
+|  |  |  |  |  |  |  SCLiteral (7:36) = 2
+|  |  SCMethod (8:5): array_nested, version 3.16: array_nested { ^Array[[1], Array[2]] } -> [[1], [2]]
+|  |  |  SCBody (8:20)
+|  |  |  |  SCExplicitReturn (8:20)
+|  |  |  |  |  SCCollection (8:21): Array = [[1], [2]]
+|  |  |  |  |  |  SCCollection (8:27): Array = [1]
+|  |  |  |  |  |  |  SCLiteral (8:28) = 1
+|  |  |  |  |  |  SCCollection (8:32): Array = [2]
+|  |  |  |  |  |  |  SCLiteral (8:38) = 2
+|  |  SCMethod (9:5): event_constant, version 3.16: event_constant { ^Event[a: 1, b: 2] } -> (a: 1, b: 2)
+|  |  |  SCBody (9:22)
+|  |  |  |  SCExplicitReturn (9:22)
+|  |  |  |  |  SCCollection (9:23): Event = (a: 1, b: 2)
+|  |  |  |  |  |  SCLiteral (9:29) = \a
+|  |  |  |  |  |  SCLiteral (9:32) = 1
+|  |  |  |  |  |  SCLiteral (9:35) = \b
+|  |  |  |  |  |  SCLiteral (9:38) = 2
+|  |  SCMethod (10:5): event_odd, version 3.16: event_odd { ^Event[a: 1, \b] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Warning: Event key without a value
+|  |  |  collections/class_collections.sc:10:30
+|  |  |      8 │     array_nested { ^Array[[1], Array[2]] }
+|  |  |      9 │     event_constant { ^Event[a: 1, b: 2] }
+|  |  |     10 │     event_odd { ^Event[a: 1, \b] }
+|  |  |        ┆                              ^^ this key has no value.
+|  |  |     11 │     event_not_constant { ^Event[a: 1.foo] }
+|  |  |     12 │     set_constant_elements { ^Set[1, 2] }
+|  |  |     13 │     set_empty { ^Set[] }
+|  |  |
+|  |  |  The elements of `Event[...]` are pairs of keys and values, e.g., `Event[a: 1, b: 2]`. Add a value, or remove the key.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (10:17)
+|  |  |  |  SCExplicitReturn (10:17)
+|  |  |  |  |  SCCollection (10:18): Event
+|  |  |  |  |  |  SCLiteral (10:24) = \a
+|  |  |  |  |  |  SCLiteral (10:27) = 1
+|  |  |  |  |  |  SCLiteral (10:30) = \b
+|  |  SCMethod (11:5): event_not_constant, version 3.16: event_not_constant { ^Event[a: 1.foo] }
+|  |  |  SCBody (11:26)
+|  |  |  |  SCExplicitReturn (11:26)
+|  |  |  |  |  SCCollection (11:27): Event
+|  |  |  |  |  |  SCLiteral (11:33) = \a
+|  |  |  |  |  |  SCMessage (11:36): foo
+|  |  |  |  |  |  |  SCLiteral (11:36) = 1
+|  |  SCMethod (12:5): set_constant_elements, version 3.16: set_constant_elements { ^Set[1, 2] }
+|  |  |  SCBody (12:29)
+|  |  |  |  SCExplicitReturn (12:29)
+|  |  |  |  |  SCCollection (12:30): Set
+|  |  |  |  |  |  SCLiteral (12:34) = 1
+|  |  |  |  |  |  SCLiteral (12:37) = 2
+|  |  SCMethod (13:5): set_empty, version 3.16: set_empty { ^Set[] }
+|  |  |  SCBody (13:17)
+|  |  |  |  SCExplicitReturn (13:17)
+|  |  |  |  |  SCCollection (13:18): Set
+|  |  SCMethod (14:5): nested_in_array, version 3.16: nested_in_array { ^[Array[1], Set[2]] }
+|  |  |  SCBody (14:23)
+|  |  |  |  SCExplicitReturn (14:23)
+|  |  |  |  |  SCCollection (14:24): Array
+|  |  |  |  |  |  SCCollection (14:25): Array = [1]
+|  |  |  |  |  |  |  SCLiteral (14:31) = 1
+|  |  |  |  |  |  SCCollection (14:35): Set
+|  |  |  |  |  |  |  SCLiteral (14:39) = 2
+|  |  SCMethod (15:5): undefined_class, version 3.16: undefined_class { ^NotAClass[1] }
+|  |  |  SCBody (15:23)
+|  |  |  |  SCExplicitReturn (15:23)
+|  |  |  |  |  SCCollection (15:24): NotAClass
+|  |  |  |  |  |  SCLiteral (15:34) = 1
+Successfully compiled 17 classes.

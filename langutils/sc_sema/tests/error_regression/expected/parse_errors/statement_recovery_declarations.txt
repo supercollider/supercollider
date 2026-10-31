@@ -1,0 +1,232 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): StatementDeclarations : Object, version 3.16
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (5:5): poisoned: bad_var, version 3.16: bad_var { var a = ; ^1 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/statement_recovery_declarations.sc:5:23
+|  |  |      3 │ StatementDeclarations {
+|  |  |      4 │     // expect: poisoned
+|  |  |      5 │     bad_var { var a = ; ^1 }
+|  |  |        ┆                       ^ Expected an expression, but found `;`.
+|  |  |      6 │     // expect: poisoned
+|  |  |      7 │     bad_var_name { var ; ^1 }
+|  |  |      8 │     // The dropped declaration's variable isn't known, which is reported as well.
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (5:15)
+|  |  |  |  SCExprList (5:15)
+|  |  |  |  SCExplicitReturn (5:25)
+|  |  |  |  |  SCLiteral (5:26) = 1
+|  |  SCMethod (7:5): poisoned: bad_var_name, version 3.16: bad_var_name { var ; ^1 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/statement_recovery_declarations.sc:7:24
+|  |  |      5 │     bad_var { var a = ; ^1 }
+|  |  |      6 │     // expect: poisoned
+|  |  |      7 │     bad_var_name { var ; ^1 }
+|  |  |        ┆                        ^ Expected `#`, a name, or `while`, but found `;`.
+|  |  |      8 │     // The dropped declaration's variable isn't known, which is reported as well.
+|  |  |      9 │     // expect: poisoned
+|  |  |     10 │     uses_dropped { var a = ; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (7:20)
+|  |  |  |  SCExprList (7:20)
+|  |  |  |  SCExplicitReturn (7:26)
+|  |  |  |  |  SCLiteral (7:27) = 1
+|  |  SCMethod (10:5): poisoned: uses_dropped, version 3.16: uses_dropped { var a = ; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/statement_recovery_declarations.sc:10:28
+|  |  |      8 │     // The dropped declaration's variable isn't known, which is reported as well.
+|  |  |      9 │     // expect: poisoned
+|  |  |     10 │     uses_dropped { var a = ; ^a }
+|  |  |        ┆                            ^ Expected an expression, but found `;`.
+|  |  |     11 │     // expect: poisoned
+|  |  |     12 │     bad_default { |x = | ^x }
+|  |  |     13 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  parse_errors/statement_recovery_declarations.sc:10:31
+|  |  |      8 │     // The dropped declaration's variable isn't known, which is reported as well.
+|  |  |      9 │     // expect: poisoned
+|  |  |     10 │     uses_dropped { var a = ; ^a }
+|  |  |        ┆                               ^ this is not defined.
+|  |  |     11 │     // expect: poisoned
+|  |  |     12 │     bad_default { |x = | ^x }
+|  |  |     13 │     // expect: poisoned
+|  |  |
+|  |  |  Declare it with 'var', or use '~a' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (10:20)
+|  |  |  |  SCExprList (10:20)
+|  |  |  |  SCExplicitReturn (10:30)
+|  |  |  |  |  SCExprList (10:31)
+|  |  SCMethod (12:5): poisoned: bad_default, version 3.16: bad_default { |x = | ^x }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/statement_recovery_declarations.sc:12:24
+|  |  |     10 │     uses_dropped { var a = ; ^a }
+|  |  |     11 │     // expect: poisoned
+|  |  |     12 │     bad_default { |x = | ^x }
+|  |  |        ┆                        ^ Expected `{`, `[`, `(`, `#`, an integer, a float, `inf`, an accidental, a symbol, a string, a character, `nil`, `true`, `false`, `#{`, or `-`, but found `|`.
+|  |  |     13 │     // expect: poisoned
+|  |  |     14 │     bad_default_then_statements { |x = , y| var z = 1; ^z }
+|  |  |     15 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  parse_errors/statement_recovery_declarations.sc:12:27
+|  |  |     10 │     uses_dropped { var a = ; ^a }
+|  |  |     11 │     // expect: poisoned
+|  |  |     12 │     bad_default { |x = | ^x }
+|  |  |        ┆                           ^ this is not defined.
+|  |  |     13 │     // expect: poisoned
+|  |  |     14 │     bad_default_then_statements { |x = , y| var z = 1; ^z }
+|  |  |     15 │     // expect: poisoned
+|  |  |
+|  |  |  Declare it with 'var', or use '~x' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (12:26)
+|  |  |  |  SCExplicitReturn (12:26)
+|  |  |  |  |  SCExprList (12:27)
+|  |  SCMethod (14:5): poisoned: bad_default_then_statements, version 3.16: bad_default_then_statements { |x = , y| var z = 1; ^z }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/statement_recovery_declarations.sc:14:40
+|  |  |     12 │     bad_default { |x = | ^x }
+|  |  |     13 │     // expect: poisoned
+|  |  |     14 │     bad_default_then_statements { |x = , y| var z = 1; ^z }
+|  |  |        ┆                                        ^ Expected `{`, `[`, `(`, `#`, an integer, a float, `inf`, an accidental, a symbol, a string, a character, `nil`, `true`, `false`, `#{`, or `-`, but found `,`.
+|  |  |     15 │     // expect: poisoned
+|  |  |     16 │     bad_arg { arg x = ; ^x }
+|  |  |     17 │     // Errors in the statements around the dropped one are reported too.
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (14:45)
+|  |  |  |  SCVariableDeclare (14:49): z, prototype
+|  |  |  |  |  SCLiteral (14:53) = 1
+|  |  |  |  SCExplicitReturn (14:56)
+|  |  |  |  |  SCRead (14:57): local z = 1, declared (14:49): z = 1
+|  |  SCMethod (16:5): poisoned: bad_arg, version 3.16: bad_arg { arg x = ; ^x }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/statement_recovery_declarations.sc:16:23
+|  |  |     14 │     bad_default_then_statements { |x = , y| var z = 1; ^z }
+|  |  |     15 │     // expect: poisoned
+|  |  |     16 │     bad_arg { arg x = ; ^x }
+|  |  |        ┆                       ^ Expected an expression, but found `;`.
+|  |  |     17 │     // Errors in the statements around the dropped one are reported too.
+|  |  |     18 │     // expect: poisoned
+|  |  |     19 │     // expect-error: Variable not defined
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  parse_errors/statement_recovery_declarations.sc:16:26
+|  |  |     14 │     bad_default_then_statements { |x = , y| var z = 1; ^z }
+|  |  |     15 │     // expect: poisoned
+|  |  |     16 │     bad_arg { arg x = ; ^x }
+|  |  |        ┆                          ^ this is not defined.
+|  |  |     17 │     // Errors in the statements around the dropped one are reported too.
+|  |  |     18 │     // expect: poisoned
+|  |  |     19 │     // expect-error: Variable not defined
+|  |  |
+|  |  |  Declare it with 'var', or use '~x' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (16:25)
+|  |  |  |  SCExplicitReturn (16:25)
+|  |  |  |  |  SCExprList (16:26)
+|  |  SCMethod (20:5): poisoned: later_error, version 3.16: later_error { 1 + ; ^undefined_variable }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/statement_recovery_declarations.sc:20:23
+|  |  |     18 │     // expect: poisoned
+|  |  |     19 │     // expect-error: Variable not defined
+|  |  |     20 │     later_error { 1 + ; ^undefined_variable }
+|  |  |        ┆                     ^ ^ ...but found `;`.
+|  |  |        ┆                     └ This `+` needs an expression after it...
+|  |  |     21 │     // expect: poisoned
+|  |  |     22 │     // expect-error: Variable already declared
+|  |  |     23 │     duplicate { var a; 1 + ; var a; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  parse_errors/statement_recovery_declarations.sc:20:26
+|  |  |     18 │     // expect: poisoned
+|  |  |     19 │     // expect-error: Variable not defined
+|  |  |     20 │     later_error { 1 + ; ^undefined_variable }
+|  |  |        ┆                          ^^^^^^^^^^^^^^^^^^ this is not defined.
+|  |  |     21 │     // expect: poisoned
+|  |  |     22 │     // expect-error: Variable already declared
+|  |  |     23 │     duplicate { var a; 1 + ; var a; ^a }
+|  |  |
+|  |  |  Declare it with 'var', or use '~undefined_variable' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (20:19)
+|  |  |  |  SCExprList (20:19)
+|  |  |  |  SCExplicitReturn (20:25)
+|  |  |  |  |  SCExprList (20:26)
+|  |  SCMethod (23:5): poisoned: duplicate, version 3.16: duplicate { var a; 1 + ; var a; ^a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Expression.
+|  |  |  parse_errors/statement_recovery_declarations.sc:23:28
+|  |  |     21 │     // expect: poisoned
+|  |  |     22 │     // expect-error: Variable already declared
+|  |  |     23 │     duplicate { var a; 1 + ; var a; ^a }
+|  |  |        ┆                          ^ ^ ...but found `;`.
+|  |  |        ┆                          └ This `+` needs an expression after it...
+|  |  |     24 │     // A good method after all of them.
+|  |  |     25 │     // expect: -> 7
+|  |  |     26 │     good { ^7 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable already declared
+|  |  |  parse_errors/statement_recovery_declarations.sc:23:34
+|  |  |     21 │     // expect: poisoned
+|  |  |     22 │     // expect-error: Variable already declared
+|  |  |     23 │     duplicate { var a; 1 + ; var a; ^a }
+|  |  |        ┆                     ^            ^ ...declared again here.
+|  |  |        ┆                     └ First declared here...
+|  |  |     24 │     // A good method after all of them.
+|  |  |     25 │     // expect: -> 7
+|  |  |     26 │     good { ^7 }
+|  |  |
+|  |  |  Arguments and variables in the same function or method must have different names. Rename one.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (23:17)
+|  |  |  |  SCVariableDeclare (23:21): a
+|  |  |  |  SCExprList (23:24)
+|  |  |  |  SCVariableDeclare (23:34): a
+|  |  |  |  SCExplicitReturn (23:37)
+|  |  |  |  |  SCRead (23:38): local a = nil, declared (23:21): a
+|  |  SCMethod (26:5): good, version 3.16: good { ^7 } -> 7
+|  |  |  SCBody (26:12)
+|  |  |  |  SCExplicitReturn (26:12)
+|  |  |  |  |  SCLiteral (26:13) = 7
+Successfully compiled 16 classes.

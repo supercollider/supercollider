@@ -1,0 +1,28 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): version 3.16: interpreted_function/statements.scd
+|  SCFunction (1:1)
+|  |  SCBody (1:1)
+|  |  |  SCAssign (5:1): instance a, declared (37:11): a
+|  |  |  |  SCLiteral (5:5) = 1
+|  |  |  SCAssign (5:8): instance b, declared (37:16): b
+|  |  |  |  SCLiteral (5:12) = 2
+|  |  |  SCMessage (6:1): +
+|  |  |  |  SCRead (6:1): instance a, declared (37:11): a
+|  |  |  |  SCPositionalArgs (6:1)
+|  |  |  |  |  SCRead (6:5): instance b, declared (37:16): b
+
+
+
+COMPILED DUMP 
+
+
+Interpreted
+|  interpreted: function 0,
+|  function 0 (1:1)
+|  |  code: 11 bytes, 0 selectors, 0 constants
+Successfully compiled 15 classes.

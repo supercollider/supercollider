@@ -678,7 +678,7 @@ int classVarOffset(const char* classname, const char* classvarname, PyrClass** c
         return -1;
     if (!classFindClassVar(classobj, classvarsymbol, &index))
         return -1;
-    return index;
+    return slotRawInt(&(*classobj)->classVarIndex) + index;
 }
 
 bool classFindClassVar(PyrClass** classobj, PyrSymbol* name, int* index) {
