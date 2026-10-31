@@ -26,7 +26,6 @@ jobs:
             vcpkg-triplet: x86-windows-release
             qt-modules: "qtwebengine"
             ctest: true
-            ctest-cmd: "RUN_TESTS"
             extra-cmake-flags: "-D USE_VCPKG_FFTW=OFF -D USE_VCPKG_LIBSNDFILE=OFF"
             # artifact-suffix: "win32" # set if needed - will trigger artifact upload
             # create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
@@ -44,7 +43,6 @@ jobs:
             artifact-suffix: "win64" # set if needed - will trigger artifact upload
             create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
             installer-suffix: "win64-installer"
-            ctest-cmd: "RUN_TESTS"
 
           - job-name: "64-bit MSVC 2026"
             cmake-arch: "x64"
@@ -58,7 +56,6 @@ jobs:
             # create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
             # installer-suffix: "win64-installer"
             # ctest: true
-            # ctest-cmd: "RUN_TESTS"
 
           - job-name: "64-bit MinGW with ctest"
             fftw-arch: "x64"
@@ -72,7 +69,6 @@ jobs:
             artifact-suffix: "win64-mingw" # set if needed - will trigger artifact upload
             extra-cmake-flags: "-D USE_VCPKG_FFTW=OFF -D SC_USE_QTWEBENGINE=OFF"
             ctest: true
-            ctest-cmd: "test"
 
     name: Windows ${{ matrix.job-name }}
     env:
@@ -193,4 +189,4 @@ jobs:
         if: matrix.ctest
         working-directory: ${{ env.BUILD_PATH }}
         shell: cmd
-        run: cmake --build . --config Release --target ${{ matrix.ctest-cmd }}
+        run: ctest --test-dir . -C Release --output-on-failure

@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestProxyNodeMap : UnitTest {
 
 
@@ -34,10 +35,9 @@ TestProxyNodeMap : UnitTest {
 		var proxy = NodeProxy.new;
 		var map = proxy.nodeMap;
 		var buffer = Buffer.new(bufnum: 42, numFrames:1);
-		var args, i;
 		map.set(\x, buffer);
-		args = map.asOSCArgArray;
-		i = args.indexOf(\x);
+		var args = map.asOSCArgArray;
+		var i = args.indexOf(\x);
 		this.assertEquals(args[i+1], buffer.bufnum);
 		buffer.free;
 		proxy.clear;

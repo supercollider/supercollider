@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestIdentityDictionaryObjectPrototyping : UnitTest {
 	test_known {
 		var ev = (\a: 1, \b: 2);

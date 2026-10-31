@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestNetAddr : UnitTest {
 
 	doReceiveTest {

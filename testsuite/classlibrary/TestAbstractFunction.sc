@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestAbstractFunction : UnitTest {
     test_function_list_remove_before_add {
         var fl = FunctionList.new;

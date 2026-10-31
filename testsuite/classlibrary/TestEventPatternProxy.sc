@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestEventPatternProxy : UnitTest{
 
     test_playOnInstanceClock {
@@ -14,9 +15,9 @@ TestEventPatternProxy : UnitTest{
 
 	test_EventPatternProxy_xfade_cleanupNotPremature {
 
-		var stream2CleanupCalled = false, p = EventPatternProxy.new.fadeTime_(2), r;
+		var stream2CleanupCalled = false, p = EventPatternProxy.new.fadeTime_(2);
 		p.source = Pbind(\dur, 1.1, \degree, 3, \amp, 0.1);
-		r = p.asStream;
+		var r = p.asStream;
 		// pulling one event is necessary to prime the old stream
 		this.assertEquals(r.next(())[\degree], 3,
 			"EventPatternProxy xfade 1st source 1st pull shold be executed transparently.");
