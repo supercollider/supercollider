@@ -1,4 +1,4 @@
-#include "tokens.hpp"
+#include "sc_lexer/details/tokens.hpp"
 
 [[nodiscard]] const char* sc::lex::to_string(TokenType t) noexcept {
     switch (t) {
@@ -14,8 +14,8 @@
         return "Integer";
     case TokenType::IntegerRadix:
         return "IntegerRadix";
-    case TokenType::Hexidecimal:
-        return "Hexidecimal";
+    case TokenType::Hexadecimal:
+        return "Hexadecimal";
     case TokenType::Float:
         return "Float";
     case TokenType::FloatRadix:
@@ -122,6 +122,8 @@
         return "Comment";
     case TokenType::MultilineComment:
         return "MultilineComment";
+    case TokenType::VersionComment:
+        return "VersionComment";
     case TokenType::ErUnexpected:
         return "ErUnexpected";
     case TokenType::ErSymbolQuoteUnclosed:

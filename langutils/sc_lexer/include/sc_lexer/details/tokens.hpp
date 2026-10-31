@@ -4,12 +4,10 @@
 #include <type_traits>
 
 namespace sc::lex {
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// TokenType
-// An enum covering all the types of things the lexer sees.
-// These are defined in range, DO NOT CHANGE THE RANGE DELIMITERS, just insert new cases inbetween them.
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// Every kind of token the lexer produces, including whitespace, comments, and errors.
+//
+// Related types are grouped in ranges delimited by `START_OF_*` and `END_OF_*`, which the `is_*` functions test.
+// Do not change the delimiters, insert new cases between them.
 // clang-format off
 enum struct TokenType : unsigned int {
     EndOfFile = 0,
@@ -24,7 +22,7 @@ enum struct TokenType : unsigned int {
         START_OF_LITERAL_INTS = START_OF_LITERALS,
             Integer = START_OF_LITERAL_INTS,
             IntegerRadix,
-            Hexidecimal,
+            Hexadecimal,
         END_OF_LITERAL_INTS,
 
         START_OF_LITERAL_FLOATS = END_OF_LITERAL_INTS,
@@ -133,6 +131,7 @@ enum struct TokenType : unsigned int {
     START_OF_COMMENTS = END_OF_WHITESPACE,
         Comment = START_OF_COMMENTS,
         MultilineComment,
+        VersionComment, // `//# VERSION 3.16`, the lexer doesn't check the version.
     END_OF_COMMENTS,
 
     // errors
@@ -190,11 +189,12 @@ template <typename... ARGS> [[nodiscard]] constexpr inline bool matches(TokenTyp
     return TokenType::START_OF_LITERAL_INTS <= t && t < TokenType::END_OF_LITERAL_INTS;
 }
 
+// The lexer cannot decide on its own whether these are operators, so the parser resolves them.
 [[nodiscard]] constexpr inline bool is_ambiguous_punctuation(TokenType t) {
     return TokenType::START_OF_AMBIGUOUS_PUNCTUATION <= t && t < TokenType::END_OF_AMBIGUOUS_PUNCTUATION;
 }
 
-// Also includes constants pi and inf
+// Whether t is a float literal, including the constants `pi` and `inf`.
 [[nodiscard]] constexpr inline bool is_float(TokenType t) {
     return TokenType::START_OF_LITERAL_FLOATS <= t && t < TokenType::END_OF_LITERAL_FLOATS;
 }
@@ -223,7 +223,7 @@ template <typename... ARGS> [[nodiscard]] constexpr inline bool matches(TokenTyp
     return TokenType::START_OF_CLOSE_BRACKETS <= t && t < TokenType::END_OF_CLOSE_BRACKETS;
 }
 
-// Requires 't' be a closing bracket.
+// The half open range `[begin, end)` of opening bracket types that match a closing bracket.
 [[nodiscard]] constexpr inline std::tuple<TokenType, TokenType> get_opening_brackets(TokenType t) {
     if (t == TokenType::CloseParen)
         return { TokenType::START_OF_HAS_CLOSING_PAREN, TokenType::END_OF_HAS_CLOSING_PAREN };
@@ -233,7 +233,6 @@ template <typename... ARGS> [[nodiscard]] constexpr inline bool matches(TokenTyp
         return { TokenType::START_OF_HAS_CLOSING_CURLY, TokenType::END_OF_HAS_CLOSING_CURLY };
 }
 
-// Requires 't' be an opening bracket.
 [[nodiscard]] constexpr inline TokenType get_closing_bracket(TokenType t) {
     if (TokenType::START_OF_HAS_CLOSING_PAREN <= t && t < TokenType::END_OF_HAS_CLOSING_PAREN)
         return TokenType::CloseParen;
@@ -244,6 +243,5 @@ template <typename... ARGS> [[nodiscard]] constexpr inline bool matches(TokenTyp
 }
 
 
-// Will return "Unknown token" if t is not known.
 [[nodiscard]] const char* to_string(TokenType t) noexcept;
 }
