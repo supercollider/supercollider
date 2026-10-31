@@ -33,6 +33,7 @@
 #ifdef _WIN32
 #    include <winsock2.h>
 #    include <vector>
+#    include "SC_Codecvt.hpp"
 #else
 #    include <unistd.h> // for _POSIX_MEMLOCK
 #    include <sys/wait.h>
@@ -480,12 +481,18 @@ int wmain(int argc, wchar_t** wargv) {
     }
 
     // convert args to utf-8
+    std::vector<std::string> utf8_args;
     std::vector<char*> argv;
-    for (int i = 0; i < argc; i++) {
-        auto argSize = WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, nullptr, 0, nullptr, nullptr);
-        argv.push_back(new char[argSize]);
-        WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, argv[i], argSize, nullptr, nullptr);
+    utf8_args.reserve(argc);
+    argv.reserve(argc + 1);
+
+    for (int i = 0; i < argc; ++i) {
+        utf8_args.push_back(SC_Codecvt::utf16_to_utf8_str(wargv[i]));
     }
+    for (auto& str : utf8_args) {
+        argv.push_back(str.data());
+    }
+    argv.push_back(nullptr); // argv termination
 
     // set codepage to UTF-8 and remember the old codepage
     auto oldCodePage = GetConsoleOutputCP();
@@ -493,15 +500,12 @@ int wmain(int argc, wchar_t** wargv) {
         scprintf("WARNING: could not set codepage to UTF-8\n");
 
     // run main
-    int result = scsynth_main(argv.size(), argv.data());
+    int result = scsynth_main(argc, argv.data());
 
     // clean up winsock
     WSACleanup();
     // reset codepage from UTF-8
     SetConsoleOutputCP(oldCodePage);
-    // clear vector with converted args
-    for (auto* arg : argv)
-        delete[] arg;
 
     return result;
 }
