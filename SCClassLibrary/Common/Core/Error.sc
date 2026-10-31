@@ -298,3 +298,36 @@ DeprecatedError : MethodError {
 		if (Error.debug) { this.halt }
 	}
 }
+
+
+// A problem found when compiling source, not when running it, so it has no backtrace.
+CompileError : Error {
+	reportStage1 { }
+	reportStage2 { }
+	// Just the problems, they are the report.
+	reportError { |stream(Post), prefix("")|
+		what.split($\n).do { |line| stream << prefix << line << $\n };
+		^stream
+	}
+}
+
+// Thrown by a method that was skipped because of an error in its source, the compiler gives such a method a body that
+// throws this, with the method as `thisMethod` and the errors the compiler found, which it also posted when the class
+// library compiled.
+PoisonedMethodError : ErrorWrapper {
+	var <>method;
+
+	// With no errors, the compiler couldn't compile the method, as it doesn't support something in it yet.
+	*new { |method, errors, callFrameAnnotations, methodBeforeBacktraceStart, methodBacktraceEnd|
+		var unsupported = errors.isNil;
+		^super.new(
+			CompileError(errors ? "The compiler doesn't support something in this method yet."),
+			if (unsupported) {
+				"% was not compiled, as the compiler doesn't support something in it yet.".format(method.asString)
+			} {
+				"% was not compiled, as it has an error in its source.".format(method.asString)
+			},
+			callFrameAnnotations, methodBeforeBacktraceStart, methodBacktraceEnd
+		).method_(method)
+	}
+}

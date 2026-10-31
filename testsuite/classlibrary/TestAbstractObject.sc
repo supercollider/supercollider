@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestAbstractObjectExperimental : UnitTest {
 	// Note that some of these tests cannot be written as AbstractObjectExperimental isn't a real object, and therefore doesn't work in many common sc contexts, such as, print to the interpreter, or using it is a 'try' block.
 

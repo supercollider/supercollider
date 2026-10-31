@@ -1,10 +1,11 @@
+//# VERSION 3.16
 TestWebView : UnitTest {
 
 	test_findText_found {
 		var window = Window();
 		var webView = WebView(window, Rect(0, 0, 100, 100));
 		var cond = Condition.new;
-		var wasFound, timeout;
+		var wasFound;
 
 		window.front; // FIXME findText doesn't work if the window isn't displayed
 		webView.setHtml("abc");
@@ -14,7 +15,7 @@ TestWebView : UnitTest {
 				wasFound = found;
 			});
 		};
-		timeout = fork {
+		var timeout = fork {
 			2.wait;
 			cond.unhang;
 		};
@@ -32,7 +33,7 @@ TestWebView : UnitTest {
 		var window = Window();
 		var webView = WebView(window, Rect(0, 0, 100, 100));
 		var cond = Condition.new;
-		var wasFound, timeout;
+		var wasFound;
 
 		window.front; // FIXME findText doesn't work if the window isn't displayed
 		webView.setHtml("abc");
@@ -42,7 +43,7 @@ TestWebView : UnitTest {
 				wasFound = found;
 			});
 		};
-		timeout = fork {
+		var timeout = fork {
 			2.wait;
 			cond.unhang;
 		};

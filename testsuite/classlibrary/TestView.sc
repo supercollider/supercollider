@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestView : UnitTest {
 	test_View_settingFontUpdatesVariable {
 		var view = View(nil, Rect(100, 100, 100, 100));

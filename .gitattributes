@@ -1,0 +1,5 @@
+# sclang source is always checked out with \n line endings, also on Windows, where git defaults to core.autocrlf=true.
+# The compiler's source positions are offsets into text with \n line endings.
+*.sc     text eol=lf
+*.scd    text eol=lf
+*.schelp text eol=lf

@@ -678,7 +678,7 @@ int classVarOffset(const char* classname, const char* classvarname, PyrClass** c
         return -1;
     if (!classFindClassVar(classobj, classvarsymbol, &index))
         return -1;
-    return index;
+    return slotRawInt(&(*classobj)->classVarIndex) + index;
 }
 
 bool classFindClassVar(PyrClass** classobj, PyrSymbol* name, int* index) {
@@ -1404,7 +1404,7 @@ void initClasses() {
     addIntrinsicVar(class_process, "nowExecutingPath", &o_nil);
     addIntrinsicClassVar(class_process, "initializedClassesOkay", &o_false);
 
-    class_interpreter = makeIntrinsicClass(s_interpreter, s_object, 33, 0);
+    class_interpreter = makeIntrinsicClass(s_interpreter, s_object, 34, 0);
 
     addIntrinsicVar(class_interpreter, "cmdLine", &o_nil);
     addIntrinsicVar(class_interpreter, "filePath", &o_nil);
@@ -1420,6 +1420,7 @@ void initClasses() {
     }
     addIntrinsicVar(class_interpreter, "codeDump", &o_nil);
     addIntrinsicVar(class_interpreter, "preProcessor", &o_nil);
+    addIntrinsicVar(class_interpreter, "languageVersion", &o_nil);
 
     class_absfunc = makeIntrinsicClass(s_absfunc, s_object, 0, 0);
     class_stream = makeIntrinsicClass(s_stream, s_absfunc, 0, 0);

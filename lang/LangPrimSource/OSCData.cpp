@@ -19,7 +19,6 @@
 */
 
 #include "ClassLibraryInfo.hpp"
-#include "PyrLexer.h"
 #include "PyrPrimitive.h"
 #include "PyrKernel.h"
 #include "PyrInterpreter.h"

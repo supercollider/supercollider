@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestPrimitive_Obj {
 	noKwargsNoVarArgs { |a, b, c|
 		_PrimitiveTestNoKwargsNoVarArg;

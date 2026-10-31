@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestServer_boot : UnitTest {
 
 	var s; // mock server for testing
@@ -51,11 +52,10 @@ TestServer_boot : UnitTest {
 	test_bootSync {
 		var vals = List[];
 		var of = OSCFunc({ |msg| vals.add(msg[3]) }, \tr, s.addr);
-		var synth;
 
 		s.bootSync;
 
-		synth = { SendTrig.ar(Impulse.ar(10), 4711, 1) }.play(s);
+		var synth = { SendTrig.ar(Impulse.ar(10), 4711, 1) }.play(s);
 		1.wait;
 		synth.free;
 
@@ -137,7 +137,7 @@ TestServer_boot : UnitTest {
 	// Will not fail deterministically, but should not fail if implementation is correct.
 	test_ServerBootActionTiming {
 		var defName = thisMethod.name;
-		var of, timer;
+		var of;
 		var cond = Condition();
 
 		var func = {
@@ -155,7 +155,7 @@ TestServer_boot : UnitTest {
 		};
 
 		// timout of 5 seconds;
-		timer = fork { 5.wait; cond.unhang };
+		var timer = fork { 5.wait; cond.unhang };
 		cond.hang;
 
 		timer.stop;
@@ -227,7 +227,7 @@ TestServer_boot : UnitTest {
 	// Check that with s.waitForBoot, the four most common ways of creating sound processes will work.
 	test_waitForBoot_fourWaysToPlaySound {
 		var amps; // holds measured amplitudes of the 8 channels
-		var flags; // whether or not the amplitudes in each pair of channels was nonzero
+ // whether or not the amplitudes in each pair of channels was nonzero
 		var o = OSCFunc({ |msg| amps = msg.drop(3) }, '/the8Amps');
 		var pbindPlayer;
 		var cond = Condition(); // signalled at end of collecting results
@@ -264,7 +264,7 @@ TestServer_boot : UnitTest {
 		o.free;
 
 		// check whether each pair of channels was nonzero
-		flags = amps.clump(2).collect(_.every(_ != 0));
+		var flags = amps.clump(2).collect(_.every(_ != 0));
 		this.assert(flags[0],
 			"Server: Pbind should play right after booting."
 		);

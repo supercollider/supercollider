@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestSynthDefOptimizations : UnitTest {
 	test_optimizeAddNeg {
 		var def = SynthDef(\addneg, {

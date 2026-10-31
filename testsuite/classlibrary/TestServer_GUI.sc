@@ -1,3 +1,4 @@
+//# VERSION 3.16
 // TestServer_GUI.sc
 // Author: Brian Heim (brianlheim@gmail.com)
 // Tests for GUI behavior during ServerBoot, ServerTree, ServerQuit
@@ -27,10 +28,9 @@ TestServer_GUI : UnitTest {
 	// Test that a GUI function executed by ServerBoot completes.
 	// In other words, tests that ServerBoot functions run on an AppClock.
 	test_serverBoot {
-		var updateFunc;
 		var cond = Condition();
 
-		updateFunc = { button.value_(1); cond.test_(true).signal };
+		var updateFunc = { button.value_(1); cond.test_(true).signal };
 		ServerBoot.add(updateFunc, server);
 		this.bootServer(server);
 
@@ -46,10 +46,9 @@ TestServer_GUI : UnitTest {
 	// Test that a GUI function executed by ServerTree completes during boot.
 	// Simulates behavior of FreqScope, etc.
 	test_serverTreeDuringBoot {
-		var updateFunc;
 		var cond = Condition();
 
-		updateFunc = { button.value_(1); cond.test_(true).signal };
+		var updateFunc = { button.value_(1); cond.test_(true).signal };
 		ServerTree.add(updateFunc, server);
 		this.bootServer(server);
 
@@ -65,12 +64,11 @@ TestServer_GUI : UnitTest {
 	// Test that a GUI function executed by ServerTree completes during cmd-period.
 	// Simulates behavior of FreqScope, etc.
 	test_serverTreeDuringCmdPeriod {
-		var updateFunc;
 		var cond = Condition();
 
 		this.bootServer(server);
 
-		updateFunc = { button.value_(1); cond.test_(true).signal };
+		var updateFunc = { button.value_(1); cond.test_(true).signal };
 		ServerTree.add(updateFunc, server);
 
 		CmdPeriod.run;
@@ -86,10 +84,9 @@ TestServer_GUI : UnitTest {
 
 	// Test that a GUI function executed by ServerQuit completes.
 	test_serverQuit {
-		var updateFunc;
 		var cond = Condition();
 
-		updateFunc = { button.value_(1); cond.test_(true).signal };
+		var updateFunc = { button.value_(1); cond.test_(true).signal };
 		ServerQuit.add(updateFunc, server);
 
 		server.bootSync;

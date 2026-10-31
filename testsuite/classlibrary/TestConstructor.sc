@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestConstructorA {
     var a, b, c;
     *new { |...args, kwargs| ^super.performArgs(\newCopyArgs, args, kwargs) }
