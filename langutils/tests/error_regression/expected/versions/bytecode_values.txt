@@ -1,0 +1,654 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): BytecodeValues : Object
+|  SCMemberList (5:1)
+|  |  SCMember (6:9): inst
+|  |  SCMember (6:15): i1
+|  |  SCMember (6:19): i2
+|  |  SCMember (6:23): i3
+|  |  SCMember (6:27): i4
+|  |  SCMember (6:31): i5
+|  |  SCMember (6:35): i6
+|  |  SCMember (6:39): i7
+|  |  SCMember (6:43): i8
+|  |  SCMember (6:47): i9
+|  |  SCMember (6:51): i10
+|  |  SCMember (6:56): i11
+|  |  SCMember (6:61): i12
+|  |  SCMember (6:66): i13
+|  |  SCMember (6:71): i14
+|  |  SCMember (6:76): i15
+|  |  SCMember (6:81): i16
+|  SCMethodList (5:1)
+|  |  SCMethod (12:5): numbers: numbers { cv; ^[0, 1, 2, -1, 3, 300, 70000, 9000000, 0.5, -1.0, 0.0, 1.0, 2.0, inf, 1.25, -0.0, 1.25] }
+|  |  |  SCBody (12:15)
+|  |  |  |  SCRead (12:15): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (12:19)
+|  |  |  |  |  SCCollection (12:20): Array
+|  |  |  |  |  |  SCLiteral (12:21) = 0
+|  |  |  |  |  |  SCLiteral (12:24) = 1
+|  |  |  |  |  |  SCLiteral (12:27) = 2
+|  |  |  |  |  |  SCLiteral (12:31) = -1
+|  |  |  |  |  |  SCLiteral (12:34) = 3
+|  |  |  |  |  |  SCLiteral (12:37) = 300
+|  |  |  |  |  |  SCLiteral (12:42) = 70000
+|  |  |  |  |  |  SCLiteral (12:49) = 9000000
+|  |  |  |  |  |  SCLiteral (12:58) = 0.5
+|  |  |  |  |  |  SCLiteral (12:64) = -1.0
+|  |  |  |  |  |  SCLiteral (12:69) = 0.0
+|  |  |  |  |  |  SCLiteral (12:74) = 1.0
+|  |  |  |  |  |  SCLiteral (12:79) = 2.0
+|  |  |  |  |  |  SCLiteral (12:84) = inf
+|  |  |  |  |  |  SCLiteral (12:89) = 1.25
+|  |  |  |  |  |  SCLiteral (12:96) = -0.0
+|  |  |  |  |  |  SCLiteral (12:101) = 1.25
+|  |  SCMethod (14:5): symbolsAndStrings: symbolsAndStrings { cv; ^[\a, \a, "s", "s", $c, $c, #[1, 2]] }
+|  |  |  SCBody (14:25)
+|  |  |  |  SCRead (14:25): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (14:29)
+|  |  |  |  |  SCCollection (14:30): Array
+|  |  |  |  |  |  SCLiteral (14:31) = \a
+|  |  |  |  |  |  SCLiteral (14:35) = \a
+|  |  |  |  |  |  SCLiteral (14:39) = "s"
+|  |  |  |  |  |  SCLiteral (14:44) = "s"
+|  |  |  |  |  |  SCLiteral (14:49) = $c
+|  |  |  |  |  |  SCLiteral (14:53) = $c
+|  |  |  |  |  |  SCCollection (14:57): Array, literal = [1, 2]
+|  |  |  |  |  |  |  SCLiteral (14:59) = 1
+|  |  |  |  |  |  |  SCLiteral (14:62) = 2
+|  |  SCMethod (16:5): classConstants: classConstants { cv; ^[kInteger, kInteger, kString, kString, kFloat, 1.5] }
+|  |  |  SCBody (16:22)
+|  |  |  |  SCRead (16:22): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (16:26)
+|  |  |  |  |  SCCollection (16:27): Array
+|  |  |  |  |  |  SCRead (16:28): class kInteger, declared (8:11): kInteger
+|  |  |  |  |  |  SCRead (16:38): class kInteger, declared (8:11): kInteger
+|  |  |  |  |  |  SCRead (16:48): class kString, declared (8:25): kString
+|  |  |  |  |  |  SCRead (16:57): class kString, declared (8:25): kString
+|  |  |  |  |  |  SCRead (16:66): class kFloat, declared (8:40): kFloat
+|  |  |  |  |  |  SCLiteral (16:74) = 1.5
+|  |  SCMethod (17:5): classes: classes { cv; ^[Object, Array, Interpreter] }
+|  |  |  SCBody (17:15)
+|  |  |  |  SCRead (17:15): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (17:19)
+|  |  |  |  |  SCCollection (17:20): Array
+|  |  |  |  |  |  SCLiteral (17:21)
+|  |  |  |  |  |  SCLiteral (17:29)
+|  |  |  |  |  |  SCLiteral (17:36)
+|  |  SCMethod (18:5): pseudoVariables: pseudoVariables { cv; ^[thisProcess, thisThread, thisMethod, thisFunctionDef, thisFunction] }
+|  |  |  SCBody (18:23)
+|  |  |  |  SCRead (18:23): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (18:27)
+|  |  |  |  |  SCCollection (18:28): Array
+|  |  |  |  |  |  SCSpecial (18:29): thisProcess
+|  |  |  |  |  |  SCSpecial (18:42): thisThread
+|  |  |  |  |  |  SCSpecial (18:54): thisMethod
+|  |  |  |  |  |  SCSpecial (18:66): thisFunctionDef
+|  |  |  |  |  |  SCSpecial (18:83): thisFunction
+|  |  SCMethod (20:5): returnNil: returnNil { cv; ^nil }
+|  |  |  SCBody (20:17)
+|  |  |  |  SCRead (20:17): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (20:21)
+|  |  |  |  |  SCLiteral (20:22) = nil
+|  |  SCMethod (21:5): returnTrue: returnTrue { cv; ^true }
+|  |  |  SCBody (21:18)
+|  |  |  |  SCRead (21:18): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (21:22)
+|  |  |  |  |  SCLiteral (21:23) = true
+|  |  SCMethod (22:5): returnFalse: returnFalse { cv; ^false }
+|  |  |  SCBody (22:19)
+|  |  |  |  SCRead (22:19): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (22:23)
+|  |  |  |  |  SCLiteral (22:24) = false
+|  |  SCMethod (23:5): returnThis: returnThis { cv; ^this }
+|  |  |  SCBody (23:18)
+|  |  |  |  SCRead (23:18): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (23:22)
+|  |  |  |  |  SCSpecial (23:23): this
+|  |  SCMethod (24:5): returnSelf: returnSelf { cv; 1 }
+|  |  |  SCBody (24:18)
+|  |  |  |  SCRead (24:18): class cv, declared (7:14): cv
+|  |  |  |  SCLiteral (24:22) = 1
+|  |  SCMethod (27:5): knownVariable: knownVariable { var b = 1; cv; ^b }
+|  |  |  SCBody (27:21)
+|  |  |  |  SCVariableDeclare (27:25): b, prototype
+|  |  |  |  |  SCLiteral (27:29) = 1
+|  |  |  |  SCRead (27:32): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (27:36)
+|  |  |  |  |  SCRead (27:37): local b = 1, declared (27:25): b = 1
+|  |  SCMethod (29:5): stores: stores { |a| var b; cv; b = a; inst = a; cv = a; ^b = a }
+|  |  |  SCArgumentDeclareList (29:15)
+|  |  |  |  SCArgumentDeclare (29:15): a
+|  |  |  SCBody (29:18)
+|  |  |  |  SCVariableDeclare (29:22): b (assigned)
+|  |  |  |  SCRead (29:25): class cv, declared (7:14): cv
+|  |  |  |  SCAssign (29:29): local b, declared (29:22): b
+|  |  |  |  |  SCRead (29:33): local a, declared (29:15): a
+|  |  |  |  SCAssign (29:36): instance inst, declared (6:9): inst
+|  |  |  |  |  SCRead (29:43): local a, declared (29:15): a
+|  |  |  |  SCAssign (29:46): class cv, declared (7:14): cv
+|  |  |  |  |  SCRead (29:51): local a, declared (29:15): a
+|  |  |  |  SCExplicitReturn (29:54)
+|  |  |  |  |  SCAssign (29:55): local b, declared (29:22): b
+|  |  |  |  |  |  SCRead (29:59): local a, declared (29:15): a
+|  |  SCMethod (30:5): highSlots: highSlots { var v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16; cv; v16 = 1; ^v16 }
+|  |  |  SCBody (30:17)
+|  |  |  |  SCVariableDeclare (30:21): v0
+|  |  |  |  SCVariableDeclare (30:25): v1
+|  |  |  |  SCVariableDeclare (30:29): v2
+|  |  |  |  SCVariableDeclare (30:33): v3
+|  |  |  |  SCVariableDeclare (30:37): v4
+|  |  |  |  SCVariableDeclare (30:41): v5
+|  |  |  |  SCVariableDeclare (30:45): v6
+|  |  |  |  SCVariableDeclare (30:49): v7
+|  |  |  |  SCVariableDeclare (30:53): v8
+|  |  |  |  SCVariableDeclare (30:57): v9
+|  |  |  |  SCVariableDeclare (30:61): v10
+|  |  |  |  SCVariableDeclare (30:66): v11
+|  |  |  |  SCVariableDeclare (30:71): v12
+|  |  |  |  SCVariableDeclare (30:76): v13
+|  |  |  |  SCVariableDeclare (30:81): v14
+|  |  |  |  SCVariableDeclare (30:86): v15
+|  |  |  |  SCVariableDeclare (30:91): v16 (assigned)
+|  |  |  |  SCRead (30:96): class cv, declared (7:14): cv
+|  |  |  |  SCAssign (30:100): local v16, declared (30:91): v16
+|  |  |  |  |  SCLiteral (30:106) = 1
+|  |  |  |  SCExplicitReturn (30:109)
+|  |  |  |  |  SCRead (30:110): local v16, declared (30:91): v16
+|  |  SCMethod (31:5): highInstanceVariable: highInstanceVariable { cv; i16 = 1; ^i16 }
+|  |  |  SCBody (31:28)
+|  |  |  |  SCRead (31:28): class cv, declared (7:14): cv
+|  |  |  |  SCAssign (31:32): instance i16, declared (6:81): i16
+|  |  |  |  |  SCLiteral (31:38) = 1
+|  |  |  |  SCExplicitReturn (31:41)
+|  |  |  |  |  SCRead (31:42): instance i16, declared (6:81): i16
+|  |  SCMethod (32:5): deepRead: deepRead { |a| cv; ^{ { { { { { { { { a } } } } } } } } } }
+|  |  |  SCArgumentDeclareList (32:17)
+|  |  |  |  SCArgumentDeclare (32:17): a (captured)
+|  |  |  SCBody (32:20)
+|  |  |  |  SCRead (32:20): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (32:24)
+|  |  |  |  |  SCFunction (32:25)
+|  |  |  |  |  |  SCBody (32:25)
+|  |  |  |  |  |  |  SCFunction (32:27)
+|  |  |  |  |  |  |  |  SCBody (32:27)
+|  |  |  |  |  |  |  |  |  SCFunction (32:29)
+|  |  |  |  |  |  |  |  |  |  SCBody (32:29)
+|  |  |  |  |  |  |  |  |  |  |  SCFunction (32:31)
+|  |  |  |  |  |  |  |  |  |  |  |  SCBody (32:31)
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCFunction (32:33)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  SCBody (32:33)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCFunction (32:35)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCBody (32:35)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCFunction (32:37)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCBody (32:37)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCFunction (32:39)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCBody (32:39)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCFunction (32:41)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCBody (32:41)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (32:43): local a, declared (32:17): a
+|  |  SCMethod (33:5): deepStore: deepStore { |a| cv; ^{ { { { { { { { { a = 1; 2 } } } } } } } } } }
+|  |  |  SCArgumentDeclareList (33:18)
+|  |  |  |  SCArgumentDeclare (33:18): a (assigned, captured)
+|  |  |  SCBody (33:21)
+|  |  |  |  SCRead (33:21): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (33:25)
+|  |  |  |  |  SCFunction (33:26)
+|  |  |  |  |  |  SCBody (33:26)
+|  |  |  |  |  |  |  SCFunction (33:28)
+|  |  |  |  |  |  |  |  SCBody (33:28)
+|  |  |  |  |  |  |  |  |  SCFunction (33:30)
+|  |  |  |  |  |  |  |  |  |  SCBody (33:30)
+|  |  |  |  |  |  |  |  |  |  |  SCFunction (33:32)
+|  |  |  |  |  |  |  |  |  |  |  |  SCBody (33:32)
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCFunction (33:34)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  SCBody (33:34)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCFunction (33:36)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCBody (33:36)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCFunction (33:38)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCBody (33:38)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCFunction (33:40)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCBody (33:40)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCFunction (33:42)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCBody (33:42)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCAssign (33:44): local a, declared (33:18): a
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (33:48) = 1
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (33:51) = 2
+|  |  SCMethod (36:5): defaults: defaults { |a = (1 + 2), b = 3| cv; ^a }
+|  |  |  SCArgumentDeclareList (36:17)
+|  |  |  |  SCArgumentDeclare (36:17): a, computed
+|  |  |  |  |  SCMessage (36:22): +
+|  |  |  |  |  |  SCLiteral (36:22) = 1
+|  |  |  |  |  |  SCPositionalArgs (36:22)
+|  |  |  |  |  |  |  SCLiteral (36:26) = 2
+|  |  |  |  SCArgumentDeclare (36:30): b, prototype
+|  |  |  |  |  SCLiteral (36:34) = 3
+|  |  |  SCBody (36:37)
+|  |  |  |  SCRead (36:37): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (36:41)
+|  |  |  |  |  SCRead (36:42): local a, declared (36:17): a = (1 + 2)
+|  |  SCMethod (37:5): computedVariable: computedVariable { var a = (1 + 2); cv; ^a }
+|  |  |  SCBody (37:24)
+|  |  |  |  SCVariableDeclare (37:28): a, computed
+|  |  |  |  |  SCMessage (37:33): +
+|  |  |  |  |  |  SCLiteral (37:33) = 1
+|  |  |  |  |  |  SCPositionalArgs (37:33)
+|  |  |  |  |  |  |  SCLiteral (37:37) = 2
+|  |  |  |  SCRead (37:41): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (37:45)
+|  |  |  |  |  SCRead (37:46): local a, declared (37:28): a = (1 + 2)
+|  |  SCMethod (38:5): pack: pack { |a| var b, c; cv; #b, c = a; ^b }
+|  |  |  SCArgumentDeclareList (38:13)
+|  |  |  |  SCArgumentDeclare (38:13): a
+|  |  |  SCBody (38:16)
+|  |  |  |  SCVariableDeclare (38:20): b (assigned)
+|  |  |  |  SCVariableDeclare (38:23): c (assigned)
+|  |  |  |  SCRead (38:26): class cv, declared (7:14): cv
+|  |  |  |  SCPackAssign (38:30)
+|  |  |  |  |  SCRead (38:38): local a, declared (38:13): a
+|  |  |  |  |  SCPackTargets (38:30)
+|  |  |  |  |  |  SCPackTarget (38:31): local b at 0, declared (38:20): b
+|  |  |  |  |  |  SCPackTarget (38:34): local c at 1, declared (38:23): c
+|  |  |  |  SCExplicitReturn (38:41)
+|  |  |  |  |  SCRead (38:42): local b, declared (38:20): b
+SCClass (5:1): Meta_BytecodeValues : Meta_Object
+|  SCMemberList (5:1)
+|  |  SCMember (8:11): kInteger = 2
+|  |  SCMember (8:25): kString = "s"
+|  |  SCMember (8:40): kFloat = 1.5
+|  |  SCMember (7:14): cv
+|  SCMethodList (5:1)
+
+
+
+BYTECODE DUMP 
+
+
+BytecodeValues
+|  function 0 (12:5): method numbers
+|  |  properties:
+|  |  selectors:
+|  |  constants: 1.25,
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    06 19           PushSpecialClass
+|  |  5    2C 11           PushInteger8
+|  |  7    C2 00           SendSpecialMsg
+|  |  9    63              PushSpecialNumber
+|  |  10   C2 08           SendSpecialMsg
+|  |  12   64              PushSpecialNumber
+|  |  13   C2 08           SendSpecialMsg
+|  |  15   65              PushSpecialNumber
+|  |  16   C2 08           SendSpecialMsg
+|  |  18   62              PushSpecialNumber
+|  |  19   C2 08           SendSpecialMsg
+|  |  21   2C 03           PushInteger8
+|  |  23   C2 08           SendSpecialMsg
+|  |  25   2D 01 2C        PushInteger16
+|  |  28   C2 08           SendSpecialMsg
+|  |  30   2E 01 11 70     PushInteger24
+|  |  34   C2 08           SendSpecialMsg
+|  |  36   2F 00 89 54 40  PushInteger32
+|  |  41   C2 08           SendSpecialMsg
+|  |  43   66              PushSpecialNumber
+|  |  44   C2 08           SendSpecialMsg
+|  |  46   67              PushSpecialNumber
+|  |  47   C2 08           SendSpecialMsg
+|  |  49   68              PushSpecialNumber
+|  |  50   C2 08           SendSpecialMsg
+|  |  52   69              PushSpecialNumber
+|  |  53   C2 08           SendSpecialMsg
+|  |  55   6A              PushSpecialNumber
+|  |  56   C2 08           SendSpecialMsg
+|  |  58   6F              PushSpecialValue
+|  |  59   C2 08           SendSpecialMsg
+|  |  61   40              PushLiteral
+|  |  62   C2 08           SendSpecialMsg
+|  |  64   68              PushSpecialNumber
+|  |  65   C2 08           SendSpecialMsg
+|  |  67   40              PushLiteral
+|  |  68   C2 08           SendSpecialMsg
+|  |  70   F3              Return
+|  function 1 (14:5): method symbolsAndStrings
+|  |  properties:
+|  |  selectors:
+|  |  constants: \a, "s", "s", $c, [1, 2],
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    06 19           PushSpecialClass
+|  |  5    2C 07           PushInteger8
+|  |  7    C2 00           SendSpecialMsg
+|  |  9    40              PushLiteral
+|  |  10   C2 08           SendSpecialMsg
+|  |  12   40              PushLiteral
+|  |  13   C2 08           SendSpecialMsg
+|  |  15   41              PushLiteral
+|  |  16   C2 08           SendSpecialMsg
+|  |  18   42              PushLiteral
+|  |  19   C2 08           SendSpecialMsg
+|  |  21   43              PushLiteral
+|  |  22   C2 08           SendSpecialMsg
+|  |  24   43              PushLiteral
+|  |  25   C2 08           SendSpecialMsg
+|  |  27   44              PushLiteral
+|  |  28   C2 08           SendSpecialMsg
+|  |  30   F3              Return
+|  function 2 (16:5): method classConstants
+|  |  properties:
+|  |  selectors:
+|  |  constants: 2, "s", 1.5,
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    06 19           PushSpecialClass
+|  |  5    2C 06           PushInteger8
+|  |  7    C2 00           SendSpecialMsg
+|  |  9    40              PushLiteral
+|  |  10   C2 08           SendSpecialMsg
+|  |  12   40              PushLiteral
+|  |  13   C2 08           SendSpecialMsg
+|  |  15   41              PushLiteral
+|  |  16   C2 08           SendSpecialMsg
+|  |  18   41              PushLiteral
+|  |  19   C2 08           SendSpecialMsg
+|  |  21   42              PushLiteral
+|  |  22   C2 08           SendSpecialMsg
+|  |  24   42              PushLiteral
+|  |  25   C2 08           SendSpecialMsg
+|  |  27   F3              Return
+|  function 3 (17:5): method classes
+|  |  properties:
+|  |  selectors: Interpreter,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    06 19           PushSpecialClass
+|  |  5    2C 03           PushInteger8
+|  |  7    C2 00           SendSpecialMsg
+|  |  9    06 00           PushSpecialClass
+|  |  11   C2 08           SendSpecialMsg
+|  |  13   06 19           PushSpecialClass
+|  |  15   C2 08           SendSpecialMsg
+|  |  17   00 00           PushClassX
+|  |  19   C2 08           SendSpecialMsg
+|  |  21   F3              Return
+|  function 4 (18:5): method pseudoVariables
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    06 19           PushSpecialClass
+|  |  5    2C 05           PushInteger8
+|  |  7    C2 00           SendSpecialMsg
+|  |  9    0F 00           SpecialOpcode
+|  |  11   C2 08           SendSpecialMsg
+|  |  13   0F 04           SpecialOpcode
+|  |  15   C2 08           SendSpecialMsg
+|  |  17   0F 01           SpecialOpcode
+|  |  19   C2 08           SendSpecialMsg
+|  |  21   0F 02           SpecialOpcode
+|  |  23   C2 08           SendSpecialMsg
+|  |  25   0F 03           SpecialOpcode
+|  |  27   C2 08           SendSpecialMsg
+|  |  29   F3              Return
+|  function 5 (20:5): method returnNil
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    F7              ReturnNil
+|  function 6 (21:5): method returnTrue
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    F5              ReturnTrue
+|  function 7 (22:5): method returnFalse
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    F6              ReturnFalse
+|  function 8 (23:5): method returnThis
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    60              PushSpecialValueThis
+|  |  4    F3              Return
+|  function 9 (24:5): method returnSelf
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    64              PushSpecialNumber
+|  |  4    F0              Drop
+|  |  5    F4              ReturnSelf
+|  function 10 (27:5): method knownVariable
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    F3              Return
+|  function 11 (29:5): method stores
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    80 02           StoreTempVar
+|  |  6    31              PushTempZeroVar
+|  |  7    70              StoreInstVar
+|  |  8    31              PushTempZeroVar
+|  |  9    90 00           StoreClassVar
+|  |  11   31              PushTempZeroVar
+|  |  12   08 00 02        StoreTempVarX
+|  |  15   F3              Return
+|  function 12 (30:5): method highSlots
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    64              PushSpecialNumber
+|  |  4    08 00 11        StoreTempVarX
+|  |  7    F0              Drop
+|  |  8    03 11           PushTempZeroVarX
+|  |  10   F3              Return
+|  function 13 (31:5): method highInstanceVariable
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    64              PushSpecialNumber
+|  |  4    07 10           StoreInstVarX
+|  |  6    F0              Drop
+|  |  7    01 10           PushInstVarX
+|  |  9    F3              Return
+|  function 14 (32:5): method deepRead
+|  |  properties: heap context,
+|  |  selectors: function 15,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    04 00           PushLiteralX
+|  |  5    F3              Return
+|  function 15 (32:25)
+|  |  properties: context, heap context,
+|  |  selectors: function 16,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F2              BlockReturn
+|  function 16 (32:27)
+|  |  properties: context, heap context,
+|  |  selectors: function 17,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F2              BlockReturn
+|  function 17 (32:29)
+|  |  properties: context, heap context,
+|  |  selectors: function 18,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F2              BlockReturn
+|  function 18 (32:31)
+|  |  properties: context, heap context,
+|  |  selectors: function 19,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F2              BlockReturn
+|  function 19 (32:33)
+|  |  properties: context, heap context,
+|  |  selectors: function 20,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F2              BlockReturn
+|  function 20 (32:35)
+|  |  properties: context, heap context,
+|  |  selectors: function 21,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F2              BlockReturn
+|  function 21 (32:37)
+|  |  properties: context, heap context,
+|  |  selectors: function 22,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F2              BlockReturn
+|  function 22 (32:39)
+|  |  properties: context, heap context,
+|  |  selectors: function 23,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F2              BlockReturn
+|  function 23 (32:41)
+|  |  properties: context,
+|  |  selectors:
+|  |  constants:
+|  |  0    02 09 01        PushTempVarX
+|  |  3    F2              BlockReturn
+|  function 24 (33:5): method deepStore
+|  |  properties: heap context,
+|  |  selectors: function 25,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    04 00           PushLiteralX
+|  |  5    F3              Return
+|  function 25 (33:26)
+|  |  properties: context, heap context,
+|  |  selectors: function 26,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F2              BlockReturn
+|  function 26 (33:28)
+|  |  properties: context, heap context,
+|  |  selectors: function 27,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F2              BlockReturn
+|  function 27 (33:30)
+|  |  properties: context, heap context,
+|  |  selectors: function 28,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F2              BlockReturn
+|  function 28 (33:32)
+|  |  properties: context, heap context,
+|  |  selectors: function 29,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F2              BlockReturn
+|  function 29 (33:34)
+|  |  properties: context, heap context,
+|  |  selectors: function 30,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F2              BlockReturn
+|  function 30 (33:36)
+|  |  properties: context, heap context,
+|  |  selectors: function 31,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F2              BlockReturn
+|  function 31 (33:38)
+|  |  properties: context, heap context,
+|  |  selectors: function 32,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F2              BlockReturn
+|  function 32 (33:40)
+|  |  properties: context, heap context,
+|  |  selectors: function 33,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F2              BlockReturn
+|  function 33 (33:42)
+|  |  properties: context,
+|  |  selectors:
+|  |  constants:
+|  |  0    64              PushSpecialNumber
+|  |  1    08 09 01        StoreTempVarX
+|  |  4    F0              Drop
+|  |  5    65              PushSpecialNumber
+|  |  6    F2              BlockReturn
+|  function 34 (36:5): method defaults
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    8F 1A 00 06     ExtendedCodes
+|  |  5    64              PushSpecialNumber
+|  |  6    65              PushSpecialNumber
+|  |  7    E0              SendSpecialBinaryArithMsg
+|  |  8    08 00 01        StoreTempVarX
+|  |  11   F0              Drop
+|  |  12   50 00           PushClassVar 
+|  |  14   F0              Drop
+|  |  15   31              PushTempZeroVar
+|  |  16   F3              Return
+|  function 35 (37:5): method computedVariable
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    64              PushSpecialNumber
+|  |  1    65              PushSpecialNumber
+|  |  2    E0              SendSpecialBinaryArithMsg
+|  |  3    80 01           StoreTempVar
+|  |  5    50 00           PushClassVar 
+|  |  7    F0              Drop
+|  |  8    31              PushTempZeroVar
+|  |  9    F3              Return
+|  function 36 (38:5): method pack
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    F1              Dup
+|  |  5    63              PushSpecialNumber
+|  |  6    C2 02           SendSpecialMsg
+|  |  8    80 02           StoreTempVar
+|  |  10   F1              Dup
+|  |  11   64              PushSpecialNumber
+|  |  12   C2 02           SendSpecialMsg
+|  |  14   80 03           StoreTempVar
+|  |  16   F0              Drop
+|  |  17   32              PushTempZeroVar
+|  |  18   F3              Return
+Meta_BytecodeValues
+Successfully compiled 16 classes.

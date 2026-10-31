@@ -1,0 +1,38 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (2:1): EscapedLiterals : Object, version 3.16
+|  SCMemberList (2:1)
+|  SCMethodList (2:1)
+|  |  SCMethod (3:5): char_newline, version 3.16: char_newline { ^$\n } -> $\n
+|  |  |  SCBody (3:20)
+|  |  |  |  SCExplicitReturn (3:20)
+|  |  |  |  |  SCLiteral (3:21) = $\n
+|  |  SCMethod (4:5): char_tab, version 3.16: char_tab { ^$\t } -> $\t
+|  |  |  SCBody (4:16)
+|  |  |  |  SCExplicitReturn (4:16)
+|  |  |  |  |  SCLiteral (4:17) = $\t
+|  |  SCMethod (5:5): char_quote, version 3.16: char_quote { ^$" } -> $"
+|  |  |  SCBody (5:18)
+|  |  |  |  SCExplicitReturn (5:18)
+|  |  |  |  |  SCLiteral (5:19) = $"
+|  |  SCMethod (6:5): char_backslash, version 3.16: char_backslash { ^$\\ } -> $\\
+|  |  |  SCBody (6:22)
+|  |  |  |  SCExplicitReturn (6:22)
+|  |  |  |  |  SCLiteral (6:23) = $\\
+|  |  SCMethod (7:5): string_escapes, version 3.16: string_escapes { ^"tab\there \"quoted\" back\\slash" } -> "tab\there \"quoted\" back\\slash"
+|  |  |  SCBody (7:22)
+|  |  |  |  SCExplicitReturn (7:22)
+|  |  |  |  |  SCLiteral (7:23) = "tab\there \"quoted\" back\\slash"
+|  |  SCMethod (8:5): string_newline, version 3.16: string_newline { ^"line one\nline two" } -> "line one\nline two"
+|  |  |  SCBody (8:22)
+|  |  |  |  SCExplicitReturn (8:22)
+|  |  |  |  |  SCLiteral (8:23) = "line one\nline two"
+|  |  SCMethod (9:5): symbol_quote_escaped, version 3.16: symbol_quote_escaped { ^'it\'s' } -> 'it\'s'
+|  |  |  SCBody (9:28)
+|  |  |  |  SCExplicitReturn (9:28)
+|  |  |  |  |  SCLiteral (9:29) = 'it\'s'
+Successfully compiled 16 classes.

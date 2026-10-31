@@ -1,0 +1,42 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): poisoned: version 3.16: interpreted/nested_return.scd
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Return in interpreted code
+|  interpreted/nested_return.scd:4:20
+|      2 │ // A function defined in interpreted code can't return either, as its home is the interpreted code.
+|      3 │ // expect-error: Return in interpreted code
+|      4 │ f = { |x| if (x) { ^1 }; 2 }; f.(true)
+|        ┆                    ^^ there is no method to return from.
+|
+|  `^` returns from the method the code is written in, but interpreted code isn't in a method. The value of interpreted code is its last expression, so remove the `^`.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCRegionList (1:1)
+|  |  SCRegion (4:1)
+|  |  |  SCFunction (4:1)
+|  |  |  |  SCBody (4:1)
+|  |  |  |  |  SCAssign (4:1): instance f, declared (37:36): f
+|  |  |  |  |  |  SCFunction (4:5): f
+|  |  |  |  |  |  |  SCArgumentDeclareList (4:8)
+|  |  |  |  |  |  |  |  SCArgumentDeclare (4:8): x
+|  |  |  |  |  |  |  SCBody (4:5)
+|  |  |  |  |  |  |  |  SCMessage (4:11): if
+|  |  |  |  |  |  |  |  |  SCRead (4:15): local x, declared (4:8): x
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (4:11)
+|  |  |  |  |  |  |  |  |  |  SCFunction (4:18)
+|  |  |  |  |  |  |  |  |  |  |  SCBody (4:18)
+|  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (4:21) = 1
+|  |  |  |  |  |  |  |  SCLiteral (4:26) = 2
+|  |  SCRegion (4:31)
+|  |  |  SCFunction (4:31)
+|  |  |  |  SCBody (4:31)
+|  |  |  |  |  SCMessage (4:31): value
+|  |  |  |  |  |  SCRead (4:31): instance f, declared (37:36): f
+|  |  |  |  |  |  SCPositionalArgs (4:31)
+|  |  |  |  |  |  |  SCLiteral (4:34) = true
+Successfully compiled 15 classes.

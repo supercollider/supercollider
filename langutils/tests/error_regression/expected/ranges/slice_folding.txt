@@ -1,0 +1,299 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (2:1): SliceFolding : Object, version 3.16
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Not a constant
+|  ranges/slice_folding.sc:8:32
+|      6 │     var initial_array_3 = [1, 2, 3][-10..];
+|      7 │     var initial_string = "hello"[..1];
+|      8 │     var initial_not_constant = 1.foo[1..2];
+|        ┆                                ^^^^^ this can't be evaluated when compiling.
+|      9 │ 
+|     10 │     const const_array = [10, 20, 30, 40];
+|     11 │     var const_array_slice = const_array[2..];
+|
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (2:1)
+|  |  SCMember (3:9): x
+|  |  SCMember (4:9): initial_array = [2, 3]
+|  |  SCMember (5:9): initial_array_2 = [2, 3]
+|  |  SCMember (6:9): initial_array_3 = [1, 2, 3]
+|  |  SCMember (7:9): initial_string = "he"
+|  |  SCMember (11:9): const_array_slice = [30, 40]
+|  |  SCMember (12:9): const_array_slice_neg = [10, 20, 30, 40]
+|  SCMethodList (2:1)
+|  |  SCMethod (14:5): array, version 3.16: array { ^[1, 2, 3, 4][1..2] } -> [2, 3]
+|  |  |  SCBody (14:13)
+|  |  |  |  SCExplicitReturn (14:13)
+|  |  |  |  |  SCMessage (14:14): copySeries = [2, 3]
+|  |  |  |  |  |  SCCollection (14:14): Array = [1, 2, 3, 4]
+|  |  |  |  |  |  |  SCLiteral (14:15) = 1
+|  |  |  |  |  |  |  SCLiteral (14:18) = 2
+|  |  |  |  |  |  |  SCLiteral (14:21) = 3
+|  |  |  |  |  |  |  SCLiteral (14:24) = 4
+|  |  |  |  |  |  SCPositionalArgs (14:14)
+|  |  |  |  |  |  |  SCLiteral (14:27) = 1
+|  |  |  |  |  |  |  SCLiteral (14:26) = nil
+|  |  |  |  |  |  |  SCLiteral (14:30) = 2
+|  |  SCMethod (15:5): from_start, version 3.16: from_start { ^[1, 2, 3][..1] } -> [1, 2]
+|  |  |  SCBody (15:18)
+|  |  |  |  SCExplicitReturn (15:18)
+|  |  |  |  |  SCMessage (15:19): copySeries = [1, 2]
+|  |  |  |  |  |  SCCollection (15:19): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (15:20) = 1
+|  |  |  |  |  |  |  SCLiteral (15:23) = 2
+|  |  |  |  |  |  |  SCLiteral (15:26) = 3
+|  |  |  |  |  |  SCPositionalArgs (15:19)
+|  |  |  |  |  |  |  SCLiteral (15:28) = nil
+|  |  |  |  |  |  |  SCLiteral (15:28) = nil
+|  |  |  |  |  |  |  SCLiteral (15:31) = 1
+|  |  SCMethod (16:5): to_end, version 3.16: to_end { ^[1, 2, 3][1..] } -> [2, 3]
+|  |  |  SCBody (16:14)
+|  |  |  |  SCExplicitReturn (16:14)
+|  |  |  |  |  SCMessage (16:15): copySeries = [2, 3]
+|  |  |  |  |  |  SCCollection (16:15): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (16:16) = 1
+|  |  |  |  |  |  |  SCLiteral (16:19) = 2
+|  |  |  |  |  |  |  SCLiteral (16:22) = 3
+|  |  |  |  |  |  SCPositionalArgs (16:15)
+|  |  |  |  |  |  |  SCLiteral (16:25) = 1
+|  |  |  |  |  |  |  SCLiteral (16:24) = nil
+|  |  |  |  |  |  |  SCLiteral (16:24) = nil
+|  |  SCMethod (17:5): step, version 3.16: step { ^[0, 1, 2, 3, 4, 5][0, 2..5] } -> [0, 2, 4]
+|  |  |  SCBody (17:12)
+|  |  |  |  SCExplicitReturn (17:12)
+|  |  |  |  |  SCMessage (17:13): copySeries = [0, 2, 4]
+|  |  |  |  |  |  SCCollection (17:13): Array = [0, 1, 2, 3, 4, 5]
+|  |  |  |  |  |  |  SCLiteral (17:14) = 0
+|  |  |  |  |  |  |  SCLiteral (17:17) = 1
+|  |  |  |  |  |  |  SCLiteral (17:20) = 2
+|  |  |  |  |  |  |  SCLiteral (17:23) = 3
+|  |  |  |  |  |  |  SCLiteral (17:26) = 4
+|  |  |  |  |  |  |  SCLiteral (17:29) = 5
+|  |  |  |  |  |  SCPositionalArgs (17:13)
+|  |  |  |  |  |  |  SCLiteral (17:32) = 0
+|  |  |  |  |  |  |  SCLiteral (17:35) = 2
+|  |  |  |  |  |  |  SCLiteral (17:38) = 5
+|  |  SCMethod (18:5): descending, version 3.16: descending { ^[1, 2, 3][2..0] } -> [3, 2, 1]
+|  |  |  SCBody (18:18)
+|  |  |  |  SCExplicitReturn (18:18)
+|  |  |  |  |  SCMessage (18:19): copySeries = [3, 2, 1]
+|  |  |  |  |  |  SCCollection (18:19): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (18:20) = 1
+|  |  |  |  |  |  |  SCLiteral (18:23) = 2
+|  |  |  |  |  |  |  SCLiteral (18:26) = 3
+|  |  |  |  |  |  SCPositionalArgs (18:19)
+|  |  |  |  |  |  |  SCLiteral (18:29) = 2
+|  |  |  |  |  |  |  SCLiteral (18:28) = nil
+|  |  |  |  |  |  |  SCLiteral (18:32) = 0
+|  |  SCMethod (19:5): clipped_end, version 3.16: clipped_end { ^[1, 2, 3][1..10] } -> [2, 3]
+|  |  |  SCBody (19:19)
+|  |  |  |  SCExplicitReturn (19:19)
+|  |  |  |  |  SCMessage (19:20): copySeries = [2, 3]
+|  |  |  |  |  |  SCCollection (19:20): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (19:21) = 1
+|  |  |  |  |  |  |  SCLiteral (19:24) = 2
+|  |  |  |  |  |  |  SCLiteral (19:27) = 3
+|  |  |  |  |  |  SCPositionalArgs (19:20)
+|  |  |  |  |  |  |  SCLiteral (19:30) = 1
+|  |  |  |  |  |  |  SCLiteral (19:29) = nil
+|  |  |  |  |  |  |  SCLiteral (19:33) = 10
+|  |  SCMethod (20:5): clipped_start, version 3.16: clipped_start { ^[1, 2, 3][-5..1] } -> [1, 2]
+|  |  |  SCBody (20:21)
+|  |  |  |  SCExplicitReturn (20:21)
+|  |  |  |  |  SCMessage (20:22): copySeries = [1, 2]
+|  |  |  |  |  |  SCCollection (20:22): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (20:23) = 1
+|  |  |  |  |  |  |  SCLiteral (20:26) = 2
+|  |  |  |  |  |  |  SCLiteral (20:29) = 3
+|  |  |  |  |  |  SCPositionalArgs (20:22)
+|  |  |  |  |  |  |  SCLiteral (20:33) = -5
+|  |  |  |  |  |  |  SCLiteral (20:31) = nil
+|  |  |  |  |  |  |  SCLiteral (20:36) = 1
+|  |  SCMethod (21:5): empty, version 3.16: empty { ^[][..3] } -> []
+|  |  |  SCBody (21:13)
+|  |  |  |  SCExplicitReturn (21:13)
+|  |  |  |  |  SCMessage (21:14): copySeries = []
+|  |  |  |  |  |  SCCollection (21:14): Array = []
+|  |  |  |  |  |  SCPositionalArgs (21:14)
+|  |  |  |  |  |  |  SCLiteral (21:16) = nil
+|  |  |  |  |  |  |  SCLiteral (21:16) = nil
+|  |  |  |  |  |  |  SCLiteral (21:19) = 3
+|  |  SCMethod (22:5): string, version 3.16: string { ^"hello"[1..3] } -> "ell"
+|  |  |  SCBody (22:14)
+|  |  |  |  SCExplicitReturn (22:14)
+|  |  |  |  |  SCMessage (22:15): copySeries = "ell"
+|  |  |  |  |  |  SCLiteral (22:15) = "hello"
+|  |  |  |  |  |  SCPositionalArgs (22:15)
+|  |  |  |  |  |  |  SCLiteral (22:23) = 1
+|  |  |  |  |  |  |  SCLiteral (22:22) = nil
+|  |  |  |  |  |  |  SCLiteral (22:26) = 3
+|  |  SCMethod (23:5): string_descending, version 3.16: string_descending { ^"hello"[3..1] } -> "lle"
+|  |  |  SCBody (23:25)
+|  |  |  |  SCExplicitReturn (23:25)
+|  |  |  |  |  SCMessage (23:26): copySeries = "lle"
+|  |  |  |  |  |  SCLiteral (23:26) = "hello"
+|  |  |  |  |  |  SCPositionalArgs (23:26)
+|  |  |  |  |  |  |  SCLiteral (23:34) = 3
+|  |  |  |  |  |  |  SCLiteral (23:33) = nil
+|  |  |  |  |  |  |  SCLiteral (23:37) = 1
+|  |  SCMethod (24:5): immutable, version 3.16: immutable { ^#[a, b, c][1..] } -> [\b, \c]
+|  |  |  SCBody (24:17)
+|  |  |  |  SCExplicitReturn (24:17)
+|  |  |  |  |  SCMessage (24:18): copySeries = [\b, \c]
+|  |  |  |  |  |  SCCollection (24:18): Array, literal = [\a, \b, \c]
+|  |  |  |  |  |  |  SCLiteral (24:20) = \a
+|  |  |  |  |  |  |  SCLiteral (24:23) = \b
+|  |  |  |  |  |  |  SCLiteral (24:26) = \c
+|  |  |  |  |  |  SCPositionalArgs (24:18)
+|  |  |  |  |  |  |  SCLiteral (24:29) = 1
+|  |  |  |  |  |  |  SCLiteral (24:28) = nil
+|  |  |  |  |  |  |  SCLiteral (24:28) = nil
+|  |  SCMethod (25:5): step_with_start_outside, version 3.16: step_with_start_outside { ^[1, 2, 3, 4][-1, 1..3] }
+|  |  |  SCBody (25:31)
+|  |  |  |  SCExplicitReturn (25:31)
+|  |  |  |  |  SCMessage (25:32): copySeries
+|  |  |  |  |  |  SCCollection (25:32): Array = [1, 2, 3, 4]
+|  |  |  |  |  |  |  SCLiteral (25:33) = 1
+|  |  |  |  |  |  |  SCLiteral (25:36) = 2
+|  |  |  |  |  |  |  SCLiteral (25:39) = 3
+|  |  |  |  |  |  |  SCLiteral (25:42) = 4
+|  |  |  |  |  |  SCPositionalArgs (25:32)
+|  |  |  |  |  |  |  SCLiteral (25:46) = -1
+|  |  |  |  |  |  |  SCLiteral (25:49) = 1
+|  |  |  |  |  |  |  SCLiteral (25:52) = 3
+|  |  SCMethod (26:5): zero_step, version 3.16: zero_step { ^[1, 2, 3][1, 1..2] }
+|  |  |  SCBody (26:17)
+|  |  |  |  SCExplicitReturn (26:17)
+|  |  |  |  |  SCMessage (26:18): copySeries
+|  |  |  |  |  |  SCCollection (26:18): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (26:19) = 1
+|  |  |  |  |  |  |  SCLiteral (26:22) = 2
+|  |  |  |  |  |  |  SCLiteral (26:25) = 3
+|  |  |  |  |  |  SCPositionalArgs (26:18)
+|  |  |  |  |  |  |  SCLiteral (26:28) = 1
+|  |  |  |  |  |  |  SCLiteral (26:31) = 1
+|  |  |  |  |  |  |  SCLiteral (26:34) = 2
+|  |  SCMethod (27:5): step_away, version 3.16: step_away { ^[1, 2, 3][2, 3..0] }
+|  |  |  SCBody (27:17)
+|  |  |  |  SCExplicitReturn (27:17)
+|  |  |  |  |  SCMessage (27:18): copySeries
+|  |  |  |  |  |  SCCollection (27:18): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (27:19) = 1
+|  |  |  |  |  |  |  SCLiteral (27:22) = 2
+|  |  |  |  |  |  |  SCLiteral (27:25) = 3
+|  |  |  |  |  |  SCPositionalArgs (27:18)
+|  |  |  |  |  |  |  SCLiteral (27:28) = 2
+|  |  |  |  |  |  |  SCLiteral (27:31) = 3
+|  |  |  |  |  |  |  SCLiteral (27:34) = 0
+|  |  SCMethod (28:5): receiver_not_constant, version 3.16: receiver_not_constant { ^x[1..2] }
+|  |  |  SCBody (28:29)
+|  |  |  |  SCExplicitReturn (28:29)
+|  |  |  |  |  SCMessage (28:30): copySeries
+|  |  |  |  |  |  SCRead (28:30): instance x, declared (3:9): x
+|  |  |  |  |  |  SCPositionalArgs (28:30)
+|  |  |  |  |  |  |  SCLiteral (28:32) = 1
+|  |  |  |  |  |  |  SCLiteral (28:31) = nil
+|  |  |  |  |  |  |  SCLiteral (28:35) = 2
+|  |  SCMethod (29:5): bound_not_constant, version 3.16: bound_not_constant { ^[1, 2, 3][1..2.foo] }
+|  |  |  SCBody (29:26)
+|  |  |  |  SCExplicitReturn (29:26)
+|  |  |  |  |  SCMessage (29:27): copySeries
+|  |  |  |  |  |  SCCollection (29:27): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (29:28) = 1
+|  |  |  |  |  |  |  SCLiteral (29:31) = 2
+|  |  |  |  |  |  |  SCLiteral (29:34) = 3
+|  |  |  |  |  |  SCPositionalArgs (29:27)
+|  |  |  |  |  |  |  SCLiteral (29:37) = 1
+|  |  |  |  |  |  |  SCLiteral (29:36) = nil
+|  |  |  |  |  |  |  SCMessage (29:40): foo
+|  |  |  |  |  |  |  |  SCLiteral (29:40) = 2
+|  |  SCMethod (32:5): first_past_end, version 3.16: first_past_end { ^[1, 2, 3][3..] } -> []
+|  |  |  SCBody (32:22)
+|  |  |  |  SCExplicitReturn (32:22)
+|  |  |  |  |  SCMessage (32:23): copySeries = []
+|  |  |  |  |  |  SCCollection (32:23): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (32:24) = 1
+|  |  |  |  |  |  |  SCLiteral (32:27) = 2
+|  |  |  |  |  |  |  SCLiteral (32:30) = 3
+|  |  |  |  |  |  SCPositionalArgs (32:23)
+|  |  |  |  |  |  |  SCLiteral (32:33) = 3
+|  |  |  |  |  |  |  SCLiteral (32:32) = nil
+|  |  |  |  |  |  |  SCLiteral (32:32) = nil
+|  |  SCMethod (33:5): first_past_end_string, version 3.16: first_past_end_string { ^"abc"[5..] } -> ""
+|  |  |  SCBody (33:29)
+|  |  |  |  SCExplicitReturn (33:29)
+|  |  |  |  |  SCMessage (33:30): copySeries = ""
+|  |  |  |  |  |  SCLiteral (33:30) = "abc"
+|  |  |  |  |  |  SCPositionalArgs (33:30)
+|  |  |  |  |  |  |  SCLiteral (33:36) = 5
+|  |  |  |  |  |  |  SCLiteral (33:35) = nil
+|  |  |  |  |  |  |  SCLiteral (33:35) = nil
+|  |  SCMethod (34:5): first_past_end_descending, version 3.16: first_past_end_descending { ^[1, 2, 3][4, 3..] } -> []
+|  |  |  SCBody (34:33)
+|  |  |  |  SCExplicitReturn (34:33)
+|  |  |  |  |  SCMessage (34:34): copySeries = []
+|  |  |  |  |  |  SCCollection (34:34): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (34:35) = 1
+|  |  |  |  |  |  |  SCLiteral (34:38) = 2
+|  |  |  |  |  |  |  SCLiteral (34:41) = 3
+|  |  |  |  |  |  SCPositionalArgs (34:34)
+|  |  |  |  |  |  |  SCLiteral (34:44) = 4
+|  |  |  |  |  |  |  SCLiteral (34:47) = 3
+|  |  |  |  |  |  |  SCLiteral (34:43) = nil
+|  |  SCMethod (35:5): negative_end_from_start, version 3.16: negative_end_from_start { ^[1, 2, 3][..-1] } -> []
+|  |  |  SCBody (35:31)
+|  |  |  |  SCExplicitReturn (35:31)
+|  |  |  |  |  SCMessage (35:32): copySeries = []
+|  |  |  |  |  |  SCCollection (35:32): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (35:33) = 1
+|  |  |  |  |  |  |  SCLiteral (35:36) = 2
+|  |  |  |  |  |  |  SCLiteral (35:39) = 3
+|  |  |  |  |  |  SCPositionalArgs (35:32)
+|  |  |  |  |  |  |  SCLiteral (35:41) = nil
+|  |  |  |  |  |  |  SCLiteral (35:41) = nil
+|  |  |  |  |  |  |  SCLiteral (35:45) = -1
+|  |  SCMethod (36:5): negative_end_from_start_string, version 3.16: negative_end_from_start_string { ^"abc"[..-2] } -> ""
+|  |  |  SCBody (36:38)
+|  |  |  |  SCExplicitReturn (36:38)
+|  |  |  |  |  SCMessage (36:39): copySeries = ""
+|  |  |  |  |  |  SCLiteral (36:39) = "abc"
+|  |  |  |  |  |  SCPositionalArgs (36:39)
+|  |  |  |  |  |  |  SCLiteral (36:44) = nil
+|  |  |  |  |  |  |  SCLiteral (36:44) = nil
+|  |  |  |  |  |  |  SCLiteral (36:48) = -2
+|  |  SCMethod (38:5): negative_end_with_first, version 3.16: negative_end_with_first { ^[1, 2, 3][0..-1] } -> [1]
+|  |  |  SCBody (38:31)
+|  |  |  |  SCExplicitReturn (38:31)
+|  |  |  |  |  SCMessage (38:32): copySeries = [1]
+|  |  |  |  |  |  SCCollection (38:32): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (38:33) = 1
+|  |  |  |  |  |  |  SCLiteral (38:36) = 2
+|  |  |  |  |  |  |  SCLiteral (38:39) = 3
+|  |  |  |  |  |  SCPositionalArgs (38:32)
+|  |  |  |  |  |  |  SCLiteral (38:42) = 0
+|  |  |  |  |  |  |  SCLiteral (38:41) = nil
+|  |  |  |  |  |  |  SCLiteral (38:46) = -1
+|  |  SCMethod (39:5): last_element_to_end, version 3.16: last_element_to_end { ^[1, 2, 3][2..] } -> [3]
+|  |  |  SCBody (39:27)
+|  |  |  |  SCExplicitReturn (39:27)
+|  |  |  |  |  SCMessage (39:28): copySeries = [3]
+|  |  |  |  |  |  SCCollection (39:28): Array = [1, 2, 3]
+|  |  |  |  |  |  |  SCLiteral (39:29) = 1
+|  |  |  |  |  |  |  SCLiteral (39:32) = 2
+|  |  |  |  |  |  |  SCLiteral (39:35) = 3
+|  |  |  |  |  |  SCPositionalArgs (39:28)
+|  |  |  |  |  |  |  SCLiteral (39:38) = 2
+|  |  |  |  |  |  |  SCLiteral (39:37) = nil
+|  |  |  |  |  |  |  SCLiteral (39:37) = nil
+SCClass (2:1): Meta_SliceFolding : Meta_Object, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (10:11): const_array = [10, 20, 30, 40]
+|  SCMethodList (2:1)
+Successfully compiled 16 classes.

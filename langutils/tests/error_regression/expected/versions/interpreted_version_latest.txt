@@ -1,0 +1,28 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): versions/interpreted_version_latest.scd
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Latest in a version comment
+|  versions/interpreted_version_latest.scd:1:1
+|      1 │ //# VERSION latest
+|        ┆ ^^^^^^^^^^^^^^^^^^ expected a release, e.g., `//# VERSION 3.16`.
+|      2 │ // `latest` can only be given by a tool, never written in a version comment, so it is compiled as legacy.
+|      3 │ // expect-error: Latest in a version comment
+|      4 │ 1 + 1
+|
+|  `latest` would change what the code means with each release, so it can only be given by a tool. The code it applies to is compiled as the legacy version.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCRegionList (1:1)
+|  |  SCRegion (4:1)
+|  |  |  SCFunction (4:1)
+|  |  |  |  SCBody (4:1)
+|  |  |  |  |  SCMessage (4:1): +
+|  |  |  |  |  |  SCLiteral (4:1) = 1
+|  |  |  |  |  |  SCPositionalArgs (4:1)
+|  |  |  |  |  |  |  SCLiteral (4:5) = 1
+Successfully compiled 15 classes.

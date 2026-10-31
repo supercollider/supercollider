@@ -1,0 +1,133 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (2:1): NotConstant : Object, version 3.16
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Not a constant
+|  classes/member_initialisers_not_constant.sc:7:30
+|      5 │     var refers_to_const = fine;
+|      6 │     classvar class_refers_to_const = fine;
+|      7 │     var refers_to_classvar = changes;
+|        ┆                              ^^^^^^^ this can't be evaluated when compiling.
+|      8 │     var message = 1.foo;
+|      9 │     var environment = ~env;
+|     10 │     var reference = `1;
+|
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Not a constant
+|  classes/member_initialisers_not_constant.sc:8:19
+|      6 │     classvar class_refers_to_const = fine;
+|      7 │     var refers_to_classvar = changes;
+|      8 │     var message = 1.foo;
+|        ┆                   ^^^^^ this can't be evaluated when compiling.
+|      9 │     var environment = ~env;
+|     10 │     var reference = `1;
+|     11 │     var unknown_name = other;
+|
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Not a constant
+|  classes/member_initialisers_not_constant.sc:9:23
+|      7 │     var refers_to_classvar = changes;
+|      8 │     var message = 1.foo;
+|      9 │     var environment = ~env;
+|        ┆                       ^^^^ this can't be evaluated when compiling.
+|     10 │     var reference = `1;
+|     11 │     var unknown_name = other;
+|     12 │     var curry = _;
+|
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Not a constant
+|  classes/member_initialisers_not_constant.sc:10:21
+|      8 │     var message = 1.foo;
+|      9 │     var environment = ~env;
+|     10 │     var reference = `1;
+|        ┆                     ^^ this can't be evaluated when compiling.
+|     11 │     var unknown_name = other;
+|     12 │     var curry = _;
+|     13 │ 
+|
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Not a constant
+|  classes/member_initialisers_not_constant.sc:11:24
+|      9 │     var environment = ~env;
+|     10 │     var reference = `1;
+|     11 │     var unknown_name = other;
+|        ┆                        ^^^^^ this can't be evaluated when compiling.
+|     12 │     var curry = _;
+|     13 │ 
+|     14 │     immutable_array { ^#[1, 2.foo, ~env] }
+|
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Not a constant
+|  classes/member_initialisers_not_constant.sc:12:17
+|     10 │     var reference = `1;
+|     11 │     var unknown_name = other;
+|     12 │     var curry = _;
+|        ┆                 ^ this can't be evaluated when compiling.
+|     13 │ 
+|     14 │     immutable_array { ^#[1, 2.foo, ~env] }
+|     15 │ }
+|
+|  This is required to be a constant, this is the usual literals and a few compiler known operations.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (2:1)
+|  |  SCMember (5:9): refers_to_const = 1
+|  SCMethodList (2:1)
+|  |  SCMethod (14:5): poisoned: immutable_array, version 3.16: immutable_array { ^#[1, 2.foo, ~env] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Not a constant
+|  |  |  classes/member_initialisers_not_constant.sc:14:29
+|  |  |     12 │     var curry = _;
+|  |  |     13 │ 
+|  |  |     14 │     immutable_array { ^#[1, 2.foo, ~env] }
+|  |  |        ┆                             ^^^^^ this can't be evaluated when compiling.
+|  |  |     15 │ }
+|  |  |
+|  |  |  This is required to be a constant, this is the usual literals and a few compiler known operations.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Not a constant
+|  |  |  classes/member_initialisers_not_constant.sc:14:36
+|  |  |     12 │     var curry = _;
+|  |  |     13 │ 
+|  |  |     14 │     immutable_array { ^#[1, 2.foo, ~env] }
+|  |  |        ┆                                    ^^^^ this can't be evaluated when compiling.
+|  |  |     15 │ }
+|  |  |
+|  |  |  This is required to be a constant, this is the usual literals and a few compiler known operations.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (14:23)
+|  |  |  |  SCExplicitReturn (14:23)
+|  |  |  |  |  SCCollection (14:24): Array, literal
+|  |  |  |  |  |  SCLiteral (14:26) = 1
+|  |  |  |  |  |  SCMessage (14:29): foo
+|  |  |  |  |  |  |  SCLiteral (14:29) = 2
+|  |  |  |  |  |  SCRead (14:36): environment env
+SCClass (2:1): Meta_NotConstant : Meta_Object, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (3:11): fine = 1
+|  |  SCMember (4:14): changes = 2
+|  |  SCMember (6:14): class_refers_to_const = 1
+|  SCMethodList (2:1)
+Successfully compiled 16 classes.

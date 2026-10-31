@@ -1,0 +1,41 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): LegacyKeyword : Object
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (6:5): one: one { ^1 } -> 1
+|  |  |  SCBody (6:11)
+|  |  |  |  SCExplicitReturn (6:11)
+|  |  |  |  |  SCLiteral (6:12) = 1
+SCClass (9:1): LegacyKeywordFile : Object, version 3.16
+|  SCMemberList (9:1)
+|  SCMethodList (9:1)
+|  |  SCMethod (11:5): two, version 3.16: two { ^2 } -> 2
+|  |  |  SCBody (11:11)
+|  |  |  |  SCExplicitReturn (11:11)
+|  |  |  |  |  SCLiteral (11:12) = 2
+SCClass (15:1): LegacyKeywordTrailing : Object
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Malformed version
+|  versions/legacy_keyword.sc:16:5
+|     14 │ // Anything after it is malformed, and the class is legacy.
+|     15 │ LegacyKeywordTrailing {
+|     16 │     //# VERSION legacy 3.16
+|        ┆     ^^^^^^^^^^^^^^^^^^^^^^^ expected a version, e.g., `//# VERSION 3.16`, or `//# VERSION legacy`.
+|     17 │     three { ^3 }
+|     18 │ }
+|
+|  The classes it applies to are compiled as the legacy version.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (15:1)
+|  SCMethodList (15:1)
+|  |  SCMethod (17:5): three: three { ^3 } -> 3
+|  |  |  SCBody (17:13)
+|  |  |  |  SCExplicitReturn (17:13)
+|  |  |  |  |  SCLiteral (17:14) = 3
+Successfully compiled 18 classes.

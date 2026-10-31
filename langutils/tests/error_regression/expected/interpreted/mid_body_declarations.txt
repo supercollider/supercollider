@@ -1,0 +1,22 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): version 3.16: interpreted/mid_body_declarations.scd
+|  SCFunction (1:1)
+|  |  SCBody (1:1)
+|  |  |  SCVariableDeclare (6:5): c (captured), prototype
+|  |  |  |  SCLiteral (6:9) = 1
+|  |  |  SCMessage (6:12): postln
+|  |  |  |  SCRead (6:12): local c, declared (6:5): c = 1
+|  |  |  SCVariableDeclare (6:26): f, computed
+|  |  |  |  SCFunction (6:30): f
+|  |  |  |  |  SCBody (6:30)
+|  |  |  |  |  |  SCRead (6:32): local c, declared (6:5): c = 1
+|  |  |  SCAssign (6:37): instance a, declared (37:11): a
+|  |  |  |  SCRead (6:41): local f, declared (6:26): f = { c }
+|  |  |  SCMessage (6:44): value
+|  |  |  |  SCRead (6:44): local f, declared (6:26): f = { c }
+Successfully compiled 15 classes.

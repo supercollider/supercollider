@@ -1,0 +1,6 @@
+add_executable(sc_backend_test tests.cpp)
+target_link_libraries(sc_backend_test boost_test sc_compiler)
+target_include_directories(sc_backend_test PUBLIC ${boost_include_dirs})
+add_test(langutils.sc_backend_test_run sc_backend_test)
+set_property(TARGET sc_backend_test PROPERTY FOLDER Test/Backend)
+target_compile_definitions(sc_backend_test PRIVATE SC_BACKEND_TEST_PRELUDE="${CMAKE_CURRENT_SOURCE_DIR}/../../tests/error_regression/prelude.sc")

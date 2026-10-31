@@ -1,0 +1,232 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): DuplicateMethods : Object, version 3.16
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Duplicate method name.
+|  classes/duplicate_methods.sc:10:5
+|      7 │     const <constant = 1;
+|      8 │ 
+|      9 │     twice { ^1 }
+|        ┆     ^^^^^ This method was duplicated...
+|     10 │     twice { ^2 }
+|        ┆     ^^^^^ ...here.
+|     11 │     *twiceClass { ^1 }
+|     12 │     *twiceClass { ^2 }
+|     13 │ 
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Duplicate method name.
+|  classes/duplicate_methods.sc:12:6
+|      9 │     twice { ^1 }
+|     10 │     twice { ^2 }
+|     11 │     *twiceClass { ^1 }
+|        ┆      ^^^^^^^^^^ This method was duplicated...
+|     12 │     *twiceClass { ^2 }
+|        ┆      ^^^^^^^^^^ ...here.
+|     13 │ 
+|     14 │     getter { ^1 }
+|     15 │     both { ^1 }
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Duplicate method name.
+|  classes/duplicate_methods.sc:5:10
+|      3 │ // compiler. The first is kept.
+|      4 │ DuplicateMethods {
+|      5 │     var <getter, <>both, >setter, plain;
+|        ┆          ^^^^^^ This method was duplicated...
+|      6 │     classvar <classGetter, <>classBoth;
+|      7 │     const <constant = 1;
+|      8 │ 
+|
+|  classes/duplicate_methods.sc:14:5
+|     12 │     *twiceClass { ^2 }
+|     13 │ 
+|     14 │     getter { ^1 }
+|        ┆     ^^^^^^ ...here.
+|     15 │     both { ^1 }
+|     16 │     both_ { ^1 }
+|     17 │     setter_ { ^1 }
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Duplicate method name.
+|  classes/duplicate_methods.sc:5:20
+|      3 │ // compiler. The first is kept.
+|      4 │ DuplicateMethods {
+|      5 │     var <getter, <>both, >setter, plain;
+|        ┆                    ^^^^ This method was duplicated...
+|      6 │     classvar <classGetter, <>classBoth;
+|      7 │     const <constant = 1;
+|      8 │ 
+|
+|  classes/duplicate_methods.sc:15:5
+|     13 │ 
+|     14 │     getter { ^1 }
+|     15 │     both { ^1 }
+|        ┆     ^^^^ ...here.
+|     16 │     both_ { ^1 }
+|     17 │     setter_ { ^1 }
+|     18 │     *classGetter { ^1 }
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Duplicate method name.
+|  classes/duplicate_methods.sc:5:20
+|      3 │ // compiler. The first is kept.
+|      4 │ DuplicateMethods {
+|      5 │     var <getter, <>both, >setter, plain;
+|        ┆                    ^^^^ This method was duplicated...
+|      6 │     classvar <classGetter, <>classBoth;
+|      7 │     const <constant = 1;
+|      8 │ 
+|
+|  classes/duplicate_methods.sc:16:5
+|     14 │     getter { ^1 }
+|     15 │     both { ^1 }
+|     16 │     both_ { ^1 }
+|        ┆     ^^^^^ ...here.
+|     17 │     setter_ { ^1 }
+|     18 │     *classGetter { ^1 }
+|     19 │     *classBoth_ { ^1 }
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Duplicate method name.
+|  classes/duplicate_methods.sc:5:27
+|      3 │ // compiler. The first is kept.
+|      4 │ DuplicateMethods {
+|      5 │     var <getter, <>both, >setter, plain;
+|        ┆                           ^^^^^^ This method was duplicated...
+|      6 │     classvar <classGetter, <>classBoth;
+|      7 │     const <constant = 1;
+|      8 │ 
+|
+|  classes/duplicate_methods.sc:17:5
+|     15 │     both { ^1 }
+|     16 │     both_ { ^1 }
+|     17 │     setter_ { ^1 }
+|        ┆     ^^^^^^^ ...here.
+|     18 │     *classGetter { ^1 }
+|     19 │     *classBoth_ { ^1 }
+|     20 │     *constant { ^1 }
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Duplicate method name.
+|  classes/duplicate_methods.sc:6:15
+|      4 │ DuplicateMethods {
+|      5 │     var <getter, <>both, >setter, plain;
+|      6 │     classvar <classGetter, <>classBoth;
+|        ┆               ^^^^^^^^^^^ This method was duplicated...
+|      7 │     const <constant = 1;
+|      8 │ 
+|      9 │     twice { ^1 }
+|
+|  classes/duplicate_methods.sc:18:6
+|     16 │     both_ { ^1 }
+|     17 │     setter_ { ^1 }
+|     18 │     *classGetter { ^1 }
+|        ┆      ^^^^^^^^^^^ ...here.
+|     19 │     *classBoth_ { ^1 }
+|     20 │     *constant { ^1 }
+|     21 │ 
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Duplicate method name.
+|  classes/duplicate_methods.sc:6:30
+|      4 │ DuplicateMethods {
+|      5 │     var <getter, <>both, >setter, plain;
+|      6 │     classvar <classGetter, <>classBoth;
+|        ┆                              ^^^^^^^^^ This method was duplicated...
+|      7 │     const <constant = 1;
+|      8 │ 
+|      9 │     twice { ^1 }
+|
+|  classes/duplicate_methods.sc:19:6
+|     17 │     setter_ { ^1 }
+|     18 │     *classGetter { ^1 }
+|     19 │     *classBoth_ { ^1 }
+|        ┆      ^^^^^^^^^^ ...here.
+|     20 │     *constant { ^1 }
+|     21 │ 
+|     22 │     // Members without that accessor are fine, as are methods of the other class.
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Duplicate method name.
+|  classes/duplicate_methods.sc:7:12
+|      5 │     var <getter, <>both, >setter, plain;
+|      6 │     classvar <classGetter, <>classBoth;
+|      7 │     const <constant = 1;
+|        ┆            ^^^^^^^^ This method was duplicated...
+|      8 │ 
+|      9 │     twice { ^1 }
+|     10 │     twice { ^2 }
+|
+|  classes/duplicate_methods.sc:20:6
+|     18 │     *classGetter { ^1 }
+|     19 │     *classBoth_ { ^1 }
+|     20 │     *constant { ^1 }
+|        ┆      ^^^^^^^^ ...here.
+|     21 │ 
+|     22 │     // Members without that accessor are fine, as are methods of the other class.
+|     23 │     // expect: no diagnostics
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCMemberList (4:1)
+|  |  SCMember (5:10): getter
+|  |  SCMember (5:20): both
+|  |  SCMember (5:27): setter
+|  |  SCMember (5:35): plain
+|  SCMethodList (4:1)
+|  |  SCMethod (9:5): twice, version 3.16: twice { ^1 } -> 1
+|  |  |  SCBody (9:13)
+|  |  |  |  SCExplicitReturn (9:13)
+|  |  |  |  |  SCLiteral (9:14) = 1
+|  |  SCMethod (24:5): plain, version 3.16: plain { ^1 } -> 1
+|  |  |  SCBody (24:13)
+|  |  |  |  SCExplicitReturn (24:13)
+|  |  |  |  |  SCLiteral (24:14) = 1
+|  |  SCMethod (26:5): setter, version 3.16: setter { ^1 } -> 1
+|  |  |  SCBody (26:14)
+|  |  |  |  SCExplicitReturn (26:14)
+|  |  |  |  |  SCLiteral (26:15) = 1
+|  |  SCMethod (28:5): classGetter, version 3.16: classGetter { ^1 } -> 1
+|  |  |  SCBody (28:19)
+|  |  |  |  SCExplicitReturn (28:19)
+|  |  |  |  |  SCLiteral (28:20) = 1
+|  |  SCMethod (36:5): plain_, version 3.16: plain_ { ^1 } -> 1
+|  |  |  SCBody (36:14)
+|  |  |  |  SCExplicitReturn (36:14)
+|  |  |  |  |  SCLiteral (36:15) = 1
+SCClass (4:1): Meta_DuplicateMethods : Meta_Object, version 3.16
+|  SCMemberList (4:1)
+|  |  SCMember (7:12): constant = 1
+|  |  SCMember (6:15): classGetter
+|  |  SCMember (6:30): classBoth
+|  SCMethodList (4:1)
+|  |  SCMethod (11:5): twiceClass, version 3.16: *twiceClass { ^1 } -> 1
+|  |  |  SCBody (11:19)
+|  |  |  |  SCExplicitReturn (11:19)
+|  |  |  |  |  SCLiteral (11:20) = 1
+|  |  SCMethod (30:5): getter, version 3.16: *getter { ^1 } -> 1
+|  |  |  SCBody (30:15)
+|  |  |  |  SCExplicitReturn (30:15)
+|  |  |  |  |  SCLiteral (30:16) = 1
+Successfully compiled 16 classes.

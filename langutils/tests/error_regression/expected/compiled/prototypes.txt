@@ -1,0 +1,123 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): Prototypes : Object
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (6:5): literals: literals { |a = 1, b = \sym, c = "text", d = #[1, 2]| var e = 2.5, f = $c, g; ^[a, b, c, d, e, f, g] }
+|  |  |  SCArgumentDeclareList (6:17)
+|  |  |  |  SCArgumentDeclare (6:17): a, prototype
+|  |  |  |  |  SCLiteral (6:21) = 1
+|  |  |  |  SCArgumentDeclare (6:24): b, prototype
+|  |  |  |  |  SCLiteral (6:28) = \sym
+|  |  |  |  SCArgumentDeclare (6:34): c, prototype
+|  |  |  |  |  SCLiteral (6:38) = "text"
+|  |  |  |  SCArgumentDeclare (6:46): d, prototype
+|  |  |  |  |  SCCollection (6:50): Array, literal = [1, 2]
+|  |  |  |  |  |  SCLiteral (6:52) = 1
+|  |  |  |  |  |  SCLiteral (6:55) = 2
+|  |  |  SCBody (6:59)
+|  |  |  |  SCVariableDeclare (6:63): e, prototype
+|  |  |  |  |  SCLiteral (6:67) = 2.5
+|  |  |  |  SCVariableDeclare (6:72): f, prototype
+|  |  |  |  |  SCLiteral (6:76) = $c
+|  |  |  |  SCVariableDeclare (6:80): g
+|  |  |  |  SCExplicitReturn (6:83)
+|  |  |  |  |  SCCollection (6:84): Array
+|  |  |  |  |  |  SCRead (6:85): local a, declared (6:17): a = 1
+|  |  |  |  |  |  SCRead (6:88): local b, declared (6:24): b = \sym
+|  |  |  |  |  |  SCRead (6:91): local c, declared (6:34): c = "text"
+|  |  |  |  |  |  SCRead (6:94): local d, declared (6:46): d = #[1, 2]
+|  |  |  |  |  |  SCRead (6:97): local e = 2.5, declared (6:63): e = 2.5
+|  |  |  |  |  |  SCRead (6:100): local f = $c, declared (6:72): f = $c
+|  |  |  |  |  |  SCRead (6:103): local g = nil, declared (6:80): g
+|  |  SCMethod (8:5): computed: computed { |a = ([1, 2]), b = (1 + 2)| var c = [a], d = b.neg; ^[c, d] }
+|  |  |  SCArgumentDeclareList (8:17)
+|  |  |  |  SCArgumentDeclare (8:17): a, computed
+|  |  |  |  |  SCCollection (8:22): Array
+|  |  |  |  |  |  SCLiteral (8:23) = 1
+|  |  |  |  |  |  SCLiteral (8:26) = 2
+|  |  |  |  SCArgumentDeclare (8:31): b, computed
+|  |  |  |  |  SCMessage (8:36): +
+|  |  |  |  |  |  SCLiteral (8:36) = 1
+|  |  |  |  |  |  SCPositionalArgs (8:36)
+|  |  |  |  |  |  |  SCLiteral (8:40) = 2
+|  |  |  SCBody (8:44)
+|  |  |  |  SCVariableDeclare (8:48): c, computed
+|  |  |  |  |  SCCollection (8:52): Array
+|  |  |  |  |  |  SCRead (8:53): local a, declared (8:17): a = ([1, 2])
+|  |  |  |  SCVariableDeclare (8:57): d, computed
+|  |  |  |  |  SCMessage (8:61): neg
+|  |  |  |  |  |  SCRead (8:61): local b, declared (8:31): b = (1 + 2)
+|  |  |  |  SCExplicitReturn (8:68)
+|  |  |  |  |  SCCollection (8:69): Array
+|  |  |  |  |  |  SCRead (8:70): local c, declared (8:48): c = [a]
+|  |  |  |  |  |  SCRead (8:73): local d, declared (8:57): d = b.neg
+|  |  SCMethod (10:5): variadic: variadic { |a ...rest, kwargs| var b = 1; ^[a, rest, kwargs, b] }
+|  |  |  SCArgumentDeclareList (10:16)
+|  |  |  |  SCArgumentDeclare (10:17): a
+|  |  |  SCArgumentDeclareList (10:16)
+|  |  |  |  SCArgumentDeclare (10:22): rest
+|  |  |  |  SCArgumentDeclare (10:28): kwargs
+|  |  |  SCBody (10:36)
+|  |  |  |  SCVariableDeclare (10:40): b, prototype
+|  |  |  |  |  SCLiteral (10:44) = 1
+|  |  |  |  SCExplicitReturn (10:47)
+|  |  |  |  |  SCCollection (10:48): Array
+|  |  |  |  |  |  SCRead (10:49): local a, declared (10:17): a
+|  |  |  |  |  |  SCRead (10:52): local rest, declared (10:22): rest
+|  |  |  |  |  |  SCRead (10:58): local kwargs, declared (10:28): kwargs
+|  |  |  |  |  |  SCRead (10:66): local b = 1, declared (10:40): b = 1
+|  |  SCMethod (12:5): function: function { ^{ |x = 3, y| var z = 4, w = x; [y, z, w] } }
+|  |  |  SCBody (12:16)
+|  |  |  |  SCExplicitReturn (12:16)
+|  |  |  |  |  SCFunction (12:17)
+|  |  |  |  |  |  SCArgumentDeclareList (12:20)
+|  |  |  |  |  |  |  SCArgumentDeclare (12:20): x, prototype
+|  |  |  |  |  |  |  |  SCLiteral (12:24) = 3
+|  |  |  |  |  |  |  SCArgumentDeclare (12:27): y
+|  |  |  |  |  |  SCBody (12:17)
+|  |  |  |  |  |  |  SCVariableDeclare (12:34): z, prototype
+|  |  |  |  |  |  |  |  SCLiteral (12:38) = 4
+|  |  |  |  |  |  |  SCVariableDeclare (12:41): w, computed
+|  |  |  |  |  |  |  |  SCRead (12:45): local x, declared (12:20): x = 3
+|  |  |  |  |  |  |  SCCollection (12:48): Array
+|  |  |  |  |  |  |  |  SCRead (12:49): local y, declared (12:27): y
+|  |  |  |  |  |  |  |  SCRead (12:52): local z = 4, declared (12:34): z = 4
+|  |  |  |  |  |  |  |  SCRead (12:55): local w, declared (12:41): w = x
+
+
+
+COMPILED DUMP 
+
+
+Prototypes
+|  class (4:1): superclass Object, not indexed
+|  method literals: function 0
+|  method computed: function 1
+|  method variadic: function 2
+|  method function: function 3
+|  function 0 (6:5): literals
+|  |  arguments: this, a = 1, b = \sym, c = "text", d = [1, 2],
+|  |  variables: e = 2.5, f = $c, g = nil,
+|  |  code: 28 bytes, 0 selectors, 0 constants
+|  function 1 (8:5): computed
+|  |  arguments: this, a, b,
+|  |  variables: c, d,
+|  |  code: 59 bytes, 0 selectors, 0 constants
+|  function 2 (10:5): variadic
+|  |  arguments: this, a = nil,
+|  |  variadic: rest, kwargs,
+|  |  variables: b = 1,
+|  |  code: 19 bytes, 0 selectors, 0 constants
+|  function 3 (12:5): function
+|  |  arguments: this,
+|  |  code: 3 bytes, 1 selectors, 0 constants
+|  function 4 (12:17), in function 3
+|  |  arguments: x = 3, y = nil,
+|  |  variables: z = 4, w,
+|  |  code: 19 bytes, 0 selectors, 0 constants
+Successfully compiled 16 classes.

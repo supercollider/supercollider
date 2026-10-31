@@ -1,0 +1,153 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (2:1): Blocks : Object, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (3:9): instance_var
+|  SCMethodList (2:1)
+|  |  SCMethod (5:5): empty, version 3.16: empty { ^{} }
+|  |  |  SCBody (5:13)
+|  |  |  |  SCExplicitReturn (5:13)
+|  |  |  |  |  SCFunction (5:14) -> nil
+|  |  |  |  |  |  SCBody (5:14)
+|  |  SCMethod (6:5): constant_body, version 3.16: constant_body { ^{ 1 } }
+|  |  |  SCBody (6:21)
+|  |  |  |  SCExplicitReturn (6:21)
+|  |  |  |  |  SCFunction (6:22) -> 1
+|  |  |  |  |  |  SCBody (6:22)
+|  |  |  |  |  |  |  SCLiteral (6:24) = 1
+|  |  SCMethod (9:5): pipe_arguments, version 3.16: pipe_arguments { ^{ |a, b| a + b } }
+|  |  |  SCBody (9:22)
+|  |  |  |  SCExplicitReturn (9:22)
+|  |  |  |  |  SCFunction (9:23)
+|  |  |  |  |  |  SCArgumentDeclareList (9:26)
+|  |  |  |  |  |  |  SCArgumentDeclare (9:26): a
+|  |  |  |  |  |  |  SCArgumentDeclare (9:29): b
+|  |  |  |  |  |  SCBody (9:23)
+|  |  |  |  |  |  |  SCMessage (9:32): +
+|  |  |  |  |  |  |  |  SCRead (9:32): local a, declared (9:26): a
+|  |  |  |  |  |  |  |  SCPositionalArgs (9:32)
+|  |  |  |  |  |  |  |  |  SCRead (9:36): local b, declared (9:29): b
+|  |  SCMethod (11:5): arg_arguments, version 3.16: arg_arguments { ^{ arg a, b; a } }
+|  |  |  SCBody (11:21)
+|  |  |  |  SCExplicitReturn (11:21)
+|  |  |  |  |  SCFunction (11:22)
+|  |  |  |  |  |  SCArgumentDeclareList (11:28)
+|  |  |  |  |  |  |  SCArgumentDeclare (11:28): a
+|  |  |  |  |  |  |  SCArgumentDeclare (11:31): b
+|  |  |  |  |  |  SCBody (11:22)
+|  |  |  |  |  |  |  SCRead (11:34): local a, declared (11:28): a
+|  |  SCMethod (13:5): variadic, version 3.16: variadic { ^{ |a ... rest| rest } }
+|  |  |  SCBody (13:16)
+|  |  |  |  SCExplicitReturn (13:16)
+|  |  |  |  |  SCFunction (13:17)
+|  |  |  |  |  |  SCArgumentDeclareList (13:19)
+|  |  |  |  |  |  |  SCArgumentDeclare (13:20): a
+|  |  |  |  |  |  SCArgumentDeclareList (13:19)
+|  |  |  |  |  |  |  SCArgumentDeclare (13:26): rest
+|  |  |  |  |  |  SCBody (13:17)
+|  |  |  |  |  |  |  SCRead (13:32): local rest, declared (13:26): rest
+|  |  SCMethod (15:5): default_argument, version 3.16: default_argument { ^{ |a = 1| a } }
+|  |  |  SCBody (15:24)
+|  |  |  |  SCExplicitReturn (15:24)
+|  |  |  |  |  SCFunction (15:25)
+|  |  |  |  |  |  SCArgumentDeclareList (15:28)
+|  |  |  |  |  |  |  SCArgumentDeclare (15:28): a, prototype
+|  |  |  |  |  |  |  |  SCLiteral (15:32) = 1
+|  |  |  |  |  |  SCBody (15:25)
+|  |  |  |  |  |  |  SCRead (15:35): local a, declared (15:28): a = 1
+|  |  SCMethod (17:5): reads_instance, version 3.16: reads_instance { ^{ instance_var } }
+|  |  |  SCBody (17:22)
+|  |  |  |  SCExplicitReturn (17:22)
+|  |  |  |  |  SCFunction (17:23)
+|  |  |  |  |  |  SCBody (17:23)
+|  |  |  |  |  |  |  SCRead (17:25): instance instance_var, declared (3:9): instance_var
+|  |  SCMethod (18:5): assigns_argument, version 3.16: assigns_argument { ^{ |a| a = 2 } }
+|  |  |  SCBody (18:24)
+|  |  |  |  SCExplicitReturn (18:24)
+|  |  |  |  |  SCFunction (18:25)
+|  |  |  |  |  |  SCArgumentDeclareList (18:28)
+|  |  |  |  |  |  |  SCArgumentDeclare (18:28): a (assigned)
+|  |  |  |  |  |  SCBody (18:25)
+|  |  |  |  |  |  |  SCAssign (18:31): local a, declared (18:28): a
+|  |  |  |  |  |  |  |  SCLiteral (18:35) = 2
+|  |  SCMethod (21:5): nested, version 3.16: nested { ^{ |a| { |b| a + b } } }
+|  |  |  SCBody (21:14)
+|  |  |  |  SCExplicitReturn (21:14)
+|  |  |  |  |  SCFunction (21:15)
+|  |  |  |  |  |  SCArgumentDeclareList (21:18)
+|  |  |  |  |  |  |  SCArgumentDeclare (21:18): a (captured)
+|  |  |  |  |  |  SCBody (21:15)
+|  |  |  |  |  |  |  SCFunction (21:21)
+|  |  |  |  |  |  |  |  SCArgumentDeclareList (21:24)
+|  |  |  |  |  |  |  |  |  SCArgumentDeclare (21:24): b
+|  |  |  |  |  |  |  |  SCBody (21:21)
+|  |  |  |  |  |  |  |  |  SCMessage (21:27): +
+|  |  |  |  |  |  |  |  |  |  SCRead (21:27): local a, declared (21:18): a
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (21:27)
+|  |  |  |  |  |  |  |  |  |  |  SCRead (21:31): local b, declared (21:24): b
+|  |  SCMethod (23:5): shadowing, version 3.16: shadowing { ^{ |instance_var| instance_var } }
+|  |  |  SCBody (23:17)
+|  |  |  |  SCExplicitReturn (23:17)
+|  |  |  |  |  SCFunction (23:18)
+|  |  |  |  |  |  SCArgumentDeclareList (23:21)
+|  |  |  |  |  |  |  SCArgumentDeclare (23:21): instance_var
+|  |  |  |  |  |  SCBody (23:18)
+|  |  |  |  |  |  |  SCRead (23:35): local instance_var, declared (23:21): instance_var
+|  |  SCMethod (26:5): poisoned: out_of_scope, version 3.16: out_of_scope { ^{ |a| a }.value(1) + a }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  functions/blocks.sc:26:42
+|  |  |     24 │     // expect-error: Variable not defined
+|  |  |     25 │     // expect-reads: a -> a
+|  |  |     26 │     out_of_scope { ^{ |a| a }.value(1) + a }
+|  |  |        ┆                                          ^ this is not defined.
+|  |  |     27 │     // expect-reads: x -> x
+|  |  |     28 │     trailing_block { ^1.do { |x| x } }
+|  |  |     29 │     // expect: no diagnostics
+|  |  |
+|  |  |  Declare it with 'var', or use '~a' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (26:20)
+|  |  |  |  SCExplicitReturn (26:20)
+|  |  |  |  |  SCMessage (26:21): +
+|  |  |  |  |  |  SCMessage (26:21): value
+|  |  |  |  |  |  |  SCFunction (26:21)
+|  |  |  |  |  |  |  |  SCArgumentDeclareList (26:24)
+|  |  |  |  |  |  |  |  |  SCArgumentDeclare (26:24): a
+|  |  |  |  |  |  |  |  SCBody (26:21)
+|  |  |  |  |  |  |  |  |  SCRead (26:27): local a, declared (26:24): a
+|  |  |  |  |  |  |  SCPositionalArgs (26:21)
+|  |  |  |  |  |  |  |  SCLiteral (26:37) = 1
+|  |  |  |  |  |  SCPositionalArgs (26:21)
+|  |  |  |  |  |  |  SCExprList (26:42)
+|  |  SCMethod (28:5): trailing_block, version 3.16: trailing_block { ^1.do { |x| x } }
+|  |  |  SCBody (28:22)
+|  |  |  |  SCExplicitReturn (28:22)
+|  |  |  |  |  SCMessage (28:23): do
+|  |  |  |  |  |  SCLiteral (28:23) = 1
+|  |  |  |  |  |  SCPositionalArgs (28:23)
+|  |  |  |  |  |  |  SCFunction (28:28)
+|  |  |  |  |  |  |  |  SCArgumentDeclareList (28:31)
+|  |  |  |  |  |  |  |  |  SCArgumentDeclare (28:31): x
+|  |  |  |  |  |  |  |  SCBody (28:28)
+|  |  |  |  |  |  |  |  |  SCRead (28:34): local x, declared (28:31): x
+|  |  SCMethod (30:5): non_local_return, version 3.16: non_local_return { ^{ ^1 } }
+|  |  |  SCBody (30:24)
+|  |  |  |  SCExplicitReturn (30:24)
+|  |  |  |  |  SCFunction (30:25)
+|  |  |  |  |  |  SCBody (30:25)
+|  |  |  |  |  |  |  SCExplicitReturn (30:27)
+|  |  |  |  |  |  |  |  SCLiteral (30:28) = 1
+|  |  SCMethod (31:5): multiple_expressions, version 3.16: multiple_expressions { ^{ 1; 2 } }
+|  |  |  SCBody (31:28)
+|  |  |  |  SCExplicitReturn (31:28)
+|  |  |  |  |  SCFunction (31:29) -> 2
+|  |  |  |  |  |  SCBody (31:29)
+|  |  |  |  |  |  |  SCLiteral (31:31) = 1
+|  |  |  |  |  |  |  SCLiteral (31:34) = 2
+Successfully compiled 16 classes.

@@ -1,0 +1,110 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (2:1): References : Object, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (3:9): member
+|  SCMethodList (2:1)
+|  |  SCMethod (7:5): literal, version 3.16: literal { ^`1 }
+|  |  |  SCBody (7:15)
+|  |  |  |  SCExplicitReturn (7:15)
+|  |  |  |  |  SCMessage (7:16): new
+|  |  |  |  |  |  SCLiteral (7:16) = Ref
+|  |  |  |  |  |  SCPositionalArgs (7:16)
+|  |  |  |  |  |  |  SCLiteral (7:17) = 1
+|  |  SCMethod (9:5): local, version 3.16: local { var a = 1; ^`a }
+|  |  |  SCBody (9:13)
+|  |  |  |  SCVariableDeclare (9:17): a, prototype
+|  |  |  |  |  SCLiteral (9:21) = 1
+|  |  |  |  SCExplicitReturn (9:24)
+|  |  |  |  |  SCMessage (9:25): new
+|  |  |  |  |  |  SCLiteral (9:25) = Ref
+|  |  |  |  |  |  SCPositionalArgs (9:25)
+|  |  |  |  |  |  |  SCRead (9:26): local a = 1, declared (9:17): a = 1
+|  |  SCMethod (11:5): member, version 3.16: member { ^`member }
+|  |  |  SCBody (11:14)
+|  |  |  |  SCExplicitReturn (11:14)
+|  |  |  |  |  SCMessage (11:15): new
+|  |  |  |  |  |  SCLiteral (11:15) = Ref
+|  |  |  |  |  |  SCPositionalArgs (11:15)
+|  |  |  |  |  |  |  SCRead (11:16): instance member, declared (3:9): member
+|  |  SCMethod (12:5): nested, version 3.16: nested { ^``1 }
+|  |  |  SCBody (12:14)
+|  |  |  |  SCExplicitReturn (12:14)
+|  |  |  |  |  SCMessage (12:15): new
+|  |  |  |  |  |  SCLiteral (12:15) = Ref
+|  |  |  |  |  |  SCPositionalArgs (12:15)
+|  |  |  |  |  |  |  SCMessage (12:16): new
+|  |  |  |  |  |  |  |  SCLiteral (12:16) = Ref
+|  |  |  |  |  |  |  |  SCPositionalArgs (12:16)
+|  |  |  |  |  |  |  |  |  SCLiteral (12:17) = 1
+|  |  SCMethod (13:5): expression, version 3.16: expression { ^`(1 + 2) }
+|  |  |  SCBody (13:18)
+|  |  |  |  SCExplicitReturn (13:18)
+|  |  |  |  |  SCMessage (13:19): new
+|  |  |  |  |  |  SCLiteral (13:19) = Ref
+|  |  |  |  |  |  SCPositionalArgs (13:19)
+|  |  |  |  |  |  |  SCMessage (13:21): + = 3
+|  |  |  |  |  |  |  |  SCLiteral (13:21) = 1
+|  |  |  |  |  |  |  |  SCPositionalArgs (13:21)
+|  |  |  |  |  |  |  |  |  SCLiteral (13:25) = 2
+|  |  SCMethod (14:5): in_array, version 3.16: in_array { ^[`1, `2] }
+|  |  |  SCBody (14:16)
+|  |  |  |  SCExplicitReturn (14:16)
+|  |  |  |  |  SCCollection (14:17): Array
+|  |  |  |  |  |  SCMessage (14:18): new
+|  |  |  |  |  |  |  SCLiteral (14:18) = Ref
+|  |  |  |  |  |  |  SCPositionalArgs (14:18)
+|  |  |  |  |  |  |  |  SCLiteral (14:19) = 1
+|  |  |  |  |  |  SCMessage (14:22): new
+|  |  |  |  |  |  |  SCLiteral (14:22) = Ref
+|  |  |  |  |  |  |  SCPositionalArgs (14:22)
+|  |  |  |  |  |  |  |  SCLiteral (14:23) = 2
+|  |  SCMethod (16:5): curried, version 3.16: curried { ^`_ }
+|  |  |  SCBody (16:15)
+|  |  |  |  SCExplicitReturn (16:15)
+|  |  |  |  |  SCFunction (16:16)
+|  |  |  |  |  |  SCArgumentDeclareList (16:16)
+|  |  |  |  |  |  |  SCArgumentDeclare (16:17): _
+|  |  |  |  |  |  SCBody (16:16)
+|  |  |  |  |  |  |  SCMessage (16:16): new
+|  |  |  |  |  |  |  |  SCLiteral (16:16) = Ref
+|  |  |  |  |  |  |  |  SCPositionalArgs (16:16)
+|  |  |  |  |  |  |  |  |  SCRead (16:17): local _, declared (16:17): _
+|  |  SCMethod (18:5): curried_inside, version 3.16: curried_inside { ^`(_ + 1) }
+|  |  |  SCBody (18:22)
+|  |  |  |  SCExplicitReturn (18:22)
+|  |  |  |  |  SCMessage (18:23): new
+|  |  |  |  |  |  SCLiteral (18:23) = Ref
+|  |  |  |  |  |  SCPositionalArgs (18:23)
+|  |  |  |  |  |  |  SCFunction (18:25)
+|  |  |  |  |  |  |  |  SCArgumentDeclareList (18:25)
+|  |  |  |  |  |  |  |  |  SCArgumentDeclare (18:25): _
+|  |  |  |  |  |  |  |  SCBody (18:25)
+|  |  |  |  |  |  |  |  |  SCMessage (18:25): +
+|  |  |  |  |  |  |  |  |  |  SCRead (18:25): local _, declared (18:25): _
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (18:25)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (18:29) = 1
+|  |  SCMethod (20:5): poisoned: undefined, version 3.16: undefined { ^`undefined }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable not defined
+|  |  |  messages/references.sc:20:19
+|  |  |     18 │     curried_inside { ^`(_ + 1) }
+|  |  |     19 │     // expect-error: Variable not defined
+|  |  |     20 │     undefined { ^`undefined }
+|  |  |        ┆                   ^^^^^^^^^ this is not defined.
+|  |  |     21 │ }
+|  |  |
+|  |  |  Declare it with 'var', or use '~undefined' to refer to an environment variable.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (20:17)
+|  |  |  |  SCExplicitReturn (20:17)
+|  |  |  |  |  SCMessage (20:18): new
+|  |  |  |  |  |  SCLiteral (20:18) = Ref
+|  |  |  |  |  |  SCPositionalArgs (20:18)
+|  |  |  |  |  |  |  SCExprList (20:19)
+Successfully compiled 16 classes.
