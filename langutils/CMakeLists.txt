@@ -5,3 +5,4 @@ endif()
 
 add_subdirectory(sc_lexer)
 add_subdirectory(sc_util)
+add_subdirectory(sc_source)
