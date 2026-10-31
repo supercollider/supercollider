@@ -1722,7 +1722,7 @@ HOT void Interpret(VMGlobals* g) {
                     --sp;
                     PyrSlot* vars = g->frame->vars;
                     SetRaw(&vars[2], slotRawFloat(&vars[2]) - 1.0); // dec i
-                    SetRaw(&vars[3], slotRawFloat(&vars[3]) - 1.0); // inc j
+                    SetRaw(&vars[3], slotRawFloat(&vars[3]) + 1.0); // inc j
                     ip -= Extended::FloatDoReverse.jumpSize();
                     dispatch_opcode;
                 }
