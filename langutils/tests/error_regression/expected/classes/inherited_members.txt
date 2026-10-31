@@ -1,0 +1,27 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (2:1): Foo : Object, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (3:9): bar
+|  |  SCMember (3:14): car
+|  |  SCMember (3:19): tar
+|  SCMethodList (2:1)
+SCClass (2:1): Meta_Foo : Meta_Object, version 3.16
+|  SCMemberList (2:1)
+|  |  SCMember (4:11): foo_const1 = nil
+|  |  SCMember (4:23): foo_const_2 = nil
+|  SCMethodList (2:1)
+SCClass (9:1): Foo2 : Foo, version 3.16
+|  SCMemberList (9:1)
+|  |  SCMember (10:9): foo2_a
+|  |  SCMember (10:17): foo2_b
+|  SCMethodList (9:1)
+SCClass (9:1): Meta_Foo2 : Meta_Foo, version 3.16
+|  SCMemberList (9:1)
+|  |  SCMember (12:14): foo2_class_var
+|  SCMethodList (9:1)
+Successfully compiled 17 classes.

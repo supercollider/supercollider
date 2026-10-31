@@ -1,0 +1,78 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): compiled/interpreted.scd
+|  SCRegionList (1:1)
+|  |  SCRegion (4:1)
+|  |  |  SCFunction (4:1)
+|  |  |  |  SCBody (4:1)
+|  |  |  |  |  SCAssign (4:1): instance a, declared (37:11): a
+|  |  |  |  |  |  SCLiteral (4:5) = 1
+|  |  SCRegion (5:1)
+|  |  |  SCFunction (5:1)
+|  |  |  |  SCBody (5:1)
+|  |  |  |  |  SCVariableDeclare (5:7): b, prototype
+|  |  |  |  |  |  SCLiteral (5:11) = 2
+|  |  |  |  |  SCVariableDeclare (5:14): c, computed
+|  |  |  |  |  |  SCCollection (5:18): Array
+|  |  |  |  |  |  |  SCRead (5:19): local b = 2, declared (5:7): b = 2
+|  |  |  |  |  SCMessage (5:23): +
+|  |  |  |  |  |  SCRead (5:23): local b = 2, declared (5:7): b = 2
+|  |  |  |  |  |  SCPositionalArgs (5:23)
+|  |  |  |  |  |  |  SCRead (5:27): local c, declared (5:14): c = [b]
+|  |  SCRegion (6:1)
+|  |  |  SCFunction (6:1)
+|  |  |  |  SCBody (6:1)
+|  |  |  |  |  SCAssign (6:1): instance r, declared (38:46): r
+|  |  |  |  |  |  SCRoutineGenerator (6:5)
+|  |  |  |  |  |  |  SCGenQualList (6:11)
+|  |  |  |  |  |  |  |  SCGenQualIterate (6:11): x
+|  |  |  |  |  |  |  |  |  SCCollection (6:16): Array
+|  |  |  |  |  |  |  |  |  |  SCLiteral (6:17) = 1
+|  |  |  |  |  |  |  |  |  |  SCLiteral (6:20) = 2
+|  |  |  |  |  |  |  |  SCGenQualIf (6:24)
+|  |  |  |  |  |  |  |  |  SCMessage (6:24): odd
+|  |  |  |  |  |  |  |  |  |  SCRead (6:24): local x, declared (6:11): x <- [1, 2]
+|  |  |  |  |  |  |  SCRead (6:8): local x, declared (6:11): x <- [1, 2]
+|  |  SCRegion (7:1)
+|  |  |  SCFunction (7:1)
+|  |  |  |  SCBody (7:1)
+|  |  |  |  |  SCAssign (7:1): instance f, declared (37:36): f
+|  |  |  |  |  |  SCFunction (7:5): f
+|  |  |  |  |  |  |  SCArgumentDeclareList (7:8)
+|  |  |  |  |  |  |  |  SCArgumentDeclare (7:8): y, prototype
+|  |  |  |  |  |  |  |  |  SCLiteral (7:12) = 3
+|  |  |  |  |  |  |  SCBody (7:5)
+|  |  |  |  |  |  |  |  SCMessage (7:15): +
+|  |  |  |  |  |  |  |  |  SCRead (7:15): local y, declared (7:8): y = 3
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (7:15)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (7:19) = 1
+
+
+
+COMPILED DUMP 
+
+
+Interpreted
+|  interpreted: function 0, function 1, function 2, function 5,
+|  function 0 (4:1)
+|  |  code: 4 bytes, 0 selectors, 0 constants
+|  function 1 (5:1)
+|  |  variables: b = 2, c,
+|  |  code: 15 bytes, 0 selectors, 0 constants
+|  function 2 (6:1)
+|  |  code: 7 bytes, 2 selectors, 0 constants
+|  function 3 (6:5), in function 2
+|  |  code: 17 bytes, 1 selectors, 0 constants
+|  function 4 (6:11), in function 3
+|  |  arguments: x,
+|  |  code: 11 bytes, 1 selectors, 0 constants
+|  function 5 (7:1)
+|  |  code: 5 bytes, 1 selectors, 0 constants
+|  function 6 (7:5): f, in function 5
+|  |  arguments: y = 3,
+|  |  code: 3 bytes, 0 selectors, 0 constants
+Successfully compiled 15 classes.

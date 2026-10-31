@@ -1,0 +1,1264 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): BytecodeInlining : Object
+|  SCMemberList (5:1)
+|  |  SCMember (6:9): inst
+|  SCMethodList (5:1)
+|  |  SCMethod (11:5): ifThen: ifThen { |a| cv; if (a) { ^1 }; ^2 }
+|  |  |  SCArgumentDeclareList (11:15)
+|  |  |  |  SCArgumentDeclare (11:15): a
+|  |  |  SCBody (11:18)
+|  |  |  |  SCRead (11:18): class cv, declared (7:14): cv
+|  |  |  |  SCMessage (11:22): if
+|  |  |  |  |  SCRead (11:26): local a, declared (11:15): a
+|  |  |  |  |  SCPositionalArgs (11:22)
+|  |  |  |  |  |  SCFunction (11:29)
+|  |  |  |  |  |  |  SCBody (11:29)
+|  |  |  |  |  |  |  |  SCExplicitReturn (11:31)
+|  |  |  |  |  |  |  |  |  SCLiteral (11:32) = 1
+|  |  |  |  SCExplicitReturn (11:37)
+|  |  |  |  |  SCLiteral (11:38) = 2
+|  |  SCMethod (12:5): ifThenElse: ifThenElse { |a| cv; ^if (a) { a.foo } { a.bar } }
+|  |  |  SCArgumentDeclareList (12:19)
+|  |  |  |  SCArgumentDeclare (12:19): a (captured)
+|  |  |  SCBody (12:22)
+|  |  |  |  SCRead (12:22): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (12:26)
+|  |  |  |  |  SCMessage (12:27): if
+|  |  |  |  |  |  SCRead (12:31): local a, declared (12:19): a
+|  |  |  |  |  |  SCPositionalArgs (12:27)
+|  |  |  |  |  |  |  SCFunction (12:34)
+|  |  |  |  |  |  |  |  SCBody (12:34)
+|  |  |  |  |  |  |  |  |  SCMessage (12:36): foo
+|  |  |  |  |  |  |  |  |  |  SCRead (12:36): local a, declared (12:19): a
+|  |  |  |  |  |  |  SCFunction (12:44)
+|  |  |  |  |  |  |  |  SCBody (12:44)
+|  |  |  |  |  |  |  |  |  SCMessage (12:46): bar
+|  |  |  |  |  |  |  |  |  |  SCRead (12:46): local a, declared (12:19): a
+|  |  SCMethod (13:5): ifMessage: ifMessage { |a| cv; ^a.if({ 1 }, { 2 }) }
+|  |  |  SCArgumentDeclareList (13:18)
+|  |  |  |  SCArgumentDeclare (13:18): a
+|  |  |  SCBody (13:21)
+|  |  |  |  SCRead (13:21): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (13:25)
+|  |  |  |  |  SCMessage (13:26): if
+|  |  |  |  |  |  SCRead (13:26): local a, declared (13:18): a
+|  |  |  |  |  |  SCPositionalArgs (13:26)
+|  |  |  |  |  |  |  SCFunction (13:31) -> 1
+|  |  |  |  |  |  |  |  SCBody (13:31)
+|  |  |  |  |  |  |  |  |  SCLiteral (13:33) = 1
+|  |  |  |  |  |  |  SCFunction (13:38) -> 2
+|  |  |  |  |  |  |  |  SCBody (13:38)
+|  |  |  |  |  |  |  |  |  SCLiteral (13:40) = 2
+|  |  SCMethod (14:5): ifKeywordBinary: ifKeywordBinary { |a| cv; ^a if: { 1 } }
+|  |  |  SCArgumentDeclareList (14:24)
+|  |  |  |  SCArgumentDeclare (14:24): a
+|  |  |  SCBody (14:27)
+|  |  |  |  SCRead (14:27): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (14:31)
+|  |  |  |  |  SCMessage (14:32): if
+|  |  |  |  |  |  SCRead (14:32): local a, declared (14:24): a
+|  |  |  |  |  |  SCPositionalArgs (14:32)
+|  |  |  |  |  |  |  SCFunction (14:38) -> 1
+|  |  |  |  |  |  |  |  SCBody (14:38)
+|  |  |  |  |  |  |  |  |  SCLiteral (14:40) = 1
+|  |  SCMethod (16:5): ifEmpty: ifEmpty { |a| cv; ^if (a) { } }
+|  |  |  SCArgumentDeclareList (16:16)
+|  |  |  |  SCArgumentDeclare (16:16): a
+|  |  |  SCBody (16:19)
+|  |  |  |  SCRead (16:19): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (16:23)
+|  |  |  |  |  SCMessage (16:24): if
+|  |  |  |  |  |  SCRead (16:28): local a, declared (16:16): a
+|  |  |  |  |  |  SCPositionalArgs (16:24)
+|  |  |  |  |  |  |  SCFunction (16:31) -> nil
+|  |  |  |  |  |  |  |  SCBody (16:31)
+|  |  SCMethod (17:5): ifEmptyThen: ifEmptyThen { |a| cv; ^if (a) { } { 2 } }
+|  |  |  SCArgumentDeclareList (17:20)
+|  |  |  |  SCArgumentDeclare (17:20): a
+|  |  |  SCBody (17:23)
+|  |  |  |  SCRead (17:23): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (17:27)
+|  |  |  |  |  SCMessage (17:28): if
+|  |  |  |  |  |  SCRead (17:32): local a, declared (17:20): a
+|  |  |  |  |  |  SCPositionalArgs (17:28)
+|  |  |  |  |  |  |  SCFunction (17:35) -> nil
+|  |  |  |  |  |  |  |  SCBody (17:35)
+|  |  |  |  |  |  |  SCFunction (17:39) -> 2
+|  |  |  |  |  |  |  |  SCBody (17:39)
+|  |  |  |  |  |  |  |  |  SCLiteral (17:41) = 2
+|  |  SCMethod (18:5): ifEmptyElse: ifEmptyElse { |a| cv; ^if (a) { 1 } { } }
+|  |  |  SCArgumentDeclareList (18:20)
+|  |  |  |  SCArgumentDeclare (18:20): a
+|  |  |  SCBody (18:23)
+|  |  |  |  SCRead (18:23): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (18:27)
+|  |  |  |  |  SCMessage (18:28): if
+|  |  |  |  |  |  SCRead (18:32): local a, declared (18:20): a
+|  |  |  |  |  |  SCPositionalArgs (18:28)
+|  |  |  |  |  |  |  SCFunction (18:35) -> 1
+|  |  |  |  |  |  |  |  SCBody (18:35)
+|  |  |  |  |  |  |  |  |  SCLiteral (18:37) = 1
+|  |  |  |  |  |  |  SCFunction (18:41) -> nil
+|  |  |  |  |  |  |  |  SCBody (18:41)
+|  |  SCMethod (19:5): ifBothEmpty: ifBothEmpty { |a| cv; ^if (a) { } { } }
+|  |  |  SCArgumentDeclareList (19:20)
+|  |  |  |  SCArgumentDeclare (19:20): a
+|  |  |  SCBody (19:23)
+|  |  |  |  SCRead (19:23): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (19:27)
+|  |  |  |  |  SCMessage (19:28): if
+|  |  |  |  |  |  SCRead (19:32): local a, declared (19:20): a
+|  |  |  |  |  |  SCPositionalArgs (19:28)
+|  |  |  |  |  |  |  SCFunction (19:35) -> nil
+|  |  |  |  |  |  |  |  SCBody (19:35)
+|  |  |  |  |  |  |  SCFunction (19:39) -> nil
+|  |  |  |  |  |  |  |  SCBody (19:39)
+|  |  SCMethod (21:5): ifIsNil: ifIsNil { |a| cv; ^if (a.isNil) { 1 } }
+|  |  |  SCArgumentDeclareList (21:16)
+|  |  |  |  SCArgumentDeclare (21:16): a
+|  |  |  SCBody (21:19)
+|  |  |  |  SCRead (21:19): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (21:23)
+|  |  |  |  |  SCMessage (21:24): if
+|  |  |  |  |  |  SCMessage (21:28): isNil
+|  |  |  |  |  |  |  SCRead (21:28): local a, declared (21:16): a
+|  |  |  |  |  |  SCPositionalArgs (21:24)
+|  |  |  |  |  |  |  SCFunction (21:37) -> 1
+|  |  |  |  |  |  |  |  SCBody (21:37)
+|  |  |  |  |  |  |  |  |  SCLiteral (21:39) = 1
+|  |  SCMethod (22:5): ifNotNil: ifNotNil { |a| cv; ^if (a.notNil) { 1 } { 2 } }
+|  |  |  SCArgumentDeclareList (22:17)
+|  |  |  |  SCArgumentDeclare (22:17): a
+|  |  |  SCBody (22:20)
+|  |  |  |  SCRead (22:20): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (22:24)
+|  |  |  |  |  SCMessage (22:25): if
+|  |  |  |  |  |  SCMessage (22:29): notNil
+|  |  |  |  |  |  |  SCRead (22:29): local a, declared (22:17): a
+|  |  |  |  |  |  SCPositionalArgs (22:25)
+|  |  |  |  |  |  |  SCFunction (22:39) -> 1
+|  |  |  |  |  |  |  |  SCBody (22:39)
+|  |  |  |  |  |  |  |  |  SCLiteral (22:41) = 1
+|  |  |  |  |  |  |  SCFunction (22:45) -> 2
+|  |  |  |  |  |  |  |  SCBody (22:45)
+|  |  |  |  |  |  |  |  |  SCLiteral (22:47) = 2
+|  |  SCMethod (23:5): ifIsNilEmpty: ifIsNilEmpty { |a| cv; ^if (isNil(a)) { } { 2 } }
+|  |  |  SCArgumentDeclareList (23:21)
+|  |  |  |  SCArgumentDeclare (23:21): a
+|  |  |  SCBody (23:24)
+|  |  |  |  SCRead (23:24): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (23:28)
+|  |  |  |  |  SCMessage (23:29): if
+|  |  |  |  |  |  SCMessage (23:33): isNil
+|  |  |  |  |  |  |  SCRead (23:39): local a, declared (23:21): a
+|  |  |  |  |  |  SCPositionalArgs (23:29)
+|  |  |  |  |  |  |  SCFunction (23:43) -> nil
+|  |  |  |  |  |  |  |  SCBody (23:43)
+|  |  |  |  |  |  |  SCFunction (23:47) -> 2
+|  |  |  |  |  |  |  |  SCBody (23:47)
+|  |  |  |  |  |  |  |  |  SCLiteral (23:49) = 2
+|  |  SCMethod (25:5): ifArguments: ifArguments { |a| cv; ^if (a) { |x| x } }
+|  |  |  SCArgumentDeclareList (25:20)
+|  |  |  |  SCArgumentDeclare (25:20): a
+|  |  |  SCBody (25:23)
+|  |  |  |  SCRead (25:23): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (25:27)
+|  |  |  |  |  SCMessage (25:28): if
+|  |  |  |  |  |  SCRead (25:32): local a, declared (25:20): a
+|  |  |  |  |  |  SCPositionalArgs (25:28)
+|  |  |  |  |  |  |  SCFunction (25:35)
+|  |  |  |  |  |  |  |  SCArgumentDeclareList (25:38)
+|  |  |  |  |  |  |  |  |  SCArgumentDeclare (25:38): x
+|  |  |  |  |  |  |  |  SCBody (25:35)
+|  |  |  |  |  |  |  |  |  SCRead (25:41): local x, declared (25:38): x
+|  |  SCMethod (26:5): ifVariables: ifVariables { |a| cv; ^if (a) { var x = 1; x } }
+|  |  |  SCArgumentDeclareList (26:20)
+|  |  |  |  SCArgumentDeclare (26:20): a
+|  |  |  SCBody (26:23)
+|  |  |  |  SCRead (26:23): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (26:27)
+|  |  |  |  |  SCMessage (26:28): if
+|  |  |  |  |  |  SCRead (26:32): local a, declared (26:20): a
+|  |  |  |  |  |  SCPositionalArgs (26:28)
+|  |  |  |  |  |  |  SCFunction (26:35) -> 1
+|  |  |  |  |  |  |  |  SCBody (26:35)
+|  |  |  |  |  |  |  |  |  SCVariableDeclare (26:41): x, prototype
+|  |  |  |  |  |  |  |  |  |  SCLiteral (26:45) = 1
+|  |  |  |  |  |  |  |  |  SCRead (26:48): local x = 1, declared (26:41): x = 1
+|  |  SCMethod (27:5): ifValue: ifValue { |a, b| cv; ^if (a, b) }
+|  |  |  SCArgumentDeclareList (27:16)
+|  |  |  |  SCArgumentDeclare (27:16): a
+|  |  |  |  SCArgumentDeclare (27:19): b
+|  |  |  SCBody (27:22)
+|  |  |  |  SCRead (27:22): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (27:26)
+|  |  |  |  |  SCMessage (27:27): if
+|  |  |  |  |  |  SCRead (27:31): local a, declared (27:16): a
+|  |  |  |  |  |  SCPositionalArgs (27:27)
+|  |  |  |  |  |  |  SCRead (27:34): local b, declared (27:19): b
+|  |  SCMethod (28:5): ifKeyword: ifKeyword { |a| cv; ^a.if(true: { 1 }) }
+|  |  |  SCArgumentDeclareList (28:18)
+|  |  |  |  SCArgumentDeclare (28:18): a
+|  |  |  SCBody (28:21)
+|  |  |  |  SCRead (28:21): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (28:25)
+|  |  |  |  |  SCMessage (28:26): if
+|  |  |  |  |  |  SCRead (28:26): local a, declared (28:18): a
+|  |  |  |  |  |  SCKwArgs (28:26)
+|  |  |  |  |  |  |  SCKwArg (28:31): true
+|  |  |  |  |  |  |  |  SCFunction (28:37) -> 1
+|  |  |  |  |  |  |  |  |  SCBody (28:37)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (28:39) = 1
+|  |  SCMethod (30:5): ifPlain: ifPlain { |a, b| cv; ^this.if(a, b) }
+|  |  |  SCArgumentDeclareList (30:16)
+|  |  |  |  SCArgumentDeclare (30:16): a
+|  |  |  |  SCArgumentDeclare (30:19): b
+|  |  |  SCBody (30:22)
+|  |  |  |  SCRead (30:22): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (30:26)
+|  |  |  |  |  SCMessage (30:27): if
+|  |  |  |  |  |  SCSpecial (30:27): this
+|  |  |  |  |  |  SCPositionalArgs (30:27)
+|  |  |  |  |  |  |  SCRead (30:35): local a, declared (30:16): a
+|  |  |  |  |  |  |  SCRead (30:38): local b, declared (30:19): b
+|  |  SCMethod (32:5): andOr: andOr { |a, b| cv; ^(a and: { b.foo }) or: { b.bar } }
+|  |  |  SCArgumentDeclareList (32:14)
+|  |  |  |  SCArgumentDeclare (32:14): a
+|  |  |  |  SCArgumentDeclare (32:17): b (captured)
+|  |  |  SCBody (32:20)
+|  |  |  |  SCRead (32:20): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (32:24)
+|  |  |  |  |  SCMessage (32:25): or
+|  |  |  |  |  |  SCMessage (32:26): and
+|  |  |  |  |  |  |  SCRead (32:26): local a, declared (32:14): a
+|  |  |  |  |  |  |  SCPositionalArgs (32:26)
+|  |  |  |  |  |  |  |  SCFunction (32:33)
+|  |  |  |  |  |  |  |  |  SCBody (32:33)
+|  |  |  |  |  |  |  |  |  |  SCMessage (32:35): foo
+|  |  |  |  |  |  |  |  |  |  |  SCRead (32:35): local b, declared (32:17): b
+|  |  |  |  |  |  SCPositionalArgs (32:25)
+|  |  |  |  |  |  |  SCFunction (32:48)
+|  |  |  |  |  |  |  |  SCBody (32:48)
+|  |  |  |  |  |  |  |  |  SCMessage (32:50): bar
+|  |  |  |  |  |  |  |  |  |  SCRead (32:50): local b, declared (32:17): b
+|  |  SCMethod (33:5): andNotInlined: andNotInlined { |a, b| cv; ^a and: b }
+|  |  |  SCArgumentDeclareList (33:22)
+|  |  |  |  SCArgumentDeclare (33:22): a
+|  |  |  |  SCArgumentDeclare (33:25): b
+|  |  |  SCBody (33:28)
+|  |  |  |  SCRead (33:28): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (33:32)
+|  |  |  |  |  SCMessage (33:33): and
+|  |  |  |  |  |  SCRead (33:33): local a, declared (33:22): a
+|  |  |  |  |  |  SCPositionalArgs (33:33)
+|  |  |  |  |  |  |  SCRead (33:40): local b, declared (33:25): b
+|  |  SCMethod (34:5): nilCoalesce: nilCoalesce { |a| cv; ^a ?? { 1 } }
+|  |  |  SCArgumentDeclareList (34:20)
+|  |  |  |  SCArgumentDeclare (34:20): a
+|  |  |  SCBody (34:23)
+|  |  |  |  SCRead (34:23): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (34:27)
+|  |  |  |  |  SCMessage (34:28): ??
+|  |  |  |  |  |  SCRead (34:28): local a, declared (34:20): a
+|  |  |  |  |  |  SCPositionalArgs (34:28)
+|  |  |  |  |  |  |  SCFunction (34:33) -> 1
+|  |  |  |  |  |  |  |  SCBody (34:33)
+|  |  |  |  |  |  |  |  |  SCLiteral (34:35) = 1
+|  |  SCMethod (35:5): notNilThen: notNilThen { |a| cv; ^a !? { a.foo } }
+|  |  |  SCArgumentDeclareList (35:19)
+|  |  |  |  SCArgumentDeclare (35:19): a (captured)
+|  |  |  SCBody (35:22)
+|  |  |  |  SCRead (35:22): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (35:26)
+|  |  |  |  |  SCMessage (35:27): !?
+|  |  |  |  |  |  SCRead (35:27): local a, declared (35:19): a
+|  |  |  |  |  |  SCPositionalArgs (35:27)
+|  |  |  |  |  |  |  SCFunction (35:32)
+|  |  |  |  |  |  |  |  SCBody (35:32)
+|  |  |  |  |  |  |  |  |  SCMessage (35:34): foo
+|  |  |  |  |  |  |  |  |  |  SCRead (35:34): local a, declared (35:19): a
+|  |  SCMethod (36:5): questionMark: questionMark { |a| cv; ^a ? 1 }
+|  |  |  SCArgumentDeclareList (36:21)
+|  |  |  |  SCArgumentDeclare (36:21): a
+|  |  |  SCBody (36:24)
+|  |  |  |  SCRead (36:24): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (36:28)
+|  |  |  |  |  SCMessage (36:29): ?
+|  |  |  |  |  |  SCRead (36:29): local a, declared (36:21): a
+|  |  |  |  |  |  SCPositionalArgs (36:29)
+|  |  |  |  |  |  |  SCLiteral (36:33) = 1
+|  |  SCMethod (39:5): whileBody: whileBody { |a| cv; while { a.notEmpty } { a.pop }; ^a }
+|  |  |  SCArgumentDeclareList (39:18)
+|  |  |  |  SCArgumentDeclare (39:18): a (captured)
+|  |  |  SCBody (39:21)
+|  |  |  |  SCRead (39:21): class cv, declared (7:14): cv
+|  |  |  |  SCMessage (39:25): while
+|  |  |  |  |  SCFunction (39:31)
+|  |  |  |  |  |  SCBody (39:31)
+|  |  |  |  |  |  |  SCMessage (39:33): notEmpty
+|  |  |  |  |  |  |  |  SCRead (39:33): local a, declared (39:18): a
+|  |  |  |  |  SCPositionalArgs (39:25)
+|  |  |  |  |  |  SCFunction (39:46)
+|  |  |  |  |  |  |  SCBody (39:46)
+|  |  |  |  |  |  |  |  SCMessage (39:48): pop
+|  |  |  |  |  |  |  |  |  SCRead (39:48): local a, declared (39:18): a
+|  |  |  |  SCExplicitReturn (39:57)
+|  |  |  |  |  SCRead (39:58): local a, declared (39:18): a
+|  |  SCMethod (40:5): whileCondition: whileCondition { |a| cv; while { a.pop.notNil }; ^a }
+|  |  |  SCArgumentDeclareList (40:23)
+|  |  |  |  SCArgumentDeclare (40:23): a (captured)
+|  |  |  SCBody (40:26)
+|  |  |  |  SCRead (40:26): class cv, declared (7:14): cv
+|  |  |  |  SCMessage (40:30): while
+|  |  |  |  |  SCFunction (40:36)
+|  |  |  |  |  |  SCBody (40:36)
+|  |  |  |  |  |  |  SCMessage (40:38): notNil
+|  |  |  |  |  |  |  |  SCMessage (40:38): pop
+|  |  |  |  |  |  |  |  |  SCRead (40:38): local a, declared (40:23): a
+|  |  |  |  SCExplicitReturn (40:54)
+|  |  |  |  |  SCRead (40:55): local a, declared (40:23): a
+|  |  SCMethod (41:5): whileEmptyBody: whileEmptyBody { |a| cv; while { a.next } { }; ^a }
+|  |  |  SCArgumentDeclareList (41:23)
+|  |  |  |  SCArgumentDeclare (41:23): a (captured)
+|  |  |  SCBody (41:26)
+|  |  |  |  SCRead (41:26): class cv, declared (7:14): cv
+|  |  |  |  SCMessage (41:30): while
+|  |  |  |  |  SCFunction (41:36)
+|  |  |  |  |  |  SCBody (41:36)
+|  |  |  |  |  |  |  SCMessage (41:38): next
+|  |  |  |  |  |  |  |  SCRead (41:38): local a, declared (41:23): a
+|  |  |  |  |  SCPositionalArgs (41:30)
+|  |  |  |  |  |  SCFunction (41:47) -> nil
+|  |  |  |  |  |  |  SCBody (41:47)
+|  |  |  |  SCExplicitReturn (41:52)
+|  |  |  |  |  SCRead (41:53): local a, declared (41:23): a
+|  |  SCMethod (42:5): whileTrue: whileTrue { |a| cv; true.while { if (a.next) { ^a } } }
+|  |  |  SCArgumentDeclareList (42:18)
+|  |  |  |  SCArgumentDeclare (42:18): a (captured)
+|  |  |  SCBody (42:21)
+|  |  |  |  SCRead (42:21): class cv, declared (7:14): cv
+|  |  |  |  SCMessage (42:25): while
+|  |  |  |  |  SCLiteral (42:25) = true
+|  |  |  |  |  SCPositionalArgs (42:25)
+|  |  |  |  |  |  SCFunction (42:36)
+|  |  |  |  |  |  |  SCBody (42:36)
+|  |  |  |  |  |  |  |  SCMessage (42:38): if
+|  |  |  |  |  |  |  |  |  SCMessage (42:42): next
+|  |  |  |  |  |  |  |  |  |  SCRead (42:42): local a, declared (42:18): a
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (42:38)
+|  |  |  |  |  |  |  |  |  |  SCFunction (42:50)
+|  |  |  |  |  |  |  |  |  |  |  SCBody (42:50)
+|  |  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (42:52)
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (42:53): local a, declared (42:18): a
+|  |  SCMethod (44:5): whileTrueFunction: whileTrueFunction { |a| cv; { true }.while { if (a.next) { ^a } } }
+|  |  |  SCArgumentDeclareList (44:26)
+|  |  |  |  SCArgumentDeclare (44:26): a (captured)
+|  |  |  SCBody (44:29)
+|  |  |  |  SCRead (44:29): class cv, declared (7:14): cv
+|  |  |  |  SCMessage (44:33): while
+|  |  |  |  |  SCFunction (44:33) -> true
+|  |  |  |  |  |  SCBody (44:33)
+|  |  |  |  |  |  |  SCLiteral (44:35) = true
+|  |  |  |  |  SCPositionalArgs (44:33)
+|  |  |  |  |  |  SCFunction (44:48)
+|  |  |  |  |  |  |  SCBody (44:48)
+|  |  |  |  |  |  |  |  SCMessage (44:50): if
+|  |  |  |  |  |  |  |  |  SCMessage (44:54): next
+|  |  |  |  |  |  |  |  |  |  SCRead (44:54): local a, declared (44:26): a
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (44:50)
+|  |  |  |  |  |  |  |  |  |  SCFunction (44:62)
+|  |  |  |  |  |  |  |  |  |  |  SCBody (44:62)
+|  |  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (44:64)
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (44:65): local a, declared (44:26): a
+|  |  SCMethod (45:5): loop: loop { |a| cv; loop { if (a.next) { ^a } } }
+|  |  |  SCArgumentDeclareList (45:13)
+|  |  |  |  SCArgumentDeclare (45:13): a (captured)
+|  |  |  SCBody (45:16)
+|  |  |  |  SCRead (45:16): class cv, declared (7:14): cv
+|  |  |  |  SCMessage (45:20): loop
+|  |  |  |  |  SCFunction (45:25)
+|  |  |  |  |  |  SCBody (45:25)
+|  |  |  |  |  |  |  SCMessage (45:27): if
+|  |  |  |  |  |  |  |  SCMessage (45:31): next
+|  |  |  |  |  |  |  |  |  SCRead (45:31): local a, declared (45:13): a
+|  |  |  |  |  |  |  |  SCPositionalArgs (45:27)
+|  |  |  |  |  |  |  |  |  SCFunction (45:39)
+|  |  |  |  |  |  |  |  |  |  SCBody (45:39)
+|  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (45:41)
+|  |  |  |  |  |  |  |  |  |  |  |  SCRead (45:42): local a, declared (45:13): a
+|  |  SCMethod (48:5): case: case { |a| cv; ^case { a == 1 } { \one } { a.isNil } { \nil } { \other } }
+|  |  |  SCArgumentDeclareList (48:13)
+|  |  |  |  SCArgumentDeclare (48:13): a (captured)
+|  |  |  SCBody (48:16)
+|  |  |  |  SCRead (48:16): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (48:20)
+|  |  |  |  |  SCMessage (48:21): case
+|  |  |  |  |  |  SCFunction (48:26)
+|  |  |  |  |  |  |  SCBody (48:26)
+|  |  |  |  |  |  |  |  SCMessage (48:28): ==
+|  |  |  |  |  |  |  |  |  SCRead (48:28): local a, declared (48:13): a
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (48:28)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (48:33) = 1
+|  |  |  |  |  |  SCPositionalArgs (48:21)
+|  |  |  |  |  |  |  SCFunction (48:37) -> \one
+|  |  |  |  |  |  |  |  SCBody (48:37)
+|  |  |  |  |  |  |  |  |  SCLiteral (48:39) = \one
+|  |  |  |  |  |  |  SCFunction (48:46)
+|  |  |  |  |  |  |  |  SCBody (48:46)
+|  |  |  |  |  |  |  |  |  SCMessage (48:48): isNil
+|  |  |  |  |  |  |  |  |  |  SCRead (48:48): local a, declared (48:13): a
+|  |  |  |  |  |  |  SCFunction (48:58) -> \nil
+|  |  |  |  |  |  |  |  SCBody (48:58)
+|  |  |  |  |  |  |  |  |  SCLiteral (48:60) = \nil
+|  |  |  |  |  |  |  SCFunction (48:67) -> \other
+|  |  |  |  |  |  |  |  SCBody (48:67)
+|  |  |  |  |  |  |  |  |  SCLiteral (48:69) = \other
+|  |  SCMethod (49:5): caseNoDefault: caseNoDefault { |a| cv; ^case { a == 1 } { \one } { a == 2 } { \two } }
+|  |  |  SCArgumentDeclareList (49:22)
+|  |  |  |  SCArgumentDeclare (49:22): a (captured)
+|  |  |  SCBody (49:25)
+|  |  |  |  SCRead (49:25): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (49:29)
+|  |  |  |  |  SCMessage (49:30): case
+|  |  |  |  |  |  SCFunction (49:35)
+|  |  |  |  |  |  |  SCBody (49:35)
+|  |  |  |  |  |  |  |  SCMessage (49:37): ==
+|  |  |  |  |  |  |  |  |  SCRead (49:37): local a, declared (49:22): a
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (49:37)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (49:42) = 1
+|  |  |  |  |  |  SCPositionalArgs (49:30)
+|  |  |  |  |  |  |  SCFunction (49:46) -> \one
+|  |  |  |  |  |  |  |  SCBody (49:46)
+|  |  |  |  |  |  |  |  |  SCLiteral (49:48) = \one
+|  |  |  |  |  |  |  SCFunction (49:55)
+|  |  |  |  |  |  |  |  SCBody (49:55)
+|  |  |  |  |  |  |  |  |  SCMessage (49:57): ==
+|  |  |  |  |  |  |  |  |  |  SCRead (49:57): local a, declared (49:22): a
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (49:57)
+|  |  |  |  |  |  |  |  |  |  |  SCLiteral (49:62) = 2
+|  |  |  |  |  |  |  SCFunction (49:66) -> \two
+|  |  |  |  |  |  |  |  SCBody (49:66)
+|  |  |  |  |  |  |  |  |  SCLiteral (49:68) = \two
+|  |  SCMethod (50:5): caseConditionStatements: caseConditionStatements { |a| cv; ^case { a.foo; a.bar } { 1 } }
+|  |  |  SCArgumentDeclareList (50:32)
+|  |  |  |  SCArgumentDeclare (50:32): a (captured)
+|  |  |  SCBody (50:35)
+|  |  |  |  SCRead (50:35): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (50:39)
+|  |  |  |  |  SCMessage (50:40): case
+|  |  |  |  |  |  SCFunction (50:45)
+|  |  |  |  |  |  |  SCBody (50:45)
+|  |  |  |  |  |  |  |  SCMessage (50:47): foo
+|  |  |  |  |  |  |  |  |  SCRead (50:47): local a, declared (50:32): a
+|  |  |  |  |  |  |  |  SCMessage (50:54): bar
+|  |  |  |  |  |  |  |  |  SCRead (50:54): local a, declared (50:32): a
+|  |  |  |  |  |  SCPositionalArgs (50:40)
+|  |  |  |  |  |  |  SCFunction (50:62) -> 1
+|  |  |  |  |  |  |  |  SCBody (50:62)
+|  |  |  |  |  |  |  |  |  SCLiteral (50:64) = 1
+|  |  SCMethod (51:5): caseNotInlined: caseNotInlined { |a, f| cv; ^case({ a }, { 1 }, f) }
+|  |  |  SCArgumentDeclareList (51:23)
+|  |  |  |  SCArgumentDeclare (51:23): a (captured)
+|  |  |  |  SCArgumentDeclare (51:26): f
+|  |  |  SCBody (51:29)
+|  |  |  |  SCRead (51:29): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (51:33)
+|  |  |  |  |  SCMessage (51:34): case
+|  |  |  |  |  |  SCFunction (51:39)
+|  |  |  |  |  |  |  SCBody (51:39)
+|  |  |  |  |  |  |  |  SCRead (51:41): local a, declared (51:23): a
+|  |  |  |  |  |  SCPositionalArgs (51:34)
+|  |  |  |  |  |  |  SCFunction (51:46) -> 1
+|  |  |  |  |  |  |  |  SCBody (51:46)
+|  |  |  |  |  |  |  |  |  SCLiteral (51:48) = 1
+|  |  |  |  |  |  |  SCRead (51:53): local f, declared (51:26): f
+|  |  SCMethod (54:5): switch: switch { |a| cv; ^switch (a, 1, { \one }, \two, { a.foo }, $c, { }, { \default }) }
+|  |  |  SCArgumentDeclareList (54:15)
+|  |  |  |  SCArgumentDeclare (54:15): a (captured)
+|  |  |  SCBody (54:18)
+|  |  |  |  SCRead (54:18): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (54:22)
+|  |  |  |  |  SCMessage (54:23): switch
+|  |  |  |  |  |  SCRead (54:31): local a, declared (54:15): a
+|  |  |  |  |  |  SCPositionalArgs (54:23)
+|  |  |  |  |  |  |  SCLiteral (54:34) = 1
+|  |  |  |  |  |  |  SCFunction (54:37) -> \one
+|  |  |  |  |  |  |  |  SCBody (54:37)
+|  |  |  |  |  |  |  |  |  SCLiteral (54:39) = \one
+|  |  |  |  |  |  |  SCLiteral (54:47) = \two
+|  |  |  |  |  |  |  SCFunction (54:53)
+|  |  |  |  |  |  |  |  SCBody (54:53)
+|  |  |  |  |  |  |  |  |  SCMessage (54:55): foo
+|  |  |  |  |  |  |  |  |  |  SCRead (54:55): local a, declared (54:15): a
+|  |  |  |  |  |  |  SCLiteral (54:64) = $c
+|  |  |  |  |  |  |  SCFunction (54:68) -> nil
+|  |  |  |  |  |  |  |  SCBody (54:68)
+|  |  |  |  |  |  |  SCFunction (54:73) -> \default
+|  |  |  |  |  |  |  |  SCBody (54:73)
+|  |  |  |  |  |  |  |  |  SCLiteral (54:75) = \default
+|  |  SCMethod (55:5): switchNoDefault: switchNoDefault { |a| cv; ^switch (a) { 1 } { \one } { 2.0 } { \two } }
+|  |  |  SCArgumentDeclareList (55:24)
+|  |  |  |  SCArgumentDeclare (55:24): a
+|  |  |  SCBody (55:27)
+|  |  |  |  SCRead (55:27): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (55:31)
+|  |  |  |  |  SCMessage (55:32): switch
+|  |  |  |  |  |  SCRead (55:40): local a, declared (55:24): a
+|  |  |  |  |  |  SCPositionalArgs (55:32)
+|  |  |  |  |  |  |  SCFunction (55:43) -> 1
+|  |  |  |  |  |  |  |  SCBody (55:43)
+|  |  |  |  |  |  |  |  |  SCLiteral (55:45) = 1
+|  |  |  |  |  |  |  SCFunction (55:49) -> \one
+|  |  |  |  |  |  |  |  SCBody (55:49)
+|  |  |  |  |  |  |  |  |  SCLiteral (55:51) = \one
+|  |  |  |  |  |  |  SCFunction (55:58) -> 2.0
+|  |  |  |  |  |  |  |  SCBody (55:58)
+|  |  |  |  |  |  |  |  |  SCLiteral (55:60) = 2.0
+|  |  |  |  |  |  |  SCFunction (55:66) -> \two
+|  |  |  |  |  |  |  |  SCBody (55:66)
+|  |  |  |  |  |  |  |  |  SCLiteral (55:68) = \two
+|  |  SCMethod (56:5): switchFunctionKey: switchFunctionKey { |a| cv; ^switch (a, { 1 }, { \one }, { \other }) }
+|  |  |  SCArgumentDeclareList (56:26)
+|  |  |  |  SCArgumentDeclare (56:26): a
+|  |  |  SCBody (56:29)
+|  |  |  |  SCRead (56:29): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (56:33)
+|  |  |  |  |  SCMessage (56:34): switch
+|  |  |  |  |  |  SCRead (56:42): local a, declared (56:26): a
+|  |  |  |  |  |  SCPositionalArgs (56:34)
+|  |  |  |  |  |  |  SCFunction (56:45) -> 1
+|  |  |  |  |  |  |  |  SCBody (56:45)
+|  |  |  |  |  |  |  |  |  SCLiteral (56:47) = 1
+|  |  |  |  |  |  |  SCFunction (56:52) -> \one
+|  |  |  |  |  |  |  |  SCBody (56:52)
+|  |  |  |  |  |  |  |  |  SCLiteral (56:54) = \one
+|  |  |  |  |  |  |  SCFunction (56:62) -> \other
+|  |  |  |  |  |  |  |  SCBody (56:62)
+|  |  |  |  |  |  |  |  |  SCLiteral (56:64) = \other
+|  |  SCMethod (58:5): switchString: switchString { |a| cv; ^switch (a, "s", { 1 }) }
+|  |  |  SCArgumentDeclareList (58:21)
+|  |  |  |  SCArgumentDeclare (58:21): a
+|  |  |  SCBody (58:24)
+|  |  |  |  SCRead (58:24): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (58:28)
+|  |  |  |  |  SCMessage (58:29): switch
+|  |  |  |  |  |  SCRead (58:37): local a, declared (58:21): a
+|  |  |  |  |  |  SCPositionalArgs (58:29)
+|  |  |  |  |  |  |  SCLiteral (58:40) = "s"
+|  |  |  |  |  |  |  SCFunction (58:45) -> 1
+|  |  |  |  |  |  |  |  SCBody (58:45)
+|  |  |  |  |  |  |  |  |  SCLiteral (58:47) = 1
+|  |  SCMethod (59:5): switchNil: switchNil { |a| cv; ^switch (a, nil, { 1 }) }
+|  |  |  SCArgumentDeclareList (59:18)
+|  |  |  |  SCArgumentDeclare (59:18): a
+|  |  |  SCBody (59:21)
+|  |  |  |  SCRead (59:21): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (59:25)
+|  |  |  |  |  SCMessage (59:26): switch
+|  |  |  |  |  |  SCRead (59:34): local a, declared (59:18): a
+|  |  |  |  |  |  SCPositionalArgs (59:26)
+|  |  |  |  |  |  |  SCLiteral (59:37) = nil
+|  |  |  |  |  |  |  SCFunction (59:42) -> 1
+|  |  |  |  |  |  |  |  SCBody (59:42)
+|  |  |  |  |  |  |  |  |  SCLiteral (59:44) = 1
+|  |  SCMethod (62:5): nestedFunction: nestedFunction { |a| cv; ^if (a) { { a } } }
+|  |  |  SCArgumentDeclareList (62:23)
+|  |  |  |  SCArgumentDeclare (62:23): a (captured)
+|  |  |  SCBody (62:26)
+|  |  |  |  SCRead (62:26): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (62:30)
+|  |  |  |  |  SCMessage (62:31): if
+|  |  |  |  |  |  SCRead (62:35): local a, declared (62:23): a
+|  |  |  |  |  |  SCPositionalArgs (62:31)
+|  |  |  |  |  |  |  SCFunction (62:38)
+|  |  |  |  |  |  |  |  SCBody (62:38)
+|  |  |  |  |  |  |  |  |  SCFunction (62:40)
+|  |  |  |  |  |  |  |  |  |  SCBody (62:40)
+|  |  |  |  |  |  |  |  |  |  |  SCRead (62:42): local a, declared (62:23): a
+SCClass (5:1): Meta_BytecodeInlining : Meta_Object
+|  SCMemberList (5:1)
+|  |  SCMember (7:14): cv
+|  SCMethodList (5:1)
+SCClass (66:1): BytecodeInliningFixes : Object
+|  SCMemberList (66:1)
+|  SCMethodList (66:1)
+|  |  SCMethod (70:5): andEmpty: andEmpty { |a| cv; ^a and: { } }
+|  |  |  SCArgumentDeclareList (70:17)
+|  |  |  |  SCArgumentDeclare (70:17): a
+|  |  |  SCBody (70:20)
+|  |  |  |  SCRead (70:20): class cv, declared (67:14): cv
+|  |  |  |  SCExplicitReturn (70:24)
+|  |  |  |  |  SCMessage (70:25): and
+|  |  |  |  |  |  SCRead (70:25): local a, declared (70:17): a
+|  |  |  |  |  |  SCPositionalArgs (70:25)
+|  |  |  |  |  |  |  SCFunction (70:32) -> nil
+|  |  |  |  |  |  |  |  SCBody (70:32)
+|  |  SCMethod (71:5): whileEmptyCondition: whileEmptyCondition { cv; while { }; ^nil }
+|  |  |  SCBody (71:27)
+|  |  |  |  SCRead (71:27): class cv, declared (67:14): cv
+|  |  |  |  SCMessage (71:31): while
+|  |  |  |  |  SCFunction (71:37) -> nil
+|  |  |  |  |  |  SCBody (71:37)
+|  |  |  |  SCExplicitReturn (71:42)
+|  |  |  |  |  SCLiteral (71:43) = nil
+|  |  SCMethod (72:5): loopEmpty: loopEmpty { cv; loop { } }
+|  |  |  SCBody (72:17)
+|  |  |  |  SCRead (72:17): class cv, declared (67:14): cv
+|  |  |  |  SCMessage (72:21): loop
+|  |  |  |  |  SCFunction (72:26) -> nil
+|  |  |  |  |  |  SCBody (72:26)
+|  |  SCMethod (73:5): caseEmptyCondition: caseEmptyCondition { cv; ^case { } { 1 } }
+|  |  |  SCBody (73:26)
+|  |  |  |  SCRead (73:26): class cv, declared (67:14): cv
+|  |  |  |  SCExplicitReturn (73:30)
+|  |  |  |  |  SCMessage (73:31): case
+|  |  |  |  |  |  SCFunction (73:36) -> nil
+|  |  |  |  |  |  |  SCBody (73:36)
+|  |  |  |  |  |  SCPositionalArgs (73:31)
+|  |  |  |  |  |  |  SCFunction (73:40) -> 1
+|  |  |  |  |  |  |  |  SCBody (73:40)
+|  |  |  |  |  |  |  |  |  SCLiteral (73:42) = 1
+|  |  SCMethod (75:5): closed: closed { |a| cv; ^if (a) #{ 1 } }
+|  |  |  SCArgumentDeclareList (75:15)
+|  |  |  |  SCArgumentDeclare (75:15): a
+|  |  |  SCBody (75:18)
+|  |  |  |  SCRead (75:18): class cv, declared (67:14): cv
+|  |  |  |  SCExplicitReturn (75:22)
+|  |  |  |  |  SCMessage (75:23): if
+|  |  |  |  |  |  SCRead (75:27): local a, declared (75:15): a
+|  |  |  |  |  |  SCPositionalArgs (75:23)
+|  |  |  |  |  |  |  SCFunction (75:30): closed -> 1
+|  |  |  |  |  |  |  |  SCBody (75:30)
+|  |  |  |  |  |  |  |  |  SCLiteral (75:33) = 1
+|  |  SCMethod (78:5): switchDuplicateKeys: switchDuplicateKeys { |a| cv; ^switch (a, 1, { \first }, 1, { \second }) }
+|  |  |  SCArgumentDeclareList (78:28)
+|  |  |  |  SCArgumentDeclare (78:28): a
+|  |  |  SCBody (78:31)
+|  |  |  |  SCRead (78:31): class cv, declared (67:14): cv
+|  |  |  |  SCExplicitReturn (78:35)
+|  |  |  |  |  SCMessage (78:36): switch
+|  |  |  |  |  |  SCRead (78:44): local a, declared (78:28): a
+|  |  |  |  |  |  SCPositionalArgs (78:36)
+|  |  |  |  |  |  |  SCLiteral (78:47) = 1
+|  |  |  |  |  |  |  SCFunction (78:50) -> \first
+|  |  |  |  |  |  |  |  SCBody (78:50)
+|  |  |  |  |  |  |  |  |  SCLiteral (78:52) = \first
+|  |  |  |  |  |  |  SCLiteral (78:62) = 1
+|  |  |  |  |  |  |  SCFunction (78:65) -> \second
+|  |  |  |  |  |  |  |  SCBody (78:65)
+|  |  |  |  |  |  |  |  |  SCLiteral (78:67) = \second
+SCClass (66:1): Meta_BytecodeInliningFixes : Meta_Object
+|  SCMemberList (66:1)
+|  |  SCMember (67:14): cv
+|  SCMethodList (66:1)
+
+
+
+BYTECODE DUMP 
+
+
+BytecodeInlining
+|  function 0 (11:5): method ifThen
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    F9 00 02        JumpIfFalsePushNil
+|  |  7    64              PushSpecialNumber
+|  |  8    F3              Return
+|  |  9    F0              Drop
+|  |  10   65              PushSpecialNumber
+|  |  11   F3              Return
+|  function 1 (12:5): method ifThenElse
+|  |  properties:
+|  |  selectors: bar, foo,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    F8 00 07        JumpIfFalse
+|  |  7    31              PushTempZeroVar
+|  |  8    FF              TailCallReturnFromMethod
+|  |  9    A1 01           SendMsg
+|  |  11   FC 00 04        JumpFwd
+|  |  14   31              PushTempZeroVar
+|  |  15   FF              TailCallReturnFromMethod
+|  |  16   A1 00           SendMsg
+|  |  18   F3              Return
+|  function 2 (13:5): method ifMessage
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    F8 00 04        JumpIfFalse
+|  |  7    64              PushSpecialNumber
+|  |  8    FC 00 01        JumpFwd
+|  |  11   65              PushSpecialNumber
+|  |  12   F3              Return
+|  function 3 (14:5): method ifKeywordBinary
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    F9 00 01        JumpIfFalsePushNil
+|  |  7    64              PushSpecialNumber
+|  |  8    F3              Return
+|  function 4 (16:5): method ifEmpty
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    F0              Drop
+|  |  5    6E              PushSpecialValue
+|  |  6    F3              Return
+|  function 5 (17:5): method ifEmptyThen
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    F8 00 04        JumpIfFalse
+|  |  7    6E              PushSpecialValue
+|  |  8    FC 00 01        JumpFwd
+|  |  11   65              PushSpecialNumber
+|  |  12   F3              Return
+|  function 6 (18:5): method ifEmptyElse
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    F9 00 01        JumpIfFalsePushNil
+|  |  7    64              PushSpecialNumber
+|  |  8    F3              Return
+|  function 7 (19:5): method ifBothEmpty
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    F0              Drop
+|  |  5    6E              PushSpecialValue
+|  |  6    F3              Return
+|  function 8 (21:5): method ifIsNil
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    8F 1A 00 01     ExtendedCodes
+|  |  8    64              PushSpecialNumber
+|  |  9    F3              Return
+|  function 9 (22:5): method ifNotNil
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    8F 19 00 04     ExtendedCodes
+|  |  8    64              PushSpecialNumber
+|  |  9    FC 00 01        JumpFwd
+|  |  12   65              PushSpecialNumber
+|  |  13   F3              Return
+|  function 10 (23:5): method ifIsNilEmpty
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    8F 18 00 04     ExtendedCodes
+|  |  8    6E              PushSpecialValue
+|  |  9    FC 00 01        JumpFwd
+|  |  12   65              PushSpecialNumber
+|  |  13   F3              Return
+|  function 11 (25:5): method ifArguments
+|  |  properties:
+|  |  selectors: function 12,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    04 00           PushLiteralX
+|  |  6    FF              TailCallReturnFromMethod
+|  |  7    C2 0B           SendSpecialMsg
+|  |  9    F3              Return
+|  function 12 (25:35)
+|  |  properties: closed,
+|  |  selectors:
+|  |  constants:
+|  |  0    30              PushTempZeroVar
+|  |  1    F2              BlockReturn
+|  function 13 (26:5): method ifVariables
+|  |  properties:
+|  |  selectors: function 14,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    04 00           PushLiteralX
+|  |  6    FF              TailCallReturnFromMethod
+|  |  7    C2 0B           SendSpecialMsg
+|  |  9    F3              Return
+|  function 14 (26:35)
+|  |  properties: closed,
+|  |  selectors:
+|  |  constants:
+|  |  0    30              PushTempZeroVar
+|  |  1    F2              BlockReturn
+|  function 15 (27:5): method ifValue
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    32              PushTempZeroVar
+|  |  5    FF              TailCallReturnFromMethod
+|  |  6    C2 0B           SendSpecialMsg
+|  |  8    F3              Return
+|  function 16 (28:5): method ifKeyword
+|  |  properties:
+|  |  selectors: function 17,
+|  |  constants: \true,
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    40              PushLiteral
+|  |  5    04 00           PushLiteralX
+|  |  7    FF              TailCallReturnFromMethod
+|  |  8    0C 03 01 0B     SendSpecialMsgX
+|  |  12   F3              Return
+|  function 17 (28:37)
+|  |  properties: closed,
+|  |  selectors:
+|  |  constants:
+|  |  0    64              PushSpecialNumber
+|  |  1    F2              BlockReturn
+|  function 18 (30:5): method ifPlain
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    60              PushSpecialValueThis
+|  |  4    31              PushTempZeroVar
+|  |  5    32              PushTempZeroVar
+|  |  6    FF              TailCallReturnFromMethod
+|  |  7    C3 0B           SendSpecialMsg
+|  |  9    F3              Return
+|  function 19 (32:5): method andOr
+|  |  properties:
+|  |  selectors: foo, bar,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    FA 00 03        JumpIfFalsePushFalse
+|  |  7    32              PushTempZeroVar
+|  |  8    A1 00           SendMsg
+|  |  10   FB 00 04        JumpIfTruePushTrue
+|  |  13   32              PushTempZeroVar
+|  |  14   FF              TailCallReturnFromMethod
+|  |  15   A1 01           SendMsg
+|  |  17   F3              Return
+|  function 20 (33:5): method andNotInlined
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    32              PushTempZeroVar
+|  |  5    FF              TailCallReturnFromMethod
+|  |  6    C2 0E           SendSpecialMsg
+|  |  8    F3              Return
+|  function 21 (34:5): method nilCoalesce
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    8F 17 00 01     ExtendedCodes
+|  |  8    64              PushSpecialNumber
+|  |  9    F3              Return
+|  function 22 (35:5): method notNilThen
+|  |  properties:
+|  |  selectors: foo,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    8F 1B 00 04     ExtendedCodes
+|  |  8    31              PushTempZeroVar
+|  |  9    FF              TailCallReturnFromMethod
+|  |  10   A1 00           SendMsg
+|  |  12   F3              Return
+|  function 23 (36:5): method questionMark
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    64              PushSpecialNumber
+|  |  5    8F 16           ExtendedCodes
+|  |  7    F3              Return
+|  function 24 (39:5): method whileBody
+|  |  properties:
+|  |  selectors: notEmpty, pop,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    A1 00           SendMsg
+|  |  6    F9 00 06        JumpIfFalsePushNil
+|  |  9    31              PushTempZeroVar
+|  |  10   A1 01           SendMsg
+|  |  12   FD 00 0A        JumpBack
+|  |  15   F0              Drop
+|  |  16   31              PushTempZeroVar
+|  |  17   F3              Return
+|  function 25 (40:5): method whileCondition
+|  |  properties:
+|  |  selectors: pop,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    A1 00           SendMsg
+|  |  6    0D 03           SendSpecialUnaryArithMsgX
+|  |  8    F9 00 04        JumpIfFalsePushNil
+|  |  11   6E              PushSpecialValue
+|  |  12   FD 00 0A        JumpBack
+|  |  15   F0              Drop
+|  |  16   31              PushTempZeroVar
+|  |  17   F3              Return
+|  function 26 (41:5): method whileEmptyBody
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    C1 04           SendSpecialMsg
+|  |  6    F9 00 04        JumpIfFalsePushNil
+|  |  9    6E              PushSpecialValue
+|  |  10   FD 00 08        JumpBack
+|  |  13   F0              Drop
+|  |  14   31              PushTempZeroVar
+|  |  15   F3              Return
+|  function 27 (42:5): method whileTrue
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    C1 04           SendSpecialMsg
+|  |  6    F9 00 02        JumpIfFalsePushNil
+|  |  9    31              PushTempZeroVar
+|  |  10   F3              Return
+|  |  11   FD 00 09        JumpBack
+|  |  14   F0              Drop
+|  |  15   F4              ReturnSelf
+|  function 28 (44:5): method whileTrueFunction
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    6C              PushSpecialValue
+|  |  4    F9 00 0B        JumpIfFalsePushNil
+|  |  7    31              PushTempZeroVar
+|  |  8    C1 04           SendSpecialMsg
+|  |  10   F9 00 02        JumpIfFalsePushNil
+|  |  13   31              PushTempZeroVar
+|  |  14   F3              Return
+|  |  15   FD 00 0D        JumpBack
+|  |  18   F0              Drop
+|  |  19   F4              ReturnSelf
+|  function 29 (45:5): method loop
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    C1 04           SendSpecialMsg
+|  |  6    F9 00 02        JumpIfFalsePushNil
+|  |  9    31              PushTempZeroVar
+|  |  10   F3              Return
+|  |  11   FD 00 09        JumpBack
+|  |  14   F0              Drop
+|  |  15   F4              ReturnSelf
+|  function 30 (48:5): method case
+|  |  properties:
+|  |  selectors:
+|  |  constants: \other, \nil, \one,
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    64              PushSpecialNumber
+|  |  5    E6              SendSpecialBinaryArithMsg
+|  |  6    F8 00 04        JumpIfFalse
+|  |  9    42              PushLiteral
+|  |  10   FC 00 0A        JumpFwd
+|  |  13   31              PushTempZeroVar
+|  |  14   8F 18 00 04     ExtendedCodes
+|  |  18   41              PushLiteral
+|  |  19   FC 00 01        JumpFwd
+|  |  22   40              PushLiteral
+|  |  23   F3              Return
+|  function 31 (49:5): method caseNoDefault
+|  |  properties:
+|  |  selectors:
+|  |  constants: \two, \one,
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    64              PushSpecialNumber
+|  |  5    E6              SendSpecialBinaryArithMsg
+|  |  6    F8 00 04        JumpIfFalse
+|  |  9    41              PushLiteral
+|  |  10   FC 00 07        JumpFwd
+|  |  13   31              PushTempZeroVar
+|  |  14   65              PushSpecialNumber
+|  |  15   E6              SendSpecialBinaryArithMsg
+|  |  16   F9 00 01        JumpIfFalsePushNil
+|  |  19   40              PushLiteral
+|  |  20   F3              Return
+|  function 32 (50:5): method caseConditionStatements
+|  |  properties:
+|  |  selectors: foo, bar,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    A1 00           SendMsg
+|  |  6    F0              Drop
+|  |  7    31              PushTempZeroVar
+|  |  8    A1 01           SendMsg
+|  |  10   F9 00 01        JumpIfFalsePushNil
+|  |  13   64              PushSpecialNumber
+|  |  14   F3              Return
+|  function 33 (51:5): method caseNotInlined
+|  |  properties: heap context,
+|  |  selectors: function 34, function 35,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    04 00           PushLiteralX
+|  |  5    04 01           PushLiteralX
+|  |  7    32              PushTempZeroVar
+|  |  8    FF              TailCallReturnFromMethod
+|  |  9    C3 10           SendSpecialMsg
+|  |  11   F3              Return
+|  function 34 (51:39)
+|  |  properties: context,
+|  |  selectors:
+|  |  constants:
+|  |  0    21 01           PushTempVar
+|  |  2    F2              BlockReturn
+|  function 35 (51:46)
+|  |  properties: closed,
+|  |  selectors:
+|  |  constants:
+|  |  0    64              PushSpecialNumber
+|  |  1    F2              BlockReturn
+|  function 36 (54:5): method switch
+|  |  properties:
+|  |  selectors: foo,
+|  |  constants: switch table (capacity 16, 1: 0, \two: 4, $c: 11, default: 15), \one, \default,
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    40              PushLiteral
+|  |  5    8F 1C           ExtendedCodes
+|  |  7    41              PushLiteral
+|  |  8    FC 00 0C        JumpFwd
+|  |  11   31              PushTempZeroVar
+|  |  12   FF              TailCallReturnFromMethod
+|  |  13   A1 00           SendMsg
+|  |  15   FC 00 05        JumpFwd
+|  |  18   6E              PushSpecialValue
+|  |  19   FC 00 01        JumpFwd
+|  |  22   42              PushLiteral
+|  |  23   F3              Return
+|  function 37 (55:5): method switchNoDefault
+|  |  properties:
+|  |  selectors:
+|  |  constants: switch table (capacity 16, 1: 0, 2.0: 4, default: 8), \one, \two,
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    40              PushLiteral
+|  |  5    8F 1C           ExtendedCodes
+|  |  7    41              PushLiteral
+|  |  8    FC 00 05        JumpFwd
+|  |  11   42              PushLiteral
+|  |  12   FC 00 01        JumpFwd
+|  |  15   6E              PushSpecialValue
+|  |  16   F3              Return
+|  function 38 (56:5): method switchFunctionKey
+|  |  properties:
+|  |  selectors:
+|  |  constants: switch table (capacity 8, 1: 0, default: 4), \one, \other,
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    40              PushLiteral
+|  |  5    8F 1C           ExtendedCodes
+|  |  7    41              PushLiteral
+|  |  8    FC 00 01        JumpFwd
+|  |  11   42              PushLiteral
+|  |  12   F3              Return
+|  function 39 (58:5): method switchString
+|  |  properties:
+|  |  selectors: function 40,
+|  |  constants: "s",
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    40              PushLiteral
+|  |  5    04 00           PushLiteralX
+|  |  7    FF              TailCallReturnFromMethod
+|  |  8    C3 11           SendSpecialMsg
+|  |  10   F3              Return
+|  function 40 (58:45)
+|  |  properties: closed,
+|  |  selectors:
+|  |  constants:
+|  |  0    64              PushSpecialNumber
+|  |  1    F2              BlockReturn
+|  function 41 (59:5): method switchNil
+|  |  properties:
+|  |  selectors: function 42,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    6E              PushSpecialValue
+|  |  5    04 00           PushLiteralX
+|  |  7    FF              TailCallReturnFromMethod
+|  |  8    C3 11           SendSpecialMsg
+|  |  10   F3              Return
+|  function 42 (59:42)
+|  |  properties: closed,
+|  |  selectors:
+|  |  constants:
+|  |  0    64              PushSpecialNumber
+|  |  1    F2              BlockReturn
+|  function 43 (62:5): method nestedFunction
+|  |  properties: heap context,
+|  |  selectors: function 44,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    F9 00 02        JumpIfFalsePushNil
+|  |  7    04 00           PushLiteralX
+|  |  9    F3              Return
+|  function 44 (62:40)
+|  |  properties: context,
+|  |  selectors:
+|  |  constants:
+|  |  0    21 01           PushTempVar
+|  |  2    F2              BlockReturn
+Meta_BytecodeInlining
+BytecodeInliningFixes
+|  function 0 (70:5): method andEmpty
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 01           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    FA 00 01        JumpIfFalsePushFalse
+|  |  7    6E              PushSpecialValue
+|  |  8    F3              Return
+|  function 1 (71:5): method whileEmptyCondition
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 01           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    6E              PushSpecialValue
+|  |  4    F9 00 04        JumpIfFalsePushNil
+|  |  7    6E              PushSpecialValue
+|  |  8    FD 00 06        JumpBack
+|  |  11   F0              Drop
+|  |  12   F7              ReturnNil
+|  function 2 (72:5): method loopEmpty
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 01           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    6E              PushSpecialValue
+|  |  4    FD 00 02        JumpBack
+|  |  7    F0              Drop
+|  |  8    F4              ReturnSelf
+|  function 3 (73:5): method caseEmptyCondition
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 01           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    6E              PushSpecialValue
+|  |  4    F9 00 01        JumpIfFalsePushNil
+|  |  7    64              PushSpecialNumber
+|  |  8    F3              Return
+|  function 4 (75:5): method closed
+|  |  properties:
+|  |  selectors: function 5,
+|  |  constants:
+|  |  0    50 01           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    04 00           PushLiteralX
+|  |  6    FF              TailCallReturnFromMethod
+|  |  7    C2 0B           SendSpecialMsg
+|  |  9    F3              Return
+|  function 5 (75:30)
+|  |  properties: closed,
+|  |  selectors:
+|  |  constants:
+|  |  0    64              PushSpecialNumber
+|  |  1    F2              BlockReturn
+|  function 6 (78:5): method switchDuplicateKeys
+|  |  properties:
+|  |  selectors:
+|  |  constants: switch table (capacity 16, 1: 0, default: 8), \first, \second,
+|  |  0    50 01           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    40              PushLiteral
+|  |  5    8F 1C           ExtendedCodes
+|  |  7    41              PushLiteral
+|  |  8    FC 00 05        JumpFwd
+|  |  11   42              PushLiteral
+|  |  12   FC 00 01        JumpFwd
+|  |  15   6E              PushSpecialValue
+|  |  16   F3              Return
+Meta_BytecodeInliningFixes
+Successfully compiled 17 classes.

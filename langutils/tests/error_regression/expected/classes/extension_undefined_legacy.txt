@@ -1,0 +1,14 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): Defined : Object
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (11:5): method: method { ^2 } -> 2
+|  |  |  SCBody (11:14)
+|  |  |  |  SCExplicitReturn (11:14)
+|  |  |  |  |  SCLiteral (11:15) = 2
+Successfully compiled 16 classes.
