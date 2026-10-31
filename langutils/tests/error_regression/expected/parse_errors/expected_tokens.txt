@@ -1,0 +1,87 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): ExpectedTokens : Object, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (7:5): poisoned: not_an_expression, version 3.16: not_an_expression { ^(1, ) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/expected_tokens.sc:7:30
+|  |  |      5 │     // expect: poisoned
+|  |  |      6 │     // expect-error: Unexpected Token.
+|  |  |      7 │     not_an_expression { ^(1, ) }
+|  |  |        ┆                              ^ Expected an expression, but found `)`.
+|  |  |      8 │     // expect: poisoned
+|  |  |      9 │     // expect-error: Unexpected Token.
+|  |  |     10 │     not_an_operator { ^(1 = 2) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (7:25)
+|  |  |  |  SCExplicitReturn (7:25)
+|  |  |  |  |  SCExprList (7:26)
+|  |  SCMethod (10:5): poisoned: not_an_operator, version 3.16: not_an_operator { ^(1 = 2) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/expected_tokens.sc:10:27
+|  |  |      8 │     // expect: poisoned
+|  |  |      9 │     // expect-error: Unexpected Token.
+|  |  |     10 │     not_an_operator { ^(1 = 2) }
+|  |  |        ┆                           ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `=`.
+|  |  |     11 │     // A multiline token is shown up to its first line.
+|  |  |     12 │     // expect: poisoned
+|  |  |     13 │     // expect-error: Unexpected Token.
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (10:23)
+|  |  |  |  SCExplicitReturn (10:23)
+|  |  |  |  |  SCExprList (10:24)
+|  |  SCMethod (14:5): poisoned: multiline, version 3.16: multiline { var "first'\n'second"; ^1 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/expected_tokens.sc:14:21
+|  |  |     12 │       // expect: poisoned
+|  |  |     13 │       // expect-error: Unexpected Token.
+|  |  |     14 │ ╭     multiline { var "first
+|  |  |     15 │ │ second"; ^1 }
+|  |  |        ┆ ╰───────^ Expected `#`, a name, or `while`, but found `"first...`.
+|  |  |     16 │       // expect: poisoned
+|  |  |     17 │       // expect-error: Unexpected Token.
+|  |  |     18 │       in_nested_function { |x| if (x) { ^(1 = x) }; ^2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (14:17)
+|  |  |  |  SCExprList (14:17)
+|  |  |  |  SCExplicitReturn (15:9)
+|  |  |  |  |  SCLiteral (15:10) = 1
+|  |  SCMethod (18:5): poisoned: in_nested_function, version 3.16: in_nested_function { |x| if (x) { ^(1 = x) }; ^2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/expected_tokens.sc:18:43
+|  |  |     16 │     // expect: poisoned
+|  |  |     17 │     // expect-error: Unexpected Token.
+|  |  |     18 │     in_nested_function { |x| if (x) { ^(1 = x) }; ^2 }
+|  |  |        ┆                                           ^ Expected a binary operator, `[`, `)`, `;`, `,`, `..`, `:`, or `.`, but found `=`.
+|  |  |     19 │ }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (18:27)
+|  |  |  |  SCArgumentDeclare (18:27): x
+|  |  |  SCBody (18:30)
+|  |  |  |  SCMessage (18:30): if
+|  |  |  |  |  SCRead (18:34): local x, declared (18:27): x
+|  |  |  |  |  SCPositionalArgs (18:30)
+|  |  |  |  |  |  SCFunction (18:37)
+|  |  |  |  |  |  |  SCBody (18:37)
+|  |  |  |  |  |  |  |  SCExplicitReturn (18:39)
+|  |  |  |  |  |  |  |  |  SCExprList (18:40)
+|  |  |  |  SCExplicitReturn (18:51)
+|  |  |  |  |  SCLiteral (18:52) = 2
+Successfully compiled 16 classes.

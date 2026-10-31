@@ -1,0 +1,43 @@
+
+──────────────────────────────────────────────────────────────────────────────────
+Warning: Misplaced version
+versions/not_first_line.sc:3:1
+    1 │ // A version comment below anything else, even a comment, isn't the file's, so it is misplaced and its classes are
+    2 │ // legacy.
+    3 │ //# VERSION 3.16
+      ┆ ^^^^^^^^^^^^^^^^ this version applies to nothing.
+    4 │ NotFirstLine {
+    5 │     // expect-error: Variable declared after an expression
+    6 │     one { 1; var b = 2; ^b }
+
+A version must be the first line of a file, for all of it, or, in a class file, the first thing in a class's body, for that class.
+──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): NotFirstLine : Object
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (6:5): poisoned: one: one { 1; var b = 2; ^b }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Variable declared after an expression
+|  |  |  versions/not_first_line.sc:6:18
+|  |  |      4 │ NotFirstLine {
+|  |  |      5 │     // expect-error: Variable declared after an expression
+|  |  |      6 │     one { 1; var b = 2; ^b }
+|  |  |        ┆                  ^^^^^ this isn't at the start of the body.
+|  |  |      7 │ }
+|  |  |
+|  |  |  In the legacy version, as in the old compiler, a function's or method's variables must be declared at the start of its body, before any other expression. From 3.16 they can be declared anywhere. Move the declaration to the start, or add `//# VERSION 3.16`.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (6:11)
+|  |  |  |  SCLiteral (6:11) = 1
+|  |  |  |  SCVariableDeclare (6:18): b, prototype
+|  |  |  |  |  SCLiteral (6:22) = 2
+|  |  |  |  SCExplicitReturn (6:25)
+|  |  |  |  |  SCRead (6:26): local b = 2, declared (6:18): b = 2
+Successfully compiled 16 classes.

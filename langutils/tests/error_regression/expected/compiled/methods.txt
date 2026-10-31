@@ -1,0 +1,100 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): Methods : Object
+|  SCMemberList (3:1)
+|  |  SCMember (4:9): x
+|  SCMethodList (3:1)
+|  |  SCMethod (6:5): prim: prim { _BasicNew ^this.primitiveFailed }
+|  |  |  SCBody (6:22)
+|  |  |  |  SCExplicitReturn (6:22)
+|  |  |  |  |  SCMessage (6:23): primitiveFailed
+|  |  |  |  |  |  SCSpecial (6:23): this
+|  |  SCMethod (8:5): primArgs: primArgs { |a, b = 1| _ObjectPerform ^this.primitiveFailed }
+|  |  |  SCArgumentDeclareList (8:17)
+|  |  |  |  SCArgumentDeclare (8:17): a
+|  |  |  |  SCArgumentDeclare (8:20): b, prototype
+|  |  |  |  |  SCLiteral (8:24) = 1
+|  |  |  SCBody (8:42)
+|  |  |  |  SCExplicitReturn (8:42)
+|  |  |  |  |  SCMessage (8:43): primitiveFailed
+|  |  |  |  |  |  SCSpecial (8:43): this
+|  |  SCMethod (10:5): returnSelf: returnSelf { ^this }
+|  |  |  SCBody (10:18)
+|  |  |  |  SCExplicitReturn (10:18)
+|  |  |  |  |  SCSpecial (10:19): this
+|  |  SCMethod (12:5): returnLiteral: returnLiteral { ^1 } -> 1
+|  |  |  SCBody (12:21)
+|  |  |  |  SCExplicitReturn (12:21)
+|  |  |  |  |  SCLiteral (12:22) = 1
+|  |  SCMethod (14:5): returnArgument: returnArgument { |a| ^a }
+|  |  |  SCArgumentDeclareList (14:23)
+|  |  |  |  SCArgumentDeclare (14:23): a
+|  |  |  SCBody (14:26)
+|  |  |  |  SCExplicitReturn (14:26)
+|  |  |  |  |  SCRead (14:27): local a, declared (14:23): a
+|  |  SCMethod (16:5): returnInstance: returnInstance { ^x }
+|  |  |  SCBody (16:22)
+|  |  |  |  SCExplicitReturn (16:22)
+|  |  |  |  |  SCRead (16:23): instance x, declared (4:9): x
+|  |  SCMethod (18:5): code: code { |a| ^a + x }
+|  |  |  SCArgumentDeclareList (18:13)
+|  |  |  |  SCArgumentDeclare (18:13): a
+|  |  |  SCBody (18:16)
+|  |  |  |  SCExplicitReturn (18:16)
+|  |  |  |  |  SCMessage (18:17): +
+|  |  |  |  |  |  SCRead (18:17): local a, declared (18:13): a
+|  |  |  |  |  |  SCPositionalArgs (18:17)
+|  |  |  |  |  |  |  SCRead (18:21): instance x, declared (4:9): x
+|  |  SCMethod (23:5): extension: extension { ^x + 1 }
+|  |  |  SCBody (23:17)
+|  |  |  |  SCExplicitReturn (23:17)
+|  |  |  |  |  SCMessage (23:18): +
+|  |  |  |  |  |  SCRead (23:18): instance x, declared (4:9): x
+|  |  |  |  |  |  SCPositionalArgs (23:18)
+|  |  |  |  |  |  |  SCLiteral (23:22) = 1
+
+
+
+COMPILED DUMP 
+
+
+Methods
+|  class (3:1): superclass Object, not indexed
+|  instance variables: x,
+|  method prim: function 0, primitive _BasicNew
+|  method primArgs: function 1, primitive _ObjectPerform
+|  method returnSelf: function 2
+|  method returnLiteral: function 3
+|  method returnArgument: function 4
+|  method returnInstance: function 5
+|  method code: function 6
+|  method extension: function 7
+|  function 0 (6:5): prim
+|  |  arguments: this,
+|  |  code: 4 bytes, 0 selectors, 0 constants
+|  function 1 (8:5): primArgs
+|  |  arguments: this, a = nil, b = 1,
+|  |  code: 4 bytes, 0 selectors, 0 constants
+|  function 2 (10:5): returnSelf
+|  |  arguments: this,
+|  |  shortcut: return self
+|  function 3 (12:5): returnLiteral
+|  |  arguments: this,
+|  |  shortcut: return literal 1
+|  function 4 (14:5): returnArgument
+|  |  arguments: this, a = nil,
+|  |  shortcut: return argument 1
+|  function 5 (16:5): returnInstance
+|  |  arguments: this,
+|  |  shortcut: return instance variable 0
+|  function 6 (18:5): code
+|  |  arguments: this, a = nil,
+|  |  code: 6 bytes, 0 selectors, 0 constants
+|  function 7 (23:5): extension
+|  |  arguments: this,
+|  |  code: 4 bytes, 0 selectors, 0 constants
+Successfully compiled 16 classes.

@@ -1,0 +1,128 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): PartialNames : Object
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (6:5): one: one { ^_ + 1 }
+|  |  |  SCBody (6:11)
+|  |  |  |  SCExplicitReturn (6:11)
+|  |  |  |  |  SCFunction (6:12)
+|  |  |  |  |  |  SCArgumentDeclareList (6:12)
+|  |  |  |  |  |  |  SCArgumentDeclare (6:12): _
+|  |  |  |  |  |  SCBody (6:12)
+|  |  |  |  |  |  |  SCMessage (6:12): +
+|  |  |  |  |  |  |  |  SCRead (6:12): local _, declared (6:12): _
+|  |  |  |  |  |  |  |  SCPositionalArgs (6:12)
+|  |  |  |  |  |  |  |  |  SCLiteral (6:16) = 1
+|  |  SCMethod (8:5): two: two { ^_ - _ }
+|  |  |  SCBody (8:11)
+|  |  |  |  SCExplicitReturn (8:11)
+|  |  |  |  |  SCFunction (8:12)
+|  |  |  |  |  |  SCArgumentDeclareList (8:12)
+|  |  |  |  |  |  |  SCArgumentDeclare (8:12): _
+|  |  |  |  |  |  |  SCArgumentDeclare (8:16): _
+|  |  |  |  |  |  SCBody (8:12)
+|  |  |  |  |  |  |  SCMessage (8:12): -
+|  |  |  |  |  |  |  |  SCRead (8:12): local _1, declared (8:12): _
+|  |  |  |  |  |  |  |  SCPositionalArgs (8:12)
+|  |  |  |  |  |  |  |  |  SCRead (8:16): local _2, declared (8:16): _
+|  |  SCMethod (10:5): three: three { ^[_, _, _] }
+|  |  |  SCBody (10:13)
+|  |  |  |  SCExplicitReturn (10:13)
+|  |  |  |  |  SCFunction (10:14)
+|  |  |  |  |  |  SCArgumentDeclareList (10:14)
+|  |  |  |  |  |  |  SCArgumentDeclare (10:15): _
+|  |  |  |  |  |  |  SCArgumentDeclare (10:18): _
+|  |  |  |  |  |  |  SCArgumentDeclare (10:21): _
+|  |  |  |  |  |  SCBody (10:14)
+|  |  |  |  |  |  |  SCCollection (10:14): Array
+|  |  |  |  |  |  |  |  SCRead (10:15): local _1, declared (10:15): _
+|  |  |  |  |  |  |  |  SCRead (10:18): local _2, declared (10:18): _
+|  |  |  |  |  |  |  |  SCRead (10:21): local _3, declared (10:21): _
+|  |  SCMethod (12:5): nested: nested { |x| if (x) { ^_.foo(_) }; ^this.bar(_, 1, _) }
+|  |  |  SCArgumentDeclareList (12:15)
+|  |  |  |  SCArgumentDeclare (12:15): x
+|  |  |  SCBody (12:18)
+|  |  |  |  SCMessage (12:18): if
+|  |  |  |  |  SCRead (12:22): local x, declared (12:15): x
+|  |  |  |  |  SCPositionalArgs (12:18)
+|  |  |  |  |  |  SCFunction (12:25)
+|  |  |  |  |  |  |  SCBody (12:25)
+|  |  |  |  |  |  |  |  SCExplicitReturn (12:27)
+|  |  |  |  |  |  |  |  |  SCFunction (12:28)
+|  |  |  |  |  |  |  |  |  |  SCArgumentDeclareList (12:28)
+|  |  |  |  |  |  |  |  |  |  |  SCArgumentDeclare (12:28): _
+|  |  |  |  |  |  |  |  |  |  |  SCArgumentDeclare (12:34): _
+|  |  |  |  |  |  |  |  |  |  SCBody (12:28)
+|  |  |  |  |  |  |  |  |  |  |  SCMessage (12:28): foo
+|  |  |  |  |  |  |  |  |  |  |  |  SCRead (12:28): local _1, declared (12:28): _
+|  |  |  |  |  |  |  |  |  |  |  |  SCPositionalArgs (12:28)
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (12:34): local _2, declared (12:34): _
+|  |  |  |  SCExplicitReturn (12:40)
+|  |  |  |  |  SCFunction (12:41)
+|  |  |  |  |  |  SCArgumentDeclareList (12:41)
+|  |  |  |  |  |  |  SCArgumentDeclare (12:50): _
+|  |  |  |  |  |  |  SCArgumentDeclare (12:56): _
+|  |  |  |  |  |  SCBody (12:41)
+|  |  |  |  |  |  |  SCMessage (12:41): bar
+|  |  |  |  |  |  |  |  SCSpecial (12:41): this
+|  |  |  |  |  |  |  |  SCPositionalArgs (12:41)
+|  |  |  |  |  |  |  |  |  SCRead (12:50): local _1, declared (12:50): _
+|  |  |  |  |  |  |  |  |  SCLiteral (12:53) = 1
+|  |  |  |  |  |  |  |  |  SCRead (12:56): local _2, declared (12:56): _
+|  |  SCMethod (13:5): bar: bar { |a, b, c| ^a }
+|  |  |  SCArgumentDeclareList (13:12)
+|  |  |  |  SCArgumentDeclare (13:12): a
+|  |  |  |  SCArgumentDeclare (13:15): b
+|  |  |  |  SCArgumentDeclare (13:18): c
+|  |  |  SCBody (13:21)
+|  |  |  |  SCExplicitReturn (13:21)
+|  |  |  |  |  SCRead (13:22): local a, declared (13:12): a
+
+
+
+COMPILED DUMP 
+
+
+PartialNames
+|  class (4:1): superclass Object, not indexed
+|  method one: function 0
+|  method two: function 2
+|  method three: function 4
+|  method nested: function 6
+|  method bar: function 9
+|  function 0 (6:5): one
+|  |  arguments: this,
+|  |  code: 3 bytes, 1 selectors, 0 constants
+|  function 1 (6:12), in function 0
+|  |  arguments: _ = nil,
+|  |  code: 3 bytes, 0 selectors, 0 constants
+|  function 2 (8:5): two
+|  |  arguments: this,
+|  |  code: 3 bytes, 1 selectors, 0 constants
+|  function 3 (8:12), in function 2
+|  |  arguments: _ = nil, _ = nil,
+|  |  code: 5 bytes, 0 selectors, 0 constants
+|  function 4 (10:5): three
+|  |  arguments: this,
+|  |  code: 3 bytes, 1 selectors, 0 constants
+|  function 5 (10:14), in function 4
+|  |  arguments: _ = nil, _ = nil, _ = nil,
+|  |  code: 16 bytes, 0 selectors, 0 constants
+|  function 6 (12:5): nested
+|  |  arguments: this, x = nil,
+|  |  code: 11 bytes, 2 selectors, 0 constants
+|  function 7 (12:28), in function 6
+|  |  arguments: _ = nil, _ = nil,
+|  |  code: 4 bytes, 1 selectors, 0 constants
+|  function 8 (12:41), in function 6
+|  |  arguments: _ = nil, _ = nil,
+|  |  code: 8 bytes, 1 selectors, 0 constants
+|  function 9 (13:5): bar
+|  |  arguments: this, a = nil, b = nil, c = nil,
+|  |  shortcut: return argument 1
+Successfully compiled 16 classes.
