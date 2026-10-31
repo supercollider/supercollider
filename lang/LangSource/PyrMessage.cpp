@@ -729,7 +729,7 @@ HOT void returnFromMethod(VMGlobals* g) {
         // We need to remove f, 1, 2, 3, 4, leaving the DoesNotUnderstandError.
         // Don't do this when doing a tail call, that isn't a true non-local return.
         // Don't do this if yielded to another thread.
-        if (g->tailCall == 0 && !yieled && distance > 1 && oneBeforeReturnFrame) {
+        if (g->tailCall == 0 && !yieled && distance >= 1 && oneBeforeReturnFrame) {
             const auto expected = oneBeforeReturnFrame->expectedStackDepthAfterReturn.getInt();
             const auto current = g->gc->StackDepth();
             if (expected < current) {
