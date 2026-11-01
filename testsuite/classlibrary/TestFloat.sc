@@ -72,13 +72,13 @@ TestFloat : UnitTest {
 
 		var out = List[];
 
-		-3.0.reverseDo { |v, i|
+		3.0.reverseDo { |v, i|
 			out.add([v, i]);
 		};
 		this.assertEquals(out, List[
-			[2.0, 0],
-			[1.0, 1],
-			[0.0, 2]
+			[2.0, 0.0],
+			[1.0, 1.0],
+			[0.0, 2.0]
 		]);
 
 	}
