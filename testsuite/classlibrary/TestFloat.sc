@@ -68,4 +68,19 @@ TestFloat : UnitTest {
 		// This means the conversion from value to string to value isn't complete over the float type.
 	}
 
+	test_reverseDo {
+
+		var out = List[];
+
+		3.0.reverseDo { |v, i|
+			out.add([v, i]);
+		};
+		this.assertEquals(out, List[
+			[2.0, 0.0],
+			[1.0, 1.0],
+			[0.0, 2.0]
+		]);
+
+	}
+
 }
