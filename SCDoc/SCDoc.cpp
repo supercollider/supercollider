@@ -192,7 +192,7 @@ DocNode* scdoc_parse_file(const std::string& fn, int mode) {
 
     // incoming fn is from QString.toStdString(), so it's UTF-8.
 #ifdef _WIN32
-    const std::wstring fn_w = SC_Codecvt::utf8_to_utf16_str(fn.c_str());
+    const std::wstring fn_w = SC_Codecvt::utf8_to_utf16_str(fn);
     fp = _wfopen(fn_w.c_str(), L"r");
 #else
     fp = fopen(fn.c_str(), "r");

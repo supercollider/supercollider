@@ -626,13 +626,13 @@ int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */) {
         return this_err;
 
 #ifdef _WIN32
-    const auto this_str_w = SC_Codecvt::utf8_to_utf16_str(this_str.c_str());
+    const auto this_str_w = SC_Codecvt::utf8_to_utf16_str(this_str);
     const auto count = GetEnvironmentVariableW(this_str_w.c_str(), nullptr, 0);
     std::string buf;
     if (count != 0) {
         std::wstring wbuf(count, 0);
         GetEnvironmentVariableW(this_str_w.c_str(), wbuf.data(), count);
-        buf = SC_Codecvt::utf16_to_utf8_str(wbuf.c_str());
+        buf = SC_Codecvt::utf16_to_utf8_str(wbuf);
     }
     char* value = count != 0 ? buf.data() : nullptr;
 #else
@@ -665,7 +665,7 @@ int prString_Setenv(struct VMGlobals* g, int numArgsPushed) {
 
     if (IsNil(slot_value)) {
 #ifdef _WIN32
-        SetEnvironmentVariableW(SC_Codecvt::utf8_to_utf16_str(this_name_str.c_str()).c_str(), nullptr);
+        SetEnvironmentVariableW(SC_Codecvt::utf8_to_utf16_str(this_name_str).c_str(), nullptr);
 #else
         unsetenv(this_name_str.c_str());
 #endif
@@ -674,8 +674,8 @@ int prString_Setenv(struct VMGlobals* g, int numArgsPushed) {
         if (value_err != errNone)
             return value_err;
 #ifdef _WIN32
-        SetEnvironmentVariableW(SC_Codecvt::utf8_to_utf16_str(this_name_str.c_str()).c_str(),
-                                SC_Codecvt::utf8_to_utf16_str(value_str.c_str()).c_str());
+        SetEnvironmentVariableW(SC_Codecvt::utf8_to_utf16_str(this_name_str).c_str(),
+                                SC_Codecvt::utf8_to_utf16_str(value_str).c_str());
 #else
         setenv(this_name_str.c_str(), value_str.c_str(), 1);
 #endif
