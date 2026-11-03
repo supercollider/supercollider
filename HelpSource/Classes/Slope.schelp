@@ -6,7 +6,7 @@ description::
 Measures the rate of change per second of a signal.
 Formula implemented is:
 
-code::
+code#fragment::
 out[i] = (in[i] - in[i-1]) * sampling_rate
 ::
 

@@ -427,7 +427,7 @@ Freeing a buffer removes it from the cache; quitting the server clears all the c
 You may access cached buffers using the following methods.
 
 It may be simpler to access them through the server object:
-code::
+code#fragment::
 myServer.cachedBufferAt(bufnum)
 myServer.cachedBuffersDo(func)
 
@@ -893,7 +893,7 @@ x.free; b.free;
 method:: query
 Sends a code::\b_query:: message to the server, which reponds with: the OSC address pattern (code::/b_info::), code::bufnum::, code::numFrames::, code::numChannels::, and code::sampleRate:: of the server-side buffer representation. These values are passed, in order, to the strong::action:: function which, by default, is:
 code::
-action: { |oscAddrPattern, bufnum, numFrames, numChannels, sampleRate|
+{ |oscAddrPattern, bufnum, numFrames, numChannels, sampleRate|
     postf("bufnum: %\nnumFrames: %\nnumChannels: %\nsampleRate: %\n",
         bufnum, numFrames, numChannels, sampleRate
     );

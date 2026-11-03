@@ -15,7 +15,7 @@ code::
 
 first make sure that the localhost server is booted. Then put the cursor anywhere on the line (shown above) and press <enter>. If you don't have an enter key, then you can use ctrl-Return, Ctrl-c, fn-Return( on Some Macs), or Shift-Return. The server will synthesize audio and text that looks something like
 
-code::
+teletype::
 Synth("-613784702" : 1000)
 ::
 
@@ -45,7 +45,7 @@ code::
 
 The server will synthesize audio and text that looks something like
 
-code::
+teletype::
 Synth("-393573063" : 1000)
 ::
 

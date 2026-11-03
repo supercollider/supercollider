@@ -1257,7 +1257,8 @@ void ScCodeEditor::evaluateLine() {
 
     text.replace(QChar(0x2029), QChar('\n'));
 
-    Main::evaluateCode(text, false, &document()->filePath(), cursorLineNumber(textCursor()));
+    Main::evaluateCode(text, false, &document()->filePath(), cursorLineNumber(textCursor()), 0,
+                       document()->languageVersion());
 
     blinkCode(cursor);
 }
@@ -1303,14 +1304,15 @@ void ScCodeEditor::evaluateRegion() {
 
     text.replace(QChar(0x2029), QChar('\n'));
 
-    Main::evaluateCode(text, false, &document()->filePath(), cursorLineNumber(textCursor()), 0);
+    Main::evaluateCode(text, false, &document()->filePath(), cursorLineNumber(textCursor()), 0,
+                       document()->languageVersion());
 
     blinkCode(cursor);
 }
 
 void ScCodeEditor::evaluateDocument() {
     QString documentText = textDocument()->toPlainText();
-    Main::evaluateCode(documentText, false, &document()->filePath(), 0, 0);
+    Main::evaluateCode(documentText, false, &document()->filePath(), 0, 0, document()->languageVersion());
 }
 
 QTextCursor ScCodeEditor::cursorAt(const TokenIterator it, int offset) {

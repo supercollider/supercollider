@@ -105,7 +105,7 @@ argument::a
 Parameter for Lehmer random number generator perturbed by
 Xenakis as in
 
-code::
+code#fragment::
 ((old*a)+c)%1.0
 ::
 

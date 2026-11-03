@@ -15,7 +15,7 @@ necessarily, in the current form: it is limited to the arithmetic operations tha
 
 You can extend Maybe as you need for your purpose, by the following schema:
 
-code::
+code#class::
 // replace "myMethod" with your method name
 + Maybe {
 	myMethod { |...args, kwargs|

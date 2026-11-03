@@ -376,21 +376,39 @@ void HelpBrowser::onScResponse(const QString& command, const QString& data) {
 }
 
 void HelpBrowser::evaluateSelection(bool evaluateRegion) {
-    static const QString jsSelectLine("selectLine()");
-    static const QString jsSelectRegion("selectRegion()");
+    // Each script answers [code, version]. The version is the data-sc-version of the code block or inline code the
+    // selection starts in; none means Legacy. It is 'class' in class library code, which isn't evaluated.
+    static const QString jsVersion("(() => {"
+                                   "  const selection = window.getSelection();"
+                                   "  if (!selection.rangeCount) return '';"
+                                   "  const node = selection.getRangeAt(0).startContainer;"
+                                   "  const element = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;"
+                                   "  if (element && element.closest('[data-sc-class-code]')) return 'class';"
+                                   "  const block = element && element.closest('[data-sc-version]');"
+                                   "  return block ? block.getAttribute('data-sc-version') : '';"
+                                   "})()");
+    static const QString jsSelection("[window.getSelection().toString(), " + jsVersion + "]");
+    static const QString jsSelectLine("[selectLine(), " + jsVersion + "]");
+    static const QString jsSelectRegion("[selectRegion(), " + jsVersion + "]");
 
-    mWebView->page()->runJavaScript("window.getSelection().toString()", [this, evaluateRegion](const QVariant& res) {
-        QString selection = res.toString();
-        if (!selection.isEmpty()) {
-            Main::scProcess()->evaluateCode(selection);
-        } else {
-            mWebView->page()->runJavaScript(evaluateRegion ? jsSelectRegion : jsSelectLine, [](QVariant res) {
-                QString selectionResult = res.toString();
-                if (!selectionResult.isEmpty()) {
-                    Main::scProcess()->evaluateCode(selectionResult);
-                }
-            });
-        }
+    auto evaluate = [](const QVariant& res) {
+        const QVariantList codeAndVersion = res.toList();
+        if (codeAndVersion.size() != 2)
+            return false;
+        const QString code = codeAndVersion[0].toString();
+        if (code.isEmpty())
+            return false;
+        const QString version = codeAndVersion[1].toString();
+        if (version == QLatin1String("class"))
+            return true;
+        Main::scProcess()->evaluateCodeWithVersion(code, false, nullptr, 0, 0, version);
+        return true;
+    };
+
+    mWebView->page()->runJavaScript(jsSelection, [this, evaluateRegion, evaluate](const QVariant& res) {
+        if (!evaluate(res))
+            mWebView->page()->runJavaScript(evaluateRegion ? jsSelectRegion : jsSelectLine,
+                                            [evaluate](const QVariant& res) { evaluate(res); });
     });
 }
 

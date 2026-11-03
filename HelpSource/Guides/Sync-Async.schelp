@@ -109,7 +109,8 @@ SynthDef("Help-SynthDef", { arg out = 0;
 
 Let's take a look at the method definition for SynthDef-play and see what it does.
 
-code::
+code#class#fragment::
+SynthDef {
 	play { arg target,args,addAction=\addToTail;
 		var synth, msg;
 		target = target.asTarget;
@@ -119,6 +120,7 @@ code::
 		this.send(target.server, msg); // ** send the def, and the message as a completion message
 		^synth // return the Synth object
 	}
+}
 ::
 
 This might seem a little complicated if you're not used to mucking about in class definitions, but the important part is the second argument to code::this.send(target.server, msg);::. This argument is a completion message, it is a message that the server will execute when the send action is complete. In this case it says create a synth node on the server which corresponds to the link::Classes/Synth:: object I've already created, when and only when the def has been sent to the server app. (See the helpfile link::Reference/Server-Command-Reference:: for details on messaging.)

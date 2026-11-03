@@ -1250,6 +1250,10 @@ QString AutoCompleter::getMethodDocs(const DocNode& node, QString methodName, bo
 void AutoCompleter::parseClassNode(DocNode* node, QString* str) {
     QString id = node->id;
 
+    // A code tag's release and marks, e.g. code#3.16#class#error::, are not text.
+    if (id == "VERSION" || id == "CLASSCODE" || id == "FRAGMENTCODE" || id == "ERRORCODE")
+        return;
+
     if (id == "NOTE")
         str->append("<br><br>Note:<br>");
 

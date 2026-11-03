@@ -415,7 +415,7 @@ x // pi is everywhere
 
 method::flopWith
 Flop with a user defined function. Can be used to collect over several collections in parallel.
-code::
+code#fragment::
 [[1, 2, 3], [4, 5, 6]].flopWith(_+_);
 [[1, 2, 3], 1, [7, 8]].flopWith{ |a, b, c| a+b+c }; // shorter array wraps
 

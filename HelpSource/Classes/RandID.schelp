@@ -104,8 +104,11 @@ SynthDef(\test, {
 }).dumpUGens
 )
 
-// correct order! annotated:
 
+::
+
+teletype::
+// correct order! annotated:
 // one RNG chain, id = 0
 [0_RandID, control, [0, 1]]
 [1_RandSeed, scalar, [1, 88372]]

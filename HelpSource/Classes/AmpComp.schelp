@@ -8,7 +8,7 @@ Description::
 
 Implements the (optimized) formula:
 
-code::
+code#fragment::
 compensationFactor = (root / freq) ** exp
 ::
 

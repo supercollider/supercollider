@@ -5,7 +5,7 @@ related:: Classes/GrainBuf
 
 Description::
 Triggers generate grains from a buffer. Each grain has a Hanning envelope
-code::
+teletype::
 (sin2(x) for x from 0 to π)
 ::
 and can be panned over multichannel output.

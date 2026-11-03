@@ -11,7 +11,7 @@ Order of execution in this context doesn't mean the order in which statements ar
 Whether or not you specify the order of execution, each synth and each group goes into a specific place in the chain of execution.
 
 If you have on the server:
-code::
+teletype::
     synth 1 ---> synth 2
 ::
 ... all the unit generators associated with synth 1 will execute before those in synth 2 during each control cycle.
@@ -19,11 +19,11 @@ code::
 If you don't have any synths that use In.ar, you don't have to worry about order of execution. It only matters when one synth is reading the output of another.
 
 The rule is simple: if you have a synth on the server (i.e. an "effect") that depends on the output from another synth (the "source"), the effect must appear later in the chain of nodes on the server than the source.
-code::
+teletype::
     source ---> effect
 ::
 If you have:
-code::
+teletype::
     effect ---> source
 ::
 The effect synth will not hear the source synth, and you won't get the results you want.
@@ -96,7 +96,7 @@ Where order of execution matters, it is important that you specify an addAction,
 
 
 subsection:: Moving nodes
-code::
+teletype::
     .moveBefore
     .moveAfter
     .moveToHead
@@ -112,7 +112,7 @@ code::
 subsection:: Groups
 
 Groups can be moved in the same way as synths. When you move a group, all the synths in that group move with it. This is why groups are such an important tool for managing order of execution. (See the Group helpfile for details on this and other convenient aspects of Groups.)
-code::
+teletype::
     Group 1 ---> Group 2
 ::
 In the above configuration, all of the synths in group 1 will execute before all of the synths in group 2. This is an easy, easy way to make the order of execution happen the way you want it to.
@@ -138,15 +138,15 @@ Before you start coding, plan out what you want and decide where the synths need
 
 A common configuration is to have a routine playing nodes, all of which need to be processed by a single effect. Plus, you want this effect to be separate from other things running at the same time.
 To be sure, you should place the synth -> effect chain on a private audio bus, then transfer it to the main output.
-code::
+teletype::
 	[Lots of synths] ----> effect ----> transfer
 ::
 This is a perfect place to use a group:
-code::
+teletype::
 	Group ( [lots of synths] ) ----> effect ----> transfer
 ::
 To make the structure clearer in the code, one can also make a group for the effect (even if there's only one synth in it):
-code::
+teletype::
 	Group ( [lots of synths] ) ----> Group ( [effect] ) ----> transfer
 ::
 I'm going to throw a further wrench into the example by modulating a parameter (note length) using a control rate synth.

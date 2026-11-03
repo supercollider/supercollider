@@ -30,13 +30,13 @@ NUMBEREDLIST::
 
 Using the NotificationCenter class, a connection between a subject and an observer to perform an action in response to a message is created by the following code:
 
-code::
+code#fragment::
 NotificationCenter.register(subject, message, observer, action)
 ::
 
 To notify observers that a subject has changed, the NotificationCenter must call the method code:: notify :: :
 
-code::
+teletype::
 NotificationCenter.notify(subject, message, <optional arguments>...);
 ::
 
@@ -46,7 +46,7 @@ section:: Example
 
 When a Server boots or quits, it notifies its observers sending them the message \newAllocators:
 
-code::
+code#fragment::
 NotificationCenter.notify(server, \newAllocators)
 ::
 

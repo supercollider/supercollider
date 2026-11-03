@@ -72,6 +72,11 @@ public:
     void updateTextMirrorForDocument(class Document* doc, int position, int charsRemoved, int charsAdded);
     void updateSelectionMirrorForDocument(class Document* doc, int start, int range);
 
+public:
+    // Version is a language release (e.g., 3.16 or legacy), or empty for the text's own line 1, else Legacy.
+    void evaluateCodeWithVersion(QString const& commandString, bool silent, const QString* filePath, int lineNumber,
+                                 int column, QString const& version);
+
 public slots:
     void toggleRunning();
     void startLanguage(void);
@@ -83,7 +88,9 @@ public slots:
     void onReadAllStandardOutput();
     void onReadAllStandardError();
     void evaluateCode(QString const& commandString, bool silent = false, const QString* filePath = nullptr,
-                      int lineNumber = 0, int column = 0);
+                      int lineNumber = 0, int column = 0) {
+        evaluateCodeWithVersion(commandString, silent, filePath, lineNumber, column, QString());
+    }
 
 signals:
     void scPost(QString const&);

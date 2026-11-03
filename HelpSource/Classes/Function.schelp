@@ -26,7 +26,7 @@ See link::Classes/AbstractFunction#Function Composition:: for function compositi
 
 Because Functions are such an important concept, here some examples from related programming languages with functions as first class objects:
 
-code::
+teletype::
 // returning the first argument itself:
 { |x| x }.value(1) // SuperCollider
 [:x | x ] value: 1 // Smalltalk

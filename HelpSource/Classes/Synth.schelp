@@ -12,7 +12,7 @@ For more on the important distinction between client objects and server nodes, s
 
 subsection:: Order of Execution
 Order of execution is a crucial issue when creating Synths which interact with each other.
-code::
+code#fragment::
 	sound ->  filter
 ::
 If a sound is to be passed through a filter, the synth that does the filtering must be later in the order of execution than the synth which is its input.  The computer must calculate a buffer's worth of sound, and then the computer moves on to calculate a buffer's worth of the filtered version of that sound.

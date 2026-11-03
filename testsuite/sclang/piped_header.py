@@ -41,6 +41,13 @@ CASES = {
         expected=["Variable declared after an expression"],
         forbidden=["-> no file 2"],
     ),
+    # The IDE's help browser and untitled documents send a version with no file.
+    "no_file_with_version": dict(
+        file="",
+        records=["3.16"],
+        text=LATE_VAR + '"no file with version " ++ q',
+        expected=["-> no file with version 2"],
+    ),
     # --interpreted-version sets the version of text with no file, and nothing else.
     "flag_no_file": dict(
         file="",

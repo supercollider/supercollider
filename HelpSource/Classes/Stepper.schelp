@@ -99,7 +99,7 @@ s.performList(\sendMsg, \b_setn, 10, 0, a.size, a);
 
 (
 SynthDef(\stepper, { |out|
-	var rate, clock, index, freq, ffreq, env, out, rev, lfo;
+	var rate, clock, index, freq, ffreq, env, sig, rev, lfo;
 
 	rate = MouseX.kr(1, 5, 1);
 	clock = Impulse.kr(rate);
@@ -108,29 +108,29 @@ SynthDef(\stepper, { |out|
 	freq = BufRd.kr(1, 10, index, 1, 1);
 	freq = Lag2.kr(freq) + [0, 0.3];
 	ffreq = MouseY.kr(80, 1600, 1) * (env * 4 + 2);
-	out = Mix.ar(LFPulse.ar(freq * [1, 3/2, 2], 0, 0.3));
-	out = RLPF.ar(out, ffreq, 0.3, env);
-	out = RLPF.ar(out, ffreq, 0.3, env);
-	out = out * 0.02;
+	sig = Mix.ar(LFPulse.ar(freq * [1, 3/2, 2], 0, 0.3));
+	sig = RLPF.ar(sig, ffreq, 0.3, env);
+	sig = RLPF.ar(sig, ffreq, 0.3, env);
+	sig = sig * 0.02;
 
 	// echo
-	out = CombL.ar(out, 1, 0.66/rate, 2, 0.8, out);
+	sig = CombL.ar(sig, 1, 0.66/rate, 2, 0.8, sig);
 
 	// reverb
-	rev = out;
+	rev = sig;
 	5.do { rev = AllpassN.ar(rev, 0.05, { 0.05.rand }.dup, rrand(1.5, 2.0)) };
-	out = out + (0.3 * rev);
+	sig = sig + (0.3 * rev);
 
-	out = LeakDC.ar(out);
+	sig = LeakDC.ar(sig);
 
 	// flanger
 	lfo = SinOsc.kr(0.2, [0, 0.5pi], 0.0024, 0.0025);
-	1.do { out = DelayL.ar(out, 0.1, lfo, 1, out) };
+	1.do { sig = DelayL.ar(sig, 0.1, lfo, 1, sig) };
 
 	// slight bass emphasis
-	out = OnePole.ar(out, 0.9);
+	sig = OnePole.ar(sig, 0.9);
 
-	Out.ar(out, out);
+	Out.ar(out, sig);
 
 }).add;
 )

@@ -37,7 +37,7 @@ argument:: weightingscheme
 
 returns::
 Six k-rate outputs:
-code::
+code#fragment::
 #beattick, eighthtick, groovetick, tempo, phase, groove = BeatTrack2.kr(busindex, numfeatures)
 ::
 

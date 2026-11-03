@@ -16,7 +16,7 @@ It is the simplest display, it is just the object asString.
 
 The .gui method is called on your model:
 
-code::
+code#fragment::
 // standard usage
 theModel.gui(parent, bounds)
 
@@ -136,7 +136,7 @@ the string to display
 
 EXAMPLES::
 
-code::
+code#class::
 
 YourSimpleGuiClass : ObjectGui {
 
@@ -191,7 +191,7 @@ YourGuiClass : ObjectGui {
 	// is sent to your model
 	update { |changed, changer|
 
-		if(changer !== this, {
+		if(changer !== this) {
 			/* if it is this gui object that changed the value
 				using the numberEditor, then we already have a correct
 				display and don't need to waste cpu to update it.

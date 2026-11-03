@@ -196,7 +196,7 @@ definitionList::
 
 code::
 Place([0, [1, 2], [3, 4, 5]], 3).asStream.all;
---> [ 0, 1, 3, 0, 2, 4, 0, 1, 5 ]
+// --> [ 0, 1, 3, 0, 2, 4, 0, 1, 5 ]
 ::
 
 If we turn this into a matrix and read vertically, the original arrays are clearly visible:

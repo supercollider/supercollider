@@ -27,7 +27,7 @@ This value will be added to the output.
 
 
 Examples::
-code::
+code#fragment::
 // indexing into a fixed table
 (
 {

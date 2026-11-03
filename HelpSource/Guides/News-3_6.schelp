@@ -13,7 +13,7 @@ SECTION:: Language-side news
 
 subsection:: More informative syntax errors
 The parser now posts the details of syntax errors, example:
-code::
+code#error::
 [1,2,%,4];
 123;
 ::

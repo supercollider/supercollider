@@ -7,7 +7,7 @@ categories::  UGens>Generators>Chaotic
 Description::
 
 A noise generator based on the logistic map:
-code::
+code#fragment::
 y = chaosParam * y * (1.0 - y)
 ::
 

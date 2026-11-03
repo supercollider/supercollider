@@ -9,7 +9,7 @@ QuartzComposerView allows for the rendering of Quartz Composer Compositions with
 
 You can access input and output ports using the methods setInputValue, getInputValue and getOutputValue, or (do to a slight of hand in the implementation, using the port keys as getters and setters directly. The following two lines of code are thus equivalent:
 
-code::
+code#fragment::
 myQCView.setInputValue(\valueIn, 1);
 myQCView.valueIn = 1;
 ::

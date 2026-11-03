@@ -30,12 +30,20 @@
 #include <QDir>
 #include <QFile>
 #include <QMessageBox>
+#include <QRegularExpression>
 #include <QTextBlock>
 #include <QApplication>
 
 #include <yaml-cpp/yaml.h>
 
 using namespace ScIDE;
+
+QString Document::languageVersion() const {
+    // The same rule as langutils/VERSION_COMMENT.md.
+    static const QRegularExpression directive(QStringLiteral("^//# VERSION (legacy|[0-9]+\\.[0-9]+)[ \\t]*\\r?$"));
+    const auto match = directive.match(mDoc->firstBlock().text());
+    return match.hasMatch() ? match.captured(1) : QString();
+}
 
 Document::Document(bool isPlainText, const QByteArray& id, const QString& title, const QString& text):
     mId(id),

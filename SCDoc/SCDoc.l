@@ -23,12 +23,26 @@
 #include "SCDoc.tab.hpp"
 
 int scdoc_start_token = 0;
-//int colnum;
-//#define YY_USER_ACTION { scdoclloc.first_column = colnum; colnum=colnum+yyleng; scdoclloc.last_column=colnum; if(scdoclloc.first_line!=yylineno) colnum=1; scdoclloc.first_line = scdoclloc.last_line = yylineno;}
+// A token's line is the line after its match, so a code block's is the line its code starts on.
+#define YY_USER_ACTION { scdoclloc.first_line = scdoclloc.last_line = yylineno; }
 
 static int method_caller;
 
+// What follows `code#` in a code tag, e.g. "3.16#class#error" in "code#3.16#class#error::", see make_code in SCDoc.y.
+static char* code_tag(const char* text) {
+    const char* start = strchr(text, '#') + 1;
+    size_t length = strstr(start, "::") - start;
+    char* tag = (char*)malloc(length + 1);
+    memcpy(tag, start, length);
+    tag[length] = 0;
+    return tag;
+}
+
 %}
+
+RELEASE legacy|[0-9]+\.[0-9]+
+CHECK fragment|error
+CODETAG #{RELEASE}(#class)?(#{CHECK})?|#class(#{CHECK})?|#{CHECK}
 
 %option noyywrap never-interactive nounistd yylineno
 
@@ -97,11 +111,14 @@ if (scdoc_start_token) {
 (?i:soft::[ \t\n\r]*)         BEGIN(verbatim); return SOFT;
 (?i:strong::[ \t\n\r]*)       BEGIN(verbatim); return STRONG;
 (?i:emphasis::[ \t\n\r]*)     BEGIN(verbatim); return EMPHASIS;
-(?i:code::[ \t]*)           BEGIN(verbatim); return CODE;
+(?i:code::[ \t]*)           BEGIN(verbatim); scdoclval.str = NULL; return CODE;
+(?i:code){CODETAG}::[ \t]*  BEGIN(verbatim); scdoclval.str = code_tag(scdoctext); return CODE;
+(?i:code)#[^:\n]*::          return BAD_CODE_VERSION;
 (?i:teletype::[ \t]*)       BEGIN(verbatim); return TELETYPE;
 (?i:math::[ \t]*) BEGIN(verbatim); return MATH;
 
-(?i:[ \t]*code::[ \t]*\n+)      BEGIN(verbatim2); return CODEBLOCK;
+(?i:[ \t]*code::[ \t]*\n+)      BEGIN(verbatim2); scdoclval.str = NULL; return CODEBLOCK;
+(?i:[ \t]*code){CODETAG}::[ \t]*\n+  BEGIN(verbatim2); scdoclval.str = code_tag(scdoctext); return CODEBLOCK;
 (?i:[ \t]*teletype::[ \t]*\n+)  BEGIN(verbatim2); return TELETYPEBLOCK;
 (?i:[ \t]*math::[ \t]*\n+) BEGIN(verbatim2); return MATHBLOCK;
 
@@ -170,10 +187,11 @@ if (scdoc_start_token) {
 <eat>(?i:soft::[ \t\n\r]*)         BEGIN(eat2);
 <eat>(?i:strong::[ \t\n\r]*)       BEGIN(eat2);
 <eat>(?i:emphasis::[ \t\n\r]*)     BEGIN(eat2);
-<eat>(?i:code::[ \t]*)           BEGIN(eat2);
+<eat>(?i:code){CODETAG}?::[ \t]*           BEGIN(eat2);
+<eat>(?i:code)#[^:\n]*::          return BAD_CODE_VERSION;
 <eat>(?i:teletype::[ \t]*)       BEGIN(eat2);
 <eat>(?i:math::[ \t]*) BEGIN(eat2);
-<eat>(?i:[ \t]*code::[ \t]*\n+)      BEGIN(eat3);
+<eat>(?i:[ \t]*code){CODETAG}?::[ \t]*\n+      BEGIN(eat3);
 <eat>(?i:[ \t]*teletype::[ \t]*\n+)  BEGIN(eat3);
 <eat>(?i:[ \t]*math::[ \t]*\n+) BEGIN(eat3);
 <eat2>[ \t\n\r]*::            BEGIN(eat);

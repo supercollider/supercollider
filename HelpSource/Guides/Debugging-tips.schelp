@@ -24,11 +24,17 @@ code::
 	SendTrig.kr(Impulse.kr(4), 0, freq);
 	SinOsc.ar(freq, 0, 0.3) ! 2
 }.play;
+
+
+::
+teletype::
 [ /tr, 1000, 0, 1340.8098144531 ]
 [ /tr, 1000, 0, 1153.9201660156 ]
 [ /tr, 1000, 0, 966.35247802734 ]
 [ /tr, 1000, 0, 629.31628417969 ]
+::
 
+code::
 o.free;  // when done, you need to clean up the OSCFunc
 ::
 
@@ -95,7 +101,7 @@ You can debug a value that changes infrequently in a similar way, using the Chan
 Note that it will skip changes that occur immediately after a previous change, because any trigger needs to revert back to zero before triggering again.
 
 code::
-{ var steps = LFNoise0.kr; steps.poll(Changed.kr(steps); }.play;
+{ var steps = LFNoise0.kr; steps.poll(Changed.kr(steps)); }.play;
 ::
 
 You can also use a separate trigger. This is useful for having the most control over when a poll occurs.
@@ -163,7 +169,9 @@ SynthDef(\resonz, { |out, freq = 440|
 a = Synth(\resonz);
 a.trace;
 a.free;
+::
 
+teletype::
 		TRACE 1005  resonz    #units: 21
 		  unit 0 Control
 		    in
@@ -262,21 +270,21 @@ Server.default = s = Server.new('local-debug', DebugNetAddr("localhost", 57110))
 s.boot;
 s.makeWindow;		// optional
 
-	latency nil		// these messages get sent on bootup
-		[ "/notify", 1 ]
+// latency nil		// these messages get sent on bootup
+// 	[ "/notify", 1 ]
 
-	latency nil
-		[ "/g_new", 1 ]
+// latency nil
+// 	[ "/g_new", 1 ]
 
 a = { SinOsc.ar(440, 0, 0.4) ! 2 }.play;
 
-	latency nil
-		[ "/d_recv", "data[ 290 ]", [ 9, "-1589009783", 1001, 0, 1, 'i_out', 0, 'out', 0 ] ]
+// latency nil
+//	[ "/d_recv", "data[ 290 ]", [ 9, "-1589009783", 1001, 0, 1, 'i_out', 0, 'out', 0 ] ]
 
 a.free;
 
-	latency nil
-		[ 11, 1001 ]
+// latency nil
+// 	[ 11, 1001 ]
 ::
 
 section:: Debugging client code
@@ -299,16 +307,16 @@ In most cases, this will give you more information than a regular error dump. Us
 subsection:: Debug output using post statements
 
 The most common approach is to insert statements to print the values of variables and expressions. Since the normal printing methods don't change the value of an expression, they can be placed in the middle of the statement without altering the processing flow. There's no significant difference between:
-code::
+code#fragment::
 if(a > 0) { positive.value(a) };
 ::
 and
-code::
+code#fragment::
 if((a > 0).postln) { positive.value(a) };
 ::
 
 Common methods to use are:
-code::
+teletype::
 .postln
 .postcs		// post the object as a compile string
 .debug(caller)	// post the object along with a tag identifying the caller
@@ -326,8 +334,8 @@ if (a > 0) { positiveFunc.value(a) };
 )
 
 // output:
-positiveFunc-arg a: 5
-50
+//positiveFunc-arg a: 5
+//50
 ::
 
 The caller argument is optional; however, it's very helpful for tracing the origin of erroneous values.
@@ -335,7 +343,7 @@ The caller argument is optional; however, it's very helpful for tracing the orig
 Another advantage of .debug is that it's easier to search for them in your source code and remove them later.
 
 To print multiple values at one time, wrap them in an array before using .debug or .postcs. Note that if any of the array members are collections, postln will hide them behind the class name: "an Array, a Dictionary" etc. Use postcs if you expect to be posting collections.
-code::
+code#fragment::
 [val1, val2, val3].debug(\myMethod);
 [\callerTag, val1, val2, val3].postcs;
 ::
@@ -355,8 +363,9 @@ positiveFunc = { |a|
 a = 5;
 if (a > 0) { positiveFunc.value(a) };
 )
-
-// output:
+::
+Output:
+teletype::
 positiveFunc-arg a: 5
 CALL STACK:
 	< FunctionDef in closed FunctionDef >

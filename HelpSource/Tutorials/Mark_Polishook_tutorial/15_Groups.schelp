@@ -92,7 +92,7 @@ s.queryAllNodes;
 )
 ::
 
-code::
+teletype::
 Group(0)
         Group(1)
                 Synth 1003
@@ -100,7 +100,7 @@ Group(0)
 
 will appear in the transcript window. It shows Group(0) as the rootnode, Group(1) as the branching default_node and Synth 1003 (or some such number) as a leaf attached to the default_node.
 
-code::
+teletype::
 Rootnode - Group(0)
 	  |
 	  |
@@ -143,7 +143,7 @@ s.queryAllNodes;
 
 The printout in the transcript window
 
-code::
+teletype::
 Group(0)
         Group(1)
                 Synth 1005
@@ -154,7 +154,7 @@ shows that Group(0) is the rootnode and Group(1) is the default_node.
 
 Synth 1005 and 1004 (or similar such numbers) are leaves attached to the default_node. Synth 1005 is first in the list because of the way nodes are attached, by default, to the head of a list: Synth 1004, the "ringModulation" synth, was evaluated first and attached to the head of Group(1). Then Synth 1005, the "pitchFromNoise"s synth, was evaluated and placed at the head of the list (in front of Synth 1004).
 
-code::
+teletype::
 	Rootnode - Group(0)
 	  |
 	  |
@@ -245,7 +245,7 @@ s.queryAllNodes;
 )
 ::
 
-code::
+teletype::
 	Rootnode
 	  |
 	  |

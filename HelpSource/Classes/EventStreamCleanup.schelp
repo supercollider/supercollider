@@ -103,7 +103,7 @@ Used internally.
 
 
 EXAMPLES::
-code::
+code#class#fragment::
 // some code from the class library
 
 // here is a pattern that can end the stream externally after a number of steps

@@ -92,7 +92,7 @@ SynthDef("noiseToPitch", { arg out = 0, mul = 1;
 
 (
 // 左右のチャンネルをアクティブ化する
-Synth("noiseToPitch", [\out, 0\mul, 1]);
+Synth("noiseToPitch", [\out, 0, \mul, 1]);
 Synth("noiseToPitch", [\out, 1, \mul, 1]);
 )
 ::

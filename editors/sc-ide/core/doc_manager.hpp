@@ -67,6 +67,9 @@ public:
         mModelItem->setText(mTitle);
     }
 
+    // The release named by a `//# VERSION` directive on line 1, or empty. Sent with each evaluation.
+    QString languageVersion() const;
+
     QFont defaultFont() const { return mDoc->defaultFont(); }
     void setDefaultFont(const QFont& font);
 

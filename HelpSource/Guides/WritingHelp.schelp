@@ -244,16 +244,16 @@ section:: Links
 URL's are automagically converted to links.
 
 The code::link\:::: tag is used for cross-reference between docs. It uses a simple namespace, example:
-code::
+teletype::
 See also link::Classes/SinOsc:: for a nice oscillator.
 Or take a look at link::Browse#UGens:: for a full list.
 The link::Overviews/Methods#play#play method:: is often very useful.
 ::
 
-Anchors can be inserted manually with code::anchor\::name\:::: and referenced like this: code::
+Anchors can be inserted manually with code::anchor\::name\:::: and referenced like this: teletype::
 link::Foo/Bar#hello::
 ::
-or to jump to an anchor in this document: code::
+or to jump to an anchor in this document: teletype::
 link::#hello::
 ::
 
@@ -262,24 +262,24 @@ All sections get anchor names automagically.
 All methods get anchor names prefixed with code::*:: for class methods and code::-:: for instance methods.
 
 One can change the rendered text of the link by using another code::#:: character:
-code::
+teletype::
 Also see link::Classes/SinOsc##a nice oscillator::
 ::
 
 A link to specific methods:
-code::
+teletype::
 Take a look at link::Classes/SinOsc#*ar:: and link::Classes/Function#-play::
 ::
 Renders as: link::Classes/SinOsc#*ar:: and link::Classes/Function#-play::
 
 The link::Overviews/Methods:: overview is dynamic and allows a specific method to be shown, by using the methodname as anchor, for example to get a list of all classes implementing code::play:: :
-code::
+teletype::
 All classes implementing code::play:: can be seen link::Overviews/Methods#play#here::.
 ::
 Renders as: All classes implementing code::play:: can be seen link::Overviews/Methods#play#here::.
 
 The link::Browse:: page is also dynamic, and can take a category tree as anchor name:
-code::
+teletype::
 For more filters, see link::Browse#UGens>Filters::
 ::
 Renders as: For more filters, see link::Browse#UGens>Filters::
@@ -291,15 +291,15 @@ The easiest way to contribute to the documentation is:
     1. Fork the SuperCollider repository https://github.com/supercollider/supercollider
 
     2. Clone your repository
-    code::
+    teletype::
     git clone — recursive https://github.com/{your_username}/supercollider.git
     ::
     3. Create a branch for doc updates
-    code::
+    teletype::
     git checkout -b doc_updates
     ::
     4. Do your update, commit your changes and push to github
-    code::
+    teletype::
     git push origin -u doc_updates
     ::
     5. Submit your pull request through github, from your branch doc_updates to SuperCollider develop

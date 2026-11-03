@@ -86,7 +86,7 @@ returns:: a link::Classes/Size::
 
 discussion::
 This can be used to scale the graphics to fit the page if the bounds of the graphics is known:
-code::
+code#fragment::
 x = penPrinter.pageSize.width / bounds.width;
 Pen.scale(x, x);
 // ... draw stuff here ...

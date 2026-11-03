@@ -24,10 +24,12 @@ Call the object in order.
 
 Examples::
 
-code::
-*initClass {
-	StartUp.add {
-		// something to do...
+code#class::
+SomeClass {
+	*initClass {
+		StartUp.add {
+			// something to do...
+		}
 	}
 }
 ::

@@ -541,7 +541,7 @@ window.front;
 
 You can see that when adding the views inside the layouts, I also specified a number. This is called strong::assigning a 'stretch':: to a view:
 
-code::
+code#fragment::
 windowLayout.add(volumeSlider, stretch: 3);
 ::
 

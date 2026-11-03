@@ -48,11 +48,12 @@ code::
 {
 	z = LFPulse.ar(800);
 	[z, Slew.ar(z, 4000, 4000)]
-}.plot)
+}.plot
+);
 
 
 
-Has the effect of removing transients and higher frequencies.
+//Has the effect of removing transients and higher frequencies.
 (
 {
 

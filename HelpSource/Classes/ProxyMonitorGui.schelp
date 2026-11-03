@@ -22,7 +22,7 @@ p = ProxySpace.push;
 	Ringz.ar(Dust.ar(dens ! 3, dens.reciprocal.sqrt), freq * freqline, 0.1)
 };
 ~test.playN(0, vol: 0.1);
-)
+);
 
 	// make a ProxyMonitorGui
 z = ProxyMonitorGui();
@@ -110,7 +110,7 @@ ProxyMonitorGui(~test);
 //	ProxyMonitorGui gets its look from GUI.skin, so you could customize it there,
 //	or pass your own look in:
 
-ProxyMonitorGui(skin: <your look here>)
+ProxyMonitorGui(skin: nil /* replace nil with your look */)
 
 y = ProxyMonitorGui(~test);
 ::

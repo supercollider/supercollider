@@ -257,7 +257,7 @@ f.value(8, 0, 7)
 ::
 
 section:: Randomly group a Collection
-code::
+code#fragment::
 curdle(probability)
 ::
 The probability argument sets the chance that two adjacent elements will be separated.

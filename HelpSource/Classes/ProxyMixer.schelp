@@ -109,6 +109,7 @@ m.setNameLeftBorder(200); // aps left pos, smaller slider
 // relative adjust:
 m.shiftNameLeftBorder(10);
 m.shiftNameLeftBorder(-10);
+::
 
 strong::standard JITGui methods: ::
 method:: setDefaults, accepts, getState, checkUpdate

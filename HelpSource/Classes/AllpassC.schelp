@@ -8,7 +8,7 @@ Description::
 
 A Schroeder allpass filter is given by the difference equations
 
-code::
+teletype::
 s(t) = x(t) + k * s(t - D)
 y(t) = -k * s(t) + s(t - D)
 ::

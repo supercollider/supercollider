@@ -26,7 +26,7 @@ code::
 
 SuperCollider prints a four-part error notification to the post window. The parts of the notification are ERROR, RECEIVER, ARGS, and CALL STACK, as in
 
-code::
+teletype::
 ERROR: Message 'createRuntimeError' not understood.
 RECEIVER:
    Integer 3
@@ -59,37 +59,37 @@ CALL STACK:
 
 The ERROR section explains what went wrong. The RECEIVER section names the class of the object to which the message was sent. The ARGS section says how many arguments were included in the message. Read the CALL STACK from the bottom to the top to see where the error happened. Reading from bottom to top means going from
 
-code::
+code#fragment::
 Process-interpretPrintCmdLine
 ::
 
 to
 
-code::
+code#fragment::
 Interpreter-interpretPrintCmdLine
 ::
 
 to
 
-code::
+code#fragment::
 Object-doesNotUnderstand
 ::
 
 to
 
-code::
+code#fragment::
 Object-throw
 ::
 
 to
 
-code::
+code#fragment::
 Nil-handleError
 ::
 
 to
 
-code::
+code#fragment::
 DoesNotUnderstandError-reportError
 ::
 
@@ -97,7 +97,7 @@ which is the first line in the stack.
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-code::
+code#fragment::
 DoesNotUnderstandError-reportError
 ::
 
@@ -117,7 +117,7 @@ to create another runtime error message.
 
 The ERROR, RECEIVER, ARGS, and CALL STACK headers in the post window explain the problem: Instances of class Char have no knowledge of multiplication.
 
-code::
+teletype::
 ERROR: Message '*' not understood.
 RECEIVER:
    Character 97 'a'
@@ -179,7 +179,7 @@ The printout shows the code ran successfully until the index, i, reached 3, whic
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-code::
+teletype::
 a Task
 0
 1
@@ -235,7 +235,7 @@ if(x=4) { "this is ok"};
 
 produces
 
-code::
+teletype::
 ERROR: Non Boolean in test.
 RECEIVER:
    Integer 4
@@ -275,7 +275,8 @@ Asking for the length of a non-existent file creates a runtime error. The notifi
 code::
 f = File("i_don't_exist", "r");
 f.length;
-
+::
+teletype::
 ERROR: Primitive '_FileLength' failed.
 Failed.
 RECEIVER:

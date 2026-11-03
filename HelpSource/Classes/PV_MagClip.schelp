@@ -30,12 +30,13 @@ s.boot;
 b = Buffer.read(s, ExampleFiles.child);
 
 (
+{
 	var in, chain;
 	in = Mix.arFill(3, { LFSaw.ar(exprand(100, 500), 0, 0.1) });
 	chain = FFT(LocalBuf(2048), in);
 	chain = PV_MagClip(chain, MouseX.kr(0, 15));
-	Out.ar(out, 0.5 * IFFT(chain).dup);
-}).play(s);
+	Out.ar(\out.kr, 0.5 * IFFT(chain).dup);
+}.play(s);
 )
 
 (

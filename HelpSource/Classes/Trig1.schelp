@@ -29,10 +29,10 @@ Examples::
 
 code::
 
-{ Trig1.ar(Dust.ar(1), 0.2) * FSinOsc.ar(800, 0.5) }.play
+{ Trig1.ar(Dust.ar(1), 0.2) * FSinOsc.ar(800, 0.5) }.play;
 
 
-To create a fixed duration gate
+// To create a fixed duration gate
 (
 
 SynthDef("trig1", { |dur = 0.125|
@@ -57,7 +57,7 @@ Routine({
 
 )
 
-This should sound like a continuous sine wave, although it is actually a series of 0.25 second synths.
+// This should sound like a continuous sine wave, although it is actually a series of 0.25 second synths.
 (
 SynthDef("trig1", {
 	var gate;

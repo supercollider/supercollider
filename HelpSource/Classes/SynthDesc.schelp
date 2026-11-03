@@ -60,14 +60,14 @@ definitionlist::
 Other plug-ins may be written at a later date, to support sharing metadata with applications in other languages using formats like JSON (JavaScript Object Notation) or XML.
 
 You may specify a global default metadata plug-in as follows:
-code::
+teletype::
 SynthDesc.mdPlugin = ... plug-in class name ...;
 ::
 Metadata are not written when using code::SynthDef().load(server)::. This is because SynthDesc exists to describe a SynthDef to the client, whereas SynthDef is really just an abstraction to create a link::Classes/UGen:: graph for the server. Metadata are also not written for code::SynthDef().add::, because in the normal case, nothing is persisted to disk. (If the SynthDef is very large and a disk file is required, then the metadata will persist along with the .scsyndef file.)
 
 subsection:: Automatic population
 You may write a function to populate entries into the metadata automatically, based on the SynthDesc object. This function executes when reading a SynthDesc from disk, when using .add, and before writing a metadata file (in .store).
-code::
+teletype::
 SynthDesc.populateMetadataFunc = { |synthdesc|
 	... do work here ...
 };

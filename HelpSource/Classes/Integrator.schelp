@@ -7,7 +7,7 @@ Description::
 
 Integrates an input signal with a leak. The formula implemented is:
 
-code::
+code#fragment::
 out(0) = in(0) + (coef * out(-1))
 ::
 

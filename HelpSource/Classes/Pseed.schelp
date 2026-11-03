@@ -114,7 +114,7 @@ SynthDef(\drum, { |out, dur, t_gate = 1, pew = 1, sustain = 1, pan, fed = 0, tun
 
 (
 Pdef(\drumPat,
-	Pseed(9223372036854775807, // This is the highest 64 bit number.
+	Pseed(9,
 		Psync(
 			Pbind(*[
 				instrument: \drum,
