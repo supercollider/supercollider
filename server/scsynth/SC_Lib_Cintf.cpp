@@ -297,7 +297,7 @@ static bool PlugIn_Load(const fs::path& filename) {
         FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                        NULL, lastErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&s, 0, NULL);
         scprintf("*** ERROR: LoadLibrary '%s' err '%s'\n", filename_utf8_str.c_str(),
-                 SC_Codecvt::utf16_wcstr_to_utf8_string(s).c_str());
+                 SC_Codecvt::utf16_to_utf8_str(s).c_str());
         LocalFree(s);
         return false;
     }
@@ -319,7 +319,7 @@ static bool PlugIn_Load(const fs::path& filename) {
         wchar_t* s;
         FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                        NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&s, 0, NULL);
-        scprintf("*** ERROR: GetProcAddress err '%s'\n", SC_Codecvt::utf16_wcstr_to_utf8_string(s).c_str());
+        scprintf("*** ERROR: GetProcAddress err '%s'\n", SC_Codecvt::utf16_to_utf8_str(s).c_str());
         LocalFree(s);
 
         FreeLibrary(hinstance);

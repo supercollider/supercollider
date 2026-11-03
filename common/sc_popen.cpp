@@ -235,7 +235,7 @@ std::tuple<pid_t, FILE*> sc_popen_c(const char* utf8_cmd, const char* mode) {
         return error_result;
     }
 
-    std::wstring cmd = SC_Codecvt::utf8_cstr_to_utf16_wstring(utf8_cmd);
+    std::wstring cmd = SC_Codecvt::utf8_to_utf16_str(utf8_cmd);
 
     current_pid = GetCurrentProcess();
 
