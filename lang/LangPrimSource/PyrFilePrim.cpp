@@ -1330,7 +1330,7 @@ int prFileGetcwd(struct VMGlobals* g, int numArgsPushed) {
         error(strerror(errno));
         return errFailed;
     }
-    const std::string cwd_str = SC_Codecvt::utf16_wcstr_to_utf8_string(wcwd);
+    const std::string cwd_str = SC_Codecvt::utf16_to_utf8_str(wcwd);
     const char* cwd = cwd_str.c_str();
 #else
     char buf[PATH_MAX];

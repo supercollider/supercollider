@@ -26,7 +26,7 @@
 #    include "SC_Errors.h"
 
 #    ifdef _WIN32
-#        include "SC_Codecvt.hpp" // utf8_cstr_to_utf16_wstring
+#        include "SC_Codecvt.hpp" // utf8_to_utf16_str
 #    endif // _WIN32
 #    include <sndfile.h>
 #    include <sndfile.hh>
@@ -193,7 +193,7 @@ inline SNDFILE* sndfileOpenFromNativeString(const wchar_t* wpath, int mode, SF_I
 /** @brief Safely opens a sound file using a UTF-8 C-string on any platform */
 inline SNDFILE* sndfileOpenFromCStr(const char* utf8Path, int mode, SF_INFO* sfinfo) {
     // convert to wchar first
-    const std::wstring wpath = SC_Codecvt::utf8_cstr_to_utf16_wstring(utf8Path);
+    const std::wstring wpath = SC_Codecvt::utf8_to_utf16_str(utf8Path);
     return sndfileOpenFromNativeString(wpath.c_str(), mode, sfinfo);
 }
 
@@ -201,7 +201,7 @@ inline SNDFILE* sndfileOpenFromCStr(const char* utf8Path, int mode, SF_INFO* sfi
 inline SndfileHandle makeSndfileHandle(const char* utf8Path, int mode = SFM_READ, int format = 0, int channels = 0,
                                        int samplerate = 0) {
     // convert to wchar first
-    const std::wstring wpath = SC_Codecvt::utf8_cstr_to_utf16_wstring(utf8Path);
+    const std::wstring wpath = SC_Codecvt::utf8_to_utf16_str(utf8Path);
     return SndfileHandle(wpath.c_str(), mode, format, channels, samplerate);
 }
 

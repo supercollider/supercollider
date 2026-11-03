@@ -39,34 +39,27 @@
 #pragma once
 
 #include <string> // string
+#include <string_view>
 #include <filesystem>
-
-#ifdef _WIN32
-#    include <codecvt> // std::codecvt_utf8_utf16, utf16
-#    include <locale> // std::wstring_convert
-#endif
 
 /** \namespace SC_Codecvt
  *  \brief Namespace for codepage conversion functions. */
 namespace SC_Codecvt {
 
-// Windows helper functions. Only defined on Windows to avoid having
-// to unnecessarily include <codecvt> and <locale>
+// Windows helper functions.
+// Only defined on Windows since they require windows.h.
 #ifdef _WIN32
 
-/** \brief Converts a UTF-8 char str to UTF-16 std::wstring
+/** \brief Converts a UTF-8 std::string_view to UTF-16 std::wstring
  *
- * This function is only defined on Windows, to avoid unnecessary header includes. */
-inline std::wstring utf8_cstr_to_utf16_wstring(const char* s) {
-    return std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>().from_bytes(s);
-}
+ * This function is only defined on Windows, to avoid unnecessary header includes.
+ * If invalid utf8 is provided, it will be replaced with U+FFFD (�). */
+std::wstring utf8_to_utf16_str(std::string_view s);
 
-/** \brief Converts a UTF-16 wchar_t str to UTF-8 std::string
+/** \brief Converts a UTF-16 std::wstring_view to UTF-8 std::string
  *
  * This function is only defined on Windows, to avoid unnecessary header includes. */
-inline std::string utf16_wcstr_to_utf8_string(const wchar_t* s) {
-    return std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>().to_bytes(s);
-}
+std::string utf16_to_utf8_str(std::wstring_view s);
 
 #endif // _WIN32
 
@@ -74,60 +67,14 @@ inline std::string utf16_wcstr_to_utf8_string(const wchar_t* s) {
  *
  * On POSIX platforms, this just converts using .string(). On Windows, uses
  * conversion between UTF-16 and UTF-8. */
-inline std::string path_to_utf8_str(const std::filesystem::path& p) {
-#ifdef _WIN32
-    return std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>().to_bytes(p.native());
-#else
-    return p.string();
-#endif // _WIN32
-}
+// FIXME: this should be updated when we move to C++20
+inline std::string path_to_utf8_str(const std::filesystem::path& p) { return p.u8string(); }
 
 /** \brief Converts a UTF-8 encoded string to a path.
  *
  * On POSIX platforms, this converts using the default constructor. On Windows,
  * uses conversion between UTF-16 and UTF-8. */
-inline std::filesystem::path utf8_str_to_path(const std::string& s) {
-#ifdef _WIN32
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    std::wstring wideString = converter.from_bytes(s);
-    return std::filesystem::path(std::move(wideString));
-#else
-    return std::filesystem::path(s);
-#endif // _WIN32
-}
-
-/** \brief Converts a native filesystem-encoded string to a UTF-8 string.
- *
- * On Windows, converts between UTF-16 and UTF-8. On POSIX systems, no-op. */
-inline std::string utf8_to_native_str(const std::string& s) {
-#ifdef _WIN32
-    // first to wide string (native format)
-    std::wstring ws = utf8_cstr_to_utf16_wstring(s.c_str());
-
-    // then to string (still native)
-    std::wstring_convert<std::codecvt_utf16<wchar_t>> conv_16to16;
-    std::string ret = conv_16to16.to_bytes(ws);
-    return ret;
-#else
-    return s;
-#endif // _WIN32
-}
-
-/** \brief Converts a UTF-8 string to a native filesystem-encoded string.
- *
- * On Windows, converts between UTF-16 and UTF-8. On POSIX systems, no-op. */
-inline std::string native_to_utf8_str(const std::string& s) {
-#ifdef _WIN32
-    // first to wide string (still native format)
-    std::wstring_convert<std::codecvt_utf16<wchar_t>> conv_16to16;
-    std::wstring ws = conv_16to16.from_bytes(s);
-
-    // then to string (utf8)
-    std::string ret = utf16_wcstr_to_utf8_string(ws.c_str());
-    return ret;
-#else
-    return s;
-#endif // _WIN32
-}
+// FIXME: this should be updated when we move to C++20
+inline std::filesystem::path utf8_str_to_path(std::string_view s) { return std::filesystem::u8path(s); }
 
 } // SC_Codecvt

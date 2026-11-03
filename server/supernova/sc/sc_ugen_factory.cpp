@@ -439,7 +439,7 @@ void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
         FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                        nullptr, lastErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&s, 0, NULL);
 
-        std::cout << "Cannot open plugin: " << path << SC_Codecvt::utf16_wcstr_to_utf8_string(s).c_str() << std::endl;
+        std::cout << "Cannot open plugin: " << path << SC_Codecvt::utf16_to_utf8_str(s).c_str() << std::endl;
         LocalFree(s);
         return;
     }
@@ -470,7 +470,7 @@ void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
         FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                        nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&s, 0, NULL);
 
-        std::cout << "*** ERROR: GetProcAddress err " << SC_Codecvt::utf16_wcstr_to_utf8_string(s) << std::endl;
+        std::cout << "*** ERROR: GetProcAddress err " << SC_Codecvt::utf16_to_utf8_str(s) << std::endl;
         LocalFree(s);
 
         FreeLibrary(hinstance);
