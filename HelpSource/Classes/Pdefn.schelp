@@ -8,7 +8,7 @@ Pdefn provides an interface to its superclass link::Classes/PatternProxy::, keep
 
 Pdef and Pdefn use separate global collections.
 
-code::
+code#fragment::
 Pdefn(key)	// returns the instance
 Pdefn(key, pat)	// defines the pattern and returns the instance, like Pdef, Tdef and Ndef.
 ::

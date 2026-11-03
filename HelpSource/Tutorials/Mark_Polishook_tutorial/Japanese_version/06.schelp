@@ -132,15 +132,15 @@ code::
 // 前のSynthDefのためのテンプレート。ラグタイムの配列なし。
 SynthDef(
 	"i am a synthdef",			// 第１アーギュメントは名前
-	{ .... i am a ugenGraphFunc ... }	// 第２アーギュメントはugenGraphFunc
+	{ /* i am a ugenGraphFunc */ }	// 第２アーギュメントはugenGraphFunc
 )
 
 // ラグタイムの配列付きで再定義したSynthDefのためのテンプレート
 // ラグタイムの配列のためのクラス定義は'rates'と呼ぶ
 SynthDef(
 	"i am a synthdef",			// 名前
-	{ .... i am a ugenGraphFunc ... },	// ugenGraphFunc
-	[ ... lagTimes ... ]			// rates
+	{ /* i am a ugenGraphFunc */ },	// ugenGraphFunc
+	[ /* lagTimes */ ]			// rates
 )
 ::
 

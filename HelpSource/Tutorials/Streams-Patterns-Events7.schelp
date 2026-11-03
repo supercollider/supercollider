@@ -56,10 +56,10 @@ You should not send or load synthdefs that you plan to use with patterns. Instea
 
 code::
 // saves .scsyndef file on disk (like .load), and adds description to the global library
-SynthDef(...).store;
+SynthDef(/* ... */).store;
 
 // adds description to the global library; no file is saved (like .send)
-SynthDef(...).add;
+SynthDef(/* ... */).add;
 ::
 
 If you don't do this, nondefault bindings will be ignored. In that case, you can provide a custom code::msgFunc:: manually. Here's an example:

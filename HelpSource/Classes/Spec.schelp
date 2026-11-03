@@ -35,9 +35,10 @@ Spec.add(\helpLin2, \freq);
 
 // existing spec:
 Spec.add(\helpLin, ControlSpec(0.ampdb, 1.ampdb, \db, units: " dB"));
+::
 
-
-// List of default specs:
+List of default specs:
+teletype::
 
 \unipolar -> ControlSpec(0, 1),
 \bipolar -> ControlSpec(-1, 1, default: 0),

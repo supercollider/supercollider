@@ -10,7 +10,7 @@ If code::in > hi::, output 1. If code::in < lo::, output 0. Otherwise, repeat th
 last sample of output, assumed to be 0 at initialization. In sclang-flavored
 pseudocode:
 
-code::
+code#fragment::
 out[i] = if(in[i] < lo[i]) {
     0
 } {

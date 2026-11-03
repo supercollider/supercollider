@@ -8,7 +8,7 @@ section:: Arithmetic operators
 Math operators apply to many classes, including arrays and other collections.
 
 Using a basic math operator on a Symbol swallows the operation (returns the symbol)
-code::
+code#fragment::
 \symbol * 5
 symbol
 ::
@@ -68,29 +68,29 @@ code::
 a = 1;
 
 a == 1 and: { "second condition".postln; [true, false].choose }
-second condition
-true
+//second condition
+//true
 
 a == 1 or: { "second condition".postln; [true, false].choose }
-true
+//true
 
 a != 1 and: { "second condition".postln; [true, false].choose }
-false
+//false
 
 a != 1 or: { "second condition".postln; [true, false].choose }
-second condition
-true
+//second condition
+//true
 ::
 In this case, the second condition will cause an error if a is nil, because nil does not understand addition. a.notNil is a safeguard to ensure the second condition makes sense.
 code::
 a = nil;
 a.notNil and: { "second condition".postln; (a = a+1) < 5 }
-false
+//false
 
 a = 10;
 a.notNil and: { "second condition".postln; (a = a+1) < 5 }
-second condition
-false
+//second condition
+//false
 ::
 
 section:: SequenceableCollection operators
@@ -112,7 +112,7 @@ definitionlist::
 ## code:: set | set :: || union of two sets
 ## code:: setA - setB :: || difference of sets (elements of setA not found in setB)
 ## code:: set -- set :: || symmetric difference:
-code::
+code#fragment::
 (setA -- setB) == ((setA - setB) | (setB - setA))
 ::
 ::
@@ -143,7 +143,7 @@ x @ y
 Point(x, y)
 ::
 ## code:: point @ point :: || make a link::Classes/Rect:: of two link::Classes/Point::s
-code::
+code#fragment::
 Point(left, top) @ Point(right, bottom)
 // returns:
 Rect(left, top, right-left, bottom-top)
@@ -159,16 +159,16 @@ definitionlist::
 A common usage is with the Post class, to write output to the post window.
 code::
 Post << "Here is a random number: " << 20.rand << ".\n";
-Here is a random number: 13.
+//Here is a random number: 13.
 ::
 
 ## code:: stream <<* collection :: || add each item of the collection to the stream.
 code::
-Post << [0, 1, 2, 3]
-[ 0, 1, 2, 3 ]
+Post << [0, 1, 2, 3];
+//[ 0, 1, 2, 3 ]
 
-Post <<* [0, 1, 2, 3]
-0, 1, 2, 3
+Post <<* [0, 1, 2, 3];
+//0, 1, 2, 3
 ::
 
 ## code:: stream <<< object :: || add the object's compile string to the stream.
@@ -201,7 +201,7 @@ f = { |slider, parent|
     slider.value_(0);
 };
 ::
-If the first line inside the function instead read code::
+If the first line inside the function instead read code#fragment::
 slider = slider ? Slider.new(parent, Rect(0, 0, 100, 20));
 ::
 , a new slider would be created even if it is not needed, or used.
@@ -281,11 +281,11 @@ definitionlist::
 ## code:: ` :: (backtick or backquote) || define a link::Classes/Ref:: : code:: `1 == Ref(1), `(a+1) == Ref(a+1) ::
 ## code:: \ :: || inside a string or symbol, escapes the next character
 code::
-"abc\"def\"ghi"
-abc"def"ghi
+"abc\"def\"ghi";
+//abc"def"ghi
 
-'abc\'def\'ghi'
-abc'def'ghi
+'abc\'def\'ghi';
+//abc'def'ghi
 ::
 definitionlist::
 ## code:: \t :: || tab character
@@ -332,8 +332,8 @@ This works only with single-argument methods like binary operators.
 section:: Class and instance variable access
 
 Inside a class definition (see link::Guides/WritingClasses:: ):
-code::
-{
+code#class::
+SomeClass{
     classvar <a,    // Define a class variable with a getter method (for outside access)
              >b,    // Define a class variable with a setter method
              <>c;   // Define a class variable with both a getter and setter method

@@ -120,7 +120,7 @@ code::
 	)
 ::
 Prints:
-code::
+teletype::
 SynthDesc 'controlList'
 Controls:
 ControlName  P 0 freq control 440

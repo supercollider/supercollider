@@ -11,7 +11,7 @@ section::Hello World, I'm SuperCollider
 
 It is traditional when learning a new programming language to start with a simple program called 'Hello World'. This just makes the program print the text 'Hello World!' to well, wherever it prints text. In SC that's a place called the post window. The post window is the one that opened up when you first started SC, and a bunch of stuff was printed there which looks something like this:
 
-code::
+teletype::
 init_OSC
 compiling class library..
 	NumPrimitives = 587
@@ -38,7 +38,7 @@ To execute it, simply click to place the cursor somewhere on the same line as th
 
 If all went well, you should see this in the post window.
 
-code::
+teletype::
 Hello World!
 -> Hello World!
 ::
@@ -75,7 +75,7 @@ When code is not surrounded by parentheses it is generally intended to be execut
 
 Note that each of the lines within the block of code ends with a semi-colon. This is very important when executing multiple lines of code. Try what happens when you execute following variant of the almost identical code.
 
-code::
+code#error::
 (
 "Call me?".postln
 "Ishmael.".postln;
@@ -84,7 +84,7 @@ code::
 
 Executing the code above results in a 'Parse Error'. With an error of this kind, the dot in the error message shows you where SC ran into trouble. Here it happens just after code::"Ishmael."::.
 
-code::
+teletype::
 ERROR: syntax error, unexpected STRING, expecting DOTDOT or ':' or ',' or ')'
 in interpreted text
 line 3 char 10:

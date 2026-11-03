@@ -59,7 +59,7 @@ InfoUGenBase.dumpClassSubtree
 
 このコードを実行すると次の様に表示されます。
 
-code::
+teletype::
 InfoUGenBase
 [
   NumRunningSynths
@@ -84,7 +84,7 @@ BufInfoUGenBase.dumpClassSubtree
 
 このコードを実行すると次の様に表示されます。
 
-code::
+teletype::
 BufInfoUGenBase
 [
   BufChannels
@@ -216,7 +216,7 @@ Synth.tail(
 
 このシンセシスのネットワークを文字による図で表すと、この様になります。
 
-code::
+teletype::
 Group (RootNode, ID 0)
       /\
      /  \

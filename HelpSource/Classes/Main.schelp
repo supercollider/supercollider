@@ -115,7 +115,7 @@ method::run
 
 Override this to do whatever you want, e. g. add a class extension file like this to the class library:
 
-code::
+code#class::
 + Main {
 	run { "myPatch.rtf".load }
 }

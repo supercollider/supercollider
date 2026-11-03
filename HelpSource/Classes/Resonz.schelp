@@ -10,7 +10,7 @@ This is the same as  link::Classes/Ringz::, except that it has a constant gain a
 
 It is a two pole resonant filter with zeroes at
 
-code::
+teletype::
 z = ±1
 ::
 

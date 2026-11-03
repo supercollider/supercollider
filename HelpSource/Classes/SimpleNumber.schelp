@@ -431,7 +431,7 @@ within a routine, yield the number so that the clock can wait for this many beat
 
 discussion::
 Create a routine by a function fork
-code::
+code#legacy::
 (
 fork {
 	1.wait;
@@ -921,7 +921,7 @@ map the receiver onto an L-curve.
 
 discussion::
 Uses the formula
-code::
+code#fragment::
 a * (m * exp(x) * rTau + 1) / (n * exp(x) * rTau + 1)
 ::
 This is used for smoothing values and limiting them to a range.

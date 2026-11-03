@@ -115,7 +115,7 @@ By default, strong::play:: applied to a Task starts the Task immediately. Most o
 
 Play takes several arguments to control its behavior.
 
-code::
+code#fragment::
 aRoutine.play(clock, quant)
 aTask.play(argClock, doReset, quant)
 ::

@@ -400,6 +400,23 @@ SCDocHTMLRenderer {
 		stream << "</div>\n";
 	}
 
+	// The code's version, and whether it is class library code, which the help browser doesn't evaluate.
+	*htmlForCodeAttributes {|node|
+		var version = node.version !? { |version| " data-sc-version='" ++ version ++ "'" } ?? "";
+		^version ++ if(node.isClassCode) { " data-sc-class-code='true'" } { "" }
+	}
+
+	// Code with no version is compiled as Legacy, so every code block shows one.
+	*htmlForVersionLabel {|node|
+		var version = node.version;
+		var label = if(version.isNil or: { version == "legacy" }) { "Legacy" } { version };
+		if(node.isClassCode) { label = label + "class code" };
+		if(node.isFragment) { label = label + "fragment" };
+		if(node.isErrorCode) { label = label ++ ", fails to compile" };
+		^"<div class='codeVersion' title='The language version this code is compiled as'>"
+		++ this.escapeSpecialChars(label) ++ "</div>"
+	}
+
 	*renderChildren {|stream, node|
 		node.children.do {|child| this.renderSubTree(stream, child) };
 	}
@@ -578,7 +595,8 @@ SCDocHTMLRenderer {
 				stream << this.htmlForLink(node.text);
 			},
 			\CODEBLOCK, {
-				stream << "<div class='codeMirrorContainer'>"
+				stream << "<div class='codeMirrorContainer'" << this.htmlForCodeAttributes(node) << ">"
+				<< this.htmlForVersionLabel(node)
                 << "<textarea class='editor'>"
 				<< this.escapeSpecialChars(node.text)
 				<< "</textarea>\n"
@@ -586,7 +604,7 @@ SCDocHTMLRenderer {
                 << "</div>\n";
 			},
 			\CODE, {
-				stream << "<code>"
+				stream << "<code" << this.htmlForCodeAttributes(node) << ">"
 				<< this.escapeSpecialChars(node.text)
 				<< "</code>";
 			},

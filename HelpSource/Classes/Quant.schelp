@@ -54,9 +54,10 @@ code:: [4.0, 1.0, 0.1] --> Quant(4.0, 1.0, 0.1) ::
 || code:: nil --> Quant(nil, nil, nil) ::
 ::
 This simplifies the syntax:
-code::
-Routine({ ... }).play(quant: 4.0):: vs. code::Routine({ ... }).play(quant: Quant(4.0))
-::
+code::Routine({ /* ... */ }).play(quant: 4.0)::
+... vs ...
+
+code::Routine({ /* ... */ }).play(quant: Quant(4.0))::
 
 subsection::Timing offset in Patterns
 

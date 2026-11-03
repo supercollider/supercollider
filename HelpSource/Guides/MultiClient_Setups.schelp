@@ -294,6 +294,7 @@ CmdPeriod.add(~freeMyGroupX);
 ~freeMyGroupX.value; // only frees the one in \pseudoRem3
 
 CmdPeriod.remove(~freeMyGroupX);
+::
 
 strong::Symmetrical / democratic setups::
 

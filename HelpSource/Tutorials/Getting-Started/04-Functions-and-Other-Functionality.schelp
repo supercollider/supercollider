@@ -174,7 +174,7 @@ Variable and argument names can consist of letters and numbers, but must begin w
 
 Variables are only valid for what is called their scope. The scope of a variable declared in a Function is that Function, i.e. the area between the two curly brackets. Execute these one at a time:
 
-code::
+code#error::
 (
 f = {
 	var foo;
@@ -188,7 +188,7 @@ foo;			// this will cause an error as "foo" is only valid within f.
 
 You can also declare variables at the top of any block of code which you execute altogether (i.e. by selecting it all). In such a case that block of code is the variable's scope. Execute the block (in parentheses) and then the last line.
 
-code::
+code#error::
 (
 var myFunc;
 myFunc = { |input| input.postln };

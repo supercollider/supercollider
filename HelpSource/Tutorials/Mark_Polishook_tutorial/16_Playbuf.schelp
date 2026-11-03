@@ -55,7 +55,7 @@ InfoUGenBase.dumpClassSubtree;
 
 It returns
 
-code::
+teletype::
 InfoUGenBase
 [
   NumRunningSynths
@@ -82,7 +82,7 @@ BufInfoUGenBase.dumpClassSubtree;
 
 and it returns
 
-code::
+teletype::
 BufInfoUGenBase
 [
   BufChannels
@@ -176,7 +176,7 @@ s.queryAllNodes;
 )
 ::
 
-code::
+teletype::
 // a diagram
 
     RootNode

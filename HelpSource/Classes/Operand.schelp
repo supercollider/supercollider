@@ -74,7 +74,7 @@ code::Operand(Operand(1)) // Operand(1)::.
 
 EXAMPLES::
 
-code::
+code#class::
 // you could make a class that always converts values to integers:
 
 IntegerOperand : Operand {
@@ -82,7 +82,9 @@ IntegerOperand : Operand {
 		^value.asInteger
 	}
 }
+::
 
-// then you would get:
+Then you would get:
+code::
 IntegerOperand(1) + pi == IntegerOperand(4)
 ::

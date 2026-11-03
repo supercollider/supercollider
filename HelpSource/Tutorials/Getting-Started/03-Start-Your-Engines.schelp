@@ -9,7 +9,7 @@ Notice that the white font on the black view on the bottom of the window has cha
 
 Also take a look at the post window, where SC has given you some info, and let you know that it booted okay. For example:
 
-code::
+teletype::
 Booting server 'localhost' on address 127.0.0.1:57110.
 Number of Devices: 2
    0 : "Built-in Microph"

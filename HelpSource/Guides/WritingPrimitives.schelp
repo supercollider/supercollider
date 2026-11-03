@@ -9,7 +9,7 @@ subsection:: SuperCollider code
 
 Primitive calls are preceded with an underscore, so for example code::_myPrimitiveName::. Here is an example call to a primitive in an SC class:
 
-code::
+code#class::
 Cocoa {
     prGetPathsDialog { arg returnSlot;
         _Cocoa_GetPathsDialog
@@ -46,29 +46,34 @@ If your primitive can return any value besides teletype::errNone:: then you will
 
 In some cases, you may wish to execute fallback SC code instead of throwing an code::Error::. This can be useful in cases where for example a primitive provides an optimised version of a method which is not usable in all instances. Here is an example of how this can be done:
 
-code::
-flop {
-	_ArrayMultiChannelExpand
-	^super.flop // this gets executed if the primitive fails
+code#class::
+SomeClass {
+    flop {
+        _ArrayMultiChannelExpand
+        ^super.flop // this gets executed if the primitive fails
+    }
 }
 ::
 
 Note that returning anything besides teletype::errNone:: will result in executing the SC method emphasis::ignoring:: the primitive call. For this reason, if you need to do some preparatory work in SC before calling the primitive, it is best practice to do this in a separate method to avoid duplication. For example:
 
-code::
-// do initial work here
-openUDPPort {|portNum|
-	var result;
-	if(openPorts.includes(portNum), {^true});
-	result = this.prOpenUDPPort(portNum);
-	if(result, { openPorts = openPorts.add(portNum); });
-	^result;
-}
+code#class::
+SomeClasss {
+    var openPorts;
+    // do initial work here
+    openUDPPort {|portNum|
+        var result;
+        if(openPorts.includes(portNum), {^true});
+        result = this.prOpenUDPPort(portNum);
+        if(result, { openPorts = openPorts.add(portNum); });
+        ^result;
+    }
 
-// this method only calls the primitive, and throws any primitive errors
-prOpenUDPPort {|portNum|
-	_OpenUDPPort
-	^this.primitiveFailed;
+    // this method only calls the primitive, and throws any primitive errors
+    prOpenUDPPort {|portNum|
+        _OpenUDPPort
+        ^this.primitiveFailed;
+    }
 }
 ::
 
