@@ -76,8 +76,8 @@ TaskProxyGui : JITGui {
 				if (History.started) { 		//	"// historical".postln;
 					string = object.asCompileString
 					++ [".resume;", ".pause;" ][but.value];
-					thisProcess.interpreter.cmdLine_(string)
-					.interpretPrintCmdLine;
+
+					thisProcess.interpret(string);
 				} { 						//	"// faster".postln;
 					[ { object.resume },{ object.pause } ][but.value].value
 				};

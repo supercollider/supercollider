@@ -99,16 +99,15 @@ The file must contain a valid SuperCollider expression, naturally.
 This will not compile class definitions, only expressions.
 
 
-private::prExecuteFile
+method::cmdLine_
+This method is being deprecated, please use the method interpret directly.
 
 method::cmdLine
+This method is being deprecated. It returns the previously interpreted code, but it is unreliable and the same information can be obtained from the debug backtrace.
 
-Returns the previously interpreted code.
 
-code::
-1 + 2;
-this.cmdLine
-::
+private::prExecuteFile
+
 
 method::codeDump
 
@@ -146,6 +145,4 @@ method::a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z
 
 Global variables ("interpreter variables") for interactive programming (see link::#Accessing::).
 
-method::functionCompileContext
-
-The compiler uses this method as a virtual context in which to compile code.
+private::functionCompileContext
