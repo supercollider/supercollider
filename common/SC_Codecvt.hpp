@@ -56,7 +56,7 @@ namespace SC_Codecvt {
  * If invalid utf8 is provided, it will be replaced with U+FFFD (�). */
 std::wstring utf8_to_utf16_str(std::string_view s);
 
-/** \brief Converts a UTF-16 std::string_view to UTF-8 std::string
+/** \brief Converts a UTF-16 std::wstring_view to UTF-8 std::string
  *
  * This function is only defined on Windows, to avoid unnecessary header includes. */
 std::string utf16_to_utf8_str(std::wstring_view s);
