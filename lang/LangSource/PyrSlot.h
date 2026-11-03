@@ -34,6 +34,11 @@
 #include "function_attributes.h"
 #include "Hash.h"
 #include "PyrSymbol.h"
+#include "SC_Endian.h"
+
+#ifndef BYTE_ORDER
+#    error "BYTE_ORDER not defined"
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Description of how nan-boxing and pointer tagging work in sc.                                                      //

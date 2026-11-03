@@ -27,6 +27,10 @@
 #include <string.h>
 #include <stdexcept>
 
+#ifndef BYTE_ORDER
+#    error "BYTE_ORDER not defined"
+#endif
+
 template <class T> class SC_IOStream {
 protected:
     T s;
