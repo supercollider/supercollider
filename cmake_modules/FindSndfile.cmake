@@ -9,14 +9,13 @@ if(NO_LIBSNDFILE)
   #if(NOT SNDFILE_FIND_QUIETLY)
   #  message(STATUS "FindSndfile: sndfile deactivated (NO_LIBSNDFILE)")
   #endif()
-  set(SNDFILE_FOUND False)
+  set(SNDFILE_FOUND FALSE)
   set(SNDFILE_INCLUDE_DIR "nowhere")  # for onceonly check above
   set(SNDFILE_LIBRARIES "")
   add_definitions("-DNO_LIBSNDFILE")
 elseif (SNDFILE_INCLUDE_DIR AND SNDFILE_LIBRARY)
   set(SNDFILE_LIBRARIES ${SNDFILE_LIBRARY})
   set(SNDFILE_FOUND TRUE)
-
 elseif (APPLE)
 
   find_path(SNDFILE_INCLUDE_DIR sndfile.h
@@ -33,16 +32,12 @@ elseif (APPLE)
     PATH_SUFFIXES lib
   )
 
-  if(NOT SNDFILE_INCLUDE_DIR OR NOT SNDFILE_LIBRARY)
-    set(SNDFILE_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../external_libraries/libsndfile/)
-    set(SNDFILE_LIBRARIES ${CMAKE_CURRENT_LIST_DIR}/../platform/mac/lib/scUBlibsndfile.a)
+  if(SNDFILE_INCLUDE_DIR AND SNDFILE_LIBRARY)
     set(SNDFILE_FOUND TRUE)
-    add_definitions("-isystem ${CMAKE_CURRENT_LIST_DIR}/../external_libraries/libsndfile")
-    message(STATUS "Could not find install of libsndfile, using old bundled version instead")
-  else()
-    set(SNDFILE_FOUND TRUE)
-    message(STATUS "Found install of libsndfile in ${SNDFILE_LIBRARY}")
     set(SNDFILE_LIBRARIES ${SNDFILE_LIBRARY})
+    message(STATUS "Found SndFile: ${SNDFILE_LIBRARY}")
+  else()
+    set(SNDFILE_LIBRARIES)
   endif()
 
 else()
@@ -95,11 +90,11 @@ else()
 
   if(SNDFILE_FOUND)
     set(SNDFILE_LIBRARIES ${SNDFILE_LIBRARY})
-  else(SNDFILE_FOUND)
+  else()
     set(SNDFILE_LIBRARIES)
-  endif(SNDFILE_FOUND)
-
+  endif()
 endif()
+
 mark_as_advanced(SNDFILE_INCLUDE_DIR SNDFILE_LIBRARY SNDFILE_LIBRARY_DIR)
 
 # check for format support

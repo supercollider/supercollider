@@ -449,9 +449,8 @@ if(MSVC)
             /diagnostics:caret # better diagnostics, shows source code location in error repot
     )
 
-    # this flag causes MSVC to correctly report __cplusplus, which prevents a compiler error
-    # caused by some versions of libsndfile's C++ header redefining nullptr as NULL.
-    # See https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
+    # this flag causes MSVC to correctly report __cplusplus, which is necessary for some third-party
+    # code to enable certain modern C++ features. It is also used in some public API headers.
     add_compile_options("/Zc:__cplusplus")
 
     # for math operations, we expect the default /fp:precise flag to be used, so that we match settings for gcc/clang
