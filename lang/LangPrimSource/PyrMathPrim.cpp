@@ -507,78 +507,64 @@ int prIndexOfPrime(VMGlobals* g, int numArgsPushed) {
 int prAs32Bits(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     // return an integer that is a bit pattern for the 32 bit float representation
-    union {
-        float f;
-        int32 i;
-    } u;
-    u.f = slotRawFloat(a);
-    SetInt(a, u.i);
+    float f = static_cast<float>(slotRawFloat(a));
+    int32_t i;
+    static_assert(sizeof(f) == sizeof(i), "size mismatch");
+    std::memcpy(&i, &f, sizeof(f));
+
+    SetInt(a, i);
+
     return errNone;
 }
 
 int prHigh32Bits(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
-#if BYTE_ORDER == BIG_ENDIAN
-    union {
-        struct {
-            uint32 hi, lo;
-        } i;
-        double f;
-    } du;
-#else
-    union {
-        struct {
-            uint32 lo, hi;
-        } i;
-        double f;
-    } du;
-#endif
+    uint32 i[2];
+    double d = slotRawFloat(a);
+    static_assert(sizeof(d) == sizeof(i[0]) * 2, "size mismatch");
+    std::memcpy(i, &d, sizeof(d));
 
-    du.f = slotRawFloat(a);
-    SetInt(a, du.i.hi);
+    if constexpr (sc::endian::native == sc::endian::little) {
+        SetInt(a, i[1]);
+    } else {
+        SetInt(a, i[0]);
+    }
+
     return errNone;
 }
 
 int prLow32Bits(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
-#if BYTE_ORDER == BIG_ENDIAN
-    union {
-        struct {
-            uint32 hi, lo;
-        } i;
-        double f;
-    } du;
-#else
-    union {
-        struct {
-            uint32 lo, hi;
-        } i;
-        double f;
-    } du;
-#endif
+    uint32 i[2];
+    double d = slotRawFloat(a);
+    static_assert(sizeof(d) == sizeof(i[0]) * 2, "size mismatch");
+    std::memcpy(i, &d, sizeof(d));
 
-    du.f = slotRawFloat(a);
-    SetInt(a, du.i.lo);
+    if constexpr (sc::endian::native == sc::endian::little) {
+        SetInt(a, i[0]);
+    } else {
+        SetInt(a, i[1]);
+    }
+
     return errNone;
 }
 
 int prFrom32Bits(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
     PyrSlot* b = g->sp;
-    int err, word;
+    int err, i;
 
-    err = slotIntVal(b, &word);
+    err = slotIntVal(b, &i);
     if (err)
         return err;
 
-    union {
-        float f;
-        int32 i;
-    } u;
-    u.i = word;
-    SetFloat(a, u.f);
+    float f;
+    static_assert(sizeof(f) == sizeof(i), "size mismatch");
+    std::memcpy(&f, &i, sizeof(f));
+
+    SetFloat(a, f);
 
     return errNone;
 }
@@ -597,24 +583,20 @@ int prFrom64Bits(VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
 
-#if BYTE_ORDER == BIG_ENDIAN
-    union {
-        struct {
-            uint32 hi, lo;
-        } i;
-        double f;
-    } du;
-#else
-    union {
-        struct {
-            uint32 lo, hi;
-        } i;
-        double f;
-    } du;
-#endif
-    du.i.hi = hi;
-    du.i.lo = lo;
-    SetFloat(a, du.f);
+    uint32_t i[2];
+    if constexpr (sc::endian::native == sc::endian::little) {
+        i[0] = lo;
+        i[1] = hi;
+    } else {
+        i[0] = hi;
+        i[1] = lo;
+    }
+
+    double d;
+    static_assert(sizeof(d) == sizeof(i[0]) * 2, "size mismatch");
+    std::memcpy(&d, i, sizeof(d));
+
+    SetFloat(a, d);
 
     return errNone;
 }
