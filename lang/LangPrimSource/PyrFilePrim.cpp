@@ -490,50 +490,50 @@ int prFileWrite(struct VMGlobals* g, int numArgsPushed) {
             ptr = obj->slots;
             int elemSize = gFormatElemSize[obj->obj_format];
             int numElems = obj->size;
-#if BYTE_ORDER != BIG_ENDIAN
-            switch (elemSize) {
-            case 1:
+            if constexpr (sc::endian::native == sc::endian::little) {
+                switch (elemSize) {
+                case 1:
+                    fwrite(ptr, elemSize, numElems, file);
+                    break;
+                case 2: {
+                    char* ptr = slotRawString(b)->s;
+                    char* ptrend = ptr + numElems * 2;
+                    for (; ptr < ptrend; ptr += 2) {
+                        fputc(ptr[1], file);
+                        fputc(ptr[0], file);
+                    }
+                    break;
+                }
+                case 4: {
+                    char* ptr = slotRawString(b)->s;
+                    char* ptrend = ptr + numElems * 4;
+                    for (; ptr < ptrend; ptr += 4) {
+                        fputc(ptr[3], file);
+                        fputc(ptr[2], file);
+                        fputc(ptr[1], file);
+                        fputc(ptr[0], file);
+                    }
+                    break;
+                }
+                case 8: {
+                    char* ptr = slotRawString(b)->s;
+                    char* ptrend = ptr + numElems * 8;
+                    for (; ptr < ptrend; ptr += 8) {
+                        fputc(ptr[7], file);
+                        fputc(ptr[6], file);
+                        fputc(ptr[5], file);
+                        fputc(ptr[4], file);
+                        fputc(ptr[3], file);
+                        fputc(ptr[2], file);
+                        fputc(ptr[1], file);
+                        fputc(ptr[0], file);
+                    }
+                    break;
+                }
+                }
+            } else {
                 fwrite(ptr, elemSize, numElems, file);
-                break;
-            case 2: {
-                char* ptr = slotRawString(b)->s;
-                char* ptrend = ptr + numElems * 2;
-                for (; ptr < ptrend; ptr += 2) {
-                    fputc(ptr[1], file);
-                    fputc(ptr[0], file);
-                }
-                break;
             }
-            case 4: {
-                char* ptr = slotRawString(b)->s;
-                char* ptrend = ptr + numElems * 4;
-                for (; ptr < ptrend; ptr += 4) {
-                    fputc(ptr[3], file);
-                    fputc(ptr[2], file);
-                    fputc(ptr[1], file);
-                    fputc(ptr[0], file);
-                }
-                break;
-            }
-            case 8: {
-                char* ptr = slotRawString(b)->s;
-                char* ptrend = ptr + numElems * 8;
-                for (; ptr < ptrend; ptr += 8) {
-                    fputc(ptr[7], file);
-                    fputc(ptr[6], file);
-                    fputc(ptr[5], file);
-                    fputc(ptr[4], file);
-                    fputc(ptr[3], file);
-                    fputc(ptr[2], file);
-                    fputc(ptr[1], file);
-                    fputc(ptr[0], file);
-                }
-                break;
-            }
-            }
-#else
-            fwrite(ptr, elemSize, numElems, file);
-#endif
         }
         break;
     }
@@ -588,50 +588,50 @@ int prFileWriteLE(struct VMGlobals* g, int numArgsPushed) {
             ptr = obj->slots;
             int elemSize = gFormatElemSize[obj->obj_format];
             int numElems = obj->size;
-#if BYTE_ORDER == BIG_ENDIAN
-            switch (elemSize) {
-            case 1:
+            if constexpr (sc::endian::native == sc::endian::big) {
+                switch (elemSize) {
+                case 1:
+                    fwrite(ptr, elemSize, numElems, file);
+                    break;
+                case 2: {
+                    char* ptr = slotRawString(b)->s;
+                    char* ptrend = ptr + numElems * 2;
+                    for (; ptr < ptrend; ptr += 2) {
+                        fputc(ptr[1], file);
+                        fputc(ptr[0], file);
+                    }
+                    break;
+                }
+                case 4: {
+                    char* ptr = slotRawString(b)->s;
+                    char* ptrend = ptr + numElems * 4;
+                    for (; ptr < ptrend; ptr += 4) {
+                        fputc(ptr[3], file);
+                        fputc(ptr[2], file);
+                        fputc(ptr[1], file);
+                        fputc(ptr[0], file);
+                    }
+                    break;
+                }
+                case 8: {
+                    char* ptr = slotRawString(b)->s;
+                    char* ptrend = ptr + numElems * 8;
+                    for (; ptr < ptrend; ptr += 8) {
+                        fputc(ptr[7], file);
+                        fputc(ptr[6], file);
+                        fputc(ptr[5], file);
+                        fputc(ptr[4], file);
+                        fputc(ptr[3], file);
+                        fputc(ptr[2], file);
+                        fputc(ptr[1], file);
+                        fputc(ptr[0], file);
+                    }
+                    break;
+                }
+                }
+            } else {
                 fwrite(ptr, elemSize, numElems, file);
-                break;
-            case 2: {
-                char* ptr = slotRawString(b)->s;
-                char* ptrend = ptr + numElems * 2;
-                for (; ptr < ptrend; ptr += 2) {
-                    fputc(ptr[1], file);
-                    fputc(ptr[0], file);
-                }
-                break;
             }
-            case 4: {
-                char* ptr = slotRawString(b)->s;
-                char* ptrend = ptr + numElems * 4;
-                for (; ptr < ptrend; ptr += 4) {
-                    fputc(ptr[3], file);
-                    fputc(ptr[2], file);
-                    fputc(ptr[1], file);
-                    fputc(ptr[0], file);
-                }
-                break;
-            }
-            case 8: {
-                char* ptr = slotRawString(b)->s;
-                char* ptrend = ptr + numElems * 8;
-                for (; ptr < ptrend; ptr += 8) {
-                    fputc(ptr[7], file);
-                    fputc(ptr[6], file);
-                    fputc(ptr[5], file);
-                    fputc(ptr[4], file);
-                    fputc(ptr[3], file);
-                    fputc(ptr[2], file);
-                    fputc(ptr[1], file);
-                    fputc(ptr[0], file);
-                }
-                break;
-            }
-            }
-#else
-            fwrite(ptr, elemSize, numElems, file);
-#endif
         }
         break;
     }
@@ -1175,58 +1175,58 @@ int prFileReadRaw(struct VMGlobals* g, int numArgsPushed) {
     numElems = fread(slotRawString(b)->s, elemSize, numElems, file);
     slotRawObject(b)->size = numElems;
 
-#if BYTE_ORDER != BIG_ENDIAN
-    switch (elemSize) {
-    case 1:
-        break;
-    case 2: {
-        char* ptr = slotRawString(b)->s;
-        char* ptrend = ptr + numElems * 2;
-        for (; ptr < ptrend; ptr += 2) {
-            char temp = ptr[0];
-            ptr[0] = ptr[1];
-            ptr[1] = temp;
+    if constexpr (sc::endian::native == sc::endian::little) {
+        switch (elemSize) {
+        case 1:
+            break;
+        case 2: {
+            char* ptr = slotRawString(b)->s;
+            char* ptrend = ptr + numElems * 2;
+            for (; ptr < ptrend; ptr += 2) {
+                char temp = ptr[0];
+                ptr[0] = ptr[1];
+                ptr[1] = temp;
+            }
+            break;
         }
-        break;
-    }
-    case 4: {
-        char* ptr = slotRawString(b)->s;
-        char* ptrend = ptr + numElems * 4;
-        for (; ptr < ptrend; ptr += 4) {
-            char temp = ptr[0];
-            ptr[0] = ptr[3];
-            ptr[3] = temp;
+        case 4: {
+            char* ptr = slotRawString(b)->s;
+            char* ptrend = ptr + numElems * 4;
+            for (; ptr < ptrend; ptr += 4) {
+                char temp = ptr[0];
+                ptr[0] = ptr[3];
+                ptr[3] = temp;
 
-            temp = ptr[1];
-            ptr[1] = ptr[2];
-            ptr[2] = temp;
+                temp = ptr[1];
+                ptr[1] = ptr[2];
+                ptr[2] = temp;
+            }
+            break;
         }
-        break;
-    }
-    case 8: {
-        char* ptr = slotRawString(b)->s;
-        char* ptrend = ptr + numElems * 8;
-        for (; ptr < ptrend; ptr += 8) {
-            char temp = ptr[0];
-            ptr[0] = ptr[7];
-            ptr[7] = temp;
+        case 8: {
+            char* ptr = slotRawString(b)->s;
+            char* ptrend = ptr + numElems * 8;
+            for (; ptr < ptrend; ptr += 8) {
+                char temp = ptr[0];
+                ptr[0] = ptr[7];
+                ptr[7] = temp;
 
-            temp = ptr[1];
-            ptr[1] = ptr[6];
-            ptr[6] = temp;
+                temp = ptr[1];
+                ptr[1] = ptr[6];
+                ptr[6] = temp;
 
-            temp = ptr[2];
-            ptr[2] = ptr[5];
-            ptr[5] = temp;
+                temp = ptr[2];
+                ptr[2] = ptr[5];
+                ptr[5] = temp;
 
-            temp = ptr[3];
-            ptr[3] = ptr[4];
-            ptr[4] = temp;
+                temp = ptr[3];
+                ptr[3] = ptr[4];
+                ptr[4] = temp;
+            }
+            break;
         }
-        break;
+        }
     }
-    }
-#endif
 
     if (slotRawObject(b)->size == 0)
         SetNil(a);
@@ -1255,58 +1255,58 @@ int prFileReadRawLE(struct VMGlobals* g, int numArgsPushed) {
     numElems = fread(slotRawString(b)->s, elemSize, numElems, file);
     slotRawObject(b)->size = numElems;
 
-#if BYTE_ORDER == BIG_ENDIAN
-    switch (elemSize) {
-    case 1:
-        break;
-    case 2: {
-        char* ptr = slotRawString(b)->s;
-        char* ptrend = ptr + numElems * 2;
-        for (; ptr < ptrend; ptr += 2) {
-            char temp = ptr[0];
-            ptr[0] = ptr[1];
-            ptr[1] = temp;
+    if constexpr (sc::endian::native == sc::endian::big) {
+        switch (elemSize) {
+        case 1:
+            break;
+        case 2: {
+            char* ptr = slotRawString(b)->s;
+            char* ptrend = ptr + numElems * 2;
+            for (; ptr < ptrend; ptr += 2) {
+                char temp = ptr[0];
+                ptr[0] = ptr[1];
+                ptr[1] = temp;
+            }
+            break;
         }
-        break;
-    }
-    case 4: {
-        char* ptr = slotRawString(b)->s;
-        char* ptrend = ptr + numElems * 4;
-        for (; ptr < ptrend; ptr += 4) {
-            char temp = ptr[0];
-            ptr[0] = ptr[3];
-            ptr[3] = temp;
+        case 4: {
+            char* ptr = slotRawString(b)->s;
+            char* ptrend = ptr + numElems * 4;
+            for (; ptr < ptrend; ptr += 4) {
+                char temp = ptr[0];
+                ptr[0] = ptr[3];
+                ptr[3] = temp;
 
-            temp = ptr[1];
-            ptr[1] = ptr[2];
-            ptr[2] = temp;
+                temp = ptr[1];
+                ptr[1] = ptr[2];
+                ptr[2] = temp;
+            }
+            break;
         }
-        break;
-    }
-    case 8: {
-        char* ptr = slotRawString(b)->s;
-        char* ptrend = ptr + numElems * 8;
-        for (; ptr < ptrend; ptr += 8) {
-            char temp = ptr[0];
-            ptr[0] = ptr[7];
-            ptr[7] = temp;
+        case 8: {
+            char* ptr = slotRawString(b)->s;
+            char* ptrend = ptr + numElems * 8;
+            for (; ptr < ptrend; ptr += 8) {
+                char temp = ptr[0];
+                ptr[0] = ptr[7];
+                ptr[7] = temp;
 
-            temp = ptr[1];
-            ptr[1] = ptr[6];
-            ptr[6] = temp;
+                temp = ptr[1];
+                ptr[1] = ptr[6];
+                ptr[6] = temp;
 
-            temp = ptr[2];
-            ptr[2] = ptr[5];
-            ptr[5] = temp;
+                temp = ptr[2];
+                ptr[2] = ptr[5];
+                ptr[5] = temp;
 
-            temp = ptr[3];
-            ptr[3] = ptr[4];
-            ptr[4] = temp;
+                temp = ptr[3];
+                ptr[3] = ptr[4];
+                ptr[4] = temp;
+            }
+            break;
         }
-        break;
+        }
     }
-    }
-#endif
 
     if (slotRawObject(b)->size == 0)
         SetNil(a);
