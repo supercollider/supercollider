@@ -13,8 +13,10 @@ For most patterns, the stream is an instance of link::Classes/Routine::. Routine
 
 Every pattern class must respond to code::asStream::; however, most patterns do not directly implement code::asStream::. Instead, they use the generic code::asStream:: implementation from link::Classes/Pattern::.
 
-code::
+code#class#fragment::
+Pattern{
 	asStream { ^Routine({ arg inval; this.embedInStream(inval) }) }
+}
 ::
 
 This line creates a Routine whose job is simply to embed the pattern into its stream. "Embedding" means for the pattern to do its assigned work, and return control to the parent level when it's finished. When a simple pattern finishes, its parent level is the Routine itself. After code::embedInStream:: returns, there is nothing else for the Routine to do, so that stream is over; it can only yield nil thereafter.
@@ -26,9 +28,11 @@ p = Pseries(0, 1, 3).asStream;	// this will yield exactly 3 values
 
 We saw that list patterns can contain other patterns, and that the inner patterns are treated like "subroutines." List patterns do this by calling code::embedInStream:: on their list items. Most objects are embedded into the stream just by yielding the object:
 
-code::
-		// in Object
+code#class#error::
+Object {
+	// in Object
 	embedInStream { ^this.yield; }
+}
 ::
 
 But if the item is a pattern itself, control enters into the subpattern and stays there until the subpattern ends. Then control goes back to the list pattern to get the next item, which is embedded and so on.
@@ -58,7 +62,7 @@ list::
 
 One of the simpler pattern definitions in the main library is Prand:
 
-code::
+code#class#error::
 Prand : ListPattern {
 	embedInStream { arg inval;
 		var item;
@@ -74,7 +78,7 @@ Prand : ListPattern {
 
 This definition doesn't show the instance variables or code::*new:: method. Where are they? They are inherited from the superclass, ListPattern.
 
-code::
+code#class#error::
 ListPattern : Pattern {
 	var <>list, <>repeats=1;
 
@@ -152,7 +156,7 @@ p.nextN(20);	// no matter how long you do this, it'll never be > 9!
 
 code::asStream:: should be used if the parent pattern needs to perform some other operation on the yield value before yielding, or if it needs to keep track of multiple child streams at the same time. For instance, link::Classes/Pdiff:: takes the difference between the current value and last value. Since the subtraction comes between evaluating the child pattern and yielding the difference, the child pattern must be used as a stream.
 
-code::
+code#class#error::
 Pdiff : FilterPattern {
 	embedInStream { arg event;
 			// here is the stream!
@@ -179,14 +183,14 @@ Because of this rule, emphasis::all variables reflecting the state of a particul
 
 To initialize the pattern's parameters (instance variables), typical practice in the library is to give getter and setter methods to all instance variables, and use the setters in the code::*new:: method (or, use code::^super.newCopyArgs(...))::. It's not typical to have an init method populate the instance variables. E.g.,
 
-code::
+code#class#error::
 Pn : FilterPattern {
 	var <>repeats;
 	*new { arg pattern, repeats=inf;
 			// setter method used here for repeats
 		^super.new(pattern).repeats_(repeats)
 	}
-...
+	/* ... */
 }
 ::
 
@@ -195,8 +199,8 @@ Consider carefully whether a parameter can change in each code::next:: call. If 
 note::
 strong::Exercise for the reader:: : Why does code::Pwhite(0.0, 1.0, inf):: work, even with the code::asStream:: and next calls?
 
-code::
-Pwhite : Pattern {
+code#class::
+PwhiteExample : Pattern {
 	var <>lo, <>hi, <>length;
 	*new { arg lo=0.0, hi=1.0, length=inf;
 		^super.newCopyArgs(lo, hi, length)
@@ -218,7 +222,8 @@ Pwhite : Pattern {
 		^inval;
 	}
 }
-
+::
+code::
 // the plot rises b/c the lo and hi values increase on every 'next' value
 Pwhite(Pseries(0.0, 0.01, inf), Pseries(0.2, 0.01, inf), inf).asStream.nextN(200).plot;
 ::
@@ -230,7 +235,8 @@ Some event patterns create server or other objects that need to be explicitly re
 
 Basic usage involves 4 stages:
 
-code::
+code#class#error::
+Pattern {
 	embedInStream { |inval|
 		var	outputEvent;
 
@@ -239,7 +245,7 @@ code::
 
 		// #2 - make persistent resource, and add cleanup function
 		// could be some kind of resource other than a Synth
-		synth = (... make the Synth here...);
+		synth = (/* make the Synth here */);
 		cleanup.addFunction(inval, { |flag|
 			if(flag) {
 				synth.release
@@ -247,7 +253,7 @@ code::
 		});
 
 		loop {
-			outputEvent = (... get output event...);
+			outputEvent = (/* get output event */);
 
 			// #4 - cleanup.exit
 			if(outputEvent.isNil) { ^cleanup.exit(inval) };
@@ -257,6 +263,7 @@ code::
 			inval = outputEvent.yield;
 		}
 	}
+}
 ::
 
 numberedList::

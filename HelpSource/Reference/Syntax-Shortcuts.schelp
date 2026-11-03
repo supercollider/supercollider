@@ -130,12 +130,12 @@ There are some limitations to the extent of the surrounding expression that code
 subsection:: defining instance variable accessor methods
 table::
 ## instead of writing: || you can write:
-## code::
+## code#class::
 Thing { var x;
     x { ^x }
     x_ { arg z; x = z; }
 }
-:: || code::
+:: || code#class::
 Thing { var <>x; }
 ::
 ::
@@ -189,7 +189,7 @@ note::
 Trailing arguments must be literal blocks. No other expression may be used as a trailing argument, even if it evaluates to a Function. For example, you cannot use a variable name as a trailing argument, even if this variable was assigned a Function.
 
 Using a selector as an infix binary operator (discussed in the next section) enables a visually similar construct that does allow arbitrary expressions as operands, but these binary-operator constructs technically do not have trailing arguments.
-code::
+code#error::
 (
 var f = { |n| (2**n) + (3**n) };
 collect((1..5), f); // valid
@@ -200,7 +200,7 @@ collect((1..5), f); // valid
 collect((1..5)) f;  // syntax error (ibid.)
 ::
 A fairly common case when this syntactic restriction matters: a partial application using the code::_:: syntax is an expression evaluating to a Function, but it is not a literal block. Therefore:
-code::
+code#error::
 do(6) _.postln  // syntax error
 6.do _.postln   // syntax error
 do(6, _.postln) // valid
@@ -219,26 +219,26 @@ warning::
 When switching between various forms of call syntax, one has to be mindful that a selector as a binary operator has equal precedence with most other binary operators, but has lower precedence than the receiver dot notation (code::.::). Therefore, replacing a receiver syntax (dot) with a selector written as a binary operator can change the result of some expressions, as illustrated below:
 
 code::
-4 + 5.div(2) // -> 6
-4 + 5 div: 2 // -> 4
+4 + 5.div(2); // -> 6
+4 + 5 div: 2; // -> 4
 
 // This is a left-to-right application of two dots,
 // the first of which has a trailing block argument.
-(1..3).collect { |x| x + 1 }.bubble
+(1..3).collect { |x| x + 1 }.bubble;
 // -> [ [ 2, 3, 4 ] ]
 
 // This is a selector binary operator ("collect:") applied
 // to two arguments, the second of which is the result
 // of applying "bubble" (via dot syntax) to a function.
-(1..3) collect: { |x| x + 1 }.bubble
+(1..3) collect: { |x| x + 1 }.bubble;
 // -> [ [ a Function ], [ a Function ], [ a Function ] ]
 
 // Changing precedence in the above with explicit parentheses
-((1..3) collect: { |x| x + 1 }).bubble
+((1..3) collect: { |x| x + 1 }).bubble;
 // -> [ [ 2, 3, 4 ] ]
 
 // Or by uniform use of selectors as binary operators
-(1..3) collect: { |x| x + 1 } bubble: 0
+(1..3) collect: { |x| x + 1 } bubble: 0;
 ::
 ::
 
@@ -252,7 +252,7 @@ table::
 
 The latter form is usually not a shortcut, except when one wants to dynamically change the adverb of an operator, for instance that of code::+++::, because adverbs in the infix notation are interpreted as literals.
 
-code::
+code#error::
 (
 var a = (_+_) ! [3, 3]; // -> [ [ 0, 1, 2 ], [ 1, 2, 3 ], [ 2, 3, 4 ] ]
 (0..2) collect: (+++)(a, 99, _) flatten: 3; // iterated adverb

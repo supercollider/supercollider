@@ -20,7 +20,7 @@ add this value
 
 discussion::
 Same as:
-code::
+code#fragment::
 in.madd(mul, add)
 ::
 

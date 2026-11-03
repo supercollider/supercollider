@@ -99,7 +99,7 @@ and newly added: a float between 0 and 1. This is to offer more choices for leve
 For a full discussion, see link::Classes/LevelComp::;
 here is an overview of the levelComp variants:
 
-code::
+code#fragment::
 // default is equal power comp: level / (numchans.sqrt)
 Splay.ar(ins, spread, level, center); // true is default
 // write it explicitly for clarity

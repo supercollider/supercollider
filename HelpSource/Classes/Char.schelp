@@ -23,7 +23,7 @@ See link::Classes/String:: for more information.
 note::
 From version 3.15 onwards one can no longer have a whitespace literal (except the space) after the dollar sign.
 If you see source code with a dollar followed by some whitespace, it is now always the space character.
-code::
+code#error::
 // This is a compiler error from version 3.15 as there is no space after the dollar.
 a = $
 ;

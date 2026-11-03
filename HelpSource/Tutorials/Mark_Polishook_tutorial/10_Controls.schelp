@@ -126,7 +126,7 @@ code::
 // a template for a synthdef with two components
 SynthDef(
 	"aSynth",				// 1st argument is a name
-	{ .... i am a ugenGraphFunc ... }	// 2nd argument is a ugenGraphFunc
+	{ /* i am a ugenGraphFunc */ }	// 2nd argument is a ugenGraphFunc
 )
 ::
 
@@ -137,8 +137,8 @@ code::
 // the class definition for the lagtime array calls it 'rates'
 SynthDef(
 	"aSynth",				// name
-	{ .... i am a ugenGraphFunc ... },	// ugenGraphFunc
-	[ ... lagTimes ... ]			// rates
+	{ /* i am a ugenGraphFunc */ },	// ugenGraphFunc
+	[ /* lagTimes */ ]			// rates
 )
 ::
 

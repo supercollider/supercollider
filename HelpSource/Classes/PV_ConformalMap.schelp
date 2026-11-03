@@ -7,7 +7,7 @@ Description::
 
 Applies the conformal mapping
 
-code::
+teletype::
 
 z → (z - a) / (1 - za*)
 
@@ -20,7 +20,7 @@ the UGen.
 Makes a transformation of the complex plane so the output is full of
 phase vocoder artifacts but may be musically fun. Usually keep
 
-code::
+teletype::
 |a| < 1
 ::
 but

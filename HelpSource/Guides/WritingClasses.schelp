@@ -26,7 +26,7 @@ section:: Inheriting
 
 To avoid having to write the same code several times, classes can strong::inherit:: implementations from their strong::superclasses::.
 
-code::
+code#class#fragment::
 MyClass : SomeSuperclass {
 
 }
@@ -48,7 +48,7 @@ subsection:: Instance Methods
 
 Each object instance responds to its strong::instance methods::. Instance methods are called in the local context of the object. Within instance methods, the keyword code::this:: refers to the instance itself.
 
-code::
+code#class::
 MyClass {
 
 	instanceMethod { | argument |
@@ -72,7 +72,7 @@ To return from the method use teletype::^:: (caret). Multiple exit points also p
 specified, the method will return the instance (and in the case of Class methods, will return the class). There is no
 such thing as returning void in SuperCollider.
 
-code::
+code#class#fragment::
 MyClass {
 	someMethod {
 		^returnObject
@@ -95,7 +95,7 @@ An object's  strong::class methods:: are defined alongside its instance methods.
 
 A link::Classes/Class:: is itself an object. It is what all instances of it have in common. Class methods are the instance methods of the object's class. That's why within class methods, the keyword code::this:: refers to the class.
 
-code::
+code#class::
 MyClass {
 	*classMethod { | argument |
 		this.anotherClassMethod(argument)
@@ -119,7 +119,7 @@ subsection::Overriding methods (overloading)
 To change the behaviour inherited from the superclass, methods can be overridden. Note that an object looks always for
 the method it has defined first and then looks in the superclass. Here code::MyClass.value(2):: will return 6, not 4:
 
-code::
+code#class::
 SomeSuperclass {
 	calculate { |in| ^in * 2 }
 	value { |in| ^this.calculate(in) }
@@ -132,7 +132,7 @@ MyClass : SomeSuperclass {
 
 The keyword code::super:: can be used to call methods on the superclass
 
-code::
+code#class::
 SomeSuperclass {
 
 	value {
@@ -153,7 +153,7 @@ section:: Instances
 code::Object.new:: will return a new object.
 When overriding the class method code::.new:: you must call the superclass, which in turn calls its superclass, up until code::Object.new:: is called and an object is actually created and its memory allocated.
 
-code::
+code#class::
 MyClass {
 	// This is a normal constructor method.
 	*new { ^super.new }
@@ -178,7 +178,7 @@ The former is recommend and discussed first.
 Rather than calling the method code::new:: a call to link::Classes/Object#*newCopyArgs:: can be used to initialise members.
 
 The code below allows the call-site to decide the initial value of code::c:: and defaults code::a:: to 10 and code::b:: to 20.
-code::
+code#class::
 Foo {
 	var a, b, c;
 	*new { |myC| ^super.newCopyArgs(a: 10, b: 20, c: myC) }
@@ -193,7 +193,7 @@ However, when there is a hierarchy of classes, code::newCopyArgs:: requires that
 This makes changing the base class difficult.
 Here is one way to mitigate this issue using variable keyword arguments link::Reference/Functions#Variable Arguments:: and link::Classes/Object#-superPerformArgs::.
 
-code::
+code#class::
 Base {
 	var <>a, <>b;
 	*new { |a, b ...args, kwargs|
@@ -225,7 +225,7 @@ it is good to require that only keyword arguments be used.
 This can be achieved by removing the named arguments and throwing an error if code::args:: is not empty.
 One disadvantage here is that autocomplete in the IDE will not work.
 
-code::
+code#class::
 Foo {
 	*new { |... args, kwargs|
 		if(args.empty.not) { Error().throw };
@@ -239,7 +239,7 @@ Another benefit is that the instance is never in an incomplete state: either all
 The disadvantages come when you have complex initialisation logic where the arguments in code::Derived:: require knowledge of the arguments in code::Base::.
 Traditionally in SuperCollider this has been solved with an code::init:: method as seen below, although a 'builder' pattern might be considered for complex cases.
 
-code::
+code#class::
 Base {
 	var a, b;
 	*new {|a, b| ^super.new.init(a, b) }
@@ -253,7 +253,7 @@ Base {
 
 This works but becomes more complex in inheritance chains.
 
-code::
+code#class::
 Base {
 	var a, b;
 	*new {|a, b| ^super.new.init(a, b) }
@@ -269,7 +269,7 @@ Derived : Base {
 	*new { |a, b, c| ^super.new.derivedInit(a, b, c) }
 	derivedInit { |newA, newB, newC|
 		// do initialisation with all the arguments
-		this.init(newA, newB) // call Base.init
+		this.init(newA, newB); // call Base.init
 		c = newC; // assign to Derived's c
 	}
 }
@@ -289,7 +289,7 @@ section:: Class instances
 
 Class variables are accessible within class methods and in any instance methods.
 
-code::
+code#class::
 MyClass {
 	classvar myClassvar;
 
@@ -301,7 +301,7 @@ MyClass {
 
 Initializations on class level (e.g. to set up code::classvar::s) can be implemented by overloading the link::Classes/Class#*initClass:: method.
 
-code::
+code#class::
 MyClass {
 	classvar myClassvar;
 
@@ -321,13 +321,16 @@ See also: link::Guides/Polymorphism::
 
 Two completely unrelated objects can respond to the same messages and therefore be used together in the same code. For example, link::Classes/Function:: and link::Classes/Event:: have no common superclass apart from the general class link::Classes/Object::. But both respond to the message code::play::. Instead of inheriting all methods, you can simply implement some of the same methods in your class.
 
-code::
+code#class::
 MyClass {
 	var count = 0;
 	value {
 		^count = count + 1
 	}
 }
+::
+
+code::
 // objects of this class will respond to the message "value", just like a function.
 a = MyClass.new;
 a.value; // returns 1
@@ -336,7 +339,7 @@ a.value; // returns 1
 subsection::Object Composition
 Often, an object passes control to one of the objects it has in its instance variables. Because these objects can be of any kind, this is a very flexible way to achieve a wide range of functionalities. For example, a link::Classes/Button:: has an code::action:: instance variable, which may hold anything that responds to the message code::value::.
 
-code::
+code#class::
 MyClass {
 	var action;
 	*new { |action|
@@ -346,7 +349,9 @@ MyClass {
 		action.value(x);
 	}
 }
+::
 
+code::
 // depending on what "action" is, objects of this class will behave differently
 a = MyClass({ "hello." });
 b = MyClass({ |i| log2(i) * sin(i * pi) });
@@ -362,7 +367,7 @@ subsection:: Initializing variables directly
 
 In a variable declaration, variables can be directly initialized. Only link::Reference/Literals:: may be used to initialize variables this way. This means that it is not possible to chain assignments (e.g. code:: var x = 9; var y = x + 1::).
 
-code::
+code#class::
 MyClass {
 	classvar all = #[];
 	var x = 8;
@@ -374,7 +379,7 @@ subsection:: Variable Scope
 
 An instance variable is accessible strong::from all instance methods:: of this class and its subclasses. A class variable, by contrast, is accessible strong::from all class and instance methods:: of this class and its subclasses. Instance variables will shadow class variables of the same name.
 
-code::
+code#class::
 MyClass {
 	classvar x = 0, y = 1;
 	var x = 1;
@@ -387,7 +392,7 @@ MyClass {
 
 Subclasses can override class variable declarations (but not instance variables). Then the class variables of the superclass are not accessible in the subclass anymore.
 
-code::
+code#class::
 SomeSuperclass {
 	classvar x = 0;
 
@@ -412,7 +417,7 @@ subsection:: Getters and Setters
 SuperCollider demands that variables are not accessible outside of the class or instance. A method must be added to
 explicitly give access:
 
-code::
+code#class#fragment::
 MyClass : SomeSuperclass {
 	var myVariable;
 
@@ -429,7 +434,7 @@ MyClass : SomeSuperclass {
 These are referred to as getter and setter methods. SuperCollider allows these methods to be easily added by adding teletype::<:: or
 teletype::>::.
 
-code::
+code#class::
 MyClass {
 	var <getMe, >setMe, <>getMeOrSetMe;
 }
@@ -437,14 +442,14 @@ MyClass {
 
 This provides the following methods:
 
-code::
+code#fragment::
 someObject.getMe;
 someObject.setMe_(value);
 ::
 
 And it also allows us to say:
 
-code::
+code#fragment::
 someObject.setMe = value;
 
 someObject.getMeOrSetMe_(5);
@@ -453,7 +458,7 @@ someObject.getMeOrSetMe;
 
 A getter or setter method created in this fashion may be overridden in a subclass by explicitly defining the method. Setter methods should take only one argument to support both ways of expression consistently.  eg.
 
-code::
+code#class#fragment::
 MyClass {
 
 	variable_ { | newValue |
@@ -468,12 +473,12 @@ A setter method should always return the receiver. This allows us to be sure tha
 subsection::Constants
 Constants are variables, that, well, don't vary. They can only be assigned initially.
 
-code::
+code#class::
 MyClass {
 	const <zero = 0;
 }
 
-MyClass.zero // returns 0
+// MyClass.zero  returns 0
 ::
 
 section:: External method files
@@ -481,7 +486,7 @@ section:: External method files
 Methods may be added to Classes in separate files.  This is equivalent to Categories in Objective-C.  By convention, the
 file name starts with a lower case letter: the name of the method or feature that the methods are supporting.
 
-code::
+code#class::
 + Class {
 
 	newMethod {
@@ -500,14 +505,15 @@ section:: Slotted classes
 
 Classes defined with code::[slot]:: can use the syntax code::myClass[...]:: which will call code::myClass.new:: and then code::this.add(each):: for each item in the square brackets.
 
-code::
+code#class::
 MyClass[] {
 	var <allOfThem;
 	add { |item|
 		allOfThem = allOfThem.add(item)
 	}
 }
-
+::
+code::
 a = MyClass[1, 2, 3];
 a.allOfThem; // [1, 2, 3]
 ::
@@ -519,7 +525,7 @@ subsection:: Printing custom messages to post window
 By default when postln is called on an class instance the name of the class is printed in a post window. When
 code::postln:: or code::asString:: is called on a class instance, the class then calls code::printOn:: which by default returns just the object's class name. This should be overridden to obtain more useful information.
 
-code::
+code#class::
 MyTestPoint {
 	var <x, <y;
 
@@ -545,8 +551,9 @@ code::storeOn:: should return the string that evaluated creates the instance of 
 code::storeArgs:: should return an array with the arguments to be passed to code::TheClass.new::. In most cases this
 method can be used instead of code::storeOn::.
 
-code::
-// either
+
+either...
+code#class::
 MyTestPoint {
 	var <x, <y;
 
@@ -560,8 +567,9 @@ MyTestPoint {
 		stream << "MyTestPoint.new(" <<< x << ", " <<< y << ")"
 	}
 }
-
-// or
+::
+...or...
+code#class::
 MyTestPoint {
 	var <x, <y;
 

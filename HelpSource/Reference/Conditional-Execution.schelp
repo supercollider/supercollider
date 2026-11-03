@@ -100,10 +100,10 @@ code:: falseFunc.value :: if receiver is code::false::).
 If teletype::falseFunc:: is not present and teletype::expr:: is false, then the code::.if:: method returns code::nil::.
 
 subsubsection:: Syntax
-code::
+code#fragment::
 // function call notation
 if(expr, trueFunc, falseFunc);
-if(0 < 3, {"aha"} {"brb"});
+if(0 < 3) {"aha"} {"brb"};
 
 // function call notation with trailing argument block
 // looks almost like C (without the "else").
@@ -168,14 +168,14 @@ Case is inlined (under the conditions outlined link::#Optimization through inlin
 
 subsubsection:: Syntax
 
-code::
+code#fragment::
 // { testFuncBody1 } is technically the receiver.
 // trailing receiver and argument block notation
 // (possible because receiver and all arguments are Functions):
 case
 	{ testFuncBody1 } { trueFuncBody1 }
 	{ testFuncBody2 } { trueFuncBody2 }
-	...
+	/* ... */
 	{ testFuncBodyN } { trueFuncBodyN }
 	{ defaultFuncBody }; // defaultFunc can be omitted.
 
@@ -183,7 +183,7 @@ case
 case(
 		testFunc1, trueFunc1,
     	testFunc2, trueFunc2,
-		...,
+		/* ... */
 		testFuncN, trueFuncN,
 		defaultFunc // defaultFunc can be omitted.
 	);
@@ -250,14 +250,14 @@ e.g., code::(2/3) == (1 - (1/3)):: returns code::false::.
 
 subsubsection:: Syntax
 
-code::
+code#fragment::
 // function call syntax with trailing argument blocks
 // linebreaks are optional but recommended
 switch(value)
 	{ testValue1 } { trueFuncBody1 }
 	{ testValue2 } { trueFuncBody2 }
 	{ testValue3 } { trueFuncBody3 }
-	...
+	/* ... */
 	{ testValueN } { trueFunchBodyN }
 	{ defaultBody }; // defaultbody can be omitted.
 
@@ -265,7 +265,7 @@ switch(value)
 switch(value,
 	testValue1, trueFunc1,
 	testValue2, trueFunc2,
-	...
+	/* ... */
 	testValueN, trueFuncN,
 	defaultFunc // defaultFunc can be omitted
 );
@@ -361,7 +361,7 @@ teletype::testFunc:: is a Function (which returns itself), e.g., code::{x < 0}::
 whereas teletype::expr:: above was an expression, e.g., code::x < 0::, which returned a Boolean.
 
 subsubsection:: Syntax
-code::
+code#fragment::
 // function call with receiver and argument as trailing function block
 // this is _different_ from C!
 while { testFuncBody } { loopFuncBody };
@@ -505,16 +505,18 @@ code::
 			SinOsc.ar(freq), //as are arguments
 			Saw.ar(freq)
 		) * 0.2;
-    }.scope(bufsize: s.sampleRate/freq; //bufsize to match the period of the oscillators
+    }.scope(bufsize: s.sampleRate/freq); //bufsize to match the period of the oscillators
 )
 ::
 Here, the receiver LFTri is a UGen.
 The UGen class in turn implements an link::Classes/UGen#-if:: method by translating it into a linear crossfade using binary operators:
 
-code::
+code#class#fragment::
+UGen {
 	if { arg trueUGen, falseUGen;
 		^(this * (trueUGen - falseUGen)) + falseUGen;
 	}
+}
 ::
 
 The regular link::Classes/Boolean#-if:: discussed above does emphasis::not:: crossfade.
@@ -578,7 +580,7 @@ if (condition) {
 }
 ::
 
-code::
+code#fragment::
 //if-statement in SuperCollider, function call notation with trailing argument block
 if (condition) {
 	trueFuncBody
@@ -604,7 +606,7 @@ strong::second::, that teletype::expr1:: and teletype::expr2:: should not
 already emphasis::be:: Functions in their own right (unless you intend them to be).
 
 In examples:
-code::
+code#error::
 if(condition, trueFunc, falseFunc)
 // is NOT equivalent to
 if (condition) {
@@ -647,7 +649,7 @@ code:: method { receiverFuncBody } { arg1FuncBody }  { arg2FuncBody }::
 Among the conditional expressions discussed here, this applies to .while and .case (because they are methods of link::Classes/Function::.)
 
 Example:
-code::
+code#fragment::
 //function call notation with receiver block and trailing argument block
 while { testFuncBody } { loopFuncBody };
 // abbreviation of  function call notation with trailing argument block
@@ -673,7 +675,7 @@ if True: a = "gobbledeegook"
 Whereas in SuperCollider, both analogous cases work:
 code::
 (
-var a = "oink"
+var a = "oink";
 a = if([true,false].choose, {"gobbledeegook"});
 a.postln;
 )

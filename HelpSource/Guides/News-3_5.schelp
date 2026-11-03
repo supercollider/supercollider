@@ -57,7 +57,7 @@ link::Classes/String#-openTextFile:: now works also on frontends without link::C
 subsection:: Optional trailing comma
 It was already allowed to have a trailing comma in arrays: code::[1,2,3,]::,
 but now it's also allowed in Event construction and message arguments:
-code::
+code#fragment::
 (a:1, b:2, c:3,);
 
 Pbind(

@@ -317,7 +317,7 @@ test_myMethod {
 
 will result in:
 
-code::
+teletype::
 FAIL: a TestMyClass: test_myMethod
 obj has color red
 Is:
@@ -385,7 +385,7 @@ This can help to eliminate repetitive code, and makes it easier to
 maintain your tests by ensuring that they all run under the same set
 of conditions.
 
-code::
+code#class::
 TestYourClass : UnitTest {
 	setUp {
 		// this will be called before each test

@@ -180,11 +180,11 @@ To send only the relevant values to the new Synth, the Event needs to know what 
 
 code::
 // Save into the library, write a .scsyndef file, and load it on the server
-SynthDef(...).store;
+SynthDef(/* ... */).store;
 
 // Save into the library and send the SynthDef to the server (no .scsyndef file)
 // Make sure the server is booted before doing this
-SynthDef(...).add;
+SynthDef(/* ... */).add;
 ::
 
 .load(s)	-->	.store

@@ -179,33 +179,35 @@ code::
 (
 var abc = 2;
 { arg x = abc+1; x }   // OK
-)
-
+);
+::
+code#error::
 (
 var abc = 2;
 { |x = abc+1| x }
-)
-ERROR: Parse error
-   in file 'selected text'
-   line 1 char 10:
-  { |x = abc•+1| x }
------------------------------------
-ERROR: Command line parse failed
-
+);
+//ERROR: Parse error
+//   in file 'selected text'
+//   line 1 char 10:
+//  { |x = abc•+1| x }
+//-----------------------------------
+//ERROR: Command line parse failed
+::
+code::
 (
 var abc = 2;
 { |x = (abc+1)| x }   // OK
-)
+);
 
 (
 var abc = 2;
 { |x (abc+1)| x }   // In ||, the = may be omitted if () are there
-)
+);
 ::
 
 This is because the pipe character also serves as a binary operator. Without parentheses, expressions such as the following are ambiguous:
 
-code::
+code#error::
 { |a, b, c = a | b | c }
 ::
 
