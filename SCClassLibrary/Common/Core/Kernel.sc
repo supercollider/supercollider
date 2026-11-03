@@ -835,7 +835,6 @@ Interpreter {
 	var lineNumber;
 	var column;
 
-
 	var context; // faked interpreter context frame. Don't mess with it.
 
 	// a-z are predefined variables for use by the interactive context.
