@@ -25,68 +25,154 @@
 #include "SC_Types.h"
 #include <string.h>
 
-// return the ptr to the byte after the OSC string.
+/** @brief returns a ptr to the byte after the OSC string. */
 SC_INLINE const char* OSCstrskip(const char* str) {
-    //	while (str[3]) { str += 4; }
-    //	return str + 4;
-    do {
+    // OSC strings are always zero-padded to a multiple of 4 bytes.
+    // If the last byte is not '\0', we know that another 4 bytes must follow.
+    while (str[3]) {
         str += 4;
-    } while (str[-1]);
-    return str;
+    }
+    return str + 4;
 }
 
-// returns the number of bytes (including padding) for an OSC string.
+/** @brief returns the byte size (including padding) of an OSC string. */
 SC_INLINE size_t OSCstrlen(const char* strin) { return (size_t)(OSCstrskip(strin) - strin); }
 
-// returns a float, converting an int if necessary
+/** @brief reads and returns a 32-bit integer */
+SC_INLINE int32 OSCint(const char* inData) {
+    int32 i;
+    memcpy(&i, inData, 4);
+    return sc_ntohl(i);
+}
+
+/** @brief reads and returns a 64-bit integer */
+SC_INLINE int64 OSCint64(const char* inData) {
+    int64 i;
+    memcpy(&i, inData, 8);
+    return sc_ntohll(i);
+}
+
+/** @brief reads and returns a 32-bit float */
 SC_INLINE float32 OSCfloat(const char* inData) {
-    elem32 elem;
-    elem.u = sc_ntohl(*(uint32*)inData);
-    return elem.f;
+    // get data as 32-bit int with correct byte order
+    int32 i = OSCint(inData);
+    // convert bit pattern to float32
+    float32 f;
+#ifdef __cplusplus
+    static_assert(sizeof(i) == sizeof(f), "size mismatch");
+#endif
+    memcpy(&f, &i, sizeof(f));
+    return f;
 }
 
-SC_INLINE int32 OSCint(const char* inData) { return (int32)sc_ntohl(*(uint32*)inData); }
+/** @brief reads and returns an OSC timetag */
+SC_INLINE int64 OSCtime(const char* inData) { return OSCint64(inData); }
 
-SC_INLINE int64 OSCtime(const char* inData) {
-    return ((int64)sc_ntohl(*(uint32*)inData) << 32) + (sc_ntohl(*(uint32*)(inData + 4)));
-}
-
+/** @brief reads and returns a 64-bit float */
 SC_INLINE float64 OSCdouble(const char* inData) {
-    elem64 slot;
-    slot.i = ((int64)sc_ntohl(*(uint32*)inData) << 32) + (sc_ntohl(*(uint32*)(inData + 4)));
-    return slot.f;
+    // get data as 64-bit int with correct byte order
+    int64 i = OSCint64(inData);
+    // convert bit pattern to float64
+    float64 d;
+#ifdef __cplusplus
+    static_assert(sizeof(i) == sizeof(d), "size mismatch");
+#endif
+    memcpy(&d, &i, sizeof(d));
+    return d;
 }
 
+/** @brief A struct that only contains the argument part of an OSC message,
+ *  from the typetag string to the end of the message.
+ *  It is used for passing OSC message arguments to plugin command, unit
+ *  command and bufgen functions.
+ */
 struct sc_msg_iter {
+    /** @brief the OSC message data (starting at the typetag string) */
     const char* data;
+    /** @brief the read position for the next argument data */
     const char* rdpos;
+    /** @brief the end of the OSC message data */
     const char* endpos;
+    /** @brief the start of the actual typetags, without the leading ','.
+     *  `tags[count]` yields the typetag for the next argument or '\0'
+     *  if all arguments have been read.
+     */
     const char* tags;
+    /** @brief the total size of the OSC message. Same as endpos - data. */
     int32 size;
+    /** @brief the number of arguments read so far */
     int32 count;
 
 #ifdef __cplusplus
+    /** @brief default constructor */
     sc_msg_iter();
+    /** @brief constructor that takes OSC message data */
     sc_msg_iter(int inSize, const char* inData);
+    /** @brief (re)init with different data */
     void init(int inSize, const char* inData);
+    /** @brief read and return a timetag ('t') argument.
+     *  If the argument has the wrong type or there are no remaining
+     *  arguments, the given default value is returned.
+     */
     int64 gett(int64 defaultValue = 1);
+    /** @brief read and return a 32-bit integer ('i') argument.
+     *  If the argument has the wrong type or there are no remaining
+     *  arguments, the given default value is returned.
+     */
     int32 geti(int32 defaultValue = 0);
+    /** @brief read and return a 32-bit float ('f') argument.
+     *  If the argument has the wrong type or there are no remaining
+     *  arguments, the given default value is returned.
+     */
     float32 getf(float32 defaultValue = 0.f);
+    /** @brief read and return a 64-bit float ('d') argument.
+     *  If the argument has the wrong type or there are no remaining
+     *  arguments, the given default value is returned.
+     */
     float64 getd(float64 defaultValue = 0.f);
+    /** @brief read and return an OSC string ('s') argument.
+     *  If the argument has the wrong type or there are no remaining
+     *  arguments, the given default value is returned.
+     */
     const char* gets(const char* defaultValue = 0);
+    /** @brief read and return an OSC string ('s') as a int32*.
+     *  If the argument has the wrong type or there are no remaining
+     *  arguments, the given default value is returned.
+     */
     int32* gets4(char* defaultValue = 0);
+    /** @brief returns the size of the upcoming OSC blob ('b') argument.
+     *  MIDI arguments ('m') are also supported; in that case the size
+     *  is always 4.
+     *  If the argument has the wrong type or there are no remaining
+     *  arguments, a size of 0 is reported.
+     */
     size_t getbsize();
+    /** @brief read the blob argument data into the provided buffer.
+     *  If the argument is not a blob ('b') or MIDI message ('m'),
+     *  the behavior is undefined.
+     */
     void getb(char* outData, size_t inSize);
+    /** @brief skip the current blob ('b') or MIDI ('m') argument.
+     *  If the argument is not a blob ('b') or MIDI message ('m'),
+     *  the behavior is undefined.
+     */
     void skipb();
+    /** @brief returns the remaining bytes of the OSC argument data.
+     *  @note A return value of 0 does not necessarily mean that there
+     *  are no more pending arguments! Some OSC typetags ('F', 'T',
+     *  'N' and 'I') do not have any associated data.
+     */
     size_t remain() { return (size_t)(endpos - rdpos); }
-
+    /** @brief returns the typetag for the next argument.
+     *  If there are no more arguments, '\0' is returned.
+     */
     char nextTag(char defaultTag = 'f') { return tags ? tags[count] : defaultTag; }
 #endif
 };
 
 #ifdef __cplusplus
 
-inline sc_msg_iter::sc_msg_iter() {}
+inline sc_msg_iter::sc_msg_iter(): data(nullptr), rdpos(nullptr), endpos(nullptr), tags(nullptr), size(0), count(0) {}
 
 inline sc_msg_iter::sc_msg_iter(int inSize, const char* inData) { init(inSize, inData); }
 

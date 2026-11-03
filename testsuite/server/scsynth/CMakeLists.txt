@@ -1,5 +1,5 @@
 set(test_source_files
-    scsynth_test.cpp readwrite_test.cpp
+    scsynth_test.cpp readwrite_test.cpp sc_msg_iter_test.cpp
 )
 
 foreach(test_file ${test_source_files})
@@ -13,12 +13,14 @@ foreach(test_file ${test_source_files})
         PUBLIC ${CMAKE_SOURCE_DIR}/include/plugin_interface
         PUBLIC ${CMAKE_SOURCE_DIR}/server/scsynth
     )
-    target_link_libraries(${test_name} libscsynth boost_test)
+    target_link_libraries(${test_name} PRIVATE libscsynth boost_test)
     if (PTHREADS_FOUND)
-        target_link_libraries(${test_name} ${PTHREADS_LIBRARIES})
+        target_link_libraries(${test_name} PRIVATE ${PTHREADS_LIBRARIES})
     endif()
 
     add_test(${test_name}_run ${EXECUTABLE_OUTPUT_PATH}/${test_name})
 
     set_property(TARGET ${test_name} PROPERTY FOLDER Test/scsynth)
 endforeach()
+
+target_link_libraries(sc_msg_iter_test PRIVATE oscpack)
