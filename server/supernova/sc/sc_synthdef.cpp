@@ -21,25 +21,16 @@
 #include <fstream>
 #include <sstream>
 
-#include <boost/endian/arithmetic.hpp>
-
 #include "sc_synthdef.hpp"
 #include "sc_ugen_factory.hpp"
 
 #include "utilities/sized_array.hpp"
 #include "utilities/exists.hpp"
 
+#include "SC_Endian.h"
+
+
 namespace nova {
-
-typedef std::int16_t int16;
-typedef std::int32_t int32;
-typedef std::int8_t int8;
-
-using boost::endian::big_int16_t;
-using boost::endian::big_int32_t;
-using boost::endian::big_int8_t;
-
-using std::size_t;
 
 namespace {
 
@@ -59,23 +50,25 @@ std::string read_pstring(const char*& buffer, const char* buffer_end) {
     str[int(name_size)] = 0;
 
     buffer += name_size;
+
     return std::string(str);
 }
 
 float read_float(const char*& buffer, const char* buffer_end) {
     verify_synthdef_buffer(buffer, buffer_end);
 
-    big_int32_t data;
+    int32_t data;
     std::memcpy(&data, buffer, 4);
     buffer += 4;
 
-    union {
-        int32_t i;
-        float f;
-    } cast;
+    if constexpr (sc::endian::native == sc::endian::little)
+        data = sc::byteswap(data);
 
-    cast.i = data;
-    return cast.f;
+    float f;
+    static_assert(sizeof(data) == sizeof(f), "size mismatch");
+    std::memcpy(&f, &data, sizeof(f));
+
+    return f;
 }
 
 int8_t read_int8(const char*& buffer, const char* buffer_end) {
@@ -90,19 +83,27 @@ int8_t read_int8(const char*& buffer, const char* buffer_end) {
 int16_t read_int16(const char*& buffer, const char* buffer_end) {
     verify_synthdef_buffer(buffer, buffer_end);
 
-    big_int16_t data;
+    int16_t data;
     std::memcpy(&data, buffer, 2);
     buffer += 2;
-    return data;
+
+    if constexpr (sc::endian::native == sc::endian::little)
+        return sc::byteswap(data);
+    else
+        return data;
 }
 
 int32_t read_int32(const char*& buffer, const char* buffer_end) {
     verify_synthdef_buffer(buffer, buffer_end);
 
-    big_int32_t data;
+    int32_t data;
     std::memcpy(&data, buffer, 4);
     buffer += 4;
-    return data;
+
+    if constexpr (sc::endian::native == sc::endian::little)
+        return sc::byteswap(data);
+    else
+        return data;
 }
 
 int32_t read_int(const char*& buffer, const char* buffer_end, int size) {
@@ -111,6 +112,7 @@ int32_t read_int(const char*& buffer, const char* buffer_end, int size) {
 
     if (size == 16)
         return read_int16(buffer, buffer_end);
+
     assert(false);
     return 0;
 }
