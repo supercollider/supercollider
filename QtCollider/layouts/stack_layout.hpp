@@ -38,7 +38,7 @@ class StackLayout : public QLayout {
 
 public:
     enum StackingMode { StackOne, StackAll };
-    Q_ENUM(StackLayout::StackingMode)
+    Q_ENUM(StackingMode)
 
     StackLayout();
     ~StackLayout();
