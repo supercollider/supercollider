@@ -70,16 +70,16 @@ struct RGen {
     /** @brief Generate a random 32 bit number */
     uint32 trand();
 
-    /** @brief Generate 32 bit integer from 0 to scale - 1 */
+    /** @brief Generate 32 bit integer in the range [0, scale) */
     int32 irand(int32 scale);
 
-    /** @brief Generate a 32 bit integer from -scale to +scale */
+    /** @brief Generate a 32 bit integer in the range [-scale, +scale] */
     int32 irand2(int32 scale);
 
-    /** @brief Generates a single random 32 bit integer value in linear distribution from 0 to +scale */
+    /** @brief Generates a single random 32 bit integer value in linear distribution in the range [0, scale) */
     int32 ilinrand(int32 scale);
 
-    /** @brief Bilateral linearly distributed random 32 bit integer from -scale to +scale. */
+    /** @brief Bilateral linearly distributed random 32 bit integer in the range (-scale, scale) */
     int32 ibilinrand(int32 scale);
 
     //------------------- 32-bit float random number generators -------------------//
@@ -87,60 +87,81 @@ struct RGen {
     /** @brief Generate one of the two float values -1.0 or +1.0 */
     float fcoin();
 
-    /** @brief Generate a float from 0.0 to 0.999... */
+    /** @brief Generate a float in the range [0.0, 1.0) */
     float frand();
 
-    /** @brief Generate a float from -1.0 to +0.999... */
+    /** @brief Generate a float in the range [-1.0, 1.0) */
     float frand2();
 
-    /** @brief Generate a float from +1.0 to +1.999... */
+    /** @brief Generate a float in the range [1.0, 2.0) */
     float frand0();
 
-    /** @brief Generate a float from -0.125 to +0.124999... */
+    /** @brief Generate a float in the range [-0.125, 0.125) */
     float frand8();
 
-    /** @brief Generates a single random float value in linear distribution from 0.0 to 0.999 */
+    /** @brief Generates a single random float value in linear distribution in the range [0.0, 1.0) */
     float flinrand();
 
-    /** @brief Bilateral linearly distributed random float from -0.999 to +0.999. */
+    /** @brief Bilateral linearly distributed random float in the range (-1.0, 1.0) */
     float fbilinrand();
 
-    /** @brief Larry Polansky's loose approximation of a gaussian generator.
+    /**
+     * @brief Generates a random float that is the result of summing three uniform random generators
+     * to yield a bell-like distribution.
      *
-     *  Generates a random float that is the result of summing three
-     *  uniform random generators to yield a bell-like distribution.
+     * Larry Polansky's loose approximation of a gaussian generator.
+     *
+     * @note: The theoretical output range is [-inf, inf]. Clip if necessary!
      */
     float fsum3rand();
 
     //------------------- 64-bit float random number generators -------------------//
 
-    /** @brief Generate a double from 0.0 to 0.999... */
+    /** @brief Generate a double in the range [0.0, 1.0) */
     double drand();
 
-    /** @brief Generate a double from -1.0 to +0.999... */
+    /** @brief Generate a double in the range [-1.0, 1.0) */
     double drand2();
 
-    /** @brief Generates a single random double value in linear distribution from 0.0 to +scale */
+    /** @brief Generates a random double value in linear distribution in the range [0.0, scale) */
     double linrand(double scale);
 
-    /** @brief Bilateral linearly distributed random double from -scale to +scale. */
+    /** @brief Bilateral linearly distributed random double in the range (-scale, scale) */
     double bilinrand(double scale);
 
-    /** @brief Generates a single random double value in an exponential distributions from lo to hi.
-     *  @note preconditions: lo and hi must greater than zero! Also, hi should be >= lo.
+    /**
+     * @brief Generates a random double value in a log-uniform distribution in the range [lo, hi).
+     * Despite its name it does *not* use an exponential distribution.
+     * See https://en.wikipedia.org/wiki/Reciprocal_distribution.
+     *
+     * @note lo and hi must be greater than zero! Also, hi should be >= lo.
      */
     double exprandrng(double lo, double hi);
 
-    /** @brief Generates a single random double value in an exponential distributions from 0.0 to +scale */
+    /**
+     * @brief Generates a random double value in an exponential distribution, scaled by 'scale'.
+     * 'scale' is the inverse of the rate parameter λ.
+     * See https://en.wikipedia.org/wiki/Exponential_distribution.
+     *
+     * @note: The theoretical output range is [0.0, inf]. Clip if necessary!
+     */
     double exprand(double scale);
 
-    /** @brief Bilateral exponentially distributed random double from -scale to +scale. */
+    /**
+     * @brief Bilateral exponentially distributed random double, scaled by 'scale'.
+     * 'scale' is the inverse of the rate parameter λ.
+     *
+     * @note: The theoretical output range is [-inf, inf]. Clip if necessary!
+     */
     double biexprand(double scale);
 
-    /** @brief Larry Polansky's loose approximation of a gaussian generator.
+    /**
+     * @brief Generates a random double that is the result of summing three uniform random generators
+     * to yield a bell-like distribution.
      *
-     *  Generates a random double that is the result of summing three
-     *  uniform random generators to yield a bell-like distribution.
+     * Larry Polansky's loose approximation of a gaussian generator.
+     *
+     * @note: The theoretical output range is [-inf, inf]. Clip if necessary!
      */
     double sum3rand(double scale);
 #endif
