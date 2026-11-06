@@ -569,7 +569,7 @@ void GenericCodeEditor::handleKeyUp(QKeyEvent* event, QTextCursor& textCursor) {
 }
 
 void GenericCodeEditor::handleKeyDelete(QKeyEvent* event, QTextCursor& textCursor) {
-    if (event->modifiers() & Qt::META) {
+    if (event->modifiers() & Qt::CTRL) {
         textCursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
         textCursor.removeSelectedText();
     } else
@@ -577,7 +577,7 @@ void GenericCodeEditor::handleKeyDelete(QKeyEvent* event, QTextCursor& textCurso
 }
 
 void GenericCodeEditor::handleKeyBackspace(QKeyEvent* event, QTextCursor& textCursor, bool& updateCursor) {
-    if (event->modifiers() & Qt::META) {
+    if (event->modifiers() & Qt::CTRL) {
         textCursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor);
         textCursor.removeSelectedText();
     } else {
