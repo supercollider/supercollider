@@ -304,6 +304,7 @@ add_executable(scsynth
         # these files contain code only used in main()
         ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
         $<$<BOOL:${APPLE}>: ${CMAKE_SOURCE_DIR}/common/SC_AppleEventLoop.mm >
+        $<$<BOOL:${LIBSCSYNTH}>: ${CMAKE_SOURCE_DIR}/common/SC_Codecvt.cpp > # needed on Windows
 )
 target_link_libraries(scsynth PRIVATE libscsynth)
 if (WIN32)
