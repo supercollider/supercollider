@@ -95,6 +95,28 @@ int prSCDoc_ParseFile(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+
+int prSCDoc_gatherErrors(struct VMGlobals* g, int numArgsPushed) {
+    if (scdoc_errors.empty()) {
+        SetNil(g->sp);
+        return errNone;
+    }
+
+    PyrObject* ar = newPyrArray(g->gc, static_cast<int>(scdoc_errors.size()), 0, false);
+
+    size_t i = 0;
+    for (const std::string& er : scdoc_errors) {
+        auto s = newPyrString(g->gc, er.c_str(), 0, false);
+        SetObject(ar->slots + i, s);
+        ++i;
+    }
+
+    ar->size = static_cast<int>(scdoc_errors.size());
+
+    SetObject(g->sp, ar);
+    return errNone;
+}
+
 void initSCDocPrimitives() {
     int base, index = 0;
 
@@ -103,4 +125,5 @@ void initSCDocPrimitives() {
     base = nextPrimitiveIndex();
 
     definePrimitive(base, index++, "_SCDoc_ParseFile", prSCDoc_ParseFile, 3, 0);
+    definePrimitive(base, index++, "_SCDoc_GatherErrors", prSCDoc_gatherErrors, 1, 0);
 }
