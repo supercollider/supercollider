@@ -119,4 +119,9 @@ TestNonLocalReturn : UnitTest {
 		// As of 2026, Function.forkIfNeeded does this.
 		^if(false, 1, {Error("throwing").throw})
 	}
+
+	inlined { ^[1, if (true) { ^\early }] }
+	test_inlined {
+		this.assertEquals([\pending, this.inlined], [\pending, \early], "stack clean up should work when inlined.");
+	}
 }
