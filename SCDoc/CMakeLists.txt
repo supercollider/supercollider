@@ -6,6 +6,8 @@ set(SCDOC_SRCS
     ${SCDOC_DIR}/SCDoc.tab.cpp
     ${SCDOC_DIR}/lex.scdoc.cpp
     ${SCDOC_DIR}/SCDocPrim.cpp
+    ${SCDOC_DIR}/SCDocSearchIndex.cpp
+    ${SCDOC_DIR}/SCDocSearchIndex.h
 )
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")

@@ -28,6 +28,8 @@
     --color-warning-bg: #f7f7d7;
     --color-warning-fg: var(--color-cm-keyword);
 
+    --color-highlight-bg: var(--color-cm-evaluated);
+
     --color-fg: var(--color-cm-text);
     --color-fg-400: #333;
     --color-fg-300: #555;

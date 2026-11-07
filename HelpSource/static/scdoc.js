@@ -222,6 +222,37 @@ function fixTOC() {
     if ($("#toc").length) {
         set_up_toc();
     }
+
+    highlightSearchTerms();
+}
+
+// Highlights the words given in the URL as ?highlight=... by the full-text search
+// (Search.html). mark.js is only loaded when needed.
+function highlightSearchTerms() {
+    const query = new URLSearchParams(window.location.search).get("highlight");
+    const contents = document.querySelector(".contents");
+    if (!query || !contents) return;
+    // same separators as in fulltextsearch.js
+    const terms = query.toLowerCase().split(/[\s!-\/:-@\[-`{-~]+/).filter((t) => t.length > 0);
+    if (terms.length == 0) return;
+
+    const script = document.createElement("script");
+    script.src = helpRoot + "/static/lib/mark-8.11.1.min.js";
+    script.onload = () => {
+        // like in fulltextsearch.js, terms with at least 3 characters also match the beginning of words
+        const pattern = terms.map((t) => escape_regexp(t) + (t.length >= 3 ? "\\w*" : "\\b")).join("|");
+        new Mark(contents).markRegExp(new RegExp("\\b(?:" + pattern + ")", "gi"), {
+            exclude: ["textarea", ".CodeMirror *", ".katex *"],
+        });
+        // the marks do not move the page, but scroll to the target again, in case the page
+        // layout changed while loading
+        const hash = window.location.hash.slice(1);
+        const target = hash
+            ? (document.getElementsByName(hash)[0] || document.getElementsByName(decodeURIComponent(hash))[0])
+            : contents.querySelector("mark");
+        if (target) target.scrollIntoView();
+    };
+    document.head.appendChild(script);
 }
 
 // theming
