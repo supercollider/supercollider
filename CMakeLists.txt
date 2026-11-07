@@ -685,6 +685,23 @@ mark_as_advanced(QT_QMAKE_EXECUTABLE)
 mark_as_advanced(SNDFILE SNDFILE_LIBRARY_DIR)
 mark_as_advanced(SC_HIDAPI)
 
+
+#############################################
+# sclang safety checks
+
+# sclang safety checks are all enabled in debug mode.
+option(SCLANG_SAFETY_ALL "Overrides all other settings, enables all safety checks" OFF)
+mark_as_advanced(SCLANG_SAFETY_SLOT_CHECK)
+
+option(SCLANG_SAFETY_STACK_OVERFLOW "Enables or disables stack overflow checks." OFF)
+mark_as_advanced(SCLANG_SAFETY_STACK_OVERFLOW)
+
+option(SCLANG_SAFETY_SLOT_CHECK "Enables or disables slot unpacking checks." OFF)
+mark_as_advanced(SCLANG_SAFETY_SLOT_CHECK)
+
+
+configure_file(common/sc_assert.h.in common/sc_assert.h)
+
 #############################################
 # uninstall target
 if(NOT TARGET uninstall)
