@@ -98,7 +98,7 @@ set(scsynth_sources
         ${CMAKE_SOURCE_DIR}/common/Samp.cpp
         ${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
         ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
-        ${CMAKE_SOURCE_DIR}/common/SC_Codecvt.cpp # needed on Windows
+        ${CMAKE_SOURCE_DIR}/common/SC_Codecvt.cpp
 )
 
 if(APPLE)
@@ -303,10 +303,11 @@ add_executable(scsynth
 
         # these files contain code only used in main()
         ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
+        ${CMAKE_SOURCE_DIR}/common/SC_ServerProgramOptions.cpp
         $<$<BOOL:${APPLE}>: ${CMAKE_SOURCE_DIR}/common/SC_AppleEventLoop.mm >
         $<$<BOOL:${LIBSCSYNTH}>: ${CMAKE_SOURCE_DIR}/common/SC_Codecvt.cpp > # needed on Windows
 )
-target_link_libraries(scsynth PRIVATE libscsynth)
+target_link_libraries(scsynth PRIVATE libscsynth Boost::headers Boost::program_options)
 if (WIN32)
     # if libscsynth is a shared library, scsynth.exe does not automatically link to ws2_32
     target_link_libraries(scsynth PRIVATE ws2_32)

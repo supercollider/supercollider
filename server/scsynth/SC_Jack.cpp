@@ -216,9 +216,9 @@ bool SC_JackDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
     char* clientName = nullptr;
     char* serverName = nullptr;
 
-    if (mWorld->hw->mInDeviceName && (strlen(mWorld->hw->mInDeviceName) > 0)) {
+    if (auto devName = mWorld->hw->mInDeviceName; devName && devName[0] != '\0') {
         // parse string <serverName>:<clientName>
-        SC_StringParser sp(mWorld->hw->mInDeviceName, ':');
+        SC_StringParser sp(devName, ':');
         if (!sp.AtEnd())
             serverName = strdup(sp.NextToken());
         if (!sp.AtEnd())
@@ -227,7 +227,7 @@ bool SC_JackDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
             // no semicolon found
             clientName = serverName;
             serverName = nullptr;
-        } else if (strlen(clientName) == 0) {
+        } else if (clientName[0] == '\0') {
             free(clientName);
             clientName = nullptr;
         }

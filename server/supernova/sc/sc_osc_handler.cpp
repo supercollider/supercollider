@@ -35,6 +35,7 @@
 #include "sc_osc_handler.hpp"
 #include "../server/server.hpp"
 #include "utilities/sized_array.hpp"
+#include "../../common/SC_ServerProgramOptions.hpp"
 
 #include "SC_OSC_Commands.h"
 #include "SC_Version.hpp"
@@ -593,6 +594,17 @@ void sc_scheduled_bundles::execute_bundles(time_tag const& last, time_tag const&
     world->mSampleOffset = world->mSubsampleOffset = 0;
 }
 
+sc_osc_handler::sc_osc_handler(ServerProgramOptions const& args):
+    sc_notify_observers(detail::network_thread::io_context_, args.mMaxLogins),
+    tcp_acceptor_(detail::network_thread::io_context_),
+    tcp_password_(args.mPassword ? args.mPassword : "") {
+    if (args.mRealTime) {
+        if (args.mTcpPort.has_value() && !open_socket(IPPROTO_TCP, args.mBindAddress, *args.mTcpPort))
+            throw std::runtime_error("cannot open TCP socket");
+        if (args.mUdpPort.has_value() && !open_socket(IPPROTO_UDP, args.mBindAddress, *args.mUdpPort))
+            throw std::runtime_error("cannot open UDP socket");
+    }
+}
 
 void sc_osc_handler::open_tcp_acceptor(ip::address address, unsigned int port) {
     if (address.is_v6())
@@ -706,7 +718,7 @@ void sc_osc_handler::tcp_connection::start(sc_osc_handler* self) {
     ip::tcp::no_delay option(true);
     socket_.set_option(option);
 
-    const bool check_password = self->tcp_password_;
+    const bool check_password = !self->tcp_password_.empty();
 
     if (check_password) {
         std::array<char, 32> password;
@@ -722,7 +734,7 @@ void sc_osc_handler::tcp_connection::start(sc_osc_handler* self) {
             size = socket_.receive(asio::buffer(password.data(), msglen));
 
             bool verified = true;
-            if (size != msglen || strcmp(password.data(), self->tcp_password_) != 0)
+            if (size != msglen || self->tcp_password_ != password.data())
                 verified = false;
 
             if (!verified)
