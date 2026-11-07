@@ -139,21 +139,6 @@ std::tuple<int, std::string> slotStrStdStrVal(PyrSlot* slot) {
         : std::make_tuple(errWrongType, std::string());
 }
 
-int slotPStrVal(PyrSlot* slot, unsigned char* str) {
-    if (IsSym(slot)) {
-        strncpy((char*)str + 1, slotRawSymbol(slot)->name, 255);
-        str[0] = slotRawSymbol(slot)->length;
-        return errNone;
-    } else if (isKindOfSlot(slot, class_string)) {
-        int len;
-        len = sc_min(255, slotRawObject(slot)->size);
-        memcpy(str + 1, slotRawString(slot)->s, len);
-        str[0] = len;
-        return errNone;
-    }
-    return errWrongType;
-}
-
 int instVarAt(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
     int index;
