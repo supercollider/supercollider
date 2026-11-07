@@ -18,7 +18,7 @@ To check whether you belong to that group execute the command code:: groups :: i
 After you have added the udev rules file, you can access the device after plugging and replugging the device.
 
 You can change the permission manually (as root) from the terminal with the command:
-code::
+teletype::
 sudo chmod 664 /dev/hidraw*
 sudo chgrp plugdev /dev/hidraw*
 ::

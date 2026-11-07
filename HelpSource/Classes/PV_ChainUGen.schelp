@@ -33,7 +33,7 @@ code::
 method:: pvcalc
 pvcalc applies a function to the frequency-domain data of an FFT chain. See link::#-pvcollect:: below for discussion of efficiency considerations. See also link::#-pvcalc2:: below, and link::Classes/UnpackFFT::.
 
-code::
+code#fragment::
 chain = chain.pvcalc(numframes, func, frombin, tobin, zeroothers)
 ::
 
@@ -43,7 +43,7 @@ Number of FFT frames to process
 
 argument::func
 The function that takes two arrays as inputs  (code::magnitude::, and code::phase::) and returns a resulting pair of arrays code::[magnitude, phase]::.
-code::
+code#fragment::
 // example function
 { |magnitudes, phases|
 	[mags.reverse, phases.reverse] // e.g. upside-down spectrum
@@ -67,7 +67,7 @@ If set to 1 then bins outside of the range being processed are silenced.
 method::pvcalc2
 The method pvcalc2 is just like link::#-pvcalc:: but can combine two FFT chains.
 
-code::
+code#fragment::
 chain = chain.pvcalc2(chain2, numframes, func, frombin, tobin, zeroothers)
 ::
 
@@ -103,7 +103,7 @@ If set to 1 then bins outside of the range being processed are silenced.
 method:: pvcollect
 Process each bin of an FFT chain, separately, by applying a function to each bin of an FFT chain.
 
-code::
+code#fragment::
 chain = chain.pvcollect(numframes, func, frombin, tobin, zeroothers)
 ::
 

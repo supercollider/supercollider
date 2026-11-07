@@ -33,7 +33,6 @@ Primitives for String.
 #include <stdlib.h>
 #include <ctype.h>
 #include <vector>
-#include "PyrLexer.h"
 #include "SC_Filesystem.hpp"
 #include "SC_Codecvt.hpp" // path_to_utf8_str
 #include "SC_TextUtils.hpp"

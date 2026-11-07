@@ -187,11 +187,11 @@ Ndef.all[\localhost].asCode; // posts as valid code
 
 Examples::
 
-code::
+code#fragment::
 // ProxySpace returns instances of NodeProxy:
-a = NodeProxy(s) 	is equivalent to ~a;
-a.source = ...		is equivalent to ~a = ...
-a[3] = ...		is equivalent to ~a[3] = ...
+a = NodeProxy(s); // 	is equivalent to ~a;
+a.source = ~foo;  //	is equivalent to ~a = ~foo;
+a[3] = ~foo;	  //	is equivalent to ~a[3] = ~foo;
 
 // the two expressions are equivalent:
 ~out = something;

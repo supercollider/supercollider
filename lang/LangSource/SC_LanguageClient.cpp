@@ -29,6 +29,7 @@
 #include "PyrSched.h"
 #include "SCBase.h"
 #include "SC_StringBuffer.h"
+#include "sc_diagnostic/style.hpp"
 
 #include <cerrno>
 #include <cstring>
@@ -83,6 +84,8 @@ SC_LanguageClient::SC_LanguageClient(const std::string& name) {
     unlockInstance();
 }
 
+const sc::diag::Style& SC_LanguageClient::diagnosticStyle() const { return sc::diag::plain_style(); }
+
 SC_LanguageClient::~SC_LanguageClient() {
     lockInstance();
     gInstance = nullptr;
@@ -125,11 +128,12 @@ bool SC_LanguageClient::recompileLibrary(bool standalone) {
     return mCompiledSuccessfully = ::compileLibrary(mCompiledSuccessfully, standalone);
 }
 
-void SC_LanguageClient::setCmdLine(const char* buf, size_t size, const char* filePath, int lineNumber, int column) {
+void SC_LanguageClient::setCmdLine(const char* buf, size_t size, const char* filePath, int lineNumber, int column,
+                                   const char* version) {
     assert(buf != nullptr);
     lock();
     if (isLibraryCompiled()) {
-        setCommandLine(buf, size, filePath, lineNumber, column);
+        setCommandLine(buf, size, filePath, lineNumber, column, version);
     }
     unlock();
 }

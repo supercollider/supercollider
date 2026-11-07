@@ -1,0 +1,75 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): Shape : Object
+|  SCMemberList (5:1)
+|  |  SCMember (8:11): name = "shape"
+|  |  SCMember (8:28): origin
+|  SCMethodList (5:1)
+SCClass (5:1): Meta_Shape : Meta_Object
+|  SCMemberList (5:1)
+|  |  SCMember (7:11): sides = 0
+|  |  SCMember (6:15): count = 0
+|  |  SCMember (6:26): registry
+|  SCMethodList (5:1)
+SCClass (11:1): Square : Shape
+|  SCMemberList (11:1)
+|  |  SCMember (14:10): size = 2
+|  |  SCMember (14:20): corners
+|  SCMethodList (11:1)
+|  |  SCMethod (16:5): area: area { ^size * size }
+|  |  |  SCBody (16:12)
+|  |  |  |  SCExplicitReturn (16:12)
+|  |  |  |  |  SCMessage (16:13): *
+|  |  |  |  |  |  SCRead (16:13): instance size, declared (14:10): size
+|  |  |  |  |  |  SCPositionalArgs (16:13)
+|  |  |  |  |  |  |  SCRead (16:20): instance size, declared (14:10): size
+SCClass (11:1): Meta_Square : Meta_Shape
+|  SCMemberList (11:1)
+|  |  SCMember (13:11): corners_count = 4
+|  |  SCMember (12:16): unit = 1.0
+|  SCMethodList (11:1)
+SCClass (19:1): Samples[float] : Shape
+|  SCMemberList (19:1)
+|  |  SCMember (20:9): rate = 44100
+|  SCMethodList (19:1)
+
+
+
+COMPILED DUMP 
+
+
+Shape
+|  class (5:1): superclass Object, not indexed
+|  instance variables: name = "shape", origin,
+|  accessor name (8:11): shortcut: return instance variable 0
+|  accessor name_ (8:11): shortcut: assign instance variable 0
+|  accessor origin (8:28): shortcut: return instance variable 1
+Meta_Shape
+|  class (5:1): superclass Meta_Object, not indexed
+|  class variables from 4
+|  class variables: count = 0, registry,
+|  constants: sides = 0,
+|  accessor count (6:15): shortcut: return class variable 4
+Square
+|  class (11:1): superclass Shape, not indexed
+|  instance variables: name = "shape", origin, size = 2, corners,
+|  accessor size (14:10): shortcut: return instance variable 2
+|  method area: function 0
+|  function 0 (16:5): area
+|  |  arguments: this,
+|  |  code: 7 bytes, 0 selectors, 0 constants
+Meta_Square
+|  class (11:1): superclass Meta_Shape, not indexed
+|  class variables from 6
+|  class variables: unit = 1.0,
+|  constants: corners_count = 4,
+|  accessor unit (12:16): shortcut: return class variable 6
+|  accessor unit_ (12:16): shortcut: assign class variable 6
+Samples
+|  class (19:1): superclass Shape, float
+|  instance variables: name = "shape", origin, rate = 44100,
+Successfully compiled 18 classes.

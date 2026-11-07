@@ -29,7 +29,7 @@ try { g.() } { |e| ErrorWrapper(e, "Thrown at top level").throw }
 ::
 
 This produces a backtrace as follows.
-code::
+teletype::
 ──────────────────────────────────────────────────────────────────────────────────
 ERROR: Thrown at top level
 

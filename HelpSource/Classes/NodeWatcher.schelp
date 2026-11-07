@@ -13,7 +13,7 @@ and sets the isPlaying and isRunning variables on the Node instance accordingly.
 In some cases this can be an invaluable service. The use of an independant object to maintain the state keeps the implementation of the Node classes simple.
 Note that server notification should be on. (this is default. see: aServer.notify)
 
-code::
+code#fragment::
 // the most common use:
 NodeWatcher.register(aNode);
 ::

@@ -168,26 +168,26 @@ In general, this works for class and method names. These are the things that the
 list::
 
 ## strong::Class names::
-code::
+teletype::
 Sin<...>
 ::
 When you have typed at least 3 letters of a class name, a list of classes beginning with these letters will be shown.
 
 ## strong::Method names following class names::
-code::
+teletype::
 Array.<...>
 ::
 When you type a dot after a class name, a list of methods of that class will be shown.
 
 ## strong::Method names following literals and built-ins::
-code::
+teletype::
 123.<...>
 currentEnvironment.<...>
 ::
 When you type a dot after a literal (number, string, symbol, etc.) or a built-in (currentEnvironment, thisProcess, etc.), a list of instance methods of their classes will be shown.
 
 ## strong::Method names following a variable name::
-code::
+teletype::
 value.lin<...>
 ::
 When you type a dot and 3 letters after a variable, a list of all methods of all classes starting with these letters will be shown (because the class of the variable is not known).
@@ -206,12 +206,12 @@ The editor helps you when writing arguments of a method by showing you a complet
 The assistance is activated as soon as you type an opening parenthesis after a method name, at which point a box containing the arguments will pop up. However, if the class of the method is not known, first a menu of classes that implement the method will be shown, and after you select one of the classes using the arrow keys or the Page Up and Page Down keys, and press Return, the box with arguments will pop up.
 
 So, for example, in the following cases method call assistance will pop up immediately:
-code::
+teletype::
 SinOsc.ar(
 123.forBy(
 ::
 ...while in the following cases, you will first need to select a class, because the class is not known:
-code::
+teletype::
 min(
 x.play(
 [1,2,3].inject(

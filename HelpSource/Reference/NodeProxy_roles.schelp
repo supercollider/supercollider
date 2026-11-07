@@ -7,16 +7,16 @@ Similar to Adverbs (see link::Guides/J-concepts-in-SC::), roles allow to specify
 
 The below examples can equally be used for link::Classes/Ndef:: and in link::Classes/ProxySpace::.
 
-code::
+code#fragment::
 // Thus, the following expressions behave in an equivalent way:
 
 a = NodeProxy(s);
-a[0] = ...
+a[0] = ~something;
 
 ProxySpace.push(s);
-~a[0] = ...
+~a[0] = ~something;
 
-Ndef(\a, ...)
+Ndef(\a, ~something);
 ::
 
 section::Existing roles

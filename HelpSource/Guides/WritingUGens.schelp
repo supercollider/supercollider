@@ -27,7 +27,7 @@ savings, but it does save typing.
 The below example has only a code::.ar:: method, but you can just as easily have both code::.ar:: and code::.kr::
 methods.
 
-code::
+code#class::
 BoringMixer {
     *ar { arg left, right;
         ^(left + right) * 0.5;
@@ -203,7 +203,7 @@ code::ClearFFTUnitIfMemFailed:: is defined in code::FFT_UGens.h::
 ::
 
 Minimal example, C style:
-code::
+teletype::
 struct MyUnit : public Unit {
   float* m_values;
   float* m_moreValues;
@@ -227,7 +227,7 @@ void MyUnit_Dtor(MyUnit* unit) {
 }
 ::
 Or, in C++ class style:
-code::
+teletype::
 namespace MyUnit {
   // 1. Use initializer list to ensure pointers are initialized to nullptr
   MyUnit::MyUnit():

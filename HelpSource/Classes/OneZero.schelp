@@ -8,7 +8,7 @@ Description::
 
 A one zero filter. Implements the formula:
 
-code::
+teletype::
 
 out(i) = ((1 - abs(coef)) * in(i)) + (coef * in(i-1)).
 

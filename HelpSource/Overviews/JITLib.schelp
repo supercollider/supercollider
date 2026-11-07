@@ -58,7 +58,7 @@ list::
 code::
 Pdef(\name)		//returns the proxy
 ::
-code::
+code#fragment::
 Pdef(\name, object)	//sets the source and returns the proxy
 ::
 the rest of the behaviour depends on its use.
@@ -72,7 +72,7 @@ code::
 ProxySpace.push
 ::
 code::
-~out = { ...}
+~out = { /* ... */ }
 ::
 
 helpfile: link::Classes/ProxySpace:: for the use together with other environments, see link::Tutorials/JITLib/jitlib_basic_concepts_02::

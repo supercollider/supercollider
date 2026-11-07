@@ -1,0 +1,581 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): BytecodeInstanceVariableLast : Object, version 3.16
+|  SCMemberList (4:1)
+|  |  SCMember (5:9): v0
+|  |  SCMember (5:13): v1
+|  |  SCMember (5:17): v2
+|  |  SCMember (5:21): v3
+|  |  SCMember (5:25): v4
+|  |  SCMember (5:29): v5
+|  |  SCMember (5:33): v6
+|  |  SCMember (5:37): v7
+|  |  SCMember (5:41): v8
+|  |  SCMember (5:45): v9
+|  |  SCMember (5:49): v10
+|  |  SCMember (5:54): v11
+|  |  SCMember (5:59): v12
+|  |  SCMember (5:64): v13
+|  |  SCMember (5:69): v14
+|  |  SCMember (5:74): v15
+|  |  SCMember (5:79): v16
+|  |  SCMember (5:84): v17
+|  |  SCMember (5:89): v18
+|  |  SCMember (5:94): v19
+|  |  SCMember (5:99): v20
+|  |  SCMember (5:104): v21
+|  |  SCMember (5:109): v22
+|  |  SCMember (5:114): v23
+|  |  SCMember (5:119): v24
+|  |  SCMember (5:124): v25
+|  |  SCMember (5:129): v26
+|  |  SCMember (5:134): v27
+|  |  SCMember (5:139): v28
+|  |  SCMember (5:144): v29
+|  |  SCMember (5:149): v30
+|  |  SCMember (5:154): v31
+|  |  SCMember (5:159): v32
+|  |  SCMember (5:164): v33
+|  |  SCMember (5:169): v34
+|  |  SCMember (5:174): v35
+|  |  SCMember (5:179): v36
+|  |  SCMember (5:184): v37
+|  |  SCMember (5:189): v38
+|  |  SCMember (5:194): v39
+|  |  SCMember (5:199): v40
+|  |  SCMember (5:204): v41
+|  |  SCMember (5:209): v42
+|  |  SCMember (5:214): v43
+|  |  SCMember (5:219): v44
+|  |  SCMember (5:224): v45
+|  |  SCMember (5:229): v46
+|  |  SCMember (5:234): v47
+|  |  SCMember (5:239): v48
+|  |  SCMember (5:244): v49
+|  |  SCMember (5:249): v50
+|  |  SCMember (5:254): v51
+|  |  SCMember (5:259): v52
+|  |  SCMember (5:264): v53
+|  |  SCMember (5:269): v54
+|  |  SCMember (5:274): v55
+|  |  SCMember (5:279): v56
+|  |  SCMember (5:284): v57
+|  |  SCMember (5:289): v58
+|  |  SCMember (5:294): v59
+|  |  SCMember (5:299): v60
+|  |  SCMember (5:304): v61
+|  |  SCMember (5:309): v62
+|  |  SCMember (5:314): v63
+|  |  SCMember (5:319): v64
+|  |  SCMember (5:324): v65
+|  |  SCMember (5:329): v66
+|  |  SCMember (5:334): v67
+|  |  SCMember (5:339): v68
+|  |  SCMember (5:344): v69
+|  |  SCMember (5:349): v70
+|  |  SCMember (5:354): v71
+|  |  SCMember (5:359): v72
+|  |  SCMember (5:364): v73
+|  |  SCMember (5:369): v74
+|  |  SCMember (5:374): v75
+|  |  SCMember (5:379): v76
+|  |  SCMember (5:384): v77
+|  |  SCMember (5:389): v78
+|  |  SCMember (5:394): v79
+|  |  SCMember (5:399): v80
+|  |  SCMember (5:404): v81
+|  |  SCMember (5:409): v82
+|  |  SCMember (5:414): v83
+|  |  SCMember (5:419): v84
+|  |  SCMember (5:424): v85
+|  |  SCMember (5:429): v86
+|  |  SCMember (5:434): v87
+|  |  SCMember (5:439): v88
+|  |  SCMember (5:444): v89
+|  |  SCMember (5:449): v90
+|  |  SCMember (5:454): v91
+|  |  SCMember (5:459): v92
+|  |  SCMember (5:464): v93
+|  |  SCMember (5:469): v94
+|  |  SCMember (5:474): v95
+|  |  SCMember (5:479): v96
+|  |  SCMember (5:484): v97
+|  |  SCMember (5:489): v98
+|  |  SCMember (5:494): v99
+|  |  SCMember (5:499): v100
+|  |  SCMember (5:505): v101
+|  |  SCMember (5:511): v102
+|  |  SCMember (5:517): v103
+|  |  SCMember (5:523): v104
+|  |  SCMember (5:529): v105
+|  |  SCMember (5:535): v106
+|  |  SCMember (5:541): v107
+|  |  SCMember (5:547): v108
+|  |  SCMember (5:553): v109
+|  |  SCMember (5:559): v110
+|  |  SCMember (5:565): v111
+|  |  SCMember (5:571): v112
+|  |  SCMember (5:577): v113
+|  |  SCMember (5:583): v114
+|  |  SCMember (5:589): v115
+|  |  SCMember (5:595): v116
+|  |  SCMember (5:601): v117
+|  |  SCMember (5:607): v118
+|  |  SCMember (5:613): v119
+|  |  SCMember (5:619): v120
+|  |  SCMember (5:625): v121
+|  |  SCMember (5:631): v122
+|  |  SCMember (5:637): v123
+|  |  SCMember (5:643): v124
+|  |  SCMember (5:649): v125
+|  |  SCMember (5:655): v126
+|  |  SCMember (5:661): v127
+|  |  SCMember (5:667): v128
+|  |  SCMember (5:673): v129
+|  |  SCMember (5:679): v130
+|  |  SCMember (5:685): v131
+|  |  SCMember (5:691): v132
+|  |  SCMember (5:697): v133
+|  |  SCMember (5:703): v134
+|  |  SCMember (5:709): v135
+|  |  SCMember (5:715): v136
+|  |  SCMember (5:721): v137
+|  |  SCMember (5:727): v138
+|  |  SCMember (5:733): v139
+|  |  SCMember (5:739): v140
+|  |  SCMember (5:745): v141
+|  |  SCMember (5:751): v142
+|  |  SCMember (5:757): v143
+|  |  SCMember (5:763): v144
+|  |  SCMember (5:769): v145
+|  |  SCMember (5:775): v146
+|  |  SCMember (5:781): v147
+|  |  SCMember (5:787): v148
+|  |  SCMember (5:793): v149
+|  |  SCMember (5:799): v150
+|  |  SCMember (5:805): v151
+|  |  SCMember (5:811): v152
+|  |  SCMember (5:817): v153
+|  |  SCMember (5:823): v154
+|  |  SCMember (5:829): v155
+|  |  SCMember (5:835): v156
+|  |  SCMember (5:841): v157
+|  |  SCMember (5:847): v158
+|  |  SCMember (5:853): v159
+|  |  SCMember (5:859): v160
+|  |  SCMember (5:865): v161
+|  |  SCMember (5:871): v162
+|  |  SCMember (5:877): v163
+|  |  SCMember (5:883): v164
+|  |  SCMember (5:889): v165
+|  |  SCMember (5:895): v166
+|  |  SCMember (5:901): v167
+|  |  SCMember (5:907): v168
+|  |  SCMember (5:913): v169
+|  |  SCMember (5:919): v170
+|  |  SCMember (5:925): v171
+|  |  SCMember (5:931): v172
+|  |  SCMember (5:937): v173
+|  |  SCMember (5:943): v174
+|  |  SCMember (5:949): v175
+|  |  SCMember (5:955): v176
+|  |  SCMember (5:961): v177
+|  |  SCMember (5:967): v178
+|  |  SCMember (5:973): v179
+|  |  SCMember (5:979): v180
+|  |  SCMember (5:985): v181
+|  |  SCMember (5:991): v182
+|  |  SCMember (5:997): v183
+|  |  SCMember (5:1003): v184
+|  |  SCMember (5:1009): v185
+|  |  SCMember (5:1015): v186
+|  |  SCMember (5:1021): v187
+|  |  SCMember (5:1027): v188
+|  |  SCMember (5:1033): v189
+|  |  SCMember (5:1039): v190
+|  |  SCMember (5:1045): v191
+|  |  SCMember (5:1051): v192
+|  |  SCMember (5:1057): v193
+|  |  SCMember (5:1063): v194
+|  |  SCMember (5:1069): v195
+|  |  SCMember (5:1075): v196
+|  |  SCMember (5:1081): v197
+|  |  SCMember (5:1087): v198
+|  |  SCMember (5:1093): v199
+|  |  SCMember (5:1099): v200
+|  |  SCMember (5:1105): v201
+|  |  SCMember (5:1111): v202
+|  |  SCMember (5:1117): v203
+|  |  SCMember (5:1123): v204
+|  |  SCMember (5:1129): v205
+|  |  SCMember (5:1135): v206
+|  |  SCMember (5:1141): v207
+|  |  SCMember (5:1147): v208
+|  |  SCMember (5:1153): v209
+|  |  SCMember (5:1159): v210
+|  |  SCMember (5:1165): v211
+|  |  SCMember (5:1171): v212
+|  |  SCMember (5:1177): v213
+|  |  SCMember (5:1183): v214
+|  |  SCMember (5:1189): v215
+|  |  SCMember (5:1195): v216
+|  |  SCMember (5:1201): v217
+|  |  SCMember (5:1207): v218
+|  |  SCMember (5:1213): v219
+|  |  SCMember (5:1219): v220
+|  |  SCMember (5:1225): v221
+|  |  SCMember (5:1231): v222
+|  |  SCMember (5:1237): v223
+|  |  SCMember (5:1243): v224
+|  |  SCMember (5:1249): v225
+|  |  SCMember (5:1255): v226
+|  |  SCMember (5:1261): v227
+|  |  SCMember (5:1267): v228
+|  |  SCMember (5:1273): v229
+|  |  SCMember (5:1279): v230
+|  |  SCMember (5:1285): v231
+|  |  SCMember (5:1291): v232
+|  |  SCMember (5:1297): v233
+|  |  SCMember (5:1303): v234
+|  |  SCMember (5:1309): v235
+|  |  SCMember (5:1315): v236
+|  |  SCMember (5:1321): v237
+|  |  SCMember (5:1327): v238
+|  |  SCMember (5:1333): v239
+|  |  SCMember (5:1339): v240
+|  |  SCMember (5:1345): v241
+|  |  SCMember (5:1351): v242
+|  |  SCMember (5:1357): v243
+|  |  SCMember (5:1363): v244
+|  |  SCMember (5:1369): v245
+|  |  SCMember (5:1375): v246
+|  |  SCMember (5:1381): v247
+|  |  SCMember (5:1387): v248
+|  |  SCMember (5:1393): v249
+|  |  SCMember (5:1399): v250
+|  |  SCMember (5:1405): v251
+|  |  SCMember (5:1411): v252
+|  |  SCMember (5:1417): v253
+|  |  SCMember (5:1423): v254
+|  |  SCMember (5:1429): v255
+|  SCMethodList (4:1)
+|  |  SCMethod (7:5): last, version 3.16: last { this.touch; ^v255 }
+|  |  |  SCBody (7:12)
+|  |  |  |  SCMessage (7:12): touch
+|  |  |  |  |  SCSpecial (7:12): this
+|  |  |  |  SCExplicitReturn (7:24)
+|  |  |  |  |  SCRead (7:25): instance v255, declared (5:1429): v255
+|  |  SCMethod (8:5): touch, version 3.16: touch { }
+|  |  |  SCBody (8:13)
+SCClass (10:1): BytecodeInstanceVariablePast : Object, version 3.16
+|  SCMemberList (10:1)
+|  |  SCMember (11:9): v0
+|  |  SCMember (11:13): v1
+|  |  SCMember (11:17): v2
+|  |  SCMember (11:21): v3
+|  |  SCMember (11:25): v4
+|  |  SCMember (11:29): v5
+|  |  SCMember (11:33): v6
+|  |  SCMember (11:37): v7
+|  |  SCMember (11:41): v8
+|  |  SCMember (11:45): v9
+|  |  SCMember (11:49): v10
+|  |  SCMember (11:54): v11
+|  |  SCMember (11:59): v12
+|  |  SCMember (11:64): v13
+|  |  SCMember (11:69): v14
+|  |  SCMember (11:74): v15
+|  |  SCMember (11:79): v16
+|  |  SCMember (11:84): v17
+|  |  SCMember (11:89): v18
+|  |  SCMember (11:94): v19
+|  |  SCMember (11:99): v20
+|  |  SCMember (11:104): v21
+|  |  SCMember (11:109): v22
+|  |  SCMember (11:114): v23
+|  |  SCMember (11:119): v24
+|  |  SCMember (11:124): v25
+|  |  SCMember (11:129): v26
+|  |  SCMember (11:134): v27
+|  |  SCMember (11:139): v28
+|  |  SCMember (11:144): v29
+|  |  SCMember (11:149): v30
+|  |  SCMember (11:154): v31
+|  |  SCMember (11:159): v32
+|  |  SCMember (11:164): v33
+|  |  SCMember (11:169): v34
+|  |  SCMember (11:174): v35
+|  |  SCMember (11:179): v36
+|  |  SCMember (11:184): v37
+|  |  SCMember (11:189): v38
+|  |  SCMember (11:194): v39
+|  |  SCMember (11:199): v40
+|  |  SCMember (11:204): v41
+|  |  SCMember (11:209): v42
+|  |  SCMember (11:214): v43
+|  |  SCMember (11:219): v44
+|  |  SCMember (11:224): v45
+|  |  SCMember (11:229): v46
+|  |  SCMember (11:234): v47
+|  |  SCMember (11:239): v48
+|  |  SCMember (11:244): v49
+|  |  SCMember (11:249): v50
+|  |  SCMember (11:254): v51
+|  |  SCMember (11:259): v52
+|  |  SCMember (11:264): v53
+|  |  SCMember (11:269): v54
+|  |  SCMember (11:274): v55
+|  |  SCMember (11:279): v56
+|  |  SCMember (11:284): v57
+|  |  SCMember (11:289): v58
+|  |  SCMember (11:294): v59
+|  |  SCMember (11:299): v60
+|  |  SCMember (11:304): v61
+|  |  SCMember (11:309): v62
+|  |  SCMember (11:314): v63
+|  |  SCMember (11:319): v64
+|  |  SCMember (11:324): v65
+|  |  SCMember (11:329): v66
+|  |  SCMember (11:334): v67
+|  |  SCMember (11:339): v68
+|  |  SCMember (11:344): v69
+|  |  SCMember (11:349): v70
+|  |  SCMember (11:354): v71
+|  |  SCMember (11:359): v72
+|  |  SCMember (11:364): v73
+|  |  SCMember (11:369): v74
+|  |  SCMember (11:374): v75
+|  |  SCMember (11:379): v76
+|  |  SCMember (11:384): v77
+|  |  SCMember (11:389): v78
+|  |  SCMember (11:394): v79
+|  |  SCMember (11:399): v80
+|  |  SCMember (11:404): v81
+|  |  SCMember (11:409): v82
+|  |  SCMember (11:414): v83
+|  |  SCMember (11:419): v84
+|  |  SCMember (11:424): v85
+|  |  SCMember (11:429): v86
+|  |  SCMember (11:434): v87
+|  |  SCMember (11:439): v88
+|  |  SCMember (11:444): v89
+|  |  SCMember (11:449): v90
+|  |  SCMember (11:454): v91
+|  |  SCMember (11:459): v92
+|  |  SCMember (11:464): v93
+|  |  SCMember (11:469): v94
+|  |  SCMember (11:474): v95
+|  |  SCMember (11:479): v96
+|  |  SCMember (11:484): v97
+|  |  SCMember (11:489): v98
+|  |  SCMember (11:494): v99
+|  |  SCMember (11:499): v100
+|  |  SCMember (11:505): v101
+|  |  SCMember (11:511): v102
+|  |  SCMember (11:517): v103
+|  |  SCMember (11:523): v104
+|  |  SCMember (11:529): v105
+|  |  SCMember (11:535): v106
+|  |  SCMember (11:541): v107
+|  |  SCMember (11:547): v108
+|  |  SCMember (11:553): v109
+|  |  SCMember (11:559): v110
+|  |  SCMember (11:565): v111
+|  |  SCMember (11:571): v112
+|  |  SCMember (11:577): v113
+|  |  SCMember (11:583): v114
+|  |  SCMember (11:589): v115
+|  |  SCMember (11:595): v116
+|  |  SCMember (11:601): v117
+|  |  SCMember (11:607): v118
+|  |  SCMember (11:613): v119
+|  |  SCMember (11:619): v120
+|  |  SCMember (11:625): v121
+|  |  SCMember (11:631): v122
+|  |  SCMember (11:637): v123
+|  |  SCMember (11:643): v124
+|  |  SCMember (11:649): v125
+|  |  SCMember (11:655): v126
+|  |  SCMember (11:661): v127
+|  |  SCMember (11:667): v128
+|  |  SCMember (11:673): v129
+|  |  SCMember (11:679): v130
+|  |  SCMember (11:685): v131
+|  |  SCMember (11:691): v132
+|  |  SCMember (11:697): v133
+|  |  SCMember (11:703): v134
+|  |  SCMember (11:709): v135
+|  |  SCMember (11:715): v136
+|  |  SCMember (11:721): v137
+|  |  SCMember (11:727): v138
+|  |  SCMember (11:733): v139
+|  |  SCMember (11:739): v140
+|  |  SCMember (11:745): v141
+|  |  SCMember (11:751): v142
+|  |  SCMember (11:757): v143
+|  |  SCMember (11:763): v144
+|  |  SCMember (11:769): v145
+|  |  SCMember (11:775): v146
+|  |  SCMember (11:781): v147
+|  |  SCMember (11:787): v148
+|  |  SCMember (11:793): v149
+|  |  SCMember (11:799): v150
+|  |  SCMember (11:805): v151
+|  |  SCMember (11:811): v152
+|  |  SCMember (11:817): v153
+|  |  SCMember (11:823): v154
+|  |  SCMember (11:829): v155
+|  |  SCMember (11:835): v156
+|  |  SCMember (11:841): v157
+|  |  SCMember (11:847): v158
+|  |  SCMember (11:853): v159
+|  |  SCMember (11:859): v160
+|  |  SCMember (11:865): v161
+|  |  SCMember (11:871): v162
+|  |  SCMember (11:877): v163
+|  |  SCMember (11:883): v164
+|  |  SCMember (11:889): v165
+|  |  SCMember (11:895): v166
+|  |  SCMember (11:901): v167
+|  |  SCMember (11:907): v168
+|  |  SCMember (11:913): v169
+|  |  SCMember (11:919): v170
+|  |  SCMember (11:925): v171
+|  |  SCMember (11:931): v172
+|  |  SCMember (11:937): v173
+|  |  SCMember (11:943): v174
+|  |  SCMember (11:949): v175
+|  |  SCMember (11:955): v176
+|  |  SCMember (11:961): v177
+|  |  SCMember (11:967): v178
+|  |  SCMember (11:973): v179
+|  |  SCMember (11:979): v180
+|  |  SCMember (11:985): v181
+|  |  SCMember (11:991): v182
+|  |  SCMember (11:997): v183
+|  |  SCMember (11:1003): v184
+|  |  SCMember (11:1009): v185
+|  |  SCMember (11:1015): v186
+|  |  SCMember (11:1021): v187
+|  |  SCMember (11:1027): v188
+|  |  SCMember (11:1033): v189
+|  |  SCMember (11:1039): v190
+|  |  SCMember (11:1045): v191
+|  |  SCMember (11:1051): v192
+|  |  SCMember (11:1057): v193
+|  |  SCMember (11:1063): v194
+|  |  SCMember (11:1069): v195
+|  |  SCMember (11:1075): v196
+|  |  SCMember (11:1081): v197
+|  |  SCMember (11:1087): v198
+|  |  SCMember (11:1093): v199
+|  |  SCMember (11:1099): v200
+|  |  SCMember (11:1105): v201
+|  |  SCMember (11:1111): v202
+|  |  SCMember (11:1117): v203
+|  |  SCMember (11:1123): v204
+|  |  SCMember (11:1129): v205
+|  |  SCMember (11:1135): v206
+|  |  SCMember (11:1141): v207
+|  |  SCMember (11:1147): v208
+|  |  SCMember (11:1153): v209
+|  |  SCMember (11:1159): v210
+|  |  SCMember (11:1165): v211
+|  |  SCMember (11:1171): v212
+|  |  SCMember (11:1177): v213
+|  |  SCMember (11:1183): v214
+|  |  SCMember (11:1189): v215
+|  |  SCMember (11:1195): v216
+|  |  SCMember (11:1201): v217
+|  |  SCMember (11:1207): v218
+|  |  SCMember (11:1213): v219
+|  |  SCMember (11:1219): v220
+|  |  SCMember (11:1225): v221
+|  |  SCMember (11:1231): v222
+|  |  SCMember (11:1237): v223
+|  |  SCMember (11:1243): v224
+|  |  SCMember (11:1249): v225
+|  |  SCMember (11:1255): v226
+|  |  SCMember (11:1261): v227
+|  |  SCMember (11:1267): v228
+|  |  SCMember (11:1273): v229
+|  |  SCMember (11:1279): v230
+|  |  SCMember (11:1285): v231
+|  |  SCMember (11:1291): v232
+|  |  SCMember (11:1297): v233
+|  |  SCMember (11:1303): v234
+|  |  SCMember (11:1309): v235
+|  |  SCMember (11:1315): v236
+|  |  SCMember (11:1321): v237
+|  |  SCMember (11:1327): v238
+|  |  SCMember (11:1333): v239
+|  |  SCMember (11:1339): v240
+|  |  SCMember (11:1345): v241
+|  |  SCMember (11:1351): v242
+|  |  SCMember (11:1357): v243
+|  |  SCMember (11:1363): v244
+|  |  SCMember (11:1369): v245
+|  |  SCMember (11:1375): v246
+|  |  SCMember (11:1381): v247
+|  |  SCMember (11:1387): v248
+|  |  SCMember (11:1393): v249
+|  |  SCMember (11:1399): v250
+|  |  SCMember (11:1405): v251
+|  |  SCMember (11:1411): v252
+|  |  SCMember (11:1417): v253
+|  |  SCMember (11:1423): v254
+|  |  SCMember (11:1429): v255
+|  |  SCMember (11:1435): v256
+|  SCMethodList (10:1)
+|  |  SCMethod (13:5): past, version 3.16: past { this.touch; ^v256 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Instance variable out of reach
+|  |  |  bytecode/instance_variable_out_of_reach.sc:13:5
+|  |  |     11 │     var v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20, v21, v22, v23, v24, v25, v26, v27, v28, v29, v30, v31, v32, v33, v34, v35, v36, v37, v38, v39, v40, v41, v42, v43, v44, v45, v46, v47, v48, v49, v50, v51, v52, v53, v54, v55, v56, v57, v58, v59, v60, v61, v62, v63, v64, v65, v66, v67, v68, v69, v70, v71, v72, v73, v74, v75, v76, v77, v78, v79, v80, v81, v82, v83, v84, v85, v86, v87, v88, v89, v90, v91, v92, v93, v94, v95, v96, v97, v98, v99, v100, v101, v102, v103, v104, v105, v106, v107, v108, v109, v110, v111, v112, v113, v114, v115, v116, v117, v118, v119, v120, v121, v122, v123, v124, v125, v126, v127, v128, v129, v130, v131, v132, v133, v134, v135, v136, v137, v138, v139, v140, v141, v142, v143, v144, v145, v146, v147, v148, v149, v150, v151, v152, v153, v154, v155, v156, v157, v158, v159, v160, v161, v162, v163, v164, v165, v166, v167, v168, v169, v170, v171, v172, v173, v174, v175, v176, v177, v178, v179, v180, v181, v182, v183, v184, v185, v186, v187, v188, v189, v190, v191, v192, v193, v194, v195, v196, v197, v198, v199, v200, v201, v202, v203, v204, v205, v206, v207, v208, v209, v210, v211, v212, v213, v214, v215, v216, v217, v218, v219, v220, v221, v222, v223, v224, v225, v226, v227, v228, v229, v230, v231, v232, v233, v234, v235, v236, v237, v238, v239, v240, v241, v242, v243, v244, v245, v246, v247, v248, v249, v250, v251, v252, v253, v254, v255, v256;
+|  |  |     12 │     // expect-error: Instance variable out of reach
+|  |  |     13 │     past { this.touch; ^v256 }
+|  |  |        ┆     ^^^^^^^^^^^^^^^^^^^^^^^^^^ this uses instance variable number 256, past number 255.
+|  |  |     14 │     touch { }
+|  |  |     15 │ }
+|  |  |
+|  |  |  Bytecode refers to an instance variable by a single byte, so only the first 256, counting those of the superclasses, can be used by a method or function written in a class. Group the others, e.g., into an Event.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (13:12)
+|  |  |  |  SCMessage (13:12): touch
+|  |  |  |  |  SCSpecial (13:12): this
+|  |  |  |  SCExplicitReturn (13:24)
+|  |  |  |  |  SCRead (13:25): instance v256, declared (11:1435): v256
+|  |  SCMethod (14:5): touch, version 3.16: touch { }
+|  |  |  SCBody (14:13)
+
+
+
+BYTECODE DUMP 
+
+
+BytecodeInstanceVariableLast
+|  function 0 (7:5): method last
+|  |  properties:
+|  |  selectors: touch,
+|  |  constants:
+|  |  0    A0 00           SendMsgThisOpt
+|  |  2    F0              Drop
+|  |  3    01 FF           PushInstVarX
+|  |  5    F3              Return
+|  function 1 (8:5): method touch
+|  |  properties:
+|  |  shortcut: return self
+|  |  selectors:
+|  |  constants:
+BytecodeInstanceVariablePast
+|  function 1 (14:5): method touch
+|  |  properties:
+|  |  shortcut: return self
+|  |  selectors:
+|  |  constants:
+Successfully compiled 17 classes.

@@ -1,0 +1,195 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (6:1): PoisonedMethodError : Object, version 3.16
+|  SCMemberList (6:1)
+|  SCMethodList (6:1)
+|  |  SCMethod (8:5): throw, version 3.16: throw { }
+|  |  |  SCBody (8:13)
+SCClass (6:1): Meta_PoisonedMethodError : Meta_Object, version 3.16
+|  SCMemberList (6:1)
+|  SCMethodList (6:1)
+|  |  SCMethod (7:5): new, version 3.16: *new { |method| ^super.new }
+|  |  |  SCArgumentDeclareList (7:13)
+|  |  |  |  SCArgumentDeclare (7:13): method
+|  |  |  SCBody (7:21)
+|  |  |  |  SCExplicitReturn (7:21)
+|  |  |  |  |  SCMessage (7:22): new
+|  |  |  |  |  |  SCSpecial (7:22): super
+SCClass (11:1): NotCompiledStub : Object, version 3.16
+|  SCMemberList (11:1)
+|  SCMethodList (11:1)
+|  |  SCMethod (12:5): foo, version 3.16: foo { |... a| ^a }
+|  |  |  SCArgumentDeclareList (12:11)
+|  |  |  |  SCArgumentDeclare (12:16): a
+|  |  |  SCBody (12:19)
+|  |  |  |  SCExplicitReturn (12:19)
+|  |  |  |  |  SCRead (12:20): local a, declared (12:16): a
+|  |  SCMethod (14:5): two_variadic, version 3.16: two_variadic { |a, b| ^this.foo(*a, *b) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Not compiled
+|  |  |  bytecode/not_compiled_stub.sc:14:5
+|  |  |     12 │     foo { |... a| ^a }
+|  |  |     13 │     // expect-error: Not compiled
+|  |  |     14 │     two_variadic { |a, b| ^this.foo(*a, *b) }
+|  |  |        ┆     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the compiler can't compile this yet.
+|  |  |     15 │     // A nested function that can't be lowered fails its method.
+|  |  |     16 │     // expect-error: Not compiled
+|  |  |     17 │     in_function { |a, b| ^{ this.foo(*a, *b) } }
+|  |  |
+|  |  |  The backend doesn't support something in this code yet, so calling it throws a PoisonedMethodError.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (14:21)
+|  |  |  |  SCArgumentDeclare (14:21): a
+|  |  |  |  SCArgumentDeclare (14:24): b
+|  |  |  SCBody (14:27)
+|  |  |  |  SCExplicitReturn (14:27)
+|  |  |  |  |  SCMessage (14:28): foo
+|  |  |  |  |  |  SCSpecial (14:28): this
+|  |  |  |  |  |  SCVariadicArgs (14:28)
+|  |  |  |  |  |  |  SCRead (14:38): local a, declared (14:21): a
+|  |  |  |  |  |  |  SCRead (14:42): local b, declared (14:24): b
+|  |  SCMethod (17:5): in_function, version 3.16: in_function { |a, b| ^{ this.foo(*a, *b) } }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Not compiled
+|  |  |  bytecode/not_compiled_stub.sc:17:5
+|  |  |     15 │     // A nested function that can't be lowered fails its method.
+|  |  |     16 │     // expect-error: Not compiled
+|  |  |     17 │     in_function { |a, b| ^{ this.foo(*a, *b) } }
+|  |  |        ┆     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the compiler can't compile this yet.
+|  |  |     18 │     // expect: no diagnostics
+|  |  |     19 │     fine { ^1 }
+|  |  |     20 │ }
+|  |  |
+|  |  |  The backend doesn't support something in this code yet, so calling it throws a PoisonedMethodError.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (17:20)
+|  |  |  |  SCArgumentDeclare (17:20): a (captured)
+|  |  |  |  SCArgumentDeclare (17:23): b (captured)
+|  |  |  SCBody (17:26)
+|  |  |  |  SCExplicitReturn (17:26)
+|  |  |  |  |  SCFunction (17:27)
+|  |  |  |  |  |  SCBody (17:27)
+|  |  |  |  |  |  |  SCMessage (17:29): foo
+|  |  |  |  |  |  |  |  SCSpecial (17:29): this
+|  |  |  |  |  |  |  |  SCVariadicArgs (17:29)
+|  |  |  |  |  |  |  |  |  SCRead (17:39): local a, declared (17:20): a
+|  |  |  |  |  |  |  |  |  SCRead (17:43): local b, declared (17:23): b
+|  |  SCMethod (19:5): fine, version 3.16: fine { ^1 } -> 1
+|  |  |  SCBody (19:12)
+|  |  |  |  SCExplicitReturn (19:12)
+|  |  |  |  |  SCLiteral (19:13) = 1
+
+
+
+LIR DUMP 
+
+
+PoisonedMethodError
+|  function 0 (8:5): method throw
+|  |  body 0
+|  |  |  ReturnSelf
+Meta_PoisonedMethodError
+|  function 0 (7:5): method new
+|  |  body 0
+|  |  |  PushSpecial this
+|  |  |  Send new (positional 0, super, tail from method)
+|  |  |  Return
+NotCompiledStub
+|  function 0 (12:5): method foo
+|  |  body 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Return
+|  function 1 (14:5): method two_variadic (not emitted)
+|  |  body 0
+|  |  |  Unimplemented SCMessage
+|  |  |  Return
+|  function 2 (14:5): method two_variadic
+|  |  body 0
+|  |  |  PushClass PoisonedMethodError
+|  |  |  PushSpecial thisMethod
+|  |  |  PushSpecialValue nil
+|  |  |  Send new (positional 2)
+|  |  |  Send throw (positional 0)
+|  |  |  Drop
+|  |  |  ReturnSelf
+|  function 3 (17:5): method in_function (not emitted)
+|  |  body 0
+|  |  |  PushFunction 4
+|  |  |  Return
+|  function 4 (17:27)
+|  |  body 0
+|  |  |  Unimplemented SCMessage
+|  function 5 (17:5): method in_function
+|  |  body 0
+|  |  |  PushClass PoisonedMethodError
+|  |  |  PushSpecial thisMethod
+|  |  |  PushSpecialValue nil
+|  |  |  Send new (positional 2)
+|  |  |  Send throw (positional 0)
+|  |  |  Drop
+|  |  |  ReturnSelf
+|  function 6 (19:5): method fine
+|  |  body 0
+|  |  |  PushConstant 1
+|  |  |  Return
+
+
+
+BYTECODE DUMP 
+
+
+PoisonedMethodError
+|  function 0 (8:5): method throw
+|  |  properties:
+|  |  shortcut: return self
+|  |  selectors:
+|  |  constants:
+Meta_PoisonedMethodError
+|  function 0 (7:5): method new
+|  |  properties:
+|  |  selectors: new,
+|  |  constants:
+|  |  0    FF              TailCallReturnFromMethod
+|  |  1    B1 00           SendSuperMsgThisOpt
+|  |  3    F3              Return
+NotCompiledStub
+|  function 0 (12:5): method foo
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    F3              Return
+|  function 2 (14:5): method two_variadic
+|  |  properties:
+|  |  selectors: throw, PoisonedMethodError,
+|  |  constants:
+|  |  0    00 01           PushClassX
+|  |  2    0F 01           SpecialOpcode
+|  |  4    6E              PushSpecialValue
+|  |  5    C3 00           SendSpecialMsg
+|  |  7    A1 00           SendMsg
+|  |  9    F0              Drop
+|  |  10   F4              ReturnSelf
+|  function 5 (17:5): method in_function
+|  |  properties:
+|  |  selectors: throw, PoisonedMethodError,
+|  |  constants:
+|  |  0    00 01           PushClassX
+|  |  2    0F 01           SpecialOpcode
+|  |  4    6E              PushSpecialValue
+|  |  5    C3 00           SendSpecialMsg
+|  |  7    A1 00           SendMsg
+|  |  9    F0              Drop
+|  |  10   F4              ReturnSelf
+|  function 6 (19:5): method fine
+|  |  properties:
+|  |  shortcut: return literal 1
+|  |  selectors:
+|  |  constants:
+Successfully compiled 17 classes.

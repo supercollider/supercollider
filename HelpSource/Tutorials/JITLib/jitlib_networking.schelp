@@ -23,7 +23,7 @@ a local time server is better than the apple time server. if you cannot sync the
 
 subsection::a) boot the (remote) server and create a local model
 
-code::
+code#fragment::
 s = Server("serverName", NetAddr(hostname, port));
 s.options.maxLogins = 16; // or the maximum number of participants in the network
 s.boot; // you cannot directly boot a remote server instance, but this initializes everything that is needed

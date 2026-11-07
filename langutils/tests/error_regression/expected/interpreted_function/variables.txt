@@ -1,0 +1,29 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): interpreted_function/variables.scd
+|  SCFunction (1:1)
+|  |  SCBody (1:1)
+|  |  |  SCVariableDeclare (4:5): q, prototype
+|  |  |  |  SCLiteral (4:9) = 1
+|  |  |  SCVariableDeclare (4:12): r, prototype
+|  |  |  |  SCLiteral (4:16) = 2
+|  |  |  SCMessage (4:19): +
+|  |  |  |  SCRead (4:19): local q = 1, declared (4:5): q = 1
+|  |  |  |  SCPositionalArgs (4:19)
+|  |  |  |  |  SCRead (4:23): local r = 2, declared (4:12): r = 2
+
+
+
+COMPILED DUMP 
+
+
+Interpreted
+|  interpreted: function 0,
+|  function 0 (1:1)
+|  |  variables: q = 1, r = 2,
+|  |  code: 5 bytes, 0 selectors, 0 constants
+Successfully compiled 15 classes.

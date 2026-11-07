@@ -724,7 +724,7 @@ section::some more topics
 
 subsection::nodeproxy with numbers as input
 
-code::
+code#fragment::
 p = ProxySpace.push(s.boot);
 
 
@@ -750,7 +750,7 @@ p = ProxySpace.push(s.boot);
 // (pseudocode)
 SynthDef("name", { arg out, fadeTime;
 	Out.kr(out,
-		Control.kr(Array.fill(proxy.numChannels, { the number }))
+		Control.kr(Array.fill(proxy.numChannels, { /* the number */ }))
 			* EnvGate.new(fadeTime:fadeTime)
 	)
 });

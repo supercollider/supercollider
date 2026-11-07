@@ -1,0 +1,178 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): Brackets : Object, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (8:5): poisoned: extra, version 3.16: extra { ^(1 + 2]) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unmatched Bracket.
+|  |  |  parse_errors/brackets.sc:8:20
+|  |  |      6 │     // expect: poisoned
+|  |  |      7 │     // expect-error: Unmatched Bracket.
+|  |  |      8 │     extra { ^(1 + 2]) }
+|  |  |        ┆                    ^ This `]` has no opening bracket.
+|  |  |      9 │     // One of the wrong kind closes the innermost bracket.
+|  |  |     10 │     // expect: poisoned
+|  |  |     11 │     // expect-error: Mismatched Bracket.
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (8:13)
+|  |  |  |  SCExplicitReturn (8:13)
+|  |  |  |  |  SCMessage (8:15): + = 3
+|  |  |  |  |  |  SCLiteral (8:15) = 1
+|  |  |  |  |  |  SCPositionalArgs (8:15)
+|  |  |  |  |  |  |  SCLiteral (8:19) = 2
+|  |  SCMethod (12:5): poisoned: wrong_kind, version 3.16: wrong_kind { ^(1 + 2] }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Mismatched Bracket.
+|  |  |  parse_errors/brackets.sc:12:25
+|  |  |     10 │     // expect: poisoned
+|  |  |     11 │     // expect-error: Mismatched Bracket.
+|  |  |     12 │     wrong_kind { ^(1 + 2] }
+|  |  |        ┆                   ^     ^ ...is closed with `]`, rather than `)`.
+|  |  |        ┆                   └ This `(`...
+|  |  |     13 │     // An unclosed bracket is closed before the bracket around it closes.
+|  |  |     14 │     // expect: poisoned
+|  |  |     15 │     // expect-error: Unclosed Bracket.
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (12:18)
+|  |  |  |  SCExplicitReturn (12:18)
+|  |  |  |  |  SCMessage (12:20): + = 3
+|  |  |  |  |  |  SCLiteral (12:20) = 1
+|  |  |  |  |  |  SCPositionalArgs (12:20)
+|  |  |  |  |  |  |  SCLiteral (12:24) = 2
+|  |  SCMethod (16:5): poisoned: unclosed, version 3.16: unclosed { ^(1 + 2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unclosed Bracket.
+|  |  |  parse_errors/brackets.sc:16:24
+|  |  |     14 │     // expect: poisoned
+|  |  |     15 │     // expect-error: Unclosed Bracket.
+|  |  |     16 │     unclosed { ^(1 + 2 }
+|  |  |        ┆                 ^      ^ ...before this `}`, which closes the bracket around it.
+|  |  |        ┆                 └ This `(` isn't closed...
+|  |  |     17 │     // expect: poisoned
+|  |  |     18 │     // expect-error: Unclosed Bracket.
+|  |  |     19 │     unclosed_nested { |x| if (x) { ^[1, (2 }; ^3 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (16:16)
+|  |  |  |  SCExplicitReturn (16:16)
+|  |  |  |  |  SCMessage (16:18): + = 3
+|  |  |  |  |  |  SCLiteral (16:18) = 1
+|  |  |  |  |  |  SCPositionalArgs (16:18)
+|  |  |  |  |  |  |  SCLiteral (16:22) = 2
+|  |  SCMethod (19:5): poisoned: unclosed_nested, version 3.16: unclosed_nested { |x| if (x) { ^[1, (2 }; ^3 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unclosed Bracket.
+|  |  |  parse_errors/brackets.sc:19:44
+|  |  |     17 │     // expect: poisoned
+|  |  |     18 │     // expect-error: Unclosed Bracket.
+|  |  |     19 │     unclosed_nested { |x| if (x) { ^[1, (2 }; ^3 }
+|  |  |        ┆                                     ^      ^ ...before this `}`, which closes the bracket around it.
+|  |  |        ┆                                     └ This `[` isn't closed...
+|  |  |     20 │     // expect: poisoned
+|  |  |     21 │     // expect-error: Mismatched Bracket.
+|  |  |     22 │     wrong_kind_nested { |x| if (x) { ^(1] }; ^2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unclosed Bracket.
+|  |  |  parse_errors/brackets.sc:19:44
+|  |  |     17 │     // expect: poisoned
+|  |  |     18 │     // expect-error: Unclosed Bracket.
+|  |  |     19 │     unclosed_nested { |x| if (x) { ^[1, (2 }; ^3 }
+|  |  |        ┆                                         ^  ^ ...before this `}`, which closes the bracket around it.
+|  |  |        ┆                                         └ This `(` isn't closed...
+|  |  |     20 │     // expect: poisoned
+|  |  |     21 │     // expect-error: Mismatched Bracket.
+|  |  |     22 │     wrong_kind_nested { |x| if (x) { ^(1] }; ^2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (19:24)
+|  |  |  |  SCArgumentDeclare (19:24): x
+|  |  |  SCBody (19:27)
+|  |  |  |  SCMessage (19:27): if
+|  |  |  |  |  SCRead (19:31): local x, declared (19:24): x
+|  |  |  |  |  SCPositionalArgs (19:27)
+|  |  |  |  |  |  SCFunction (19:34)
+|  |  |  |  |  |  |  SCBody (19:34)
+|  |  |  |  |  |  |  |  SCExplicitReturn (19:36)
+|  |  |  |  |  |  |  |  |  SCCollection (19:37): Array = [1, 2]
+|  |  |  |  |  |  |  |  |  |  SCLiteral (19:38) = 1
+|  |  |  |  |  |  |  |  |  |  SCLiteral (19:42) = 2
+|  |  |  |  SCExplicitReturn (19:47)
+|  |  |  |  |  SCLiteral (19:48) = 3
+|  |  SCMethod (22:5): poisoned: wrong_kind_nested, version 3.16: wrong_kind_nested { |x| if (x) { ^(1] }; ^2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Mismatched Bracket.
+|  |  |  parse_errors/brackets.sc:22:41
+|  |  |     20 │     // expect: poisoned
+|  |  |     21 │     // expect-error: Mismatched Bracket.
+|  |  |     22 │     wrong_kind_nested { |x| if (x) { ^(1] }; ^2 }
+|  |  |        ┆                                       ^ ^ ...is closed with `]`, rather than `)`.
+|  |  |        ┆                                       └ This `(`...
+|  |  |     23 │     // A syntax error inside the repaired bracket is still reported.
+|  |  |     24 │     // expect: poisoned
+|  |  |     25 │     // expect-error: Unclosed Bracket.
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCArgumentDeclareList (22:26)
+|  |  |  |  SCArgumentDeclare (22:26): x
+|  |  |  SCBody (22:29)
+|  |  |  |  SCMessage (22:29): if
+|  |  |  |  |  SCRead (22:33): local x, declared (22:26): x
+|  |  |  |  |  SCPositionalArgs (22:29)
+|  |  |  |  |  |  SCFunction (22:36)
+|  |  |  |  |  |  |  SCBody (22:36)
+|  |  |  |  |  |  |  |  SCExplicitReturn (22:38)
+|  |  |  |  |  |  |  |  |  SCLiteral (22:40) = 1
+|  |  |  |  SCExplicitReturn (22:46)
+|  |  |  |  |  SCLiteral (22:47) = 2
+|  |  SCMethod (27:5): poisoned: unclosed_with_error, version 3.16: unclosed_with_error { ^(1 2 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Missing Operator.
+|  |  |  parse_errors/brackets.sc:27:31
+|  |  |     25 │     // expect-error: Unclosed Bracket.
+|  |  |     26 │     // expect-error: Missing Operator.
+|  |  |     27 │     unclosed_with_error { ^(1 2 }
+|  |  |        ┆                             ^ ^ ...and `2` starts another. Put an operator between them, e.g., `+`, or separate them with `;`.
+|  |  |        ┆                             └ This ends an expression...
+|  |  |     28 │     // Parsed as written.
+|  |  |     29 │     // expect: -> 3
+|  |  |     30 │     after { ^3 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unclosed Bracket.
+|  |  |  parse_errors/brackets.sc:27:33
+|  |  |     25 │     // expect-error: Unclosed Bracket.
+|  |  |     26 │     // expect-error: Missing Operator.
+|  |  |     27 │     unclosed_with_error { ^(1 2 }
+|  |  |        ┆                            ^    ^ ...before this `}`, which closes the bracket around it.
+|  |  |        ┆                            └ This `(` isn't closed...
+|  |  |     28 │     // Parsed as written.
+|  |  |     29 │     // expect: -> 3
+|  |  |     30 │     after { ^3 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (27:27)
+|  |  |  |  SCExplicitReturn (27:27)
+|  |  |  |  |  SCExprList (27:28)
+|  |  SCMethod (30:5): after, version 3.16: after { ^3 } -> 3
+|  |  |  SCBody (30:13)
+|  |  |  |  SCExplicitReturn (30:13)
+|  |  |  |  |  SCLiteral (30:14) = 3
+Successfully compiled 16 classes.

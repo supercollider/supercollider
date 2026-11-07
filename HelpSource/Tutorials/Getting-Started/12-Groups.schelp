@@ -90,7 +90,7 @@ section::'queryAllNodes' and node IDs
 
 Server has a method called 'queryAllNodes' which will post a representation of the server's node tree. You should have seen something like the following in the post window when executing the example above:
 
-code::
+teletype::
 nodes on localhost:
 a Server
 Group(0)
@@ -128,7 +128,7 @@ s.queryAllNodes;
 
 In general you should add nodes to the default group, or groups contained within it, and emphasis::not:: before or after it. When adding an 'effects' synth, for instance, one should resist the temptation to add it after the default group, and instead create a separate source group within the default group. This will prevent problems with scoping or recording.
 
-code::
+teletype::
 default group [
 	source group [
 		source synth1

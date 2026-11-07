@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestNetAddr_Server : UnitTest {
 
 	var server, big, addr;

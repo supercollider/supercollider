@@ -25,7 +25,7 @@ code::
 // synthdefのテンプレート ... 疑似コードを含む
 SynthDef(
 	"i am a synthdef",			// 第１アーギュメントは名前
-	{ .... i am a ugenGraphFunc ... }	// 第２アーギュメントはUGen
+	{ /* i am a ugenGraphFunc */ }	// 第２アーギュメントはUGen
 )
 ::
 

@@ -25,7 +25,7 @@ This file contains the definitions of the core objects that implement the class 
 
 #pragma once
 
-#include "OpcodeOperands.h"
+#include "sc_bytecode/details/OpcodeOperands.h"
 #include "PyrObject.h"
 #include "PyrObjectHdr.h"
 #include "VMGlobals.h"
@@ -241,6 +241,7 @@ struct PyrInterpreter : public PyrObjectHdr {
     PyrSlot k, l, m, n, o, p, q, r, s, t;
     PyrSlot u, v, w, x, y, z;
     PyrSlot codeDump, preProcessor;
+    PyrSlot languageVersion;
 };
 
 

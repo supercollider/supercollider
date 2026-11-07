@@ -1,3 +1,4 @@
+//# VERSION 3.16
 // Tests for SerialPort
 //
 // These tests perform integration testing on SerialPort by creating an input/output pair of virtual serial ports
@@ -104,7 +105,7 @@ TestSerialPort : UnitTest {
 	getCom0ComPorts {
 		var cmd = "% list".format(socatPath);
 		var allPorts = cmd.unixCmdGetStdOut;
-		var first, second;
+		var first;
 		var getNameFromLine;
 
 		if(allPorts.size == 0) {
@@ -125,7 +126,7 @@ TestSerialPort : UnitTest {
 			Error("Could not get the port name").throw;
 		};
 
-		second = allPorts[1].stripWhiteSpace;
+		var second = allPorts[1].stripWhiteSpace;
 		second = getNameFromLine.(second);
 		if(second.isEmpty) {
 			Error("Could not get the port name").throw;
@@ -139,9 +140,8 @@ TestSerialPort : UnitTest {
 	createSocatPorts {
 		var cmd = "% -d -d pty,raw,echo=0 pty,raw,echo=0 2>&1".format(socatPath);
 		var pipe = Pipe.new(cmd, "r");
-		var first, second;
 
-		first = pipe.getLine;
+		var first = pipe.getLine;
 		first = first.findRegexp("/dev/(ttys|pts).*");
 		if(first.isEmpty) {
 			Error("socat is not installed").throw;
@@ -149,7 +149,7 @@ TestSerialPort : UnitTest {
 
 		first = first[0][1];
 
-		second = pipe.getLine;
+		var second = pipe.getLine;
 		second = second.findRegexp("/dev/(ttys|pts).*");
 		if(second.isEmpty) {
 			Error("couldn't read second tty from socat").throw;
@@ -174,10 +174,9 @@ TestSerialPort : UnitTest {
 	}
 
 	test_open_onExistingDevice_defaultArgs {
-		var port;
 		if(this.skipSerialTests) { ^this };
 
-		port = this.mkPort(input);
+		var port = this.mkPort(input);
 		this.assert(port.isOpen);
 		port.close();
 	}
@@ -221,20 +220,18 @@ TestSerialPort : UnitTest {
 	}
 
 	test_close {
-		var port;
 		if(this.skipSerialTests) { ^this };
 
-		port = this.mkPort(input);
+		var port = this.mkPort(input);
 		port.close();
 		this.assert(port.isOpen.not);
 	}
 
 	test_connectionLost {
-		var in, cond;
 		if(this.skipSerialTests) { ^this };
 
-		in = this.mkPort(input);
-		cond = Condition();
+		var in = this.mkPort(input);
+		var cond = Condition();
 		this.destroyPorts();
 
 		fork { 3.wait; cond.test_(true) };
@@ -244,22 +241,21 @@ TestSerialPort : UnitTest {
 	}
 
 	test_next_noData_producesNil {
-		var port;
 		if(this.skipSerialTests) { ^this };
 
-		port = this.mkPort(input);
+		var port = this.mkPort(input);
 		this.assertEquals(port.next, nil);
 		port.close();
 	}
 
 	test_putAndNext_oneByte {
-		var in, out, result, rout, cond;
+		var rout;
 		if(this.skipSerialTests) { ^this };
 
-		in = this.mkPort(input);
-		out = this.mkPort(output);
-		result = nil;
-		cond = Condition();
+		var in = this.mkPort(input);
+		var out = this.mkPort(output);
+		var result = nil;
+		var cond = Condition();
 
 		out.put($a);
 
@@ -281,13 +277,13 @@ TestSerialPort : UnitTest {
 	}
 
 	test_putAndNext_twoBytes {
-		var in, out, result, rout, cond;
+		var rout;
 		if(this.skipSerialTests) { ^this };
 
-		in = this.mkPort(input);
-		out = this.mkPort(output);
-		result = nil;
-		cond = Condition();
+		var in = this.mkPort(input);
+		var out = this.mkPort(output);
+		var result = nil;
+		var cond = Condition();
 
 		out.put($a);
 		out.put($b);
@@ -311,15 +307,15 @@ TestSerialPort : UnitTest {
 	}
 
 	test_putAndRead_oneByte {
-		var in, out, rout, cond, result;
+		var rout;
 		if(this.skipSerialTests) { ^this };
 
-		in = this.mkPort(input);
-		out = this.mkPort(output);
+		var in = this.mkPort(input);
+		var out = this.mkPort(output);
 
 		rout;
-		cond = Condition();
-		result = nil;
+		var cond = Condition();
+		var result = nil;
 
 		out.put($a);
 		rout = fork { result = in.read; cond.test_(true).signal };
@@ -334,22 +330,20 @@ TestSerialPort : UnitTest {
 	}
 
 	test_rxErrors_noDataSent_isZero {
-		var in;
 		if(this.skipSerialTests) { ^this };
 
-		in = this.mkPort(input);
+		var in = this.mkPort(input);
 		this.assertEquals(in.rxErrors, 0);
 		in.close();
 	}
 
 	test_rxErrors_bufferOverflow {
-		var in, out, rxErrs;
-		var written = 0, res, now, timeoutTime = 5;
+		var written = 0, res, timeoutTime = 5;
 		if(this.skipSerialTests) { ^this };
 
-		in = this.mkPort(input);
-		out = this.mkPort(output);
-		rxErrs = 0;
+		var in = this.mkPort(input);
+		var out = this.mkPort(output);
+		var rxErrs = 0;
 
 		// Overflow the buffer by exactly 1
 		for(0, kBufferSize) { |i|
@@ -361,7 +355,7 @@ TestSerialPort : UnitTest {
 			0.0001.wait;
 		};
 
-		now = thisProcess.mainThread.seconds;
+		var now = thisProcess.mainThread.seconds;
 
 		// spin until all data has been read
 		while { (rxErrs == 0) and: ((thisProcess.mainThread.seconds - now) < timeoutTime) } { rxErrs = in.rxErrors; 0.01.wait; };
@@ -376,14 +370,14 @@ TestSerialPort : UnitTest {
 	}
 
 	test_putAll {
-		var in, out, result, rout, cond;
+		var rout;
 		if(this.skipSerialTests) { ^this };
 
-		in = this.mkPort(input);
-		out = this.mkPort(output);
-		result = nil;
+		var in = this.mkPort(input);
+		var out = this.mkPort(output);
+		var result = nil;
 		rout;
-		cond = Condition();
+		var cond = Condition();
 
 		out.putAll("Hello");
 
@@ -410,12 +404,11 @@ TestSerialPort : UnitTest {
 	}
 
 	test_doneAction_onNormalClose {
-		var in, ranAction, cond;
 		if(this.skipSerialTests) { ^this };
 
-		in = this.mkPort(input);
-		ranAction = false;
-		cond = Condition();
+		var in = this.mkPort(input);
+		var ranAction = false;
+		var cond = Condition();
 
 		in.doneAction_ {
 			ranAction = true;
@@ -431,12 +424,11 @@ TestSerialPort : UnitTest {
 
 
 	test_doneAction_onConnectionLost {
-		var in, ranAction, cond;
 		if(this.skipSerialTests) { ^this };
 
-		in = this.mkPort(input);
-		ranAction = false;
-		cond = Condition();
+		var in = this.mkPort(input);
+		var ranAction = false;
+		var cond = Condition();
 
 		in.doneAction_ {
 			ranAction = true;

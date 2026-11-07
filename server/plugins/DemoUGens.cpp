@@ -25,8 +25,8 @@
 static InterfaceTable* ft;
 
 // example of implementing a plugin command with async execution.
-// NOTE: the "pluginCmdDemo" command is used by the TestPluginCommand unit test!
-// If you change this code, make sure to update testsuite/classlibrary/TestPluginCommand.sc.
+// NOTE: the "pluginCmdDemo" command is used by the TestPluginCommand_Server unit test!
+// If you change this code, make sure to update testsuite/classlibrary/TestPluginCommand_Server.sc.
 
 struct MyPluginData // data for the global instance of the plugin
 {
@@ -174,8 +174,8 @@ s.sendMsg('/cmd', \pluginCmdDemo, 7, 9, \fail, ['/s_new', \sine, 900, 0, 0]);
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 // example of implementing a plugin with unit commands
-// NOTE: the "UnitCmdDemo" UGen and its unit commands are used by the TestUnitCommand unit test!
-// If you change this code, make sure to update testsuite/classlibrary/TestUnitCommand.sc.
+// NOTE: the "UnitCmdDemo" UGen and its unit commands are used by the TestUnitCommand_Server unit test!
+// If you change this code, make sure to update testsuite/classlibrary/TestUnitCommand_Server.sc.
 
 struct UnitCmdDemo : public Unit {
     float value;

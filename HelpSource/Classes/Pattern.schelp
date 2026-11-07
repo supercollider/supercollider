@@ -89,11 +89,11 @@ subsection::Playing Event Patterns
 The link::#-play:: method does not return the pattern itself. Instead, it returns the link::Classes/EventStreamPlayer:: object that actually runs the pattern. Control instructions — stop, pause, resume, play, reset — should be addressed to the EventStreamPlayer. (The same pattern can play many times simultaneously, using different EventStreamPlayers.)
 
 code::
-p = Pbind(...);
+p = Pbind(/* ... */);
 p.play;
 p.stop;	// does not stop because p is not the EventStreamPlayer that is actually playing
 
-p = Pbind(...).play;
+p = Pbind(/* ... */).play;
 p.stop;	// DOES stop because p is the EventStreamPlayer
 ::
 

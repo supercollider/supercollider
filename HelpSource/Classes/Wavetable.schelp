@@ -114,7 +114,7 @@ Wavetable.sineFill(512, [1]).asSignal.plot;
 
 
 subsection:: Advanced notes: wavetable format
-code::
+teletype::
 Signal: [a0, a1, a2...]
 Wavetable: [2*a0-a1, a1-a0, 2*a1-a2, a2-a1, 2*a2-a3, a3-a2...]
 ::

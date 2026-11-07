@@ -1,3 +1,5 @@
+%require "3.8"
+
 %{
 /************************************************************************
 *
@@ -49,6 +51,30 @@ static inline bool stringEqual(const char * a, const char * b)
     return strcmp(a, b) == 0;
 }
 
+// A code tag's tag is what follows `code#`: an optional release, then optionally `class`, then optionally `fragment`
+// or `error`, joined by `#`, e.g. "3.16#class#error" from "code#3.16#class#error::". The lexer checks the order. The
+// release is a VERSION child, e.g. "3.16". Class library code has a CLASSCODE child, a fragment, which is only
+// parsed, a FRAGMENTCODE child, and code that must fail to compile an ERRORCODE child.
+static DocNode * make_code(const char * id, char * text, char * tag, int line)
+{
+    DocNode * n = doc_node_make(id, text, NULL);
+    n->line = line;
+    if (!tag)
+        return n;
+    for (char * part = strtok(tag, "#"); part; part = strtok(NULL, "#")) {
+        if (stringEqual(part, "class"))
+            doc_node_add_child(n, doc_node_create("CLASSCODE"));
+        else if (stringEqual(part, "fragment"))
+            doc_node_add_child(n, doc_node_create("FRAGMENTCODE"));
+        else if (stringEqual(part, "error"))
+            doc_node_add_child(n, doc_node_create("ERRORCODE"));
+        else
+            doc_node_add_child(n, doc_node_make("VERSION", strdup(part), NULL));
+    }
+    free(tag);
+    return n;
+}
+
 %}
 %locations
 %define parse.error verbose
@@ -69,14 +95,16 @@ static inline bool stringEqual(const char * a, const char * b)
 // nestable range tags with no text, with children
 %token LIST TREE NUMBEREDLIST DEFINITIONLIST TABLE FOOTNOTE NOTE WARNING
 // modal range tags that take multi-line text
-%token CODE LINK ANCHOR SOFT IMAGE TELETYPE MATH STRONG EMPHASIS
-%token CODEBLOCK "CODE block" TELETYPEBLOCK "TELETYPE block" MATHBLOCK "MATH block"
+%token <str> CODE CODEBLOCK "CODE block"
+%token LINK ANCHOR SOFT IMAGE TELETYPE MATH STRONG EMPHASIS
+%token TELETYPEBLOCK "TELETYPE block" MATHBLOCK "MATH block"
 // symbols
 %token TAGSYM "::" BARS "||" HASHES "##"
 // text and whitespace
 %token <str> TEXT "text" URL COMMA METHODNAME "method name" METHODARGS "arguments string"
 %token NEWLINE "newline" EMPTYLINES "empty lines"
 %token BAD_METHODNAME "bad method name"
+%token BAD_CODE_VERSION "code tag with a bad version (code#, then any of a version, legacy or major.minor, class, and fragment or error, in that order and joined by #, e.g. code#3.16::, code#3.16#class::, or code#fragment::)"
 
 %token END 0 "end of file"
 
@@ -127,7 +155,7 @@ document: START_FULL eateol dochead optsections
 ;
 
 eateol: eol
-      | /* empty */
+      | %empty
       ;
 
 dochead: dochead headline { $$ = doc_node_add_child($1,$2); }
@@ -152,7 +180,7 @@ sectiontag: CLASSMETHODS { $$ = "CLASSMETHODS"; method_type = "CMETHOD"; }
 ;
 
 optsections: sections
-           | { $$ = doc_node_make("BODY",NULL,NULL); }
+           | %empty { $$ = doc_node_make("BODY",NULL,NULL); }
 ;
 
 sections: sections section { $$ = doc_node_add_child($1,$2); }
@@ -165,7 +193,7 @@ section: SECTION { method_type = "METHOD"; } words2 eol optsubsections { $$ = do
 ;
 
 optsubsections: subsections
-              | { $$ = NULL; }
+              | %empty { $$ = NULL; }
 ;
 
 subsections: subsections subsection { $$ = doc_node_add_child($1,$2); }
@@ -177,7 +205,7 @@ subsection: SUBSECTION words2 eol optsubsubsections { $$ = doc_node_make_take_ch
 ;
 
 optsubsubsections: subsubsections
-                 | { $$ = NULL; }
+                 | %empty { $$ = NULL; }
 ;
 
 subsubsections: subsubsections subsubsection { $$ = doc_node_add_child($1,$2); }
@@ -210,7 +238,7 @@ subsubsection: SUBSUBSECTION words2 eol optbody { $$ = doc_node_make_take_childr
                 NULL, $2); }
 ;
 
-optMETHODARGS: { $$ = NULL; }
+optMETHODARGS: %empty { $$ = NULL; }
              | METHODARGS
     {
 //        $$ = doc_node_make("ARGSTRING",$1,NULL);
@@ -247,11 +275,11 @@ methodbody: optbody optargs optreturns optdiscussion
 ;
 
 optbody: body
-       | { $$ = NULL; }
+       | %empty { $$ = NULL; }
 ;
 
 optargs: args
-       | { $$ = NULL; }
+       | %empty { $$ = NULL; }
 ;
 
 args: args arg { $$ = doc_node_add_child($1,$2); }
@@ -263,11 +291,11 @@ arg: ARGUMENT words eol optbody { $$ = doc_node_make_take_children("ARGUMENT", $
 ;
 
 optreturns: RETURNS body { $$ = doc_node_make_take_children("RETURNS",NULL,$2); }
-          | { $$ = NULL; }
+          | %empty { $$ = NULL; }
 ;
 
 optdiscussion: DISCUSSION body { $$ = doc_node_make_take_children("DISCUSSION",NULL,$2); }
-             | { $$ = NULL; }
+             | %empty { $$ = NULL; }
 ;
 
 /*
@@ -293,6 +321,7 @@ bodyelem: rangetag body TAGSYM { $$ = doc_node_make_take_children($1,NULL,$2); }
         | TABLE tablebody TAGSYM { $$ = doc_node_make_take_children("TABLE",NULL,$2); }
         | DEFINITIONLIST deflistbody TAGSYM { $$ = doc_node_make_take_children("DEFINITIONLIST",NULL,$2); }
         | blocktag wordsnl TAGSYM { $$ = doc_node_make($1,$2,NULL); }
+        | CODEBLOCK wordsnl TAGSYM { $$ = make_code("CODEBLOCK",$2,$1,@1.first_line); }
         | CLASSTREE words eoleof { $$ = doc_node_make("CLASSTREE",$2,NULL); }
         | KEYWORD commalist eoleof { $$ = doc_node_make_take_children("KEYWORD",NULL,$2);
 //            printf("keyword '%s'\n",$2->children[0]->text);
@@ -308,6 +337,7 @@ prose: prose proseelem { $$ = doc_node_add_child($1, $2); }
 proseelem: anyword { $$ = doc_node_make(NODE_TEXT,$1,NULL); } // one TEXT for each word
          | URL { $$ = doc_node_make("LINK",$1,NULL); }
          | inlinetag words TAGSYM { $$ = doc_node_make($1,$2,NULL); }
+         | CODE words TAGSYM { $$ = make_code("CODE",$2,$1,@1.first_line); }
          | FOOTNOTE body TAGSYM { $$ = doc_node_make_take_children("FOOTNOTE",NULL,$2); }
          | NEWLINE { $$ = doc_node_create(NODE_NL); }
          ;
@@ -316,14 +346,12 @@ inlinetag: LINK { $$ = "LINK"; }
          | STRONG { $$ = "STRONG"; }
          | SOFT { $$ = "SOFT"; }
          | EMPHASIS { $$ = "EMPHASIS"; }
-         | CODE { $$ = "CODE"; }
          | TELETYPE { $$ = "TELETYPE"; }
          | MATH { $$ = "MATH"; }
          | ANCHOR { $$ = "ANCHOR"; }
 ;
 
-blocktag: CODEBLOCK { $$ = "CODEBLOCK"; }
-        | MATHBLOCK { $$ = "MATHBLOCK"; }
+blocktag: MATHBLOCK { $$ = "MATHBLOCK"; }
         | TELETYPEBLOCK { $$ = "TELETYPEBLOCK"; }
 ;
 

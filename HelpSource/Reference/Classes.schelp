@@ -18,8 +18,10 @@ Instance variables declaration lists occur after the open curly bracket of the c
 Instance variables may only be directly accessed and changed from within the class' own methods. Instance variables may be exposed to clients by adding getter and setter messages to the class. A getter message is a message with the same name as the variable which returns the value of that variable when sent to the receiver. A setter message is a message with the name of the variable with an underscore appended which sets the value of the instance variable to the value of the argument to the message.
 
 Getter and setter methods may be defined in the declaration of the instance variable. A getter message for an instance variable is created by typing a less than sign code::<:: before the variable name. A setter message is created by typing a greater than code::>:: sign before the variable name. If both occur then they must occur in the order code::<>::.
-code::
-var a, <b, >c, <>d;
+code#class::
+SomeClass{
+	var a, <b, >c, <>d;
+}
 ::
 definitionlist::
 ## a || has no getter or setter.
@@ -27,14 +29,15 @@ definitionlist::
 ## c || has only a setter.
 ## d || has both a getter and setter.
 ::
-code::
+code#class#fragment::
 Point {
 	// x and y are instance variables which have both getter and setter methods
 	// and default to zero.
 	var <>x = 0, <>y = 0;
-	...
+	/* ... */
 }
-
+::
+code::
 p = Point.new;
 p.x_(5);		// send setter message to set x to 5
 p.y_(7);		// send setter message to set y to 7
@@ -64,12 +67,12 @@ Class Methods are methods that implement messages sent to the class object. A co
 
 section:: Determine the class of an object
 link::Classes/Object:: defines the method code::isKindOf:::
-code::
+code#fragment::
 anObject.isKindOf(aClass)
 ::
 It returns true if the object is of the class or one of its subclasses.
 
 To determine if an object is specifically of type aClass, but not one of its subclasses, use the code::class:: instance variable and the identity equals sign:
-code::
+code#fragment::
 anObject.class === aClass
 ::

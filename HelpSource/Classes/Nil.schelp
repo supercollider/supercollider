@@ -91,9 +91,9 @@ See also link::Reference/matchItem::.
 
 
 code::
-[3, 2, 1].select(nil.matchItem(_))); // returns all
+[3, 2, 1].select(nil.matchItem(_)); // returns all
 // compare:
-[3, 2, 1].select([1, -1, 2].matchItem(_))); // returns only those in the key collection
+[3, 2, 1].select([1, -1, 2].matchItem(_)); // returns only those in the key collection
 ::
 
 

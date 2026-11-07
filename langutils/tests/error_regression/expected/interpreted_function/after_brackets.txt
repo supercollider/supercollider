@@ -1,0 +1,37 @@
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Unexpected Token.
+interpreted_function/after_brackets.scd:3:15
+    1 │ // interpreted-function
+    2 │ // Variables in brackets are the whole function, as in the old grammar, nothing follows them.
+    3 │ (var q = 1; q); q
+      ┆               ^ Expected the end of the file, but found `;`.
+
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Unexpected Token.
+interpreted_function/after_brackets.scd:4:1
+    2 │ // Variables in brackets are the whole function, as in the old grammar, nothing follows them.
+    3 │ (var q = 1; q); q
+    4 │ 
+      ┆ ^ Expected a binary operator, `{`, `[`, `(`, `)`, `;`, `^`, `#{`, `=`, or `.`, but found the end of the file.
+
+──────────────────────────────────────────────────────────────────────────────────
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Unexpected Token.
+interpreted_function/after_brackets.scd:4:1
+    2 │ // Variables in brackets are the whole function, as in the old grammar, nothing follows them.
+    3 │ (var q = 1; q); q
+    4 │ 
+      ┆ ^ Expected `)`, `;`, or `^`, but found the end of the file.
+
+──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
+Successfully compiled 15 classes.

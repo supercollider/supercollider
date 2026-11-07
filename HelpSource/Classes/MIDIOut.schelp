@@ -208,12 +208,12 @@ http://www.snoize.com/MIDIMonitor/
 subsection::Sysex example
 
 a machinedrum manual say sysex commands should be formatted like this...
-code::
+teletype::
 $f0,$00,$20,$3c,$02,$00,command,...,$f7
 ::
 
 and to set the tempo the machinedrum expects this command...
-code::
+teletype::
 $61 | Set tempo ID
 %0aaaaaaa | Upper bits
 %0bbbbbbb | Lower bits

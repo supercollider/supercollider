@@ -1,0 +1,83 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): DoubleMinus : Object, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (6:5): binary, version 3.16: binary { ^5 - - 3 } -> 8
+|  |  |  SCBody (6:14)
+|  |  |  |  SCExplicitReturn (6:14)
+|  |  |  |  |  SCMessage (6:15): - = 8
+|  |  |  |  |  |  SCLiteral (6:15) = 5
+|  |  |  |  |  |  SCPositionalArgs (6:15)
+|  |  |  |  |  |  |  SCLiteral (6:21) = -3
+|  |  SCMethod (8:5): single, version 3.16: single { ^-3 } -> -3
+|  |  |  SCBody (8:14)
+|  |  |  |  SCExplicitReturn (8:14)
+|  |  |  |  |  SCLiteral (8:16) = -3
+|  |  SCMethod (10:5): poisoned: integer, version 3.16: integer { ^- - 3 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  literals/double_minus.sc:10:18
+|  |  |      8 │     single { ^-3 }
+|  |  |      9 │     // expect: poisoned
+|  |  |     10 │     integer { ^- - 3 }
+|  |  |        ┆                  ^ Expected an integer, a float, `inf`, or an accidental, but found `-`.
+|  |  |     11 │     // expect: poisoned
+|  |  |     12 │     integer_three { ^- - - 3 }
+|  |  |     13 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (10:15)
+|  |  |  |  SCExprList (10:15)
+|  |  SCMethod (12:5): poisoned: integer_three, version 3.16: integer_three { ^- - - 3 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  literals/double_minus.sc:12:24
+|  |  |     10 │     integer { ^- - 3 }
+|  |  |     11 │     // expect: poisoned
+|  |  |     12 │     integer_three { ^- - - 3 }
+|  |  |        ┆                        ^ Expected an integer, a float, `inf`, or an accidental, but found `-`.
+|  |  |     13 │     // expect: poisoned
+|  |  |     14 │     hexadecimal { ^- - 0xFF }
+|  |  |     15 │     // expect: poisoned
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (12:21)
+|  |  |  |  SCExprList (12:21)
+|  |  SCMethod (14:5): poisoned: hexadecimal, version 3.16: hexadecimal { ^- - 0xFF }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  literals/double_minus.sc:14:22
+|  |  |     12 │     integer_three { ^- - - 3 }
+|  |  |     13 │     // expect: poisoned
+|  |  |     14 │     hexadecimal { ^- - 0xFF }
+|  |  |        ┆                      ^ Expected an integer, a float, `inf`, or an accidental, but found `-`.
+|  |  |     15 │     // expect: poisoned
+|  |  |     16 │     float { ^- - 3.5 }
+|  |  |     17 │ }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (14:19)
+|  |  |  |  SCExprList (14:19)
+|  |  SCMethod (16:5): poisoned: float, version 3.16: float { ^- - 3.5 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  literals/double_minus.sc:16:16
+|  |  |     14 │     hexadecimal { ^- - 0xFF }
+|  |  |     15 │     // expect: poisoned
+|  |  |     16 │     float { ^- - 3.5 }
+|  |  |        ┆                ^ Expected an integer, a float, `inf`, or an accidental, but found `-`.
+|  |  |     17 │ }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (16:13)
+|  |  |  |  SCExprList (16:13)
+Successfully compiled 16 classes.

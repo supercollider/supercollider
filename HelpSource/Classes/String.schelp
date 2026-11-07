@@ -170,8 +170,7 @@ method::postf
 Prints a formatted string with arguments to the current post window. The % character in the format string is replaced by a string representation of an argument. To print a % character use \\% .
 code::
 postf("this % a %. pi = %, list = %\n", "is", "test", pi.round(1e-4), (1..4))
-
-this is a test. pi = 3.1416, list = [1, 2, 3, 4]
+//this is a test. pi = 3.1416, list = [1, 2, 3, 4]
 ::
 
 method::postcs
@@ -418,16 +417,16 @@ returns:: A link::Classes/String::.
 
 code::
 // remove numbers
-"g8et t8ho9se 3num5b89ers ou06t o8f h12er56e!".replaceRegexp("[0-9]", "")
--> get those numbers out of here!
+"g8et t8ho9se 3num5b89ers ou06t o8f h12er56e!".replaceRegexp("[0-9]", "");
+//-> get those numbers out of here!
 
 // remove capital letters
 "HelLO WoRlD".replaceRegexp("(\\\w)", "\\\L$1")
--> hello world
+//-> hello world
 
 // remove all capital letter unless at the start of a word
 "HelLO worLD! I weNT tO Paris yeSTErDay.".replaceRegexp("(\\\S)(\\\S*)", "$1\\\L$2")
--> Hello world! I went to Paris yesterday.
+//-> Hello world! I went to Paris yesterday.
 ::
 
 method::findRegexp
@@ -441,7 +440,7 @@ To see the marked sub-expression results more clearly, consider:
 
 code::
 "foobar".findRegexp("(o*)(bar)");
--> [[1, oobar], [1, oo], [3, bar]]
+//-> [[1, oobar], [1, oo], [3, bar]]
 ::
 
 code::"oobar":: matches the entire regular expression. code::"oo":: and code::"bar":: match the first and second parenthesized sub-expressions, respectively.
@@ -589,8 +588,7 @@ method::format
 Returns a formatted string with arguments. The % character in the format string is replaced by a string representation of an argument. To print a % character use \\% .
 code::
 format("this % a %. pi = %, list = %\n", "is", "test", pi.round(1e-4), (1..4))
-
-this is a test. pi = 3.1416, list = [1, 2, 3, 4]
+//this is a test. pi = 3.1416, list = [1, 2, 3, 4]
 ::
 
 method::escapeChar

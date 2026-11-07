@@ -59,7 +59,7 @@ x.free; b.free;
 
 PlayBuf.ar has a number of arguments which allow you to control various aspects of how it works. Take a look at the link::Classes/PlayBuf:: helpfile for details of them all, but for now lets just concern ourselves with the first three, used in the example above.
 
-code::
+code#fragment::
 PlayBuf.ar(
 	1,				// number of channels
 	bufnum, 			// number of buffer to play

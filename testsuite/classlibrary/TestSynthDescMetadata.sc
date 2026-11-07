@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestSynthDescMetadata : UnitTest {
 	const defname = \test_md;
 	var dir, path, mdPath, metadata, original, oldMdPlugin;
@@ -25,14 +26,12 @@ TestSynthDescMetadata : UnitTest {
 	}
 
 	test_SynthDesc_read_restores_metadata_in_desc_and_def {
-		var synthdesc;
-		synthdesc = SynthDesc.read(path, keepDefs: true)[defname];
+		var synthdesc = SynthDesc.read(path, keepDefs: true)[defname];
 		this.checkMetadata(synthdesc, metadata, SynthDesc);
 	}
 
 	test_SynthDescLib_read_restores_metadata_in_desc_and_def {
-		var synthdesc;
-		synthdesc = SynthDescLib.read(dir +/+ "*.scsyndef").global;
+		var synthdesc = SynthDescLib.read(dir +/+ "*.scsyndef").global;
 		synthdesc = synthdesc[defname];
 		this.checkMetadata(synthdesc, metadata, SynthDescLib);
 	}

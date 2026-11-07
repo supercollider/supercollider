@@ -58,7 +58,8 @@ n.proxy_(~test);
 	// number of sliders
 n = NodeProxyEditor(~test, 6);
 
-	// the top line has a choice of elements:
+/*
+	 the top line has a choice of elements:
 	\CLR 		button to clear proxy
 	\reset		button to reset proxy nodemap
 	\scope		button to scope proxy
@@ -79,6 +80,7 @@ n = NodeProxyEditor(~test, 6);
 		// maybe provide later this?
 	\name -> { func }; 	// add your own element...
 
+*/
 	// The default buttons/controls are:
 NodeProxyEditor(extras: nil, monitor: true, sinks: true);
 	// these are:

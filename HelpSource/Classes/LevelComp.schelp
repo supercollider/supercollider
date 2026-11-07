@@ -41,7 +41,7 @@ EXAMPLES::
 code::Splay:: and code::SplayAz:: use code::LevelComp:: internally via the code::levelComp:: argument, and obtain rate and number of channels from code::Splay/Az::.
 
 Here is an Overview of the code::levelComp:: usage variants:
-code::
+code#fragment::
 // default is equal power comp: level / (numchans.sqrt)
 Splay.ar(ins, spread, level, center); // true is default
 // write it explicitly for clarity

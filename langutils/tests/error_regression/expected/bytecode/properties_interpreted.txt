@@ -1,0 +1,80 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): version 3.16: bytecode/properties_interpreted.scd
+|  SCRegionList (1:1)
+|  |  SCRegion (6:1)
+|  |  |  SCFunction (6:1)
+|  |  |  |  SCBody (6:1)
+|  |  |  |  |  SCVariableDeclare (6:7): x, prototype
+|  |  |  |  |  |  SCLiteral (6:11) = 1
+|  |  |  |  |  SCFunction (6:14)
+|  |  |  |  |  |  SCBody (6:14)
+|  |  |  |  |  |  |  SCMessage (6:16): +
+|  |  |  |  |  |  |  |  SCRead (6:16): instance a, declared (37:11): a
+|  |  |  |  |  |  |  |  SCPositionalArgs (6:16)
+|  |  |  |  |  |  |  |  |  SCLiteral (6:20) = 1
+|  |  SCRegion (7:1)
+|  |  |  SCFunction (7:1)
+|  |  |  |  SCBody (7:1)
+|  |  |  |  |  SCVariableDeclare (7:7): y (captured), computed
+|  |  |  |  |  |  SCRead (7:11): instance a, declared (37:11): a
+|  |  |  |  |  SCFunction (7:14)
+|  |  |  |  |  |  SCBody (7:14)
+|  |  |  |  |  |  |  SCRead (7:16): local y, declared (7:7): y = a
+|  |  SCRegion (8:3)
+|  |  |  SCFunction (8:3)
+|  |  |  |  SCBody (8:3)
+|  |  |  |  |  SCFunction (8:3)
+|  |  |  |  |  |  SCBody (8:3)
+|  |  |  |  |  |  |  SCSpecial (8:5): this
+
+
+
+BYTECODE DUMP 
+
+
+Interpreted
+|  function 0 (6:1)
+|  |  properties: closed,
+|  |  selectors: function 1,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F2              BlockReturn
+|  function 1 (6:14)
+|  |  properties: closed,
+|  |  selectors:
+|  |  constants:
+|  |  0    01 05           PushInstVarX
+|  |  2    6B              PushOneAndAddOne
+|  |  3    F2              BlockReturn
+|  function 2 (7:1)
+|  |  properties: closed, heap context,
+|  |  selectors: function 3,
+|  |  constants:
+|  |  0    01 05           PushInstVarX
+|  |  2    80 00           StoreTempVar
+|  |  4    04 00           PushLiteralX
+|  |  6    F2              BlockReturn
+|  function 3 (7:14)
+|  |  properties: context,
+|  |  selectors:
+|  |  constants:
+|  |  0    21 00           PushTempVar
+|  |  2    F2              BlockReturn
+|  function 4 (8:3)
+|  |  properties: heap context,
+|  |  selectors: function 5,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F2              BlockReturn
+|  function 5 (8:3)
+|  |  properties: context,
+|  |  selectors:
+|  |  constants:
+|  |  0    60              PushSpecialValueThis
+|  |  1    F2              BlockReturn
+Successfully compiled 15 classes.

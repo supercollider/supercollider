@@ -25,7 +25,7 @@
 #include "SC_InlineUnaryOp.h"
 #include "SC_InlineBinaryOp.h"
 #include "PyrSignal.h"
-#include "PyrParseNode.h"
+#include "SpecialSelectorsOperatorsAndClasses.h"
 #include "PyrMessage.h"
 #include "clz.h"
 #include <stdlib.h>

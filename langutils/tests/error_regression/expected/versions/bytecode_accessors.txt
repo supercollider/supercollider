@@ -1,0 +1,78 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): AccessorsBase : Object
+|  SCMemberList (4:1)
+|  |  SCMember (5:10): inherited
+|  SCMethodList (4:1)
+SCClass (8:1): Accessors : AccessorsBase
+|  SCMemberList (8:1)
+|  |  SCMember (9:10): getter
+|  |  SCMember (9:20): both
+|  |  SCMember (9:27): setter
+|  |  SCMember (9:35): plain
+|  SCMethodList (8:1)
+|  |  SCMethod (16:5): both_: both_ { |value| both = value + 1 }
+|  |  |  SCArgumentDeclareList (16:14)
+|  |  |  |  SCArgumentDeclare (16:14): value
+|  |  |  SCBody (16:21)
+|  |  |  |  SCAssign (16:21): instance both, declared (9:20): both
+|  |  |  |  |  SCMessage (16:28): +
+|  |  |  |  |  |  SCRead (16:28): local value, declared (16:14): value
+|  |  |  |  |  |  SCPositionalArgs (16:28)
+|  |  |  |  |  |  |  SCLiteral (16:36) = 1
+SCClass (8:1): Meta_Accessors : Meta_AccessorsBase
+|  SCMemberList (8:1)
+|  |  SCMember (11:12): constant = 1
+|  |  SCMember (11:27): array = [1, 2]
+|  |  SCMember (11:44): hidden = 2
+|  |  SCMember (10:15): classGetter
+|  |  SCMember (10:30): classBoth
+|  |  SCMember (10:41): classPlain
+|  SCMethodList (8:1)
+|  |  SCMethod (18:5): classGetter: *classGetter { ^nil } -> nil
+|  |  |  SCBody (18:20)
+|  |  |  |  SCExplicitReturn (18:20)
+|  |  |  |  |  SCLiteral (18:21) = nil
+
+
+
+BYTECODE DUMP 
+
+
+AccessorsBase
+|  accessor (5:10): method inherited
+|  |  shortcut: return instance variable 0
+Accessors
+|  accessor (9:10): method getter
+|  |  shortcut: return instance variable 1
+|  accessor (9:20): method both
+|  |  shortcut: return instance variable 2
+|  accessor (9:27): method setter_
+|  |  shortcut: assign instance variable 3
+|  function 0 (16:5): method both_
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    6B              PushOneAndAddOne
+|  |  2    72              StoreInstVar
+|  |  3    F4              ReturnSelf
+Meta_Accessors
+|  accessor (11:12): method constant
+|  |  shortcut: return literal 1
+|  accessor (11:27): method array
+|  |  shortcut: return literal [1, 2]
+|  accessor (10:30): method classBoth
+|  |  shortcut: return class variable 1
+|  accessor (10:30): method classBoth_
+|  |  shortcut: assign class variable 1
+|  function 0 (18:5): method classGetter
+|  |  properties:
+|  |  shortcut: return literal nil
+|  |  selectors:
+|  |  constants:
+Successfully compiled 17 classes.

@@ -172,7 +172,7 @@ If you have installed local paths that are not under git source control (your ow
 
 The file format looks like this:
 
-code::
+teletype::
 https://github.com/author/quarkname@tags/4.1.4
 https://github.com/supercollider-quarks/ddwCommon@8ae156b460dcb08285013265cf3a1c7172bba665
 ~/supercollider/quarks/my-thing
@@ -206,7 +206,7 @@ Now you can (un)install your own packages from your local folder.
 
 Managing your code with git is optional, but you should consider using it early on. Even if you do not intend to share your code with anyone else, git provides a backup system and a time machine if you break something.
 
-code::
+teletype::
 # in the terminal, its easy as this:
 git init
 ::
@@ -227,7 +227,7 @@ https://github.com/supercollider-quarks/quarks/blob/master/directory.txt
 
 Simply click teletype::edit::, add in your quark's info, and submit a pull request. Here's an example of what an entry should look like in the Quark Directory:
 
-code::
+teletype::
 quarkname=https://github.com/author/quarkname
 ::
 
@@ -256,7 +256,7 @@ It's similar to the package.json file in npm (JavaScript package manager) or bow
 
 The file name is the name of the quark followed by the .quark extension:
 
-code::
+teletype::
 {quark name}.quark
 ::
 
@@ -296,7 +296,7 @@ list::
 
 dependencies is a list of Quarks or git urls with optional an @refspec
 
-code::
+teletype::
 Bjorklund
 cruciallib@tags/4.1.4
 ::

@@ -8,7 +8,7 @@ By default, SuperCollider has 1024 buses for audio signals and 16,384 for contro
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-code::
+teletype::
 // the array of audio buses (channels)
 [ channel0, channel1, channel2, channel3, channel4, ... , ..., ..., etc., ... channel127 ]
 

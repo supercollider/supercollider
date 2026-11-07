@@ -1,9 +1,9 @@
+//# VERSION 3.16
 
 TestPmono : UnitTest {
 
 	test_Pmono_makes_node_after_pause {
-		var player, event;
-		player = Pmono(
+		var player = Pmono(
 			\default,
 			\degree, Pseries(-7, 1, inf),
 			\dur, 0.01
@@ -15,13 +15,12 @@ TestPmono : UnitTest {
 		// plays *before* stop. Nonzero wait time guarantees that.
 		0.001.wait;
 		player.stop;
-		event = player.originalStream.next(Event.default);
+		var event = player.originalStream.next(Event.default);
 		this.assertEquals(event[\type], \monoNote, "After stop, Pmono's next event should be monoNote");
 	}
 
 	test_PmonoArtic_makes_node_after_pause {
-		var player, event;
-		player = PmonoArtic(
+		var player = PmonoArtic(
 			\default,
 			\degree, Pseries(-7, 1, inf),
 			\dur, 0.01,
@@ -29,7 +28,7 @@ TestPmono : UnitTest {
 		).play;
 		0.001.wait;
 		player.stop;
-		event = player.originalStream.next(Event.default);
+		var event = player.originalStream.next(Event.default);
 		this.assertEquals(event[\type], \monoNote, "After stop, PmonoArtic's next event should be monoNote");
 	}
 }

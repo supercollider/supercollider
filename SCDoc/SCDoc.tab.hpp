@@ -35,8 +35,8 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_SCDOC_SCDOC_TAB_HPP_INCLUDED
-# define YY_SCDOC_SCDOC_TAB_HPP_INCLUDED
+#ifndef YY_SCDOC_SCDOC_SCDOC_TAB_HPP_INCLUDED
+# define YY_SCDOC_SCDOC_SCDOC_TAB_HPP_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -84,15 +84,15 @@ extern int scdocdebug;
     NOTE = 285,                    /* NOTE  */
     WARNING = 286,                 /* WARNING  */
     CODE = 287,                    /* CODE  */
-    LINK = 288,                    /* LINK  */
-    ANCHOR = 289,                  /* ANCHOR  */
-    SOFT = 290,                    /* SOFT  */
-    IMAGE = 291,                   /* IMAGE  */
-    TELETYPE = 292,                /* TELETYPE  */
-    MATH = 293,                    /* MATH  */
-    STRONG = 294,                  /* STRONG  */
-    EMPHASIS = 295,                /* EMPHASIS  */
-    CODEBLOCK = 296,               /* "CODE block"  */
+    CODEBLOCK = 288,               /* "CODE block"  */
+    LINK = 289,                    /* LINK  */
+    ANCHOR = 290,                  /* ANCHOR  */
+    SOFT = 291,                    /* SOFT  */
+    IMAGE = 292,                   /* IMAGE  */
+    TELETYPE = 293,                /* TELETYPE  */
+    MATH = 294,                    /* MATH  */
+    STRONG = 295,                  /* STRONG  */
+    EMPHASIS = 296,                /* EMPHASIS  */
     TELETYPEBLOCK = 297,           /* "TELETYPE block"  */
     MATHBLOCK = 298,               /* "MATH block"  */
     TAGSYM = 299,                  /* "::"  */
@@ -106,9 +106,10 @@ extern int scdocdebug;
     NEWLINE = 307,                 /* "newline"  */
     EMPTYLINES = 308,              /* "empty lines"  */
     BAD_METHODNAME = 309,          /* "bad method name"  */
-    START_FULL = 310,              /* START_FULL  */
-    START_PARTIAL = 311,           /* START_PARTIAL  */
-    START_METADATA = 312           /* START_METADATA  */
+    BAD_CODE_VERSION = 310,        /* "code tag with a bad version (code#, then any of a version, legacy or major.minor, class, and fragment or error, in that order and joined by #, e.g. code#3.16::, code#3.16#class::, or code#fragment::)"  */
+    START_FULL = 311,              /* START_FULL  */
+    START_PARTIAL = 312,           /* START_PARTIAL  */
+    START_METADATA = 313           /* START_METADATA  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -117,14 +118,14 @@ extern int scdocdebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 55 "SCDoc.y"
+#line 81 "SCDoc/SCDoc.y"
 
     intptr_t i;
     const char *id;
     char *str;
     DocNode *doc_node;
 
-#line 128 "SCDoc.tab.hpp"
+#line 129 "SCDoc/SCDoc.tab.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -153,4 +154,4 @@ extern YYLTYPE scdoclloc;
 int scdocparse (void);
 
 
-#endif /* !YY_SCDOC_SCDOC_TAB_HPP_INCLUDED  */
+#endif /* !YY_SCDOC_SCDOC_SCDOC_TAB_HPP_INCLUDED  */

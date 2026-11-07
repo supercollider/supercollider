@@ -82,7 +82,7 @@ Pbind(
 
 The next level is code::'midinote':: which is by default bound to this function:
 
-code::
+code#fragment::
 	~midinote = {
 		(~note.value + ~gtranspose + (~octave * divs) + ~root)
 				* 12.0 / ~stepsPerOctave;

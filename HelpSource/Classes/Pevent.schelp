@@ -23,7 +23,7 @@ Pevent(Pbind(\harmonic, Pseq([24, 25, 29, 30], inf)), (octave: 3, dur: 0.2)).tra
 
 Pevent is a simpler form of link::Classes/Pchain::, so that these are equivalent:
 
-code::
+code#fragment::
 Pevent(pattern, event)
 Pchain(pattern, event)
 pattern <> event

@@ -1,8 +1,8 @@
+//# VERSION 3.16
 TestFloat : UnitTest {
 
 	test_storeOn {
-		var stored;
-		stored = String.streamContents({ arg stream; stream <<< 1e-05});
+		var stored = String.streamContents({ arg stream; stream <<< 1e-05});
 		this.assert(stored !=  "1e-05.0", "scientific notation should not have a .0 at the end");
 		this.assertEquals(stored ,  "1e-05", "scientific notation");
 

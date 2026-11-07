@@ -1,0 +1,771 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): BytecodeSends : Object
+|  SCMemberList (5:1)
+|  |  SCMember (6:9): inst
+|  SCMethodList (5:1)
+|  |  SCMethod (10:5): thisOpt: thisOpt { cv; ^this.foo }
+|  |  |  SCBody (10:15)
+|  |  |  |  SCRead (10:15): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (10:19)
+|  |  |  |  |  SCMessage (10:20): foo
+|  |  |  |  |  |  SCSpecial (10:20): this
+|  |  SCMethod (11:5): specialThisOpt: specialThisOpt { cv; ^this.size }
+|  |  |  SCBody (11:22)
+|  |  |  |  SCRead (11:22): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (11:26)
+|  |  |  |  |  SCMessage (11:27): size
+|  |  |  |  |  |  SCSpecial (11:27): this
+|  |  SCMethod (13:5): instanceSpecial: instanceSpecial { cv; ^inst.size }
+|  |  |  SCBody (13:23)
+|  |  |  |  SCRead (13:23): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (13:27)
+|  |  |  |  |  SCMessage (13:28): size
+|  |  |  |  |  |  SCRead (13:28): instance inst, declared (6:9): inst
+|  |  SCMethod (17:5): pushAllArgs: pushAllArgs { |a, b| cv; ^this.foo(a, b) }
+|  |  |  SCArgumentDeclareList (17:20)
+|  |  |  |  SCArgumentDeclare (17:20): a
+|  |  |  |  SCArgumentDeclare (17:23): b
+|  |  |  SCBody (17:26)
+|  |  |  |  SCRead (17:26): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (17:30)
+|  |  |  |  |  SCMessage (17:31): foo
+|  |  |  |  |  |  SCSpecial (17:31): this
+|  |  |  |  |  |  SCPositionalArgs (17:31)
+|  |  |  |  |  |  |  SCRead (17:40): local a, declared (17:20): a
+|  |  |  |  |  |  |  SCRead (17:43): local b, declared (17:23): b
+|  |  SCMethod (18:5): pushAllButFirst: pushAllButFirst { |a, b| cv; ^inst.size.foo(a, b) }
+|  |  |  SCArgumentDeclareList (18:24)
+|  |  |  |  SCArgumentDeclare (18:24): a
+|  |  |  |  SCArgumentDeclare (18:27): b
+|  |  |  SCBody (18:30)
+|  |  |  |  SCRead (18:30): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (18:34)
+|  |  |  |  |  SCMessage (18:35): foo
+|  |  |  |  |  |  SCMessage (18:35): size
+|  |  |  |  |  |  |  SCRead (18:35): instance inst, declared (6:9): inst
+|  |  |  |  |  |  SCPositionalArgs (18:35)
+|  |  |  |  |  |  |  SCRead (18:49): local a, declared (18:24): a
+|  |  |  |  |  |  |  SCRead (18:52): local b, declared (18:27): b
+|  |  SCMethod (19:5): pushAllButFirstTwo: pushAllButFirstTwo { |a, b| cv; ^this.foo(1, a, b) }
+|  |  |  SCArgumentDeclareList (19:27)
+|  |  |  |  SCArgumentDeclare (19:27): a
+|  |  |  |  SCArgumentDeclare (19:30): b
+|  |  |  SCBody (19:33)
+|  |  |  |  SCRead (19:33): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (19:37)
+|  |  |  |  |  SCMessage (19:38): foo
+|  |  |  |  |  |  SCSpecial (19:38): this
+|  |  |  |  |  |  SCPositionalArgs (19:38)
+|  |  |  |  |  |  |  SCLiteral (19:47) = 1
+|  |  |  |  |  |  |  SCRead (19:50): local a, declared (19:27): a
+|  |  |  |  |  |  |  SCRead (19:53): local b, declared (19:30): b
+|  |  SCMethod (20:5): specialPushAllArgs: specialPushAllArgs { |a, b| cv; ^this.put(a, b) }
+|  |  |  SCArgumentDeclareList (20:27)
+|  |  |  |  SCArgumentDeclare (20:27): a
+|  |  |  |  SCArgumentDeclare (20:30): b
+|  |  |  SCBody (20:33)
+|  |  |  |  SCRead (20:33): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (20:37)
+|  |  |  |  |  SCMessage (20:38): put
+|  |  |  |  |  |  SCSpecial (20:38): this
+|  |  |  |  |  |  SCPositionalArgs (20:38)
+|  |  |  |  |  |  |  SCRead (20:47): local a, declared (20:27): a
+|  |  |  |  |  |  |  SCRead (20:50): local b, declared (20:30): b
+|  |  SCMethod (22:5): notTheArguments: notTheArguments { |a, b| cv; ^inst.foo(a, b) }
+|  |  |  SCArgumentDeclareList (22:24)
+|  |  |  |  SCArgumentDeclare (22:24): a
+|  |  |  |  SCArgumentDeclare (22:27): b
+|  |  |  SCBody (22:30)
+|  |  |  |  SCRead (22:30): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (22:34)
+|  |  |  |  |  SCMessage (22:35): foo
+|  |  |  |  |  |  SCRead (22:35): instance inst, declared (6:9): inst
+|  |  |  |  |  |  SCPositionalArgs (22:35)
+|  |  |  |  |  |  |  SCRead (22:44): local a, declared (22:24): a
+|  |  |  |  |  |  |  SCRead (22:47): local b, declared (22:27): b
+|  |  SCMethod (25:5): forSeries: forSeries { |f| cv; ^(1..10).do(f) }
+|  |  |  SCArgumentDeclareList (25:18)
+|  |  |  |  SCArgumentDeclare (25:18): f
+|  |  |  SCBody (25:21)
+|  |  |  |  SCRead (25:21): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (25:25)
+|  |  |  |  |  SCMessage (25:26): do
+|  |  |  |  |  |  SCRange (25:26)
+|  |  |  |  |  |  |  SCLiteral (25:27) = 1
+|  |  |  |  |  |  |  SCMissing (25:26)
+|  |  |  |  |  |  |  SCLiteral (25:30) = 10
+|  |  |  |  |  |  SCPositionalArgs (25:26)
+|  |  |  |  |  |  |  SCRead (25:37): local f, declared (25:18): f
+|  |  SCMethod (26:5): seriesSelector: seriesSelector { |f| cv; ^1.series(nil, 10).do(f) }
+|  |  |  SCArgumentDeclareList (26:23)
+|  |  |  |  SCArgumentDeclare (26:23): f
+|  |  |  SCBody (26:26)
+|  |  |  |  SCRead (26:26): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (26:30)
+|  |  |  |  |  SCMessage (26:31): do
+|  |  |  |  |  |  SCMessage (26:31): series
+|  |  |  |  |  |  |  SCLiteral (26:31) = 1
+|  |  |  |  |  |  |  SCPositionalArgs (26:31)
+|  |  |  |  |  |  |  |  SCLiteral (26:40) = nil
+|  |  |  |  |  |  |  |  SCLiteral (26:45) = 10
+|  |  |  |  |  |  SCPositionalArgs (26:31)
+|  |  |  |  |  |  |  SCRead (26:52): local f, declared (26:23): f
+|  |  SCMethod (30:5): unary: unary { |a| cv; ^a.neg }
+|  |  |  SCArgumentDeclareList (30:14)
+|  |  |  |  SCArgumentDeclare (30:14): a
+|  |  |  SCBody (30:17)
+|  |  |  |  SCRead (30:17): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (30:21)
+|  |  |  |  |  SCMessage (30:22): neg
+|  |  |  |  |  |  SCRead (30:22): local a, declared (30:14): a
+|  |  SCMethod (31:5): unaryWithArgument: unaryWithArgument { |a| cv; ^a.neg(1) }
+|  |  |  SCArgumentDeclareList (31:26)
+|  |  |  |  SCArgumentDeclare (31:26): a
+|  |  |  SCBody (31:29)
+|  |  |  |  SCRead (31:29): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (31:33)
+|  |  |  |  |  SCMessage (31:34): neg
+|  |  |  |  |  |  SCRead (31:34): local a, declared (31:26): a
+|  |  |  |  |  |  SCPositionalArgs (31:34)
+|  |  |  |  |  |  |  SCLiteral (31:40) = 1
+|  |  SCMethod (32:5): unaryWrittenBinary: unaryWrittenBinary { |a| cv; ^a neg: 1 }
+|  |  |  SCArgumentDeclareList (32:27)
+|  |  |  |  SCArgumentDeclare (32:27): a
+|  |  |  SCBody (32:30)
+|  |  |  |  SCRead (32:30): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (32:34)
+|  |  |  |  |  SCMessage (32:35): neg
+|  |  |  |  |  |  SCRead (32:35): local a, declared (32:27): a
+|  |  |  |  |  |  SCPositionalArgs (32:35)
+|  |  |  |  |  |  |  SCLiteral (32:42) = 1
+|  |  SCMethod (33:5): unaryPastNibbleWrittenBinary: unaryPastNibbleWrittenBinary { |a, b| cv; ^a reciprocal: b }
+|  |  |  SCArgumentDeclareList (33:37)
+|  |  |  |  SCArgumentDeclare (33:37): a
+|  |  |  |  SCArgumentDeclare (33:40): b
+|  |  |  SCBody (33:43)
+|  |  |  |  SCRead (33:43): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (33:47)
+|  |  |  |  |  SCMessage (33:48): reciprocal
+|  |  |  |  |  |  SCRead (33:48): local a, declared (33:37): a
+|  |  |  |  |  |  SCPositionalArgs (33:48)
+|  |  |  |  |  |  |  SCRead (33:62): local b, declared (33:40): b
+|  |  SCMethod (34:5): binary: binary { |a| cv; ^a * 3 }
+|  |  |  SCArgumentDeclareList (34:15)
+|  |  |  |  SCArgumentDeclare (34:15): a
+|  |  |  SCBody (34:18)
+|  |  |  |  SCRead (34:18): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (34:22)
+|  |  |  |  |  SCMessage (34:23): *
+|  |  |  |  |  |  SCRead (34:23): local a, declared (34:15): a
+|  |  |  |  |  |  SCPositionalArgs (34:23)
+|  |  |  |  |  |  |  SCLiteral (34:27) = 3
+|  |  SCMethod (35:5): binaryNotNibble: binaryNotNibble { |a| cv; ^a pow: 3 }
+|  |  |  SCArgumentDeclareList (35:24)
+|  |  |  |  SCArgumentDeclare (35:24): a
+|  |  |  SCBody (35:27)
+|  |  |  |  SCRead (35:27): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (35:31)
+|  |  |  |  |  SCMessage (35:32): pow
+|  |  |  |  |  |  SCRead (35:32): local a, declared (35:24): a
+|  |  |  |  |  |  SCPositionalArgs (35:32)
+|  |  |  |  |  |  |  SCLiteral (35:39) = 3
+|  |  SCMethod (36:5): adverb: adverb { |a| cv; ^a +.x 3 }
+|  |  |  SCArgumentDeclareList (36:15)
+|  |  |  |  SCArgumentDeclare (36:15): a
+|  |  |  SCBody (36:18)
+|  |  |  |  SCRead (36:18): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (36:22)
+|  |  |  |  |  SCMessage (36:23): +
+|  |  |  |  |  |  SCRead (36:23): local a, declared (36:15): a
+|  |  |  |  |  |  SCPositionalArgs (36:23)
+|  |  |  |  |  |  |  SCLiteral (36:29) = 3
+|  |  |  |  |  |  SCLiteral (36:27) = \x
+|  |  SCMethod (37:5): addOne: addOne { |a| cv; ^a + 1 }
+|  |  |  SCArgumentDeclareList (37:15)
+|  |  |  |  SCArgumentDeclare (37:15): a
+|  |  |  SCBody (37:18)
+|  |  |  |  SCRead (37:18): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (37:22)
+|  |  |  |  |  SCMessage (37:23): +
+|  |  |  |  |  |  SCRead (37:23): local a, declared (37:15): a
+|  |  |  |  |  |  SCPositionalArgs (37:23)
+|  |  |  |  |  |  |  SCLiteral (37:27) = 1
+|  |  SCMethod (38:5): subtractOne: subtractOne { |a| cv; ^a - 1 }
+|  |  |  SCArgumentDeclareList (38:20)
+|  |  |  |  SCArgumentDeclare (38:20): a
+|  |  |  SCBody (38:23)
+|  |  |  |  SCRead (38:23): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (38:27)
+|  |  |  |  |  SCMessage (38:28): -
+|  |  |  |  |  |  SCRead (38:28): local a, declared (38:20): a
+|  |  |  |  |  |  SCPositionalArgs (38:28)
+|  |  |  |  |  |  |  SCLiteral (38:32) = 1
+|  |  SCMethod (41:5): keywords: keywords { |a| cv; ^a.foo(1, x: 2) }
+|  |  |  SCArgumentDeclareList (41:17)
+|  |  |  |  SCArgumentDeclare (41:17): a
+|  |  |  SCBody (41:20)
+|  |  |  |  SCRead (41:20): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (41:24)
+|  |  |  |  |  SCMessage (41:25): foo
+|  |  |  |  |  |  SCRead (41:25): local a, declared (41:17): a
+|  |  |  |  |  |  SCPositionalArgs (41:25)
+|  |  |  |  |  |  |  SCLiteral (41:31) = 1
+|  |  |  |  |  |  SCKwArgs (41:25)
+|  |  |  |  |  |  |  SCKwArg (41:34): x
+|  |  |  |  |  |  |  |  SCLiteral (41:37) = 2
+|  |  SCMethod (42:5): specialKeywords: specialKeywords { |a| cv; ^a.at(1, x: 2) }
+|  |  |  SCArgumentDeclareList (42:24)
+|  |  |  |  SCArgumentDeclare (42:24): a
+|  |  |  SCBody (42:27)
+|  |  |  |  SCRead (42:27): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (42:31)
+|  |  |  |  |  SCMessage (42:32): at
+|  |  |  |  |  |  SCRead (42:32): local a, declared (42:24): a
+|  |  |  |  |  |  SCPositionalArgs (42:32)
+|  |  |  |  |  |  |  SCLiteral (42:37) = 1
+|  |  |  |  |  |  SCKwArgs (42:32)
+|  |  |  |  |  |  |  SCKwArg (42:40): x
+|  |  |  |  |  |  |  |  SCLiteral (42:43) = 2
+|  |  SCMethod (43:5): operatorKeywords: operatorKeywords { |a| cv; ^a.max(1, x: 2) }
+|  |  |  SCArgumentDeclareList (43:25)
+|  |  |  |  SCArgumentDeclare (43:25): a
+|  |  |  SCBody (43:28)
+|  |  |  |  SCRead (43:28): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (43:32)
+|  |  |  |  |  SCMessage (43:33): max
+|  |  |  |  |  |  SCRead (43:33): local a, declared (43:25): a
+|  |  |  |  |  |  SCPositionalArgs (43:33)
+|  |  |  |  |  |  |  SCLiteral (43:39) = 1
+|  |  |  |  |  |  SCKwArgs (43:33)
+|  |  |  |  |  |  |  SCKwArg (43:42): x
+|  |  |  |  |  |  |  |  SCLiteral (43:45) = 2
+|  |  SCMethod (44:5): manyArguments: manyArguments { |a| cv; ^a.foo(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15) }
+|  |  |  SCArgumentDeclareList (44:22)
+|  |  |  |  SCArgumentDeclare (44:22): a
+|  |  |  SCBody (44:25)
+|  |  |  |  SCRead (44:25): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (44:29)
+|  |  |  |  |  SCMessage (44:30): foo
+|  |  |  |  |  |  SCRead (44:30): local a, declared (44:22): a
+|  |  |  |  |  |  SCPositionalArgs (44:30)
+|  |  |  |  |  |  |  SCLiteral (44:36) = 1
+|  |  |  |  |  |  |  SCLiteral (44:39) = 2
+|  |  |  |  |  |  |  SCLiteral (44:42) = 3
+|  |  |  |  |  |  |  SCLiteral (44:45) = 4
+|  |  |  |  |  |  |  SCLiteral (44:48) = 5
+|  |  |  |  |  |  |  SCLiteral (44:51) = 6
+|  |  |  |  |  |  |  SCLiteral (44:54) = 7
+|  |  |  |  |  |  |  SCLiteral (44:57) = 8
+|  |  |  |  |  |  |  SCLiteral (44:60) = 9
+|  |  |  |  |  |  |  SCLiteral (44:63) = 10
+|  |  |  |  |  |  |  SCLiteral (44:67) = 11
+|  |  |  |  |  |  |  SCLiteral (44:71) = 12
+|  |  |  |  |  |  |  SCLiteral (44:75) = 13
+|  |  |  |  |  |  |  SCLiteral (44:79) = 14
+|  |  |  |  |  |  |  SCLiteral (44:83) = 15
+|  |  SCMethod (46:5): superThisOpt: superThisOpt { cv; ^super.foo }
+|  |  |  SCBody (46:20)
+|  |  |  |  SCRead (46:20): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (46:24)
+|  |  |  |  |  SCMessage (46:25): foo
+|  |  |  |  |  |  SCSpecial (46:25): super
+|  |  SCMethod (47:5): superArguments: superArguments { |a| cv; ^super.foo(a) }
+|  |  |  SCArgumentDeclareList (47:23)
+|  |  |  |  SCArgumentDeclare (47:23): a
+|  |  |  SCBody (47:26)
+|  |  |  |  SCRead (47:26): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (47:30)
+|  |  |  |  |  SCMessage (47:31): foo
+|  |  |  |  |  |  SCSpecial (47:31): super
+|  |  |  |  |  |  SCPositionalArgs (47:31)
+|  |  |  |  |  |  |  SCRead (47:41): local a, declared (47:23): a
+|  |  SCMethod (48:5): superKeywords: superKeywords { |a| cv; ^super.foo(a, x: 1) }
+|  |  |  SCArgumentDeclareList (48:22)
+|  |  |  |  SCArgumentDeclare (48:22): a
+|  |  |  SCBody (48:25)
+|  |  |  |  SCRead (48:25): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (48:29)
+|  |  |  |  |  SCMessage (48:30): foo
+|  |  |  |  |  |  SCSpecial (48:30): super
+|  |  |  |  |  |  SCPositionalArgs (48:30)
+|  |  |  |  |  |  |  SCRead (48:40): local a, declared (48:22): a
+|  |  |  |  |  |  SCKwArgs (48:30)
+|  |  |  |  |  |  |  SCKwArg (48:43): x
+|  |  |  |  |  |  |  |  SCLiteral (48:46) = 1
+|  |  SCMethod (49:5): setter: setter { |a| cv; a.foo = 1 }
+|  |  |  SCArgumentDeclareList (49:15)
+|  |  |  |  SCArgumentDeclare (49:15): a
+|  |  |  SCBody (49:18)
+|  |  |  |  SCRead (49:18): class cv, declared (7:14): cv
+|  |  |  |  SCMessage (49:22): foo_
+|  |  |  |  |  SCRead (49:22): local a, declared (49:15): a
+|  |  |  |  |  SCPositionalArgs (49:22)
+|  |  |  |  |  |  SCLiteral (49:30) = 1
+|  |  SCMethod (50:5): superSetter: superSetter { cv; super.foo = 1 }
+|  |  |  SCBody (50:19)
+|  |  |  |  SCRead (50:19): class cv, declared (7:14): cv
+|  |  |  |  SCMessage (50:23): foo_
+|  |  |  |  |  SCSpecial (50:23): super
+|  |  |  |  |  SCPositionalArgs (50:23)
+|  |  |  |  |  |  SCLiteral (50:35) = 1
+|  |  SCMethod (53:5): tableOrder: tableOrder { |a| cv; ^a.foo({ 1 }, Interpreter) }
+|  |  |  SCArgumentDeclareList (53:19)
+|  |  |  |  SCArgumentDeclare (53:19): a
+|  |  |  SCBody (53:22)
+|  |  |  |  SCRead (53:22): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (53:26)
+|  |  |  |  |  SCMessage (53:27): foo
+|  |  |  |  |  |  SCRead (53:27): local a, declared (53:19): a
+|  |  |  |  |  |  SCPositionalArgs (53:27)
+|  |  |  |  |  |  |  SCFunction (53:33) -> 1
+|  |  |  |  |  |  |  |  SCBody (53:33)
+|  |  |  |  |  |  |  |  |  SCLiteral (53:35) = 1
+|  |  |  |  |  |  |  SCLiteral (53:40)
+|  |  SCMethod (54:5): setterTableOrder: setterTableOrder { |a| cv; a.foo = { 1 } }
+|  |  |  SCArgumentDeclareList (54:25)
+|  |  |  |  SCArgumentDeclare (54:25): a
+|  |  |  SCBody (54:28)
+|  |  |  |  SCRead (54:28): class cv, declared (7:14): cv
+|  |  |  |  SCMessage (54:32): foo_
+|  |  |  |  |  SCRead (54:32): local a, declared (54:25): a
+|  |  |  |  |  SCPositionalArgs (54:32)
+|  |  |  |  |  |  SCFunction (54:40): foo -> 1
+|  |  |  |  |  |  |  SCBody (54:40)
+|  |  |  |  |  |  |  |  SCLiteral (54:42) = 1
+|  |  SCMethod (56:5): environment: environment { cv; ^~x }
+|  |  |  SCBody (56:19)
+|  |  |  |  SCRead (56:19): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (56:23)
+|  |  |  |  |  SCRead (56:24): environment x
+|  |  SCMethod (57:5): performList: performList { |a, b| cv; ^a.foo(*b) }
+|  |  |  SCArgumentDeclareList (57:20)
+|  |  |  |  SCArgumentDeclare (57:20): a
+|  |  |  |  SCArgumentDeclare (57:23): b
+|  |  |  SCBody (57:26)
+|  |  |  |  SCRead (57:26): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (57:30)
+|  |  |  |  |  SCMessage (57:31): foo
+|  |  |  |  |  |  SCRead (57:31): local a, declared (57:20): a
+|  |  |  |  |  |  SCVariadicArgs (57:31)
+|  |  |  |  |  |  |  SCRead (57:38): local b, declared (57:23): b
+|  |  SCMethod (59:5): tail: tail { cv; ^{ |a| a.foo } }
+|  |  |  SCBody (59:12)
+|  |  |  |  SCRead (59:12): class cv, declared (7:14): cv
+|  |  |  |  SCExplicitReturn (59:16)
+|  |  |  |  |  SCFunction (59:17)
+|  |  |  |  |  |  SCArgumentDeclareList (59:20)
+|  |  |  |  |  |  |  SCArgumentDeclare (59:20): a
+|  |  |  |  |  |  SCBody (59:17)
+|  |  |  |  |  |  |  SCMessage (59:23): foo
+|  |  |  |  |  |  |  |  SCRead (59:23): local a, declared (59:20): a
+SCClass (5:1): Meta_BytecodeSends : Meta_Object
+|  SCMemberList (5:1)
+|  |  SCMember (7:14): cv
+|  SCMethodList (5:1)
+
+
+
+BYTECODE DUMP 
+
+
+BytecodeSends
+|  function 0 (10:5): method thisOpt
+|  |  properties:
+|  |  selectors: foo,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    FF              TailCallReturnFromMethod
+|  |  4    A0 00           SendMsgThisOpt
+|  |  6    F3              Return
+|  function 1 (11:5): method specialThisOpt
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    FF              TailCallReturnFromMethod
+|  |  4    C0 09           SendSpecialMsgThisOpt
+|  |  6    F3              Return
+|  function 2 (13:5): method instanceSpecial
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    FF              TailCallReturnFromMethod
+|  |  4    88 00 09        PushInstVarAndSendSpecialMsg
+|  |  7    F3              Return
+|  function 3 (17:5): method pushAllArgs
+|  |  properties:
+|  |  selectors: foo,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    FF              TailCallReturnFromMethod
+|  |  4    89 00           PushAllArgsAndSendMsg
+|  |  6    F3              Return
+|  function 4 (18:5): method pushAllButFirst
+|  |  properties:
+|  |  selectors: foo,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    88 00 09        PushInstVarAndSendSpecialMsg
+|  |  6    FF              TailCallReturnFromMethod
+|  |  7    8A 00           PushAllButFirstArgAndSendMsg
+|  |  9    F3              Return
+|  function 5 (19:5): method pushAllButFirstTwo
+|  |  properties:
+|  |  selectors: foo,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    60              PushSpecialValueThis
+|  |  4    64              PushSpecialNumber
+|  |  5    FF              TailCallReturnFromMethod
+|  |  6    8D 00           PushAllButFirstTwoArgsAndSendMsg
+|  |  8    F3              Return
+|  function 6 (20:5): method specialPushAllArgs
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    FF              TailCallReturnFromMethod
+|  |  4    8B 03           PushAllArgsAndSendSpecialMsg
+|  |  6    F3              Return
+|  function 7 (22:5): method notTheArguments
+|  |  properties:
+|  |  selectors: foo,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    01 00           PushInstVarX
+|  |  5    31              PushTempZeroVar
+|  |  6    32              PushTempZeroVar
+|  |  7    FF              TailCallReturnFromMethod
+|  |  8    A3 00           SendMsg
+|  |  10   F3              Return
+|  function 8 (25:5): method forSeries
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    64              PushSpecialNumber
+|  |  4    6E              PushSpecialValue
+|  |  5    2C 0A           PushInteger8
+|  |  7    31              PushTempZeroVar
+|  |  8    FF              TailCallReturnFromMethod
+|  |  9    C4 40           SendSpecialMsg
+|  |  11   F3              Return
+|  function 9 (26:5): method seriesSelector
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    64              PushSpecialNumber
+|  |  4    6E              PushSpecialValue
+|  |  5    2C 0A           PushInteger8
+|  |  7    C3 4C           SendSpecialMsg
+|  |  9    31              PushTempZeroVar
+|  |  10   FF              TailCallReturnFromMethod
+|  |  11   C2 1D           SendSpecialMsg
+|  |  13   F3              Return
+|  function 10 (30:5): method unary
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    FF              TailCallReturnFromMethod
+|  |  5    0D 00           SendSpecialUnaryArithMsgX
+|  |  7    F3              Return
+|  function 11 (31:5): method unaryWithArgument
+|  |  properties:
+|  |  selectors: neg,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    64              PushSpecialNumber
+|  |  5    FF              TailCallReturnFromMethod
+|  |  6    A2 00           SendMsg
+|  |  8    F3              Return
+|  function 12 (32:5): method unaryWrittenBinary
+|  |  properties:
+|  |  selectors: neg,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    64              PushSpecialNumber
+|  |  5    FF              TailCallReturnFromMethod
+|  |  6    A2 00           SendMsg
+|  |  8    F3              Return
+|  function 13 (33:5): method unaryPastNibbleWrittenBinary
+|  |  properties:
+|  |  selectors: reciprocal,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    32              PushTempZeroVar
+|  |  5    FF              TailCallReturnFromMethod
+|  |  6    A2 00           SendMsg
+|  |  8    F3              Return
+|  function 14 (34:5): method binary
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    2C 03           PushInteger8
+|  |  6    FF              TailCallReturnFromMethod
+|  |  7    E2              SendSpecialBinaryArithMsg
+|  |  8    F3              Return
+|  function 15 (35:5): method binaryNotNibble
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    2C 03           PushInteger8
+|  |  6    FF              TailCallReturnFromMethod
+|  |  7    0E 19           SendSpecialBinaryArithMsgX
+|  |  9    F3              Return
+|  function 16 (36:5): method adverb
+|  |  properties:
+|  |  selectors:
+|  |  constants: \x,
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    2C 03           PushInteger8
+|  |  6    40              PushLiteral
+|  |  7    FF              TailCallReturnFromMethod
+|  |  8    FE 00           SpecialBinaryOpWithAdverb
+|  |  10   F3              Return
+|  function 17 (37:5): method addOne
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    6B              PushOneAndAddOne
+|  |  5    F3              Return
+|  function 18 (38:5): method subtractOne
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    FF              TailCallReturnFromMethod
+|  |  5    61              PushOneAndSubtract
+|  |  6    F3              Return
+|  function 19 (41:5): method keywords
+|  |  properties:
+|  |  selectors: foo,
+|  |  constants: \x,
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    64              PushSpecialNumber
+|  |  5    40              PushLiteral
+|  |  6    65              PushSpecialNumber
+|  |  7    FF              TailCallReturnFromMethod
+|  |  8    0A 04 01 00     SendMsgX
+|  |  12   F3              Return
+|  function 20 (42:5): method specialKeywords
+|  |  properties:
+|  |  selectors:
+|  |  constants: \x,
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    64              PushSpecialNumber
+|  |  5    40              PushLiteral
+|  |  6    65              PushSpecialNumber
+|  |  7    FF              TailCallReturnFromMethod
+|  |  8    0C 04 01 02     SendSpecialMsgX
+|  |  12   F3              Return
+|  function 21 (43:5): method operatorKeywords
+|  |  properties:
+|  |  selectors: max,
+|  |  constants: \x,
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    64              PushSpecialNumber
+|  |  5    40              PushLiteral
+|  |  6    65              PushSpecialNumber
+|  |  7    FF              TailCallReturnFromMethod
+|  |  8    0A 04 01 00     SendMsgX
+|  |  12   F3              Return
+|  function 22 (44:5): method manyArguments
+|  |  properties:
+|  |  selectors: foo,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    64              PushSpecialNumber
+|  |  5    65              PushSpecialNumber
+|  |  6    2C 03           PushInteger8
+|  |  8    2C 04           PushInteger8
+|  |  10   2C 05           PushInteger8
+|  |  12   2C 06           PushInteger8
+|  |  14   2C 07           PushInteger8
+|  |  16   2C 08           PushInteger8
+|  |  18   2C 09           PushInteger8
+|  |  20   2C 0A           PushInteger8
+|  |  22   2C 0B           PushInteger8
+|  |  24   2C 0C           PushInteger8
+|  |  26   2C 0D           PushInteger8
+|  |  28   2C 0E           PushInteger8
+|  |  30   2C 0F           PushInteger8
+|  |  32   FF              TailCallReturnFromMethod
+|  |  33   0A 10 00 00     SendMsgX
+|  |  37   F3              Return
+|  function 23 (46:5): method superThisOpt
+|  |  properties:
+|  |  selectors: foo,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    FF              TailCallReturnFromMethod
+|  |  4    B1 00           SendSuperMsgThisOpt
+|  |  6    F3              Return
+|  function 24 (47:5): method superArguments
+|  |  properties:
+|  |  selectors: foo,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    60              PushSpecialValueThis
+|  |  4    31              PushTempZeroVar
+|  |  5    FF              TailCallReturnFromMethod
+|  |  6    B3 00           SendSuperMsg
+|  |  8    F3              Return
+|  function 25 (48:5): method superKeywords
+|  |  properties:
+|  |  selectors: foo,
+|  |  constants: \x,
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    60              PushSpecialValueThis
+|  |  4    31              PushTempZeroVar
+|  |  5    40              PushLiteral
+|  |  6    64              PushSpecialNumber
+|  |  7    FF              TailCallReturnFromMethod
+|  |  8    0B 04 01 00     SendSuperMsgX
+|  |  12   F3              Return
+|  function 26 (49:5): method setter
+|  |  properties:
+|  |  selectors: foo_,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    64              PushSpecialNumber
+|  |  5    A2 00           SendMsg
+|  |  7    F0              Drop
+|  |  8    F4              ReturnSelf
+|  function 27 (50:5): method superSetter
+|  |  properties:
+|  |  selectors: foo_,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    60              PushSpecialValueThis
+|  |  4    64              PushSpecialNumber
+|  |  5    B3 00           SendSuperMsg
+|  |  7    F0              Drop
+|  |  8    F4              ReturnSelf
+|  function 28 (53:5): method tableOrder
+|  |  properties:
+|  |  selectors: foo, function 29, Interpreter,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    04 01           PushLiteralX
+|  |  6    00 02           PushClassX
+|  |  8    FF              TailCallReturnFromMethod
+|  |  9    A3 00           SendMsg
+|  |  11   F3              Return
+|  function 29 (53:33)
+|  |  properties: closed,
+|  |  selectors:
+|  |  constants:
+|  |  0    64              PushSpecialNumber
+|  |  1    F2              BlockReturn
+|  function 30 (54:5): method setterTableOrder
+|  |  properties:
+|  |  selectors: function 31, foo_,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    04 00           PushLiteralX
+|  |  6    A2 01           SendMsg
+|  |  8    F0              Drop
+|  |  9    F4              ReturnSelf
+|  function 31 (54:40)
+|  |  properties: closed,
+|  |  selectors:
+|  |  constants:
+|  |  0    64              PushSpecialNumber
+|  |  1    F2              BlockReturn
+|  function 32 (56:5): method environment
+|  |  properties:
+|  |  selectors:
+|  |  constants: \x,
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    40              PushLiteral
+|  |  4    FF              TailCallReturnFromMethod
+|  |  5    C1 3C           SendSpecialMsg
+|  |  7    F3              Return
+|  function 33 (57:5): method performList
+|  |  properties:
+|  |  selectors:
+|  |  constants: \foo,
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    40              PushLiteral
+|  |  5    32              PushTempZeroVar
+|  |  6    FF              TailCallReturnFromMethod
+|  |  7    C3 38           SendSpecialMsg
+|  |  9    F3              Return
+|  function 34 (59:5): method tail
+|  |  properties:
+|  |  selectors: function 35,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    04 00           PushLiteralX
+|  |  5    F3              Return
+|  function 35 (59:17)
+|  |  properties: closed,
+|  |  selectors: foo,
+|  |  constants:
+|  |  0    30              PushTempZeroVar
+|  |  1    B0              TailCallReturnFromFunction
+|  |  2    A1 00           SendMsg
+|  |  4    F2              BlockReturn
+Meta_BytecodeSends
+Successfully compiled 16 classes.

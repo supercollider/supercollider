@@ -78,8 +78,8 @@ public:
     static Settings::Manager* settings() { return instance()->mSettings; }
 
     static void evaluateCode(QString const& text, bool silent = false, const QString* filePath = nullptr,
-                             int lineNumber = 0, int column = 0) {
-        instance()->scProcess()->evaluateCode(text, silent, filePath, lineNumber, column);
+                             int lineNumber = 0, int column = 0, QString const& version = QString()) {
+        instance()->scProcess()->evaluateCodeWithVersion(text, silent, filePath, lineNumber, column, version);
     }
 
     static void evaluateCodeIfCompiled(QString const& text, bool silent = false, const QString* filePath = nullptr,

@@ -16,6 +16,8 @@ typedef struct DocNode {
     char* text;
     int n_childs;
     struct DocNode** children;
+    /// For CODE and CODEBLOCK, the line their code starts on, from 1; 0 for other nodes.
+    int line;
 } DocNode;
 
 char* strmerge(char* a, char* b);

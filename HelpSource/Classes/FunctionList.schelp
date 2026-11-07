@@ -28,8 +28,8 @@ instanceMethods::
 method::array
 
 Set/get the FunctionList's array. New functions can be added to the array directly, e.g.
-code::
-x = FunctionList(...some functions);
+code#fragment::
+x = FunctionList(/* some functions */);
 x.array = x.array.insert(2, aFunction);
 ::
 
@@ -48,7 +48,7 @@ returns:: the last function when only one function is left, or code::nil:: when 
 discussion::
 code::addFunc:: and code::removeFunc:: are implemented for link::Classes/Nil::, link::Classes/Object:: and link::Classes/FunctionList::
 
-code::
+code#fragment::
 nil.addFunc(f) // returns f
 obj.addFunc(f) // returns FunctionList([obj, f])
 nil.removeFunc(f) // returns nil

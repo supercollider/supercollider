@@ -44,7 +44,7 @@ SynthDef(\sinGrain, { |out = 0, freq = 440, amp = 0.5, dur = 1|
 ::
 
 This is the output:
-code::
+teletype::
     Left channel                     Right channel
 Logical vs Physical time         Logical vs Physical time
 95         95.001466112          95         95.002988196
@@ -86,12 +86,12 @@ In general, all synths that are triggered by live input (MIDI, GUI, HID) should 
 The latency value should allow enough time for the event to execute and generate the OSC bundle, and for the server to interpret the message and render the audio in time to reach the hardware output on time. If the client and server are on the same machine, this value can be quite low. Running over a network, you must allow more time. (Latency compensates for network timing jitter also.)
 
 Pbind automatically imports a latency parameter from the server's latency variable. You can set the default latency for event patterns like this:
-code::
+code#fragment::
 myServer.latency = 0.2;  // 0.2 is the default
 ::
 
 Here are three ways to play a synth with the latency parameter:
-code::
+code#fragment::
 // messaging style
 // s.nextNodeID is how to get the next unused node ID from the server
 s.sendBundle(latency, [\s_new, defName, s.nextNodeID, targetID, addAction, arguments]);

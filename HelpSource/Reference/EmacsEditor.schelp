@@ -134,7 +134,7 @@ Setting the mark always makes an entry on the current buffer’s mark ring. If y
 section:: Customizing Emacs' behavior
 
 You can customize the behaviour of Emacs, by putting things in the startup file of emacs. This file is code:: ~/.emacs ::. You can define options there, for example:
-code::
+teletype::
 (custom-set-variables
  '(case-fold-search t)
  '(global-font-lock-mode t nil (font-lock))
@@ -144,7 +144,7 @@ code::
 )
 ::
 nil means that an option is turned off, t or 1 means that it is turned on.
-code::
+teletype::
 '(sclang-eval-line-forward nil)
 ::
 Configure the text cursor NOT to move after hitting C-c C-c
@@ -152,7 +152,7 @@ Configure the text cursor NOT to move after hitting C-c C-c
 subsection:: Customize w3m
 
 Normally w3m uses the arrow keys to jump between hyperlinks. For browsing SC help files this is not very useful.
-code::
+teletype::
 (eval-after-load "w3m"
  '(progn
  (define-key w3m-mode-map [left] 'backward-char)
@@ -164,7 +164,7 @@ code::
 ::
 
 subsection:: Automatically complete brackets and parentheses
-code::
+teletype::
   (setq skeleton-pair t)
   (global-set-key (kbd "(") 'skeleton-pair-insert-maybe)
   (global-set-key (kbd "{") 'skeleton-pair-insert-maybe)
@@ -174,7 +174,7 @@ code::
 ::
 
 subsection:: Scrollwheel support
-code::
+teletype::
 ;;; scrollwheel support
 (defun scroll-up-half ()
   "Scroll up half a page."
@@ -194,12 +194,12 @@ code::
 subsection:: Recent files menu
 
 Recentf is a minor mode that builds a list of recently opened files. This list is automatically saved across Emacs sessions. You can then access this list through a menu. Put this in your `~/.emacs’:
-code::
+teletype::
 (require 'recentf)
 (recentf-mode 1)
 ::
 For adding a shortcut (C-x C-r) to open a recent file add this code as well:
-code::
+teletype::
 (defun recentf-open-files-compl ()
   (interactive)
   (let* ((all-files recentf-list)

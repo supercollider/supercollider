@@ -846,6 +846,9 @@ Interpreter {
 
 	var <>codeDump, <>preProcessor;
 
+	// Set with cmdLine, nil unless the client sends the version, e.g., from line 1 of the editor's file.
+	var languageVersion;
+
 	*new { ^this.shouldNotImplement(thisMethod) }
 
 	cmdLine_ {
@@ -880,12 +883,12 @@ Interpreter {
 	// compile, evaluate
 	interpret { |string ... args, kwargs|
 		kwargs = kwargs.asEvent;
-		^this.compile(string, kwargs[\filePath], kwargs[\lineNumber], kwargs[\column]).valueArray(args);
+		^this.compile(string, kwargs[\filePath], kwargs[\lineNumber], kwargs[\column], kwargs[\version]).valueArray(args);
 	}
 	// compile, evaluate, print
 	interpretPrint { arg string ... args, kwargs;
 		kwargs = kwargs.asEvent;
-		^this.compile(string, kwargs[\filePath], kwargs[\lineNumber], kwargs[\column]).valueArray(args).postln;
+		^this.compile(string, kwargs[\filePath], kwargs[\lineNumber], kwargs[\column], kwargs[\version]).valueArray(args).postln;
 	}
 
 	// Compiles a string into Function object (closure).
@@ -895,19 +898,22 @@ Interpreter {
 	// This is also why you can access these straight from the repl... `context`, `cmdLine`, all valid!
 	// Yes, even the 'private' instance variables can be accessed this way.
 	// This also applied to everything inside object, e.g., `currentEnvironment` and `nl`.
-	compile  { |string, filePath_, lineNumber_, column_|
+	// The version is a release, e.g., '3.16' or \legacy, as a Symbol or String. When nil, it is the one on
+	// line 1 of the string, else legacy.
+	compile  { |string, filePath_, lineNumber_, column_, version|
 		cmdLine = string;
 		filePath = filePath_;
 		lineNumber = lineNumber_;
 		column = column_;
+		languageVersion = version;
 		^this.prCompileUsingMembers
 	}
 
 	prCompileUsingMembers {
-		^this.prCompile(cmdLine, filePath, lineNumber, column)
+		^this.prCompile(cmdLine, filePath, lineNumber, column, languageVersion)
 	}
 
-	prCompile { |string, filePath, lineNumber, column|
+	prCompile { |string, filePath, lineNumber, column, version|
 		_CompileExpression
 		// TODO: this is rather bad, returning nil if the compilation fails means we can't tell if it failed because returning nil is valid.
 		^nil

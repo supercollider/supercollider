@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestThreadReschedule : UnitTest {
 	test_Threads_rescheduleToOtherClock {
 		var cond = Condition.new,

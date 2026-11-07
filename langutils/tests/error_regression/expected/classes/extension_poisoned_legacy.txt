@@ -1,0 +1,52 @@
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Duplicate extension
+../modules/extension_poisoned_legacy.sc:6:5
+    4 │ // Within one module, the order isn't defined, so neither is used.
+    5 │ +Poisoned {
+    6 │     duplicated { ^1 }
+      ┆     ^^^^^^^^^^ ...and so does this one, in the same module.
+    7 │ }
+    8 │ 
+    9 │ +Poisoned {
+   10 │     duplicated { ^2 }
+      ┆     ^^^^^^^^^^ This extension defines the method...
+   11 │ }
+
+The order of the files in a module isn't defined, so neither can be chosen, and the method can't be used. Delete one.
+──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (2:1): Poisoned : Object
+|  SCMemberList (2:1)
+|  SCMethodList (2:1)
+|  |  SCMethod (7:5): poisoned: duplicated: duplicated { ^3 }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Warning: Extension overwritten
+|  |  |  ../modules/extension_poisoned_legacy.sc:6:5
+|  |  |      4 │ // Within one module, the order isn't defined, so neither is used.
+|  |  |      5 │ +Poisoned {
+|  |  |      6 │     duplicated { ^1 }
+|  |  |        ┆     ^^^^^^^^^^ This extension defines the method...
+|  |  |      7 │ }
+|  |  |      8 │ 
+|  |  |      9 │ +Poisoned {
+|  |  |
+|  |  |  classes/extension_poisoned_legacy.sc:7:5
+|  |  |      5 │     // expect-warning: Extension overwritten
+|  |  |      6 │     // expect: poisoned
+|  |  |      7 │     duplicated { ^3 }
+|  |  |        ┆     ^^^^^^^^^^ ...but is replaced by this one, from a later module.
+|  |  |      8 │ }
+|  |  |
+|  |  |  In the old compiler the extension from the module given last is used. From 3.16 this is an error, as which is used depends on the order the modules are given.
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (7:18)
+|  |  |  |  SCExplicitReturn (7:18)
+|  |  |  |  |  SCLiteral (7:19) = 3
+Successfully compiled 16 classes.

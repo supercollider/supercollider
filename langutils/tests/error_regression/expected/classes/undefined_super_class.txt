@@ -1,0 +1,37 @@
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Super class not defined.
+classes/undefined_super_class.sc:4:10
+    2 │ // A class whose superclass isn't defined is poisoned while declaring the classes. Only that is reported: its methods,
+    3 │ // and those of its subclasses, aren't compiled, so its undefined members aren't reported too.
+    4 │ Orphan : Undefined {
+      ┆          ^^^^^^^^^ super class not defined.
+    5 │     var member = 1;
+    6 │     classvar class_var;
+    7 │ 
+
+classes/undefined_super_class.sc:17:16
+   15 │ }
+   16 │ 
+   17 │ SecondOrphan : Undefined {
+      ┆                ^^^^^^^^^ super class not defined.
+   18 │     method { ^1 }
+   19 │ }
+   20 │ 
+
+The class Undefined was not defined.
+──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (21:1): Fine : Object, version 3.16
+|  SCMemberList (21:1)
+|  SCMethodList (21:1)
+|  |  SCMethod (22:5): method, version 3.16: method { ^1 } -> 1
+|  |  |  SCBody (22:14)
+|  |  |  |  SCExplicitReturn (22:14)
+|  |  |  |  |  SCLiteral (22:15) = 1
+Successfully compiled 16 classes.

@@ -307,6 +307,26 @@ SCDocNode {
 		^children.detect {|node| node.id===id}
 	}
 
+	// The release of a code node, e.g. "3.16" for code#3.16::, or nil.
+	version {
+		^children !? { this.findChild(\VERSION) !? { |node| node.text } }
+	}
+
+	// Whether a code node is class library code, e.g. code#3.16#class::, rather than code to evaluate.
+	isClassCode {
+		^children.notNil and: { this.findChild(\CLASSCODE).notNil }
+	}
+
+	// Whether a code node is a fragment, e.g. code#fragment::, which is only parsed when the docs are checked.
+	isFragment {
+		^children.notNil and: { this.findChild(\FRAGMENTCODE).notNil }
+	}
+
+	// Whether a code node must fail to compile, e.g. code#error::, as it shows an error.
+	isErrorCode {
+		^children.notNil and: { this.findChild(\ERRORCODE).notNil }
+	}
+
 	notPrivOnly {
 		if(notPrivOnly.isNil) {
 			notPrivOnly = (children.detect {|x| x.id != \CPRIVATE and: {x.id != \IPRIVATE}}.notNil)

@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestCorrectArgCountObj {
 	var <a, <b, <c;
 	*new {|a| ^super.newCopyArgs(a) }

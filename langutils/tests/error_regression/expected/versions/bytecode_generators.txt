@@ -1,0 +1,815 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): BytecodeGeneratorsLegacy : Object
+|  SCMemberList (3:1)
+|  |  SCMember (4:9): iv
+|  SCMethodList (3:1)
+|  |  SCMethod (6:5): iterate: iterate { |src| src; ^{: x * 2, x <- src } }
+|  |  |  SCArgumentDeclareList (6:16)
+|  |  |  |  SCArgumentDeclare (6:16): src (captured)
+|  |  |  SCBody (6:21)
+|  |  |  |  SCRead (6:21): local src, declared (6:16): src
+|  |  |  |  SCExplicitReturn (6:26)
+|  |  |  |  |  SCRoutineGenerator (6:27)
+|  |  |  |  |  |  SCGenQualList (6:37)
+|  |  |  |  |  |  |  SCGenQualIterate (6:37): x
+|  |  |  |  |  |  |  |  SCRead (6:42): local src, declared (6:16): src
+|  |  |  |  |  |  SCMessage (6:30): *
+|  |  |  |  |  |  |  SCRead (6:30): local x, declared (6:37): x <- src
+|  |  |  |  |  |  |  SCPositionalArgs (6:30)
+|  |  |  |  |  |  |  |  SCLiteral (6:34) = 2
+|  |  SCMethod (7:5): indexRange: indexRange { |n| n; ^{: [x, i], x i <- (1..n), x.odd } }
+|  |  |  SCArgumentDeclareList (7:19)
+|  |  |  |  SCArgumentDeclare (7:19): n (captured)
+|  |  |  SCBody (7:22)
+|  |  |  |  SCRead (7:22): local n, declared (7:19): n
+|  |  |  |  SCExplicitReturn (7:25)
+|  |  |  |  |  SCRoutineGenerator (7:26)
+|  |  |  |  |  |  SCGenQualList (7:37)
+|  |  |  |  |  |  |  SCGenQualIterate (7:37): x, i
+|  |  |  |  |  |  |  |  SCRange (7:44)
+|  |  |  |  |  |  |  |  |  SCLiteral (7:45) = 1
+|  |  |  |  |  |  |  |  |  SCMissing (7:44)
+|  |  |  |  |  |  |  |  |  SCRead (7:48): local n, declared (7:19): n
+|  |  |  |  |  |  |  SCGenQualIf (7:52)
+|  |  |  |  |  |  |  |  SCMessage (7:52): odd
+|  |  |  |  |  |  |  |  |  SCRead (7:52): local x, declared (7:37): x i <- (1..n)
+|  |  |  |  |  |  SCCollection (7:29): Array
+|  |  |  |  |  |  |  SCRead (7:30): local x, declared (7:37): x i <- (1..n)
+|  |  |  |  |  |  |  SCRead (7:33): local i, declared (7:37): x i <- (1..n)
+|  |  SCMethod (8:5): qualifiers: qualifiers { |n| n; ^{: y, x <- (1, 3..n), var y = x * iv, :: y.postln, :while (y < 10) } }
+|  |  |  SCArgumentDeclareList (8:19)
+|  |  |  |  SCArgumentDeclare (8:19): n (captured)
+|  |  |  SCBody (8:22)
+|  |  |  |  SCRead (8:22): local n, declared (8:19): n
+|  |  |  |  SCExplicitReturn (8:25)
+|  |  |  |  |  SCRoutineGenerator (8:26)
+|  |  |  |  |  |  SCGenQualList (8:32)
+|  |  |  |  |  |  |  SCGenQualIterate (8:32): x
+|  |  |  |  |  |  |  |  SCRange (8:37)
+|  |  |  |  |  |  |  |  |  SCLiteral (8:38) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (8:41) = 3
+|  |  |  |  |  |  |  |  |  SCRead (8:44): local n, declared (8:19): n
+|  |  |  |  |  |  |  SCGenQualDeclare (8:48): y
+|  |  |  |  |  |  |  |  SCMessage (8:56): *
+|  |  |  |  |  |  |  |  |  SCRead (8:56): local x, declared (8:32): x <- (1, 3..n)
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (8:56)
+|  |  |  |  |  |  |  |  |  |  SCRead (8:60): instance iv, declared (4:9): iv
+|  |  |  |  |  |  |  SCGenQualSideEffect (8:64)
+|  |  |  |  |  |  |  |  SCMessage (8:67): postln
+|  |  |  |  |  |  |  |  |  SCRead (8:67): local y, declared (8:48): var y = x * iv
+|  |  |  |  |  |  |  SCGenQualWhile (8:77)
+|  |  |  |  |  |  |  |  SCMessage (8:85): <
+|  |  |  |  |  |  |  |  |  SCRead (8:85): local y, declared (8:48): var y = x * iv
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (8:85)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (8:89) = 10
+|  |  |  |  |  |  SCRead (8:29): local y, declared (8:48): var y = x * iv
+|  |  SCMethod (9:5): immediate: immediate { |src| src; ^{; x.postln, x <- src, var z = { x }, z.value > 1 } }
+|  |  |  SCArgumentDeclareList (9:18)
+|  |  |  |  SCArgumentDeclare (9:18): src
+|  |  |  SCBody (9:23)
+|  |  |  |  SCRead (9:23): local src, declared (9:18): src
+|  |  |  |  SCExplicitReturn (9:28)
+|  |  |  |  |  SCImmediateGenerator (9:29)
+|  |  |  |  |  |  SCGenQualList (9:42)
+|  |  |  |  |  |  |  SCGenQualIterate (9:42): x (captured)
+|  |  |  |  |  |  |  |  SCRead (9:47): local src, declared (9:18): src
+|  |  |  |  |  |  |  SCGenQualDeclare (9:52): z
+|  |  |  |  |  |  |  |  SCFunction (9:60)
+|  |  |  |  |  |  |  |  |  SCBody (9:60)
+|  |  |  |  |  |  |  |  |  |  SCRead (9:62): local x, declared (9:42): x <- src
+|  |  |  |  |  |  |  SCGenQualIf (9:67)
+|  |  |  |  |  |  |  |  SCMessage (9:67): >
+|  |  |  |  |  |  |  |  |  SCMessage (9:67): value
+|  |  |  |  |  |  |  |  |  |  SCRead (9:67): local z, declared (9:52): var z = { x }
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (9:67)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (9:77) = 1
+|  |  |  |  |  |  SCMessage (9:32): postln
+|  |  |  |  |  |  |  SCRead (9:32): local x, declared (9:42): x <- src
+|  |  SCMethod (10:5): rangeGenerator: rangeGenerator { |n| n; ^(: 1..n) }
+|  |  |  SCArgumentDeclareList (10:23)
+|  |  |  |  SCArgumentDeclare (10:23): n
+|  |  |  SCBody (10:26)
+|  |  |  |  SCRead (10:26): local n, declared (10:23): n
+|  |  |  |  SCExplicitReturn (10:29)
+|  |  |  |  |  SCRangeGenerator (10:30)
+|  |  |  |  |  |  SCLiteral (10:33) = 1
+|  |  |  |  |  |  SCMissing (10:30)
+|  |  |  |  |  |  SCRead (10:36): local n, declared (10:23): n
+|  |  SCMethod (11:5): nilTest: nilTest { |src| src; {; x, x <- src, x.isNil }; ^nil }
+|  |  |  SCArgumentDeclareList (11:16)
+|  |  |  |  SCArgumentDeclare (11:16): src
+|  |  |  SCBody (11:21)
+|  |  |  |  SCRead (11:21): local src, declared (11:16): src
+|  |  |  |  SCImmediateGenerator (11:26)
+|  |  |  |  |  SCGenQualList (11:32)
+|  |  |  |  |  |  SCGenQualIterate (11:32): x
+|  |  |  |  |  |  |  SCRead (11:37): local src, declared (11:16): src
+|  |  |  |  |  |  SCGenQualIf (11:42)
+|  |  |  |  |  |  |  SCMessage (11:42): isNil
+|  |  |  |  |  |  |  |  SCRead (11:42): local x, declared (11:32): x <- src
+|  |  |  |  |  SCRead (11:29): local x, declared (11:32): x <- src
+|  |  |  |  SCExplicitReturn (11:53)
+|  |  |  |  |  SCLiteral (11:54) = nil
+|  |  SCMethod (12:5): tail: tail { |src| src; ^{ {; x, x <- src } } }
+|  |  |  SCArgumentDeclareList (12:13)
+|  |  |  |  SCArgumentDeclare (12:13): src (captured)
+|  |  |  SCBody (12:18)
+|  |  |  |  SCRead (12:18): local src, declared (12:13): src
+|  |  |  |  SCExplicitReturn (12:23)
+|  |  |  |  |  SCFunction (12:24)
+|  |  |  |  |  |  SCBody (12:24)
+|  |  |  |  |  |  |  SCImmediateGenerator (12:26)
+|  |  |  |  |  |  |  |  SCGenQualList (12:32)
+|  |  |  |  |  |  |  |  |  SCGenQualIterate (12:32): x
+|  |  |  |  |  |  |  |  |  |  SCRead (12:37): local src, declared (12:13): src
+|  |  |  |  |  |  |  |  SCRead (12:29): local x, declared (12:32): x <- src
+|  |  SCMethod (13:5): nilTests: nilTests { |src| src; ^{: x, x <- src, x.notNil, :while x.isNil } }
+|  |  |  SCArgumentDeclareList (13:17)
+|  |  |  |  SCArgumentDeclare (13:17): src (captured)
+|  |  |  SCBody (13:22)
+|  |  |  |  SCRead (13:22): local src, declared (13:17): src
+|  |  |  |  SCExplicitReturn (13:27)
+|  |  |  |  |  SCRoutineGenerator (13:28)
+|  |  |  |  |  |  SCGenQualList (13:34)
+|  |  |  |  |  |  |  SCGenQualIterate (13:34): x
+|  |  |  |  |  |  |  |  SCRead (13:39): local src, declared (13:17): src
+|  |  |  |  |  |  |  SCGenQualIf (13:44)
+|  |  |  |  |  |  |  |  SCMessage (13:44): notNil
+|  |  |  |  |  |  |  |  |  SCRead (13:44): local x, declared (13:34): x <- src
+|  |  |  |  |  |  |  SCGenQualWhile (13:54)
+|  |  |  |  |  |  |  |  SCMessage (13:61): isNil
+|  |  |  |  |  |  |  |  |  SCRead (13:61): local x, declared (13:34): x <- src
+|  |  |  |  |  |  SCRead (13:31): local x, declared (13:34): x <- src
+|  |  SCMethod (14:5): ranges: ranges { |n| n; ^{: x, x <- (..n), y <- (1..), z <- (:1, 3..) } }
+|  |  |  SCArgumentDeclareList (14:15)
+|  |  |  |  SCArgumentDeclare (14:15): n (captured)
+|  |  |  SCBody (14:18)
+|  |  |  |  SCRead (14:18): local n, declared (14:15): n
+|  |  |  |  SCExplicitReturn (14:21)
+|  |  |  |  |  SCRoutineGenerator (14:22)
+|  |  |  |  |  |  SCGenQualList (14:28)
+|  |  |  |  |  |  |  SCGenQualIterate (14:28): x
+|  |  |  |  |  |  |  |  SCRange (14:33)
+|  |  |  |  |  |  |  |  |  SCLiteral (14:33) = 0
+|  |  |  |  |  |  |  |  |  SCMissing (14:33)
+|  |  |  |  |  |  |  |  |  SCRead (14:36): local n, declared (14:15): n
+|  |  |  |  |  |  |  SCGenQualIterate (14:40): y
+|  |  |  |  |  |  |  |  SCRange (14:45)
+|  |  |  |  |  |  |  |  |  SCLiteral (14:46) = 1
+|  |  |  |  |  |  |  |  |  SCMissing (14:45)
+|  |  |  |  |  |  |  |  |  SCMissing (14:45)
+|  |  |  |  |  |  |  SCGenQualIterate (14:52): z
+|  |  |  |  |  |  |  |  SCRangeGenerator (14:57)
+|  |  |  |  |  |  |  |  |  SCLiteral (14:59) = 1
+|  |  |  |  |  |  |  |  |  SCLiteral (14:62) = 3
+|  |  |  |  |  |  |  |  |  SCMissing (14:57)
+|  |  |  |  |  |  SCRead (14:25): local x, declared (14:28): x <- (..n)
+|  |  SCMethod (15:5): nested: nested { |src| src; ^{: x, x <- src, y i <- {: z, z <- x } } }
+|  |  |  SCArgumentDeclareList (15:15)
+|  |  |  |  SCArgumentDeclare (15:15): src (captured)
+|  |  |  SCBody (15:20)
+|  |  |  |  SCRead (15:20): local src, declared (15:15): src
+|  |  |  |  SCExplicitReturn (15:25)
+|  |  |  |  |  SCRoutineGenerator (15:26)
+|  |  |  |  |  |  SCGenQualList (15:32)
+|  |  |  |  |  |  |  SCGenQualIterate (15:32): x (captured)
+|  |  |  |  |  |  |  |  SCRead (15:37): local src, declared (15:15): src
+|  |  |  |  |  |  |  SCGenQualIterate (15:42): y, i
+|  |  |  |  |  |  |  |  SCRoutineGenerator (15:49)
+|  |  |  |  |  |  |  |  |  SCGenQualList (15:55)
+|  |  |  |  |  |  |  |  |  |  SCGenQualIterate (15:55): z
+|  |  |  |  |  |  |  |  |  |  |  SCRead (15:60): local x, declared (15:32): x <- src
+|  |  |  |  |  |  |  |  |  SCRead (15:52): local z, declared (15:55): z <- x
+|  |  |  |  |  |  SCRead (15:29): local x, declared (15:32): x <- src
+|  |  SCMethod (16:5): nonLocalReturn: nonLocalReturn { |src| src; if (src.notNil) { ^{: if (x.notNil) { ^x } { 1 }, x <- src } }; ^2 }
+|  |  |  SCArgumentDeclareList (16:23)
+|  |  |  |  SCArgumentDeclare (16:23): src (captured)
+|  |  |  SCBody (16:28)
+|  |  |  |  SCRead (16:28): local src, declared (16:23): src
+|  |  |  |  SCMessage (16:33): if
+|  |  |  |  |  SCMessage (16:37): notNil
+|  |  |  |  |  |  SCRead (16:37): local src, declared (16:23): src
+|  |  |  |  |  SCPositionalArgs (16:33)
+|  |  |  |  |  |  SCFunction (16:49)
+|  |  |  |  |  |  |  SCBody (16:49)
+|  |  |  |  |  |  |  |  SCExplicitReturn (16:51)
+|  |  |  |  |  |  |  |  |  SCRoutineGenerator (16:52)
+|  |  |  |  |  |  |  |  |  |  SCGenQualList (16:83)
+|  |  |  |  |  |  |  |  |  |  |  SCGenQualIterate (16:83): x (captured)
+|  |  |  |  |  |  |  |  |  |  |  |  SCRead (16:88): local src, declared (16:23): src
+|  |  |  |  |  |  |  |  |  |  SCMessage (16:55): if
+|  |  |  |  |  |  |  |  |  |  |  SCMessage (16:59): notNil
+|  |  |  |  |  |  |  |  |  |  |  |  SCRead (16:59): local x, declared (16:83): x <- src
+|  |  |  |  |  |  |  |  |  |  |  SCPositionalArgs (16:55)
+|  |  |  |  |  |  |  |  |  |  |  |  SCFunction (16:69)
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCBody (16:69)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (16:71)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (16:72): local x, declared (16:83): x <- src
+|  |  |  |  |  |  |  |  |  |  |  |  SCFunction (16:76) -> 1
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCBody (16:76)
+|  |  |  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (16:78) = 1
+|  |  |  |  SCExplicitReturn (16:97)
+|  |  |  |  |  SCLiteral (16:98) = 2
+|  |  SCMethod (17:5): members: members { |src| src; ^{; iv = x, x <- src, :: cv = x; iv, var w = x + cv } }
+|  |  |  SCArgumentDeclareList (17:16)
+|  |  |  |  SCArgumentDeclare (17:16): src
+|  |  |  SCBody (17:21)
+|  |  |  |  SCRead (17:21): local src, declared (17:16): src
+|  |  |  |  SCExplicitReturn (17:26)
+|  |  |  |  |  SCImmediateGenerator (17:27)
+|  |  |  |  |  |  SCGenQualList (17:38)
+|  |  |  |  |  |  |  SCGenQualIterate (17:38): x
+|  |  |  |  |  |  |  |  SCRead (17:43): local src, declared (17:16): src
+|  |  |  |  |  |  |  SCGenQualSideEffect (17:48)
+|  |  |  |  |  |  |  |  SCExprList (17:51)
+|  |  |  |  |  |  |  |  |  SCAssign (17:51): class cv, declared (5:14): cv
+|  |  |  |  |  |  |  |  |  |  SCRead (17:56): local x, declared (17:38): x <- src
+|  |  |  |  |  |  |  |  |  SCRead (17:59): instance iv, declared (4:9): iv
+|  |  |  |  |  |  |  SCGenQualDeclare (17:63): w
+|  |  |  |  |  |  |  |  SCMessage (17:71): +
+|  |  |  |  |  |  |  |  |  SCRead (17:71): local x, declared (17:38): x <- src
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (17:71)
+|  |  |  |  |  |  |  |  |  |  SCRead (17:75): class cv, declared (5:14): cv
+|  |  |  |  |  |  SCAssign (17:30): instance iv, declared (4:9): iv
+|  |  |  |  |  |  |  SCRead (17:35): local x, declared (17:38): x <- src
+|  |  SCMethod (18:5): functions: functions { |src| src; ^{: { x + w }, x i <- src, var w = { i } } }
+|  |  |  SCArgumentDeclareList (18:18)
+|  |  |  |  SCArgumentDeclare (18:18): src (captured)
+|  |  |  SCBody (18:23)
+|  |  |  |  SCRead (18:23): local src, declared (18:18): src
+|  |  |  |  SCExplicitReturn (18:28)
+|  |  |  |  |  SCRoutineGenerator (18:29)
+|  |  |  |  |  |  SCGenQualList (18:43)
+|  |  |  |  |  |  |  SCGenQualIterate (18:43): x (captured), i (captured)
+|  |  |  |  |  |  |  |  SCRead (18:50): local src, declared (18:18): src
+|  |  |  |  |  |  |  SCGenQualDeclare (18:55): w (captured)
+|  |  |  |  |  |  |  |  SCFunction (18:63)
+|  |  |  |  |  |  |  |  |  SCBody (18:63)
+|  |  |  |  |  |  |  |  |  |  SCRead (18:65): local i, declared (18:43): x i <- src
+|  |  |  |  |  |  SCFunction (18:32)
+|  |  |  |  |  |  |  SCBody (18:32)
+|  |  |  |  |  |  |  |  SCMessage (18:34): +
+|  |  |  |  |  |  |  |  |  SCRead (18:34): local x, declared (18:43): x i <- src
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (18:34)
+|  |  |  |  |  |  |  |  |  |  SCRead (18:38): local w, declared (18:55): var w = { i }
+|  |  SCMethod (19:5): outer: outer { |src| var k = 3; src; ^{: x + k, x <- (k..src), var k = k + 1, k.even } }
+|  |  |  SCArgumentDeclareList (19:14)
+|  |  |  |  SCArgumentDeclare (19:14): src (captured)
+|  |  |  SCBody (19:19)
+|  |  |  |  SCVariableDeclare (19:23): k (captured), prototype
+|  |  |  |  |  SCLiteral (19:27) = 3
+|  |  |  |  SCRead (19:30): local src, declared (19:14): src
+|  |  |  |  SCExplicitReturn (19:35)
+|  |  |  |  |  SCRoutineGenerator (19:36)
+|  |  |  |  |  |  SCGenQualList (19:46)
+|  |  |  |  |  |  |  SCGenQualIterate (19:46): x
+|  |  |  |  |  |  |  |  SCRange (19:51)
+|  |  |  |  |  |  |  |  |  SCRead (19:52): local k, declared (19:23): k = 3
+|  |  |  |  |  |  |  |  |  SCMissing (19:51)
+|  |  |  |  |  |  |  |  |  SCRead (19:55): local src, declared (19:14): src
+|  |  |  |  |  |  |  SCGenQualDeclare (19:61): k
+|  |  |  |  |  |  |  |  SCMessage (19:69): +
+|  |  |  |  |  |  |  |  |  SCRead (19:69): local k, declared (19:23): k = 3
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (19:69)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (19:73) = 1
+|  |  |  |  |  |  |  SCGenQualIf (19:76)
+|  |  |  |  |  |  |  |  SCMessage (19:76): even
+|  |  |  |  |  |  |  |  |  SCRead (19:76): local k, declared (19:61): var k = k + 1
+|  |  |  |  |  |  SCMessage (19:39): +
+|  |  |  |  |  |  |  SCRead (19:39): local x, declared (19:46): x <- (k..src)
+|  |  |  |  |  |  |  SCPositionalArgs (19:39)
+|  |  |  |  |  |  |  |  SCRead (19:43): local k, declared (19:61): var k = k + 1
+SCClass (3:1): Meta_BytecodeGeneratorsLegacy : Meta_Object
+|  SCMemberList (3:1)
+|  |  SCMember (5:14): cv
+|  SCMethodList (3:1)
+
+
+
+BYTECODE DUMP 
+
+
+BytecodeGeneratorsLegacy
+|  function 0 (6:5): method iterate
+|  |  properties: heap context,
+|  |  selectors: r, function 1,
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    F0              Drop
+|  |  2    04 01           PushLiteralX
+|  |  4    FF              TailCallReturnFromMethod
+|  |  5    A1 00           SendMsg
+|  |  7    F3              Return
+|  function 1 (6:27)
+|  |  properties: context,
+|  |  selectors: function 2,
+|  |  constants:
+|  |  0    21 01           PushTempVar
+|  |  2    04 00           PushLiteralX
+|  |  4    B0              TailCallReturnFromFunction
+|  |  5    C2 1D           SendSpecialMsg
+|  |  7    F2              BlockReturn
+|  function 2 (6:37)
+|  |  properties: closed,
+|  |  selectors:
+|  |  constants:
+|  |  0    30              PushTempZeroVar
+|  |  1    65              PushSpecialNumber
+|  |  2    E2              SendSpecialBinaryArithMsg
+|  |  3    B0              TailCallReturnFromFunction
+|  |  4    C1 49           SendSpecialMsg
+|  |  6    F2              BlockReturn
+|  function 3 (7:5): method indexRange
+|  |  properties: heap context,
+|  |  selectors: r, function 4,
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    F0              Drop
+|  |  2    04 01           PushLiteralX
+|  |  4    FF              TailCallReturnFromMethod
+|  |  5    A1 00           SendMsg
+|  |  7    F3              Return
+|  function 4 (7:26)
+|  |  properties: context,
+|  |  selectors: function 5,
+|  |  constants:
+|  |  0    64              PushSpecialNumber
+|  |  1    6E              PushSpecialValue
+|  |  2    21 01           PushTempVar
+|  |  4    04 00           PushLiteralX
+|  |  6    B0              TailCallReturnFromFunction
+|  |  7    C4 40           SendSpecialMsg
+|  |  9    F2              BlockReturn
+|  function 5 (7:37)
+|  |  properties: closed,
+|  |  selectors: odd,
+|  |  constants:
+|  |  0    30              PushTempZeroVar
+|  |  1    A1 00           SendMsg
+|  |  3    F9 00 0E        JumpIfFalsePushNil
+|  |  6    06 19           PushSpecialClass
+|  |  8    65              PushSpecialNumber
+|  |  9    C2 00           SendSpecialMsg
+|  |  11   30              PushTempZeroVar
+|  |  12   C2 08           SendSpecialMsg
+|  |  14   31              PushTempZeroVar
+|  |  15   C2 08           SendSpecialMsg
+|  |  17   B0              TailCallReturnFromFunction
+|  |  18   C1 49           SendSpecialMsg
+|  |  20   F2              BlockReturn
+|  function 6 (8:5): method qualifiers
+|  |  properties: heap context,
+|  |  selectors: r, function 7,
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    F0              Drop
+|  |  2    04 01           PushLiteralX
+|  |  4    FF              TailCallReturnFromMethod
+|  |  5    A1 00           SendMsg
+|  |  7    F3              Return
+|  function 7 (8:26)
+|  |  properties: context, heap context,
+|  |  selectors: function 8,
+|  |  constants:
+|  |  0    64              PushSpecialNumber
+|  |  1    2C 03           PushInteger8
+|  |  3    21 01           PushTempVar
+|  |  5    04 00           PushLiteralX
+|  |  7    B0              TailCallReturnFromFunction
+|  |  8    C4 40           SendSpecialMsg
+|  |  10   F2              BlockReturn
+|  function 8 (8:32)
+|  |  properties: context,
+|  |  selectors: function 9,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    30              PushTempZeroVar
+|  |  3    01 00           PushInstVarX
+|  |  5    E2              SendSpecialBinaryArithMsg
+|  |  6    B0              TailCallReturnFromFunction
+|  |  7    C2 06           SendSpecialMsg
+|  |  9    F2              BlockReturn
+|  function 9 (8:48)
+|  |  properties: closed,
+|  |  selectors: alwaysYield,
+|  |  constants:
+|  |  0    30              PushTempZeroVar
+|  |  1    C1 3A           SendSpecialMsg
+|  |  3    F0              Drop
+|  |  4    30              PushTempZeroVar
+|  |  5    2C 0A           PushInteger8
+|  |  7    E8              SendSpecialBinaryArithMsg
+|  |  8    F8 00 07        JumpIfFalse
+|  |  11   30              PushTempZeroVar
+|  |  12   B0              TailCallReturnFromFunction
+|  |  13   C1 49           SendSpecialMsg
+|  |  15   FC 00 04        JumpFwd
+|  |  18   6E              PushSpecialValue
+|  |  19   B0              TailCallReturnFromFunction
+|  |  20   A1 00           SendMsg
+|  |  22   F2              BlockReturn
+|  function 10 (9:5): method immediate
+|  |  properties:
+|  |  selectors: function 11,
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    F0              Drop
+|  |  2    31              PushTempZeroVar
+|  |  3    04 00           PushLiteralX
+|  |  5    FF              TailCallReturnFromMethod
+|  |  6    C2 1D           SendSpecialMsg
+|  |  8    F3              Return
+|  function 11 (9:42)
+|  |  properties: closed, heap context,
+|  |  selectors: function 13, function 12,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    04 01           PushLiteralX
+|  |  4    B0              TailCallReturnFromFunction
+|  |  5    C2 06           SendSpecialMsg
+|  |  7    F2              BlockReturn
+|  function 12 (9:60)
+|  |  properties: context,
+|  |  selectors:
+|  |  constants:
+|  |  0    21 00           PushTempVar
+|  |  2    F2              BlockReturn
+|  function 13 (9:52)
+|  |  properties: context,
+|  |  selectors:
+|  |  constants:
+|  |  0    30              PushTempZeroVar
+|  |  1    C1 06           SendSpecialMsg
+|  |  3    64              PushSpecialNumber
+|  |  4    E9              SendSpecialBinaryArithMsg
+|  |  5    F9 00 05        JumpIfFalsePushNil
+|  |  8    21 00           PushTempVar
+|  |  10   B0              TailCallReturnFromFunction
+|  |  11   C1 3A           SendSpecialMsg
+|  |  13   F2              BlockReturn
+|  function 14 (10:5): method rangeGenerator
+|  |  properties:
+|  |  selectors: seriesIter,
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    F0              Drop
+|  |  2    64              PushSpecialNumber
+|  |  3    6E              PushSpecialValue
+|  |  4    FF              TailCallReturnFromMethod
+|  |  5    8D 00           PushAllButFirstTwoArgsAndSendMsg
+|  |  7    F3              Return
+|  function 15 (11:5): method nilTest
+|  |  properties:
+|  |  selectors: function 16,
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    F0              Drop
+|  |  2    31              PushTempZeroVar
+|  |  3    04 00           PushLiteralX
+|  |  5    C2 1D           SendSpecialMsg
+|  |  7    F0              Drop
+|  |  8    F7              ReturnNil
+|  function 16 (11:32)
+|  |  properties: closed,
+|  |  selectors:
+|  |  constants:
+|  |  0    30              PushTempZeroVar
+|  |  1    8F 1A 00 01     ExtendedCodes
+|  |  5    30              PushTempZeroVar
+|  |  6    F2              BlockReturn
+|  function 17 (12:5): method tail
+|  |  properties: heap context,
+|  |  selectors: function 18,
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    F0              Drop
+|  |  2    04 00           PushLiteralX
+|  |  4    F3              Return
+|  function 18 (12:24)
+|  |  properties: context,
+|  |  selectors: function 19,
+|  |  constants:
+|  |  0    21 01           PushTempVar
+|  |  2    04 00           PushLiteralX
+|  |  4    B0              TailCallReturnFromFunction
+|  |  5    C2 1D           SendSpecialMsg
+|  |  7    F2              BlockReturn
+|  function 19 (12:32)
+|  |  properties: closed,
+|  |  selectors:
+|  |  constants:
+|  |  0    30              PushTempZeroVar
+|  |  1    F2              BlockReturn
+|  function 20 (13:5): method nilTests
+|  |  properties: heap context,
+|  |  selectors: r, function 21,
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    F0              Drop
+|  |  2    04 01           PushLiteralX
+|  |  4    FF              TailCallReturnFromMethod
+|  |  5    A1 00           SendMsg
+|  |  7    F3              Return
+|  function 21 (13:28)
+|  |  properties: context,
+|  |  selectors: function 22,
+|  |  constants:
+|  |  0    21 01           PushTempVar
+|  |  2    04 00           PushLiteralX
+|  |  4    B0              TailCallReturnFromFunction
+|  |  5    C2 1D           SendSpecialMsg
+|  |  7    F2              BlockReturn
+|  function 22 (13:34)
+|  |  properties: closed,
+|  |  selectors: alwaysYield,
+|  |  constants:
+|  |  0    30              PushTempZeroVar
+|  |  1    8F 1B 00 10     ExtendedCodes
+|  |  5    30              PushTempZeroVar
+|  |  6    8F 18 00 07     ExtendedCodes
+|  |  10   30              PushTempZeroVar
+|  |  11   B0              TailCallReturnFromFunction
+|  |  12   C1 49           SendSpecialMsg
+|  |  14   FC 00 04        JumpFwd
+|  |  17   6E              PushSpecialValue
+|  |  18   B0              TailCallReturnFromFunction
+|  |  19   A1 00           SendMsg
+|  |  21   F2              BlockReturn
+|  function 23 (14:5): method ranges
+|  |  properties: heap context,
+|  |  selectors: r, function 24,
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    F0              Drop
+|  |  2    04 01           PushLiteralX
+|  |  4    FF              TailCallReturnFromMethod
+|  |  5    A1 00           SendMsg
+|  |  7    F3              Return
+|  function 24 (14:22)
+|  |  properties: context,
+|  |  selectors: function 25,
+|  |  constants:
+|  |  0    63              PushSpecialNumber
+|  |  1    6E              PushSpecialValue
+|  |  2    21 01           PushTempVar
+|  |  4    04 00           PushLiteralX
+|  |  6    B0              TailCallReturnFromFunction
+|  |  7    C4 40           SendSpecialMsg
+|  |  9    F2              BlockReturn
+|  function 25 (14:28)
+|  |  properties: closed, heap context,
+|  |  selectors: function 26,
+|  |  constants:
+|  |  0    64              PushSpecialNumber
+|  |  1    6E              PushSpecialValue
+|  |  2    6E              PushSpecialValue
+|  |  3    04 00           PushLiteralX
+|  |  5    B0              TailCallReturnFromFunction
+|  |  6    C4 40           SendSpecialMsg
+|  |  8    F2              BlockReturn
+|  function 26 (14:40)
+|  |  properties: context, heap context,
+|  |  selectors: seriesIter, function 27,
+|  |  constants:
+|  |  0    64              PushSpecialNumber
+|  |  1    2C 03           PushInteger8
+|  |  3    6E              PushSpecialValue
+|  |  4    A3 00           SendMsg
+|  |  6    04 01           PushLiteralX
+|  |  8    B0              TailCallReturnFromFunction
+|  |  9    C2 1D           SendSpecialMsg
+|  |  11   F2              BlockReturn
+|  function 27 (14:52)
+|  |  properties: context,
+|  |  selectors:
+|  |  constants:
+|  |  0    22 00           PushTempVar
+|  |  2    B0              TailCallReturnFromFunction
+|  |  3    C1 49           SendSpecialMsg
+|  |  5    F2              BlockReturn
+|  function 28 (15:5): method nested
+|  |  properties: heap context,
+|  |  selectors: r, function 29,
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    F0              Drop
+|  |  2    04 01           PushLiteralX
+|  |  4    FF              TailCallReturnFromMethod
+|  |  5    A1 00           SendMsg
+|  |  7    F3              Return
+|  function 29 (15:26)
+|  |  properties: context,
+|  |  selectors: function 30,
+|  |  constants:
+|  |  0    21 01           PushTempVar
+|  |  2    04 00           PushLiteralX
+|  |  4    B0              TailCallReturnFromFunction
+|  |  5    C2 1D           SendSpecialMsg
+|  |  7    F2              BlockReturn
+|  function 30 (15:32)
+|  |  properties: closed, heap context,
+|  |  selectors: r, function 31, function 33,
+|  |  constants:
+|  |  0    04 01           PushLiteralX
+|  |  2    A1 00           SendMsg
+|  |  4    04 02           PushLiteralX
+|  |  6    B0              TailCallReturnFromFunction
+|  |  7    C2 1D           SendSpecialMsg
+|  |  9    F2              BlockReturn
+|  function 31 (15:49)
+|  |  properties: context,
+|  |  selectors: function 32,
+|  |  constants:
+|  |  0    21 00           PushTempVar
+|  |  2    04 00           PushLiteralX
+|  |  4    B0              TailCallReturnFromFunction
+|  |  5    C2 1D           SendSpecialMsg
+|  |  7    F2              BlockReturn
+|  function 32 (15:55)
+|  |  properties: closed,
+|  |  selectors:
+|  |  constants:
+|  |  0    30              PushTempZeroVar
+|  |  1    B0              TailCallReturnFromFunction
+|  |  2    C1 49           SendSpecialMsg
+|  |  4    F2              BlockReturn
+|  function 33 (15:42)
+|  |  properties: context,
+|  |  selectors:
+|  |  constants:
+|  |  0    21 00           PushTempVar
+|  |  2    B0              TailCallReturnFromFunction
+|  |  3    C1 49           SendSpecialMsg
+|  |  5    F2              BlockReturn
+|  function 34 (16:5): method nonLocalReturn
+|  |  properties: heap context,
+|  |  selectors: r, function 35,
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    F0              Drop
+|  |  2    31              PushTempZeroVar
+|  |  3    8F 1B 00 06     ExtendedCodes
+|  |  7    04 01           PushLiteralX
+|  |  9    FF              TailCallReturnFromMethod
+|  |  10   A1 00           SendMsg
+|  |  12   F3              Return
+|  |  13   F0              Drop
+|  |  14   65              PushSpecialNumber
+|  |  15   F3              Return
+|  function 35 (16:52)
+|  |  properties: context, heap context,
+|  |  selectors: function 36,
+|  |  constants:
+|  |  0    21 01           PushTempVar
+|  |  2    04 00           PushLiteralX
+|  |  4    B0              TailCallReturnFromFunction
+|  |  5    C2 1D           SendSpecialMsg
+|  |  7    F2              BlockReturn
+|  function 36 (16:83)
+|  |  properties: context,
+|  |  selectors:
+|  |  constants:
+|  |  0    30              PushTempZeroVar
+|  |  1    8F 19 00 05     ExtendedCodes
+|  |  5    30              PushTempZeroVar
+|  |  6    F3              Return
+|  |  7    FC 00 01        JumpFwd
+|  |  10   64              PushSpecialNumber
+|  |  11   B0              TailCallReturnFromFunction
+|  |  12   C1 49           SendSpecialMsg
+|  |  14   F2              BlockReturn
+|  function 37 (17:5): method members
+|  |  properties: heap context,
+|  |  selectors: function 38,
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    F0              Drop
+|  |  2    31              PushTempZeroVar
+|  |  3    04 00           PushLiteralX
+|  |  5    FF              TailCallReturnFromMethod
+|  |  6    C2 1D           SendSpecialMsg
+|  |  8    F3              Return
+|  function 38 (17:38)
+|  |  properties: context, heap context,
+|  |  selectors: function 39,
+|  |  constants:
+|  |  0    30              PushTempZeroVar
+|  |  1    90 00           StoreClassVar
+|  |  3    01 00           PushInstVarX
+|  |  5    F0              Drop
+|  |  6    04 00           PushLiteralX
+|  |  8    30              PushTempZeroVar
+|  |  9    50 00           PushClassVar 
+|  |  11   E0              SendSpecialBinaryArithMsg
+|  |  12   B0              TailCallReturnFromFunction
+|  |  13   C2 06           SendSpecialMsg
+|  |  15   F2              BlockReturn
+|  function 39 (17:63)
+|  |  properties: context,
+|  |  selectors:
+|  |  constants:
+|  |  0    21 00           PushTempVar
+|  |  2    07 00           StoreInstVarX
+|  |  4    F2              BlockReturn
+|  function 40 (18:5): method functions
+|  |  properties: heap context,
+|  |  selectors: r, function 41,
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    F0              Drop
+|  |  2    04 01           PushLiteralX
+|  |  4    FF              TailCallReturnFromMethod
+|  |  5    A1 00           SendMsg
+|  |  7    F3              Return
+|  function 41 (18:29)
+|  |  properties: context,
+|  |  selectors: function 42,
+|  |  constants:
+|  |  0    21 01           PushTempVar
+|  |  2    04 00           PushLiteralX
+|  |  4    B0              TailCallReturnFromFunction
+|  |  5    C2 1D           SendSpecialMsg
+|  |  7    F2              BlockReturn
+|  function 42 (18:43)
+|  |  properties: closed, heap context,
+|  |  selectors: function 44, function 43,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    04 01           PushLiteralX
+|  |  4    B0              TailCallReturnFromFunction
+|  |  5    C2 06           SendSpecialMsg
+|  |  7    F2              BlockReturn
+|  function 43 (18:63)
+|  |  properties: context,
+|  |  selectors:
+|  |  constants:
+|  |  0    21 01           PushTempVar
+|  |  2    F2              BlockReturn
+|  function 44 (18:55)
+|  |  properties: context, heap context,
+|  |  selectors: function 45,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    B0              TailCallReturnFromFunction
+|  |  3    C1 49           SendSpecialMsg
+|  |  5    F2              BlockReturn
+|  function 45 (18:32)
+|  |  properties: context,
+|  |  selectors:
+|  |  constants:
+|  |  0    22 00           PushTempVar
+|  |  2    21 00           PushTempVar
+|  |  4    B0              TailCallReturnFromFunction
+|  |  5    E0              SendSpecialBinaryArithMsg
+|  |  6    F2              BlockReturn
+|  function 46 (19:5): method outer
+|  |  properties: heap context,
+|  |  selectors: r, function 47,
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    F0              Drop
+|  |  2    04 01           PushLiteralX
+|  |  4    FF              TailCallReturnFromMethod
+|  |  5    A1 00           SendMsg
+|  |  7    F3              Return
+|  function 47 (19:36)
+|  |  properties: context, heap context,
+|  |  selectors: function 48,
+|  |  constants:
+|  |  0    21 02           PushTempVar
+|  |  2    6E              PushSpecialValue
+|  |  3    21 01           PushTempVar
+|  |  5    04 00           PushLiteralX
+|  |  7    B0              TailCallReturnFromFunction
+|  |  8    C4 40           SendSpecialMsg
+|  |  10   F2              BlockReturn
+|  function 48 (19:46)
+|  |  properties: context, heap context,
+|  |  selectors: function 49,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    22 02           PushTempVar
+|  |  4    6B              PushOneAndAddOne
+|  |  5    B0              TailCallReturnFromFunction
+|  |  6    C2 06           SendSpecialMsg
+|  |  8    F2              BlockReturn
+|  function 49 (19:61)
+|  |  properties: context,
+|  |  selectors: even,
+|  |  constants:
+|  |  0    30              PushTempZeroVar
+|  |  1    A1 00           SendMsg
+|  |  3    F9 00 07        JumpIfFalsePushNil
+|  |  6    21 00           PushTempVar
+|  |  8    30              PushTempZeroVar
+|  |  9    E0              SendSpecialBinaryArithMsg
+|  |  10   B0              TailCallReturnFromFunction
+|  |  11   C1 49           SendSpecialMsg
+|  |  13   F2              BlockReturn
+Meta_BytecodeGeneratorsLegacy
+Successfully compiled 16 classes.

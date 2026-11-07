@@ -44,21 +44,21 @@ code::
 e = IdentityDictionary(8,
 	parent: IdentityDictionary[\b -> 10]
 ).put(\a, 5);
--> IdentityDictionary[(a -> 5)]
+// -> IdentityDictionary[(a -> 5)]
 
 // But 'b' is still there
 e[\a] + e[\b]
--> 15
+// -> 15
 
 // Iteration touches 'a' only
 e.keysValuesDo { |key, value| [key, value].postln };
--> [a, 5]
+// -> [a, 5]
 
 // 'collect' is also an iteration, and doesn't touch the parent
 g = e.collect { |x| x * 5 };
--> IdentityDictionary[(a -> 25)]
-g[\b]
--> 10
+// -> IdentityDictionary[(a -> 25)]
+g[\b];
+// -> 10
 
 // The parent goes into a copy as well
 g = e.copy;
@@ -66,8 +66,8 @@ g[\b]
 
 // But it's by reference: 'e' and 'g' have the same parent
 g.parent[\b] = 20;
-e[\b]
--> 20
+e[\b];
+// -> 20
 ::
 
 CLASSMETHODS::

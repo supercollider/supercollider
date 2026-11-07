@@ -1,0 +1,138 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): BytecodeDifferences : Object
+|  SCMemberList (5:1)
+|  SCMethodList (5:1)
+|  |  SCMethod (9:5): returnSequenceNil: returnSequenceNil { |a| cv; ^(a; nil) }
+|  |  |  SCArgumentDeclareList (9:26)
+|  |  |  |  SCArgumentDeclare (9:26): a
+|  |  |  SCBody (9:29)
+|  |  |  |  SCRead (9:29): class cv, declared (6:14): cv
+|  |  |  |  SCExplicitReturn (9:33)
+|  |  |  |  |  SCExprList (9:35)
+|  |  |  |  |  |  SCRead (9:35): local a, declared (9:26): a
+|  |  |  |  |  |  SCLiteral (9:38) = nil
+|  |  SCMethod (12:5): seriesDo: seriesDo { |a, f| cv; ^(a..10).do(f) }
+|  |  |  SCArgumentDeclareList (12:17)
+|  |  |  |  SCArgumentDeclare (12:17): a
+|  |  |  |  SCArgumentDeclare (12:20): f
+|  |  |  SCBody (12:23)
+|  |  |  |  SCRead (12:23): class cv, declared (6:14): cv
+|  |  |  |  SCExplicitReturn (12:27)
+|  |  |  |  |  SCMessage (12:28): do
+|  |  |  |  |  |  SCRange (12:28)
+|  |  |  |  |  |  |  SCRead (12:29): local a, declared (12:17): a
+|  |  |  |  |  |  |  SCMissing (12:28)
+|  |  |  |  |  |  |  SCLiteral (12:32) = 10
+|  |  |  |  |  |  SCPositionalArgs (12:28)
+|  |  |  |  |  |  |  SCRead (12:39): local f, declared (12:20): f
+|  |  SCMethod (13:5): superSeriesDo: superSeriesDo { |a, f| cv; ^super.series(a, 10).do(f) }
+|  |  |  SCArgumentDeclareList (13:22)
+|  |  |  |  SCArgumentDeclare (13:22): a
+|  |  |  |  SCArgumentDeclare (13:25): f
+|  |  |  SCBody (13:28)
+|  |  |  |  SCRead (13:28): class cv, declared (6:14): cv
+|  |  |  |  SCExplicitReturn (13:32)
+|  |  |  |  |  SCMessage (13:33): do
+|  |  |  |  |  |  SCMessage (13:33): series
+|  |  |  |  |  |  |  SCSpecial (13:33): super
+|  |  |  |  |  |  |  SCPositionalArgs (13:33)
+|  |  |  |  |  |  |  |  SCRead (13:46): local a, declared (13:22): a
+|  |  |  |  |  |  |  |  SCLiteral (13:49) = 10
+|  |  |  |  |  |  SCPositionalArgs (13:33)
+|  |  |  |  |  |  |  SCRead (13:56): local f, declared (13:25): f
+|  |  SCMethod (14:5): nestedNonLocalReturn: nestedNonLocalReturn { |a| cv; a.do { |x| if (x) { ^1 } }; ^2 }
+|  |  |  SCArgumentDeclareList (14:29)
+|  |  |  |  SCArgumentDeclare (14:29): a
+|  |  |  SCBody (14:32)
+|  |  |  |  SCRead (14:32): class cv, declared (6:14): cv
+|  |  |  |  SCMessage (14:36): do
+|  |  |  |  |  SCRead (14:36): local a, declared (14:29): a
+|  |  |  |  |  SCPositionalArgs (14:36)
+|  |  |  |  |  |  SCFunction (14:41)
+|  |  |  |  |  |  |  SCArgumentDeclareList (14:44)
+|  |  |  |  |  |  |  |  SCArgumentDeclare (14:44): x
+|  |  |  |  |  |  |  SCBody (14:41)
+|  |  |  |  |  |  |  |  SCMessage (14:47): if
+|  |  |  |  |  |  |  |  |  SCRead (14:51): local x, declared (14:44): x
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (14:47)
+|  |  |  |  |  |  |  |  |  |  SCFunction (14:54)
+|  |  |  |  |  |  |  |  |  |  |  SCBody (14:54)
+|  |  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (14:56)
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (14:57) = 1
+|  |  |  |  SCExplicitReturn (14:64)
+|  |  |  |  |  SCLiteral (14:65) = 2
+SCClass (5:1): Meta_BytecodeDifferences : Meta_Object
+|  SCMemberList (5:1)
+|  |  SCMember (6:14): cv
+|  SCMethodList (5:1)
+
+
+
+BYTECODE DUMP 
+
+
+BytecodeDifferences
+|  function 0 (9:5): method returnSequenceNil
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    F0              Drop
+|  |  5    F7              ReturnNil
+|  function 1 (12:5): method seriesDo
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    6E              PushSpecialValue
+|  |  5    2C 0A           PushInteger8
+|  |  7    32              PushTempZeroVar
+|  |  8    FF              TailCallReturnFromMethod
+|  |  9    C4 40           SendSpecialMsg
+|  |  11   F3              Return
+|  function 2 (13:5): method superSeriesDo
+|  |  properties:
+|  |  selectors: series,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    60              PushSpecialValueThis
+|  |  4    31              PushTempZeroVar
+|  |  5    2C 0A           PushInteger8
+|  |  7    B4 00           SendSuperMsg
+|  |  9    32              PushTempZeroVar
+|  |  10   FF              TailCallReturnFromMethod
+|  |  11   C2 1D           SendSpecialMsg
+|  |  13   F3              Return
+|  function 3 (14:5): method nestedNonLocalReturn
+|  |  properties: heap context,
+|  |  selectors: function 4,
+|  |  constants:
+|  |  0    50 00           PushClassVar 
+|  |  2    F0              Drop
+|  |  3    31              PushTempZeroVar
+|  |  4    04 00           PushLiteralX
+|  |  6    C2 1D           SendSpecialMsg
+|  |  8    F0              Drop
+|  |  9    65              PushSpecialNumber
+|  |  10   F3              Return
+|  function 4 (14:41)
+|  |  properties: context,
+|  |  selectors:
+|  |  constants:
+|  |  0    30              PushTempZeroVar
+|  |  1    F9 00 02        JumpIfFalsePushNil
+|  |  4    64              PushSpecialNumber
+|  |  5    F3              Return
+|  |  6    F2              BlockReturn
+Meta_BytecodeDifferences
+Successfully compiled 16 classes.

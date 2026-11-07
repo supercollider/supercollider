@@ -1,3 +1,4 @@
+//# VERSION 3.16
 // TestServer_ServerGUI.sc
 // Author: Brian Heim (brianlheim@gmail.com)
 // Tests for the GUI created by s.makeGui
@@ -113,9 +114,8 @@ TestServer_ServerGUI : UnitTest {
 	test_default {
 		var expValues = [0, 0, 1, 0, 0];
 		var expEnabled = [true, true, true, false, true];
-		var oldDefault;
 
-		oldDefault = Server.default;
+		var oldDefault = Server.default;
 		Server.default = server;
 
 		this.assertButtonStates(expValues, expEnabled, "After defaulting this server");
@@ -127,9 +127,8 @@ TestServer_ServerGUI : UnitTest {
 	test_undefault {
 		var expValues = [0, 0, 0, 0, 0];
 		var expEnabled = [true, true, true, false, true];
-		var oldDefault;
 
-		oldDefault = Server.default;
+		var oldDefault = Server.default;
 		Server.default = server;
 		Server.default = oldDefault;
 

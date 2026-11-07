@@ -1,3 +1,4 @@
+//# VERSION 3.16
 // An attempt to test most of the moderately complex rules in the parser.
 // It is not meant as a replacement for fuzz testing, but just as a quick and dirty answer to the question
 //   'did I just definitively break everything?'
@@ -27,8 +28,7 @@ TestParserRules : UnitTest {
 	}
 
 	test_argdecls1 {
-		var f;
-		f = { arg foo; };
+		var f = { arg foo; };
 		this.assertEquals(f.def.argNames[0], \foo);
 
 		f = { arg foo, bar; };
@@ -68,8 +68,7 @@ TestParserRules : UnitTest {
 	}
 
 	test_vardecls {
-		var f;
-		f = { var foo; };
+		var f = { var foo; };
 		this.assertEquals(f.def.varNames[0], \foo);
 
 		f = { var foo, bar; };
@@ -120,8 +119,7 @@ TestParserRules : UnitTest {
 
 	test_valrange3 {
 		// calls seriesIter
-		var a;
-		a = (:..1);
+		var a = (:..1);
 		this.assertEquals(a.next, 0);
 		this.assertEquals(a.next, 1);
 		this.assertEquals(a.next, nil);
@@ -154,7 +152,7 @@ TestParserRules : UnitTest {
 	}
 
 	valrange2Inf1 { |n|
-		(0..).do{ |i|
+		(:0..).do{ |i|
 			if (i >= n) { ^i }
 		};
 	}

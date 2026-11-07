@@ -8,7 +8,7 @@ Score encapsulates a list of timed OSC commands and provides some methods for us
 
 The list should be in the following format, with times in ascending order. Bundles are okay.
 
-code::
+teletype::
 [
 [beat1, [OSCcmd1]],
 [beat2, [OSCcmd2], [OSCcmd3]],
@@ -200,7 +200,7 @@ Score.writeFromFile(Platform.defaultTempDir +/+ "score-test", Platform.defaultTe
 
 From the command line, the file can then be rendered from within the build directory:
 
-code::
+teletype::
 scsynth -N test.osc _ test.aif 44100 AIFF int16 -o 1
 ::
 

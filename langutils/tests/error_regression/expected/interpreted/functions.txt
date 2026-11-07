@@ -1,0 +1,54 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): version 3.16: interpreted/functions.scd
+|  SCRegionList (1:1)
+|  |  SCRegion (4:1)
+|  |  |  SCFunction (4:1)
+|  |  |  |  SCBody (4:1)
+|  |  |  |  |  SCAssign (4:1): instance a, declared (37:11): a
+|  |  |  |  |  |  SCFunction (4:5): a
+|  |  |  |  |  |  |  SCArgumentDeclareList (4:5)
+|  |  |  |  |  |  |  |  SCArgumentDeclare (4:5): _
+|  |  |  |  |  |  |  SCBody (4:5)
+|  |  |  |  |  |  |  |  SCMessage (4:5): +
+|  |  |  |  |  |  |  |  |  SCRead (4:5): local _, declared (4:5): _
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (4:5)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (4:9) = 1
+|  |  SCRegion (4:12)
+|  |  |  SCFunction (4:12)
+|  |  |  |  SCBody (4:12)
+|  |  |  |  |  SCAssign (4:12): instance b, declared (37:16): b
+|  |  |  |  |  |  SCRoutineGenerator (4:16)
+|  |  |  |  |  |  |  SCGenQualList (4:22)
+|  |  |  |  |  |  |  |  SCGenQualIterate (4:22): x
+|  |  |  |  |  |  |  |  |  SCCollection (4:27): Array = [1, 2]
+|  |  |  |  |  |  |  |  |  |  SCLiteral (4:28) = 1
+|  |  |  |  |  |  |  |  |  |  SCLiteral (4:31) = 2
+|  |  |  |  |  |  |  SCRead (4:19): local x, declared (4:22): x <- [1, 2]
+|  |  SCRegion (4:37)
+|  |  |  SCFunction (4:37)
+|  |  |  |  SCBody (4:37)
+|  |  |  |  |  SCAssign (4:37): instance c, declared (37:21): c
+|  |  |  |  |  |  SCFunction (4:41): c
+|  |  |  |  |  |  |  SCArgumentDeclareList (4:44)
+|  |  |  |  |  |  |  |  SCArgumentDeclare (4:44): n
+|  |  |  |  |  |  |  SCBody (4:41)
+|  |  |  |  |  |  |  |  SCMessage (4:47): *
+|  |  |  |  |  |  |  |  |  SCRead (4:47): local n, declared (4:44): n
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (4:47)
+|  |  |  |  |  |  |  |  |  |  SCMessage (4:51): value
+|  |  |  |  |  |  |  |  |  |  |  SCRead (4:51): instance a, declared (37:11): a
+|  |  |  |  |  |  |  |  |  |  |  SCPositionalArgs (4:51)
+|  |  |  |  |  |  |  |  |  |  |  |  SCRead (4:54): local n, declared (4:44): n
+|  |  SCRegion (4:60)
+|  |  |  SCFunction (4:60)
+|  |  |  |  SCBody (4:60)
+|  |  |  |  |  SCMessage (4:60): value
+|  |  |  |  |  |  SCRead (4:60): instance c, declared (37:21): c
+|  |  |  |  |  |  SCPositionalArgs (4:60)
+|  |  |  |  |  |  |  SCLiteral (4:63) = 2
+Successfully compiled 15 classes.

@@ -33,11 +33,12 @@ A function is evaluated each iteration and is passed the iterated numeric value 
 
 Syntax
 
-code::
+code#fragment::
 for(startValue, endValue) { loopFuncBody }
 
 // alternate
 for(startValue, endValue, loopFunc)
+::
 
 Example
 code::
@@ -50,7 +51,7 @@ The forBy selector implements iteration over an integer series with a variable s
 A function is evaluated each iteration and is passed the iterated numeric value as an argument.
 
 Syntax
-code::
+code#fragment::
 forBy(startValue, endValue, stepValue) { loopFuncBody };
 
 forBy(startValue, endValue, stepValue, loopFunc);
@@ -71,7 +72,7 @@ Other kinds of Objects respond to do by passing themselves to the function one t
 The function is called with two arguments, the item, and an iteration counter.
 
 Syntax
-code::
+code#fragment::
 collection.do { loopFuncBody };
 
 // alternate
@@ -105,38 +106,10 @@ Routine {
 }.do { arg item; item.postln };  // 'do' applies to the Routine
 ::
 
-Note:: The syntax code::(8..20).do:: uses an optimization to avoid generating an array that is used only for iteration (but which would be discarded thereafter).
-The return value of code:: (8..20).do { |item| item.postln } :: is 8, the starting value.
+In legacy code an optimisation was used that turned code::(0..).do { |i| i.postln }:: into a routine.
+This is no longer the case in 3.16, instead, simple use the correct routine range syntax code:: (:0..).do {|i| i.postln }::.
 
-However, if code::do:: is written as an infix binary operator, as in code::(8..20) do: { |item| item.postln }::, then it will generate the series as an array first, before calling Array:do.
-One side effect of this is that it is valid to code::do:: over an infinite series within a routine only if code::do:: is written as a method call.
-If it is written as a binary operator, you will get a "wrong type" error because the array must be finite.
 
-code::
-// OK: 'do' is a method call
-r = Routine {
-	(8 .. ).do { |i|
-		i.yield;
-	};
-};
-
-r.next;
--> 8
--> 9 etc.
-
-// ERROR: 'do' is an operator
-r = Routine {
-	(8 .. ) do: { |i|
-		i.yield;
-	};
-};
-
-r.next;
-
-ERROR: Primitive '_SimpleNumberSeries' failed.
-Wrong type.
-::
-::
 
 section:: Breaking from a loop
 
@@ -150,7 +123,7 @@ code::
 Suppose we want the loop to stop after code:: i == 7::.
 Other languages (e.g. javascript or python) would allow us to write expressions analogous to the following:
 
-code::
+code#error::
 // this won't work in SC
 100.do { |i| if(i == 7) {break}; i.postln; } // syntax error;
 ::

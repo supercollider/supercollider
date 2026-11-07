@@ -104,7 +104,7 @@ a.nextN(10);
 
 SuperCollider's built-in control structures allow some simplification.
 
-code::
+code#legacy::
 a = Routine {
 	(0..).do { |i|
 		i.yield;

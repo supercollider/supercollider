@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestMod : UnitTest {
 	test_mod_integer {
 		var array = [1, (2 ** 30).asInteger, -10, 11, -2, (2 ** 30).asInteger.neg];

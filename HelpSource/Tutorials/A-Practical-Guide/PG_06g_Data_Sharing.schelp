@@ -185,7 +185,7 @@ f = { |topNote, triad|
 };
 
 f.value(7, #[0, 2, 4]);
---> [ 7, 2, 4 ] (first inversion triad)
+// --> [ 7, 2, 4 ] (first inversion triad)
 ::
 
 Then the transposed array is checked to see if the top note is already a member. If not, it's added so that the melody will always be present.

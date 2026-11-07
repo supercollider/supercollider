@@ -1,0 +1,41 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): poisoned: versions/interpreted_version_misplaced.scd
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Warning: Misplaced version
+|  versions/interpreted_version_misplaced.scd:6:1
+|      4 │ // expect-warning: Misplaced version
+|      5 │ // expect-error: Variable declared after an expression
+|      6 │ //# VERSION 3.16
+|        ┆ ^^^^^^^^^^^^^^^^ this version applies to nothing.
+|      7 │ (var a = 1; a; var b = 2; b)
+|
+|  A version must be the first line of a file, for all of it, or, in a class file, the first thing in a class's body, for that class.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  Error: Variable declared after an expression
+|  versions/interpreted_version_misplaced.scd:7:20
+|      5 │ // expect-error: Variable declared after an expression
+|      6 │ //# VERSION 3.16
+|      7 │ (var a = 1; a; var b = 2; b)
+|        ┆                    ^^^^^ this isn't at the start of the body.
+|
+|  In the legacy version, as in the old compiler, a function's or method's variables must be declared at the start of its body, before any other expression. From 3.16 they can be declared anywhere. Move the declaration to the start, or add `//# VERSION 3.16`.
+|  ──────────────────────────────────────────────────────────────────────────────────
+|  SCRegionList (1:1)
+|  |  SCRegion (7:1)
+|  |  |  SCFunction (7:1)
+|  |  |  |  SCBody (7:1)
+|  |  |  |  |  SCVariableDeclare (7:6): a, prototype
+|  |  |  |  |  |  SCLiteral (7:10) = 1
+|  |  |  |  |  SCRead (7:13): local a = 1, declared (7:6): a = 1
+|  |  |  |  |  SCVariableDeclare (7:20): b, prototype
+|  |  |  |  |  |  SCLiteral (7:24) = 2
+|  |  |  |  |  SCRead (7:27): local b = 2, declared (7:20): b = 2
+Successfully compiled 15 classes.
