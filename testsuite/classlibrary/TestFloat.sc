@@ -83,4 +83,16 @@ TestFloat : UnitTest {
 
 	}
 
+	test_from32Bits {
+		var bits = 0x40490FDB;
+		var f = Float.from32Bits(bits);
+		this.assertEquals(f.as32Bits, bits, "convertion from/to 32 bits");
+	}
+
+	test_from64Bits {
+		var hi = pi.high32Bits;
+		var lo = pi.low32Bits;
+		var f = Float.from64Bits(hi, lo);
+		this.assertEquals(f, pi, "conversion from/to 64 bits");
+	}
 }

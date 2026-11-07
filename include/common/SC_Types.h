@@ -23,7 +23,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#if __cplusplus
+#ifdef __cplusplus
 #    define SC_INLINE inline
 #else
 #    define SC_INLINE static inline

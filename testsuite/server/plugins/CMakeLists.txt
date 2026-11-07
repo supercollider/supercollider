@@ -3,6 +3,8 @@ set(plugin_tests
     shared_lib_test.cpp
 )
 
+set_source_files_properties(c_api_test.c PROPERTIES LANGUAGE C)
+
 set(CMAKE_SHARED_MODULE_PREFIX "")
 set(CMAKE_SHARED_MODULE_SUFFIX ".scx")
 
@@ -31,6 +33,8 @@ foreach(test_file ${plugin_tests})
         )
     endif()
 endforeach()
+
+set_property(TARGET c_api_test PROPERTY C_STANDARD 99)
 
 # DLL for shared_lib_test(_supernova)
 add_library(testlib SHARED testlib.cpp)

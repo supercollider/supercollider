@@ -23,9 +23,15 @@
 
 #include "SC_Types.h"
 #include "SC_Endian.h"
-#include <stdio.h>
-#include <string.h>
+
+#include <array>
+#include <cstdio>
+#include <cstring>
 #include <stdexcept>
+
+#ifndef BYTE_ORDER
+#    error "BYTE_ORDER not defined"
+#endif
 
 template <class T> class SC_IOStream {
 protected:
@@ -78,15 +84,14 @@ public:
     void writeFloat_le(float inFloat)
 #endif
     {
-        union {
-            float f;
-            uint8 c[4];
-        } u;
-        u.f = inFloat;
-        writeUInt8(u.c[0]);
-        writeUInt8(u.c[1]);
-        writeUInt8(u.c[2]);
-        writeUInt8(u.c[3]);
+        std::array<uint8, 4> c;
+        static_assert(sizeof(inFloat) == c.size(), "size mismatch");
+        std::memcpy(c.data(), &inFloat, c.size());
+
+        writeUInt8(c[0]);
+        writeUInt8(c[1]);
+        writeUInt8(c[2]);
+        writeUInt8(c[3]);
     }
 
 #if BYTE_ORDER == BIG_ENDIAN
@@ -95,15 +100,14 @@ public:
     void writeFloat_be(float inFloat)
 #endif
     {
-        union {
-            float f;
-            uint8 c[4];
-        } u;
-        u.f = inFloat;
-        writeUInt8(u.c[3]);
-        writeUInt8(u.c[2]);
-        writeUInt8(u.c[1]);
-        writeUInt8(u.c[0]);
+        std::array<uint8, 4> c;
+        static_assert(sizeof(inFloat) == c.size(), "size mismatch");
+        std::memcpy(c.data(), &inFloat, c.size());
+
+        writeUInt8(c[3]);
+        writeUInt8(c[2]);
+        writeUInt8(c[1]);
+        writeUInt8(c[0]);
     }
 
 
@@ -113,19 +117,18 @@ public:
     void writeDouble_le(double inDouble)
 #endif
     {
-        union {
-            double f;
-            uint8 c[8];
-        } u;
-        u.f = inDouble;
-        writeUInt8(u.c[0]);
-        writeUInt8(u.c[1]);
-        writeUInt8(u.c[2]);
-        writeUInt8(u.c[3]);
-        writeUInt8(u.c[4]);
-        writeUInt8(u.c[5]);
-        writeUInt8(u.c[6]);
-        writeUInt8(u.c[7]);
+        std::array<uint8, 8> c;
+        static_assert(sizeof(inDouble) == c.size(), "size mismatch");
+        std::memcpy(c.data(), &inDouble, c.size());
+
+        writeUInt8(c[0]);
+        writeUInt8(c[1]);
+        writeUInt8(c[2]);
+        writeUInt8(c[3]);
+        writeUInt8(c[4]);
+        writeUInt8(c[5]);
+        writeUInt8(c[6]);
+        writeUInt8(c[7]);
     }
 
 #if BYTE_ORDER == BIG_ENDIAN
@@ -134,19 +137,18 @@ public:
     void writeDouble_be(double inDouble)
 #endif
     {
-        union {
-            double f;
-            uint8 c[8];
-        } u;
-        u.f = inDouble;
-        writeUInt8(u.c[7]);
-        writeUInt8(u.c[6]);
-        writeUInt8(u.c[5]);
-        writeUInt8(u.c[4]);
-        writeUInt8(u.c[3]);
-        writeUInt8(u.c[2]);
-        writeUInt8(u.c[1]);
-        writeUInt8(u.c[0]);
+        std::array<uint8, 8> c;
+        static_assert(sizeof(inDouble) == c.size(), "size mismatch");
+        std::memcpy(c.data(), &inDouble, c.size());
+
+        writeUInt8(c[7]);
+        writeUInt8(c[6]);
+        writeUInt8(c[5]);
+        writeUInt8(c[4]);
+        writeUInt8(c[3]);
+        writeUInt8(c[2]);
+        writeUInt8(c[1]);
+        writeUInt8(c[0]);
     }
 
 
@@ -186,15 +188,17 @@ public:
     float readFloat_le()
 #endif
     {
-        union {
-            float f;
-            uint8 c[4];
-        } u;
-        u.c[0] = readUInt8();
-        u.c[1] = readUInt8();
-        u.c[2] = readUInt8();
-        u.c[3] = readUInt8();
-        return u.f;
+        std::array<uint8, 4> c;
+        c[0] = readUInt8();
+        c[1] = readUInt8();
+        c[2] = readUInt8();
+        c[3] = readUInt8();
+
+        float f;
+        static_assert(sizeof(f) == c.size(), "size mismatch");
+        std::memcpy(&f, c.data(), c.size());
+
+        return f;
     }
 
 #if BYTE_ORDER == BIG_ENDIAN
@@ -203,15 +207,17 @@ public:
     float readFloat_be()
 #endif
     {
-        union {
-            float f;
-            uint8 c[4];
-        } u;
-        u.c[3] = readUInt8();
-        u.c[2] = readUInt8();
-        u.c[1] = readUInt8();
-        u.c[0] = readUInt8();
-        return u.f;
+        std::array<uint8, 4> c;
+        c[3] = readUInt8();
+        c[2] = readUInt8();
+        c[1] = readUInt8();
+        c[0] = readUInt8();
+
+        float f;
+        static_assert(sizeof(f) == c.size(), "size mismatch");
+        std::memcpy(&f, c.data(), c.size());
+
+        return f;
     }
 
 
@@ -221,19 +227,21 @@ public:
     double readDouble_le()
 #endif
     {
-        union {
-            double f;
-            uint8 c[8];
-        } u;
-        u.c[0] = readUInt8();
-        u.c[1] = readUInt8();
-        u.c[2] = readUInt8();
-        u.c[3] = readUInt8();
-        u.c[4] = readUInt8();
-        u.c[5] = readUInt8();
-        u.c[6] = readUInt8();
-        u.c[7] = readUInt8();
-        return u.f;
+        std::array<uint8, 8> c;
+        c[0] = readUInt8();
+        c[1] = readUInt8();
+        c[2] = readUInt8();
+        c[3] = readUInt8();
+        c[4] = readUInt8();
+        c[5] = readUInt8();
+        c[6] = readUInt8();
+        c[7] = readUInt8();
+
+        double d;
+        static_assert(sizeof(d) == c.size(), "size mismatch");
+        std::memcpy(&d, c.data(), c.size());
+
+        return d;
     }
 
 #if BYTE_ORDER == BIG_ENDIAN
@@ -242,19 +250,21 @@ public:
     double readDouble_be()
 #endif
     {
-        union {
-            double f;
-            uint8 c[8];
-        } u;
-        u.c[7] = readUInt8();
-        u.c[6] = readUInt8();
-        u.c[5] = readUInt8();
-        u.c[4] = readUInt8();
-        u.c[3] = readUInt8();
-        u.c[2] = readUInt8();
-        u.c[1] = readUInt8();
-        u.c[0] = readUInt8();
-        return u.f;
+        std::array<uint8, 8> c;
+        c[7] = readUInt8();
+        c[6] = readUInt8();
+        c[5] = readUInt8();
+        c[4] = readUInt8();
+        c[3] = readUInt8();
+        c[2] = readUInt8();
+        c[1] = readUInt8();
+        c[0] = readUInt8();
+
+        double d;
+        static_assert(sizeof(d) == c.size(), "size mismatch");
+        std::memcpy(&d, c.data(), c.size());
+
+        return d;
     }
 
     void readSymbol(char* outString) {

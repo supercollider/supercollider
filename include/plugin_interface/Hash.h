@@ -28,8 +28,10 @@
 // A good hash function makes a lot of difference.
 // I have not used Bob Jenkins own hash function because the keys I use are relatively short.
 
+// This file is currently only used in C++ code (privat and public) and therefore uses some
+// C++ features. If necessary, we can later turn the Hash() functions into pure C functions.
 
-// hash function for a string
+/** @brief hash function for a string */
 inline int32 Hash(const char* inKey) {
     // the one-at-a-time hash.
     // a very good hash function. ref: a web page by Bob Jenkins.
@@ -46,7 +48,7 @@ inline int32 Hash(const char* inKey) {
     return hash;
 }
 
-// hash function for a string that also returns the length
+/** @brief hash function for a string that also returns the length */
 inline int32 Hash(const char* inKey, size_t* outLength) {
     // the one-at-a-time hash.
     // a very good hash function. ref: a web page by Bob Jenkins.
@@ -64,7 +66,7 @@ inline int32 Hash(const char* inKey, size_t* outLength) {
     return hash;
 }
 
-// hash function for an array of char
+/** @brief hash function for an array of characters */
 inline int32 Hash(const char* inKey, int32 inLength) {
     // the one-at-a-time hash.
     // a very good hash function. ref: a web page by Bob Jenkins.
@@ -80,7 +82,7 @@ inline int32 Hash(const char* inKey, int32 inLength) {
     return hash;
 }
 
-// hash function for integers
+/** @brief hash function for a 32-bit integer */
 inline int32 Hash(int32 inKey) {
     // Thomas Wang's integer hash.
     // http://www.concentric.net/~Ttwang/tech/inthash.htm
@@ -95,6 +97,7 @@ inline int32 Hash(int32 inKey) {
     return (int32)hash;
 }
 
+/** @brief hash function for a 64-bit integer */
 inline int64 Hash64(int64 inKey) {
     // Thomas Wang's 64 bit integer hash.
     uint64 hash = (uint64)inKey;
@@ -109,6 +112,7 @@ inline int64 Hash64(int64 inKey) {
     return (int64)hash;
 }
 
+/** @brief hash function for an array of 32-bit integer */
 inline int32 Hash(const int32* inKey, int32 inLength) {
     // one-at-a-time hashing of a string of int32's.
     // uses Thomas Wang's integer hash for the combining step.
@@ -119,14 +123,12 @@ inline int32 Hash(const int32* inKey, int32 inLength) {
     return hash;
 }
 
-#if BYTE_ORDER == LITTLE_ENDIAN
-const int32 kLASTCHAR = (int32)0xFF000000;
-#else
-const int32 kLASTCHAR = (int32)0x000000FF;
-#endif
+constexpr int32 kLASTCHAR = sc::endian::native == sc::endian::little ? (int32)0xFF000000 : (int32)0x000000FF;
 
+/** @brief hash function for an OSC string.
+ *  OSC strings are always zero-padded to a multiple of 4 bytes.
+ */
 inline int32 Hash(const int32* inKey) {
-    // hashing of a string of int32's.
     // uses Thomas Wang's integer hash for the combining step.
     int32 hash = 0;
     int32 c;
