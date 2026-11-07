@@ -282,6 +282,7 @@ TestCoreUGens : UnitTest {
 			[\exp, \log],
 			[\midicps, \cpsmidi], // this test currently limits passing tolerance for all tests
 			[\midiratio, \ratiomidi],
+			[\centratio, \ratiocent],
 			[\dbamp, \ampdb],
 			[\octcps, \cpsoct],
 			[\sin, \asin],
