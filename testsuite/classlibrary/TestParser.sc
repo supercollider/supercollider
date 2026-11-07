@@ -72,28 +72,25 @@ TestParser : UnitTest {
 			|commentString|
 			var message = "'%' should be an open-ended comment.".format(commentString);
 
-			this.assertEquals(commentString.interpret, nil, message);
-			this.assertEquals((commentString ++ testCs).interpret, nil, message);
+			this.assertEquals(try { commentString.interpret }, nil, message);
+			this.assertEquals(try { (commentString ++ testCs).interpret }, nil, message);
 		};
 
 		closedTests.do {
 			|commentString|
 			var message = "'%' should be a closed block comment.".format(commentString);
 
-			this.assertEquals(commentString.interpret, nil, message);
-			this.assertEquals((commentString ++ testCs).interpret, testCsValue, message);
+			this.assertEquals(try { commentString.interpret } , nil, message);
+			this.assertEquals(try { (commentString ++ testCs).interpret }, testCsValue, message);
 		};
 
 		errorTests.do {
 			|commentString|
 			var message = "'%' should throw a parsing error when interpreted.".format(commentString);
-			var courtesyMessage = "NOTE: The parsing errors thrown above are intentional — currently testing bizarre strings with .interpret";
 
-			this.assertEquals(commentString.interpret, nil, message);
-			this.assertEquals((commentString ++ testCs).interpret, nil, message);
-			this.assertEquals((testCs ++ commentString).interpret, nil, message);
-
-			courtesyMessage.postln;
+			this.assertException({ commentString.interpret}, CompilerError, message);
+			this.assertException({ (commentString ++ testCs).interpret}, CompilerError, message);
+			this.assertException({ (testCs ++ commentString).interpret}, CompilerError, message);
 		}
 	}
 }
