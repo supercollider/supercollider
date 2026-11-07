@@ -94,6 +94,9 @@ struct PyrFrame : public PyrObjectHdr {
     //  and nil, which means it has been free'd.
     PyrSlot referenceCount;
 
+    // Set when this frame was entered through a tail call, holds the function or method whose frame it replaced.
+    PyrSlot tailCalledFrom;
+
     PyrSlot vars[1];
 
     // Implemented in the gc source file.
@@ -109,7 +112,7 @@ struct PyrFrame : public PyrObjectHdr {
 
 // Framesize refers to the minimum number of slots the frame object must allocate.
 // vars[1] doesn't have to exist.
-#define FRAMESIZE 7
+#define FRAMESIZE 8
 
 struct PyrProcess : public PyrObjectHdr {
     PyrSlot classVars;

@@ -20,6 +20,7 @@
 
 #include "PyrMessage.h"
 #include "PyrParseNode.h"
+#include "ClassLibraryInfo.hpp"
 #include "PyrPrimitiveProto.h"
 #include "PyrInterpreter.h"
 #include "PyrPrimitive.h"
@@ -77,22 +78,28 @@ private:
 };
 
 // This MUST be called at the top of the function before the VMGlobals object is altered.
-void prepForTailCall(VMGlobals* g) {
-#if TAILCALLOPTIMIZE
-    const int tailCall = g->tailCall;
-    if (tailCall == 1)
-        returnFromMethod(g);
-    else if (tailCall > 0)
-        returnFromBlock(g);
-#endif
+// Returns the function whose frame was removed by a tail call, or nullptr.
+PyrBlock* prepForTailCall(VMGlobals* g) {
+    if (gClassLibraryInfo.generateTailCalls) {
+        const int tailCall = g->tailCall;
+        if (tailCall > 0) {
+            auto* elided = slotRawBlock(&g->frame->method);
+            if (tailCall == 1)
+                returnFromMethod(g);
+            else
+                returnFromBlock(g);
+            return elided;
+        }
+    }
+    return nullptr;
 }
 
 struct ResetTailCall {
     VMGlobals* g;
     ~ResetTailCall() {
-#if TAILCALLOPTIMIZE
-        g->tailCall = 0;
-#endif
+        if (gClassLibraryInfo.generateTailCalls) {
+            g->tailCall = 0;
+        }
     }
 };
 
@@ -525,10 +532,12 @@ inline PyrFrame* createFrameForExecuteMethod(VMGlobals* g, PyrBlock* block) {
 }
 
 HOT void setupForMethod(VMGlobals* g, PyrBlock* meth, std::int64_t totalNumArgsPushed, std::int64_t numKwArgsPushed) {
-    prepForTailCall(g);
+    auto* tailCalledFrom = prepForTailCall(g);
     const GCSanityChecker gc_sanity_checker(g, "executeMethod");
 
     auto callFrame = createFrameForExecuteMethod(g, meth);
+    if (tailCalledFrom)
+        SetObject(&callFrame->tailCalledFrom, tailCalledFrom);
     prepareArgsForExecute(g, meth, callFrame, totalNumArgsPushed, numKwArgsPushed, true);
 
     g->execMethod = numKwArgsPushed == 0 ? 20 : 10;
@@ -611,10 +620,10 @@ HOT void returnFromMethod(VMGlobals* g) {
     homeContext = slotRawFrame(&slotRawFrame(&curframe->context)->homeContext);
     if (homeContext == nullptr) {
     null_return:
-#if TAILCALLOPTIMIZE
-        if (g->tailCall)
-            return; // do nothing.
-#endif
+        if (gClassLibraryInfo.generateTailCalls) {
+            if (g->tailCall)
+                return; // do nothing.
+        }
 
         /*
             static bool once = true;
