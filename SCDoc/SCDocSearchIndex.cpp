@@ -7,7 +7,7 @@
 
 namespace {
 
-bool isNode(const DocNode* n, const char* id) { return strcmp(n->id, id) == 0; }
+bool isNode(const DocNode& n, const char* id) { return strcmp(n.id, id) == 0; }
 
 // html anchors/urls need to be escaped - i.e. "Foo Bar" needs to become "Foo%20Bar"
 // see SCDocHTMLRenderer:escapeSpacesInAnchor
@@ -70,13 +70,13 @@ bool isBlank(const std::string& str) {
  */
 class TextExtractor {
 public:
-    std::vector<Entry> extract(const DocNode* body, const std::string& summary) {
+    std::vector<Entry> extract(const DocNode* body, const std::string_view summary) {
         mEntries.clear();
         beginEntry("", "");
         mCurrent.body += summary;
         mCurrent.body += ' ';
         if (body)
-            walkChildren(body);
+            walkChildren(*body);
         endEntry();
         return std::move(mEntries);
     }
@@ -96,9 +96,9 @@ private:
         mCurrent = Entry();
     }
 
-    void walkChildren(const DocNode* n) {
-        for (int i = 0; i < n->n_childs; i++)
-            walk(n->children[i]);
+    void walkChildren(const DocNode& n) {
+        for (int i = 0; i < n.n_childs; i++)
+            walk(*n.children[i]);
     }
 
     void appendBody(const char* text) {
@@ -106,7 +106,7 @@ private:
             mCurrent.body += text;
     }
 
-    void walk(const DocNode* n) {
+    void walk(const DocNode& n) {
         if (isNode(n, "DESCRIPTION")) {
             beginEntry("description", "Description");
             walkChildren(n);
@@ -120,7 +120,7 @@ private:
             beginEntry("instancemethods", "Instance Methods");
             walkChildren(n);
         } else if (isNode(n, "SECTION") || isNode(n, "SUBSECTION") || isNode(n, "SUBSUBSECTION")) {
-            const char* text = n->text ? n->text : "";
+            const char* text = n.text ? n.text : "";
             beginEntry(escapeAnchor(text), text);
             walkChildren(n);
         } else if (isNode(n, "CMETHOD")) {
@@ -131,25 +131,25 @@ private:
             walkMethod(n, ".");
         } else if (isNode(n, NODE_TEXT) || isNode(n, "CODE") || isNode(n, "TELETYPE") || isNode(n, "EMPHASIS")
                    || isNode(n, "STRONG") || isNode(n, "SOFT")) {
-            appendBody(n->text);
+            appendBody(n.text);
         } else if (isNode(n, "LINK")) {
-            if (n->text)
-                mCurrent.body += extractLinkText(n->text);
+            if (n.text)
+                mCurrent.body += extractLinkText(n.text);
         } else if (isNode(n, "CODEBLOCK") || isNode(n, "TELETYPEBLOCK")) {
-            if (n->text) {
-                mCurrent.code += n->text;
+            if (n.text) {
+                mCurrent.code += n.text;
                 mCurrent.code += '\n';
             }
         } else if (isNode(n, "KEYWORD")) {
-            for (int i = 0; i < n->n_childs; i++) {
+            for (int i = 0; i < n.n_childs; i++) {
                 mCurrent.body += ' ';
-                appendBody(n->children[i]->text);
+                appendBody(n.children[i]->text);
                 mCurrent.body += ' ';
             }
         } else if (isNode(n, "ARGUMENT")) {
             mCurrent.body += ' ';
-            if (n->text) {
-                mCurrent.body += n->text;
+            if (n.text) {
+                mCurrent.body += n.text;
                 mCurrent.body += ": ";
             }
             walkChildren(n);
@@ -166,27 +166,27 @@ private:
     }
 
     // see SCDocHTMLRenderer:renderMethod for the anchors
-    void walkMethod(const DocNode* n, const char* indicator) {
-        if (n->n_childs < 1 || n->children[0]->n_childs < 1 || !n->children[0]->children[0]->text)
+    void walkMethod(const DocNode& n, std::string_view indicator) {
+        if (n.n_childs < 1 || n.children[0]->n_childs < 1 || !n.children[0]->children[0]->text)
             return;
-        const DocNode* names = n->children[0];
+        const DocNode* names = n.children[0];
         beginEntry(indicator + std::string(names->children[0]->text), "");
         for (int i = 0; i < names->n_childs; i++) {
             if (names->children[i]->text)
                 mCurrent.methodNames.push_back(names->children[i]->text);
         }
         // arguments of generic methods (outside class docs)
-        if (n->text) {
-            mCurrent.body += n->text;
+        if (n.text) {
+            mCurrent.body += n.text;
             mCurrent.body += ' ';
         }
-        if (n->n_childs > 1)
-            walkChildren(n->children[1]);
+        if (n.n_childs > 1)
+            walkChildren(*n.children[1]);
     }
 
     // converts "link::Classes/Pbind::" to "Pbind" for the search index.
     // see also SCDocHTMLRenderer:htmlForLink
-    static std::string extractLinkText(const char* link) {
+    static std::string extractLinkText(const std::string_view link) {
         // split "path#anchor#label", anchor and label are optional
         std::vector<std::string> parts;
         std::istringstream stream(link);
@@ -213,14 +213,14 @@ private:
     std::vector<Entry> mEntries;
 };
 
-const DocNode* findBody(const DocNode* root) {
+const DocNode* findBody(const DocNode& root) {
     if (isNode(root, "BODY"))
-        return root; // partial parse
-    for (int i = 0; i < root->n_childs; i++) {
-        if (isNode(root->children[i], "BODY"))
-            return root->children[i];
+        return &root; // partial parse
+    for (int i = 0; i < root.n_childs; i++) {
+        if (isNode(*root.children[i], "BODY"))
+            return root.children[i];
     }
-    return nullptr;
+    return {};
 }
 
 // strip repeated whitespaces from string to reduce space of the search index since they are not relevant for the index
