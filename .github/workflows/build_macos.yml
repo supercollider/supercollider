@@ -13,14 +13,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - job-name: "universal arm64 x64 with ctest"
+          - job-name: "universal arm64 x64 with ctest and help"
             os-version: "15"
             xcode-version: "16.0"
             qt-version: "6.8.3" # will use qt from aqtinstall
             qt-modules: 'qtwebengine qtwebchannel qtwebsockets qtpositioning'
             deployment-target: "12"
             cmake-architectures: "x86_64;arm64"
-            homebrew-packages: ""
+            # coreutils provides timeout for the help build
+            homebrew-packages: "coreutils"
             homebrew-uninstall: "readline"
             vcpkg-packages: "readline libsndfile" # use only when building a universal binary; otherwise use vcpkg in manifest mode (no need to install packages separately)
             vcpkg-triplet: "arm64-osx-release-supercollider"
@@ -29,6 +30,7 @@ jobs:
             extra-cmake-flags: "-D VCPKG_MANIFEST_MODE=OFF" # we need to disable manifest mode for universal binaries
             artifact-suffix: "macOS-universal"
             ctest: true
+            build-help: true
 
           - job-name: "x64 legacy"
             os-version: "15-intel"
@@ -216,6 +218,22 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
+
+      - name: Build help
+        if: matrix.build-help
+        continue-on-error: false
+        run: timeout 5m cmake --build $BUILD_PATH --config Release --target Help
+
+      - name: create help archive
+        if: matrix.build-help
+        run: cd $BUILD_PATH/Help && zip --symlinks -r Help.zip .
+
+      - name: upload help artifacts
+        uses: actions/upload-artifact@v4
+        if: matrix.build-help
+        with:
+          name: SuperCollider-${{ inputs.sc-version }}-RenderedHelp.zip
+          path: ${{ env.BUILD_PATH }}/Help/Help.zip
 
       - name: Run CTests
         continue-on-error: false
