@@ -326,7 +326,7 @@ elseif(AUDIOAPI STREQUAL webaudio)
         --bind -sMODULARIZE=1 -sEXPORT_ES6=1 -sEXPORT_NAME='ScSynth'
         --pre-js "${CMAKE_SOURCE_DIR}/platform/wasm/scsynth.pre.js"
         -sEXPORTED_FUNCTIONS=['_malloc','_free','_webOscBindingAnchor']
-        -sEXPORTED_RUNTIME_METHODS=['ccall','cwrap','HEAPU8','UTF8ToString']
+        -sEXPORTED_RUNTIME_METHODS=['ccall','cwrap','HEAPU8','UTF8ToString','FS']
     )
     if(WASM_DEBUG)
         target_compile_options(scsynth PRIVATE -pthread -g)

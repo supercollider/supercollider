@@ -414,6 +414,7 @@ elseif(EMSCRIPTEN)
         -sEXPORT_NAME='ScLang' \
         -sMODULARIZE=1 \
         -sEXPORTED_FUNCTIONS=['_webOscBindingAnchor','_main','_free','_scWasmBindingAnchor'] \
+        -sEXPORTED_RUNTIME_METHODS=['FS'] \
         -sPTHREAD_POOL_SIZE=${PTHREAD_POOL_SIZE} \
         --preload-file ${CMAKE_SOURCE_DIR}/SCClassLibrary@/sc/SCClassLibrary \
         -sSTACK_SIZE=1048576 \
