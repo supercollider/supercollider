@@ -504,6 +504,8 @@ void scsynthInit(ScWebAudioOptions* options) {
     };
 
     EMSCRIPTEN_WEBAUDIO_T context = emscripten_create_audio_context(&attributes);
+    // set it right away so the context is available to JS directly after boot
+    gAudioContext = context;
 
     emscripten_start_wasm_audio_worklet_thread_async(context, gAudioWorkletStack, sizeof(gAudioWorkletStack),
                                                      audioWorkletReady, options);
@@ -546,10 +548,10 @@ EMSCRIPTEN_BINDINGS(scWebAudio) {
     emscripten::function("scsynthIsReady", emscripten::optional_override([] { return gScWebAudioDriver != nullptr; }));
 
     /** @brief helper function for connecting a mic into the scsynth worklet */
-    emscripten::function("getAudioContext", emscripten::optional_override(([]() { return gAudioContext; })));
+    emscripten::function("getAudioContextHandle", emscripten::optional_override(([]() { return gAudioContext; })));
 
     /** @brief helper function for connecting a mic into the scsynth worklet */
-    emscripten::function("getScsynthWorkletNode",
+    emscripten::function("getScsynthWorkletNodeHandle",
                          emscripten::optional_override(([]() { return gScsynthWorkletNode; })));
 
 

@@ -109,7 +109,7 @@ Module['onOscReply'] = (message) => {
  * @returns {AudioContext}
  */
 Module['getAudioContext'] = () => {
-    return EmAudio[Module['_getAudioContext']()];
+    return EmAudio[Module['getAudioContextHandle']()];
 }
 
 /**
@@ -117,5 +117,5 @@ Module['getAudioContext'] = () => {
  * @returns {AudioWorkletNode}
  */
 Module['getWorkletNode'] = () => {
-    return EmAudio[Module['_getScsynthWorkletNode']()]
+    return EmAudio[Module['getScsynthWorkletNodeHandle']()]
 }
