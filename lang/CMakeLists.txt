@@ -410,6 +410,7 @@ elseif(EMSCRIPTEN)
         -sINITIAL_MEMORY=${INITIAL_MEMORY_GROWTH} \
         -sEXIT_RUNTIME=0 \
         --pre-js ${CMAKE_SOURCE_DIR}/platform/wasm/sclang.pre.js \
+        --pre-js ${CMAKE_SOURCE_DIR}/platform/wasm/common.pre.js \
         -sEXPORT_ES6=1 \
         -sEXPORT_NAME='ScLang' \
         -sMODULARIZE=1 \
