@@ -27,6 +27,10 @@ argument::maxval
 
 Value corresponding to the right edge of the screen.
 
+note::
+If the screen resolution changes after the server has booted, mouse coordinates continue to be scaled using the screen width that was in effect at boot time. Reboot the server after changing the screen resolution to ensure correct scaling.
+::
+
 
 argument::warp
 
