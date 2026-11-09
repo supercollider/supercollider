@@ -215,6 +215,10 @@ TestArray : UnitTest {
 				elem.every { |x, j| x[1] == j }
 			};
 		};
+
+		// seed the thread's rgen to get deterministic results
+		thisThread.randSeed_(2517);
+
 		// test with different sizes
 		[ 5, 7, 16, 50, 113, 247, 1001 ].do { |n|
 			4.do {
