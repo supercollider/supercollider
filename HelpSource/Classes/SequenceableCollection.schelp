@@ -553,14 +553,42 @@ code::
 ::
 
 method::sort
-Sort the contents of the collection using the comparison function argument. The function should take two elements as arguments and return true if the first argument should be sorted before the second argument. If the function is nil, the following default function is used. { |a, b| a <= b }
+Sort the contents of the collection using the comparison function argument. If the function is nil, the following default function is used: code::{ |a, b| a <= b }::.
+
+The comparison function takes two elements as arguments and must return true if the first argument is considered emphasis::less than or equal to:: the second argument. That is, it returns true if the first argument emphasis::may:: be ordered emphasis::before:: the second and false if the first argument emphasis::must:: be ordered emphasis::after:: the second.
+
+The sort is guaranteed to be emphasis::stable::: elements that compare equal are kept in their original relative order.
+
+note::Unlike many other programming languages, the comparison function must return true for equal elements. If you try to use a strict comparison (code::a < b::) instead, the sorting may appear to work, but the stability guarantee is lost.::
+
+Examples:
+
 code::
 [6, 2, 1, 7, 5].sort;
-[6, 2, 1, 7, 5].sort({ |a, b| a > b }); // reverse sort
+[6, 2, 1, 7, 5].sort({ |a, b| a >= b }); // reverse sort
+
+(
+a =  [
+	[ 6, "f" ], [ 5, "c" ], [ 10, "h" ], [ 5, "d" ],
+	[ 7, "g" ], [ 4, "b" ], [ 5, "e" ], [ 1, "a" ]
+];
+)
+
+// elements that compare equal keep their relative order:
+a.copy.sort({ |a, b| a[0] <= b[0] });
+
+// NOTE: if you sort in reverse order, equal elements still appear in their original order:
+a.copy.sort({ |a, b| a[0] >= b[0] });
+
+// If you also want to reverse the order of equal elements, the recommended way is to sort and reverse:
+a.copy.sort({ |a, b| a[0] <= b[0] }).reverse;
 ::
 
 method::sortBy
 Sort the contents of the collection using the key strong::key::, which is assumed to be found inside each element of the receiver.
+
+The sort is stable: elements that compare equal are kept in their original relative order.
+
 code::
 (
 a = [

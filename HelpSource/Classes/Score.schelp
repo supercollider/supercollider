@@ -151,11 +151,9 @@ x.score
 
 
 method::sort
-sort the score time order.
+sort the score by ascending timestamps. The relative order of bundles with the same timestamp is preserved!
 
-The initial scored passed to the link::#*new:: method is sorted automatically. If you modify the score afterwards, it is recommended to sort it strong::before recordNRT or write:: when you are not sure about the packet order.
-
-note::The sorting is emphasis::not:: stable, i.e. bundles with the same timestamp might end up in a different order. If two or more messages (with the same timestamp) depend on a certain order, put them in the same bundle!::
+The initial list passed to the link::#*new:: method is sorted automatically. If you modify the score afterwards, it is recommended to sort it strong::before recordNRT or write:: when you are not sure about the bundle order.
 
 method::recordNRT
 synthesize the score in non-realtime. For details of the arguments see link::#*recordNRT:: above.
