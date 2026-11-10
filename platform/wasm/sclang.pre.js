@@ -49,3 +49,42 @@ Module['onIdeSend'] = function(message) {}
 Module['onOsc'] = function(message){
     console.log("New OSC message from sclang", message);
 }
+
+/** DOCS LAND **/
+
+// internally used so the docs loading promise is a global singleton
+let docsLoadPromise;
+
+/**
+ * Mount docs data async so while the interpreter compiles, the docs data can be loaded in the background.
+ * `docsLoadPromise` acts as a promise, such that it can be awaited b/c the help files should be available
+ * before sclang tries to access/index any!
+ *
+ * To make sure the docs have been mounted before accessing, use `await sclang.loadDocs();`
+ */
+Module['loadDocs'] = function() {
+    docsLoadPromise ??= (async () => {
+        const [meta, data] = await Promise.all([
+            // locate file is vendored by emscripten
+            fetch(locateFile('sclang-help.js.metadata')).then((r) => r.json()),
+            fetch(locateFile('sclang-help.data')).then((r) => r.arrayBuffer()),
+        ]);
+        const bytes = new Uint8Array(data);
+        for (const {filename, start, end} of meta.files) {
+            // now write the loaded files into the filesystem
+            Module['addFile'](filename, bytes.subarray(start, end));
+        }
+    })().catch((e) => {
+        // allows for retries
+        docsLoadPromise = undefined;
+        throw e;
+    });
+    return docsLoadPromise;
+}
+
+// this acts as a flag so sclang can preload the docs using `const sclang = await ScLang({ preloadDocs: true });`
+if(Module['preloadDocs'] ?? false) {
+    Module['postRun'] = [].concat(Module['postRun'] ?? [], () => {
+        Module['loadDocs']().catch((e) => {console.warn('sclang could not load docs', e)});
+    })
+}
