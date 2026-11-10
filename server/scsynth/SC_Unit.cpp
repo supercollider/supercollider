@@ -28,6 +28,7 @@
 #include "Unroll.h"
 #include "SC_Prototypes.h"
 #include "sc_linear_allocator.hpp"
+#include "SC_APIVersion.h"
 
 Unit* Unit_New(World* inWorld, Graph* graph, UnitSpec* inUnitSpec, sc::linear_allocator& alloc) {
     UnitDef* def = inUnitSpec->mUnitDef;
@@ -36,6 +37,7 @@ Unit* Unit_New(World* inWorld, Graph* graph, UnitSpec* inUnitSpec, sc::linear_al
     assert(mem != nullptr);
     Unit* unit = reinterpret_cast<Unit*>(mem);
 
+    unit->mStructSize = SC_IMPLEMENTED_STRUCT_SIZE(Unit, mBufLength);
     unit->mWorld = inWorld;
     unit->mUnitDef = def;
 

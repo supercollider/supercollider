@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-
+#include "SC_Graph.h"
 #include "SC_Group.h"
 #include "SC_SynthDef.h"
 #include "SC_Unit.h"

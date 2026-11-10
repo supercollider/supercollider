@@ -193,4 +193,4 @@ jobs:
         if: matrix.ctest
         working-directory: ${{ env.BUILD_PATH }}
         shell: cmd
-        run: cmake --build . --config Release --target ${{ matrix.ctest-cmd }}
+        run: ctest -C Release --output-on-failure

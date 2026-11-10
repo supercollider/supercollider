@@ -38,6 +38,8 @@ class padded_rw_spinlock;
 #endif
 
 struct World {
+    size_t mStructSize; // versioned struct
+
     // a pointer to private implementation, not available to plug-ins.
     struct HiddenWorld* hw;
 
@@ -128,6 +130,3 @@ SC_INLINE SndBuf* World_GetNRTBuf(World* inWorld, uint32 index) {
         index = 0;
     return inWorld->mSndBufsNonRealTimeMirror + index;
 }
-
-typedef void (*LoadPlugInFunc)(struct InterfaceTable*);
-typedef void (*UnLoadPlugInFunc)(void);
