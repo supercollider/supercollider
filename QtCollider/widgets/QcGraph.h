@@ -110,7 +110,6 @@ private:
 
 class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client {
     Q_OBJECT
-    Q_ENUMS(ElementStyle)
     Q_PROPERTY(QVariantList value READ value WRITE setValue)
     Q_PROPERTY(QVariantList strings READ dummyVariantList WRITE setStrings);
     Q_PROPERTY(int index READ index WRITE setIndex);
@@ -167,6 +166,7 @@ public:
         DotElements,
         RectElements,
     };
+    Q_ENUM(ElementStyle)
 
 public:
     QcGraph();

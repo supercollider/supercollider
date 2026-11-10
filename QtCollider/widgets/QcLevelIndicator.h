@@ -45,7 +45,7 @@ class QcLevelIndicator : public QWidget, QcHelper, QtCollider::Style::Client {
 
 public:
     enum LevelIndicatorStyle { Continuous = 0, LED };
-    Q_ENUMS(LevelIndicatorStyle);
+    Q_ENUM(LevelIndicatorStyle);
 
     QcLevelIndicator();
     void setValue(float f) {
