@@ -150,6 +150,7 @@ private:
 #endif
 
 struct SndBuf {
+    size_t mStructSize; // versioned struct
     double samplerate;
     double sampledur; // = 1/ samplerate
     float* data;

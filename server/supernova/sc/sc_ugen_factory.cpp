@@ -21,16 +21,6 @@
 
 #ifdef STATIC_PLUGINS
 #    include "../../plugins/SC_StaticPlugins.h"
-#else
-#    ifdef DLOPEN
-#        include <dlfcn.h>
-#    elif defined(_WIN32)
-#        ifndef NOMINMAX
-#            define NOMINMAX
-#        endif
-#        include <windows.h>
-#        include "SC_Codecvt.hpp"
-#    endif
 #endif // STATIC_PLUGINS
 
 #include "SC_Filesystem.hpp"
@@ -50,8 +40,8 @@ using DirName = SC_Filesystem::DirName;
 
 #include "SC_World.h"
 #include "SC_Wire.h"
-#include "ErrorMessage.hpp"
 #include "SC_Filesystem.hpp" // SC_PLUGIN_EXT
+#include "SC_Codecvt.hpp"
 
 // The generic .so extension has been deprecated in SC 3.15 so developers can ship shared libraries
 // along their plugins. We do the following to provide a smooth upgrade path:
@@ -81,6 +71,8 @@ Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth
     memset(chunk, 0, memory_requirement());
 
     Unit* unit = (Unit*)(std::uintptr_t(chunk + 63) & (~63)); // align on 64 byte boundary
+
+    unit->mStructSize = SC_IMPLEMENTED_STRUCT_SIZE(Unit, mBufLength);
 
     unit->mInBuf = allocator.alloc<float*>(unit_spec.input_specs.size());
     unit->mOutBuf = allocator.alloc<float*>(unit_spec.output_specs.size());
@@ -247,7 +239,7 @@ void sc_ugen_factory::load_plugins(server_arguments const& args) {
 
 #else
 
-sc_ugen_factory::~sc_ugen_factory() { close_handles(); }
+sc_ugen_factory::~sc_ugen_factory() { close_modules(); }
 
 void sc_ugen_factory::load_plugins(server_arguments const& args) {
     if (!args.ugen_paths.empty()) {
@@ -359,144 +351,28 @@ void sc_ugen_factory::load_plugin_folder(std::filesystem::path const& dir, bool 
 }
 #    endif // LINUX_PLUGIN_WORKAROUND
 
-static bool check_api_version(int (*api_version)(), std::string const& filename) {
-    using namespace scsynth;
-
-    if (api_version) {
-        int plugin_version = (*api_version)();
-        if (plugin_version == sc_api_version)
-            return true;
-        else
-            std::cout << ErrorMessage::apiVersionMismatch(filename, sc_api_version, plugin_version) << std::endl;
-    } else {
-        std::cout << ErrorMessage::apiVersionNotFound(filename) << std::endl;
-    }
-
-    return false;
-}
-
-#    ifdef DLOPEN
 void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
-    void* handle = dlopen(path.string().c_str(), RTLD_NOW | RTLD_LOCAL);
-    if (handle == nullptr)
-        return;
+    const std::string filename_utf8 = SC_Codecvt::path_to_utf8_str(path);
 
-    typedef int (*info_function)();
+    try {
+        ServerPluginModule module(path);
+        module.load(&sc_interface, filename_utf8.c_str());
 
-    info_function api_version = reinterpret_cast<info_function>(dlsym(handle, "api_version"));
-
-    if (!check_api_version(api_version, path.string())) {
-        dlclose(handle);
-        return;
-    }
-
-    info_function supernova_check = reinterpret_cast<info_function>(dlsym(handle, "server_type"));
-    if (!supernova_check || (*supernova_check)() == sc_server_scsynth) {
-        // silently ignore
-        dlclose(handle);
-        return;
-    }
-
-    void* load_symbol = dlsym(handle, "load");
-    if (!load_symbol) {
-        std::cout << "Problem when loading plugin: \"load\" function undefined" << path << std::endl;
-        dlclose(handle);
-        return;
-    }
-
-    open_handles.push_back(handle);
-    LoadPlugInFunc load_func = reinterpret_cast<LoadPlugInFunc>(load_symbol);
-    (*load_func)(&sc_interface);
-
-    /* don't close the handle */
-    return;
-}
-
-void sc_ugen_factory::close_handles() {
-    for (void* handle : open_handles) {
-        void* ptr = dlsym(handle, "unload");
-        if (ptr) {
-            UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
-            (*unloadFunc)();
+        open_modules.push_back(std::move(module));
+    } catch (const ServerPluginException& e) {
+        // silently ignore plugins compiled for the wrong Server type
+        if (e.errorCode() != ServerPluginError::WrongServerType) {
+            std::cout << "ERROR: '" << filename_utf8 << "': " << e.errorMessage() << std::endl;
         }
-        dlclose(handle);
     }
 }
 
-#    elif defined(_WIN32)
-
-void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
-    // This allows plugins to place DLL dependencies in the same directory.
-    SetDllDirectoryW(path.parent_path().c_str());
-    // std::cout << "try open plugin: " << path << std::endl;
-    HINSTANCE hinstance = LoadLibraryW(path.wstring().c_str());
-    // Reset DLL directory
-    SetDllDirectoryW(nullptr);
-
-    if (!hinstance) {
-        wchar_t* s;
-        DWORD lastErr = GetLastError();
-        FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                       nullptr, lastErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&s, 0, NULL);
-
-        std::cout << "Cannot open plugin: " << path << SC_Codecvt::utf16_to_utf8_str(s).c_str() << std::endl;
-        LocalFree(s);
-        return;
+void sc_ugen_factory::close_modules() {
+    for (auto& module : open_modules) {
+        module.unload();
     }
-
-    typedef int (*info_function)();
-    info_function api_version = reinterpret_cast<info_function>(GetProcAddress(hinstance, "api_version"));
-
-    if (!check_api_version(api_version, path.string())) {
-        FreeLibrary(hinstance);
-        return;
-    }
-
-    typedef int (*info_function)();
-    info_function server_type = reinterpret_cast<info_function>(GetProcAddress(hinstance, "server_type"));
-    if (!server_type) {
-        FreeLibrary(hinstance);
-        return;
-    }
-
-    if ((*server_type)() != sc_server_supernova) {
-        FreeLibrary(hinstance);
-        return;
-    }
-
-    void* ptr = (void*)GetProcAddress(hinstance, "load");
-    if (!ptr) {
-        wchar_t* s;
-        FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                       nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&s, 0, NULL);
-
-        std::cout << "*** ERROR: GetProcAddress err " << SC_Codecvt::utf16_to_utf8_str(s) << std::endl;
-        LocalFree(s);
-
-        FreeLibrary(hinstance);
-        return;
-    }
-    open_handles.push_back(hinstance);
-    LoadPlugInFunc loadFunc = (LoadPlugInFunc)ptr;
-    (*loadFunc)(&sc_interface);
-
-    return;
+    open_modules.clear();
 }
-
-void sc_ugen_factory::close_handles() {
-    for (void* ptrhinstance : open_handles) {
-        HINSTANCE hinstance = (HINSTANCE)ptrhinstance;
-        void* ptr = (void*)GetProcAddress(hinstance, "unload");
-        if (ptr) {
-            UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
-            (*unloadFunc)();
-        }
-        FreeLibrary(hinstance);
-    }
-}
-#    else
-#        error "platform does not support dynamic plugin loading"
-#    endif
 
 #endif // STATIC_PLUGINS
 

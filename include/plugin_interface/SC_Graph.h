@@ -32,13 +32,15 @@ enum { kGraph_Reblock = 0x1, kGraph_Resample = 0x2 };
  * bumping the plugin API version number in SC_InterfaceTable.h!
  */
 struct Graph {
-    Node mNode;
+    Node mNode; // must be the first member
+
+    size_t mStructSize; // versioned struct
+
     int32 mRefCount;
+    uint32 mFlags;
 
     uint32 mNumTicks;
     uint32 mTickCounter;
-
-    uint32 mFlags;
 
     Rate* mFullRate;
     Rate* mBufRate;

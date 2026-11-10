@@ -101,6 +101,12 @@ set(scsynth_sources
         ${CMAKE_SOURCE_DIR}/common/SC_Codecvt.cpp # needed on Windows
 )
 
+if(NOT STATIC_PLUGINS)
+    list(APPEND scsynth_sources
+        ${CMAKE_SOURCE_DIR}/common/SC_ServerPluginModule.cpp
+    )
+endif()
+
 if(APPLE)
     set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
 

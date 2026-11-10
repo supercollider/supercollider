@@ -37,6 +37,7 @@
 #include "SC_Lock.h"
 #include "../../common/Samp.hpp"
 #include "../../common/SC_SndFileHelpers.hpp"
+#include "SC_Version.hpp"
 
 // NOTE: replace with <numbers> once we switch to C++20
 #include <boost/math/constants/constants.hpp>
@@ -638,6 +639,17 @@ void sc_plugin_interface::initialize(server_arguments const& args, float* contro
     freeAll_nodes.reserve(16);
     freeDeep_nodes.reserve(16);
 
+    sc_interface.mStructSize = SC_IMPLEMENTED_STRUCT_SIZE(InterfaceTable, fReleaseScopeBuffer);
+
+    sc_interface.mStructSize = SC_IMPLEMENTED_STRUCT_SIZE(InterfaceTable, fReleaseScopeBuffer);
+
+    sc_interface.mApiVersionMajor = SC_API_VERSION_MAJOR;
+    sc_interface.mApiVersionMinor = SC_API_VERSION_MINOR;
+
+    sc_interface.mSCVersionMajor = SC_VersionMajor;
+    sc_interface.mSCVersionMinor = SC_VersionMinor;
+    sc_interface.mSCVersionPatch = SC_VersionPatch;
+
     /* define functions */
     sc_interface.fDefineUnit = &define_unit;
     sc_interface.fDefineBufGen = &define_bufgen;
@@ -712,6 +724,8 @@ void sc_plugin_interface::initialize(server_arguments const& args, float* contro
     world.ft = &sc_interface;
 
     /* initialize world */
+    world.mStructSize = SC_IMPLEMENTED_STRUCT_SIZE(World, mRestrictedPath);
+
     /* control busses */
     world.mControlBus = control_busses;
     world.mNumControlBusChannels = args.control_busses;
@@ -728,14 +742,19 @@ void sc_plugin_interface::initialize(server_arguments const& args, float* contro
     std::fill(world.mAudioBusTouched, world.mAudioBusTouched + args.audio_busses, -1);
     world.mAudioBusLocks = audio_busses.locks;
 
-    /* audio buffers */
+    /* sound buffers */
     world.mNumSndBufs = args.buffers;
     world.mSndBufs = new SndBuf[world.mNumSndBufs] {}; // zero-initialize
     world.mSndBufsNonRealTimeMirror = new SndBuf[world.mNumSndBufs] {}; // zero-initialize
     world.mSndBufUpdates = new SndBufUpdates[world.mNumSndBufs] {}; // zero-initialize
-    world.mBufCounter = 0;
+    const auto sndBufSize = SC_IMPLEMENTED_STRUCT_SIZE(SndBuf, sndfile);
+    for (int i = 0; i < world.mNumSndBufs; ++i) {
+        world.mSndBufs[i].mStructSize = sndBufSize;
+        world.mSndBufsNonRealTimeMirror[i].mStructSize = sndBufSize;
+    }
 
     /* audio settings */
+    world.mBufCounter = 0;
     world.mBufLength = args.blocksize;
     world.mSampleRate = args.samplerate;
 

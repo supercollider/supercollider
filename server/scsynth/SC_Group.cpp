@@ -20,6 +20,7 @@
 
 
 #include "SC_Group.h"
+#include "SC_Graph.h"
 #include "SC_GraphDef.h"
 #include "Hash.h"
 #include "sc_msg_iter.h"
@@ -31,6 +32,7 @@
 #include "SC_WorldOptions.h"
 #include "SC_Errors.h"
 #include "scsynthsend.h"
+#include "SC_APIVersion.h"
 
 NodeDef gGroupNodeDef;
 

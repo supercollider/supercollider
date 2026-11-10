@@ -29,6 +29,7 @@
 #include "SC_Wire.h"
 #include "Unroll.h"
 #include "SC_Prototypes.h"
+#include "SC_APIVersion.h"
 
 void Unit_ChooseMulAddFunc(Unit* unit);
 
@@ -38,6 +39,7 @@ Unit* Unit_New(World* inWorld, Graph* graph, UnitSpec* inUnitSpec, char*& memory
     Unit* unit = (Unit*)memory;
     memory += def->mAllocSize;
 
+    unit->mStructSize = SC_IMPLEMENTED_STRUCT_SIZE(Unit, mBufLength);
     unit->mWorld = inWorld;
     unit->mUnitDef = def;
 
