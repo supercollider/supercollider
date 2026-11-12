@@ -187,6 +187,47 @@ TestArray : UnitTest {
 		}
 	}
 
+	test_sort {
+		// sort is supposed to be stable, i.e. it should not change the relative order of elements that compare equal
+		var test = { |n, reverse=false|
+			// [ a, 0 ], [ a, 1 ], ... [ a, x-1 ], [ b, 0 ], [ b, 1 ], ... [ b, y-1 ], [ c, 0 ], [ c, 1 ], ... [ c, z-1 ], etc.
+			// where a, b, c, etc. are unique random numbers and x, y, z, etc. are random numbers between 2 and limit-1.
+			var i, k, limit = min(n.div(2), 16);
+			var usedIndexes = Set();
+			var array = [];
+			while { array.size < n } {
+				k = rrand(2, limit-1);
+				// rand(n) because sure we always have spare indexes
+				while { i = rand(n); usedIndexes.includes(i) };
+				usedIndexes.add(i);
+				array = array.addAll((0..k).collect { |j| [ i, j ] });
+			};
+			// clamp to n
+			array = array.keep(n);
+			// sort by the first element
+			if (reverse) {
+				array.sort { |a, b| a[0] >= b[0] };
+			} {
+				array.sort { |a, b| a[0] <= b[0] };
+			};
+			// check if the relative order of elements that compare equal has been preserved
+			array.separate({ |a, b| a[0] != b[0] }).every { |elem, i|
+				elem.every { |x, j| x[1] == j }
+			};
+		};
+
+		// seed the thread's rgen to get deterministic results
+		thisThread.randSeed_(2517);
+
+		// test with different sizes
+		[ 5, 7, 16, 50, 113, 247, 1001 ].do { |n|
+			4.do {
+				this.assert(test.value(n), false);
+				this.assert(test.value(n), true);
+			}
+		}
+	}
+
 	// ----- editDistance and similarity --------------------------------------------
 
 	test_editDistance_emptyThis_isSizeThat {
