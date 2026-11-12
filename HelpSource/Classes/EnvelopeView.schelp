@@ -1,7 +1,7 @@
 class:: EnvelopeView
 summary:: A configurable view with nodes and connections
 categories:: GUI>Views
-related:: Classes/MultiSliderView, Classes/SCEnvelopeEdit
+related:: Classes/MultiSliderView
 
 DESCRIPTION::
 
