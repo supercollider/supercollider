@@ -88,7 +88,7 @@ Scale {
 		var baseKey;
 		stepsPerOctave = stepsPerOctave ? tuning.stepsPerOctave;
 		baseKey = (stepsPerOctave * (scaleDegree div: this.size)) + this.wrapAt(scaleDegree);
-		^if(accidental == 0) { baseKey } { baseKey + (accidental * (stepsPerOctave / 12.0)) }
+		^if(accidental == 0) { baseKey } { baseKey + (accidental * (12.0 / stepsPerOctave)) }
 	}
 
 	performKeyToDegree { | degree, stepsPerOctave = 12 |
