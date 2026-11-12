@@ -33,6 +33,8 @@
 
 #include "utilities/named_hash_entry.hpp"
 
+class ServerProgramOptions;
+
 namespace nova {
 namespace bi = boost::intrusive;
 
@@ -202,7 +204,7 @@ public:
     uint32_t ugen_count() const { return ugen_count_; }
     /* @} */
 
-    void load_plugins(server_arguments const& args);
+    void load_plugins(ServerProgramOptions const& args);
 
 private:
 #ifndef STATIC_PLUGINS

@@ -25,7 +25,6 @@
 
 #include "nova-simd/simd_memory.hpp"
 
-#include "../server/server_args.hpp"
 #include "../server/memory_pool.hpp"
 #include "../server/server.hpp"
 #include "malloc_aligned.hpp"
@@ -37,6 +36,7 @@
 #include "SC_Lock.h"
 #include "../../common/Samp.hpp"
 #include "../../common/SC_SndFileHelpers.hpp"
+#include "../../common/SC_ServerProgramOptions.hpp"
 
 // NOTE: replace with <numbers> once we switch to C++20
 #include <boost/math/constants/constants.hpp>
@@ -610,6 +610,9 @@ namespace nova {
 
 
 void initialize_rate(Rate& rate, double sample_rate, int blocksize) {
+    assert(sample_rate > 0);
+    assert(blocksize > 0);
+
     rate.mSampleRate = sample_rate;
     rate.mSampleDur = 1. / sample_rate;
     rate.mRadiansPerSample = 2 * boost::math::constants::pi<double>() / sample_rate;
@@ -629,8 +632,8 @@ void initialize_rate(Rate& rate, double sample_rate, int blocksize) {
 }
 
 
-void sc_plugin_interface::initialize(server_arguments const& args, float* control_busses) {
-    const bool nrt_mode = args.non_rt;
+void sc_plugin_interface::initialize(ServerProgramOptions const& args, float* control_busses) {
+    const bool rt_mode = args.mRealTime;
 
     done_nodes.reserve(64);
     pause_nodes.reserve(16);
@@ -664,7 +667,7 @@ void sc_plugin_interface::initialize(server_arguments const& args, float* contro
     sc_interface.mSineWavetable = gSineWavetable;
 
     /* memory allocation */
-    if (!nrt_mode) {
+    if (rt_mode) {
         sc_interface.fRTAlloc = &rt_alloc;
         sc_interface.fRTRealloc = &rt_realloc;
         sc_interface.fRTFree = &rt_free;
@@ -714,42 +717,46 @@ void sc_plugin_interface::initialize(server_arguments const& args, float* contro
     /* initialize world */
     /* control busses */
     world.mControlBus = control_busses;
-    world.mNumControlBusChannels = args.control_busses;
-    world.mControlBusTouched = new int32[args.control_busses];
-    std::fill(world.mControlBusTouched, world.mControlBusTouched + args.control_busses, -1);
+    world.mNumControlBusChannels = args.mNumControlBusChannels;
+    world.mControlBusTouched = new int32[args.mNumControlBusChannels];
+    std::fill_n(world.mControlBusTouched, args.mNumControlBusChannels, -1);
     world.mControlBusLock = new spin_lock();
 
     /* audio busses */
-    audio_busses.initialize(args.audio_busses, args.blocksize);
+    audio_busses.initialize(args.mNumAudioBusChannels, args.mBufLength);
 
     world.mAudioBus = audio_busses.buffers;
-    world.mNumAudioBusChannels = args.audio_busses;
-    world.mAudioBusTouched = new int32[args.audio_busses];
-    std::fill(world.mAudioBusTouched, world.mAudioBusTouched + args.audio_busses, -1);
+    world.mNumAudioBusChannels = args.mNumAudioBusChannels;
+    world.mAudioBusTouched = new int32[args.mNumAudioBusChannels];
+    std::fill_n(world.mAudioBusTouched, args.mNumAudioBusChannels, -1);
     world.mAudioBusLocks = audio_busses.locks;
 
     /* audio buffers */
-    world.mNumSndBufs = args.buffers;
+    world.mNumSndBufs = args.mNumBuffers;
     world.mSndBufs = new SndBuf[world.mNumSndBufs] {}; // zero-initialize
     world.mSndBufsNonRealTimeMirror = new SndBuf[world.mNumSndBufs] {}; // zero-initialize
     world.mSndBufUpdates = new SndBufUpdates[world.mNumSndBufs] {}; // zero-initialize
     world.mBufCounter = 0;
 
     /* audio settings */
-    world.mBufLength = args.blocksize;
-    world.mSampleRate = args.samplerate;
+    world.mBufLength = args.mBufLength;
+    world.mSampleRate = args.mPreferredSampleRate;
 
-    initialize_rate(world.mFullRate, args.samplerate, args.blocksize);
-    initialize_rate(world.mBufRate, double(args.samplerate) / args.blocksize, 1);
+    // NOTE: mPreferredSampleRate might be 0 (= use default) or not be supported by audio driver.
+    // In that case, the audio backend will call reset_sampling_rate() with the actual sample rate.
+    if (world.mSampleRate > 0) {
+        initialize_rate(world.mFullRate, world.mSampleRate, world.mBufLength);
+        initialize_rate(world.mBufRate, world.mSampleRate / (double)world.mBufLength, 1);
+    }
 
-    world.mNumInputs = args.input_channels;
-    world.mNumOutputs = args.output_channels;
+    world.mNumInputs = args.mNumInputBusChannels;
+    world.mNumOutputs = args.mNumOutputBusChannels;
 
-    world.mRealTime = !args.non_rt;
-    world.mVerbosity = args.verbosity;
+    world.mRealTime = args.mRealTime;
+    world.mVerbosity = args.mVerbosity;
 
     /* rngs */
-    world.mNumRGens = args.rng_count;
+    world.mNumRGens = args.mNumRGens;
     world.mRGen = new RGen[world.mNumRGens];
     std::vector<std::uint32_t> seeds(world.mNumRGens);
 
@@ -771,6 +778,7 @@ void sc_plugin_interface::initialize(server_arguments const& args, float* contro
 }
 
 void sc_plugin_interface::reset_sampling_rate(int sr) {
+    assert(sr > 0);
     world.mSampleRate = sr;
 
     initialize_rate(world.mFullRate, sr, world.mBufLength);
