@@ -42,9 +42,30 @@ std::optional<int> CLIOptions::parse(int argc, char* argv[], SC_TerminalClient::
         .add(hiddenDescription)
         .add(languageConfigDescription);
 
+    // everything after the script path goes to the script as is, even if it starts with a dash
+    auto scriptArgsParser = [](std::vector<std::string>& args) {
+        std::vector<po::option> result;
+        if (!args.front().empty() && args.front()[0] == '-') {
+            return result;
+        }
+        for (const auto& arg : args) {
+            po::option opt;
+            opt.value.push_back(arg);
+            opt.original_tokens.push_back(arg);
+            result.push_back(opt);
+        }
+        args.clear();
+        return result;
+    };
+
     po::variables_map vm;
     try {
-        store(po::command_line_parser(argc, argv).options(cmdLineOptions).positional(positionalOptions).run(), vm);
+        store(po::command_line_parser(argc, argv)
+                  .options(cmdLineOptions)
+                  .positional(positionalOptions)
+                  .extra_style_parser(scriptArgsParser)
+                  .run(),
+              vm);
         notify(vm);
     } catch (po::unknown_option& e) {
         std::cerr << e.what() << std::endl;
