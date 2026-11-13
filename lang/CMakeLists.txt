@@ -433,10 +433,33 @@ elseif(EMSCRIPTEN)
                 -sSTACK_OVERFLOW_CHECK=2 \
         ")
     endif()
+
     # create sub-folder in order to separate build files from cmake cache files
-    set_target_properties(sclang PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${WASM_DIST_DIR}/sclang
+    set(SCLANG_WASM_OUTPUT_DIR ${WASM_DIST_DIR}/sclang)
+    set_target_properties(sclang PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${SCLANG_WASM_OUTPUT_DIR})
+
+    set(SCLANG_WASM_HELP_OUTPUTS
+        ${SCLANG_WASM_OUTPUT_DIR}/sclang-help.js
+        ${SCLANG_WASM_OUTPUT_DIR}/sclang-help.js.metadata
+        ${SCLANG_WASM_OUTPUT_DIR}/sclang-help.data
     )
+    file(GLOB_RECURSE SCLANG_HELP_SOURCES CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/HelpSource/*)
+    add_custom_command(
+        OUTPUT ${SCLANG_WASM_HELP_OUTPUTS}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${SCLANG_WASM_OUTPUT_DIR}
+        COMMAND ${EMSCRIPTEN_ROOT_PATH}/tools/file_packager
+            ${SCLANG_WASM_OUTPUT_DIR}/sclang-help.data
+            --preload ${CMAKE_SOURCE_DIR}/HelpSource@/sc/HelpSource
+            --exclude "*.qtz" "*/.DS_Store"
+            --separate-metadata
+            --js-output=${SCLANG_WASM_OUTPUT_DIR}/sclang-help.js
+        DEPENDS ${SCLANG_HELP_SOURCES}
+        COMMENT "add help files in a dedicated data file so it can be loaded optionally and async"
+        VERBATIM
+    )
+    add_custom_target(sclang-help DEPENDS ${SCLANG_WASM_HELP_OUTPUTS})
+    add_dependencies(sclang sclang-help)
+
     set(SCLANG_WASM_FILES
         ${WASM_ASSET_DIR}/sclang/index.html
         ${WASM_ASSET_DIR}/LICENSE
