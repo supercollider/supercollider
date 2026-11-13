@@ -25,10 +25,17 @@ A PyrSymbol is a unique string that resides in a global hash table.
 
 #pragma once
 
-#include "SC_Types.h"
 #include <cstdint>
+#include <cstring>
+#include <limits>
+
+static constexpr auto metaClassPrefix = "Meta_";
+static const auto metaClassPrefixLen = strlen(metaClassPrefix);
 
 struct PyrSymbol {
+    // This does not include the null terminator.
+    static constexpr auto maxLength = std::numeric_limits<std::uint8_t>::max();
+
     char* name;
     std::int64_t hash;
     short specialIndex;
