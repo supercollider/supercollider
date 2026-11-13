@@ -19,6 +19,16 @@ FSinOsc.ar(800, 0.0, 0.2); // create a sine oscillator at 800 Hz, phase 0.0, amp
 
 A unit generator's signal inputs can be other unit generators, scalars, or arrays of unit generators and scalars.
 
+note::
+You may see argument defaults displayed as floats (e.g., code::0.0::) in the help documentation or the
+link::Guides/SCide#Method call assistance#SuperCollider-IDE code editor's method call assistance::,
+even when the argument is intended as an integer (e.g., code::0::).
+This is because the audio server processes these strong::arguments::
+as 32-bit floating-point strong::inputs::.
+For a detailed explanation,
+see link::Classes/UGen#Default argument values: Floats vs. Integers::.
+::
+
 section::SynthDefs and Synths
 
 In order to play a unit generator one needs to compile it in a link::Classes/SynthDef:: and play it on the server in a link::Classes/Synth::. A synth node is a container for one or more unit generators that execute together. A SynthDef is like a kind of pattern for creating synth nodes on the server.
