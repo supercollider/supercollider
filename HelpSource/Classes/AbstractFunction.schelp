@@ -121,6 +121,8 @@ a = Pseries(220, 220, inf).cpsmidi; a.asStream.nextN(12); // overtone series as 
 
 method::midiratio
 method::ratiomidi
+method::centratio
+method::ratiocent
 method::ampdb
 method::dbamp
 method::octcps

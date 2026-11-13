@@ -793,6 +793,8 @@ SequenceableCollection : Collection {
 	midicps { ^this.performUnaryOp('midicps') }
 	cpsmidi { ^this.performUnaryOp('cpsmidi') }
 	midiratio { ^this.performUnaryOp('midiratio') }
+	ratiocent { ^this.performUnaryOp('ratiocent') }
+	centratio { ^this.performUnaryOp('centratio') }
 	ratiomidi { ^this.performUnaryOp('ratiomidi') }
 	ampdb { ^this.performUnaryOp('ampdb') }
 	dbamp { ^this.performUnaryOp('dbamp') }
