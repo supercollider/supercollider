@@ -110,7 +110,10 @@ try {
 try {
 
 	if (thisProcess.argv[0].notNil) {
-		var str = action.(CollStream()).collection;
+		var str;
+		// Optional second argument: no-tail-calls, so backtraces are generated with every frame present.
+		Process.tailCallOptimize = (thisProcess.argv[1] != "no-tail-calls");
+		str = action.(CollStream()).collection;
 		str = str.split($\n).collect{ |line|
 			line
 				.replaceRegexp("(\\s*)[0-9]+ │", "\t\t│")

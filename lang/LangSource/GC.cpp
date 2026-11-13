@@ -428,6 +428,7 @@ HOT PyrFrame* PyrGC::NewFrame(size_t inNumBytes, std::int64_t inFlags, std::int6
     obj->caller = PyrSlot::make(0);
     obj->context = PyrSlot {};
     obj->homeContext = PyrSlot {};
+    obj->tailCalledFrom = PyrSlot {};
 
 #ifdef GC_SANITYCHECK
     SanityCheck();

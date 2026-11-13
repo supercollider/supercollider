@@ -18,6 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include "ClassLibraryInfo.hpp"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
 #include "PyrMathPrim.h"
@@ -205,9 +206,9 @@ template <typename Functor> inline int prOpNum(VMGlobals* g, int numArgsPushed) 
         g->sp = g->sp - (numArgsPushed - 1);
     }
     g->numpop = 0;
-#if TAILCALLOPTIMIZE
-    g->tailCall = 0;
-#endif
+    if (gClassLibraryInfo.generateTailCalls) {
+        g->tailCall = 0;
+    }
     return errNone;
 
 send_normal_2:
@@ -264,9 +265,9 @@ template <typename Functor> inline int prOpInt(VMGlobals* g, int numArgsPushed) 
         g->sp = g->sp - (numArgsPushed - 1);
     }
     g->numpop = 0;
-#if TAILCALLOPTIMIZE
-    g->tailCall = 0;
-#endif
+    if (gClassLibraryInfo.generateTailCalls) {
+        g->tailCall = 0;
+    }
     return errNone;
 
 send_normal_2:
@@ -324,9 +325,9 @@ template <typename Functor> inline int prOpFloat(VMGlobals* g, int numArgsPushed
         g->sp = g->sp - (numArgsPushed - 1);
     }
     g->numpop = 0;
-#if TAILCALLOPTIMIZE
-    g->tailCall = 0;
-#endif
+    if (gClassLibraryInfo.generateTailCalls) {
+        g->tailCall = 0;
+    }
     return errNone;
 
 send_normal_2:
