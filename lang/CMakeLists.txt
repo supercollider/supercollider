@@ -410,10 +410,12 @@ elseif(EMSCRIPTEN)
         -sINITIAL_MEMORY=${INITIAL_MEMORY_GROWTH} \
         -sEXIT_RUNTIME=0 \
         --pre-js ${CMAKE_SOURCE_DIR}/platform/wasm/sclang.pre.js \
+        --pre-js ${CMAKE_SOURCE_DIR}/platform/wasm/common.pre.js \
         -sEXPORT_ES6=1 \
         -sEXPORT_NAME='ScLang' \
         -sMODULARIZE=1 \
         -sEXPORTED_FUNCTIONS=['_webOscBindingAnchor','_main','_free','_scWasmBindingAnchor'] \
+        -sEXPORTED_RUNTIME_METHODS=['FS'] \
         -sPTHREAD_POOL_SIZE=${PTHREAD_POOL_SIZE} \
         --preload-file ${CMAKE_SOURCE_DIR}/SCClassLibrary@/sc/SCClassLibrary \
         -sSTACK_SIZE=1048576 \
