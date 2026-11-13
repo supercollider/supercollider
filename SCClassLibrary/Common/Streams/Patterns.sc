@@ -492,7 +492,7 @@ Pbrown : Pattern {
 
 Pgbrown : Pbrown {
 	calcNext { arg cur, step;
-		^cur * (1 + step.xrand2)
+		^cur * exprand((1 + step).reciprocal, 1 + step)
 	}
 }
 
