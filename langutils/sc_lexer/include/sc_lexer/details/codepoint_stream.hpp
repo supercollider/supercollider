@@ -45,14 +45,17 @@ class CodePointStream {
         // Code points since the start of the line, not bytes and not the visual column.
         std::uint32_t current_codepoint_in_line { 0 };
         bool prev_was_newline { false };
-        void update(src::CodePoint next, std::uint8_t sz) noexcept {
+        // The last code point was a newline, so the next one starts a line.
+        void start_line() noexcept {
             if (prev_was_newline) {
                 current_line_number += 1;
                 current_codepoint_in_line = 0;
                 prev_was_newline = false;
-            } else {
-                current_codepoint_in_line += 1;
             }
+        }
+        void update(src::CodePoint next, std::uint8_t sz) noexcept {
+            start_line();
+            current_codepoint_in_line += 1;
             prev_was_newline = src::is_newline(next);
             next_byte_offest += sz;
         }
@@ -119,11 +122,7 @@ public:
 
     // Begins a token: advances the stream by one code point.
     [[nodiscard]] std::tuple<src::SourceCodeLocation, src::CodePoint> start_token() {
-        if (state.prev_was_newline) {
-            state.current_line_number += 1;
-            state.current_codepoint_in_line = 0;
-            state.prev_was_newline = false;
-        }
+        state.start_line();
         return { { state.next_byte_offest, state.current_line_number, state.current_codepoint_in_line }, advance() };
     }
 

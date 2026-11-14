@@ -366,6 +366,23 @@ template <size_t I> void match_str(const char* text, const std::array<TSource, I
     test(sc::lex::lexer(stream, action), sc::lex::TokenType::EndOfFile, "");
 }
 
+BOOST_AUTO_TEST_CASE(newline_inside_a_token) {
+    // The column after a newline inside a token counts the code points on the new line.
+    const char* text = "/*a\nbc*/ x";
+    auto src = sc::src::NormalisedSource(text, strlen(text));
+    CodePointStream stream { src, {} };
+    sc::lex::actions::TypeAndLocationAction action {};
+    const auto comment = sc::lex::lexer(stream, action);
+    BOOST_TEST((comment.type == sc::lex::TokenType::MultilineComment));
+    BOOST_TEST(comment.range.end.line_number == 1u);
+    BOOST_TEST(comment.range.end.codepoint_in_line == 4u);
+    const auto space = sc::lex::lexer(stream, action);
+    BOOST_TEST((space.type == sc::lex::TokenType::Space));
+    const auto x = sc::lex::lexer(stream, action);
+    BOOST_TEST(x.range.begin.line_number == 1u);
+    BOOST_TEST(x.range.begin.codepoint_in_line == 5u);
+}
+
 BOOST_AUTO_TEST_CASE(newline_normalisation) {
     match_str("meow\r\nwoof",
               std::array {
