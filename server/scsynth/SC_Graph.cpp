@@ -35,6 +35,7 @@
 #include "Unroll.h"
 #include "SC_ReplyImpl.hpp"
 #include "clz.h"
+#include "SC_APIVersion.h"
 
 void Unit_ChooseMulAddFunc(Unit* unit);
 
@@ -138,6 +139,7 @@ SCErr Graph_New(World* inWorld, GraphDef* inGraphDef, int32 inID, sc_msg_iter* a
     int err = Node_New(inWorld, &inGraphDef->mNodeDef, inID, (Node**)&graph);
     if (err)
         return err;
+
     Graph_Ctor(inWorld, inGraphDef, graph, args, argtype);
     *outGraph = graph;
     return err;

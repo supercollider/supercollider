@@ -21,11 +21,12 @@
 
 #pragma once
 
-#include "SC_Graph.h"
+#include "SC_Node.h"
 
 struct Group {
     Node mNode;
 
-    Node *mHead, *mTail;
+    Node* mHead;
+    Node* mTail;
 };
 typedef struct Group Group;

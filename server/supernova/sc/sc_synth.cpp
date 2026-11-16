@@ -35,6 +35,8 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
     mNode.mWorld = &world;
     mNode.mID = node_id;
 
+    mStructSize = SC_IMPLEMENTED_STRUCT_SIZE(Graph, mPrivate);
+
     rgen.init(reinterpret_cast<uintptr_t>(this));
     mRGen = &rgen;
     mSubsampleOffset = world.mSubsampleOffset;

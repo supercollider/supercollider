@@ -20,13 +20,7 @@
 
 #pragma once
 
-// TODO next time this is updated, change SC_PlugIn.hpp `numInputs`, `numOutputs` to have correct
-// return type
-// NOTE: The plugin API version has been temporarily bumped to avoid potential crashes
-// with existing plugins on the develop branch. After all plugin API changes have been
-// made for SC 3.15, the API version should be restored to 4.
-static const int sc_api_version = 7;
-
+#include "SC_APIVersion.h"
 #include "SC_Types.h"
 #include "SC_World.h"
 #include "SC_SndBuf.h"
@@ -53,6 +47,15 @@ struct ScopeBufferHnd {
 };
 
 struct InterfaceTable {
+    size_t mStructSize; // versioned struct
+
+    uint32 mApiVersionMajor;
+    uint32 mApiVersionMinor;
+
+    uint32 mSCVersionMajor;
+    uint32 mSCVersionMinor;
+    uint32 mSCVersionPatch;
+
     uint32 mSineSize;
     float32* mSineWavetable;
     float32* mSine;
@@ -229,6 +232,9 @@ typedef struct InterfaceTable InterfaceTable;
 
 typedef enum { sc_server_scsynth = 0, sc_server_supernova = 1 } SC_ServerType;
 
+typedef void (*LoadPlugInFunc)(struct InterfaceTable*, const char*);
+typedef void (*UnloadPlugInFunc)(void);
+
 #ifdef STATIC_PLUGINS
 #    define PluginLoad(name) void name##_Load(InterfaceTable* inTable)
 #    define PluginUnload(name) void name##_Unload(void)
@@ -242,9 +248,10 @@ typedef enum { sc_server_scsynth = 0, sc_server_supernova = 1 } SC_ServerType;
 #    endif
 
 #    define PluginLoad(name)                                                                                           \
-        C_LINKAGE SC_API_EXPORT int api_version(void) { return sc_api_version; }                                       \
+        C_LINKAGE SC_API_EXPORT int api_version(void) { return SC_API_VERSION; }                                       \
+        C_LINKAGE SC_API_EXPORT int api_min_version(void) { return SC_MIN_REQUIRED_API_VERSION; }                      \
         SUPERNOVA_CHECK                                                                                                \
-        C_LINKAGE SC_API_EXPORT void load(InterfaceTable* inTable)
+        C_LINKAGE SC_API_EXPORT void load(InterfaceTable* inTable, const char* inPluginPath)
 
 #    define PluginUnload(name) C_LINKAGE SC_API_EXPORT void unload(void)
 #endif

@@ -43,6 +43,12 @@ set(libsupernova_src
     utilities/hardware_topology.cpp
 )
 
+if(NOT STATIC_PLUGINS)
+    list(APPEND libsupernova_src
+        ${CMAKE_SOURCE_DIR}/common/SC_ServerPluginModule.cpp
+    )
+endif()
+
 if(APPLE)
     list( APPEND libsupernova_src ${CMAKE_SOURCE_DIR}/common/SC_Apple.mm )
 

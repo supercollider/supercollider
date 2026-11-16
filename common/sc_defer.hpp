@@ -2,6 +2,8 @@
 
 #include <utility>
 
+namespace sc {
+
 template <typename T> struct defer {
     defer(T&& t): t(std::move(t)) {}
     defer(defer&&) = delete;
@@ -13,3 +15,5 @@ template <typename T> struct defer {
 private:
     T t;
 };
+
+} // namespace sc

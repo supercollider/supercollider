@@ -6,6 +6,6 @@ if (SUPERNOVA)
     add_subdirectory(supernova)
 endif()
 
-add_subdirectory(plugins)
+add_subdirectory(plugin_api)
 
 set_property(TARGET boost_test PROPERTY FOLDER Util)

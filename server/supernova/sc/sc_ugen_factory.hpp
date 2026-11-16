@@ -28,10 +28,13 @@
 #include "sc_synth.hpp"
 #include "sc_plugin_interface.hpp"
 
-#include "SC_InterfaceTable.h"
 #include "SC_Unit.h"
 
 #include "utilities/named_hash_entry.hpp"
+
+#ifndef STATIC_PLUGINS
+#    include "SC_ServerPluginModule.hpp"
+#endif // STATIC_PLUGINS
 
 namespace nova {
 namespace bi = boost::intrusive;
@@ -210,9 +213,9 @@ private:
     void load_plugin(std::filesystem::path const& path);
     void load_plugin_folder(std::filesystem::path const& dir, bool is_top_level, bool found_scx_file);
 
-    void close_handles();
+    void close_modules();
 
-    std::vector<void*> open_handles;
+    std::vector<ServerPluginModule> open_modules;
 #endif
     uint32_t ugen_count_ = 0;
 };
