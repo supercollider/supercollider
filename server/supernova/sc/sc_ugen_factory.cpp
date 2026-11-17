@@ -71,7 +71,7 @@ namespace nova {
 std::unique_ptr<sc_ugen_factory> sc_factory;
 
 Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth* parent, int parentIndex, World* world,
-                             linear_allocator& allocator) {
+                             sc::linear_allocator& allocator) {
     const int buffer_length = parent->mFullRate->mBufLength;
 
     const size_t output_count = unit_spec.output_specs.size();

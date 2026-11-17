@@ -33,6 +33,8 @@
 
 #include "utilities/named_hash_entry.hpp"
 
+#include "sc_linear_allocator.hpp"
+
 class ServerProgramOptions;
 
 namespace nova {
@@ -78,7 +80,7 @@ public:
         unitcmd_set(unitcmd_set_type::bucket_traits(unitcmd_set_buckets, unitcmd_set_bucket_count)) {}
 
     Unit* construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth* parent, int parentIndex, World* world,
-                    linear_allocator& allocator);
+                    sc::linear_allocator& allocator);
 
     void initialize(Unit* unit) { (*ctor)(unit); }
 

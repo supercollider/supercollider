@@ -133,7 +133,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
     if (raw_chunk == nullptr)
         throw std::bad_alloc();
 
-    linear_allocator allocator(raw_chunk);
+    sc::linear_allocator allocator(raw_chunk, raw_chunk + total_alloc_size);
 
     /* prepare controls */
     /* NB: mControls must be allocated first, see sc_synth::finalize()! */
