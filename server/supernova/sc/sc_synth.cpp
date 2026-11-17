@@ -46,25 +46,21 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
     localBufNum = 0;
     localMaxBufNum = 0;
 
+    int block_size = 0;
+    float upsample = 0;
     mFlags = 0;
 
-    int block_size = prototype->block_size;
-    float upsample = prototype->resample_factor;
-    // For now Supernova only supports fixed reblocking and resampling arguments.
-    // This is enforced in sc_synthdef::read_synthdef().
-    assert(block_size >= 0 && upsample >= 0.0);
-    // 0.0 means no resampling
-    if (upsample == 0.0) {
-        upsample = 1.0;
-    }
-
-    if (block_size == 0 && upsample == 1.0) {
-        // no reblocking or resampling
-        mNumTicks = 1;
-        mTickCounter = 0;
-        block_size = world.mBufLength;
-    } else {
+    // quick test that also makes sure that we have allocated memory for the Rate objects.
+    if (prototype->reblock_or_resample) {
         // reblocking and/or upsampling
+
+        // For now Supernova only supports fixed reblocking and resampling arguments.
+        // This is enforced in sc_synthdef::read_synthdef().
+        assert(block_size >= 0 && upsample >= 0.0);
+
+        // 1. upsample
+        // NOTE: first get the upsample factor because it is needed for the block size calculation
+        upsample = prototype->resample_factor;
         if (upsample > 1.0) {
             // make sure that 'upsample' is a power of two!
             if (ispoweroftwo((int)upsample)) {
@@ -74,11 +70,16 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
                 log_printf("WARNING: Synth: upsample factor (%f) not a power of two\n", upsample);
                 upsample = 1.0;
             }
+        } else if (upsample == 0.0) {
+            // 0.0 means no resampling
+            upsample = 1.0;
         } else if (upsample < 1.0) {
             log_printf("WARNING: Synth: downsampling (%f) not supported (yet)\n", upsample);
             upsample = 1.0;
         }
 
+        // 2. block size
+        block_size = prototype->block_size;
         if (block_size != 0) {
             if (!ispoweroftwo(block_size)) {
                 log_printf("WARNING: Synth: block size (%d) not a power of two\n", block_size);
@@ -107,6 +108,11 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
 
         mNumTicks = (world.mBufLength * upsample) / block_size;
         mTickCounter = 0;
+    } else {
+        // no reblocking or resampling
+        mNumTicks = 1;
+        mTickCounter = 0;
+        block_size = world.mBufLength;
     }
 
     // so far mPrivate is only used for queued unit commands,
@@ -120,12 +126,10 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
 
     /* we allocate one memory chunk */
     const size_t alloc_size = prototype->memory_requirement();
-    const size_t rate_alloc_size = mFlags & kGraph_ReblockOrResample ? sizeof(Rate) * 2 : 0;
     const size_t sample_alloc_size = block_size * synthdef.buffer_count;
     static constexpr size_t wire_buffer_alignment = 64; // align wire buffer to cache line boundaries
 
-    const size_t total_alloc_size =
-        alloc_size + rate_alloc_size + sample_alloc_size * sizeof(sample) + wire_buffer_alignment;
+    const size_t total_alloc_size = alloc_size + sample_alloc_size * sizeof(sample) + wire_buffer_alignment;
 
     char* raw_chunk = rt_synthesis ? (char*)rt_pool.malloc(total_alloc_size) : (char*)malloc(total_alloc_size);
 
@@ -152,17 +156,21 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
         mAudioBusOffsets[i] = -1; /* init to -1: not mapped to an audio bus yet */
     }
 
-    /* allocate and init Rates */
-    if (rate_alloc_size > 0) {
-        /* reblocking and/or resampling */
-        mFullRate = allocator.alloc<Rate>();
-        mBufRate = allocator.alloc<Rate>();
+    /* allocate and init rates */
+    if (mFlags & kGraph_ReblockOrResample) {
+        /* reblock and/or upsample -> use our own local Rate objects */
+        assert(prototype->reblock_or_resample);
+        assert(upsample > 0 && block_size > 0);
+
+        auto rates = allocator.alloc<Rate>(2);
+        mFullRate = rates;
+        mBufRate = rates + 1;
 
         double sample_rate = world.mSampleRate * upsample;
         initialize_rate(*mFullRate, sample_rate, block_size);
         initialize_rate(*mBufRate, sample_rate / block_size, 1);
     } else {
-        /* use Server block size and sample rate */
+        /* no reblocking or upsampling -> use the gobal rates */
         mFullRate = &world.mFullRate;
         mBufRate = &world.mBufRate;
     }
@@ -195,7 +203,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
         calc_units[i] = units[index];
     }
 
-    assert((char*)mControls + alloc_size <= allocator.alloc<char>()); // ensure the memory boundaries
+    assert(allocator.check_bounds());
 }
 
 sc_synth::~sc_synth() { finalize(); }

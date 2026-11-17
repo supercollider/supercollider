@@ -78,6 +78,7 @@ Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth
 
     /* allocate Unit with the given alignment */
     char* chunk = allocator.alloc_aligned<char>(alloc_size, alignment);
+    assert(chunk != nullptr);
     memset(chunk, 0, alloc_size);
     Unit* unit = reinterpret_cast<Unit*>(chunk);
 

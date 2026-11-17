@@ -260,7 +260,7 @@ void sc_synthdef::read_synthdef(const char*& buffer, const char* buffer_end, int
         }
     }
 
-    if (version > 2) {
+    if (version >= 3) {
         /* Unfortunately, we cannot set the block size or resample factor via a Control
          * because of the way that Supernova constructs Synths. (The Synth arguments are
          * only parsed and set after the Synth has been fully constructed. At this point
@@ -276,7 +276,8 @@ void sc_synthdef::read_synthdef(const char*& buffer, const char* buffer_end, int
             std::cout << "WARNING: SynthDef: block size must be a constant (Controls are not supported yet)"
                       << std::endl;
             block_size = 0; /* no reblocking */
-        }
+        } else if (block_size > 0)
+            reblock_or_resample = true;
 
         /* resample */
         resample_factor = read_float(buffer, buffer_end);
@@ -286,7 +287,11 @@ void sc_synthdef::read_synthdef(const char*& buffer, const char* buffer_end, int
             std::cout << "WARNING: SynthDef: resample factor must be a constant (Controls are not supported yet)"
                       << std::endl;
             resample_factor = 1.0; /* no resampling */
-        }
+        } else if (resample_factor == 0.0) {
+            /* 0.0 means 'no resampling' */
+            resample_factor = 1.0;
+        } else if (resample_factor != 1.0)
+            reblock_or_resample = true;
     } else {
         block_size = 0;
         block_size_index = 0;
@@ -417,6 +422,10 @@ void sc_synthdef::prepare() {
 
     // reserves space for units (one more to allor prefetching) + extra space for alignment
     memory_requirement_ += (graph.size() + calc_unit_indices.size() + 1) * sizeof(Unit*) + alignof(Unit*);
+
+    // allocate memory for local Rate objects + extra space for alignemt
+    if (reblock_or_resample)
+        memory_requirement_ += sizeof(Rate) * 2 + alignof(Rate); // extra space for alignment
 
     // memory that is required to fill the sc_synth data structure
     // see SC_Graph.h for corresponding data structure

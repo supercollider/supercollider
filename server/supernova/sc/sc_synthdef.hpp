@@ -134,11 +134,13 @@ private:
     float_vector parameters;
     parameter_index_map_t parameter_map;
 
-    int32_t block_size; /**< Synth block size. 0 = same as Server. -1 = take from control */
-    uint32_t block_size_index; /**< control index for block size */
+    int32_t block_size; /**< Synth block size. 0 = same as Server. */
+    uint32_t block_size_index; /**< control index for block size. Not used yet. */
 
-    float resample_factor; /**< resample factor. 1.0 = no resampling. -1.0 = take from control */
-    uint32_t resample_index; /**< control index for resample factor */
+    float resample_factor; /**< resample factor. 1.0 or 0.0 = no resampling. */
+    uint32_t resample_index; /**< control index for resample factor. Not used yet. */
+
+    bool reblock_or_resample = false;
 
     graph_t graph;
     unsigned int buffer_count;
