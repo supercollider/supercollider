@@ -71,6 +71,17 @@ void ReadName(const char*& buffer, const char* end, int32* name) {
     readData(buffer, end, (char*)name, namelen);
 }
 
+void SkipName(const char*& buffer, const char* end) {
+    uint32 namelen = readUInt8(buffer, end);
+    if (namelen >= kSCNameByteLen) {
+        std::ostringstream os;
+        os << "name too long (> " << kSCNameByteLen - 1 << " chars): " << std::string(buffer, namelen);
+        throw std::runtime_error(os.str());
+    }
+    checkBufferSpace(buffer, end, namelen);
+    buffer += namelen;
+}
+
 void ReadNodeDefName(const char*& buffer, const char* end, int32* name) {
     uint32 namelen = readUInt8(buffer, end);
     if (namelen >= kSCNodeDefNameByteLen) {
@@ -144,14 +155,20 @@ GraphDef* GraphDefLib_Read(World* inWorld, const char* buffer, size_t size, Grap
     if (version > 3)
         throw std::runtime_error("version " + std::to_string(version) + " not supported");
 
-    uint32 numDefs = readInt16_be(buffer, end);
-    if (version > 2) {
+    int32 numDefs = readInt16_be(buffer, end);
+    if (numDefs < 0)
+        throw std::runtime_error("bad synthdef count " + std::to_string(numDefs));
+
+    if (version >= 3) {
         // in version 3, every synth definition starts with a size field (int32) that tells
         // the size of the entire definition in bytes (including the size field itself).
         // NB: GraphDef_Read() might not read all the fields so we must explicitly set
         // the begin and end on each iteration!
         for (int i = 0; i < numDefs; ++i) {
-            size_t synthDefSize = readInt32_be(buffer, end);
+            int32 synthDefSize = readInt32_be(buffer, end);
+            if (synthDefSize < 0)
+                throw std::runtime_error("bad synthdef size " + std::to_string(synthDefSize));
+
             const char* synthDefEnd = buffer + synthDefSize - 4;
             if (synthDefEnd > end)
                 throw std::runtime_error("wrong synthdef size");
@@ -169,24 +186,29 @@ GraphDef* GraphDefLib_Read(World* inWorld, const char* buffer, size_t size, Grap
     return inList;
 }
 
-
-void ChooseMulAddFunc(GraphDef* graphDef, UnitSpec* unitSpec);
 void DoBufferColoring(World* inWorld, GraphDef* inGraphDef);
 
-void GraphDef_ReadVariant(World* inWorld, const char*& buffer, const char* end, GraphDef* inGraphDef,
-                          GraphDef* inVariant) {
-    memcpy(inVariant, inGraphDef, sizeof(GraphDef));
+void GraphDef_ReadVariant(const char*& buffer, const char* end, const GraphDef& inGraphDef, GraphDef& inVariant) {
+    memcpy(&inVariant, &inGraphDef, sizeof(GraphDef));
 
-    inVariant->mNumVariants = 0;
-    inVariant->mVariants = nullptr;
+    inVariant.mNumVariants = 0;
+    inVariant.mVariants = nullptr;
 
-    ReadName(buffer, end, inVariant->mNodeDef.mName);
-    inVariant->mNodeDef.mHash = Hash(inVariant->mNodeDef.mName);
+    ReadName(buffer, end, inVariant.mNodeDef.mName);
+    inVariant.mNodeDef.mHash = Hash(inVariant.mNodeDef.mName);
 
-    inVariant->mInitialControlValues = new float32[inGraphDef->mNumControls];
-    for (uint32 i = 0; i < inGraphDef->mNumControls; ++i) {
-        inVariant->mInitialControlValues[i] = readFloat_be(buffer, end);
+    inVariant.mInitialControlValues = new float32[inGraphDef.mNumControls];
+    for (uint32 i = 0; i < inGraphDef.mNumControls; ++i) {
+        inVariant.mInitialControlValues[i] = readFloat_be(buffer, end);
     }
+}
+
+void GraphDef_SkipVariant(const char*& buffer, const char* end, const GraphDef& inGraphDef) {
+    SkipName(buffer, end);
+
+    const size_t controlSize = inGraphDef.mNumControls * sizeof(float);
+    checkBufferSpace(buffer, end, controlSize);
+    buffer += controlSize;
 }
 
 
@@ -245,8 +267,13 @@ static void GraphDef_SetAllocSizes(GraphDef* graphDef) {
     // mMapControls may need to be aligned!
     graphDef->mNodeDef.mAllocSize += graphDef->mNumControls * controlAllocSize + alignof(float*);
 
+    if (graphDef->mMaybeResampleOrReblock) {
+        // The rates may need to be aligned!
+        graphDef->mNodeDef.mAllocSize += sizeof(Rate) * 2 + alignof(Rate);
+    }
+
     for (int i = 0; i < graphDef->mNumUnitSpecs; ++i) {
-        // The Unit might need to be aligned!
+        // The Unit may need to be aligned!
         graphDef->mNodeDef.mAllocSize += graphDef->mUnitSpecs[i].mAllocSize + alignof(Unit);
     }
 }
@@ -319,33 +346,58 @@ GraphDef* GraphDef_Read(World* inWorld, const char*& buffer, const char* end, Gr
 
     DoBufferColoring(inWorld, graphDef.get());
 
-    GraphDef_SetAllocSizes(graphDef.get());
-
+    // we cannot create the variants yet because we have not read all GraphDef members.
+    // instead we store the begin and end of the variant data, so we can read it later.
+    int32 numVariants = 0;
+    const char* variantDataBegin = nullptr;
+    const char* variantDataEnd = nullptr;
     if (inVersion >= 1) {
-        uint16 numVariants = readInt16_be(buffer, end);
-        if (numVariants > 0) {
-            graphDef->mVariants = new GraphDef[numVariants];
-            for (uint32 i = 0; i < numVariants; ++i) {
-                GraphDef_ReadVariant(inWorld, buffer, end, graphDef.get(), graphDef->mVariants + i);
-                // increment mNumVariants after every successful call to GraphDef_ReadVariant()
-                // so that we can safely call GraphDef_Free() when we catch an exception.
-                graphDef->mNumVariants++;
-            }
+        numVariants = readInt16_be(buffer, end);
+        if (numVariants < 0) {
+            throw std::runtime_error("bad variant count " + std::to_string(numVariants));
         }
+        // skip variant data (if any)
+        variantDataBegin = buffer;
+        for (int i = 0; i < numVariants; ++i) {
+            GraphDef_SkipVariant(buffer, end, *graphDef);
+        }
+        variantDataEnd = buffer;
     }
 
-    if (inVersion > 2) {
+    if (inVersion >= 3) {
         // reblock
         graphDef->mBlockSize = readInt32_be(buffer, end);
         graphDef->mBlockSizeIndex = readInt32_be(buffer, end);
+        // did the user provide a fixed (non-default) block size or assign a control?
+        if (graphDef->mBlockSize != 0) {
+            graphDef->mMaybeResampleOrReblock = true;
+        }
         // resample
         graphDef->mResampleFactor = readFloat_be(buffer, end);
         graphDef->mResampleIndex = readInt32_be(buffer, end);
+        // did the user provide a fixed (non-default) resample factor or assign a control?
+        if (graphDef->mResampleFactor != 1.0 && graphDef->mResampleFactor != 0.0) {
+            graphDef->mMaybeResampleOrReblock = true;
+        }
     } else {
         graphDef->mBlockSize = 0;
         graphDef->mBlockSizeIndex = 0;
         graphDef->mResampleFactor = 1.0;
         graphDef->mResampleIndex = 0;
+    }
+
+    // only after all members have been set!
+    GraphDef_SetAllocSizes(graphDef.get());
+
+    // create variants after setting the alloc sizes!
+    if (numVariants > 0) {
+        graphDef->mVariants = new GraphDef[numVariants];
+        for (int i = 0; i < numVariants; ++i) {
+            GraphDef_ReadVariant(variantDataBegin, variantDataEnd, *graphDef, graphDef->mVariants[i]);
+            // increment mNumVariants after every successful call to GraphDef_ReadVariant()
+            // so that we can safely call GraphDef_Free() when we catch an exception.
+            graphDef->mNumVariants++;
+        }
     }
 
     // finally add to list

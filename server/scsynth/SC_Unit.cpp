@@ -29,12 +29,11 @@
 #include "SC_Prototypes.h"
 #include "sc_linear_allocator.hpp"
 
-void Unit_ChooseMulAddFunc(Unit* unit);
-
 Unit* Unit_New(World* inWorld, Graph* graph, UnitSpec* inUnitSpec, sc::linear_allocator& alloc) {
     UnitDef* def = inUnitSpec->mUnitDef;
 
     char* mem = alloc.alloc_aligned<char>(def->mAllocSize, alignof(Unit));
+    assert(mem != nullptr);
     Unit* unit = reinterpret_cast<Unit*>(mem);
 
     unit->mWorld = inWorld;

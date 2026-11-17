@@ -41,6 +41,10 @@ typedef HashTable<ParamSpec, Malloc> ParamSpecTable;
 struct GraphDef {
     NodeDef mNodeDef;
 
+    struct GraphDef* mNext;
+
+    int32 mRefCount;
+
     uint32 mNumControls;
     uint32 mNumAudioControls;
 
@@ -65,13 +69,12 @@ struct GraphDef {
     float32 mResampleFactor;
     uint32 mResampleIndex;
 
-    int mRefCount;
-    struct GraphDef* mNext;
-
-    struct GraphDef* mOriginal;
+    // a quick way for a Synth to know whether it might need to resample or reblock.
+    bool mMaybeResampleOrReblock;
 
     uint32 mNumVariants;
     struct GraphDef* mVariants;
+    struct GraphDef* mOriginal;
 };
 
 GraphDef* GraphDef_Recv(World* inWorld, const char* buffer, size_t size, GraphDef* inList);

@@ -37,8 +37,6 @@
 #include "clz.h"
 #include "sc_linear_allocator.hpp"
 
-void Unit_ChooseMulAddFunc(Unit* unit);
-
 struct QueuedCmd {
     struct QueuedCmd* mNext;
     ReplyAddress mReplyAddress;
@@ -66,10 +64,6 @@ static void Graph_Dtor(Graph* inGraph) {
                 (dtor)(unit);
         }
     }
-
-    // NOTE: mBufRate is allocated as part of mFullRate, see Graph_Ctor()!
-    if (inGraph->mFullRate != &world->mFullRate)
-        World_Free(world, inGraph->mFullRate);
 
     // free queued Unit commands
     // AFAICT this can only happen if a Graph is created, Unit commands are sent and
@@ -411,47 +405,30 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
     graph->localBufNum = 0;
     graph->localMaxBufNum = 0; // this is set from synth
 
+    int32 blockSize = 0;
+    float upsample = 0;
     graph->mFlags = 0;
 
-    int32 blockSize = inGraphDef->mBlockSize;
-    if (blockSize < 0) {
-        // get block size from Synth Control
-        uint32 index = inGraphDef->mBlockSizeIndex;
-        if (index < graph->mNumControls) {
-            blockSize = graph->mMapControls[index][0];
-        } else {
-            scprintf("ERROR: block size control index %d out of range!\n", index);
-            blockSize = 0;
+    // quick test that also makes sure that we have allocated memory for the Rate objects.
+    if (inGraphDef->mMaybeResampleOrReblock) {
+        // 1. upsample
+        // NOTE: first get the upsample factor because it is needed for the block size calculation.
+        upsample = inGraphDef->mResampleFactor;
+        if (upsample < 0.0) {
+            // get resample factor from Synth Control
+            uint32 index = inGraphDef->mResampleIndex;
+            if (index < graph->mNumControls) {
+                upsample = graph->mMapControls[index][0];
+            } else {
+                scprintf("ERROR: resample control index %d out of range!\n", index);
+                upsample = 1.0;
+            }
         }
-    }
-    // note: 0 means no reblocking.
 
-    float upsample = inGraphDef->mResampleFactor;
-    if (upsample < 0.0) {
-        // get resample factor from Synth Control
-        uint32 index = inGraphDef->mResampleIndex;
-        if (index < graph->mNumControls) {
-            upsample = graph->mMapControls[index][0];
-        } else {
-            scprintf("ERROR: resample control index %d out of range!\n", index);
+        if (upsample == 0.0) {
+            // treat 0.0 as no resampling
             upsample = 1.0;
-        }
-    }
-    // treat 0.0 as no resampling
-    if (upsample == 0.0) {
-        upsample = 1.0;
-    }
-
-    if (blockSize == 0 && upsample == 1.0) {
-        // no reblocking and no upsampling -> use the global rates
-        graph->mNumTicks = 1;
-        graph->mTickCounter = 0;
-        graph->mFullRate = &inWorld->mFullRate;
-        graph->mBufRate = &inWorld->mBufRate;
-        blockSize = inWorld->mBufLength;
-    } else {
-        // reblocking or upsampling
-        if (upsample > 1.0) {
+        } else if (upsample > 1.0) {
             // make sure that 'upsample' is a power of two!
             if (ISPOWEROFTWO((int)upsample)) {
                 upsample = (int)upsample;
@@ -468,6 +445,20 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
             upsample = 1.0;
         }
 
+        // 2. block size
+        blockSize = inGraphDef->mBlockSize;
+        if (blockSize < 0) {
+            // get block size from Synth Control
+            uint32 index = inGraphDef->mBlockSizeIndex;
+            if (index < graph->mNumControls) {
+                blockSize = graph->mMapControls[index][0];
+            } else {
+                scprintf("ERROR: block size control index %d out of range!\n", index);
+                blockSize = 0;
+            }
+        }
+
+        // 0 means 'no reblocking'
         if (blockSize != 0) {
             if (!ISPOWEROFTWO(blockSize)) {
                 scprintf("WARNING: Synth: block size (%d) not a power of two\n", blockSize);
@@ -510,22 +501,31 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
             // use Server block size
             blockSize = inWorld->mBufLength;
         }
+    }
+
+    if (graph->mFlags & kGraph_ReblockOrResample) {
+        // reblock and/or upsample -> use our own local Rate objects
+        assert(inGraphDef->mMaybeResampleOrReblock);
+        assert(upsample > 0 && blockSize > 0);
 
         graph->mNumTicks = (inWorld->mBufLength * upsample) / blockSize;
         graph->mTickCounter = 0;
         double sampleRate = inWorld->mSampleRate * upsample;
 
-        // Hit allocator only once, see Graph_Dtor().
-        // (Ideally the rates should be allocated as part of the Synth itself.
-        // This means we would have to detect potential reblocking/resampling
-        // already in the SynthDef and increase mAllocSize accordingly.)
-        Rate* chunk = (Rate*)World_Alloc(inWorld, sizeof(Rate) * 2);
+        Rate* rates = alloc.alloc<Rate>(2);
 
-        graph->mFullRate = chunk;
+        graph->mFullRate = rates;
         Rate_Init(graph->mFullRate, sampleRate, blockSize);
 
-        graph->mBufRate = chunk + 1;
+        graph->mBufRate = rates + 1;
         Rate_Init(graph->mBufRate, sampleRate / blockSize, 1);
+    } else {
+        // no reblocking or upsampling -> use the global rates
+        graph->mNumTicks = 1;
+        graph->mTickCounter = 0;
+        graph->mFullRate = &inWorld->mFullRate;
+        graph->mBufRate = &inWorld->mBufRate;
+        blockSize = inWorld->mBufLength;
     }
 
     //  scprintf("Graph_Ctor: block size: %d, upsample: %f, ticks: %d\n",
@@ -588,6 +588,7 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
                     // its own block size is *larger* than the Server block size. (Otherwise we would
                     // overwrite subsequent buffers.) Since the wire buffer space is a single large
                     // array, we can simply multiply the wire buffer index by the Graph block size.
+                    // Note that we have already checked that we have enough wire buffer space.
                     wire->mBuffer = bufspace + outputSpec->mBufferIndex * blockSize;
                     unitOutput[j] = wire;
                     unitOutBuf[j] = wire->mBuffer;
@@ -607,6 +608,8 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
             }
         }
     }
+
+    assert(alloc.check_bounds());
 
     graph->mRefCount = 1;
 
