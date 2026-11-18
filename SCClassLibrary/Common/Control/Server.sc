@@ -68,13 +68,13 @@ ServerOptions {
 	}
 
 	device_ { |dev|
-		if (dev.isKindOf(String)) {
-			inDevice = outDevice = dev;
-		};
-
 		if (dev.isKindOf(Array)) {
-			inDevice = dev.wrapAt[0];
-			outDevice = dev.wrapAt[1];
+			// elements are either String-like or nil
+			inDevice = dev.wrapAt(0) !? _.asString;
+			outDevice = dev.wrapAt(1) !? _.asString;
+		} {
+			// 'dev' is either String-like or nil
+			inDevice = outDevice = dev !? _.asString;
 		}
 	}
 
