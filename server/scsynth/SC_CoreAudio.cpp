@@ -642,10 +642,10 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
                 scprintf("get kAudioDevicePropertyDeviceName error %4.4s B %d %p\n", (char*)&err, i, devices[i]);
                 return false;
             }
-            if (strcmp(name, mWorld->hw->mInDeviceName) == 0) {
+            if (auto inDevice = mWorld->hw->mInDeviceName; inDevice && strcmp(name, inDevice) == 0) {
                 mInputDevice = devices[i];
             }
-            if (strcmp(name, mWorld->hw->mOutDeviceName) == 0) {
+            if (auto outDevice = mWorld->hw->mOutDeviceName; outDevice && strcmp(name, outDevice) == 0) {
                 mOutputDevice = devices[i];
             }
             free(name);

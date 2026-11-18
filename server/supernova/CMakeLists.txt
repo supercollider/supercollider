@@ -34,11 +34,10 @@ set(libsupernova_src
     ${CMAKE_SOURCE_DIR}/common/Samp.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
-    ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
-    ${CMAKE_SOURCE_DIR}/common/SC_Codecvt.cpp # needed on Windows
+    ${CMAKE_SOURCE_DIR}/common/SC_Codecvt.cpp
+
     server/node_graph.cpp
     server/server.cpp
-    server/server_args.cpp
 
     utilities/hardware_topology.cpp
 )
@@ -240,6 +239,7 @@ add_executable(supernova
 
     # these files contain code only used in main()
     ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_ServerProgramOptions.cpp
     $<$<BOOL:${APPLE}>: ${CMAKE_SOURCE_DIR}/common/SC_AppleEventLoop.mm >
 )
 target_link_libraries(supernova PRIVATE libsupernova)

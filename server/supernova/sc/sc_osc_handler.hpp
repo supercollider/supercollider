@@ -51,7 +51,6 @@
 
 #include "sc_endpoint.hpp"
 #include "../server/memory_pool.hpp"
-#include "../server/server_args.hpp"
 #include "../server/server_scheduler.hpp"
 #include "../utilities/osc_server.hpp"
 #include "../utilities/sized_array.hpp"
@@ -59,6 +58,8 @@
 #include "../utilities/time_tag.hpp"
 
 struct FifoMsg;
+
+class ServerProgramOptions;
 
 namespace nova {
 
@@ -199,17 +200,7 @@ class sc_osc_handler : private detail::network_thread, public sc_notify_observer
     /* @} */
 
 public:
-    sc_osc_handler(server_arguments const& args):
-        sc_notify_observers(detail::network_thread::io_context_, args.max_logins),
-        tcp_acceptor_(detail::network_thread::io_context_),
-        tcp_password_(args.server_password.size() ? args.server_password.c_str() : nullptr) {
-        if (!args.non_rt) {
-            if (args.tcp_port && !open_socket(IPPROTO_TCP, args.socket_address, args.tcp_port))
-                throw std::runtime_error("cannot open socket");
-            if (args.udp_port && !open_socket(IPPROTO_UDP, args.socket_address, args.udp_port))
-                throw std::runtime_error("cannot open socket");
-        }
-    }
+    sc_osc_handler(ServerProgramOptions const& args);
 
     void start_receive_thread() { detail::network_thread::start_receive(); }
 
@@ -373,7 +364,7 @@ private:
     udp::endpoint udp_remote_endpoint_;
 
     tcp::acceptor tcp_acceptor_;
-    const char* tcp_password_; /* we are not owning this! */
+    std::string tcp_password_;
 
     std::array<char, 1 << 15> recv_buffer_;
 
