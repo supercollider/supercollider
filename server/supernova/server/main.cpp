@@ -162,28 +162,14 @@ void start_audio_backend(ServerProgramOptions const& args) {
     int input_channels = args.mNumInputBusChannels;
     int output_channels = args.mNumOutputBusChannels;
 
-    std::string input_device, output_device;
     // if input_device/output_device are empty, default audio device will be chosen
-    if (args.mInDeviceName || args.mOutDeviceName) {
-        if (args.mInDeviceName)
-            input_device = args.mInDeviceName;
-        if (args.mOutDeviceName)
-            output_device = args.mOutDeviceName;
+    std::string input_device;
+    if (args.mInDeviceName && input_channels > 0)
+        input_device = args.mInDeviceName;
 
-        if (!args.mInDeviceName) {
-            assert(!output_device.empty());
-            input_device = output_device;
-        }
-        if (!args.mOutDeviceName) {
-            assert(!input_device.empty());
-            output_device = input_device;
-        }
-    }
-
-    if (input_channels == 0)
-        input_device.clear();
-    if (output_channels == 0)
-        output_device.clear();
+    std::string output_device;
+    if (args.mOutDeviceName && output_channels > 0)
+        output_device = args.mOutDeviceName;
 
     std::cout << "Requested audio devices:" << std::endl;
     if (input_channels)
