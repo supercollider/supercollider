@@ -7,14 +7,15 @@
 
 namespace {
 
-bool isNode(const DocNode& n, const char* id) { return strcmp(n.id, id) == 0; }
+bool isNode(const DocNode& n, const std::string_view id) { return n.id == id; }
 
 // html anchors/urls need to be escaped - i.e. "Foo Bar" needs to become "Foo%20Bar"
 // see SCDocHTMLRenderer:escapeSpacesInAnchor
-std::string escapeAnchor(const char* str) {
+std::string escapeAnchor(std::string_view str) {
     std::string res;
-    for (const char* c = str; *c; c++) {
-        switch (*c) {
+    res.reserve(str.size());
+    for (const auto c : str) {
+        switch (c) {
         case ' ':
             res += "%20";
             break;
@@ -37,7 +38,7 @@ std::string escapeAnchor(const char* str) {
             res += "%60";
             break;
         default:
-            res += *c;
+            res += c;
         }
     }
     return res;
@@ -51,8 +52,10 @@ struct Entry {
     std::string code;
 };
 
-bool isBlank(const std::string& str) {
-    for (unsigned char c : str) {
+bool isBlank(const std::string_view str) {
+    for (const unsigned char c : str) {
+        // we use > here in order to catch any non-printable ascii chars as well
+        // see https://en.cppreference.com/cpp/language/ascii
         if (c > ' ')
             return false;
     }
@@ -170,7 +173,7 @@ private:
         if (n.n_childs < 1 || n.children[0]->n_childs < 1 || !n.children[0]->children[0]->text)
             return;
         const DocNode* names = n.children[0];
-        beginEntry(indicator + std::string(names->children[0]->text), "");
+        beginEntry(std::string(indicator).append(names->children[0]->text), "");
         for (int i = 0; i < names->n_childs; i++) {
             if (names->children[i]->text)
                 mCurrent.methodNames.push_back(names->children[i]->text);
@@ -188,25 +191,37 @@ private:
     // see also SCDocHTMLRenderer:htmlForLink
     static std::string extractLinkText(const std::string_view link) {
         // split "path#anchor#label", anchor and label are optional
-        std::vector<std::string> parts;
-        std::istringstream stream(link);
-        for (std::string part; std::getline(stream, part, '#');)
-            parts.push_back(part);
-        parts.resize(3);
-        const std::string& path = parts[0];
-        const std::string& anchor = parts[1];
-        const std::string& label = parts[2];
+        const auto first = link.find('#');
+        const std::string_view path = link.substr(0, first);
+
+        std::string_view anchor;
+        std::string_view label;
+
+        if (first != std::string_view::npos) {
+            const auto rest = link.substr(first + 1);
+            const auto second = rest.find('#');
+            anchor = rest.substr(0, second);
+            if (second != std::string_view::npos) {
+                label = rest.substr(second + 1);
+            }
+        }
 
         if (!label.empty())
-            return label;
+            return std::string(label);
         // like the renderer, show external links as they are
         if (path.find("://") != std::string::npos)
-            return link;
+            return std::string(path);
         // "Classes/SinOsc" -> "SinOsc" (rfind returns npos if there is no slash, and npos + 1 == 0)
-        std::string name = path.substr(path.rfind('/') + 1);
+        const std::string_view name = path.substr(path.rfind('/') + 1);
         if (anchor.empty())
-            return name;
-        return name.empty() ? anchor : name + ": " + anchor;
+            return std::string(name);
+        if (name.empty())
+            return std::string(anchor);
+
+        std::string result;
+        result.reserve(name.size() + 2 + anchor.size());
+        result.append(name).append(": ").append(anchor);
+        return result;
     }
 
     Entry mCurrent;
@@ -224,10 +239,13 @@ const DocNode* findBody(const DocNode& root) {
 }
 
 // strip repeated whitespaces from string to reduce space of the search index since they are not relevant for the index
-std::string stripWhitespace(const std::string& str) {
+std::string stripWhitespace(const std::string_view str) {
     std::string res;
+    res.reserve(str.size());
     bool pendingSpace = false;
     for (unsigned char c : str) {
+        // we use <= here in order to catch any non-printable ascii chars as well
+        // see https://en.cppreference.com/cpp/language/ascii
         if (c <= ' ') {
             pendingSpace = !res.empty();
             continue;
@@ -258,7 +276,7 @@ int emitDocument(YAML::Emitter& out, const SCDocTextSource& doc, const std::stri
     DocNode* root = scdoc_parse_file(file, isAddition ? SCDOC_PARSE_PARTIAL : SCDOC_PARSE_FULL);
     if (!root)
         return 0;
-    std::vector<Entry> entries = TextExtractor().extract(findBody(root), isAddition ? "" : doc.summary);
+    const std::vector<Entry> entries = TextExtractor().extract(findBody(*root), isAddition ? "" : doc.summary);
     doc_node_free_tree(root);
     for (const Entry& entry : entries)
         emitEntry(out, doc, entry);
