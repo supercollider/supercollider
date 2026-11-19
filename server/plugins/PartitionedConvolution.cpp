@@ -112,7 +112,7 @@ void PartConv_Ctor(PartConv* unit) {
     if (bufnum >= unit->mWorld->mNumSndBufs) {
         int localBufNum = bufnum - unit->mWorld->mNumSndBufs;
         Graph* parent = unit->mParent;
-        if (localBufNum <= parent->localMaxBufNum) {
+        if (localBufNum < parent->mNumLocalSndBufs) {
             buf = parent->mLocalSndBufs + localBufNum;
         } else {
             printf("PartConv Error: Invalid Spectral data bufnum %d \n", bufnum);

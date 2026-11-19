@@ -65,6 +65,14 @@ static void Graph_Dtor(Graph* inGraph) {
         }
     }
 
+#if 1
+    for (int i = 0; i < inGraph->mNumLocalSndBufs; ++i) {
+        if (inGraph->mLocalSndBufs[i].data != nullptr) {
+            scprintf("ERROR: Graph_Dtor: LocalSndBuf %d not released!\n");
+        }
+    }
+#endif
+
     // free queued Unit commands
     // AFAICT this can only happen if a Graph is created, Unit commands are sent and
     // the Graph is deleted all at in the same control block.
@@ -339,10 +347,7 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
     graph->mLocalAudioBusUnit = nullptr;
     graph->mLocalControlBusUnit = nullptr;
 
-    graph->mLocalSndBufs = nullptr;
-    graph->localBufNum = 0;
-    graph->localMaxBufNum = 0; // this is set from synth
-
+    // resampling and reblocking
     int32 blockSize = 0;
     float upsample = 0;
     graph->mFlags = 0;
@@ -465,13 +470,19 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
         graph->mBufRate = &inWorld->mBufRate;
         blockSize = inWorld->mBufLength;
     }
-
     //  scprintf("Graph_Ctor: block size: %d, upsample: %f, ticks: %d\n",
     //           blockSize, upsample, graph->mNumTicks);
 
-    // so far mPrivate is only used for queued unit commands,
-    // i.e. it just points to the head of the list.
-    graph->mPrivate = nullptr;
+    // set up local SndBufs
+    int numLocalSndBufs = inGraphDef->mNumLocalSndBufs;
+    graph->mNumLocalSndBufs = numLocalSndBufs;
+    if (numLocalSndBufs > 0) {
+        graph->mLocalSndBufs = alloc.alloc<SndBuf>(numLocalSndBufs);
+        for (int i = 0; i < numLocalSndBufs; ++i) {
+            // zero-initialize!
+            new (&graph->mLocalSndBufs[i]) SndBuf {};
+        }
+    }
 
     // initialize units
     // scprintf("initialize units\n");
@@ -549,6 +560,10 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
 
     assert(alloc.check_bounds());
 
+    // so far mPrivate is only used for queued unit commands,
+    // i.e. it just points to the head of the list.
+    graph->mPrivate = nullptr;
+
     graph->mRefCount = 1;
 
     inGraphDef->mRefCount++;
@@ -559,6 +574,10 @@ void Graph_QueueUnitCmd(Graph* inGraph, int inSize, const char* inData, const Re
     // calc function, i.e. after calling the unit constructors.
     // scprintf("->Graph_QueueUnitCmd\n");
     QueuedCmd* cmd = (QueuedCmd*)World_Alloc(inGraph->mNode.mWorld, sizeof(QueuedCmd) + inSize);
+    if (cmd == nullptr) {
+        scprintf("ERROR: could not queue unit command: RT alloc failed.\n");
+        return;
+    }
     cmd->mNext = nullptr;
     if (inReplyAddress)
         cmd->mReplyAddress = *inReplyAddress;

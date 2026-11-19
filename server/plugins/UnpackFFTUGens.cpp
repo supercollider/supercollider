@@ -110,7 +110,7 @@ void Unpack1FFT_Ctor(Unpack1FFT* unit) {
     if (ibufnum >= world->mNumSndBufs) {                                                                               \
         int localBufNum = ibufnum - world->mNumSndBufs;                                                                \
         Graph* parent = unit->mParent;                                                                                 \
-        if (localBufNum <= parent->localBufNum) {                                                                      \
+        if (localBufNum < parent->mNumLocalSndBufs) {                                                                  \
             buf = parent->mLocalSndBufs + localBufNum;                                                                 \
         } else {                                                                                                       \
             buf = world->mSndBufs;                                                                                     \
@@ -221,7 +221,7 @@ void PackFFT_next(PackFFT* unit, int inNumSamples) {
     if (ibufnum >= world->mNumSndBufs) {
         int localBufNum = ibufnum - world->mNumSndBufs;
         Graph* parent = unit->mParent;
-        if (localBufNum <= parent->localBufNum) {
+        if (localBufNum < parent->mNumLocalSndBufs) {
             buf = parent->mLocalSndBufs + localBufNum;
         } else {
             buf = world->mSndBufs;

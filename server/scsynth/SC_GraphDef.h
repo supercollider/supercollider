@@ -72,7 +72,9 @@ struct GraphDef {
     // a quick way for a Synth to know whether it might need to resample or reblock.
     bool mMaybeResampleOrReblock;
 
+    uint32 mNumLocalSndBufs;
     uint32 mNumVariants;
+
     struct GraphDef* mVariants;
     struct GraphDef* mOriginal;
 };

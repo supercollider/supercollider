@@ -142,19 +142,16 @@ Tap : UGen {
 }
 
 LocalBuf : WidthFirstUGen {
-
 	*new { arg numFrames = 1, numChannels = 1;
 		^this.multiNew('scalar', numChannels, numFrames)
 	}
 
 	*new1 { arg rate ... args;
-		var maxLocalBufs = UGen.buildSynthDef.maxLocalBufs;
-		if(maxLocalBufs.isNil) {
-			maxLocalBufs = MaxLocalBufs.new;
-			UGen.buildSynthDef.maxLocalBufs = maxLocalBufs;
-		};
-		maxLocalBufs.increment;
-		^super.new.rate_(rate).addToSynth.init( *args ++ maxLocalBufs )
+		// NOTE: we can't do this in the 'init' method because 'allocateLocalBuffer' is overridden in
+		// SynthDefV2, where it might have to create a MaxLocalBufs instance and add it to the SynthDef
+		// *before* this UGen! See SynthDefOld.sc.
+		var bufnum = UGen.buildSynthDef.allocateLocalBuffer;
+		^super.new.rate_(rate).addToSynth.init(bufnum, *args);
 	}
 
 	*newFrom { arg list;

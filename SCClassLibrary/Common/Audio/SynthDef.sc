@@ -10,7 +10,7 @@ SynthDef {
 
 	var <>constants;
 	var <>constantSet;
-	var <>maxLocalBufs;
+	var <>numLocalBufs;
 	var <reblock;
 	var <resample;
 
@@ -82,7 +82,7 @@ SynthDef {
 		constantSet = Set.new;
 		controls = nil;
 		controlIndex = 0;
-		maxLocalBufs = nil;
+		numLocalBufs = 0;
 		reblock = nil;
 		resample = nil;
 	}
@@ -282,6 +282,12 @@ SynthDef {
 			});
 	}
 
+	allocateLocalBuffer {
+		var bufnum = numLocalBufs;
+		numLocalBufs = bufnum + 1;
+		^bufnum;
+	}
+
 	finishBuild {
 		this.addCopiesIfNeeded;
 		this.optimizeGraph;
@@ -412,6 +418,9 @@ SynthDef {
 
 				// resample
 				(this.resample ?? { Resample() }).writeDef(file);
+
+				// local Buffers
+				file.putInt32(numLocalBufs);
 
 				// calculate total size in bytes
 				endPos = file.pos;

@@ -255,7 +255,7 @@ static SndBuf* ConvGetBuffer(Unit* unit, int32 bufnum, const char* ugenName, int
         if (bufnum >= world->mNumSndBufs) {
             int localBufNum = bufnum - world->mNumSndBufs;
             Graph* parent = unit->mParent;
-            if (localBufNum <= parent->localMaxBufNum) {
+            if (localBufNum < parent->mNumLocalSndBufs) {
                 buf = parent->mLocalSndBufs + localBufNum;
             } else {
                 if (unit->mWorld->mVerbosity > -1)

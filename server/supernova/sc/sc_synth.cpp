@@ -42,10 +42,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
     mLocalAudioBusUnit = nullptr;
     mLocalControlBusUnit = nullptr;
 
-    mLocalSndBufs = nullptr;
-    localBufNum = 0;
-    localMaxBufNum = 0;
-
+    // reblocking and upsampling
     int block_size = 0;
     float upsample = 0;
     mFlags = 0;
@@ -140,8 +137,8 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
      * The synthdef's memory requirement already accounts for this. See sc_synthdef::prepare() */
     sc::linear_allocator allocator(raw_chunk, raw_chunk + total_alloc_size);
 
-    /* prepare controls */
-    /* NB: mControls must be allocated first, see sc_synth::finalize()! */
+    /* allocate controls
+     * NOTE: mControls must be allocated first, see sc_synth::finalize()! */
     mNumControls = parameter_count;
     mControls = allocator.alloc<float>(parameter_count);
     mControlRates = allocator.alloc<int>(parameter_count);
@@ -156,7 +153,17 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
         mAudioBusOffsets[i] = -1; /* init to -1: not mapped to an audio bus yet */
     }
 
-    /* allocate and init rates */
+    /* allocate and initialize constant wires */
+    mWire = allocator.alloc<Wire>(constants_count);
+    for (size_t i = 0; i != synthdef.constants.size(); ++i) {
+        Wire* wire = mWire + i;
+        wire->mFromUnit = nullptr;
+        wire->mCalcRate = 0;
+        wire->mBuffer = nullptr;
+        wire->mScalarValue = get_constant(i);
+    }
+
+    /* allocate and initialize rates */
     if (mFlags & kGraph_ReblockOrResample) {
         /* reblock and/or upsample -> use our own local Rate objects */
         assert(prototype->reblock_or_resample);
@@ -175,14 +182,14 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
         mBufRate = &world.mBufRate;
     }
 
-    /* allocate constant wires */
-    mWire = allocator.alloc<Wire>(constants_count);
-    for (size_t i = 0; i != synthdef.constants.size(); ++i) {
-        Wire* wire = mWire + i;
-        wire->mFromUnit = nullptr;
-        wire->mCalcRate = 0;
-        wire->mBuffer = nullptr;
-        wire->mScalarValue = get_constant(i);
+    /* allocate local SndBufs */
+    mNumLocalSndBufs = prototype->local_sndbuf_count;
+    if (mNumLocalSndBufs > 0) {
+        mLocalSndBufs = allocator.alloc<SndBuf>(mNumLocalSndBufs);
+        for (size_t i = 0; i < mNumLocalSndBufs; ++i)
+            new (&mLocalSndBufs[i]) SndBuf {}; // zero-initialize!
+    } else {
+        mLocalSndBufs = nullptr;
     }
 
     unit_count = prototype->unit_count();
@@ -263,6 +270,7 @@ void sc_synth::finalize() {
     }
 
     sc_factory->free_ugens(unit_count);
+    // mControls holds the (RT) memory chunk.
     if (sc_factory->is_realtime_synthesis())
         rt_pool.free(mControls);
     else

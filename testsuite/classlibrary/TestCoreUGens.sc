@@ -1125,5 +1125,92 @@ TestCoreUGens : UnitTest {
 		}
 	}
 
+	test_LocalBuf {
+		var test = { |version, defClass|
+			var numFrames = 2048, numChannels = 2;
+			var def, success, synth, bus, cond = Condition(), result;
+			var defName = ("test_LocalBuf" ++ version).asSymbol;
+
+			this.bootServer(server);
+
+			bus = Bus.control(server, 5);
+			bus.fill(-1000, 5);
+
+			def = defClass.new(defName, {
+				var bufs = { LocalBuf(numFrames, numChannels) }.dup;
+				var sig = bufs ++ [ NumBuffers.ir, BufFrames.ir(bufs[0]), BufChannels.ir(bufs[0]) ];
+				Out.kr(bus.index, sig);
+			}).send(server);
+
+			this.assertEquals(def.numLocalBufs, 2,
+				"SynthDef version % shows correct number of local Buffers".format(version));
+
+			server.sync;
+
+			synth = Synth(defName);
+
+			server.sync; // let it compute at least one block
+
+			bus.get { |values|
+				result = values;
+				cond.test_(true).signal;
+			};
+			cond.wait;
+
+			synth.free;
+
+			if (version < 3) {
+				// fails and outputs -1
+				this.assertEquals(result.keep(2), [ -1, -1 ],
+					"LocalBuf in SynthDef version % outputs -1.f".format(version));
+			} {
+				// outputs bufnum
+				this.assertEquals(result[0] - result[2], 0, "LocalBuf outputs correct bufnum");
+				this.assertEquals(result[1] - result[2], 1, "LocalBuf outputs correct bufnum");
+				this.assertEquals(result[3], numFrames, "LocalBuf has correct frame count");
+				this.assertEquals(result[4], numChannels, "LocalBuf has correct channel count");
+			}
+		};
+
+		test.value(1, SynthDefV1);
+		test.value(2, SynthDefV2);
+		test.value(3, SynthDef);
+	}
+
+	test_LocalBufWithWrongArguments {
+		var test = { |numFrames, numChannels|
+			var def, success, synth, bus, cond = Condition(), result;
+
+			this.bootServer(server);
+
+			bus = Bus.control(server, 1);
+			bus.set(-1000);
+
+			SynthDef(\testWrongLocalBufArguments, {
+				Out.kr(bus.index, LocalBuf(numFrames, numChannels));
+			}).send(server);
+
+			server.sync;
+
+			synth = Synth(\testWrongLocalBufArguments);
+
+			server.sync; // let it compute at least one block
+
+			bus.get { |value|
+				result = value;
+				cond.test_(true).signal;
+			};
+			cond.wait;
+
+			synth.free;
+
+			this.assertEquals(result, -1, "LocalBuf handles wrong argument");
+		};
+
+		test.value(-1, 1);
+		test.value(0, 1);
+		test.value(1, -1);
+		test.value(1, 0);
+	}
 
 } // end TestCoreUGens class

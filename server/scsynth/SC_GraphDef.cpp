@@ -29,7 +29,6 @@
 #include "SC_WorldOptions.h"
 #include "ReadWriteMacros.h"
 #include "SC_Prototypes.h"
-#include "SC_CoreAudio.h"
 #include "SC_Errors.h"
 #include "SC_Filesystem.hpp"
 
@@ -272,6 +271,9 @@ static void GraphDef_SetAllocSizes(GraphDef* graphDef) {
         graphDef->mNodeDef.mAllocSize += sizeof(Rate) * 2 + alignof(Rate);
     }
 
+    // The SndBufs may need to be aligned! See Graph_Ctor().
+    graphDef->mNodeDef.mAllocSize += graphDef->mNumLocalSndBufs * sizeof(SndBuf) + alignof(SndBuf);
+
     for (int i = 0; i < graphDef->mNumUnitSpecs; ++i) {
         // The Unit may need to be aligned!
         graphDef->mNodeDef.mAllocSize += graphDef->mUnitSpecs[i].mAllocSize + alignof(Unit);
@@ -379,11 +381,15 @@ GraphDef* GraphDef_Read(World* inWorld, const char*& buffer, const char* end, Gr
         if (graphDef->mResampleFactor != 1.0 && graphDef->mResampleFactor != 0.0) {
             graphDef->mMaybeResampleOrReblock = true;
         }
+
+        // local SndBufs
+        graphDef->mNumLocalSndBufs = readInt32_be(buffer, end);
     } else {
         graphDef->mBlockSize = 0;
         graphDef->mBlockSizeIndex = 0;
         graphDef->mResampleFactor = 1.0;
         graphDef->mResampleIndex = 0;
+        graphDef->mNumLocalSndBufs = 0;
     }
 
     // only after all members have been set!

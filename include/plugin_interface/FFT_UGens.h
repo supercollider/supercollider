@@ -100,7 +100,7 @@ SC_INLINE void FFT_ClearUnitOutputs(Unit* unit, int wrongNumSamples) { OUT0(0) =
         if (ibufnum >= world->mNumSndBufs) {                                                                           \
             int localBufNum = ibufnum - world->mNumSndBufs;                                                            \
             Graph* parent = unit->mParent;                                                                             \
-            if (localBufNum <= parent->localBufNum) {                                                                  \
+            if (localBufNum < parent->mNumLocalSndBufs) {                                                              \
                 buf = parent->mLocalSndBufs + localBufNum;                                                             \
             } else {                                                                                                   \
                 buf = world->mSndBufs;                                                                                 \
@@ -129,7 +129,7 @@ SC_INLINE void FFT_ClearUnitOutputs(Unit* unit, int wrongNumSamples) { OUT0(0) =
         if (ibufnum1 >= world->mNumSndBufs) {                                                                          \
             int localBufNum = ibufnum1 - world->mNumSndBufs;                                                           \
             Graph* parent = unit->mParent;                                                                             \
-            if (localBufNum <= parent->localBufNum) {                                                                  \
+            if (localBufNum < parent->mNumLocalSndBufs) {                                                              \
                 buf1 = parent->mLocalSndBufs + localBufNum;                                                            \
             } else {                                                                                                   \
                 buf1 = world->mSndBufs;                                                                                \
@@ -140,7 +140,7 @@ SC_INLINE void FFT_ClearUnitOutputs(Unit* unit, int wrongNumSamples) { OUT0(0) =
         if (ibufnum2 >= world->mNumSndBufs) {                                                                          \
             int localBufNum = ibufnum2 - world->mNumSndBufs;                                                           \
             Graph* parent = unit->mParent;                                                                             \
-            if (localBufNum <= parent->localBufNum) {                                                                  \
+            if (localBufNum < parent->mNumLocalSndBufs) {                                                              \
                 buf2 = parent->mLocalSndBufs + localBufNum;                                                            \
             } else {                                                                                                   \
                 buf2 = world->mSndBufs;                                                                                \

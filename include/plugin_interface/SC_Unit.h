@@ -298,7 +298,7 @@ template <bool shared> struct buffer_lock {
         if (bufnum >= world->mNumSndBufs) {                                                                            \
             int localBufNum = bufnum - world->mNumSndBufs;                                                             \
             Graph* parent = unit->mParent;                                                                             \
-            if (localBufNum <= parent->localBufNum) {                                                                  \
+            if (localBufNum < parent->mNumLocalSndBufs) {                                                              \
                 unit->m_buf = parent->mLocalSndBufs + localBufNum;                                                     \
             } else {                                                                                                   \
                 bufnum = 0;                                                                                            \
@@ -329,7 +329,7 @@ template <bool shared> struct buffer_lock {
         if (bufnum >= world->mNumSndBufs) {                                                                            \
             int localBufNum = bufnum - world->mNumSndBufs;                                                             \
             Graph* parent = unit->mParent;                                                                             \
-            if (localBufNum <= parent->localBufNum) {                                                                  \
+            if (localBufNum < parent->mNumLocalSndBufs) {                                                              \
                 unit->m_buf = parent->mLocalSndBufs + localBufNum;                                                     \
             } else {                                                                                                   \
                 bufnum = 0;                                                                                            \
@@ -358,7 +358,7 @@ template <bool shared> struct buffer_lock {
         if (bufnum >= world->mNumSndBufs) {                                                                            \
             int localBufNum = bufnum - world->mNumSndBufs;                                                             \
             Graph* parent = unit->mParent;                                                                             \
-            if (localBufNum <= parent->localBufNum) {                                                                  \
+            if (localBufNum < parent->mNumLocalSndBufs) {                                                              \
                 unit->m_buf = parent->mLocalSndBufs + localBufNum;                                                     \
             } else {                                                                                                   \
                 bufnum = 0;                                                                                            \

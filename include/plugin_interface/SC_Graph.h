@@ -69,8 +69,7 @@ struct Graph {
     struct Unit* mLocalControlBusUnit;
 
     SndBuf* mLocalSndBufs;
-    int32 localBufNum;
-    int32 localMaxBufNum;
+    uint32 mNumLocalSndBufs;
 
     void* mPrivate;
 };

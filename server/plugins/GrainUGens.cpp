@@ -180,7 +180,7 @@ inline double sc_gloop(double in, double hi) {
     if (bufnum >= world->mNumSndBufs) {                                                                                \
         int localBufNum = bufnum - world->mNumSndBufs;                                                                 \
         Graph* parent = unit->mParent;                                                                                 \
-        if (localBufNum <= parent->localBufNum) {                                                                      \
+        if (localBufNum < parent->mNumLocalSndBufs) {                                                                  \
             buf = parent->mLocalSndBufs + localBufNum;                                                                 \
         } else {                                                                                                       \
             bufnum = 0;                                                                                                \

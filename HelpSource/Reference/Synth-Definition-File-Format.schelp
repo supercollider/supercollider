@@ -55,6 +55,7 @@ If the value is -1, the block size is taken from the specified parameter (see ne
 ## int32 - the parameter index for the block size. This is only used if the block size field above is -1.
 ## float32 - the synth resampling factor. For no resampling, the value should be 0.0 or 1.0. If the value is -1.0, the resampling factor is taken from the specified parameter (see next field).
 ## int32 - the parameter index for the resampling factor. This is only used if the resampling factor field above is -1.0.
+## int32 - number of local Buffers
 ::
 
 a strong::param-name:: is :
@@ -159,6 +160,7 @@ tree::
     ## int32 - the parameter index for the block size. This is only used if the block size field above is -1.
     ## float32 - the synth resampling factor. For no resampling, the value should be 0.0 or 1.0. If the value is -1.0, the resampling factor is taken from the specified parameter (see next field).
     ## int32 - the parameter index for the resampling factor. This is only used if the resampling factor field above is -1.0.
+    ## int32 - number of local Buffers
     ::
 ::
 
@@ -238,4 +240,4 @@ Unit generators should be listed in an order that permits efficient reuse of con
 
 There should be no duplicate values in the constants table.
 
-copyright © 2002 James McCartney - converted to new help system 2010 by Jonatan Liljedahl, updated for version 2 by Scott Wilson 2011
+copyright © 2002 James McCartney - converted to new help system 2010 by Jonatan Liljedahl, updated for version 2 by Scott Wilson 2011, updated for version 3 by Christof Ressi 2026.

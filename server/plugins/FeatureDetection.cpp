@@ -83,7 +83,7 @@ void RunningSum_Dtor(RunningSum* unit);
     if (ibufnum >= world->mNumSndBufs) {                                                                               \
         int localBufNum = ibufnum - world->mNumSndBufs;                                                                \
         Graph* parent = unit->mParent;                                                                                 \
-        if (localBufNum <= parent->localBufNum) {                                                                      \
+        if (localBufNum < parent->mNumLocalSndBufs) {                                                                  \
             buf = parent->mLocalSndBufs + localBufNum;                                                                 \
         } else {                                                                                                       \
             bufOK = 0;                                                                                                 \

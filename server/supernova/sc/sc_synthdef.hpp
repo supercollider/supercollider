@@ -134,18 +134,20 @@ private:
     float_vector parameters;
     parameter_index_map_t parameter_map;
 
-    int32_t block_size; /**< Synth block size. 0 = same as Server. */
-    uint32_t block_size_index; /**< control index for block size. Not used yet. */
+    int32_t block_size = 0; /**< Synth block size. 0 = same as Server. */
+    uint32_t block_size_index = 0; /**< control index for block size. Not used yet. */
 
-    float resample_factor; /**< resample factor. 1.0 or 0.0 = no resampling. */
-    uint32_t resample_index; /**< control index for resample factor. Not used yet. */
+    float resample_factor = 1.0; /**< resample factor. 1.0 or 0.0 = no resampling. */
+    uint32_t resample_index = 0; /**< control index for resample factor. Not used yet. */
 
     bool reblock_or_resample = false;
 
+    uint32_t local_sndbuf_count = 0;
+
     graph_t graph;
-    unsigned int buffer_count;
+    uint32_t buffer_count = 0;
     calc_units_t calc_unit_indices; /**< indices of the units, that need to be calculated */
-    std::size_t memory_requirement_;
+    std::size_t memory_requirement_ = 0;
 };
 
 std::vector<sc_synthdef> read_synthdefs(const char* buffer, const char* buffer_end);

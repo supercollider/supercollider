@@ -1,6 +1,27 @@
 // SynthDef version 2
 SynthDefV2 : SynthDef {
 	const <version = 2;
+
+	var maxLocalBufs;
+
+	initBuild {
+		super.initBuild;
+		maxLocalBufs = nil;
+	}
+
+	// In version 3, this method just increments the number of local Buffers,
+	// but here we have to create a MaxLocalBufs instance in the very first call.
+	// The MaxLocalBufs UGen receives the number of local Buffers via its input and
+	// uses that to allocate the SndBuf array. In version 3, this UGen is not used
+	// anymore because the number of local Buffers is included in the SynthDef file.
+	// See also LocalBuf.new1.
+	allocateLocalBuffer {
+		if (maxLocalBufs.isNil) {
+			maxLocalBufs = MaxLocalBufs();
+		};
+		maxLocalBufs.increment;
+		^super.allocateLocalBuffer;
+	}
 }
 
 // SynthDef version 1
