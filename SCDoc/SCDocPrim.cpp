@@ -171,7 +171,6 @@ static std::pair<int, std::vector<SCDocTextSource>> readDocTextSources(const Pyr
             }
         }
     }
-    // do i need move here?
     return { errNone, std::move(docs) };
 }
 
