@@ -1716,7 +1716,7 @@ void Pitch_Dtor(Pitch* unit) { RTFree(unit->mWorld, unit->m_buffer); }
 void Pitch_next_a(Pitch* unit, int inNumSamples) {
     bool foundPeak;
 
-    float* in = ZIN(kPitchIn);
+    float* in = IN(kPitchIn);
     uint32 size = unit->m_size;
     uint32 index = unit->m_index;
     int downsamp = unit->m_downsamp;
