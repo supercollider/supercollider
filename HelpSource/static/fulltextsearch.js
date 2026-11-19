@@ -35,20 +35,6 @@ function ftsEscapeHtml(str) {
     return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-// same characters as SCDocHTMLRenderer.binaryOperatorCharacters
-const ftsBinaryOperatorChars = "!@%&*-+=|<>?/";
-
-// method entries in doctext.js have the method names instead of a heading
-function ftsMethodHeading(entry) {
-    return entry.method.map((name) => {
-        switch (entry.anchor[0]) {
-        case "*": return entry.title + "." + name;
-        case "-": return [...name].some((c) => ftsBinaryOperatorChars.includes(c)) ? name : "." + name;
-        default: return name;
-        }
-    }).join(", ");
-}
-
 function ftsBuildIndex(entries, done, progress) {
     elasticlunr.tokenizer.setSeperator(ftsSeparator);
     const index = elasticlunr(function () {
@@ -65,7 +51,6 @@ function ftsBuildIndex(entries, done, progress) {
         const end = Math.min(i + 500, entries.length);
         for (; i < end; i++) {
             const e = entries[i];
-            if (e.method) e.heading = ftsMethodHeading(e);
             index.addDoc({ ref: i, title: e.title, heading: e.heading, body: e.body, code: e.code });
         }
         if (i < entries.length) {

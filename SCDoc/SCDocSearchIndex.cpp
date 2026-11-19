@@ -3,11 +3,32 @@
 
 #include <sstream>
 #include <string.h>
+#include <string_view>
 #include <yaml-cpp/yaml.h>
 
 namespace {
 
 bool isNode(const DocNode& n, const std::string_view id) { return n.id == id; }
+
+/// Method kind determined by the section it appears in
+enum class MethodKind {
+    INSTANCE, // inside classmethods::, e.g. .reverse
+    CLASS, // inside instancemethods:: e.g. SinOsc.ar
+    GENERIC, // outside class docs (e.g. in a guide), e.g. play
+};
+
+char anchorPrefix(const MethodKind kind) {
+    switch (kind) {
+    case MethodKind::INSTANCE:
+        return '-';
+    case MethodKind::CLASS:
+        return '*';
+    case MethodKind::GENERIC:
+        return '.';
+    }
+    // generic return value to silence -Wreturn-type
+    return '.';
+}
 
 // html anchors/urls need to be escaped - i.e. "Foo Bar" needs to become "Foo%20Bar"
 // see SCDocHTMLRenderer:escapeSpacesInAnchor
@@ -44,10 +65,17 @@ std::string escapeAnchor(std::string_view str) {
     return res;
 }
 
+// same characters as SCDocHTMLRenderer.binaryOperatorCharacters
+constexpr std::string_view binaryOperatorChars = "!@%&*-+=|<>?/";
+
+bool isBinaryOperator(const std::string_view name) {
+    return name.find_first_of(binaryOperatorChars) != std::string_view::npos;
+}
+
 struct Entry {
     std::string anchor;
     std::string heading;
-    std::vector<std::string> methodNames; // only for methods
+    bool isMethod = false;
     std::string body;
     std::string code;
 };
@@ -73,8 +101,9 @@ bool isBlank(const std::string_view str) {
  */
 class TextExtractor {
 public:
-    std::vector<Entry> extract(const DocNode* body, const std::string_view summary) {
+    std::vector<Entry> extract(const DocNode* body, const std::string_view title, const std::string_view summary) {
         mEntries.clear();
+        mTitle = title;
         beginEntry("", "");
         mCurrent.body += summary;
         mCurrent.body += ' ';
@@ -94,7 +123,7 @@ private:
     void endEntry() {
         bool hasText = !isBlank(mCurrent.body) || !isBlank(mCurrent.code);
         // methods are always kept, as their name is searchable
-        if (hasText || !mCurrent.methodNames.empty())
+        if (hasText || mCurrent.isMethod)
             mEntries.push_back(std::move(mCurrent));
         mCurrent = Entry();
     }
@@ -127,11 +156,11 @@ private:
             beginEntry(escapeAnchor(text), text);
             walkChildren(n);
         } else if (isNode(n, "CMETHOD")) {
-            walkMethod(n, "*");
+            walkMethod(n, MethodKind::CLASS);
         } else if (isNode(n, "IMETHOD")) {
-            walkMethod(n, "-");
+            walkMethod(n, MethodKind::INSTANCE);
         } else if (isNode(n, "METHOD")) {
-            walkMethod(n, ".");
+            walkMethod(n, MethodKind::GENERIC);
         } else if (isNode(n, NODE_TEXT) || isNode(n, "CODE") || isNode(n, "TELETYPE") || isNode(n, "EMPHASIS")
                    || isNode(n, "STRONG") || isNode(n, "SOFT")) {
             appendBody(n.text);
@@ -169,14 +198,20 @@ private:
     }
 
     // see SCDocHTMLRenderer:renderMethod for the anchors
-    void walkMethod(const DocNode& n, std::string_view indicator) {
+    void walkMethod(const DocNode& n, const MethodKind kind) {
         if (n.n_childs < 1 || n.children[0]->n_childs < 1 || !n.children[0]->children[0]->text)
             return;
         const DocNode* names = n.children[0];
-        beginEntry(std::string(indicator).append(names->children[0]->text), "");
+        beginEntry(std::string(1, anchorPrefix(kind)).append(names->children[0]->text), "");
+        mCurrent.isMethod = true;
+        // "method:: ar, kr" becomes the heading "SinOsc.ar, SinOsc.kr"
         for (int i = 0; i < names->n_childs; i++) {
-            if (names->children[i]->text)
-                mCurrent.methodNames.push_back(names->children[i]->text);
+            const char* name = names->children[i]->text;
+            if (!name)
+                continue;
+            if (!mCurrent.heading.empty())
+                mCurrent.heading += ", ";
+            mCurrent.heading += methodHeading(kind, name);
         }
         // arguments of generic methods (outside class docs)
         if (n.text) {
@@ -185,6 +220,26 @@ private:
         }
         if (n.n_childs > 1)
             walkChildren(*n.children[1]);
+    }
+
+    // see SCDocHTMLRenderer:renderMethod (methodCodePrefix)
+    std::string methodHeading(const MethodKind kind, const std::string_view name) const {
+        std::string heading;
+        switch (kind) {
+        case MethodKind::CLASS:
+            heading.append(mTitle).append(".").append(name);
+            break;
+        case MethodKind::INSTANCE:
+            // binary operator methods are written w/o '.', i.e. simply '+'
+            if (!isBinaryOperator(name))
+                heading.append(".");
+            heading.append(name);
+            break;
+        case MethodKind::GENERIC:
+            heading.append(name);
+            break;
+        }
+        return heading;
     }
 
     // converts "link::Classes/Pbind::" to "Pbind" for the search index.
@@ -224,6 +279,7 @@ private:
         return result;
     }
 
+    std::string mTitle;
     Entry mCurrent;
     std::vector<Entry> mEntries;
 };
@@ -264,8 +320,6 @@ void emitEntry(YAML::Emitter& out, const SCDocTextSource& doc, const Entry& entr
     out << YAML::Key << "anchor" << YAML::Value << entry.anchor;
     out << YAML::Key << "title" << YAML::Value << stripWhitespace(doc.title);
     out << YAML::Key << "heading" << YAML::Value << stripWhitespace(entry.heading);
-    if (!entry.methodNames.empty())
-        out << YAML::Key << "method" << YAML::Value << entry.methodNames;
     out << YAML::Key << "installed" << YAML::Value << (doc.isExtension ? "extension" : "standard");
     out << YAML::Key << "body" << YAML::Value << stripWhitespace(entry.body);
     out << YAML::Key << "code" << YAML::Value << stripWhitespace(entry.code);
@@ -276,7 +330,8 @@ int emitDocument(YAML::Emitter& out, const SCDocTextSource& doc, const std::stri
     DocNode* root = scdoc_parse_file(file, isAddition ? SCDOC_PARSE_PARTIAL : SCDOC_PARSE_FULL);
     if (!root)
         return 0;
-    const std::vector<Entry> entries = TextExtractor().extract(findBody(*root), isAddition ? "" : doc.summary);
+    const std::vector<Entry> entries =
+        TextExtractor().extract(findBody(*root), stripWhitespace(doc.title), isAddition ? "" : doc.summary);
     doc_node_free_tree(root);
     for (const Entry& entry : entries)
         emitEntry(out, doc, entry);
