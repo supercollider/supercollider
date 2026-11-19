@@ -68,7 +68,7 @@ public:
         mLabel->setTextFormat(Qt::RichText);
         mLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-        auto font = mLabel->font();
+        QFont font = Main::settings()->codeFont();
         font.setPointSizeF(parent->font().pointSizeF() * 0.8f);
         mLabel->setFont(font);
 
@@ -91,7 +91,7 @@ public:
             addArgument(text, "receiver", QString(), argNum == 0, mHighlightColor);
             --argNum;
             if (argc)
-                text += ", &nbsp;&nbsp;";
+                text += ", ";
         }
 
         for (int i = 0; i < argc; ++i) {
@@ -100,7 +100,7 @@ public:
             addArgument(text, arg.name, arg.defaultValue, argNum == i, mHighlightColor);
 
             if (i != argc - 1)
-                text += ", &nbsp;&nbsp;";
+                text += ", ";
         }
 
         mLabel->setText(text);
@@ -127,7 +127,7 @@ private:
         text += argText;
 
         if (!valText.isEmpty())
-            text += " = " + valText;
+            text += "=" + valText;
 
         if (highlight)
             text += "</span>";
