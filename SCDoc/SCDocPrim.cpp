@@ -127,49 +127,52 @@ int prSCDoc_gatherErrors(struct VMGlobals* g, int numArgsPushed) {
  * @param docs generated content for the file
  * @return error code
  */
-static int readDocTextSources(const PyrSlot* slot, std::vector<SCDocTextSource>& docs) {
+static std::pair<int, std::vector<SCDocTextSource>> readDocTextSources(const PyrSlot* slot) {
     if (!isKindOfSlot(slot, class_array))
-        return errWrongType;
+        return { errWrongType, {} };
     PyrObject* array = slotRawObject(slot);
+    std::vector<SCDocTextSource> docs;
     docs.resize(array->size);
     for (int i = 0; i < array->size; i++) {
         PyrSlot* item = array->slots + i;
         if (!isKindOfSlot(item, class_array) || slotRawObject(item)->size != 6)
-            return errWrongType;
+            return { errWrongType, {} };
         PyrSlot* fields = slotRawObject(item)->slots;
         SCDocTextSource& doc = docs[i];
         int err;
         std::tie(err, doc.path) = slotStrStdStrVal(fields + 0);
         if (err)
-            return err;
+            return { err, {} };
         std::tie(err, doc.fullPath) = slotStrStdStrVal(fields + 1);
         if (err)
-            return err;
+            return { err, {} };
         // title and summary may be nil
         if (NotNil(fields + 2))
             std::tie(err, doc.title) = slotStrStdStrVal(fields + 2);
         if (err)
-            return err;
+            return { err, {} };
         if (NotNil(fields + 3))
             std::tie(err, doc.summary) = slotStrStdStrVal(fields + 3);
         if (err)
-            return err;
+            return { err, {} };
         doc.isExtension = IsTrue(fields + 4);
         PyrSlot* additions = fields + 5;
         if (NotNil(additions)) {
             if (!isKindOfSlot(additions, class_array))
-                return errWrongType;
+                return { errWrongType, {} };
             PyrObject* additionsArray = slotRawObject(additions);
+            doc.additions.reserve(additionsArray->size);
             for (int j = 0; j < additionsArray->size; j++) {
                 std::string addition;
                 std::tie(err, addition) = slotStrStdStrVal(additionsArray->slots + j);
                 if (err)
-                    return err;
+                    return { err, {} };
                 doc.additions.push_back(std::move(addition));
             }
         }
     }
-    return errNone;
+    // do i need move here?
+    return { errNone, std::move(docs) };
 }
 
 //
@@ -188,22 +191,22 @@ int prSCDoc_BuildSearchIndex(VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
 
-    std::vector<SCDocTextSource> docs;
-    err = readDocTextSources(docArraySlot, docs);
-    if (err)
-        return err;
+    auto [readErr, docs] = readDocTextSources(docArraySlot);
+    if (readErr)
+        return readErr;
 
     std::ofstream out(SC_Codecvt::utf8_str_to_path(outPath), std::ios::binary);
     if (!out) {
         SetNil(returnCountSlot);
         return errNone;
     }
-    int count = scdocExportSearchIndex(docs, out);
+    auto count = scdocExportSearchIndex(docs, out);
     out.close();
     if (out.fail())
-        SetNil(returnCountSlot);
-    else
-        SetInt(returnCountSlot, count);
+        *returnCountSlot = PyrSlot::make(PyrNil {});
+    else {
+        *returnCountSlot = PyrSlot::make(count);
+    }
     return errNone;
 }
 
