@@ -76,16 +76,16 @@ Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth
 
     const size_t output_count = unit_spec.output_specs.size();
 
-    /* size for wires and buffers */
-    uint8_t* chunk = allocator.alloc<uint8_t>(memory_requirement());
-    memset(chunk, 0, memory_requirement());
-
-    Unit* unit = (Unit*)(std::uintptr_t(chunk + 63) & (~63)); // align on 64 byte boundary
+    /* allocate Unit with the given alignment */
+    char* chunk = allocator.alloc_aligned<char>(alloc_size, alignment);
+    memset(chunk, 0, alloc_size);
+    Unit* unit = reinterpret_cast<Unit*>(chunk);
 
     unit->mInBuf = allocator.alloc<float*>(unit_spec.input_specs.size());
     unit->mOutBuf = allocator.alloc<float*>(unit_spec.output_specs.size());
     unit->mInput = allocator.alloc<Wire*>(unit_spec.input_specs.size());
     unit->mOutput = allocator.alloc<Wire*>(unit_spec.output_specs.size());
+    Wire* wires = allocator.alloc<Wire>(unit_spec.output_specs.size());
 
     unit->mNumInputs = unit_spec.input_specs.size();
     unit->mNumOutputs = unit_spec.output_specs.size();
@@ -111,7 +111,7 @@ Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth
 
     /* allocate buffers */
     for (size_t i = 0; i != output_count; ++i) {
-        Wire* w = allocator.alloc<Wire>();
+        Wire* w = wires + i;
 
         w->mFromUnit = unit;
         w->mCalcRate = unit->mCalcRate;

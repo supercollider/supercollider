@@ -415,16 +415,16 @@ void sc_synthdef::prepare() {
         }
     }
 
-    memory_requirement_ += (graph.size() + calc_unit_indices.size() + 1)
-        * sizeof(Unit*); // reserves space for units (one more to allor prefetching)
+    // reserves space for units (one more to allor prefetching) + extra space for alignment
+    memory_requirement_ += (graph.size() + calc_unit_indices.size() + 1) * sizeof(Unit*) + alignof(Unit*);
 
     // memory that is required to fill the sc_synth data structure
     // see SC_Graph.h for corresponding data structure
-    // mControls, mControlRates, mAudioBusOffset, mMapControls
-    const size_t param_alloc_size = parameter_count() * (sizeof(float) + sizeof(int) + sizeof(int32) + sizeof(float*));
-    // mWire
+    // mControls (float*), mControlRates (int*), mAudioBusOffset (int32*), mMapControls (float**).
+    const size_t param_alloc_size = parameter_count() * (sizeof(float) + 2 * sizeof(int32) + sizeof(float*));
     const size_t constant_alloc_size = constants.size() * sizeof(Wire);
-    const size_t ctor_alloc_size = param_alloc_size + constant_alloc_size;
+    // NOTE: mMapControls and mWire may need to be aligned!
+    const size_t ctor_alloc_size = param_alloc_size + alignof(float*) + constant_alloc_size + alignof(Wire);
 
     memory_requirement_ += ctor_alloc_size;
 

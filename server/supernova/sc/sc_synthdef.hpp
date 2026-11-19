@@ -80,8 +80,15 @@ public:
         std::vector<int32_t, boost::alignment::aligned_allocator<int32_t, 64>> buffer_mapping;
 
         std::size_t memory_requirement() const {
-            return input_specs.size() * (sizeof(Wire*) + sizeof(float*))
-                + output_specs.size() * (sizeof(Wire*) + sizeof(float*)) + output_specs.size() * sizeof(Wire);
+            // All arrays have the same alignment. Since they are allocated immediately after the Unit,
+            // which has at least the same alignment requirement, no extra memory is needed for alignment.
+            // See also sc_ugen_factory::construct().
+            static_assert(alignof(Wire) == alignof(float*), "alignment error");
+            // Wire** mInput + float** mInBuf
+            const auto input_size = input_specs.size() * (sizeof(Wire*) + sizeof(float*));
+            // Wire** mOutput + float** mOutBuf + Wire array
+            const auto output_size = output_specs.size() * (sizeof(Wire*) + sizeof(float*) + sizeof(Wire));
+            return input_size + output_size;
         }
 
         class sc_ugen_def* prototype;

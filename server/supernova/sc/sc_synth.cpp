@@ -119,20 +119,21 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
     const size_t constants_count = synthdef.constants.size();
 
     /* we allocate one memory chunk */
-    const size_t wire_buffer_alignment = 64 * 8; // align to cache line boundaries
     const size_t alloc_size = prototype->memory_requirement();
-
     const size_t rate_alloc_size = mFlags & kGraph_ReblockOrResample ? sizeof(Rate) * 2 : 0;
+    const size_t sample_alloc_size = block_size * synthdef.buffer_count;
+    static constexpr size_t wire_buffer_alignment = 64; // align wire buffer to cache line boundaries
 
-    const size_t sample_alloc_size = block_size * synthdef.buffer_count + wire_buffer_alignment; /* for alignment */
-
-    const size_t total_alloc_size = alloc_size + rate_alloc_size + sample_alloc_size * sizeof(sample);
+    const size_t total_alloc_size =
+        alloc_size + rate_alloc_size + sample_alloc_size * sizeof(sample) + wire_buffer_alignment;
 
     char* raw_chunk = rt_synthesis ? (char*)rt_pool.malloc(total_alloc_size) : (char*)malloc(total_alloc_size);
 
     if (raw_chunk == nullptr)
         throw std::bad_alloc();
 
+    /* NOTE: linear_allocator makes sure that every allocation is suitably aligned for the given type.
+     * The synthdef's memory requirement already accounts for this. See sc_synthdef::prepare() */
     sc::linear_allocator allocator(raw_chunk, raw_chunk + total_alloc_size);
 
     /* prepare controls */
@@ -180,9 +181,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
     calc_unit_count = prototype->calc_unit_count();
     units = allocator.alloc<Unit*>(unit_count);
     calc_units = allocator.alloc<Unit*>(calc_unit_count + 1); // over-allocate to allow prefetching
-    unit_buffers = allocator.alloc<sample>(sample_alloc_size);
-
-    unit_buffers = static_cast<sample*>(boost::alignment::align_up(unit_buffers, wire_buffer_alignment));
+    unit_buffers = allocator.alloc_aligned<sample>(sample_alloc_size, wire_buffer_alignment);
 
     /* allocate unit generators */
     sc_factory->allocate_ugens(synthdef.graph.size());

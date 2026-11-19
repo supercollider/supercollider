@@ -129,7 +129,7 @@ private:
         char* ptr = (char*)unit;
         char* end = (char*)unit + sizeof(Unit) + 2 * sizeof(Wire) /* + 4 * sizeof(void*)*/;
 
-        static const size_t cacheline_size = 64;
+        static constexpr size_t cacheline_size = 64;
 
         for (; ptr < end; ptr += cacheline_size) {
 #ifdef __GNUC__
