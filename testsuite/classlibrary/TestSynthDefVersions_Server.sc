@@ -2,78 +2,69 @@ TestSynthDefVersions_Server : UnitTest {
 	var compiledDefs;
 
 	setUp {
-		var defArray1, defArray2, defArray3, stream, graphFunc, variants;
+		var graphFunc = { |out, value=1| Out.kr(out, value) };
+		var variants = (a: [ value: 2 ], b: [ value: 3 ], c: [ value: 4 ]);
 
-		graphFunc = { |out, value=1| Out.kr(out, value) };
-		variants = (a: [ value: 2 ], b: [ value: 3 ], c: [ value: 4 ]);
+		compiledDefs = (1..3).collect { |version|
+			var stream, array;
+			var defClass = [ SynthDefV1, SynthDefV2, SynthDef ][version-1];
 
-		// test with multiple SynthDefs per message. Also include variants.
-		defArray1 = [
-			SynthDefOld(\test_v1_1, graphFunc, variants: variants),
-			SynthDefOld(\test_v1_2, graphFunc, variants: variants)
-		];
+			// test with multiple SynthDefs per message. Also include variants.
+			array = [
+				defClass.new(("test_v"++version++"_1").asSymbol, graphFunc, variants: variants),
+				defClass.new(("test_v"++version++"_2").asSymbol, graphFunc, variants: variants)
+			];
 
-		defArray2 = [
-			SynthDef(\test_v2_1, graphFunc, variants: variants),
-			SynthDef(\test_v2_2, graphFunc, variants: variants)
-		];
+			stream = CollStream.on(Int8Array.new(256));
+			array.writeDef(stream, version);
 
-		defArray3 = [
-			SynthDef(\test_v3_1, graphFunc, variants: variants),
-			SynthDef(\test_v3_2, graphFunc, variants: variants)
-		];
-
-		compiledDefs = [];
-		// write version 1
-		stream = CollStream.on(Int8Array.new(256));
-		defArray1.writeDefOld(stream);
-		compiledDefs = compiledDefs.add([ 1, stream.collection ]);
-		// write version 2
-		stream = CollStream.on(Int8Array.new(256));
-		defArray2.writeDef(stream, 2);
-		compiledDefs = compiledDefs.add([ 2, stream.collection ]);
-		// write version 3
-		stream = CollStream.on(Int8Array.new(256));
-		defArray3.writeDef(stream, 3);
-		compiledDefs = compiledDefs.add([ 3, stream.collection ]);
+			version -> stream.collection;
+		}
 	}
 
 	// helper method
 	serverLoadsAllSynthDefVersions { arg serverName;
 		var server = Server(thisMethod.name ++ "_" ++ serverName);
 
-		this.bootServer(server);
-
 		compiledDefs.do { |item|
-			var version = item[0], bytes = item[1];
-			var cond = Condition();
-			// use a fresh pair of control busses for each def
-			var ctlBus = Bus.control(server, 2);
-			var defName;
+			var version = item.key, bytes = item.value;
+			var timeout, ctlBus, success = false, cond = Condition();
+
+			this.bootServer(server);
 
 			server.sendMsg('/d_recv', bytes);
 
 			// sync with timeout
-			fork { 3.wait; cond.test_(true).signal };
+			cond.test = false;
+			timeout = fork { 3.wait; cond.test_(true).signal };
 			server.sync(cond);
+			timeout.stop;
 
 			this.assert(server.serverRunning, "synthdef v% should not crash %".format(version, serverName));
 
-			defName = ("test_v"++version++"_1").asSymbol;
-			Synth(defName, [ out: ctlBus.index, value: 5 ], server);
+			ctlBus = Bus.control(server, 2);
 
-			defName = ("test_v"++version++"_2").asSymbol;
-			Synth(defName, [ out: ctlBus.index + 1, value: 10 ], server);
+			Synth(("test_v"++version++"_1").asSymbol, [ out: ctlBus.index, value: 5 ], server);
 
-			server.sync;
+			Synth(("test_v"++version++"_2").asSymbol, [ out: ctlBus.index + 1, value: 10 ], server);
+
+			// sync again with timeout
+			cond.test = false;
+			timeout = fork { 3.wait; cond.test_(true).signal };
+			server.sync(cond);
+			timeout.stop;
 
 			cond.test = false;
 			ctlBus.getn(2, { |array|
-				var success = array[0] == 5 and: { array[1] == 10 };
-				this.assert(success, "synthdef v% should load successfully".format(version));
+				success = array[0] == 5 and: { array[1] == 10 };
 				cond.test_(true).signal;
 			});
+			// wait with timeout
+			timeout = fork { 3.wait; cond.test_(true).signal };
 			cond.wait;
+			timeout.stop;
+
+			this.assert(success, "synthdef v% should load successfully".format(version));
 		};
 
 		if (server.serverRunning) {
@@ -98,11 +89,12 @@ TestSynthDefVersions_Server : UnitTest {
 	serverHandlesCorruptSynthDefs { arg serverName;
 		var server = Server(thisMethod.name ++ "_" ++ serverName);
 
-		this.bootServer(server);
-
 		compiledDefs.do { |item|
-			var version = item[0], data = item[1];
-			var stream, cond = Condition();
+			var version = item.key, data = item.value;
+			var timeout, stream, cond = Condition();
+
+			this.bootServer(server);
+
 			data = data.copy; // !
 			// remove the last 4 bytes
 			data = data.extend(data.size - 4);
@@ -113,8 +105,10 @@ TestSynthDefVersions_Server : UnitTest {
 				data = data.extend(data.size div: 2);
 			};
 			// sync with timeout
-			fork { 3.wait; cond.test_(true).signal };
+			cond.test = false;
+			timeout = fork { 3.wait; cond.test_(true).signal };
 			server.sync(cond);
+			timeout.stop;
 
 			this.assert(server.serverRunning, "corrupted synthdef v% should not crash %".format(version, serverName));
 		};

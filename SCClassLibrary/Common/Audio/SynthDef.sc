@@ -1,4 +1,6 @@
 SynthDef {
+	const <version = 3;
+
 	var <>name, <>func;
 
 	var <>controls, <>controlNames; // ugens add to this
@@ -303,7 +305,7 @@ SynthDef {
 
 	asBytes {
 		var stream = CollStream.on(Int8Array.new(256));
-		this.asArray.writeDef(stream);
+		this.asArray.writeDef(stream, this.class.version);
 		^stream.collection;
 	}
 
@@ -312,7 +314,7 @@ SynthDef {
 		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
 			dir = dir ? SynthDef.synthDefDir;
 			defFileExistedBefore = File.exists(dir +/+ name ++ ".scsyndef");
-			super.writeDefFile(name, dir, overwrite);
+			super.writeDefFile(name, dir, overwrite, this.class.version);
 			if(overwrite or: { defFileExistedBefore.not }) {
 				desc = this.asSynthDesc;
 				desc.metadata = metadata;
@@ -328,16 +330,12 @@ SynthDef {
 		}
 	}
 
-	writeDef { arg file, version=3;
+	writeDef { arg file;
 		// This describes the file format for the synthdef files.
 		var allControlNamesTemp, allControlNamesMap, byteSize, startPos, endPos;
 
 		try {
-			if (version < 2 or: { version > 3 }) {
-				Error("version number" + version + "out of range").throw
-			};
-
-			if (version > 2) {
+			if (this.class.version >= 3) {
 				// save current stream position so we can calculate the SynthDef size.
 				startPos = file.pos;
 				// the SynthDef size in bytes. This will be set at the very end.
@@ -348,7 +346,7 @@ SynthDef {
 
 			this.writeConstants(file);
 
-			//controls have been added by the Control UGens
+			// controls have been added by the Control UGens
 			file.putInt32(controls.size);
 			controls.do { | item |
 				file.putFloat(item);
@@ -408,7 +406,7 @@ SynthDef {
 				};
 			};
 
-			if (version > 2) {
+			if (this.class.version >= 3) {
 				// reblock
 				(this.reblock ?? { Reblock() }).writeDef(file);
 

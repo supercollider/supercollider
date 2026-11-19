@@ -244,8 +244,8 @@ SynthDesc {
 				stream.read(variantValues);
 			};
 
-			if (version > 2) {
-				// read reblock and resample fields, just to detect corrupt SynthDef files.
+			if (version >= 3) {
+				// read fields, just to detect corrupt SynthDef files.
 				stream.getInt32; // block size value
 				stream.getInt32; // block size control index
 				stream.getFloat; // resample factor
