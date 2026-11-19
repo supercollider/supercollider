@@ -127,7 +127,7 @@ private:
         text += argText;
 
         if (!valText.isEmpty())
-            text += " = " + valText;
+            text += "=" + valText;
 
         if (highlight)
             text += "</span>";
