@@ -683,6 +683,20 @@ SequenceableCollection : Collection {
 		^count
 	}
 
+	// UGen operations
+	k2a { ^this.collect(_.k2a) }
+	a2k { ^this.collect(_.a2k) }
+
+	splay {
+		var selector = UGen.methodSelectorForRate(this.first.rate);
+		^Splay.perform(selector, this)
+	}
+
+	scan { arg which;
+		var selector = UGen.methodSelectorForRate(this.first.rate);
+		^Select.perform(selector, which, this)
+	}
+
 	// pitch operations
 	degreeToKey { arg scale, stepsPerOctave=12;
 		^this.collect({ arg scaleDegree;
