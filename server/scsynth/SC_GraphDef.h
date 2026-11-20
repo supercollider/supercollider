@@ -73,8 +73,11 @@ struct GraphDef {
     bool mMaybeResampleOrReblock;
 
     uint32 mNumLocalSndBufs;
-    uint32 mNumVariants;
 
+    uint32 mNumLocalAudioBusChannels;
+    uint32 mNumLocalControlBusChannels;
+
+    uint32 mNumVariants;
     struct GraphDef* mVariants;
     struct GraphDef* mOriginal;
 };

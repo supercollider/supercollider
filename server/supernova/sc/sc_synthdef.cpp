@@ -298,6 +298,17 @@ void sc_synthdef::read_synthdef(const char*& buffer, const char* buffer_end, int
         if (local_sndbufs < 0)
             throw std::runtime_error("bad local buffer count " + std::to_string(local_sndbufs));
         local_sndbuf_count = local_sndbufs;
+
+        /* local buses */
+        auto local_audio_buses = read_int32(buffer, buffer_end);
+        if (local_audio_buses < 0)
+            throw std::runtime_error("bad local audio bus channels " + std::to_string(local_audio_buses));
+        local_audio_bus_channels = local_audio_buses;
+
+        auto local_control_buses = read_int32(buffer, buffer_end);
+        if (local_control_buses < 0)
+            throw std::runtime_error("bad local control bus channels " + std::to_string(local_control_buses));
+        local_control_bus_channels = local_control_buses;
     }
 
     prepare();
@@ -437,8 +448,15 @@ void sc_synthdef::prepare() {
     const size_t constant_alloc_size = constants.size() * sizeof(Wire) + alignof(Wire);
     // - local buffers: mLocalSndBufs (SndBuf)
     const size_t sndbuf_alloc_size = local_sndbuf_count * sizeof(SndBuf) + alignof(SndBuf);
+    // - local audio buses: mLocalAudioBusTouched (int64)
+    // NOTE: the actual audio bus channels (mLocalAudioBus) can only be allocated
+    // in the sc_scynth ctor once we know the actual Synth block size.
+    const size_t audio_bus_alloc_size = local_audio_bus_channels * sizeof(int64) + alignof(int64);
+    // - local control buses: mLocalControlBus (float), mLocalControlBusTouched (int64)
+    const size_t control_bus_alloc_size = local_control_bus_channels * (sizeof(float) + sizeof(int64)) + alignof(int64);
 
-    const size_t ctor_alloc_size = param_alloc_size + constant_alloc_size * sndbuf_alloc_size;
+    const size_t ctor_alloc_size =
+        param_alloc_size + constant_alloc_size * sndbuf_alloc_size + audio_bus_alloc_size + control_bus_alloc_size;
 
     memory_requirement_ += ctor_alloc_size;
 

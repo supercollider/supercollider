@@ -39,8 +39,6 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
     mRGen = &rgen;
     mSubsampleOffset = world.mSubsampleOffset;
     mSampleOffset = world.mSampleOffset;
-    mLocalAudioBusUnit = nullptr;
-    mLocalControlBusUnit = nullptr;
 
     // reblocking and upsampling
     int block_size = 0;
@@ -123,10 +121,12 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
 
     /* we allocate one memory chunk */
     const size_t alloc_size = prototype->memory_requirement();
-    const size_t sample_alloc_size = block_size * synthdef.buffer_count;
-    static constexpr size_t wire_buffer_alignment = 64; // align wire buffer to cache line boundaries
+    const size_t wire_buffer_samples = block_size * synthdef.buffer_count;
+    const size_t audio_bus_samples = block_size * synthdef.local_audio_bus_channels;
+    static constexpr size_t sample_buffer_alignment = 64; // align sample buffers to cache line boundaries
 
-    const size_t total_alloc_size = alloc_size + sample_alloc_size * sizeof(sample) + wire_buffer_alignment;
+    const size_t total_alloc_size = alloc_size + wire_buffer_samples * sizeof(sample) + sample_buffer_alignment
+        + (audio_bus_samples ? audio_bus_samples * sizeof(sample) + sample_buffer_alignment : 0);
 
     char* raw_chunk = rt_synthesis ? (char*)rt_pool.malloc(total_alloc_size) : (char*)malloc(total_alloc_size);
 
@@ -192,11 +192,35 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
         mLocalSndBufs = nullptr;
     }
 
+    /* allocate and initialize local buses */
+    mNumLocalAudioBusChannels = prototype->local_audio_bus_channels;
+    if (mNumLocalAudioBusChannels > 0) {
+        mLocalAudioBus = allocator.alloc_aligned<sample>(audio_bus_samples, sample_buffer_alignment);
+        std::fill_n(mLocalAudioBus, audio_bus_samples, 0.f);
+        mLocalAudioBusTouched = allocator.alloc<int64>(mNumLocalAudioBusChannels);
+        std::fill_n(mLocalAudioBusTouched, mNumLocalAudioBusChannels, -1);
+    } else {
+        mLocalAudioBus = nullptr;
+        mLocalAudioBusTouched = nullptr;
+    }
+
+    mNumLocalControlBusChannels = prototype->local_control_bus_channels;
+    if (mNumLocalControlBusChannels > 0) {
+        mLocalControlBus = allocator.alloc<sample>(mNumLocalControlBusChannels);
+        std::fill_n(mLocalControlBus, mNumLocalControlBusChannels, 0.f);
+        mLocalControlBusTouched = allocator.alloc<int64>(mNumLocalControlBusChannels);
+        std::fill_n(mLocalControlBusTouched, mNumLocalControlBusChannels, -1);
+    } else {
+        mLocalControlBus = nullptr;
+        mLocalControlBusTouched = nullptr;
+    }
+
+    /* allocate unit buffers */
     unit_count = prototype->unit_count();
     calc_unit_count = prototype->calc_unit_count();
     units = allocator.alloc<Unit*>(unit_count);
     calc_units = allocator.alloc<Unit*>(calc_unit_count + 1); // over-allocate to allow prefetching
-    unit_buffers = allocator.alloc_aligned<sample>(sample_alloc_size, wire_buffer_alignment);
+    unit_buffers = allocator.alloc_aligned<sample>(wire_buffer_samples, sample_buffer_alignment);
 
     /* allocate unit generators */
     sc_factory->allocate_ugens(synthdef.graph.size());

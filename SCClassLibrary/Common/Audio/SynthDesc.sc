@@ -251,6 +251,8 @@ SynthDesc {
 				stream.getFloat; // resample factor
 				stream.getInt32; // resample control index
 				stream.getInt32; // local buffers
+				stream.getInt32; // local audio bus channels
+				stream.getInt32; // local control bus channels
 				// just ignore all remaining (optional) fields.
 				// these will be skipped in the readSynthDef3 method.
 			};

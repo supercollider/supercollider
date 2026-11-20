@@ -11,6 +11,8 @@ SynthDef {
 	var <>constants;
 	var <>constantSet;
 	var <>numLocalBufs;
+	var <>localAudioBusChannels;
+	var <>localControlBusChannels;
 	var <reblock;
 	var <resample;
 
@@ -83,6 +85,8 @@ SynthDef {
 		controls = nil;
 		controlIndex = 0;
 		numLocalBufs = 0;
+		localAudioBusChannels = 0;
+		localControlBusChannels = 0;
 		reblock = nil;
 		resample = nil;
 	}
@@ -100,7 +104,6 @@ SynthDef {
 		controlNames = saveControlNames
 
 		^result
-
 	}
 	addControlsFromArgsOfFunc { arg func, rates, skipArgs=0;
 		var def, names, values,argNames, specs;
@@ -288,6 +291,18 @@ SynthDef {
 		^bufnum;
 	}
 
+	allocateLocalAudioBus { arg numChannels;
+		if (numChannels > localAudioBusChannels) {
+			localAudioBusChannels = numChannels;
+		}
+	}
+
+	allocateLocalControlBus { arg numChannels;
+		if (numChannels > localControlBusChannels) {
+			localControlBusChannels = numChannels;
+		}
+	}
+
 	finishBuild {
 		this.addCopiesIfNeeded;
 		this.optimizeGraph;
@@ -421,6 +436,10 @@ SynthDef {
 
 				// local Buffers
 				file.putInt32(numLocalBufs);
+
+				// local buses
+				file.putInt32(localAudioBusChannels);
+				file.putInt32(localControlBusChannels);
 
 				// calculate total size in bytes
 				endPos = file.pos;

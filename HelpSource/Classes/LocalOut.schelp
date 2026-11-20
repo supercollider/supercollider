@@ -6,16 +6,19 @@ categories::  UGens>InOut
 
 Description::
 
-LocalOut writes to buses that are local to the enclosing synth. The buses
-should have been defined by a  link::Classes/LocalIn::  ugen. The
-code::channelsArray::  must be the same number of channels
-as were declared in the  link::Classes/LocalIn:: . These are like the
-global buses, but are more convenient if you want to implement a self
-contained effect that uses a feedback processing loop.
+LocalOut writes to buses that are local to the enclosing Synth.
+These are like the global buses, but are more convenient if you want to
+implement a self contained effect that uses a feedback processing loop.
 
+note::Local buses are necessary for feedback in a reblocked/upsampled Synth!
+Global buses cannot be used for that purpose.::
 
-warning::
+The local bus channels are allocated automatically. You can have as many
+LocalOut instances as you wanted, but note that they always refer to the same channels.
 
+The local buses can be read with the link::Classes/LocalIn:: UGen.
+
+note::
 Audio written to a LocalOut will not be read by a corresponding
 link::Classes/LocalIn::  until the next cycle, i.e. one block size of
 samples later. Because of this it is important to take this additional
@@ -23,7 +26,6 @@ delay into account when using  link::Classes/LocalIn::  to create
 feedback delays with delay times shorter than the threshold of pitch
 (i. e. < 0.05 seconds or > 20Hz), or where sample accurate
 alignment is required. See the resonator example below.
-
 ::
 
 classmethods::
@@ -34,7 +36,6 @@ argument::channelsArray
 
 An Array of channels or single output to write out. You cannot
 change the size of this once a SynthDef has been built.
-
 
 Examples::
 

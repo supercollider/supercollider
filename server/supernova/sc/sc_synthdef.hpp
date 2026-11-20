@@ -144,6 +144,9 @@ private:
 
     uint32_t local_sndbuf_count = 0;
 
+    uint32_t local_audio_bus_channels = 0;
+    uint32_t local_control_bus_channels = 0;
+
     graph_t graph;
     uint32_t buffer_count = 0;
     calc_units_t calc_unit_indices; /**< indices of the units, that need to be calculated */

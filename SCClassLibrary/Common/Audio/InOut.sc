@@ -187,6 +187,11 @@ LocalIn : AbstractIn {
 		^this.multiNew('control', numChannels, *default)
 	}
 	init { arg numChannels ... default;
+		if (rate == 'audio') {
+			UGen.buildSynthDef.allocateLocalAudioBus(numChannels);
+		} {
+			UGen.buildSynthDef.allocateLocalControlBus(numChannels);
+		};
 		inputs = default.wrapExtend(numChannels);
 		^this.initOutputs(numChannels, rate)
 	}
@@ -280,6 +285,14 @@ LocalOut : AbstractOut {
 	*kr { arg channelsArray;
 		this.multiNewList(['control'] ++ channelsArray.asArray)
 		^0.0		// LocalOut has no output
+	}
+	init { arg ... channels;
+		if (rate == 'audio') {
+			UGen.buildSynthDef.allocateLocalAudioBus(channels.size);
+		} {
+			UGen.buildSynthDef.allocateLocalControlBus(channels.size);
+		};
+		inputs = channels;
 	}
 	*numFixedArgs { ^0 }
 	writesToBus { ^false }

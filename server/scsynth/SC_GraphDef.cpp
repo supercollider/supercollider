@@ -274,6 +274,19 @@ static void GraphDef_SetAllocSizes(GraphDef* graphDef) {
     // The SndBufs may need to be aligned! See Graph_Ctor().
     graphDef->mNodeDef.mAllocSize += graphDef->mNumLocalSndBufs * sizeof(SndBuf) + alignof(SndBuf);
 
+    // NOTE: the local audio bus channels themselves can only be allocated in Graph_Ctor()
+    // once we know the actual Graph block size.
+
+    // The local audio bus touched array may need to be aligned!
+    graphDef->mNodeDef.mAllocSize += graphDef->mNumLocalAudioBusChannels * sizeof(int64) + alignof(int64);
+
+    // The control bus channels can be allocated statically.
+    graphDef->mNodeDef.mAllocSize += graphDef->mNumLocalControlBusChannels * sizeof(float);
+
+    // The local control bus touched array might need to be aligned!
+    graphDef->mNodeDef.mAllocSize += graphDef->mNumLocalControlBusChannels * sizeof(int64) + alignof(int64);
+
+    // The actual Units
     for (int i = 0; i < graphDef->mNumUnitSpecs; ++i) {
         // The Unit may need to be aligned!
         graphDef->mNodeDef.mAllocSize += graphDef->mUnitSpecs[i].mAllocSize + alignof(Unit);
@@ -384,12 +397,18 @@ GraphDef* GraphDef_Read(World* inWorld, const char*& buffer, const char* end, Gr
 
         // local SndBufs
         graphDef->mNumLocalSndBufs = readInt32_be(buffer, end);
+
+        // local Bus
+        graphDef->mNumLocalAudioBusChannels = readInt32_be(buffer, end);
+        graphDef->mNumLocalControlBusChannels = readInt32_be(buffer, end);
     } else {
         graphDef->mBlockSize = 0;
         graphDef->mBlockSizeIndex = 0;
         graphDef->mResampleFactor = 1.0;
         graphDef->mResampleIndex = 0;
         graphDef->mNumLocalSndBufs = 0;
+        graphDef->mNumLocalAudioBusChannels = 0;
+        graphDef->mNumLocalControlBusChannels = 0;
     }
 
     // only after all members have been set!
