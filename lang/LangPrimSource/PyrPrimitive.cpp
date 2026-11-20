@@ -2583,9 +2583,9 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
     // In the future we should consider removing this.
     cxt.generateTailCallByteCodes = gClassLibraryInfo.generateTailCalls;
 
-    const auto on_parse_failure = [&](CompilerContext& cxt) -> int {
+    const auto on_parse_failure = [&](CompilerContext& ctx) -> int {
         std::string concat;
-        for (const auto& diagnostic : cxt.diagnostics) {
+        for (const auto& diagnostic : ctx.diagnostics) {
             concat += "\n";
             concat += diagnostic.text;
         }
@@ -2594,18 +2594,18 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
         return errFailed;
     };
 
-    const auto on_parse_sucess = [&](CompilerContext& cxt) -> int {
-        for (const auto& diagnostic : cxt.diagnostics) {
+    const auto on_parse_sucess = [&](CompilerContext& ctx) -> int {
+        for (const auto& diagnostic : ctx.diagnostics) {
             ::postText(diagnostic.text.c_str(), diagnostic.text.size());
         }
-        auto meth = GetFunctionCompileContext(g, cxt);
+        auto meth = GetFunctionCompileContext(g, ctx);
         assert(meth); // Should be impossible.
         if (!meth) {
             errorReturnSlot = PyrSlot::make(newPyrString(g->gc, "Unknown error", 0, false));
             return errFailed;
         }
 
-        auto& children = *cxt.root->children;
+        auto& children = *ctx.root->children;
         auto blockNode = nodeCast<PyrBlockNode>(&children);
 
         // All cmd line code should return a block.
@@ -2621,9 +2621,9 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
         blockNode->mIsExplicitlyClosed = true;
 
         PyrSlot compileResult {};
-        compileNode(cxt, blockNode, &compileResult, true);
+        compileNode(ctx, blockNode, &compileResult, true);
 
-        if (cxt.errors > 0) {
+        if (ctx.errors > 0) {
             errorReturnSlot = PyrSlot::make(newPyrString(g->gc, "Unknown error", 0, false));
             stackStart[0] = PyrSlot {};
             return errFailed;
