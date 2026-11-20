@@ -110,7 +110,7 @@ option(NOVA_SIMD "Build with nova-simd support." ON)
 option(FINAL_BUILD "Build as single source file." OFF)
 option(USE_CCACHE "Use ccache if available." ON)
 
-option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
+option(FFT_GREEN "Use internal FFT lib written by John Green rather than FFTW. (Not recommended.)" OFF)
 
 set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio,bela,webaudio})")
 
