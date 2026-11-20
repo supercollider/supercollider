@@ -21,7 +21,7 @@
 
 #include "SC_PlugIn.h"
 
-#include <boost/align/is_aligned.hpp>
+#include "sc_align.hpp"
 
 #ifdef _MSC_VER
 // hypotf is c99, but not c++
@@ -7309,7 +7309,7 @@ bool ChooseOperatorFunc(BinaryOpUGen* unit) {
             func = ChooseOneSampleFunc(unit);
         }
 #if defined(NOVA_SIMD)
-    } else if (boost::alignment::is_aligned(BUFLENGTH, 16)) {
+    } else if (sc::is_aligned(BUFLENGTH, 16)) {
         /* select normal function for initialization */
         func = ChooseNormalFunc(unit);
         func(unit, 1);

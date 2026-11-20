@@ -40,7 +40,7 @@ using nova::slope_argument;
 
 #endif
 
-#include <boost/align/is_aligned.hpp>
+#include "sc_align.hpp"
 
 static InterfaceTable* ft;
 
@@ -866,7 +866,7 @@ void In_Ctor(In* unit) {
 #ifdef NOVA_SIMD
         else if (BUFLENGTH == 64)
             SETCALC(In_next_a_nova_64);
-        else if (boost::alignment::is_aligned(BUFLENGTH, 16))
+        else if (sc::is_aligned(BUFLENGTH, 16))
             SETCALC(In_next_a_nova);
 #endif
         else
@@ -1325,7 +1325,7 @@ void ReplaceOut_Ctor(ReplaceOut* unit) {
 #ifdef NOVA_SIMD
         else if (BUFLENGTH == 64)
             SETCALC(ReplaceOut_next_a_nova_64);
-        else if (boost::alignment::is_aligned(BUFLENGTH, 16))
+        else if (sc::is_aligned(BUFLENGTH, 16))
             SETCALC(ReplaceOut_next_a_nova);
 #endif
         else
@@ -1562,7 +1562,7 @@ void Out_Ctor(Out* unit) {
 #if defined(NOVA_SIMD)
         else if (BUFLENGTH == 64)
             SETCALC(Out_next_a_nova_64);
-        else if (boost::alignment::is_aligned(BUFLENGTH, 16))
+        else if (sc::is_aligned(BUFLENGTH, 16))
             SETCALC(Out_next_a_nova);
         else
             SETCALC(Out_next_a);
@@ -1882,7 +1882,7 @@ void XOut_Ctor(XOut* unit) {
         if (REBLOCK_OR_RESAMPLE)
             SETCALC(XOut_next_a_reblock);
 #ifdef NOVA_SIMD
-        else if (boost::alignment::is_aligned(BUFLENGTH, 16))
+        else if (sc::is_aligned(BUFLENGTH, 16))
             SETCALC(XOut_next_a_nova);
 #endif
         else
@@ -2379,7 +2379,7 @@ void LocalIn_Ctor(LocalIn* unit) {
 #ifdef NOVA_SIMD
         else if (BUFLENGTH == 64)
             SETCALC(LocalIn_next_a_nova_64);
-        else if (boost::alignment::is_aligned(BUFLENGTH, 16))
+        else if (sc::is_aligned(BUFLENGTH, 16))
             SETCALC(LocalIn_next_a_nova);
 #endif
         else
@@ -2583,7 +2583,7 @@ void LocalOut_Ctor(LocalOut* unit) {
 #ifdef NOVA_SIMD
         else if (BUFLENGTH == 64)
             SETCALC(LocalOut_next_a_nova_64);
-        else if (boost::alignment::is_aligned(BUFLENGTH, 16))
+        else if (sc::is_aligned(BUFLENGTH, 16))
             SETCALC(LocalOut_next_a_nova);
 #endif
         else
