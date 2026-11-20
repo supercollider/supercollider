@@ -822,7 +822,7 @@ RawPointer {
 Interpreter {
 	// The interpreter defines a context in which interactive commands
 	// are compiled.
-	classvar <>interpretThrows = false;
+	classvar <>interpretThrows = true;
 
 
 	// NOTE: all instance variables defined here (or in Object) will be accessible from every single function evaluated in the repl,
