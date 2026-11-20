@@ -13,6 +13,7 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <tuple>
 #include <vector>
@@ -21,7 +22,7 @@
 enum struct ErrorType { Error, Warning };
 
 struct DiagnosticHighlight {
-    const char* filepath;
+    std::string_view filepath; // Empty when there is no file.
     const char* txt;
     size_t txt_len;
     sc::lex::SourceCodeRange range_in_source;

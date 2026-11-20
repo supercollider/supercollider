@@ -25,6 +25,7 @@
 #include <stdexcept>
 #include <cstring>
 #include <string>
+#include <string_view>
 
 template <int MaxPacketSize = 8192> struct scpacket {
     static const int kBufSize = MaxPacketSize / sizeof(int32); // round down
@@ -68,33 +69,29 @@ template <int MaxPacketSize = 8192> struct scpacket {
         *wrpos++ = sc_htonl(slot.i >> 32);
         *wrpos++ = sc_htonl(slot.i & 0x00000000FFFFFFFF);
     }
-    void adds(const char* src) {
-        size_t len = strlen(src);
-        size_t len4 = (len + 4) >> 2;
+    void adds(const char* src) { adds(std::string_view { src }); }
+    void adds(const char* src, size_t len) { adds(std::string_view { src, len }); }
+    void adds(std::string_view src) {
+        size_t len4 = (src.size() + 4) >> 2;
         if (wrpos + len4 > endpos)
             throw_overflow_exception();
         wrpos[len4 - 1] = 0;
-        memcpy(wrpos, src, len);
+        memcpy(wrpos, src.data(), src.size());
         wrpos += len4;
     }
     void adds_slpre(const char* src) // prepends a slash
     {
-        size_t len = strlen(src);
-        size_t len4 = (len + 5) >> 2;
+        adds_slpre(std::string_view { src });
+    }
+    void adds_slpre(std::string_view src) // prepends a slash
+    {
+        size_t len4 = (src.size() + 5) >> 2;
         if (wrpos + len4 > endpos)
             throw_overflow_exception();
         wrpos[len4 - 1] = 0;
         char* wrpos_c = (char*)wrpos;
         *wrpos_c = '/';
-        memcpy(wrpos_c + 1, src, len);
-        wrpos += len4;
-    }
-    void adds(const char* src, size_t len) {
-        size_t len4 = (len + 4) >> 2;
-        if (wrpos + len4 > endpos)
-            throw_overflow_exception();
-        wrpos[len4 - 1] = 0;
-        memcpy(wrpos, src, len);
+        memcpy(wrpos_c + 1, src.data(), src.size());
         wrpos += len4;
     }
     void addb(uint8* src, size_t len) {

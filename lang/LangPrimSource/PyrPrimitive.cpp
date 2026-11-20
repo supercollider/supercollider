@@ -120,11 +120,25 @@ int slotStrVal(PyrSlot* slot, char* str, size_t maxSize) {
  *  In case of an error the string will be empty.
  */
 std::tuple<int, std::string> slotStdStrVal(PyrSlot* slot) {
-    return IsSym(slot)
-        ? std::make_tuple(errNone, std::string(slotRawSymbol(slot)->name, (size_t)slotRawSymbol(slot)->length))
-        : (isKindOfSlot(slot, class_string)
-               ? std::make_tuple(errNone, std::string(slotRawString(slot)->s, slotRawObject(slot)->size))
-               : std::make_tuple(errWrongType, std::string()));
+    return IsSym(slot) ? std::make_tuple(errNone, std::string(slotRawSymbol(slot)->view()))
+                       : (isKindOfSlot(slot, class_string)
+                              ? std::make_tuple(errNone, std::string(slotRawString(slot)->s, slotRawObject(slot)->size))
+                              : std::make_tuple(errWrongType, std::string()));
+}
+
+/**
+ * \brief View the characters of an sclang string or symbol without copying them
+ * \param slot the sclang string or symbol
+ * \return a tuple containing an int, an error code, and a view of the characters.
+ *  The view is not null terminated, and is only valid until the garbage collector next runs.
+ *  In case of an error the view will be empty.
+ */
+std::tuple<int, std::string_view> slotStrViewVal(PyrSlot* slot) {
+    if (IsSym(slot))
+        return { errNone, slotRawSymbol(slot)->view() };
+    if (isKindOfSlot(slot, class_string))
+        return { errNone, std::string_view { slotRawString(slot)->s, static_cast<size_t>(slotRawObject(slot)->size) } };
+    return { errWrongType, std::string_view {} };
 }
 
 /**
@@ -304,7 +318,6 @@ int prPrimitiveErrorString(struct VMGlobals* g, int numArgsPushed) {
     PyrString* string;
     std::string str;
     std::exception_ptr lastPrimitiveException;
-    char *lastPrimitiveExceptionClass, *lastPrimitiveExceptionMethod;
 
     a = g->sp;
     switch (slotRawInt(&g->thread->primitiveError)) {
@@ -347,20 +360,24 @@ int prPrimitiveErrorString(struct VMGlobals* g, int numArgsPushed) {
     case errException: {
         lastPrimitiveException = g->lastExceptions[g->thread].first;
         PyrMethod* meth = g->lastExceptions[g->thread].second;
-        lastPrimitiveExceptionClass = slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name;
-        lastPrimitiveExceptionMethod = slotRawSymbol(&meth->name)->name;
+        const auto className = slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->view();
+        const auto methodName = slotRawSymbol(&meth->name)->view();
         if (lastPrimitiveException) {
             try {
                 std::rethrow_exception(lastPrimitiveException);
             } catch (const std::exception& e) {
                 const char* errorString = e.what();
-                str = std::string("caught exception \'") + errorString + "\' in primitive in method "
-                    + lastPrimitiveExceptionClass + ":" + lastPrimitiveExceptionMethod;
+                str = std::string("caught exception \'") + errorString + "\' in primitive in method ";
+                str += className;
+                str += ":";
+                str += methodName;
                 break;
             }
         } else {
-            str = std::string("caught unknown exception in primitive in method ") + lastPrimitiveExceptionClass + ":"
-                + lastPrimitiveExceptionMethod;
+            str = "caught unknown exception in primitive in method ";
+            str += className;
+            str += ":";
+            str += methodName;
             break;
         }
         break;
@@ -407,15 +424,17 @@ int prDebugger(struct VMGlobals* g, int numArgsPushed) {
 int prObjectString(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     PyrString* string;
-    char str[256];
 
     a = g->sp - 1;
     if (IsSym(a)) {
-        string = newPyrString(g->gc, slotRawSymbol(a)->name, 0, true);
+        const PyrSymbol* sym = slotRawSymbol(a);
+        string = newPyrStringN(g->gc, sym->length, 0, true);
+        memcpy(string->s, sym->name, sym->length);
         SetObject(a, string);
         return errNone;
-    } else if (postString(a, str)) {
-        string = newPyrString(g->gc, str, 0, true);
+    } else if (const auto str = postString(a)) {
+        string = newPyrStringN(g->gc, str->size(), 0, true);
+        memcpy(string->s, str->data(), str->size());
         SetObject(a, string);
         return errNone;
     } else {
@@ -456,17 +475,11 @@ int prAsCompileString(struct VMGlobals* g, int numArgsPushed) {
 
     a = g->sp;
     if (IsSym(a)) {
-        int len = strlen(slotRawSymbol(a)->name) + 1;
-        if (len < 255) {
-            char str[256];
-            sprintf(str, "'%s'", slotRawSymbol(a)->name);
-            string = newPyrString(g->gc, str, 0, true);
-        } else {
-            char* str = (char*)malloc(len + 2);
-            sprintf(str, "'%s'", slotRawSymbol(a)->name);
-            string = newPyrString(g->gc, str, 0, true);
-            free(str);
-        }
+        const PyrSymbol* sym = slotRawSymbol(a);
+        string = newPyrStringN(g->gc, sym->length + 2, 0, true);
+        string->s[0] = '\'';
+        memcpy(string->s + 1, sym->name, sym->length);
+        string->s[sym->length + 1] = '\'';
     } else {
         char str[256];
         err = asCompileString(a, str);
@@ -486,7 +499,9 @@ int prClassString(struct VMGlobals* g, int numArgsPushed) {
 
     a = g->sp;
     classobj = classOfSlot(a);
-    string = newPyrString(g->gc, slotRawSymbol(&classobj->name)->name, 0, true);
+    const PyrSymbol* className = slotRawSymbol(&classobj->name);
+    string = newPyrStringN(g->gc, className->length, 0, true);
+    memcpy(string->s, className->name, className->length);
     SetObject(a, string);
     return errNone;
 }
@@ -1048,9 +1063,7 @@ int objectPerformArgsImpl(struct VMGlobals* g, int numArgsPushed, SendMessageImp
     initKnownSlots();
 
     if (!IsSym(selectorSlot)) {
-        char str[128];
-        slotString(selectorSlot, str);
-        post("performArgs 'selector' must be either a Symbol, received: '%s'\n", str);
+        post("performArgs 'selector' must be either a Symbol, received: '%s'\n", slotString(selectorSlot).c_str());
         return errWrongType;
     }
     auto selector = slotRawSymbol(selectorSlot);
@@ -1061,9 +1074,7 @@ int objectPerformArgsImpl(struct VMGlobals* g, int numArgsPushed, SendMessageImp
     else if (IsObj(argsArraySlot) && classOfSlot(argsArraySlot) == class_array)
         argsArray = slotRawObject(argsArraySlot);
     else {
-        char str[128];
-        slotString(argsArraySlot, str);
-        post("performArgs 'args' must be either nil or an Array, received: '%s'\n", str);
+        post("performArgs 'args' must be either nil or an Array, received: '%s'\n", slotString(argsArraySlot).c_str());
         return errWrongType;
     }
 
@@ -1073,9 +1084,8 @@ int objectPerformArgsImpl(struct VMGlobals* g, int numArgsPushed, SendMessageImp
     else if (IsObj(kwargsArraySlot) && classOfSlot(kwargsArraySlot) == class_array)
         kwargsArray = slotRawObject(kwargsArraySlot);
     else {
-        char str[128];
-        slotString(kwargsArraySlot, str);
-        post("performArgs 'kwargs' must be either nil or an Array, received: '%s'\n", str);
+        post("performArgs 'kwargs' must be either nil or an Array, received: '%s'\n",
+             slotString(kwargsArraySlot).c_str());
         return errWrongType;
     }
 
@@ -1103,11 +1113,9 @@ int objectPerformArgsImpl(struct VMGlobals* g, int numArgsPushed, SendMessageImp
         bool kwargsFailed = false;
         for (uint32 i = 0; i < kwSize; i += 2) {
             if (NotSym(&kwargsArray->slots[i])) {
-                char str[128];
-                slotString(kwargsArraySlot, str);
                 post("WARNING: Keyword arguments must be a key-value pair array, where the key is a Symbol.\n"
                      "Expected a Symbol got '%s'.\n",
-                     str);
+                     slotString(kwargsArraySlot).c_str());
                 kwargsFailed = true;
             }
         }
@@ -1887,13 +1895,13 @@ int debugFrame_AsErrorString(VMGlobals* g, int) {
 
         if (def.getObjectHdr()->classptr->name.getSymbol() == s_method) {
             const auto* method = def.getPyrObjType<PyrMethod>();
-            ss << "Method Name: '" << method->ownerclass.getPyrObjType<PyrClass>()->name.getSymbol()->name;
+            ss << "Method Name: '" << method->ownerclass.getPyrObjType<PyrClass>()->name.getSymbol()->view();
             ss << "-";
-            ss << method->name.getSymbol()->name << "'";
+            ss << method->name.getSymbol()->view() << "'";
         } else {
             const auto* block = def.getPyrObjType<PyrBlock>();
             if (!block->name.isNil()) {
-                ss << "Function Name: '" << block->name.getSymbol()->name << "'";
+                ss << "Function Name: '" << block->name.getSymbol()->view() << "'";
             } else {
                 ss << "Anonymous Function";
             }
@@ -1913,7 +1921,7 @@ int debugFrame_AsErrorString(VMGlobals* g, int) {
                 ss << "  args: ";
 
                 for (size_t i { 0 }; i < args->size; ++i) {
-                    ss.write(names[i]->name, names[i]->length);
+                    ss << names[i]->view();
                     ss << "=";
                     temp.clear();
                     args->slots[i].appendToStringForDebug(temp);
@@ -1932,7 +1940,7 @@ int debugFrame_AsErrorString(VMGlobals* g, int) {
                 ss << "  vars: ";
 
                 for (size_t i { 0 }; i < vars->size; ++i) {
-                    ss.write(names[i]->name, names[i]->length);
+                    ss << names[i]->view();
                     ss << "=";
                     temp.clear();
                     vars->slots[i].appendToStringForDebug(temp);
@@ -2013,14 +2021,15 @@ int debugFrame_AsErrorString(VMGlobals* g, int) {
             prefixForDiag.append(prefixPtr, prefixSz);
             prefixForDiag += "    ";
 
-            const DiagnosticHighlight d { block->filePath.isSymbol() ? block->filePath.getSymbol()->name : nullptr,
-                                          block->sourceCodeFileOrSnippet.getPyrObjType<PyrString>()->s,
-                                          static_cast<size_t>(
-                                              block->sourceCodeFileOrSnippet.getPyrObjType<PyrString>()->size),
-                                          loc,
-                                          file_line,
-                                          file_column,
-                                          annotationStr };
+            const DiagnosticHighlight d {
+                block->filePath.isSymbol() ? block->filePath.getSymbol()->view() : std::string_view {},
+                block->sourceCodeFileOrSnippet.getPyrObjType<PyrString>()->s,
+                static_cast<size_t>(block->sourceCodeFileOrSnippet.getPyrObjType<PyrString>()->size),
+                loc,
+                file_line,
+                file_column,
+                annotationStr
+            };
 
             ss.write(prefixPtr, prefixSz);
             streamSourceCodeWithHighlight(ss, d, printSource, prefixForDiag.c_str(), prefixForDiag.size());

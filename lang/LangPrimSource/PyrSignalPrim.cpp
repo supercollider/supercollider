@@ -24,6 +24,7 @@
 #include "PyrPrimitive.h"
 #include "PyrSignal.h"
 #include "PyrSignalPrim.h"
+#include <string>
 #include "PyrMessage.h"
 #include "SC_Constants.h"
 #include "SCBase.h"
@@ -82,23 +83,20 @@ int prSignalOffset(struct VMGlobals* g, int numArgsPushed) {
 }
 
 int prSignalString(struct VMGlobals* g, int numArgsPushed) {
-    PyrSlot* a;
-    PyrString* string;
-    PyrFloatArray* signal;
-    float* x;
-    char str[128];
+    PyrSlot* a = g->sp;
+    PyrFloatArray* signal = slotRawFloatArray(a);
 
-    a = g->sp;
-    slotString(a, str);
-
-    signal = slotRawFloatArray(a);
+    std::string str { slotRawSymbol(&signal->classptr->name)->view() };
     if (signal->size) {
-        x = signal->f;
-        sprintf(str, "%s[%g .. %g]", slotRawSymbol(&signal->classptr->name)->name, x[0], x[signal->size - 1]);
+        const float* x = signal->f;
+        char range[64];
+        snprintf(range, sizeof(range), "[%g .. %g]", x[0], x[signal->size - 1]);
+        str += range;
     } else {
-        sprintf(str, "%s[none]", slotRawSymbol(&signal->classptr->name)->name);
+        str += "[none]";
     }
-    string = newPyrString(g->gc, str, 0, true);
+    PyrString* string = newPyrStringN(g->gc, str.size(), 0, true);
+    memcpy(string->s, str.data(), str.size());
     SetObject(a, string);
     return errNone;
 }

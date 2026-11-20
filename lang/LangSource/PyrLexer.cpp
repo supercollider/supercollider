@@ -549,10 +549,8 @@ private:
         auto start = c_str + loc.begin.absolute + drop_from_start;
         const auto end = c_str + loc.end.absolute - drop_from_end;
         const size_t sz = end - start;
-        if (!needs_escaping) {
-            temp_buffer.insert(temp_buffer.begin(), start, end);
-            return getsym(temp_buffer.c_str());
-        }
+        if (!needs_escaping)
+            return getsymlen(start, sz);
         bool escaped = false;
         auto from_it = start;
         for (; from_it != end; from_it += 1) {
@@ -568,7 +566,7 @@ private:
             temp_buffer.push_back(*from_it);
             escaped = false;
         }
-        return getsym(temp_buffer.c_str());
+        return getsymlen(temp_buffer.data(), temp_buffer.size());
     }
 
     template <TokenType T> constexpr auto get_closing_bracket() -> decltype(auto) {

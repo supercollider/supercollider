@@ -691,8 +691,8 @@ bool classFindClassVar(PyrClass** classobj, PyrSymbol* name, int* index) {
     // if this is a Metaclass then we need to search its normal Class for
     // the class vars
     classname = slotRawSymbol(&localclassobj->name)->name;
-    if (strncmp(classname, metaClassPrefix, 5) == 0) {
-        localclassobj = getsym(classname + 5)->u.classobj;
+    if (strncmp(classname, metaClassPrefix, metaClassPrefixLen) == 0) {
+        localclassobj = getsym(classname + metaClassPrefixLen)->u.classobj;
     }
     for (j = 0; localclassobj; ++j) {
         if (NotNil(&localclassobj->classVarNames)) {
@@ -726,8 +726,8 @@ bool classFindConst(PyrClass** classobj, PyrSymbol* name, int* index) {
     // if this is a Metaclass then we need to search its normal Class for
     // the class vars
     classname = slotRawSymbol(&localclassobj->name)->name;
-    if (strncmp(classname, metaClassPrefix, 5) == 0) {
-        localclassobj = getsym(classname + 5)->u.classobj;
+    if (strncmp(classname, metaClassPrefix, metaClassPrefixLen) == 0) {
+        localclassobj = getsym(classname + metaClassPrefixLen)->u.classobj;
     }
     for (j = 0; localclassobj; ++j) {
         if (NotNil(&localclassobj->constNames)) {
@@ -1210,7 +1210,7 @@ PyrClass* makeIntrinsicClass(PyrSymbol* className, PyrSymbol* superClassName, in
             error("Can't find superclass '%s' of '%s'\n", superClassName->name, className->name);
             return nullptr;
         }
-        metaSuperClassName = getmetasym(superClassName->name);
+        metaSuperClassName = getmetasym(superClassName);
         metaSuperClass = metaSuperClassName->u.classobj;
         superInstVars = numSuperInstVars(superClass);
     } else {
@@ -1219,7 +1219,7 @@ PyrClass* makeIntrinsicClass(PyrSymbol* className, PyrSymbol* superClassName, in
         superInstVars = 0;
     }
 
-    metaClassName = getmetasym(className->name);
+    metaClassName = getmetasym(className);
     metaClassName->flags |= sym_MetaClass;
     metaclassobj =
         newClassObj(class_class, metaClassName, metaSuperClassName, classClassNumInstVars, 0, 0, 0, obj_notindexed, 0);
@@ -1696,7 +1696,6 @@ PyrObject* copyObjectRange(class PyrGC* gc, PyrObject* inobj, int start, int end
 }
 
 void dumpObject(PyrObject* obj) {
-    char str[256];
     PyrClass* classobj;
     int i;
 
@@ -1717,8 +1716,8 @@ void dumpObject(PyrObject* obj) {
     if (obj->obj_format == obj_notindexed) {
         post("  instance variables [%d]\n", obj->size);
         for (i = 0; i < obj->size; ++i) {
-            slotString(obj->slots + i, str);
-            post("    %s : %s\n", slotRawSymbolArray(&classobj->instVarNames)->symbols[i]->name, str);
+            post("    %s : %s\n", slotRawSymbolArray(&classobj->instVarNames)->symbols[i]->name,
+                 slotString(obj->slots + i).c_str());
         }
     } else {
         int maxsize;
@@ -1727,8 +1726,7 @@ void dumpObject(PyrObject* obj) {
         switch (obj->obj_format) {
         case obj_slot:
             for (i = 0; i < maxsize; ++i) {
-                slotString(obj->slots + i, str);
-                post("    %3d : %s\n", i, str);
+                post("    %3d : %s\n", i, slotString(obj->slots + i).c_str());
             }
             break;
         case obj_double:
@@ -1789,7 +1787,6 @@ void dumpObject(PyrObject* obj) {
 }
 
 void dumpBadObject(PyrObject* obj) {
-    char str[128];
     PyrClass* classobj;
     int i;
 
@@ -1809,8 +1806,8 @@ void dumpBadObject(PyrObject* obj) {
     if (obj->obj_format == obj_notindexed) {
         postfl("  instance variables [%d]\n", obj->size);
         for (i = 0; i < obj->size; ++i) {
-            slotString(obj->slots + i, str);
-            postfl("    %s : %s\n", slotRawSymbolArray(&classobj->instVarNames)->symbols[i]->name, str);
+            postfl("    %s : %s\n", slotRawSymbolArray(&classobj->instVarNames)->symbols[i]->name,
+                   slotString(obj->slots + i).c_str());
         }
     } else {
         int maxsize;
@@ -1820,8 +1817,7 @@ void dumpBadObject(PyrObject* obj) {
         switch (obj->obj_format) {
         case obj_slot:
             for (i = 0; i < maxsize; ++i) {
-                slotString(obj->slots + i, str);
-                postfl("    %3d : %s\n", i, str);
+                postfl("    %3d : %s\n", i, slotString(obj->slots + i).c_str());
             }
             break;
         case obj_double:
@@ -1889,11 +1885,7 @@ void dumpObjectSlot(PyrSlot* slot) {
     }
 }
 
-void dumpSlotOneWord(const char* tagstr, PyrSlot* slot) {
-    char str[256];
-    slotOneWord(slot, str);
-    post("%s %s\n", tagstr, str);
-}
+void dumpSlotOneWord(const char* tagstr, PyrSlot* slot) { post("%s %s\n", tagstr, slotOneWord(slot).c_str()); }
 
 void CallStackSanity(VMGlobals* g, const char* tagstr);
 void CallStackSanity(VMGlobals* g, const char* tagstr) {
@@ -1960,7 +1952,6 @@ bool FrameSanity(PyrFrame* frame, const char* tagstr) {
 }
 
 void DumpFrame(PyrFrame* frame) {
-    char str[256];
     int i, numargs;
     PyrMethod* meth;
     PyrMethodRaw* methraw;
@@ -1969,25 +1960,23 @@ void DumpFrame(PyrFrame* frame) {
         post("FRAME CORRUPTED\n");
         return;
     }
-    slotOneWord(&frame->method, str);
-    // slotString(&frame->method, str);
+    const std::string methodStr = slotOneWord(&frame->method);
 
     meth = slotRawMethod(&frame->method);
     methraw = METHRAW(meth);
     if (methraw->numSlots) {
-        post("\t%s\n", str);
+        post("\t%s\n", methodStr.c_str());
         numargs = methraw->numNormalArguments + methraw->numVariableArguments;
         for (i = 0; i < methraw->numSlots; ++i) {
-            slotOneWord(frame->vars + i, str);
-            // slotString(frame->vars + i, str);
+            const std::string str = slotOneWord(frame->vars + i);
             if (i < numargs) {
-                post("\t\targ %s = %s\n", slotRawSymbolArray(&meth->argNames)->symbols[i]->name, str);
+                post("\t\targ %s = %s\n", slotRawSymbolArray(&meth->argNames)->symbols[i]->name, str.c_str());
             } else {
-                post("\t\tvar %s = %s\n", slotRawSymbolArray(&meth->varNames)->symbols[i - numargs]->name, str);
+                post("\t\tvar %s = %s\n", slotRawSymbolArray(&meth->varNames)->symbols[i - numargs]->name, str.c_str());
             }
         }
     } else {
-        post("\t%s  (no arguments or variables)\n", str);
+        post("\t%s  (no arguments or variables)\n", methodStr.c_str());
     }
 }
 
@@ -1995,8 +1984,6 @@ void dumpByteCodes(PyrBlock* theBlock);
 
 void DumpDetailedFrame(PyrFrame* frame);
 void DumpDetailedFrame(PyrFrame* frame) {
-    char mstr[256];
-    char str[256];
     int i, numargs;
     PyrMethod* meth;
     PyrMethodRaw* methraw;
@@ -2005,8 +1992,8 @@ void DumpDetailedFrame(PyrFrame* frame) {
         post("FRAME CORRUPTED\n");
         return;
     }
-    slotOneWord(&frame->method, mstr);
-    // slotString(&frame->method, str);
+    const std::string methodStr = slotOneWord(&frame->method);
+    const char* mstr = methodStr.c_str();
 
     meth = slotRawMethod(&frame->method);
     methraw = METHRAW(meth);
@@ -2015,12 +2002,11 @@ void DumpDetailedFrame(PyrFrame* frame) {
         post("\t%s\n", mstr);
         numargs = methraw->numNormalArguments + methraw->numVariableArguments;
         for (i = 0; i < methraw->numSlots; ++i) {
-            slotOneWord(frame->vars + i, str);
-            // slotString(frame->vars + i, str);
+            const std::string str = slotOneWord(frame->vars + i);
             if (i < numargs) {
-                post("\t\targ %s = %s\n", slotRawSymbolArray(&meth->argNames)->symbols[i]->name, str);
+                post("\t\targ %s = %s\n", slotRawSymbolArray(&meth->argNames)->symbols[i]->name, str.c_str());
             } else {
-                post("\t\tvar %s = %s\n", slotRawSymbolArray(&meth->varNames)->symbols[i - numargs]->name, str);
+                post("\t\tvar %s = %s\n", slotRawSymbolArray(&meth->varNames)->symbols[i - numargs]->name, str.c_str());
             }
         }
     } else {
@@ -2032,16 +2018,11 @@ void DumpDetailedFrame(PyrFrame* frame) {
     post("\t\tnumtemps  = %d\n", methraw->numSlots);
     post("\t\tpopSize  = %d\n", methraw->popSize);
 
-    slotString(&frame->method, str);
-    post("\t\tmethod  = %s\n", str);
-    slotString(&frame->caller, str);
-    post("\t\tcaller  = %s\n", str);
-    slotString(&frame->context, str);
-    post("\t\tcontext = %s\n", str);
-    slotString(&frame->homeContext, str);
-    post("\t\thomeCtx = %s\n", str);
-    slotString(&frame->ip, str);
-    post("\t\tip      = %s\n", str);
+    post("\t\tmethod  = %s\n", slotString(&frame->method).c_str());
+    post("\t\tcaller  = %s\n", slotString(&frame->caller).c_str());
+    post("\t\tcontext = %s\n", slotString(&frame->context).c_str());
+    post("\t\thomeCtx = %s\n", slotString(&frame->homeContext).c_str());
+    post("\t\tip      = %s\n", slotString(&frame->ip).c_str());
 
     if (IsPtr(&frame->ip)) {
         post("ipoffset = %d\n", (char*)slotRawPtr(&frame->ip) - (char*)slotRawInt8Array(&meth->code)->b);
