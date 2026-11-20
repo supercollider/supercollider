@@ -55,9 +55,6 @@ struct GraphDef {
 
     struct UnitSpec* mUnitSpecs;
 
-    size_t mWiresAllocSize, mUnitsAllocSize, mCalcUnitsAllocSize;
-    size_t mControlAllocSize, mMapControlsAllocSize, mMapControlRatesAllocSize, mAudioMapBusOffsetSize;
-
     uint32 mNumParamSpecs;
     ParamSpec* mParamSpecs;
     ParamSpecTable* mParamSpecTable;

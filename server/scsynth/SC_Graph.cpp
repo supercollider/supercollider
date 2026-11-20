@@ -35,6 +35,7 @@
 #include "Unroll.h"
 #include "SC_ReplyImpl.hpp"
 #include "clz.h"
+#include "sc_linear_allocator.hpp"
 
 void Unit_ChooseMulAddFunc(Unit* unit);
 
@@ -147,43 +148,35 @@ SCErr Graph_New(World* inWorld, GraphDef* inGraphDef, int32 inID, sc_msg_iter* a
 static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_msg_iter* msg, bool argtype) {
     // scprintf("->Graph_Ctor\n");
 
-    // hit the memory allocator only once.
-    char* memory = (char*)graph + sizeof(Graph);
+    // 'graph' has been overallocated to hold the entire memory chunk for this Graph and its members.
+    // To allocate the Graph members, we have to intialize the linear allocator with the pointer
+    // just past the Graph structure itself.
+    sc::linear_allocator alloc((char*)graph + sizeof(Graph), (char*)graph + inGraphDef->mNodeDef.mAllocSize);
 
     // allocate space for children
     uint32 numUnits = inGraphDef->mNumUnitSpecs;
     graph->mNumUnits = numUnits;
     inWorld->mNumUnits += numUnits;
     inWorld->mNumGraphs++;
-    graph->mUnits = (Unit**)memory;
-    memory += inGraphDef->mUnitsAllocSize;
+    graph->mUnits = alloc.alloc<Unit*>(numUnits);
 
     // set calc func
     graph->mNode.mCalcFunc = (NodeCalcFunc)&Graph_FirstCalc;
 
     // allocate wires
     graph->mNumWires = inGraphDef->mNumWires;
-    graph->mWire = (Wire*)memory;
-    memory += inGraphDef->mWiresAllocSize;
+    graph->mWire = alloc.alloc<Wire>(graph->mNumWires);
 
     graph->mNumCalcUnits = inGraphDef->mNumCalcUnits;
-    graph->mCalcUnits = (Unit**)memory;
-    memory += inGraphDef->mCalcUnitsAllocSize;
+    graph->mCalcUnits = alloc.alloc<Unit*>(graph->mNumCalcUnits);
 
     // initialize controls
     uint32 numControls = inGraphDef->mNumControls;
     graph->mNumControls = numControls;
-    graph->mControls = (float*)memory;
-    memory += inGraphDef->mControlAllocSize;
-
-    graph->mAudioBusOffsets = (int32*)memory;
-    memory += inGraphDef->mAudioMapBusOffsetSize;
-
-    graph->mMapControls = (float**)memory;
-    memory += inGraphDef->mMapControlsAllocSize;
-
-    graph->mControlRates = (int*)memory;
-    memory += inGraphDef->mMapControlRatesAllocSize;
+    graph->mControls = alloc.alloc<float>(numControls);
+    graph->mAudioBusOffsets = alloc.alloc<int32>(numControls);
+    graph->mControlRates = alloc.alloc<int32>(numControls);
+    graph->mMapControls = alloc.alloc<float*>(numControls);
 
     {
         float* graphControls = graph->mControls;
@@ -551,9 +544,10 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
     float* bufspace = inWorld->hw->mWireBufSpace;
     uint32 wireCtr = numConstants; // never more than numConstants + numOutputs
     UnitSpec* unitSpec = inGraphDef->mUnitSpecs;
+
     for (uint32 i = 0; i < numUnits; ++i, ++unitSpec) {
         // construct unit from spec
-        Unit* unit = Unit_New(inWorld, graph, unitSpec, memory);
+        Unit* unit = Unit_New(inWorld, graph, unitSpec, alloc);
 
         // set parent
         unit->mParent = graph;

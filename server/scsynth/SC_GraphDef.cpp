@@ -236,25 +236,19 @@ inline static void calcParamSpecs(GraphDef* graphDef, const char*& buffer, const
 }
 
 static void GraphDef_SetAllocSizes(GraphDef* graphDef) {
-    graphDef->mWiresAllocSize = graphDef->mNumWires * sizeof(Wire);
-    graphDef->mUnitsAllocSize = graphDef->mNumUnitSpecs * sizeof(Unit*);
-    graphDef->mCalcUnitsAllocSize = graphDef->mNumCalcUnits * sizeof(Unit*);
+    graphDef->mNodeDef.mAllocSize += graphDef->mNumWires * sizeof(Wire);
+    graphDef->mNodeDef.mAllocSize += graphDef->mNumUnitSpecs * sizeof(Unit*);
+    graphDef->mNodeDef.mAllocSize += graphDef->mNumCalcUnits * sizeof(Unit*);
 
-    graphDef->mNodeDef.mAllocSize += graphDef->mWiresAllocSize;
-    graphDef->mNodeDef.mAllocSize += graphDef->mUnitsAllocSize;
-    graphDef->mNodeDef.mAllocSize += graphDef->mCalcUnitsAllocSize;
+    // float* mControls + int32* mControlRates + int32* mAudioBusOffset + float** mMapControls
+    size_t controlAllocSize = sizeof(float) + 2 * sizeof(int32) + sizeof(float*);
+    // mMapControls may need to be aligned!
+    graphDef->mNodeDef.mAllocSize += graphDef->mNumControls * controlAllocSize + alignof(float*);
 
-    graphDef->mControlAllocSize = graphDef->mNumControls * sizeof(float);
-    graphDef->mNodeDef.mAllocSize += graphDef->mControlAllocSize;
-
-    graphDef->mMapControlsAllocSize = graphDef->mNumControls * sizeof(float*);
-    graphDef->mNodeDef.mAllocSize += graphDef->mMapControlsAllocSize;
-
-    graphDef->mMapControlRatesAllocSize = graphDef->mNumControls * sizeof(int);
-    graphDef->mNodeDef.mAllocSize += graphDef->mMapControlRatesAllocSize;
-
-    graphDef->mAudioMapBusOffsetSize = graphDef->mNumControls * sizeof(int32);
-    graphDef->mNodeDef.mAllocSize += graphDef->mAudioMapBusOffsetSize;
+    for (int i = 0; i < graphDef->mNumUnitSpecs; ++i) {
+        // The Unit might need to be aligned!
+        graphDef->mNodeDef.mAllocSize += graphDef->mUnitSpecs[i].mAllocSize + alignof(Unit);
+    }
 }
 
 
@@ -320,7 +314,6 @@ GraphDef* GraphDef_Read(World* inWorld, const char*& buffer, const char* end, Gr
         // increment mNumUnitSpecs after every successful call to UnitSpec_Read() so that we
         // can safely call GraphDef_Free() when we catch an exception.
         graphDef->mNumUnitSpecs++;
-        graphDef->mNodeDef.mAllocSize += unitSpec->mAllocSize;
         graphDef->mNumWires += unitSpec->mNumOutputs;
     }
 

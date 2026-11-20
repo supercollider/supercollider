@@ -181,7 +181,11 @@ void Group_QueryTreeAndControls(Group* inGroup, big_scpacket* packet);
 
 ////////////////////////////////////////////////////////////////////////
 
-struct Unit* Unit_New(World* inWorld, struct Graph* graph, struct UnitSpec* inUnitSpec, char*& memory);
+namespace sc {
+class linear_allocator;
+}
+
+struct Unit* Unit_New(World* inWorld, struct Graph* graph, struct UnitSpec* inUnitSpec, sc::linear_allocator& alloc);
 void Unit_EndCalc(struct Unit* inUnit, int inNumSamples);
 void Unit_End(struct Unit* inUnit);
 
