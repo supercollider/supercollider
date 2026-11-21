@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestSwitch : UnitTest {
 	test_nil {
 		// This is indeterminate, but quite likely, 50 was more than enough to trigger this bug in practice.

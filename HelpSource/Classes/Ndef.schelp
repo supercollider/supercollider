@@ -8,7 +8,7 @@ Ndef registers synths by key. All accesses to the registered synths go through t
 
 Ndef is a reference to a proxy, forms an alternative to link::Classes/ProxySpace::. All methods are inherited from link::Classes/NodeProxy::.
 
-code::
+code#fragment::
 Ndef(key)	// returns the instance
 Ndef(key, obj)	// stores the object and returns the instance, like Tdef and Pdef.
 ::

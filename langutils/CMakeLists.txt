@@ -1,1 +1,21 @@
+# sclang.wasm links with shared memory, so every object needs the atomics feature -pthread enables.
+if(EMSCRIPTEN)
+    add_compile_options(-pthread)
+endif()
+
+add_subdirectory(sc_source)
 add_subdirectory(sc_lexer)
+add_subdirectory(sc_bytecode)
+add_subdirectory(sc_diagnostic)
+add_subdirectory(sc_parser)
+add_subdirectory(sc_sema)
+add_subdirectory(sc_backend)
+add_subdirectory(sc_compiler)
+add_subdirectory(sc_util)
+
+if(ENABLE_TESTSUITE)
+    add_subdirectory(tests)
+    add_subdirectory(sc_explorer)
+    add_subdirectory(sc_inspect)
+    add_subdirectory(sc_check_docs)
+endif()

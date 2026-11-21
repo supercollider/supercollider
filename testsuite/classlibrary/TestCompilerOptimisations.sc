@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestCompilerOptimisations : UnitTest {
 	test_extended_bytecodes {
 		this.assertEquals(Integer.findMethod(\do).code, Int8Array[-113, 0, -113, 1], "Int:do");

@@ -31,6 +31,10 @@
 #include <cstdarg>
 #include <string>
 
+namespace sc::diag {
+class Style;
+}
+
 // =====================================================================
 // SC_LanguageClient - abstract sclang client.
 // =====================================================================
@@ -124,7 +128,9 @@ public:
 
     struct VMGlobals* getVMGlobals();
 
-    void setCmdLine(const char* buf, size_t size, const char* filePath = nullptr, int lineNumber = 0, int column = 0);
+    // The version is the language version the text is compiled as, e.g., "3.16", or null for the one on its line 1.
+    void setCmdLine(const char* buf, size_t size, const char* filePath = nullptr, int lineNumber = 0, int column = 0,
+                    const char* version = nullptr);
     void setCmdLine(const char* str, const char* filePath = nullptr, int lineNumber = 0, int column = 0);
     void setCmdLinef(const char* filePath = nullptr, int lineNumber = 0, int column = 0, const char* fmt = nullptr,
                      ...);
@@ -153,6 +159,9 @@ public:
     // flush post buffer contents to screen.
     //     only called from the main language thread.
     virtual void flush() = 0;
+
+    // How compiler diagnostics are decorated when posted. Plain unless the client knows the output is a terminal.
+    virtual const sc::diag::Style& diagnosticStyle() const;
 
     // AppClock driver
     //    to be called from client mainloop.

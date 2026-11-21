@@ -1,0 +1,28 @@
+
+──────────────────────────────────────────────────────────────────────────────────
+Warning: Extension of an undefined class
+classes/extension_undefined.sc:5:3
+    3 │ Defined { }
+    4 │ 
+    5 │ + Undefined {
+      ┆   ^^^^^^^^^ No class with this name is defined.
+    6 │     method { ^1 }
+    7 │ }
+    8 │ 
+
+The extension is skipped. Check the name, or that the file defining the class is given to the compiler.
+──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): Defined : Object, version 3.16
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (11:5): method, version 3.16: method { ^2 } -> 2
+|  |  |  SCBody (11:14)
+|  |  |  |  SCExplicitReturn (11:14)
+|  |  |  |  |  SCLiteral (11:15) = 2
+Successfully compiled 16 classes.

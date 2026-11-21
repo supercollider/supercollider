@@ -1,0 +1,76 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): Hoisting : Object, version 3.16
+|  SCMemberList (5:1)
+|  SCMethodList (5:1)
+|  |  SCMethod (7:5): method, version 3.16: method { |a| var b = 1; if (a) { var c = 2, d; c + d } { var e = 3; e }; ^b }
+|  |  |  SCArgumentDeclareList (7:15)
+|  |  |  |  SCArgumentDeclare (7:15): a
+|  |  |  SCBody (7:18)
+|  |  |  |  SCVariableDeclare (7:22): b, prototype
+|  |  |  |  |  SCLiteral (7:26) = 1
+|  |  |  |  SCMessage (7:29): if
+|  |  |  |  |  SCRead (7:33): local a, declared (7:15): a
+|  |  |  |  |  SCPositionalArgs (7:29)
+|  |  |  |  |  |  SCFunction (7:36)
+|  |  |  |  |  |  |  SCBody (7:36)
+|  |  |  |  |  |  |  |  SCVariableDeclare (7:42): c, prototype
+|  |  |  |  |  |  |  |  |  SCLiteral (7:46) = 2
+|  |  |  |  |  |  |  |  SCVariableDeclare (7:49): d
+|  |  |  |  |  |  |  |  SCMessage (7:52): +
+|  |  |  |  |  |  |  |  |  SCRead (7:52): local c = 2, declared (7:42): c = 2
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (7:52)
+|  |  |  |  |  |  |  |  |  |  SCRead (7:56): local d = nil, declared (7:49): d
+|  |  |  |  |  |  SCFunction (7:60) -> 3
+|  |  |  |  |  |  |  SCBody (7:60)
+|  |  |  |  |  |  |  |  SCVariableDeclare (7:66): e, prototype
+|  |  |  |  |  |  |  |  |  SCLiteral (7:70) = 3
+|  |  |  |  |  |  |  |  SCRead (7:73): local e = 3, declared (7:66): e = 3
+|  |  |  |  SCExplicitReturn (7:78)
+|  |  |  |  |  SCRead (7:79): local b = 1, declared (7:22): b = 1
+|  |  SCMethod (9:5): loop, version 3.16: loop { var i = 0; while { i < 3 } { var j = 1; i = i + j }; ^i }
+|  |  |  SCBody (9:12)
+|  |  |  |  SCVariableDeclare (9:16): i (assigned, captured), prototype
+|  |  |  |  |  SCLiteral (9:20) = 0
+|  |  |  |  SCMessage (9:23): while
+|  |  |  |  |  SCFunction (9:29)
+|  |  |  |  |  |  SCBody (9:29)
+|  |  |  |  |  |  |  SCMessage (9:31): <
+|  |  |  |  |  |  |  |  SCRead (9:31): local i, declared (9:16): i = 0
+|  |  |  |  |  |  |  |  SCPositionalArgs (9:31)
+|  |  |  |  |  |  |  |  |  SCLiteral (9:35) = 3
+|  |  |  |  |  SCPositionalArgs (9:23)
+|  |  |  |  |  |  SCFunction (9:39)
+|  |  |  |  |  |  |  SCBody (9:39)
+|  |  |  |  |  |  |  |  SCVariableDeclare (9:45): j, prototype
+|  |  |  |  |  |  |  |  |  SCLiteral (9:49) = 1
+|  |  |  |  |  |  |  |  SCAssign (9:52): local i, declared (9:16): i = 0
+|  |  |  |  |  |  |  |  |  SCMessage (9:56): +
+|  |  |  |  |  |  |  |  |  |  SCRead (9:56): local i, declared (9:16): i = 0
+|  |  |  |  |  |  |  |  |  |  SCPositionalArgs (9:56)
+|  |  |  |  |  |  |  |  |  |  |  SCRead (9:60): local j = 1, declared (9:45): j = 1
+|  |  |  |  SCExplicitReturn (9:65)
+|  |  |  |  |  SCRead (9:66): local i, declared (9:16): i = 0
+
+
+
+COMPILED DUMP 
+
+
+Hoisting
+|  class (5:1): superclass Object, not indexed
+|  method method: function 0
+|  method loop: function 1
+|  function 0 (7:5): method
+|  |  arguments: this, a = nil,
+|  |  variables: b = 1, c, d, e,
+|  |  code: 25 bytes, 0 selectors, 0 constants
+|  function 1 (9:5): loop
+|  |  arguments: this,
+|  |  variables: i = 0, j,
+|  |  code: 21 bytes, 0 selectors, 0 constants
+Successfully compiled 16 classes.

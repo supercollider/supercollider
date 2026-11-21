@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestServer_nodeMove : UnitTest {
 
 	var pipe;

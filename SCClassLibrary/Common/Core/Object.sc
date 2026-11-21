@@ -371,9 +371,11 @@ Object : AbstractObjectExperimental {
 	asCollection { ^[this] }
 	asSymbol { ^this.asString.asSymbol }
 	asString { arg limit = 512;
-		var string;
-		_ObjectString
-		string = String.streamContentsLimit({ arg stream; this.printOn(stream); }, limit);
+		_ObjectString;
+		^this.prAsStringFallback(limit)
+	}
+	prAsStringFallback { arg limit;
+		var string = String.streamContentsLimit({ arg stream; this.printOn(stream); }, limit);
 		if (string.size >= limit, { ^(string ++ "...etc..."); });
 		^string
 	}

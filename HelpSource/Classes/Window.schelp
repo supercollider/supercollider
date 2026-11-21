@@ -408,7 +408,7 @@ To position a window relative to the top, subtract from the height.
 code::
 /* Example that positions the window using a fixed pixel offset: */
 (
-x = Window("fixed-offset position"",
+x = Window("fixed-offset position",
     Rect(100, Window.screenBounds.height - 200, 300, 100)
 );
 x.front;

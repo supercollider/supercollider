@@ -78,6 +78,7 @@ public:
     void postFlush(const char* str, size_t len) override;
     void postError(const char* str, size_t len) override;
     void flush() override;
+    const sc::diag::Style& diagnosticStyle() const override;
 
     /** \brief Requests an action to be taken on the main thread.
      *  \note It may be called from any thread, with the interpreter locked or unlocked.

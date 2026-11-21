@@ -272,8 +272,8 @@ code::
 e.reset = { "My reset function".postln };
 
 // prints:
-WARNING:
-'reset' exists a method name, so you can't use it as pseudo-method.
+// WARNING:
+// 'reset' exists a method name, so you can't use it as pseudo-method.
 
 // this does NOT execute the reset function above
 // because Object:reset responds

@@ -20,7 +20,7 @@ a dictionary or an event.
 argument::levels
 number of levels
 
-code::
+code#fragment::
 IdentityDictionary[
 	elem1 -> [otherElements],
 	elem2 -> [otherElements],

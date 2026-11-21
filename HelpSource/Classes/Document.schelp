@@ -456,7 +456,7 @@ An link::Classes/Integer:: for the number of characters to retrieve. -1 retrieve
 subsection:: Subclassing and Internal Methods
 
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
-code::
+teletype::
 	*startup
 	*numberOfOpen
 	mouseUp (x, y, modifiers, buttonNumber, clickCount, clickPos)

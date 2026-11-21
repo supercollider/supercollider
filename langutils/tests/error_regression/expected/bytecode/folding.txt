@@ -1,0 +1,128 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): BytecodeFolding : Object, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (7:5): knownVariable, version 3.16: knownVariable { var b = 1; ^b } -> 1
+|  |  |  SCBody (7:21)
+|  |  |  |  SCVariableDeclare (7:25): b, prototype
+|  |  |  |  |  SCLiteral (7:29) = 1
+|  |  |  |  SCExplicitReturn (7:32)
+|  |  |  |  |  SCRead (7:33): local b = 1, declared (7:25): b = 1
+|  |  SCMethod (8:5): folded, version 3.16: folded { ^(1 + 2) } -> 3
+|  |  |  SCBody (8:14)
+|  |  |  |  SCExplicitReturn (8:14)
+|  |  |  |  |  SCMessage (8:16): + = 3
+|  |  |  |  |  |  SCLiteral (8:16) = 1
+|  |  |  |  |  |  SCPositionalArgs (8:16)
+|  |  |  |  |  |  |  SCLiteral (8:20) = 2
+|  |  SCMethod (10:5): mutable, version 3.16: mutable { ^[1, "a"] } -> [1, "a"]
+|  |  |  SCBody (10:15)
+|  |  |  |  SCExplicitReturn (10:15)
+|  |  |  |  |  SCCollection (10:16): Array = [1, "a"]
+|  |  |  |  |  |  SCLiteral (10:17) = 1
+|  |  |  |  |  |  SCLiteral (10:20) = "a"
+|  |  SCMethod (11:5): literal, version 3.16: literal { ^#[1, "a"] } -> [1, "a"]
+|  |  |  SCBody (11:15)
+|  |  |  |  SCExplicitReturn (11:15)
+|  |  |  |  |  SCCollection (11:16): Array, literal = [1, "a"]
+|  |  |  |  |  |  SCLiteral (11:18) = 1
+|  |  |  |  |  |  SCLiteral (11:21) = "a"
+|  |  SCMethod (13:5): classConstant, version 3.16: classConstant { ^kInteger }
+|  |  |  SCBody (13:21)
+|  |  |  |  SCExplicitReturn (13:21)
+|  |  |  |  |  SCRead (13:22): class kInteger, declared (5:11): kInteger
+|  |  SCMethod (14:5): mutableClassConstant, version 3.16: mutableClassConstant { ^kString }
+|  |  |  SCBody (14:28)
+|  |  |  |  SCExplicitReturn (14:28)
+|  |  |  |  |  SCRead (14:29): class kString, declared (5:25): kString
+|  |  SCMethod (16:5): returnKnownNil, version 3.16: returnKnownNil { var b; ^b } -> nil
+|  |  |  SCBody (16:22)
+|  |  |  |  SCVariableDeclare (16:26): b
+|  |  |  |  SCExplicitReturn (16:29)
+|  |  |  |  |  SCRead (16:30): local b = nil, declared (16:26): b
+|  |  SCMethod (17:5): tail, version 3.16: tail { ^{ |a| a.foo } }
+|  |  |  SCBody (17:12)
+|  |  |  |  SCExplicitReturn (17:12)
+|  |  |  |  |  SCFunction (17:13)
+|  |  |  |  |  |  SCArgumentDeclareList (17:16)
+|  |  |  |  |  |  |  SCArgumentDeclare (17:16): a
+|  |  |  |  |  |  SCBody (17:13)
+|  |  |  |  |  |  |  SCMessage (17:19): foo
+|  |  |  |  |  |  |  |  SCRead (17:19): local a, declared (17:16): a
+SCClass (4:1): Meta_BytecodeFolding : Meta_Object, version 3.16
+|  SCMemberList (4:1)
+|  |  SCMember (5:11): kInteger = 2
+|  |  SCMember (5:25): kString = "s"
+|  SCMethodList (4:1)
+
+
+
+BYTECODE DUMP 
+
+
+BytecodeFolding
+|  function 0 (7:5): method knownVariable
+|  |  properties:
+|  |  shortcut: return literal 1
+|  |  selectors:
+|  |  constants:
+|  function 1 (8:5): method folded
+|  |  properties:
+|  |  shortcut: return literal 3
+|  |  selectors:
+|  |  constants:
+|  function 2 (10:5): method mutable
+|  |  properties:
+|  |  selectors:
+|  |  constants: [1, "a"], "a",
+|  |  0    40              PushLiteral
+|  |  1    C1 37           SendSpecialMsg
+|  |  3    F1              Dup
+|  |  4    64              PushSpecialNumber
+|  |  5    41              PushLiteral
+|  |  6    C1 37           SendSpecialMsg
+|  |  8    C3 03           SendSpecialMsg
+|  |  10   F0              Drop
+|  |  11   F3              Return
+|  function 3 (11:5): method literal
+|  |  properties:
+|  |  shortcut: return literal [1, "a"]
+|  |  selectors:
+|  |  constants:
+|  function 4 (13:5): method classConstant
+|  |  properties:
+|  |  shortcut: return literal 2
+|  |  selectors:
+|  |  constants:
+|  function 5 (14:5): method mutableClassConstant
+|  |  properties:
+|  |  selectors:
+|  |  constants: "s",
+|  |  0    40              PushLiteral
+|  |  1    F3              Return
+|  function 6 (16:5): method returnKnownNil
+|  |  properties:
+|  |  shortcut: return literal nil
+|  |  selectors:
+|  |  constants:
+|  function 7 (17:5): method tail
+|  |  properties:
+|  |  selectors: function 8,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F3              Return
+|  function 8 (17:13)
+|  |  properties: closed,
+|  |  selectors: foo,
+|  |  constants:
+|  |  0    30              PushTempZeroVar
+|  |  1    B0              TailCallReturnFromFunction
+|  |  2    A1 00           SendMsg
+|  |  4    F2              BlockReturn
+Meta_BytecodeFolding
+Successfully compiled 16 classes.

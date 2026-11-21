@@ -1,0 +1,46 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (1:1): Foo : Object
+|  SCMemberList (1:1)
+|  SCMethodList (1:1)
+|  |  SCMethod (2:3): a: a { ^1 } -> 1
+|  |  |  SCBody (2:7)
+|  |  |  |  SCExplicitReturn (2:7)
+|  |  |  |  |  SCLiteral (2:8) = 1
+|  |  SCMethod (3:3): poisoned: b: b { var x;  ^ ) }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unmatched Bracket.
+|  |  |  parse_errors/unicode_newline.sc:4:4
+|  |  |      2 │   a { ^1 }
+|  |  |      3 │   b { var x;
+|  |  |      4 │  ^ ) }
+|  |  |        ┆    ^ This `)` has no opening bracket.
+|  |  |      5 │   c { ^2 }
+|  |  |      6 │ }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  Error: Unexpected Token.
+|  |  |  parse_errors/unicode_newline.sc:4:6
+|  |  |      2 │   a { ^1 }
+|  |  |      3 │   b { var x;
+|  |  |      4 │  ^ ) }
+|  |  |        ┆      ^ Expected an expression, but found `}`.
+|  |  |      5 │   c { ^2 }
+|  |  |      6 │ }
+|  |  |
+|  |  |  ──────────────────────────────────────────────────────────────────────────────────
+|  |  |  SCBody (3:7)
+|  |  |  |  SCVariableDeclare (3:11): x
+|  |  |  |  SCExprList (4:2)
+|  |  SCMethod (5:3): c: c { ^2 } -> 2
+|  |  |  SCBody (5:7)
+|  |  |  |  SCExplicitReturn (5:7)
+|  |  |  |  |  SCLiteral (5:8) = 2
+Successfully compiled 16 classes.

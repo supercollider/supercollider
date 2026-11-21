@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestExampleFiles : UnitTest {
 	test_filesExist {
 		// we use the methods of the meta class to access the static methods

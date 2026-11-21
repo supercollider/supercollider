@@ -23,7 +23,6 @@
 #include "ClassLibraryInfo.hpp"
 #include "widgets/QcTreeWidget.h"
 
-#include <PyrLexer.h>
 #include <VMGlobals.h>
 #include <PyrKernel.h>
 #include <PyrSlot.h>

@@ -12,7 +12,7 @@ For handling strong::multidimensional arrays::, there are specific methods which
 
 note::
 For Arrays, the code::add:: method may or may not return the same Array object. It will add the argument to the receiver if there is space, otherwise it returns a new Array object with the argument added. Thus the proper usage of code::add:: with an Array is to always assign the result as follows:
-code::
+code#fragment::
     z = z.add(obj);
 ::
 This allows an efficient use of resources, only growing the array when it needs to. The link::Classes/List:: class manages the Array internally, and in many cases is more suitable.

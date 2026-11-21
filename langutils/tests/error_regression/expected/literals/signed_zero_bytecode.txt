@@ -1,0 +1,69 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): SignedZeroBytecode : Object, version 3.16
+|  SCMemberList (5:1)
+|  SCMethodList (5:1)
+|  |  SCMethod (6:5): touch, version 3.16: touch { }
+|  |  |  SCBody (6:13)
+|  |  SCMethod (7:5): positive, version 3.16: positive { this.touch; ^0.0 }
+|  |  |  SCBody (7:16)
+|  |  |  |  SCMessage (7:16): touch
+|  |  |  |  |  SCSpecial (7:16): this
+|  |  |  |  SCExplicitReturn (7:28)
+|  |  |  |  |  SCLiteral (7:29) = 0.0
+|  |  SCMethod (8:5): negative, version 3.16: negative { this.touch; ^-0.0 }
+|  |  |  SCBody (8:16)
+|  |  |  |  SCMessage (8:16): touch
+|  |  |  |  |  SCSpecial (8:16): this
+|  |  |  |  SCExplicitReturn (8:28)
+|  |  |  |  |  SCLiteral (8:30) = -0.0
+|  |  SCMethod (9:5): both, version 3.16: both { this.touch; ^[0.0, -0.0] }
+|  |  |  SCBody (9:12)
+|  |  |  |  SCMessage (9:12): touch
+|  |  |  |  |  SCSpecial (9:12): this
+|  |  |  |  SCExplicitReturn (9:24)
+|  |  |  |  |  SCCollection (9:25): Array = [0.0, -0.0]
+|  |  |  |  |  |  SCLiteral (9:26) = 0.0
+|  |  |  |  |  |  SCLiteral (9:32) = -0.0
+
+
+
+BYTECODE DUMP 
+
+
+SignedZeroBytecode
+|  function 0 (6:5): method touch
+|  |  properties:
+|  |  shortcut: return self
+|  |  selectors:
+|  |  constants:
+|  function 1 (7:5): method positive
+|  |  properties:
+|  |  selectors: touch,
+|  |  constants:
+|  |  0    A0 00           SendMsgThisOpt
+|  |  2    F0              Drop
+|  |  3    68              PushSpecialNumber
+|  |  4    F3              Return
+|  function 2 (8:5): method negative
+|  |  properties:
+|  |  selectors: touch,
+|  |  constants: -0.0,
+|  |  0    A0 00           SendMsgThisOpt
+|  |  2    F0              Drop
+|  |  3    40              PushLiteral
+|  |  4    F3              Return
+|  function 3 (9:5): method both
+|  |  properties:
+|  |  selectors: touch,
+|  |  constants: [0.0, -0.0],
+|  |  0    A0 00           SendMsgThisOpt
+|  |  2    F0              Drop
+|  |  3    40              PushLiteral
+|  |  4    C1 37           SendSpecialMsg
+|  |  6    F3              Return
+Successfully compiled 16 classes.

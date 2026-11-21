@@ -71,7 +71,7 @@ subsection:: Exploring HID control data
 
 If you have enabled debugging of the HID input data, and you move one of the controls on your device, you will get an output similar to this:
 
-code::
+teletype::
 HID Element Data:
 	devid: 0, elid: 18
 	element: 	 page: 1	usage: 53
@@ -90,7 +90,7 @@ The EMPHASIS::array value:: is only of importance for those elements which can r
 
 With the debugging method code::HIDFunc.trace( true ):: the data will be printed in a different way:
 
-code::
+teletype::
 HID Element Data:	devid: 0, elid: 18
 	device: 	a HIDInfo(Thrustmaster, Run'N' Drive, IDs:1103, 53251, /dev/hidraw4, , 258, 0), 	page: 1 	usage: 5
 	element:	a HIDElement(18: type: 2, usage: 1, 53)
@@ -117,7 +117,7 @@ code::~myhid.postUsages::
 
 These will post detailed information on each element:
 
-code::
+teletype::
 HID Element: 18, type: 1, 2, usage page: 1, usage index: 53
 	Description: GenericDesktop, Rz, input,
 	[ Data, Variable, Absolute, NoWrap, Linear, PreferredState, NoNullPosition, NonVolatile, BitField ]

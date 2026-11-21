@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestSoundFile : UnitTest {
 
 	var soundFile, path;
@@ -23,7 +24,6 @@ TestSoundFile : UnitTest {
 	}
 
 	test_instVars {
-		var instVars;
 		var info = IdentityDictionary[
 			(\numFrames -> 188893),
 			(\numChannels -> 1),
@@ -37,7 +37,7 @@ TestSoundFile : UnitTest {
 		this.assert(soundFile.fileptr.notNil, "SoundFile pointer should not be Nil after opening");
 
 		// collect all instance variables into a Dictionary, remove problematic 'fileptr'
-		instVars = soundFile.getSlots.asDict;
+		var instVars = soundFile.getSlots.asDict;
 		instVars.removeAt(\fileptr);
 
 		this.assertEquals(instVars, info, "SoundFile information should match that of actual sound file");
@@ -47,10 +47,9 @@ TestSoundFile : UnitTest {
 	// openRead and openWrite class methods (not tested above)
 	// readData and writeData
 	test_readWrite {
-		var path = PathName.tmp +/+ "SoundFile-test%.aiff".format(this.hash.asHexString(8)),
-		file, written = Signal.fill(100, { 1.0.rand2 }), read;
+		var path = PathName.tmp +/+ "SoundFile-test%.aiff".format(this.hash.asHexString(8)), written = Signal.fill(100, { 1.0.rand2 }), read;
 
-		file = SoundFile.openWrite(path, "aiff", "float", 1, 44100);
+		var file = SoundFile.openWrite(path, "aiff", "float", 1, 44100);
 		if(file.isNil) {
 			this.assert(false, "SoundFile.openWrite into temp directory should not fail");
 		};

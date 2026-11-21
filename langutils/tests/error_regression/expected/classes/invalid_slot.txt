@@ -1,0 +1,28 @@
+
+──────────────────────────────────────────────────────────────────────────────────
+Error: Invalid slot def
+classes/invalid_slot.sc:4:9
+    2 │ // A class with an invalid slot type is poisoned while declaring the classes, and so are the classes inheriting from
+    3 │ // it. Only the invalid slot type is reported.
+    4 │ BadSlot[bad] {
+      ┆         ^^^ This is an internal implementation detail, remove this, or consult the interpreter source code.
+    5 │     var member;
+    6 │     method { ^member }
+    7 │ }
+
+Slot defs are an internal implementation detail of intrinsic classes, you should not use it unless you are writing a core part of the interpreter. They are slot, double, float, int32, int16, int8, char and symbol.
+──────────────────────────────────────────────────────────────────────────────────
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (17:1): FloatSlot[float] : Object, version 3.16
+|  SCMemberList (17:1)
+|  SCMethodList (17:1)
+|  |  SCMethod (19:5): method, version 3.16: method { ^1 } -> 1
+|  |  |  SCBody (19:14)
+|  |  |  |  SCExplicitReturn (19:14)
+|  |  |  |  |  SCLiteral (19:15) = 1
+Successfully compiled 16 classes.

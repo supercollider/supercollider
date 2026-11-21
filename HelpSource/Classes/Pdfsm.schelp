@@ -51,7 +51,7 @@ If the fsm is in state x and it receives a strong::signal value:: y it looks up 
 
 The next state is then set to strong::destination state::, and the stream yielded is given by strong::return stream or pattern::. That is unless the strong::destination state:: is given as nil, or if a strong::destination state:: is given for which you have not supplied a dictionary - in both cases the current cycle ends and any remaining repeats are executed. If there is no strong::signal value:: given for a particular signal, and no \default is supplied then one will get a runtime error.
 
-code::
+code#error::
 (
 	p = Pdfsm(
 		[

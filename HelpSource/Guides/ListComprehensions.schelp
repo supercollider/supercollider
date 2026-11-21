@@ -76,7 +76,7 @@ all {:[y, z], x<-(0..30), var y = x.nthPrime, var z = 2 ** y - 1, z.asInteger.is
 section:: Qualifier Clauses
 
 A list comprehension begins with code:: {: :: and contains a body followed by several qualifier clauses separated by commas.
-code::
+code#fragment::
 {: body , qualifiers }
 ::
 There are several types of qualifier clauses that can appear after the body.
@@ -84,7 +84,7 @@ There are several types of qualifier clauses that can appear after the body.
 subsection:: generator clause
 
 The basic clause is the generator clause. Its syntax is
-code::
+teletype::
 name <- expr
 ::
 The expression should be something that can respond meaningfully to 'do' such as a collection or a stream.
@@ -126,7 +126,7 @@ all {: x, x <- (1..3), y <- (1..4-x) }
 subsection:: guard clause
 
 A guard clause is simply an expression. It should return a boolean value.
-code::
+code#fragment::
 expr
 ::
 The guard acts as a filter on the results and constrains the search.
@@ -152,7 +152,7 @@ subsection:: var clause
 
 A var clause lets you create a new variable binding that you can use in your expressions.
 The scope of the name extends to all clauses to the right and in the body.
-code::
+code#fragment::
 var name = expr
 ::
 Unlike the generator clause, the name is bound to a single value, it doesn't iterate.
@@ -165,7 +165,7 @@ all {: z, x <- (1..20), var z = (x*x-x) div: 2, z.odd }
 subsection:: side effect clause
 
 This clause lets you insert code to do some side effect like printing.
-code::
+teletype::
 \:: expr
 ::
 code::
@@ -176,7 +176,7 @@ subsection:: termination clause
 
 The termination clause is for stopping further searching for results. Once the expression becomes false,
 the routine halts.
-code::
+teletype::
 :while expr
 ::
 
@@ -230,7 +230,7 @@ the most constrained person above is fletcher, so they should be searched first,
 section:: Grammar
 
 Here is the BNF grammar for list comprehensions in SC.
-code::
+teletype::
 [ ] - optional
 { } - zero or more
 
@@ -261,23 +261,23 @@ For each of the above clauses, here is how the code is generated. The body acts 
 By understanding these translations, you can better understand how scoping and control flow work in list comprehensions.
 
 definitionlist::
-## generator || code::
+## generator || teletype::
 expr.do {|name| ..next qualifier.. }
 ::
 
-## guard || code::
+## guard || teletype::
 if (expr) { ..next qualifier.. }
 ::
 
-## binding || code::
+## binding || teletype::
 {|name| ..next qualifier.. }.value(expr)
 ::
 
-## side effect || code::
+## side effect || teletype::
 expr ; ..next qualifier..
 ::
 
-## termination || code::
+## termination || teletype::
 if (expr) { ..next qualifier.. }{ nil.alwaysYield }
 ::
 ::
