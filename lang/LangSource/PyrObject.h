@@ -77,6 +77,8 @@ struct PyrDebugFrame : public PyrObjectHdr {
     PyrSlot address;
     /// Index of the current byte code.
     PyrSlot ipIndex;
+    /// The function whose frame this one replaced through a tail call, or nil.
+    PyrSlot tailCalledFrom;
 };
 
 

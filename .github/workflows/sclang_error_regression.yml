@@ -57,8 +57,10 @@ jobs:
         run: |
           cd ${{ github.workspace }}
           timeout 5m $SCLANG -a --include-path SCClassLibrary --include-path testsuite/sclangErrorRegressions testsuite/sclangErrorRegressions/generateError.scd ${{ github.workspace }}/build/regression.txt
+          timeout 5m $SCLANG -a --include-path SCClassLibrary --include-path testsuite/sclangErrorRegressions testsuite/sclangErrorRegressions/generateError.scd ${{ github.workspace }}/build/regression_no_tail_calls.txt no-tail-calls
 
       - name: Check for differences
         shell: bash
         run: |
           diff $ERROR_REGRESSION/regression.txt ${{ github.workspace }}/build/regression.txt --unified --color
+          diff $ERROR_REGRESSION/regression_no_tail_calls.txt ${{ github.workspace }}/build/regression_no_tail_calls.txt --unified --color

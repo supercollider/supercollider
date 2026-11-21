@@ -1,0 +1,557 @@
+────────────────────────────────────────────────────────────────────────────────
+ERROR: Integer does not understand the message 'meow'.
+
+14  : Anonymous Function
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
+13  : Anonymous Function
+		file:/
+		│ 
+		│ 	catch.value {
+		│ 		ErrorGenerator.doesNotUnderstandErrorMethod
+		┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 	};
+		│ 
+		│ 	catch.value {
+12  : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethod'
+		file:/
+		│ 
+		│     *doesNotUnderstandErrorMethod {
+		│         this.doesNotUnderstandErrorMethodImpl(10, 32, someThing: 10)
+		┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│     }
+		│ 
+		│     *doesNotUnderstandErrorFunction {
+11  : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+10  : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+9   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+8   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+7   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+6   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+5   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+4   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+3   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...), i=2, a=nil
+       vars: var1=[]
+		file:/
+		│             1.meow(10, args: \woof)
+		│         } {
+		│             this.performArgs(\doesNotUnderstandErrorMethodImpl,[ i - 1], kwargs)
+		┆             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│         }
+		│     }
+		│ 
+2   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...), i=1, a=nil
+       vars: var1=[]
+		file:/
+		│             1.meow(10, args: \woof)
+		│         } {
+		│             this.performArgs(\doesNotUnderstandErrorMethodImpl,[ i - 1], kwargs)
+		┆             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│         }
+		│     }
+		│ 
+1   : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorMethodImpl'
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...), i=0, a=nil
+       vars: var1=[]
+		file:/
+		│         var var1 = 100.0.rand;
+		│         if (i == 0) {
+		│             1.meow(10, args: \woof)
+		┆             ^^^^^^^^^^^^^^^^^^^^^^^ Integer does not understand the message 'meow'.
+		│         } {
+		│             this.performArgs(\doesNotUnderstandErrorMethodImpl,[ i - 1], kwargs)
+		│         }
+
+Messages with a similar name understood by the receiver:
+  geom
+  mod
+  pow
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: Integer does not understand the message 'meow'.
+
+14  : Anonymous Function
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
+13  : Anonymous Function
+		file:/
+		│ 
+		│ 	catch.value {
+		│ 		ErrorGenerator.doesNotUnderstandErrorFunction
+		┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 	};
+		│ 
+		│ 	catch.value {
+12  : Method Name: 'Meta_ErrorGenerator-doesNotUnderstandErrorFunction'
+		file:/
+		│         };
+		│ 
+		│         f.(10, \23423, 123, 32, foo: \bar)
+		┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│     }
+		│ 
+		│ 
+11  : Function Name: 'f'
+10  : Function Name: 'f'
+9   : Function Name: 'f'
+8   : Function Name: 'f'
+7   : Function Name: 'f'
+6   : Function Name: 'f'
+5   : Function Name: 'f'
+4   : Function Name: 'f'
+3   : Function Name: 'f'
+       args: i=2, a=nil
+       vars: var1=[]
+		file:/
+		│                 1.meow(10, args: \woof)
+		│             } {
+		│                 f.performArgs(\value,[ i - 1], kwargs)
+		┆                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│             }
+		│         };
+		│ 
+2   : Function Name: 'f'
+       args: i=1, a=nil
+       vars: var1=[]
+		file:/
+		│                 1.meow(10, args: \woof)
+		│             } {
+		│                 f.performArgs(\value,[ i - 1], kwargs)
+		┆                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│             }
+		│         };
+		│ 
+1   : Function Name: 'f'
+       args: i=0, a=nil
+       vars: var1=[]
+		file:/
+		│             var var1 = 100.0.rand;
+		│             if (i == 0) {
+		│                 1.meow(10, args: \woof)
+		┆                 ^^^^^^^^^^^^^^^^^^^^^^^ Integer does not understand the message 'meow'.
+		│             } {
+		│                 f.performArgs(\value,[ i - 1], kwargs)
+		│             }
+
+Messages with a similar name understood by the receiver:
+  geom
+  mod
+  pow
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: This is a test error
+
+3   : Anonymous Function
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
+2   : Anonymous Function
+		file:/
+		│ 
+		│ 	catch.value {
+		│ 		ErrorGenerator.error
+		┆ 		^^^^^^^^^^^^^^^^^^^^ 
+		│ 	};
+		│ 
+		│ 	catch.value {
+1   : Method Name: 'Meta_ErrorGenerator-error'
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...)
+		file:/
+		│ 
+		│     *error {
+		│         Error("This is a test error").throw
+		┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│     }
+		│ 
+		│     *errorWrapper {
+
+This is a test error
+
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: Wrapping some error
+
+    ────────────────────────────────────────────────────────────────────────────────
+    ERROR: some other error
+
+    1   : Anonymous Function
+		file:/
+		│     *errorWrapper {
+		│         try {
+		│             Error("some other error").throw;
+		┆             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│         } { |er|
+		│             ErrorWrapper(er, "Wrapping some error").throw
+		│         }
+
+        some other error
+
+    ────────────────────────────────────────────────────────────────────────────────
+
+1   : Anonymous Function
+       args: er=Error(what="some other error", callFrameAnnotations=[], ...)
+		file:/
+		│             Error("some other error").throw;
+		│         } { |er|
+		│             ErrorWrapper(er, "Wrapping some error").throw
+		┆             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│         }
+		│     }
+		│ 
+Wrapping some error
+
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: Non boolean in test 
+
+3   : Anonymous Function
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
+2   : Anonymous Function
+		file:/
+		│ 
+		│ 	catch.value {
+		│ 		ErrorGenerator.mustBeBoolean
+		┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 	};
+		│ 
+		│ 	catch.value {
+1   : Method Name: 'Meta_ErrorGenerator-mustBeBoolean'
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...)
+		file:/
+		│ 
+		│     *mustBeBoolean {
+		│         if (\10) {1} {2}
+		┆             ^^^ Expected this to be either `true` or `false`, instead got Symbol(10).
+		│     }
+		│ 
+		│     *notYetImplementedError {
+
+Non boolean in test 
+
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: Not yet implemented
+
+3   : Anonymous Function
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
+2   : Anonymous Function
+		file:/
+		│ 
+		│ 	catch.value {
+		│ 		ErrorGenerator.notYetImplementedError
+		┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 	};
+		│ 
+		│ 	catch.value {
+1   : Method Name: 'Meta_ErrorGenerator-notYetImplementedError'
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...)
+		file:/
+		│ 
+		│     *notYetImplementedError {
+		│         this.notYetImplemented;
+		┆         ^^^^^^^^^^^^^^^^^^^^^^ This method has not yet been implemented.
+		│     }
+		│ 
+		│     *immutable {
+
+Not yet implemented
+
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: Primitive '_BasicPut' failed with message : 'Attempted write to immutable object.'.
+
+4   : Anonymous Function
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
+3   : Anonymous Function
+		file:/
+		│ 
+		│ 	catch.value {
+		│ 		ErrorGenerator.immutable
+		┆ 		^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 	};
+		│ 
+		│ 	catch.value {
+2   : Method Name: 'Meta_ErrorGenerator-immutable'
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...)
+       vars: a=[1]
+		file:/
+		│     *immutable {
+		│         var a = #[1];
+		│         a[0] = 10;
+		┆         ^^^^^^^^^ Attempted write to immutable object.
+		│     }
+		│ 
+		│     *subclassResponsibilityError {
+1   : Method Name: 'ArrayedCollection-put'
+       args: this=[1], index=0, item=10
+		file:/
+		│ 	put { arg index, item;
+		│ 		_BasicPut;
+		│ 		^this.primitiveFailed;
+		┆ 		 ^^^^^^^^^^^^^^^^^^^^ 
+		│ 	}
+		│ 	clipPut { arg index, item;
+		│ 		_BasicClipPut;
+
+Primitive '_BasicPut' failed with message : 'Attempted write to immutable object.'.
+
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: 'subclassResponsibilityError' should have been implemented by Meta_ErrorGenerator.
+
+3   : Anonymous Function
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
+2   : Anonymous Function
+		file:/
+		│ 
+		│ 	catch.value {
+		│ 		ErrorGenerator.subclassResponsibilityError
+		┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Please implement this method for the class 'Meta_ErrorGenerator'
+		│ 	};
+		│ 
+		│ 	catch.value {
+1   : Method Name: 'Meta_ErrorGenerator-subclassResponsibilityError'
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...)
+		file:/
+		│ 
+		│     *subclassResponsibilityError {
+		│         this.subclassResponsibility(thisMethod);
+		┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│     }
+		│ 
+		│     *shouldNotImplementError {
+
+'subclassResponsibilityError' should have been implemented by Meta_ErrorGenerator.
+
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: 'Meta_ErrorGenerator-shouldNotImplementError' is not a valid message for the subclass 'Meta_ErrorGenerator'
+
+3   : Anonymous Function
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
+2   : Anonymous Function
+		file:/
+		│ 
+		│ 	catch.value {
+		│ 		ErrorGenerator.shouldNotImplementError
+		┆ 		^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 'Meta_ErrorGenerator' cannot respond to this message, please remove the call.
+		│ 	};
+		│ 
+		│ 	catch.value {
+1   : Method Name: 'Meta_ErrorGenerator-shouldNotImplementError'
+       args: this=Meta_ErrorGenerator(name='ErrorGenerator', ...)
+		file:/
+		│ 
+		│     *shouldNotImplementError {
+		│         this.shouldNotImplement(thisMethod);
+		┆         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│     }
+		│ 
+		│     // leave these unset to throw an error
+
+'Meta_ErrorGenerator-shouldNotImplementError' is not a valid message for the subclass 'Meta_ErrorGenerator'
+
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: slot printing test
+
+3   : Anonymous Function
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
+2   : Anonymous Function
+       vars: f=Function(def=f: {\n			var array = [1,...}, ...)
+		file:/
+		│ 		};
+		│ 
+		│ 		f.();
+		┆ 		^^^^ 
+		│ 	};
+		│ 
+		│ 
+1   : Function Name: 'f'
+       vars: array=[1, 2, 3, 4, 5], dict=Event(array=['a', 1, 'array', [1, 2, 3, ...], ...], ...), recursive=[#recursion#, 2, 3]
+		file:/
+		│ 			var recursive = [1, 2, 3];
+		│ 			recursive[0] = recursive;
+		│ 			Error("slot printing test").throw
+		┆ 			^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 		};
+		│ 
+		│ 		f.();
+
+slot printing test
+
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: Here is an error
+
+2   : Anonymous Function
+		file:/
+		│ 
+		│ 		var catcher = { |f|
+		│ 			try { f.() } { |er| er.throw }
+		┆ 			      ^^^^ 
+		│ 		};
+		│ 
+		│ 		catcher.value { catcher.value { catcher.(throwSight) } }
+1   : Function Name: 'throwSight'
+		file:/
+		│ 			1 + 2;
+		│ 			2 + 3;
+		│ 			Error("Here is an error").throw
+		┆ 			^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 		};
+		│ 
+		│ 		var catcher = { |f|
+
+Here is an error
+
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: rethrowing from 2
+
+    ────────────────────────────────────────────────────────────────────────────────
+    ERROR: rethrowing from 1
+
+            ────────────────────────────────────────────────────────────────────────────────
+        ERROR: rethrowing from 0
+
+                    ────────────────────────────────────────────────────────────────────────────────
+            ERROR: Here is an error
+
+            2   : Anonymous Function
+		file:/
+		│ 
+		│ 		var catcher = {|f,i|
+		│ 			try {f.()} { |er|
+		┆ 			     ^^^^ 
+		│ 				ErrorWrapper(er, "rethrowing from %".format(i)).throw
+		│ 			}
+		│ 		};
+            1   : Function Name: 'throwSight'
+		file:/
+		│ 			1 + 2;
+		│ 			2 + 3;
+		│ 			Error("Here is an error").throw
+		┆ 			^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 		};
+		│ 
+		│ 
+
+                        Here is an error
+
+            ────────────────────────────────────────────────────────────────────────────────
+
+        1   : Anonymous Function
+               args: er=Error(what="Here is an error", callFrameAnnotations=[], ...)
+		file:/
+		│ 		var catcher = {|f,i|
+		│ 			try {f.()} { |er|
+		│ 				ErrorWrapper(er, "rethrowing from %".format(i)).throw
+		┆ 				^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 			}
+		│ 		};
+		│ 
+        rethrowing from 0
+
+        ────────────────────────────────────────────────────────────────────────────────
+
+    1   : Anonymous Function
+           args: er=ErrorWrapper(what="rethrowing from 0", callFrameAnnotations=[], ...)
+		file:/
+		│ 		var catcher = {|f,i|
+		│ 			try {f.()} { |er|
+		│ 				ErrorWrapper(er, "rethrowing from %".format(i)).throw
+		┆ 				^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 			}
+		│ 		};
+		│ 
+    rethrowing from 1
+
+    ────────────────────────────────────────────────────────────────────────────────
+
+1   : Anonymous Function
+       args: er=ErrorWrapper(what="rethrowing from 1", callFrameAnnotations=[], ...)
+		file:/
+		│ 		var catcher = {|f,i|
+		│ 			try {f.()} { |er|
+		│ 				ErrorWrapper(er, "rethrowing from %".format(i)).throw
+		┆ 				^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 			}
+		│ 		};
+		│ 
+rethrowing from 2
+
+────────────────────────────────────────────────────────────────────────────────
+

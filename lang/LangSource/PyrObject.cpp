@@ -1532,7 +1532,7 @@ void initClasses() {
     addIntrinsicVar(class_server_shm_interface, "ptr", &o_nil);
     addIntrinsicVar(class_server_shm_interface, "finalizer", &o_nil);
 
-    class_debugFrame = makeIntrinsicClass(getsym("DebugFrame"), s_object, 7, 0);
+    class_debugFrame = makeIntrinsicClass(getsym("DebugFrame"), s_object, 8, 0);
 
     addIntrinsicVar(class_debugFrame, "functionDef", &o_nil);
     addIntrinsicVar(class_debugFrame, "args", &o_nil);
@@ -1541,6 +1541,7 @@ void initClasses() {
     addIntrinsicVar(class_debugFrame, "context", &o_nil);
     addIntrinsicVar(class_debugFrame, "address", &o_nil);
     addIntrinsicVar(class_debugFrame, "ipIndex", &o_nil);
+    addIntrinsicVar(class_debugFrame, "tailCalledFrom", &o_nil);
 
 
     gTagClassTable[0] = nullptr;
