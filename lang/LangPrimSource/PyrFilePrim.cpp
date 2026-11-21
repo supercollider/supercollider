@@ -46,7 +46,7 @@ Primitives for File i/o.
 #include <fcntl.h>
 #include <math.h>
 #include <sstream>
-
+#include <sys/stat.h> //i added
 /* C++ stdlib headers */
 #include <tuple>
 #include <filesystem>
@@ -130,7 +130,35 @@ int prFileMTime(struct VMGlobals* g, int numArgsPushed) {
     SetInt(a, to_time_t(mtime));
     return errNone;
 }
+int prFileInstanceMTime(struct VMGlobals* g, int numArgsPushed) { // i added
+    // 1. Get the receiver (the File instance) from the stack
+    PyrSlot* a = g->sp; 
+    
+    // 2. Extract the underlying C FILE* pointer from the SC object
+    PyrFile* pfile = (PyrFile*)slotRawObject(a);
+    FILE* file = (FILE*)slotRawPtr(&pfile->fileptr);
 
+    // If the file isn't open/valid, fail gracefully
+    if (file == nullptr)
+        return errFailed;
+
+    // 3. Get the raw file descriptor cross-platform
+    int fd;
+#ifdef _WIN32
+    fd = _fileno(file); // Windows uses _fileno
+#else
+    fd = fileno(file);  // macOS/Linux POSIX uses fileno
+#endif
+
+    // 4. Use fstat to get the modification time of the open descriptor
+    struct stat fileStat;
+    if (fstat(fd, &fileStat) == -1)
+        return errFailed;
+
+    // 5. Push the time back to SuperCollider
+    SetInt(a, fileStat.st_mtime);
+    return errNone;
+}
 int prFileExists(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a = g->sp - 1, *b = g->sp;
     char filename[PATH_MAX];
@@ -1894,6 +1922,7 @@ void initFilePrimitives() {
     definePrimitive(base, index++, "_FileDelete", prFileDelete, 2, 0);
     definePrimitive(base, index++, "_FileDeleteAll", prFileDeleteAll, 2, 0);
     definePrimitive(base, index++, "_FileMTime", prFileMTime, 2, 0);
+    definePrimitive(base, index++, "_FileInstanceMTime", prFileInstanceMTime, 1, 0); //
     definePrimitive(base, index++, "_FileExists", prFileExists, 2, 0);
     definePrimitive(base, index++, "_FileRealPath", prFileRealPath, 2, 0);
     definePrimitive(base, index++, "_FileMkDir", prFileMkDir, 2, 0);
