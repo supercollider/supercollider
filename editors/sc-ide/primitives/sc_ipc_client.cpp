@@ -247,7 +247,7 @@ private:
             return;
 
         case tagSym:
-            emitter << YAML::DoubleQuoted << slotRawSymbol(slot)->name;
+            emitter << YAML::DoubleQuoted << std::string(slotRawSymbol(slot)->view());
             return;
 
         default:
@@ -295,15 +295,16 @@ int ScIDE_Send(struct VMGlobals* g, int numArgsPushed) {
     }
 
     PyrSlot* idSlot = g->sp - 1;
-    char id[255];
-    if (slotStrVal(idSlot, id, 255))
+    const auto [idErr, id] = slotStrViewVal(idSlot);
+    if (idErr)
         return errWrongType;
 
     PyrSlot* argSlot = g->sp;
 
     try {
         YAMLSerializer serializer(argSlot);
-        sendSelectorAndData(gIpcClient->mSocket, QString(id), QString::fromUtf8(serializer.data()));
+        sendSelectorAndData(gIpcClient->mSocket, QString::fromUtf8(id.data(), static_cast<qsizetype>(id.size())),
+                            QString::fromUtf8(serializer.data()));
     } catch (std::exception const& e) {
         postfl("Exception during ScIDE_Send: %s\n", e.what());
         return errFailed;
@@ -329,8 +330,8 @@ int ScIDE_GetDocTextMirror(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* returnSlot = g->sp - numArgsPushed + 1;
 
     PyrSlot* docIDSlot = g->sp - 2;
-    char id[255];
-    if (slotStrVal(docIDSlot, id, 255))
+    const auto [idErr, id] = slotStrViewVal(docIDSlot);
+    if (idErr)
         return errWrongType;
 
     int pos, range, err = errNone;
@@ -344,7 +345,7 @@ int ScIDE_GetDocTextMirror(struct VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
 
-    QByteArray key = QByteArray(id);
+    QByteArray key = QByteArray(id.data(), static_cast<qsizetype>(id.size()));
 
     QString docText = gIpcClient->getTextMirrorForDocument(key, pos, range);
 
@@ -361,20 +362,14 @@ int ScIDE_SetDocTextMirror(struct VMGlobals* g, int numArgsPushed) {
     }
 
     PyrSlot* docIDSlot = g->sp - 3;
-    char id[255];
-    if (slotStrVal(docIDSlot, id, 255))
+    const auto [idErr, id] = slotStrViewVal(docIDSlot);
+    if (idErr)
         return errWrongType;
 
     PyrSlot* textSlot = g->sp - 2;
 
-    int length = slotStrLen(textSlot);
-
-    if (length == -1)
-        return errWrongType;
-
-    std::vector<char> text(length + 1);
-
-    if (slotStrVal(textSlot, text.data(), length + 1))
+    const auto [textErr, text] = slotStrViewVal(textSlot);
+    if (textErr)
         return errWrongType;
 
     int pos, range, err = errNone;
@@ -388,8 +383,8 @@ int ScIDE_SetDocTextMirror(struct VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
 
-    QByteArray key = QByteArray(id);
-    QString docText = QString(text.data());
+    QByteArray key = QByteArray(id.data(), static_cast<qsizetype>(id.size()));
+    QString docText = QString::fromUtf8(text.data(), static_cast<qsizetype>(text.size()));
 
     gIpcClient->setTextMirrorForDocument(key, docText, pos, range);
 
@@ -405,11 +400,11 @@ int ScIDE_GetDocSelectionStart(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* returnSlot = g->sp - numArgsPushed + 1;
 
     PyrSlot* docIDSlot = g->sp;
-    char id[255];
-    if (slotStrVal(docIDSlot, id, 255))
+    const auto [idErr, id] = slotStrViewVal(docIDSlot);
+    if (idErr)
         return errWrongType;
 
-    QByteArray key = QByteArray(id);
+    QByteArray key = QByteArray(id.data(), static_cast<qsizetype>(id.size()));
 
     QPair<int, int> selection = gIpcClient->getSelectionMirrorForDocument(key);
 
@@ -427,11 +422,11 @@ int ScIDE_GetDocSelectionRange(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* returnSlot = g->sp - numArgsPushed + 1;
 
     PyrSlot* docIDSlot = g->sp;
-    char id[255];
-    if (slotStrVal(docIDSlot, id, 255))
+    const auto [idErr, id] = slotStrViewVal(docIDSlot);
+    if (idErr)
         return errWrongType;
 
-    QByteArray key = QByteArray(id);
+    QByteArray key = QByteArray(id.data(), static_cast<qsizetype>(id.size()));
 
     QPair<int, int> selection = gIpcClient->getSelectionMirrorForDocument(key);
 
@@ -447,8 +442,8 @@ int ScIDE_SetDocSelectionMirror(struct VMGlobals* g, int numArgsPushed) {
     }
 
     PyrSlot* docIDSlot = g->sp - 2;
-    char id[255];
-    if (slotStrVal(docIDSlot, id, 255))
+    const auto [idErr, id] = slotStrViewVal(docIDSlot);
+    if (idErr)
         return errWrongType;
 
     int start, range, err = errNone;
@@ -462,7 +457,7 @@ int ScIDE_SetDocSelectionMirror(struct VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
 
-    QByteArray key = QByteArray(id);
+    QByteArray key = QByteArray(id.data(), static_cast<qsizetype>(id.size()));
 
     gIpcClient->setSelectionMirrorForDocument(key, start, range);
 

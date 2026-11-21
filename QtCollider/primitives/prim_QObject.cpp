@@ -60,7 +60,7 @@ QC_LANG_PRIMITIVE(QObject_New, 2, PyrSlot* r, PyrSlot* a, VMGlobals* g) {
         return errWrongType;
 
     PyrObject* scObject = slotRawObject(r);
-    QString qtClassName = QString(slotRawSymbol(a + 0)->name);
+    QString qtClassName = QString::fromUtf8(slotRawSymbol(a + 0)->name, slotRawSymbol(a + 0)->length);
 
     qcSCObjectDebugMsg(1, scObject, QStringLiteral("CREATE: %2").arg(qtClassName));
 
@@ -211,7 +211,7 @@ QC_LANG_PRIMITIVE(QMetaObject_Properties, 0, PyrSlot* r, PyrSlot* a, VMGlobals* 
     PyrSlot* sClassName = slotRawObject(r)->slots + 0;
     if (NotSym(sClassName))
         return errWrongType;
-    QString className(slotRawSymbol(sClassName)->name);
+    QString className = QString::fromUtf8(slotRawSymbol(sClassName)->name, slotRawSymbol(sClassName)->length);
 
     QcAbstractFactory* f = QtCollider::factories().value(className);
 
@@ -233,7 +233,7 @@ QC_LANG_PRIMITIVE(QMetaObject_Methods, 3, PyrSlot* r, PyrSlot* a, VMGlobals* g) 
     PyrSlot* sClassName = slotRawObject(r)->slots + 0;
     if (NotSym(sClassName))
         return errWrongType;
-    QString className(slotRawSymbol(sClassName)->name);
+    QString className = QString::fromUtf8(slotRawSymbol(sClassName)->name, slotRawSymbol(sClassName)->length);
 
     QcAbstractFactory* f = QtCollider::factories().value(className);
 
@@ -490,8 +490,8 @@ QC_LANG_PRIMITIVE(QObject_ConnectSlot, 3, PyrSlot* r, PyrSlot* a, VMGlobals* g) 
     qcSCObjectDebugMsg(1, slotRawObject(r),
                        QStringLiteral("CONNECT TO SLOT: %1 -> %2").arg(symSig->name).arg(symSlot->name));
 
-    QString strSig = QStringLiteral("2") + symSig->name;
-    QString strSlot = QStringLiteral("1") + symSlot->name;
+    QString strSig = QStringLiteral("2") + QString::fromUtf8(symSig->name, symSig->length);
+    QString strSlot = QStringLiteral("1") + QString::fromUtf8(symSlot->name, symSlot->length);
 
     sndProxy->lock();
     rcvProxy->lock();

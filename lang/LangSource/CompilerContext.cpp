@@ -20,7 +20,7 @@
     const std::string& str { normalisedSource.as_string() };
     // clang-format off
     return {
-        filePathDescription.name, 
+        filePathDescription.view(), 
 		str.c_str(), 
 		str.size(),
 		range,
@@ -69,7 +69,7 @@ std::ostream& streamSourceCodeWithHighlight(std::ostream& ss, const DiagnosticHi
     const auto starting_line = source_line + range.begin.line_number;
     const auto start_column = source_column + range.end.column;
 
-    if (filepath)
+    if (!filepath.empty())
         ss << "file://" << filepath << ':' << starting_line + 1 << ':' << start_column + 1 << '\n';
     else
         ss << "unknown file:" << starting_line + 1 << ':' << start_column + 1 << '\n';

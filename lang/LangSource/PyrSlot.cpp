@@ -116,13 +116,13 @@ void PyrSlot::appendToStringForDebug(std::string& stream, size_t sizeLimit,
             const auto& c = *getPyrObjType<PyrClass>();
             stream += "Class(";
             const auto& sym = *c.name.getSymbol();
-            stream.append(sym.name, sym.length);
+            stream += sym.view();
             stream += ")";
         } else if (c == class_fundef) {
             const auto& block = *getPyrObjType<PyrBlock>();
             if (!block.name.isNil()) {
                 const auto& name = *block.name.getSymbol();
-                stream.append(name.name, name.length);
+                stream += name.view();
                 stream += ": ";
             } else {
                 stream += "Anonymous Function: ";
@@ -142,7 +142,7 @@ void PyrSlot::appendToStringForDebug(std::string& stream, size_t sizeLimit,
             }
         } else {
             const auto& objhdr = *getObjectHdr();
-            stream += objhdr.classptr->name.getSymbol()->name;
+            stream += objhdr.classptr->name.getSymbol()->view();
             stream += "(";
             if (objhdr.obj_format == obj_slot || objhdr.obj_format == obj_notindexed) {
                 const PyrObject& obj = *reinterpret_cast<const PyrObject*>(&objhdr);
@@ -155,7 +155,7 @@ void PyrSlot::appendToStringForDebug(std::string& stream, size_t sizeLimit,
                         break;
                     }
 
-                    stream += instanceNames[i]->name;
+                    stream += instanceNames[i]->view();
                     stream += "=";
 
                     obj.slots[i].appendToStringForDebug(stream, sizeLimit, alreadyVisited);

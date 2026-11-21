@@ -39,7 +39,7 @@ namespace QtCollider {
 
 QString TypeCodec<QString>::read(PyrSlot* slot) {
     if (IsSym(slot)) {
-        return QString::fromUtf8(slotRawSymbol(slot)->name);
+        return QString::fromUtf8(slotRawSymbol(slot)->name, slotRawSymbol(slot)->length);
     } else if (isKindOfSlot(slot, class_string)) {
         int len = slotRawObject(slot)->size;
         return QString::fromUtf8(slotRawString(slot)->s, len);
@@ -56,7 +56,7 @@ void TypeCodec<QString>::write(PyrSlot* slot, const QString& val) {
 
 QUrl TypeCodec<QUrl>::read(PyrSlot* slot) {
     if (IsSym(slot)) {
-        return QUrl(QString::fromUtf8(slotRawSymbol(slot)->name));
+        return QUrl(QString::fromUtf8(slotRawSymbol(slot)->name, slotRawSymbol(slot)->length));
     } else if (isKindOfSlot(slot, class_string)) {
         int len = slotRawObject(slot)->size;
         return QUrl(QString::fromUtf8(slotRawString(slot)->s, len));
@@ -313,7 +313,7 @@ QVariantList TypeCodec<QVariantList>::read(PyrSlot* slot) {
         int size = symarray->size;
         QVariantList list;
         for (int i = 0; i < size; ++i, ++symbols)
-            list << QVariant(QString((*symbols)->name));
+            list << QVariant(QString::fromUtf8((*symbols)->name, (*symbols)->length));
         return list;
     }
 

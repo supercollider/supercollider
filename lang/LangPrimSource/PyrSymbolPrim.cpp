@@ -28,6 +28,7 @@ Primitives for Symbol.
 #include <stdlib.h>
 #include "PyrPrimitive.h"
 #include "PyrSymbol.h"
+#include "PyrSymbolTable.h"
 #include "VMGlobals.h"
 #include "PyrKernel.h"
 #include "SCBase.h"
@@ -86,8 +87,6 @@ int prSymbolIsSetter(struct VMGlobals* g, int numArgsPushed) {
 
 int prSymbolAsSetter(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
-    char str[256];
-    int len;
 
     a = g->sp;
     if (!(slotRawSymbol(a)->flags & sym_Setter)) {
@@ -95,24 +94,13 @@ int prSymbolAsSetter(struct VMGlobals* g, int numArgsPushed) {
             error("Cannot convert class names or primitive names to setters.\n");
             return errFailed;
         }
-        if (strlen(slotRawSymbol(a)->name) > 255) {
-            error("symbol name too long.\n");
-            return errFailed;
-        }
-        strcpy(str, slotRawSymbol(a)->name);
-        len = strlen(str);
-        str[len] = '_';
-        str[len + 1] = 0;
-
-        // postfl("prSymbolAsSetter %s\n", str);
-        SetRaw(a, getsym(str));
+        SetRaw(a, getsettersym(slotRawSymbol(a)));
     }
     return errNone;
 }
 
 int prSymbolAsGetter(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
-    char str[256];
 
     a = g->sp;
     if ((slotRawSymbol(a)->flags & sym_Setter)) {
@@ -120,10 +108,9 @@ int prSymbolAsGetter(struct VMGlobals* g, int numArgsPushed) {
             error("Cannot convert class names or primitive names to getters.\n");
             return errFailed;
         }
-        strcpy(str, slotRawSymbol(a)->name);
-        str[strlen(str) - 1] = 0;
-        // postfl("prSymbolAsGetter %s\n", str);
-        SetRaw(a, getsym(str));
+        // sym_Setter is only set when the length is greater than 1.
+        const PyrSymbol* sym = slotRawSymbol(a);
+        SetRaw(a, getsymlen(sym->name, sym->length - 1));
     }
     return errNone;
 }
@@ -157,6 +144,7 @@ int prSymbol_IsBinaryOp(struct VMGlobals* g, int numArgsPushed) {
     static const char* binary_op_characters = "!@%&*-+=|<>?/";
     PyrSlot* a = g->sp;
     const char* str = slotRawSymbol(a)->name;
+    const int length = slotRawSymbol(a)->length;
 
     if (str[0] == '\0') {
         // An empty symbol is not a valid binary operator.
@@ -175,7 +163,6 @@ int prSymbol_IsBinaryOp(struct VMGlobals* g, int numArgsPushed) {
         if (str[0] == '/' && (str[1] == '/' || str[1] == '*')) {
             SetFalse(a);
         } else {
-            const int length = strlen(str);
             SetTrue(a);
             for (int i = 0; i < length; i++) {
                 bool character_is_binary_operator = strchr(binary_op_characters, str[i]);
@@ -193,6 +180,7 @@ int prSymbol_IsBinaryOp(struct VMGlobals* g, int numArgsPushed) {
 int prSymbol_IsIdentifier(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     const char* str = slotRawSymbol(a)->name;
+    const int length = slotRawSymbol(a)->length;
 
     // An empty symbol is not a valid identifier.
     if (str[0] == '\0') {
@@ -200,7 +188,6 @@ int prSymbol_IsIdentifier(struct VMGlobals* g, int numArgsPushed) {
 
         // The first character must be a lowercase letter.
     } else if ('a' <= str[0] && str[0] <= 'z') {
-        int length = strlen(str);
         SetTrue(a);
         // All other characters must be alphanumeric or '_'.
         for (int i = 1; i < length; i++) {
@@ -519,7 +506,7 @@ int prSymbol_isMap(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
     char* str = slotRawSymbol(a)->name;
-    if (strlen(str) > 1 && (str[0] == 'a' || str[0] == 'c') && str[1] >= '0' && str[1] <= '9')
+    if (slotRawSymbol(a)->length > 1 && (str[0] == 'a' || str[0] == 'c') && str[1] >= '0' && str[1] <= '9')
         SetTrue(a);
     else
         SetFalse(a);

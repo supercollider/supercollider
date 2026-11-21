@@ -37,8 +37,12 @@ An object archiving system for SuperCollider.
 #include "GC.h"
 #include "ReadWriteMacros.h"
 #include "SCBase.h"
+#include "PyrSymbolTable.h"
+#include <string>
 
 const int32 kArchHdrSize = 12;
+// Version 3 stores symbol lengths as int32, earlier versions as uint8.
+const int32 kArchVersion = 3;
 const int32 kObjectArrayInitialCapacity = 32;
 
 template <class S> class PyrArchiver {
@@ -67,7 +71,7 @@ public:
             // object table size
             for (int i = 0; i < mNumObjects; ++i) {
                 PyrObject* obj = mObjectArray[i];
-                size += slotRawSymbol(&obj->classptr->name)->length + 1; // class name symbol
+                size += archivedSymbolSize(slotRawSymbol(&obj->classptr->name)); // class name symbol
                 size += sizeof(int32); // size
                 if (obj->obj_format <= obj_slot) {
                     size += obj->size; // tags
@@ -78,7 +82,7 @@ public:
                 } else if (obj->obj_format == obj_symbol) {
                     PyrSymbol** symbol = ((PyrSymbolArray*)obj)->symbols;
                     for (int j = 0; j < obj->size; ++j, ++symbol) {
-                        size += (**symbol).length + 1;
+                        size += archivedSymbolSize(*symbol);
                     }
                 } else {
                     size += obj->size * gFormatElemSize[obj->obj_format];
@@ -160,7 +164,7 @@ public:
 private:
     void writeArchiveHeader() {
         mStream.writeInt32_be(('!' << 24) | ('S' << 16) | ('C' << 8) | 'a' /*'!SCa'*/);
-        mStream.writeInt32_be(2); // file version
+        mStream.writeInt32_be(kArchVersion);
         mStream.writeInt32_be(mNumObjects);
     }
 
@@ -250,7 +254,7 @@ private:
         switch (GetTag(slot)) {
         case tagObj:
             if (isKindOf(slotRawObject(slot), class_class)) {
-                return slotRawSymbol(&slotRawClass(slot)->name)->length + 1;
+                return archivedSymbolSize(slotRawSymbol(&slotRawClass(slot)->name));
             } else if (isKindOf(slotRawObject(slot), class_process)) {
                 return 0;
             } else if (isKindOf(slotRawObject(slot), class_frame)) {
@@ -264,7 +268,7 @@ private:
         case tagInt:
             return sizeof(int32);
         case tagSym:
-            return slotRawSymbol(slot)->length + 1;
+            return archivedSymbolSize(slotRawSymbol(slot));
         case tagChar:
             return sizeof(int32);
         case tagNil:
@@ -281,10 +285,20 @@ private:
         }
     }
 
+    static int32 archivedSymbolSize(const PyrSymbol* sym) { return sizeof(int32) + sym->length; }
+
+    void writeSymbol(const PyrSymbol* sym) {
+        mStream.writeInt32_be(sym->length);
+        mStream.writeData(sym->name, sym->length);
+    }
+
     PyrSymbol* readSymbolID() {
-        char str[256];
-        mStream.readSymbol(str);
-        return getsym(str);
+        const int32 length = mReadArchiveVersion >= 3 ? mStream.readInt32_be() : mStream.readUInt8();
+        if (length < 0)
+            throw std::runtime_error("corrupt SC archive: negative symbol length.\n");
+        mSymbolBuffer.resize(length);
+        mStream.readData(mSymbolBuffer.data(), length);
+        return getsymlen(mSymbolBuffer.data(), mSymbolBuffer.size());
     }
 
 
@@ -298,7 +312,7 @@ private:
         obj->ClearMark();
 
         // postfl("writeObjectHeader %s\n", slotRawSymbol(&obj->classptr->name)->name);
-        mStream.writeSymbol(slotRawSymbol(&obj->classptr->name)->name);
+        writeSymbol(slotRawSymbol(&obj->classptr->name));
 
         mStream.writeInt32_be(obj->size);
     }
@@ -363,7 +377,7 @@ private:
             obj = slotRawObject(slot);
             if (isKindOf(obj, class_class)) {
                 mStream.writeInt8('C');
-                mStream.writeSymbol(slotRawSymbol(&slotRawClass(slot)->name)->name);
+                writeSymbol(slotRawSymbol(&slotRawClass(slot)->name));
             } else if (isKindOf(obj, class_process)) {
                 mStream.writeInt8('P');
             } else if (isKindOf(obj, s_interpreter->u.classobj)) {
@@ -379,7 +393,7 @@ private:
             break;
         case tagSym:
             mStream.writeInt8('s');
-            mStream.writeSymbol(slotRawSymbol(slot)->name);
+            writeSymbol(slotRawSymbol(slot));
             break;
         case tagChar:
             mStream.writeInt8('c');
@@ -478,7 +492,7 @@ private:
         case obj_symbol: {
             PyrSymbol** data = (PyrSymbol**)obj->slots;
             for (int i = 0; i < size; ++i) {
-                mStream.writeSymbol(data[i]->name);
+                writeSymbol(data[i]);
             }
         } break;
         }
@@ -532,6 +546,7 @@ private:
 
     SC_IOStream<S> mStream;
     int32 mReadArchiveVersion;
+    std::string mSymbolBuffer;
 
     PyrObject* mInitialObjectArray[kObjectArrayInitialCapacity];
 };

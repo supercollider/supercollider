@@ -51,7 +51,8 @@ void interpretKeyEvent(QEvent* e, QList<QVariant>& args);
 QObjectProxy::QObjectProxy(QObject* qObject_, PyrObject* scObject_):
     qObject(qObject_),
     _scObject(scObject_),
-    _scClassName(slotRawSymbol(&scObject_->classptr->name)->name) {
+    _scClassName(QString::fromUtf8(slotRawSymbol(&scObject_->classptr->name)->name,
+                                   slotRawSymbol(&scObject_->classptr->name)->length)) {
     ProxyToken* token = new ProxyToken(this, qObject);
     // WARNING: make sure the signal is already in normalized signature,
     // to avoid triggering very expensive normalization!

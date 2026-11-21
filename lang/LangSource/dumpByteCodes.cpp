@@ -39,7 +39,6 @@ unsigned char* dumpOneByteCode(PyrBlock* theBlock, PyrClass* theClass, unsigned 
     PyrBlock* block;
     PyrSlot* slot;
     PyrSymbol* selector;
-    char str[256];
     std::int64_t op1, op2, op3, op4, op5;
     std::int64_t i, n, ival, jmplen;
     std::int64_t numArgNames, numVarNames, numTemps;
@@ -115,8 +114,7 @@ unsigned char* dumpOneByteCode(PyrBlock* theBlock, PyrClass* theClass, unsigned 
         op2 = *ip++; // get literal index
         // push a block if it is one
         slot = slotRawObject(&theBlock->selectors)->slots + op2;
-        slotString(slot, str);
-        post(" %02X    PushLiteralX %s\n", op2, str);
+        post(" %02X    PushLiteralX %s\n", op2, slotString(slot).c_str());
         break;
     case 5: // Extended, PushClassVar
         op2 = *ip++; // get class var literal index
@@ -260,8 +258,7 @@ unsigned char* dumpOneByteCode(PyrBlock* theBlock, PyrClass* theClass, unsigned 
         op5 = *ip++;
         ival = op5;
         slot = slotRawObject(&theBlock->constants)->slots + ival;
-        slotString(slot, str);
-        post(" %02X    PushConstant %s\n", op5, str);
+        post(" %02X    PushConstant %s\n", op5, slotString(slot).c_str());
         break;
 
     case 41:
@@ -269,8 +266,7 @@ unsigned char* dumpOneByteCode(PyrBlock* theBlock, PyrClass* theClass, unsigned 
         op5 = *ip++;
         ival = (op4 << 8) | op5;
         slot = slotRawObject(&theBlock->constants)->slots + ival;
-        slotString(slot, str);
-        post(" %02X %02X PushConstant %s\n", op4, op5, str);
+        post(" %02X %02X PushConstant %s\n", op4, op5, slotString(slot).c_str());
         break;
 
     case 42:
@@ -279,8 +275,7 @@ unsigned char* dumpOneByteCode(PyrBlock* theBlock, PyrClass* theClass, unsigned 
         op5 = *ip++;
         ival = (op3 << 16) | (op4 << 8) | op5;
         slot = slotRawObject(&theBlock->constants)->slots + ival;
-        slotString(slot, str);
-        post(" %02X %02X %02X PushConstant %s\n", op3, op4, op5, str);
+        post(" %02X %02X %02X PushConstant %s\n", op3, op4, op5, slotString(slot).c_str());
         break;
 
     case 43:
@@ -290,8 +285,7 @@ unsigned char* dumpOneByteCode(PyrBlock* theBlock, PyrClass* theClass, unsigned 
         op5 = *ip++;
         ival = (op2 << 24) | (op3 << 16) | (op4 << 8) | op5;
         slot = slotRawObject(&theBlock->constants)->slots + ival;
-        slotString(slot, str);
-        post(" %02X %02X %02X %02X PushConstant %s\n", op2, op3, op4, op5, str);
+        post(" %02X %02X %02X %02X PushConstant %s\n", op2, op3, op4, op5, slotString(slot).c_str());
         break;
 
     case 44:
@@ -373,8 +367,7 @@ unsigned char* dumpOneByteCode(PyrBlock* theBlock, PyrClass* theClass, unsigned 
     case 79:
         op2 = op1 & 15; // get temp var level
         slot = slotRawObject(&theBlock->constants)->slots + op2;
-        slotString(slot, str);
-        post("       PushLiteral %s\n", str);
+        post("       PushLiteral %s\n", slotString(slot).c_str());
         break;
 
     //	PushClassVar

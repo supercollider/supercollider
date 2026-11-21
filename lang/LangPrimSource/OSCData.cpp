@@ -122,7 +122,7 @@ static int addMsgSlot(big_scpacket* packet, PyrSlot* slot) {
         packet->addi(slotRawInt(slot));
         break;
     case tagSym:
-        packet->adds(slotRawSymbol(slot)->name);
+        packet->adds(slotRawSymbol(slot)->view());
         break;
     case tagObj:
         if (isKindOf(slotRawObject(slot), class_string)) {
@@ -168,7 +168,7 @@ static int addMsgSlotWithTags(big_scpacket* packet, PyrSlot* slot) {
         break;
     case tagSym:
         packet->addtag('s');
-        packet->adds(slotRawSymbol(slot)->name);
+        packet->adds(slotRawSymbol(slot)->view());
         break;
     case tagObj:
         if (isKindOf(slotRawObject(slot), class_string)) {
@@ -231,7 +231,7 @@ static int makeSynthMsgWithTags(big_scpacket* packet, PyrSlot* slots, int size) 
     // For convenience, we allow the user to omit the initial '/', when
     //  expressing it as a symbol (e.g. \g_new) - we add it back on here, for OSC compliance.
     if (GetTag(slots) == tagSym && slotRawSymbol(slots)->name[0] != '/') {
-        packet->adds_slpre(slotRawSymbol(slots)->name);
+        packet->adds_slpre(slotRawSymbol(slots)->view());
     } else {
         int error = addMsgSlot(packet, slots);
         if (error != errNone)

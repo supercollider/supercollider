@@ -22,7 +22,9 @@
 
 #include <functional>
 #include <algorithm>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <cstdint>
 #include <type_traits>
 #include <cassert>
@@ -655,17 +657,18 @@ extern PyrSymbol* s_this; // "this"
 extern PyrSymbol* s_super; // "super"
 
 void dumpPyrSlot(PyrSlot* slot);
-void slotString(PyrSlot* slot, char* str);
-void slotOneWord(PyrSlot* slot, char* str);
-bool postString(PyrSlot* slot, char* str);
+[[nodiscard]] std::string slotString(PyrSlot* slot);
+[[nodiscard]] std::string slotOneWord(PyrSlot* slot);
+// Returns nothing for symbols and for objects other than classes, methods, functions, and frames.
+[[nodiscard]] std::optional<std::string> postString(PyrSlot* slot);
 [[nodiscard]] const char* slotSymString(PyrSlot* slot);
 [[nodiscard]] int asCompileString(PyrSlot* slot, char* str);
 
 [[nodiscard]] int slotStrVal(PyrSlot* slot, char* str, size_t maxlen);
 [[nodiscard]] std::tuple<int, std::string> slotStdStrVal(PyrSlot* slot);
+[[nodiscard]] std::tuple<int, std::string_view> slotStrViewVal(PyrSlot* slot);
 [[nodiscard]] std::tuple<int, std::string> slotStrStdStrVal(PyrSlot* slot);
 [[nodiscard]] int slotStrLen(PyrSlot* slot) noexcept;
-[[nodiscard]] int slotPStrVal(PyrSlot* slot, unsigned char* str);
 
 template <typename numeric_type> inline void setSlotVal(PyrSlot* slot, numeric_type value) noexcept;
 template <> inline void setSlotVal<int>(PyrSlot* slot, int value) noexcept { SetInt(slot, value); }
