@@ -3,10 +3,11 @@
 (
 s = Server.default;
 
-Routine.run {var c; c = Condition.new; s.bootSync(c);
+Routine.run {
+	var c; c = Condition.new; s.bootSync(c);
 
 (
-	SynthDef('infOrgan',{
+	SynthDef('infOrgan', {
 		arg outBus=0, pitch=50, amp=1.0;
 		var out;
 		pitch = pitch + LFNoise1.kr(1000, 0.02);
@@ -50,7 +51,7 @@ Routine.run {var c; c = Condition.new; s.bootSync(c);
 	~clock.schedAbs(~clock.beats.floor + 1, {
 		~msg = List.new;
 
-		12.do{|i|
+		12.do {|i|
 			var pitch, amp, syn;
 			pitch = ~seq.wrapAt(~i) + (i*12);
 			syn = Synth.basicNew('infOrgan');
@@ -60,7 +61,7 @@ Routine.run {var c; c = Condition.new; s.bootSync(c);
 			~msg.add( syn.newMsg(~group, ['pitch', pitch, 'amp', amp, 'outBus', 0]) );
 		};
 
-		6.do{|i|
+		6.do {|i|
 			var pitch, amp, syn;
 			pitch = ~seq2.wrapAt(~i) + (i*12) + 48;
 			syn = Synth.basicNew('infOrgan');
@@ -70,7 +71,7 @@ Routine.run {var c; c = Condition.new; s.bootSync(c);
 			~msg.add( syn.newMsg(~group, ['pitch', pitch, 'amp', amp, 'outBus', 0]));
 		};
 
-		~msg !? {s.listSendBundle(s.latency, ~msg)};
+		~msg !? { s.listSendBundle(s.latency, ~msg) };
 		~i = ~i+1;
 		(1/4)
 	});
