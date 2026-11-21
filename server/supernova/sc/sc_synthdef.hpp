@@ -80,8 +80,15 @@ public:
         std::vector<int32_t, boost::alignment::aligned_allocator<int32_t, 64>> buffer_mapping;
 
         std::size_t memory_requirement() const {
-            return input_specs.size() * (sizeof(Wire*) + sizeof(float*))
-                + output_specs.size() * (sizeof(Wire*) + sizeof(float*)) + output_specs.size() * sizeof(Wire);
+            // All arrays have the same alignment. Since they are allocated immediately after the Unit,
+            // which has at least the same alignment requirement, no extra memory is needed for alignment.
+            // See also sc_ugen_factory::construct().
+            static_assert(alignof(Wire) == alignof(float*), "alignment error");
+            // Wire** mInput + float** mInBuf
+            const auto input_size = input_specs.size() * (sizeof(Wire*) + sizeof(float*));
+            // Wire** mOutput + float** mOutBuf + Wire array
+            const auto output_size = output_specs.size() * (sizeof(Wire*) + sizeof(float*) + sizeof(Wire));
+            return input_size + output_size;
         }
 
         class sc_ugen_def* prototype;
@@ -127,11 +134,13 @@ private:
     float_vector parameters;
     parameter_index_map_t parameter_map;
 
-    int32_t block_size; /**< Synth block size. 0 = same as Server. -1 = take from control */
-    uint32_t block_size_index; /**< control index for block size */
+    int32_t block_size; /**< Synth block size. 0 = same as Server. */
+    uint32_t block_size_index; /**< control index for block size. Not used yet. */
 
-    float resample_factor; /**< resample factor. 1.0 = no resampling. -1.0 = take from control */
-    uint32_t resample_index; /**< control index for resample factor */
+    float resample_factor; /**< resample factor. 1.0 or 0.0 = no resampling. */
+    uint32_t resample_index; /**< control index for resample factor. Not used yet. */
+
+    bool reblock_or_resample = false;
 
     graph_t graph;
     unsigned int buffer_count;

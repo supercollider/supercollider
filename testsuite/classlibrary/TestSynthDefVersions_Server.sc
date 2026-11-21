@@ -27,15 +27,15 @@ TestSynthDefVersions_Server : UnitTest {
 		// write version 1
 		stream = CollStream.on(Int8Array.new(256));
 		defArray1.writeDefOld(stream);
-		compiledDefs = compiledDefs.add(1).add(stream.collection);
+		compiledDefs = compiledDefs.add([ 1, stream.collection ]);
 		// write version 2
 		stream = CollStream.on(Int8Array.new(256));
 		defArray2.writeDef(stream, 2);
-		compiledDefs = compiledDefs.add(2).add(stream.collection);
+		compiledDefs = compiledDefs.add([ 2, stream.collection ]);
 		// write version 3
 		stream = CollStream.on(Int8Array.new(256));
 		defArray3.writeDef(stream, 3);
-		compiledDefs = compiledDefs.add(3).add(stream.collection);
+		compiledDefs = compiledDefs.add([ 3, stream.collection ]);
 	}
 
 	// helper method
@@ -44,7 +44,8 @@ TestSynthDefVersions_Server : UnitTest {
 
 		this.bootServer(server);
 
-		compiledDefs.pairsDo { |version, bytes|
+		compiledDefs.do { |item|
+			var version = item[0], bytes = item[1];
 			var cond = Condition();
 			// use a fresh pair of control busses for each def
 			var ctlBus = Bus.control(server, 2);
@@ -99,7 +100,8 @@ TestSynthDefVersions_Server : UnitTest {
 
 		this.bootServer(server);
 
-		compiledDefs.pairsDo { |version, data|
+		compiledDefs.do { |item|
+			var version = item[0], data = item[1];
 			var stream, cond = Condition();
 			data = data.copy; // !
 			// remove the last 4 bytes

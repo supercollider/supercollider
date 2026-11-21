@@ -22,8 +22,8 @@
 #pragma once
 
 #include "SC_Types.h"
-#include <stdio.h>
-#include <string.h>
+#include <cstring>
+#include <cstdio>
 #include <stdexcept>
 
 inline int8 readInt8(FILE* file) { return (int8)fgetc(file); }
@@ -49,13 +49,11 @@ inline int32 readInt32_be(FILE* file) {
 }
 
 inline float readFloat_be(FILE* file) {
-    union {
-        float f;
-        int32 i;
-    } u;
-    u.i = readInt32_be(file);
-    // post("readFloat %g\n", u.f);
-    return u.f;
+    int32 i = readInt32_be(file);
+    float f;
+    static_assert(sizeof(i) == sizeof(f), "size mismatche");
+    std::memcpy(&f, &i, sizeof(f));
+    return f;
 }
 
 inline void readData(FILE* file, char* outData, size_t inLength) {
@@ -102,13 +100,11 @@ inline int32 readInt32_be(const char*& buf, const char* end) {
 }
 
 inline float readFloat_be(const char*& buf, const char* end) {
-    union {
-        float f;
-        int32 i;
-    } u;
-    u.i = readInt32_be(buf, end);
-    // post("readFloat %g\n", u.f);
-    return u.f;
+    int32 i = readInt32_be(buf, end);
+    float f;
+    static_assert(sizeof(i) == sizeof(f), "size mismatche");
+    std::memcpy(&f, &i, sizeof(f));
+    return f;
 }
 
 inline void readData(const char*& buf, const char* end, char* outData, size_t inLength) {

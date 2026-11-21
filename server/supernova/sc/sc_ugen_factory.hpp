@@ -33,6 +33,8 @@
 
 #include "utilities/named_hash_entry.hpp"
 
+#include "sc_linear_allocator.hpp"
+
 class ServerProgramOptions;
 
 namespace nova {
@@ -68,6 +70,9 @@ private:
     unitcmd_set_type unitcmd_set;
 
 public:
+    // align to cache line boundaries
+    static constexpr size_t alignment = 64;
+
     sc_ugen_def(const char* inUnitClassName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor,
                 uint32 inFlags):
         named_hash_entry(inUnitClassName),
@@ -78,7 +83,7 @@ public:
         unitcmd_set(unitcmd_set_type::bucket_traits(unitcmd_set_buckets, unitcmd_set_bucket_count)) {}
 
     Unit* construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth* parent, int parentIndex, World* world,
-                    linear_allocator& allocator);
+                    sc::linear_allocator& allocator);
 
     void initialize(Unit* unit) { (*ctor)(unit); }
 
@@ -90,7 +95,7 @@ public:
     bool cant_alias() const { return flags & kUnitDef_CantAliasInputsToOutputs; }
 
     std::size_t memory_requirement() const {
-        return alloc_size + 64; // overallocate to allow alignment
+        return alloc_size + alignment; // overallocate to allow alignment
     }
 
     template <typename Func> bool add_command(const char* cmd_name, Func func) {

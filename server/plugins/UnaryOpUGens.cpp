@@ -21,7 +21,7 @@
 
 #include "SC_PlugIn.h"
 
-#include <boost/align/is_aligned.hpp>
+#include "sc_align.hpp"
 
 #ifdef NOVA_SIMD
 #    include "simd_unary_arithmetic.hpp"
@@ -1311,7 +1311,7 @@ bool ChooseOperatorFunc(UnaryOpUGen* unit) {
     } else if (BUFLENGTH == 1) {
         func = ChooseOneFunc(unit);
 #if defined(NOVA_SIMD)
-    } else if (boost::alignment::is_aligned(BUFLENGTH, 16)) {
+    } else if (sc::is_aligned(BUFLENGTH, 16)) {
         /* select normal function for initialization */
         func = ChooseNormalFunc(unit);
         func(unit, 1);

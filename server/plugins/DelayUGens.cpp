@@ -25,7 +25,7 @@
 #include "SC_PlugIn.h"
 #include <cstdio>
 
-#include <boost/align/is_aligned.hpp>
+#include "sc_align.hpp"
 
 
 const int kMAXMEDIANSIZE = 32;
@@ -3570,7 +3570,7 @@ static bool DelayUnit_init_0(DelayUnit* unit) {
         if (ZIN(0) == ZOUT(0))
             SETCALC(Delay_next_0_nop);
 #ifdef NOVA_SIMD
-        else if (boost::alignment::is_aligned(BUFLENGTH, 16))
+        else if (sc::is_aligned(BUFLENGTH, 16))
             SETCALC(Delay_next_0_nova);
 #endif
         else

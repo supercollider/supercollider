@@ -30,14 +30,24 @@
 #include "SC_Unit.h"
 #include "SC_UnitDef.h"
 #include "SC_World.h"
+#include "SC_WorldOptions.h"
 #include "sc_msg_iter.h"
+#include "sc_align.hpp"
 
 extern int gMissingNodeID;
 
 SCBool UnitDef_Create(const char* inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor,
                       uint32 inFlags) {
-    if (strlen(inName) >= kSCNameByteLen)
+    if (strlen(inName) >= kSCNameByteLen) {
+        scprintf("ERROR: DefineUnit: name too long\n");
         return false;
+    }
+
+    // A UGen class must meet the alignment requirement of the Unit "base class".
+    if (!sc::is_aligned(inAllocSize, alignof(Unit))) {
+        scprintf("ERROR: DefineUnit: bad alloc size (%d)\n", inAllocSize);
+        return false;
+    }
 
     UnitDef* unitDef = (UnitDef*)malloc(sizeof(UnitDef));
     if (!unitDef)

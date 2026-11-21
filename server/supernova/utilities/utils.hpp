@@ -41,14 +41,7 @@ namespace nova {
 using boost::intrusive_ptr;
 
 /* some basic math functions */
-inline bool ispoweroftwo(int i) { return (i & (i - 1)) == 0; }
-
-
-template <unsigned int n> struct is_power_of_two {
-    static const bool val = (n % 2 == 0) && (is_power_of_two<(n >> 1)>::val);
-};
-
-template <> struct is_power_of_two<2> { static const bool val = true; };
+inline constexpr bool ispoweroftwo(int i) { return i > 0 && (i & (i - 1)) == 0; }
 
 inline int log2(int n) {
     if (unlikely(n <= 0))
@@ -66,7 +59,7 @@ inline int log2(int n) {
 #endif
 }
 
-inline int nextpoweroftwo(int n) {
+inline constexpr int nextpoweroftwo(int n) {
     n = n - 1;
     const uint bitspace = sizeof(int) * 8 / 2;
     for (uint i = 1; i != bitspace; i *= 2)
@@ -75,7 +68,6 @@ inline int nextpoweroftwo(int n) {
     return n + 1;
 }
 
-using std::size_t;
 
 /** \brief base class for a callback function */
 template <typename t> class runnable {
@@ -140,18 +132,5 @@ PURE inline std::size_t string_hash(const char* str) {
 
     return ret;
 }
-
-struct linear_allocator {
-    linear_allocator(char* chunk): chunk(chunk) {}
-
-    template <typename T> T* alloc(int count = 1) {
-        T* ret = reinterpret_cast<T*>(chunk);
-        chunk += count * sizeof(T);
-        return ret;
-    }
-
-private:
-    char* chunk;
-};
 
 } /* namespace nova */

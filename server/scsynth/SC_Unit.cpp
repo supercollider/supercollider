@@ -19,8 +19,6 @@
 */
 
 
-#include <stdio.h>
-#include "SC_Endian.h"
 #include "SC_Graph.h"
 #include "SC_Unit.h"
 #include "SC_UnitSpec.h"
@@ -29,32 +27,28 @@
 #include "SC_Wire.h"
 #include "Unroll.h"
 #include "SC_Prototypes.h"
+#include "sc_linear_allocator.hpp"
 
-void Unit_ChooseMulAddFunc(Unit* unit);
-
-Unit* Unit_New(World* inWorld, Graph* graph, UnitSpec* inUnitSpec, char*& memory) {
+Unit* Unit_New(World* inWorld, Graph* graph, UnitSpec* inUnitSpec, sc::linear_allocator& alloc) {
     UnitDef* def = inUnitSpec->mUnitDef;
 
-    Unit* unit = (Unit*)memory;
-    memory += def->mAllocSize;
+    char* mem = alloc.alloc_aligned<char>(def->mAllocSize, alignof(Unit));
+    assert(mem != nullptr);
+    Unit* unit = reinterpret_cast<Unit*>(mem);
 
     unit->mWorld = inWorld;
     unit->mUnitDef = def;
 
     uint32 numInputs = inUnitSpec->mNumInputs;
     uint32 numOutputs = inUnitSpec->mNumOutputs;
+    uint32 numPorts = numInputs + numOutputs;
     unit->mNumInputs = numInputs;
     unit->mNumOutputs = numOutputs;
-    uint64 numPorts = numInputs + numOutputs;
 
-    unit->mInput = (Wire**)memory;
-    memory += numPorts * sizeof(Wire*);
-
+    unit->mInput = alloc.alloc<Wire*>(numPorts);
     unit->mOutput = unit->mInput + numInputs;
 
-    unit->mInBuf = (float**)memory;
-    memory += numPorts * sizeof(float*);
-
+    unit->mInBuf = alloc.alloc<float*>(numPorts);
     unit->mOutBuf = unit->mInBuf + numInputs;
 
     unit->mCalcRate = inUnitSpec->mCalcRate;
