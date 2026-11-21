@@ -657,7 +657,7 @@ div#search_box {
     border: 1px solid var(--color-fg-200);
     margin-left: 0.5em;
 }
-div#search_count {
+div.search_count {
     border-bottom: 2px solid var(--color-fg-200);
     color: var(--color-fg-400);
 }
@@ -867,4 +867,75 @@ div.met_subclasses a.seemore {
         opacity: 0;
         visibility: hidden;
     }
+}
+
+#search_tabs {
+    display: flex;
+    gap: 0.25em;
+    margin-top: 1em;
+    border-bottom: 1px solid var(--color-fg-200);
+}
+#search_tabs button {
+    font: inherit;
+    color: var(--color-fg-300);
+    background: none;
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    padding: 0.4em 1em;
+    margin-bottom: -1px;
+    cursor: pointer;
+}
+#search_tabs button:hover {
+    color: var(--color-fg);
+}
+#search_tabs button[aria-selected="true"] {
+    color: var(--color-fg);
+    background: var(--color-bg);
+    border-color: var(--color-fg-200);
+    font-weight: bold;
+}
+.search_tab_count {
+    font-weight: normal;
+    color: var(--color-fg-200);
+}
+
+#search_checks0 label {
+    margin-right: 1em;
+}
+#search_status {
+    margin: 1em 0;
+    color: var(--color-fg-300);
+}
+#search_status.fts_error {
+    color: var(--color-warning-fg);
+}
+div.fts_doc {
+    margin-top: 1.2em;
+}
+div.fts_doc_title {
+    font-weight: bold;
+}
+span.fts_summary {
+    font-weight: normal;
+    color: var(--color-fg-300);
+}
+div.fts_section {
+    margin-left: 1.5em;
+    margin-top: 0.4em;
+}
+div.fts_teaser {
+    font-size: 9.5pt;
+    color: var(--color-fg-400);
+}
+a.fts_show_more {
+    display: block;
+    margin-left: 1.5em;
+    margin-top: 0.4em;
+    font-size: 9pt;
+}
+/* search terms in results and on pages opened from the results; themes can set the colors */
+mark {
+    background: var(--color-highlight-bg, #ffd54a);
+    color: var(--color-highlight-fg, #000);
 }
