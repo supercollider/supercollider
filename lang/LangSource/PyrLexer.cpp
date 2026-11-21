@@ -735,13 +735,13 @@ int yylex() {
 
             return static_cast<int>(*convert_to_bison_tokentype(o.type));
         } else {
-            const auto [str, type] = mkLexingDiagnostic(*bison_cxt->textInfo.get(), o);
+            auto [str, type] = mkLexingDiagnostic(*bison_cxt->textInfo.get(), o);
             if (type == ErrorType::Error) {
-                bison_cxt->postError(str);
+                bison_cxt->logError(std::move(str));
                 return static_cast<int>(YYerror); // This suppresses the printing of the error message that the parse
                                                   // generates because we have already printed one.
             } else {
-                bison_cxt->postWarning(str);
+                bison_cxt->logWarning(std::move(str));
                 return yylex(); // Recursion, try next token.
             }
         }
@@ -1138,21 +1138,22 @@ struct ClassExtentionFile {
     sc::lex::SourceCodeLocation start;
 };
 
-bool compile(CompilerContext& cxt) {
-    const auto on_parse_success = [&](PyrRootNode& root) {
-        // Prints errors for us.
-        // TODO: this would be nicer if it returned diagnostics
-        compileNodeList(cxt, &root, true);
-        return cxt.errors == 0;
+
+std::tuple<bool, size_t> compile(CompilerContext& cxt) {
+    const auto on_parse_success = [&](CompilerContext& cxt) -> std::tuple<bool, size_t> {
+        assert(cxt.root);
+        compileNodeList(cxt, cxt.root, true);
+        for (const auto& diagnostic : cxt.diagnostics) {
+            ::postText(diagnostic.text.c_str(), diagnostic.text.size());
+        }
+        return { cxt.errors == 0, cxt.diagnostics.size() };
     };
 
-    const auto on_parse_failure = [&](const std::vector<CompilerContext::ParseErrorInCurFile>& errors, int error_code) {
-        for (const auto& error : errors) {
-            const auto highlight = cxt.textInfo->createDiagnosticHighlight(error.location, std::string { error.msg });
-            const auto str = diagnosticToCompilerError(ErrorType::Error, "parse error", &highlight, 1);
-            cxt.postError(str.c_str(), error.versionOfError);
+    const auto on_parse_failure = [&](CompilerContext& cxt) -> std::tuple<bool, size_t> {
+        for (const auto& diagnostic : cxt.diagnostics) {
+            ::postText(diagnostic.text.c_str(), diagnostic.text.size());
         }
-        return false;
+        return { false, cxt.diagnostics.size() };
     };
 
 
@@ -1161,14 +1162,12 @@ bool compile(CompilerContext& cxt) {
 
 std::tuple<bool, std::size_t> compile(const ClassDependency& dep) {
     CompilerContext cxt { dep.textInfo, {}, dep.range, nullptr };
-    const auto r = compile(cxt);
-    return { r, cxt.thingsPosted };
+    return compile(cxt);
 }
 
 std::tuple<bool, std::size_t> compile(const ClassExtentionFile& ext) {
     CompilerContext cxt { ext.textInfo, {}, ext.start, nullptr };
-    const auto r = compile(cxt);
-    return { r, cxt.thingsPosted };
+    return compile(cxt);
 }
 
 

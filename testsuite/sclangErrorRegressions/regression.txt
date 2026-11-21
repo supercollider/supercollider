@@ -1,5 +1,5 @@
 ────────────────────────────────────────────────────────────────────────────────
-ERROR: Integer does not understand the message 'meow'.
+ERROR: DoesNotUnderstandError Integer does not understand the message 'meow'.
 
 14  : Anonymous Function
 		file:/
@@ -69,7 +69,6 @@ ERROR: Integer does not understand the message 'meow'.
 		│         } {
 		│             this.performArgs(\doesNotUnderstandErrorMethodImpl,[ i - 1], kwargs)
 		│         }
-
 Messages with a similar name understood by the receiver:
   geom
   mod
@@ -77,7 +76,7 @@ Messages with a similar name understood by the receiver:
 ────────────────────────────────────────────────────────────────────────────────
 
 ────────────────────────────────────────────────────────────────────────────────
-ERROR: Integer does not understand the message 'meow'.
+ERROR: DoesNotUnderstandError Integer does not understand the message 'meow'.
 
 14  : Anonymous Function
 		file:/
@@ -147,7 +146,6 @@ ERROR: Integer does not understand the message 'meow'.
 		│             } {
 		│                 f.performArgs(\value,[ i - 1], kwargs)
 		│             }
-
 Messages with a similar name understood by the receiver:
   geom
   mod
@@ -155,7 +153,7 @@ Messages with a similar name understood by the receiver:
 ────────────────────────────────────────────────────────────────────────────────
 
 ────────────────────────────────────────────────────────────────────────────────
-ERROR: This is a test error
+ERROR: Error This is a test error
 
 3   : Anonymous Function
 		file:/
@@ -185,16 +183,14 @@ ERROR: This is a test error
 		│     }
 		│ 
 		│     *errorWrapper {
-
 This is a test error
 
 ────────────────────────────────────────────────────────────────────────────────
 
 ────────────────────────────────────────────────────────────────────────────────
-ERROR: Wrapping some error
-
+ERROR: ErrorWrapper Wrapping some error
     ────────────────────────────────────────────────────────────────────────────────
-    ERROR: some other error
+    ERROR: Error some other error
 
     1   : Anonymous Function
 		file:/
@@ -205,8 +201,7 @@ ERROR: Wrapping some error
 		│         } { |er|
 		│             ErrorWrapper(er, "Wrapping some error").throw
 		│         }
-
-        some other error
+    some other error
 
     ────────────────────────────────────────────────────────────────────────────────
 
@@ -225,7 +220,7 @@ Wrapping some error
 ────────────────────────────────────────────────────────────────────────────────
 
 ────────────────────────────────────────────────────────────────────────────────
-ERROR: Non boolean in test 
+ERROR: MustBeBooleanError Non boolean in test 
 
 3   : Anonymous Function
 		file:/
@@ -255,13 +250,12 @@ ERROR: Non boolean in test
 		│     }
 		│ 
 		│     *notYetImplementedError {
-
 Non boolean in test 
 
 ────────────────────────────────────────────────────────────────────────────────
 
 ────────────────────────────────────────────────────────────────────────────────
-ERROR: Not yet implemented
+ERROR: NotYetImplementedError Not yet implemented
 
 3   : Anonymous Function
 		file:/
@@ -291,13 +285,12 @@ ERROR: Not yet implemented
 		│     }
 		│ 
 		│     *immutable {
-
 Not yet implemented
 
 ────────────────────────────────────────────────────────────────────────────────
 
 ────────────────────────────────────────────────────────────────────────────────
-ERROR: Primitive '_BasicPut' failed with message : 'Attempted write to immutable object.'.
+ERROR: PrimitiveFailedError Primitive '_BasicPut' failed with message : 'Attempted write to immutable object.'.
 
 4   : Anonymous Function
 		file:/
@@ -338,13 +331,12 @@ ERROR: Primitive '_BasicPut' failed with message : 'Attempted write to immutable
 		│ 	}
 		│ 	clipPut { arg index, item;
 		│ 		_BasicClipPut;
-
 Primitive '_BasicPut' failed with message : 'Attempted write to immutable object.'.
 
 ────────────────────────────────────────────────────────────────────────────────
 
 ────────────────────────────────────────────────────────────────────────────────
-ERROR: 'subclassResponsibilityError' should have been implemented by Meta_ErrorGenerator.
+ERROR: Meta_ErrorGenerator 'subclassResponsibilityError' should have been implemented by Meta_ErrorGenerator.
 
 3   : Anonymous Function
 		file:/
@@ -374,13 +366,12 @@ ERROR: 'subclassResponsibilityError' should have been implemented by Meta_ErrorG
 		│     }
 		│ 
 		│     *shouldNotImplementError {
-
 'subclassResponsibilityError' should have been implemented by Meta_ErrorGenerator.
 
 ────────────────────────────────────────────────────────────────────────────────
 
 ────────────────────────────────────────────────────────────────────────────────
-ERROR: 'Meta_ErrorGenerator-shouldNotImplementError' is not a valid message for the subclass 'Meta_ErrorGenerator'
+ERROR: Meta_ErrorGenerator 'Meta_ErrorGenerator-shouldNotImplementError' is not a valid message for the subclass 'Meta_ErrorGenerator'
 
 3   : Anonymous Function
 		file:/
@@ -410,13 +401,12 @@ ERROR: 'Meta_ErrorGenerator-shouldNotImplementError' is not a valid message for 
 		│     }
 		│ 
 		│     // leave these unset to throw an error
-
 'Meta_ErrorGenerator-shouldNotImplementError' is not a valid message for the subclass 'Meta_ErrorGenerator'
 
 ────────────────────────────────────────────────────────────────────────────────
 
 ────────────────────────────────────────────────────────────────────────────────
-ERROR: slot printing test
+ERROR: Error slot printing test
 
 3   : Anonymous Function
 		file:/
@@ -447,13 +437,12 @@ ERROR: slot printing test
 		│ 		};
 		│ 
 		│ 		f.();
-
 slot printing test
 
 ────────────────────────────────────────────────────────────────────────────────
 
 ────────────────────────────────────────────────────────────────────────────────
-ERROR: Here is an error
+ERROR: Error Here is an error
 
 2   : Anonymous Function
 		file:/
@@ -473,22 +462,18 @@ ERROR: Here is an error
 		│ 		};
 		│ 
 		│ 		var catcher = { |f|
-
 Here is an error
 
 ────────────────────────────────────────────────────────────────────────────────
 
 ────────────────────────────────────────────────────────────────────────────────
-ERROR: rethrowing from 2
-
+ERROR: ErrorWrapper rethrowing from 2
     ────────────────────────────────────────────────────────────────────────────────
-    ERROR: rethrowing from 1
-
+    ERROR: ErrorWrapper rethrowing from 1
+        ────────────────────────────────────────────────────────────────────────────────
+        ERROR: ErrorWrapper rethrowing from 0
             ────────────────────────────────────────────────────────────────────────────────
-        ERROR: rethrowing from 0
-
-                    ────────────────────────────────────────────────────────────────────────────────
-            ERROR: Here is an error
+            ERROR: Error Here is an error
 
             2   : Anonymous Function
 		file:/
@@ -508,8 +493,7 @@ ERROR: rethrowing from 2
 		│ 		};
 		│ 
 		│ 
-
-                        Here is an error
+            Here is an error
 
             ────────────────────────────────────────────────────────────────────────────────
 
@@ -553,5 +537,126 @@ ERROR: rethrowing from 2
 		│ 
 rethrowing from 2
 
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: CompilerError 
+
+3   : Anonymous Function
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
+2   : Anonymous Function
+		file:/
+		│ 
+		│ 
+		│ 	catch.value { "var a".compile };
+		┆ 	                     ^^^^^^^^ 
+		│ 	catch.value { "1 + 2()".compile };
+		│ 	catch.value { "[)".compile };
+		│ 
+1   : Method Name: 'String-compile'
+       args: this="var a"
+		file:/
+		│ 	}
+		│ 
+		│ 	compile { ^thisProcess.interpreter.compile(this); }
+		┆ 	           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 	interpret { ^thisProcess.interpreter.interpret(this); }
+		│ 	interpretPrint { ^thisProcess.interpreter.interpretPrint(this); }
+		│ 
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: Parsing error
+		file:/
+		│ var a
+		┆       syntax error, unexpected end of file, expecting SEMICOLON or COMMA
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: CompilerError 
+
+3   : Anonymous Function
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
+2   : Anonymous Function
+		file:/
+		│ 
+		│ 	catch.value { "var a".compile };
+		│ 	catch.value { "1 + 2()".compile };
+		┆ 	                       ^^^^^^^^ 
+		│ 	catch.value { "[)".compile };
+		│ 
+		│ 	stream
+1   : Method Name: 'String-compile'
+       args: this="1 + 2()"
+		file:/
+		│ 	}
+		│ 
+		│ 	compile { ^thisProcess.interpreter.compile(this); }
+		┆ 	           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 	interpret { ^thisProcess.interpreter.interpret(this); }
+		│ 	interpretPrint { ^thisProcess.interpreter.interpretPrint(this); }
+		│ 
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: Parsing error
+		file:/
+		│ 1 + 2()
+		┆      ^ syntax error, unexpected OPENPAREN, expecting end of file
+────────────────────────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: CompilerError 
+
+3   : Anonymous Function
+		file:/
+		│ 	var catch = { |action|
+		│ 		try {
+		│ 			action.()
+		┆ 			^^^^^^^^^ 
+		│ 		} { |er|
+		│ 			er.reportError(stream);
+		│ 			stream << "\n";
+2   : Anonymous Function
+		file:/
+		│ 	catch.value { "var a".compile };
+		│ 	catch.value { "1 + 2()".compile };
+		│ 	catch.value { "[)".compile };
+		┆ 	                  ^^^^^^^^ 
+		│ 
+		│ 	stream
+		│ };
+1   : Method Name: 'String-compile'
+       args: this="[)"
+		file:/
+		│ 	}
+		│ 
+		│ 	compile { ^thisProcess.interpreter.compile(this); }
+		┆ 	           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+		│ 	interpret { ^thisProcess.interpreter.interpret(this); }
+		│ 	interpretPrint { ^thisProcess.interpreter.interpretPrint(this); }
+		│ 
+
+────────────────────────────────────────────────────────────────────────────────
+ERROR: Square bracket mismatch.
+		file:/
+		│ [)
+		┆ ^ Square bracket opened here...
+
+		file:/
+		│ [)
+		┆  ^ ...was expected to be closed here.
 ────────────────────────────────────────────────────────────────────────────────
 

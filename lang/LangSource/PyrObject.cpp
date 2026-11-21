@@ -1404,8 +1404,9 @@ void initClasses() {
     addIntrinsicVar(class_process, "nowExecutingPath", &o_nil);
     addIntrinsicClassVar(class_process, "initializedClassesOkay", &o_false);
 
-    class_interpreter = makeIntrinsicClass(s_interpreter, s_object, 33, 0);
+    class_interpreter = makeIntrinsicClass(s_interpreter, s_object, 33, 1);
 
+    addIntrinsicClassVar(class_interpreter, "interpretThrows", &o_false);
     addIntrinsicVar(class_interpreter, "cmdLine", &o_nil);
     addIntrinsicVar(class_interpreter, "filePath", &o_nil);
     addIntrinsicVar(class_interpreter, "lineNumber", &o_nil);
