@@ -52,7 +52,17 @@ jobs:
             cxx-compiler: "g++-16"
             use-syslibs: false
             shared-libscsynth: false
-            artifact-suffix: "ubuntu-26.04-gcc16" # will trigger artifact upload; after changing this update the test-linux artifact-file in actions.yml
+            artifact-suffix: "ubuntu-26.04-gcc16" # will trigger artifact upload; after changing this update the test-linux artifact-file in test_linux.yml
+            ctest: true
+
+          - job-name: "with ctest test configuration"
+            os-version: "26.04"
+            c-compiler: "gcc-16"
+            cxx-compiler: "g++-16"
+            use-syslibs: false
+            shared-libscsynth: false
+            artifact-suffix: "ubuntu-26.04-gcc16-test" # will trigger artifact upload; after changing this update the test-linux artifact-file in test_linux.yml
+            extra-cmake-flags: ""
             ctest: true
             
           - job-name: ""
@@ -128,8 +138,8 @@ jobs:
           path: |
             ~/.ccache
             ~/.cache/ccache
-          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ steps.current-date.outputs.stamp }}
-          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.extra-cmake-flags }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.extra-cmake-flags }}-
 
       - name: install dependencies
         run: |
@@ -157,7 +167,7 @@ jobs:
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
-          EXTRA_CMAKE_FLAGS=
+          EXTRA_CMAKE_FLAGS="${{ matrix.extra-cmake-flags }}"
 
           if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON"; fi
 

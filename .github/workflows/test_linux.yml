@@ -9,9 +9,20 @@ on:
 jobs:
   test-linux:
     runs-on: ubuntu-26.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - job-name: "release"
+            artifact-file: "SuperCollider-${{ inputs.sc-version }}-ubuntu-26.04-gcc16"
+
+          - job-name: "test configuration"
+            artifact-file: "SuperCollider-${{ inputs.sc-version }}-ubuntu-26.04-gcc16-test"
+
+    name: test-linux ${{ matrix.job-name }}
     env:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
-      ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-ubuntu-26.04-gcc16"
+      ARTIFACT_FILE: ${{ matrix.artifact-file }}
       TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
       COMPILER_TESTS_PATH: ${{ github.workspace }}/testsuite/classlibraryCompilerErrors
       SCLANG: ${{ github.workspace }}/build/Install/bin/sclang
