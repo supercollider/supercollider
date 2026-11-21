@@ -21,7 +21,7 @@ OSXPlatform : UnixPlatform {
 	}
 
 	startup {
-		Server.program = "exec %/scsynth".format((Platform.resourceDir +/+ "../Resources").shellQuote);
+		Server.program =  Server.program ?? {"exec %/scsynth".format((Platform.resourceDir +/+ "../Resources").shellQuote)};
 
 		Score.program = Server.program;
 
