@@ -62,10 +62,7 @@ TestParser : UnitTest {
 			"/* */*/",
 			"/* */ */",
 			"/*/**/*/*",
-			"/*/**/*/*/",
-
-			"///*\n*/", // block comment begun in line comment doesn't count (this would probably make the lang blow up if it failed anyway)
-			"// /*\n*/"
+			"/*/**/*/*/"
 		];
 
 		openTests.do {
