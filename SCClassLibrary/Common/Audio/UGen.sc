@@ -283,6 +283,25 @@ UGen : AbstractFunction {
 		)
 	}
 
+	k2a { arg ugen;
+		^switch(ugen.rate,
+			\audio, ugen,
+			\control, K2A.kr(ugen),
+			\scalar, DC.ar(ugen)
+		)
+	}
+
+	a2k { arg ugen;
+		^switch(ugen.rate,
+			\audio, A2K.kr(ugen),
+			\control, ugen,
+			\scalar, DC.kr(ugen)
+		)
+	}
+
+	splay2 { ^this ! 2 }
+	scan { arg which; ^this }
+
 	moddif { |that = 0.0, mod = 1.0|
 		^ModDif.multiNew(this.rate, this, that, mod)
 	}
