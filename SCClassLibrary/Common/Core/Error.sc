@@ -89,14 +89,20 @@ Error : Exception { }
 CompilerError : Error {
 	var <>compilerError;
 	var <>showBacktrace = true;
+	// Can all be nil if the compiler can't find these pieces of information.
+	var <>filePath, <>lineNumber, <>column;
 
-	*new {|compilerError|
+	*new {|compilerError, filePath, lineNumber, column|
 		^super.new(
 			"",
 			nil,
 			{|method| method.ownerClass === Interpreter and: {method.name === 'compile'} },
 			{}
-		).compilerError_(compilerError)
+		)
+		.compilerError_(compilerError)
+		.filePath_(filePath)
+		.lineNumber_(lineNumber)
+		.column_(column)
 	}
 
 	reportError { |stream(Post), prefix("")|

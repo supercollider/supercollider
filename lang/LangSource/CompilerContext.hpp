@@ -60,6 +60,14 @@ struct TextInfo {
     [[nodiscard]] std::tuple<const char*, std::size_t> indexIntoSource(sc::lex::SourceCodeRange range) const;
     [[nodiscard]] DiagnosticHighlight createDiagnosticHighlight(sc::lex::SourceCodeRange range,
                                                                 std::string description) const;
+    [[nodiscard]] struct DiagnosticLocation diagnosticLocation(sc::lex::SourceCodeRange range) const;
+};
+
+// Where a diagnostic starts in the file, zero based, using the same convention as the offset passed to the compiler.
+struct DiagnosticLocation {
+    PyrSymbol* filePath;
+    size_t line;
+    size_t column;
 };
 
 // Per file
@@ -84,11 +92,12 @@ struct CompilerContext {
 
     void assignRoot(struct PyrRootNode& ptr);
 
-    void logError(std::string str, std::optional<SemanticVersion> versionOfError = {});
+    void logError(std::string str, std::optional<SemanticVersion> versionOfError = {},
+                  std::optional<DiagnosticLocation> location = {});
     void logErrorInCurrentFile(sc::lex::SourceCodeRange range, const char* generalDescription, std::string description,
                                std::optional<SemanticVersion> versionOfError = {});
 
-    void logWarning(std::string str);
+    void logWarning(std::string str, std::optional<DiagnosticLocation> location = {});
     void logWarningInCurrentFile(sc::lex::SourceCodeRange range, const char* generalDescription,
                                  std::string description);
 
@@ -107,6 +116,7 @@ struct CompilerContext {
     struct Diagnostic {
         std::string text;
         bool isWarning;
+        std::optional<DiagnosticLocation> location;
     };
 
     std::vector<Diagnostic> diagnostics {};

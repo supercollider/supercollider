@@ -30,6 +30,11 @@
     // clang-format on
 }
 
+[[nodiscard]] DiagnosticLocation TextInfo::diagnosticLocation(sc::lex::SourceCodeRange range) const {
+    // The column offset only applies to the first line of the snippet.
+    const auto column = range.begin.line_number == 0 ? offsetInFile.column + range.begin.column : range.begin.column;
+    return { &filePathDescription, offsetInFile.line_number + range.begin.line_number, column };
+}
 
 CompilerContext* bison_cxt { nullptr };
 
@@ -172,7 +177,8 @@ std::tuple<struct PyrParseNode*, intptr_t> CompilerContext::popFromGenerator() {
     return { n, t };
 }
 
-void CompilerContext::logError(std::string str, std::optional<SemanticVersion> versionOfError) {
+void CompilerContext::logError(std::string str, std::optional<SemanticVersion> versionOfError,
+                               std::optional<DiagnosticLocation> location) {
     bool wasWarning = false;
     if (versionOfError && versionOfError >= *versionOfError) {
         ++warnings;
@@ -183,24 +189,24 @@ void CompilerContext::logError(std::string str, std::optional<SemanticVersion> v
     } else
         ++errors;
 
-    diagnostics.push_back({ std::move(str), wasWarning });
+    diagnostics.push_back({ std::move(str), wasWarning, location });
 }
 
 void CompilerContext::logErrorInCurrentFile(sc::lex::SourceCodeRange range, const char* generalDescription,
                                             std::string description, std::optional<SemanticVersion> versionOfError) {
     const auto h = textInfo->createDiagnosticHighlight(range, std::move(description));
     auto str = diagnosticToCompilerError(ErrorType::Error, generalDescription, &h, 1);
-    logError(std::move(str), versionOfError);
+    logError(std::move(str), versionOfError, textInfo->diagnosticLocation(range));
 }
 
-void CompilerContext::logWarning(std::string str) {
+void CompilerContext::logWarning(std::string str, std::optional<DiagnosticLocation> location) {
     ++warnings;
-    diagnostics.push_back({ std::move(str), true });
+    diagnostics.push_back({ std::move(str), true, location });
 }
 
 void CompilerContext::logWarningInCurrentFile(sc::lex::SourceCodeRange range, const char* generalDescription,
                                               std::string description) {
     const auto h = textInfo->createDiagnosticHighlight(range, std::move(description));
     auto str = diagnosticToCompilerError(ErrorType::Error, generalDescription, &h, 1);
-    logWarning(std::move(str));
+    logWarning(std::move(str), textInfo->diagnosticLocation(range));
 }

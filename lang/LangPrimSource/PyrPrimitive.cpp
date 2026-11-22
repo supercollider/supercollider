@@ -2589,8 +2589,35 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
             concat += "\n";
             concat += diagnostic.text;
         }
-        auto pyrStr = newPyrString(g->gc, concat.c_str(), 0, false);
-        errorReturnSlot = PyrSlot::make(pyrStr);
+
+        // Report the location of the first error, falling back to the first warning.
+        const DiagnosticLocation* location = nullptr;
+        for (const auto& diagnostic : ctx.diagnostics) {
+            if (!diagnostic.location)
+                continue;
+            if (!diagnostic.isWarning) {
+                location = &*diagnostic.location;
+                break;
+            }
+            if (!location)
+                location = &*diagnostic.location;
+        }
+
+        // [text, filePath, line, column], the location is nil when unknown.
+        auto text = newPyrString(g->gc, concat.c_str(), 0, false);
+        auto array = newPyrArray(g->gc, 4, 0, false);
+        array->slots[0] = PyrSlot::make(text);
+        g->gc->GCWriteNew(array, text);
+        array->slots[1] = array->slots[2] = array->slots[3] = PyrSlot {};
+        if (location) {
+            // Keep nil when the caller gave no path, rather than the "interpreted_text" placeholder.
+            if (fileName.isSymbol())
+                array->slots[1] = PyrSlot::make(location->filePath);
+            array->slots[2] = PyrSlot::make(static_cast<int>(location->line));
+            array->slots[3] = PyrSlot::make(static_cast<int>(location->column));
+        }
+        array->size = 4;
+        errorReturnSlot = PyrSlot::make(array);
         return errFailed;
     };
 
@@ -2624,9 +2651,8 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
         compileNode(ctx, blockNode, &compileResult, true);
 
         if (ctx.errors > 0) {
-            errorReturnSlot = PyrSlot::make(newPyrString(g->gc, "Unknown error", 0, false));
             stackStart[0] = PyrSlot {};
-            return errFailed;
+            return on_parse_failure(ctx);
         }
 
         // Compiler should always write a pyrblock to the result when compiling a blocknode.

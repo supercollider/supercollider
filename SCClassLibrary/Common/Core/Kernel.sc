@@ -920,9 +920,14 @@ Interpreter {
 		^this.prCompile(cmdLine, filePath, lineNumber, column)
 	}
 
-	prCompile { |string, filePath, lineNumber, column, primitiveReturnedErrorText|
+	prCompile { |string, filePath, lineNumber, column, primitiveReturnedError|
 		_CompileExpression;
-		CompilerError(primitiveReturnedErrorText).throw;
+		// Either a String, or [text, filePath, line, column] with a zero based location, nil when unknown.
+		if (primitiveReturnedError.isString) {
+			CompilerError(primitiveReturnedError).throw
+		} {
+			CompilerError(*primitiveReturnedError).throw
+		}
 	}
 
 	clearAll {
