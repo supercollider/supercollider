@@ -848,9 +848,6 @@ Interpreter {
 
 
 	*new { ^this.shouldNotImplement(thisMethod) }
-	*initClass {
-		interpretThrows = Main.scVersionMinor > 15;
-	}
 
 	interpretCmdLine {
 		^this.prCompileUsingMembers.()
