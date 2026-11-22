@@ -86,15 +86,15 @@ Exception {
 Error : Exception { }
 
 
-CompilerError : Error { 
+CompilerError : Error {
 	var <>compilerError;
 	var <>showBacktrace = true;
 
 	*new {|compilerError|
 		^super.new(
-			"", 
+			"",
 			nil,
-			{|method| method.ownerClass === Interpreter and: {method.name === 'compile'} }, 
+			{|method| method.ownerClass === Interpreter and: {method.name === 'compile'} },
 			{}
 		).compilerError_(compilerError)
 	}
