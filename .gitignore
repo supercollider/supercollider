@@ -45,3 +45,14 @@ __pycache__
 !.vscode/extensions.json
 !.vscode/launch.json
 !.vscode/c_cpp_properties.json
+
+# Visual Studio files
+.vs/
+out/
+CMakeSettings.json
+Directory.*
+
+# QtCreator files
+.qtc_clangd/
+.qtcreator/
+supercollider.*
