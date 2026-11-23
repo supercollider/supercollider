@@ -560,7 +560,7 @@ endif()
 if(NOT APPLE)
     install(DIRECTORY sounds   DESTINATION ${auxresourcesdir})
     install(DIRECTORY examples DESTINATION ${auxresourcesdir})
-elseif(APPLE)
+elseif(NOT SC_IDE) # when building the IDE, the examples will be symlinked instead, see deployment in editors/sc-ide/CMakeLists.txt
     install(DIRECTORY examples DESTINATION ${auxresourcesdir})
 endif()
 

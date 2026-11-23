@@ -527,6 +527,17 @@ if(APPLE OR WIN32)
             ")
         endif()
 
+        string(APPEND VERIFY_CMD "
+            message(STATUS \"Creating relative symlink for examples...\")
+            execute_process(
+                COMMAND ln -shF \"SuperCollider.app/Contents/Resources/examples\" \"${CMAKE_INSTALL_PREFIX}/SuperCollider/examples\"
+                RESULT_VARIABLE SYMLINK_RESULT
+            )
+            if(NOT SYMLINK_RESULT EQUAL 0)
+                message(WARNING \"Failed to create examples symlink during installation.\")
+            endif()
+        ")
+
         if(SC_CODESIGN_AFTER_DEPLOY)
             string(APPEND VERIFY_CMD "
                 message(STATUS \"Running ad hoc code signing\")
