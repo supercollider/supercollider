@@ -129,26 +129,32 @@ When the Server dynamically loads a plugin, it tries to find an exported functio
 to the interface table as the first argument. The plugin typically stores this pointer in
 a (static) global variable called `ft`, as explained in the previous section.
 
-Since SC 3.15, the `load()` function also receives the absolute plugin file path as a
-second argument. This can be useful if the plugin needs to load data files that are placed
-relative to the plugin.
+Since SC 3.15, the `load()` function also receives a context object as a second argument
+which contains the plugin binary directory as well as the plugin resource directory.
+This can be useful if the plugin requires additional resourches, such as sound files,
+textfiles or binary data, that are bundled together with the extension.
 
 `PluginLoad` is a macro that defines and exports the entry point function together with
 some other functions that are required for API versioning (more about that later).
 The actual signature of the generated entry point function is
-`void load(InterfaceTable* inTable, const char* inPluginPath)`.
+`void load(InterfaceTable* inTable, const ServerPluginContext* inContext)`.
 
-~~~cpp
+```cpp
 static InterfaceTable* ft;
 
 PluginLoad(MyPlugin) {
     // assign interface table
     ft = inTable;
-    // optionally do something with the plugin file path
-    readDataFiles(inPluginPath);
+
+    // for example, read files in the resource directory
+    readDataFiles(inContext->mResourceDir);
+
     // define UGens or commands...
 }
-~~~
+```
+
+Side note: the plugin's resource directory can be modified at compile time with the
+SC_PLUGIN_RESOURCE_DIR define. See SC_InterfaceTable.h for further documentation.
 
 # API versioning
 
@@ -211,7 +217,7 @@ Any field that is *newer* than `SC_MIN_REQUIRED_API_VERSION` must then be checke
 ### Code example
 
 Server plugin API:
-~~~cpp
+```cpp
 // NOTE: this is a fictional example because at the time of writing
 // (API v4.0) there are no API extensions yet.
 // TODO: replace with a real example in API v4.1.
@@ -229,10 +235,10 @@ struct Unit {
     int mBaz;
 #endif
 };
-~~~
+```
 
 Plugin code:
-~~~cpp
+```cpp
 // Enable *required* extensions up to API v4.1.
 // The plugin can only be loaded in a Server with API v4.1 or higher.
 // In practice, you should set this via your build system.
@@ -250,4 +256,4 @@ unit->mFoo = 1; // still ok
 // Accessing fields from API version 4.2 (or higher) requires a runtime check!
 if (SC_IMPLEMENTS_FIELD(unit, Unit, mBar))
     unit->mBar = 2; // ok
-~~~
+```

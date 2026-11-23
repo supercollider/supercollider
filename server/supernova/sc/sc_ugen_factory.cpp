@@ -355,7 +355,7 @@ void sc_ugen_factory::load_plugin(std::filesystem::path const& path) {
 
     try {
         ServerPluginModule module(path);
-        module.load(&sc_interface, filename_utf8.c_str());
+        module.load(&sc_interface);
 
         open_modules.push_back(std::move(module));
     } catch (const ServerPluginException& e) {

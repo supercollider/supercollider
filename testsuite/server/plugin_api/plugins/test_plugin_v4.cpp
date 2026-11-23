@@ -14,7 +14,7 @@ static float* globalData;
 
 PluginLoad(TestPlugin) {
     ft = inTable;
-    pluginPath = inPluginPath;
+    pluginPath = inContext->mPath;
     globalData = new float[100] {};
 }
 

@@ -35,7 +35,9 @@ enum class ServerPluginError {
     //! The Server does not meet the plugin's min. required API version
     MinRequiredAPIVersionNotMet,
     //! The plugin misses one or more required symbols
-    MissingSymbol
+    MissingSymbol,
+    //! Bad plugin info
+    BadPluginInfo
 };
 
 class ServerPluginException : public std::exception {
@@ -77,11 +79,9 @@ public:
     ServerPluginModule& operator=(const ServerPluginModule& other) = delete;
 
     //! @brief calls the plugin's entry point function ("load")
-    //! @param intefaceTable Pointer to the global interface table
-    //! @param pluginPath The absolute plugin path as a UTF-8 encoded C-string
     //! @throws ServerPluginException in case of an error
     //! @attention You must call this exactly once!
-    void load(InterfaceTable* interfaceTable, const char* pluginPath);
+    void load(InterfaceTable* interfaceTable);
 
     //! @brief calls the plugin's (optional) "unload" function.
     //! @attention You must not call this more than once!
@@ -100,8 +100,17 @@ public:
     //! @attention close() does *not* automatically call unload()!
     void close() noexcept;
 
+    const std::string& name() const noexcept { return m_name; }
+
+    const std::filesystem::path& path() const noexcept { return m_path; }
+
+    const std::filesystem::path& resourceDir() const noexcept { return m_resourceDir; }
+
 private:
     void* m_module = nullptr; // type-erased module handle
+    std::string m_name;
+    std::filesystem::path m_path;
+    std::filesystem::path m_resourceDir;
 };
 
 

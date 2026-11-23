@@ -231,7 +231,58 @@ typedef struct InterfaceTable InterfaceTable;
 
 typedef enum { sc_server_scsynth = 0, sc_server_supernova = 1 } SC_ServerType;
 
-typedef void (*LoadPlugInFunc)(struct InterfaceTable*, const char*);
+//! @macro Define the plugin's resource directory.
+//!
+//! Plugins should use the resource directory for any resources that are not executables,
+//! such as sound files, text files, binary data, etc.
+//!
+//! The path is exported via the ServerPluginInfo struct and the Server uses this to set the
+//! mPluginResourceDir member in the ServerPluginContext struct.
+//!
+//! The path can be absolute or relative. Relative paths are based on the plugin binary directory.
+//! The default empty path resolves to the plugin binary directory itself.
+//!
+//! Overriding the resource directory is necessary for Linux distro packages where the plugin
+//! binary lives in a different directory (e.g. /usr/lib/SuperCollider/Extensions/plugins/<name>)
+//! than the remaining resources (e.g. /usr/share/SuperCollider/Extensions/<name>).
+//!
+//! @note A relative path does not necessarily have to be a subfolder of the `plugins/` folder.
+//! For example, it can also be a sibling folder, in which case SC_PLUGIN_RESOURCE_DIR would be
+//! set to `../<dir>`.
+#ifndef SC_PLUGIN_RESOURCE_DIR
+#    define SC_PLUGIN_RESOURCE_DIR ""
+#endif
+
+//! @struct This is passed to a plugin's entry point function to provide additional context.
+//! It is is available inside the PluginLoad() macro through the `inContext` variable.
+typedef struct ServerPluginContext {
+    size_t mStructSize; // versioned struct
+    //! absolute path to the plugin binary.
+    const char* mPath;
+    //! plugin binary directory.
+    const char* mBinDir;
+    //! plugin resource directory. By default, this is the same as mBinDir,
+    //! but it can be overridden with the SC_PLUGIN_RESOURCE_DIR macro.
+    const char* mResourceDir;
+} ServerPluginContext;
+
+//! @struct Provides additional information about the plugin to the Server.
+//! Plugin authors never need to use this struct directly.
+typedef struct ServerPluginInfo {
+    size_t mStructSize; // versioned struct
+    //! the Server plugin API version the plugin has been compiled with
+    uint32 mApiVersion;
+    //! the minimum required Server plugin API version
+    uint32 mMinRequiredApiVersion;
+    //! the server type, @see SC_ServerType
+    int32 mServerType;
+    //! the plugin name
+    const char* mName;
+    //! the plugin resource directory, @see SC_PLUGIN_RESOURCE_DIR
+    const char* mResourceDir;
+} ServerPluginInfo;
+
+typedef void (*LoadPlugInFunc)(InterfaceTable*, const ServerPluginContext*);
 typedef void (*UnloadPlugInFunc)(void);
 
 #ifdef STATIC_PLUGINS
@@ -239,18 +290,24 @@ typedef void (*UnloadPlugInFunc)(void);
 #    define PluginUnload(name) void name##_Unload(void)
 #else
 #    ifdef SUPERNOVA
-#        define SUPERNOVA_CHECK                                                                                        \
-            C_LINKAGE SC_API_EXPORT int server_type(void) { return sc_server_supernova; }
+#        define SC_SERVER_TYPE sc_server_supernova
 #    else
-#        define SUPERNOVA_CHECK                                                                                        \
-            C_LINKAGE SC_API_EXPORT int server_type(void) { return sc_server_scsynth; }
+#        define SC_SERVER_TYPE sc_server_scsynth
 #    endif
 
 #    define PluginLoad(name)                                                                                           \
-        C_LINKAGE SC_API_EXPORT int api_version(void) { return SC_API_VERSION; }                                       \
-        C_LINKAGE SC_API_EXPORT int api_min_version(void) { return SC_MIN_REQUIRED_API_VERSION; }                      \
-        SUPERNOVA_CHECK                                                                                                \
-        C_LINKAGE SC_API_EXPORT void load(InterfaceTable* inTable, const char* inPluginPath)
+        C_LINKAGE SC_API_EXPORT const ServerPluginInfo* plugin_info(void) {                                            \
+            static ServerPluginInfo info = { SC_IMPLEMENTED_STRUCT_SIZE(ServerPluginInfo, mResourceDir),               \
+                                             SC_API_VERSION,                                                           \
+                                             SC_MIN_REQUIRED_API_VERSION,                                              \
+                                             SC_SERVER_TYPE,                                                           \
+                                             #name,                                                                    \
+                                             SC_PLUGIN_RESOURCE_DIR };                                                 \
+            return &info;                                                                                              \
+        }                                                                                                              \
+        C_LINKAGE SC_API_EXPORT int api_version(void) { return SC_API_VERSION_MAJOR; }                                 \
+        C_LINKAGE SC_API_EXPORT int server_type(void) { return SC_SERVER_TYPE; }                                       \
+        C_LINKAGE SC_API_EXPORT void load(InterfaceTable* inTable, const ServerPluginContext* inContext)
 
 #    define PluginUnload(name) C_LINKAGE SC_API_EXPORT void unload(void)
 #endif

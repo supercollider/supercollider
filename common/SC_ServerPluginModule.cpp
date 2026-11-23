@@ -188,41 +188,50 @@ std::string symbolNotFound(const char* symbol) {
 
 } // namespace ErrorMessage
 
-//! @brief Function pointer type for reporting the plugin API version or Server type.
-using PluginInfoFunction = int (*)();
+//! @brief Function pointer type for getting the plugin info.
+using PluginInfoFunction = const ServerPluginInfo* (*)();
+
+//! @brief Old function pointer type for reporting the plugin API version or Server type.
+using PluginInfoFunctionOld = int (*)();
 
 //! @brief Checks the plugin API version and returns the appropriate error code resp. error message.
 //! @param path The plugin file path.
-//! @param versionFunc The function that returns the plugin's API version. Can be nullptr!
-//! @param minVersionFunc The function that returns the min. required API version. Can be nullptr!
+//! @param info The server plugin info. Can be nullptr!
+//! @param versionFunc The old "api_version" function. Can be nullptr!
 //! @returns an error code and optional error message
 [[nodiscard]] std::pair<ServerPluginError, std::string>
-checkAPIVersion(const std::filesystem::path& path, PluginInfoFunction versionFunc, PluginInfoFunction minVersionFunc) {
+checkAPIVersion(const std::filesystem::path& path, const ServerPluginInfo* info, PluginInfoFunctionOld versionFunc) {
     if (!versionFunc) {
         return { ServerPluginError::MissingSymbol, ErrorMessage::symbolNotFound("api_version") };
     }
 
-    if (!minVersionFunc) {
-        // before SC 3.15, "api_version" only returned the major version
-        assert(versionFunc);
-        int majorVersion = reinterpret_cast<PluginInfoFunction>(versionFunc)();
-        if (majorVersion > 3) {
-            // plugins compiled against API version 4 or higher are supposed to export "api_min_version".
-            return { ServerPluginError::MissingSymbol, ErrorMessage::symbolNotFound("api_min_version") };
+    if (!info) {
+        if (versionFunc) {
+            // 'plugin_info' has only been introduced in SC 3.15, so we check the result of 'api_version'
+            // for proper error reporting.
+            int majorVersion = versionFunc();
+            if (majorVersion >= 4) {
+                // plugins compiled against API version 4 or higher are supposed to export 'api_version'.
+                return { ServerPluginError::MissingSymbol, ErrorMessage::symbolNotFound("plugin_info") };
+            } else {
+                int version = SC_MAKE_API_VERSION(majorVersion, 0);
+                return { ServerPluginError::MajorAPIVersionMismatch,
+                         ErrorMessage::majorApiVersionMismatch(path, version) };
+            }
         } else {
-            int version = SC_MAKE_API_VERSION(majorVersion, 0);
-            return { ServerPluginError::MajorAPIVersionMismatch, ErrorMessage::majorApiVersionMismatch(path, version) };
+            // plugins that do not export 'plugin_info' should at least export 'api_version'.
+            return { ServerPluginError::MissingSymbol, ErrorMessage::symbolNotFound("api_version") };
         }
     }
 
-    int version = reinterpret_cast<PluginInfoFunction>(versionFunc)();
-    if (auto [majorVersion, minorVersion] = apiVersionTuple(version); majorVersion != sc_api_version_major) {
+    if (auto [majorVersion, minorVersion] = apiVersionTuple(info->mApiVersion); majorVersion != sc_api_version_major) {
         // API version mismatch
-        return { ServerPluginError::MajorAPIVersionMismatch, ErrorMessage::majorApiVersionMismatch(path, version) };
+        return { ServerPluginError::MajorAPIVersionMismatch,
+                 ErrorMessage::majorApiVersionMismatch(path, info->mApiVersion) };
     }
 
-    int minVersion = reinterpret_cast<PluginInfoFunction>(minVersionFunc)();
-    if (minVersion > sc_api_version) {
+
+    if (int minVersion = info->mMinRequiredApiVersion; minVersion > sc_api_version) {
         // min. required version not met
         return { ServerPluginError::MinRequiredAPIVersionNotMet, ErrorMessage::minApiVersionNotMet(minVersion) };
     }
@@ -250,7 +259,7 @@ inline void* getSymbol(ModuleHandle handle, const char* sym) { return dlsym(hand
 
 } // namespace
 
-ServerPluginModule::ServerPluginModule(const std::filesystem::path& path) {
+ServerPluginModule::ServerPluginModule(const std::filesystem::path& path): m_path(path) {
 #ifdef _WIN32
     // This allows plugins to place DLL dependencies in the same directory.
     SetDllDirectoryW(path.parent_path().c_str());
@@ -281,44 +290,101 @@ ServerPluginModule::ServerPluginModule(const std::filesystem::path& path) {
     }
 #endif // _WIN32
 
-    auto serverTypeFunc = reinterpret_cast<PluginInfoFunction>(getSymbol(handle, "server_type"));
+    const ServerPluginInfo* info = nullptr;
+
+    auto infoFunc = reinterpret_cast<PluginInfoFunction>(getSymbol(handle, "plugin_info"));
+    if (infoFunc) {
+        info = infoFunc();
+        if (info == nullptr) {
+            throw ServerPluginException(ServerPluginError::BadPluginInfo, "plugin_info() returned NULL");
+        }
+    }
+
+    // first check if the plugin has been compiled for our Server type.
+    int serverType = sc_server_scsynth;
+    if (info) {
+        serverType = info->mServerType;
+    } else {
+        // this plugin does not export 'plugin_info', so have to check the server version
+        // via the old 'server_type' function.
+        auto serverTypeFunc = reinterpret_cast<PluginInfoFunctionOld>(getSymbol(handle, "server_type"));
+        if (serverTypeFunc) {
+            serverType = serverTypeFunc();
+        }
+    }
+
 #ifdef SUPERNOVA
-    if (!serverTypeFunc || serverTypeFunc() != sc_server_supernova) {
+    if (serverType != sc_server_supernova) {
 #else
-    if (serverTypeFunc && serverTypeFunc() != sc_server_scsynth) {
+    if (serverType != sc_server_scsynth) {
 #endif
         throw ServerPluginException(ServerPluginError::WrongServerType, "Wrong Server type.\n");
     }
 
-    auto apiVersionFunc = reinterpret_cast<PluginInfoFunction>(getSymbol(handle, "api_version"));
-    auto apiMinVersionFunc = reinterpret_cast<PluginInfoFunction>(getSymbol(handle, "api_min_version"));
+    auto apiVersionFunc = reinterpret_cast<PluginInfoFunctionOld>(getSymbol(handle, "api_version"));
 
-    if (auto [errorCode, errorMessage] = checkAPIVersion(path, apiVersionFunc, apiMinVersionFunc);
+    if (auto [errorCode, errorMessage] = checkAPIVersion(path, info, apiVersionFunc);
         errorCode != ServerPluginError::NoError) {
         closeModule(handle);
         throw ServerPluginException(errorCode, std::move(errorMessage));
     }
 
+    assert(info != nullptr);
+
+    if (info->mName == nullptr) {
+        throw ServerPluginException(ServerPluginError::BadPluginInfo, "plugin name is NULL");
+    }
+    m_name = info->mName;
+
+    if (info->mResourceDir == nullptr) {
+        throw ServerPluginException(ServerPluginError::BadPluginInfo, "resource dir is NULL");
+    }
+    try {
+        m_resourceDir = std::filesystem::u8path(info->mResourceDir);
+        if (m_resourceDir.empty() || m_resourceDir.is_relative()) {
+            // a relative resource dir is based on the plugin binary dir
+            m_resourceDir = m_path.parent_path() / m_resourceDir;
+        }
+    } catch (const std::exception& e) {
+        throw ServerPluginException(ServerPluginError::BadPluginInfo, "bad resource dir");
+    }
+
+    // done!
     m_module = handle;
 }
 
 ServerPluginModule::~ServerPluginModule() { close(); }
 
 ServerPluginModule::ServerPluginModule(ServerPluginModule&& other) noexcept:
-    m_module(std::exchange(other.m_module, nullptr)) {}
+    m_module(std::exchange(other.m_module, nullptr)),
+    m_path(std::move(other.m_path)),
+    m_resourceDir(std::move(other.m_resourceDir)) {}
 
 ServerPluginModule& ServerPluginModule::operator=(ServerPluginModule&& other) noexcept {
     close();
     m_module = std::exchange(other.m_module, nullptr);
+    m_path = std::move(other.m_path);
+    m_resourceDir = std::move(other.m_resourceDir);
     return *this;
 }
 
-void ServerPluginModule::load(InterfaceTable* interfaceTable, const char* pluginPath) {
+void ServerPluginModule::load(InterfaceTable* interfaceTable) {
     assert(m_module != nullptr);
     auto sym = getSymbol(static_cast<ModuleHandle>(m_module), "load");
     if (sym) {
         auto loadFunc = reinterpret_cast<LoadPlugInFunc>(sym);
-        loadFunc(interfaceTable, pluginPath);
+
+        auto path = m_path.u8string();
+        auto binDir = m_path.parent_path().u8string();
+        auto resourceDir = m_resourceDir.u8string();
+
+        ServerPluginContext ctx;
+        ctx.mStructSize = SC_IMPLEMENTED_STRUCT_SIZE(ServerPluginContext, mResourceDir);
+        ctx.mPath = path.c_str();
+        ctx.mBinDir = binDir.c_str();
+        ctx.mResourceDir = resourceDir.c_str();
+
+        loadFunc(interfaceTable, &ctx);
     } else {
         throw ServerPluginException(ServerPluginError::MissingSymbol, ErrorMessage::symbolNotFound("load"));
     }

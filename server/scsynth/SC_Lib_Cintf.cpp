@@ -166,7 +166,7 @@ static bool PlugIn_Load(const fs::path& path) {
 
     try {
         ServerPluginModule module(path);
-        module.load(&gInterfaceTable, filename_utf8.c_str());
+        module.load(&gInterfaceTable);
 
         open_modules.push_back(std::move(module));
 
