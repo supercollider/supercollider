@@ -283,19 +283,19 @@ UGen : AbstractFunction {
 		)
 	}
 
-	k2a { arg ugen;
+	k2a {
 		^switch(ugen.rate,
-			\audio, ugen,
-			\control, K2A.kr(ugen),
-			\scalar, DC.ar(ugen)
+			\audio, this,
+			\control, K2A.kr(this),
+			\scalar, DC.ar(this)
 		)
 	}
 
-	a2k { arg ugen;
-		^switch(ugen.rate,
-			\audio, A2K.kr(ugen),
-			\control, ugen,
-			\scalar, DC.kr(ugen)
+	a2k {
+		^switch(this.rate,
+			\audio, A2K.kr(this),
+			\control, this,
+			\scalar, DC.kr(this)
 		)
 	}
 
