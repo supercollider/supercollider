@@ -1,5 +1,6 @@
 add_executable(sc_parser_tests tests.cpp)
 target_link_libraries( sc_parser_tests boost_test sc_parser)
 target_include_directories(sc_parser_tests PUBLIC ${boost_include_dirs})
+target_compile_definitions(sc_parser_tests PRIVATE SC_CLASS_LIBRARY_DIR="${CMAKE_SOURCE_DIR}/SCClassLibrary")
 add_test(langutils.sc_parser_tests_run sc_parser_tests)
 set_property(TARGET sc_parser_tests PROPERTY FOLDER Test/Parser)

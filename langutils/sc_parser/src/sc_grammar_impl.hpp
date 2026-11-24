@@ -206,8 +206,7 @@ inline int yylex(sc::ast::parser::parser::value_type* v, sc::src::SourceCodeRang
     const auto token = to_parser_token(current.token);
 
     // Region recovery. Since scd files aren't valid sclang code, this tries to guess where the semicolons should go.
-    const auto* before =
-        cxt.next != sc::ast::parser::TokenIndex { 0 } ? &cxt.tokens[sc::util::retreat(cxt.next)] : nullptr;
+    const auto* before = cxt.next != sc::ast::TokenIndex { 0 } ? &cxt.tokens[sc::util::retreat(cxt.next)] : nullptr;
     const bool starts_line = before && before->range.end.line_number < current.range.begin.line_number;
     if (cxt.mode == sc::ast::parser::ParserContext::Mode::CommandContinue && starts_line && !cxt.separator_inserted
         && current.token != sc::lex::TokenType::EndOfFile && !parser_accepts(*cxt.owner, token)

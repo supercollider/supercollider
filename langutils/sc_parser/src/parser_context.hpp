@@ -3,63 +3,20 @@
 
 #include "sc_lexer/details/codepoint_stream.hpp"
 #include "sc_parser/ast.hpp"
+#include "sc_parser/tokens.hpp"
 #include "sc_util/language_version.hpp"
 
-#include "sc_source/normalise_source.hpp"
 #include "sc_source/text_info.hpp"
 #include "sc_source/text_location.hpp"
-#include "sc_lexer/details/tokens.hpp"
 #include "sc_util/indexed_vector.hpp"
-#include "sc_util/strong_index.hpp"
 
 #include <algorithm>
-#include <cstdint>
 #include <memory>
 #include <utility>
 #include <optional>
 #include <vector>
 
 namespace sc::ast::parser {
-
-// A position in ParserContext::tokens.
-struct TokenTag;
-using TokenIndex = sc::util::StrongIndex<std::uint32_t, TokenTag>;
-
-// Stores the token type, source code range.
-// Secondarily, it store an index where the matching parenthesis is (if the token is a parenthesis).
-// Additionally, the tokeniser is going to insert brackets when it thinks they are missing.
-// This is stored as a single bit (inserted bit) which is set at the top of the match index (together stored in 'bits').
-struct Token {
-    static constexpr std::uint32_t inserted_bit = std::uint32_t { 1 } << 31;
-    static constexpr std::uint32_t no_match = inserted_bit - 1;
-
-    // The most tokens there can be, as the index of a match must fit below the inserted bit.
-    // Since we have a file size limit of 2^32, this seems unlikely to ever be hit.
-    static constexpr std::uint32_t max_tokens = no_match;
-
-    Token(sc::lex::TokenType t, sc::src::SourceCodeRange r): token(t), range(r) {}
-
-    sc::lex::TokenType token;
-    sc::src::SourceCodeRange range;
-
-    // When brackets, matching return the other one in a pair.
-    [[nodiscard]] std::optional<TokenIndex> matching() const {
-        const auto m = bits & ~inserted_bit;
-        return m == no_match ? std::nullopt : std::optional { TokenIndex { m } };
-    }
-
-    // Sets the other one in a pair.
-    void set_matching_index(TokenIndex i) { bits = (bits & inserted_bit) | *i; }
-
-    // Inserted to close an unclosed bracket, so isn't in the source and has an empty range at the token before it.
-    [[nodiscard]] bool inserted() const { return bits & inserted_bit; }
-    void set_inserted() { bits |= inserted_bit; }
-
-private:
-    // The match's index, or no_match, with the inserted bit at the top.
-    std::uint32_t bits { no_match };
-};
-static_assert(sizeof(Token) == 32);
 
 // A `//# VERSION 3.16` comment, which the parser doesn't see, see ParserContext::take_version.
 struct VersionDirective {
@@ -74,8 +31,8 @@ struct VersionDirective {
 struct ParserContext;
 
 // Lexes all of the stream into the context's tokens and version directives, reporting the lexer's errors, then pairs
-// the brackets. Attempt to repair any mismatched brackets.
-void tokenise(ParserContext& cxt, sc::lex::CodePointStream cps);
+// the brackets. Attempt to repair any mismatched brackets. Comments are only collected when kept.
+void tokenise(ParserContext& cxt, sc::lex::CodePointStream cps, KeepTokens keep);
 
 struct UnexpectedToken {
     sc::src::SourceCodeRange location;
@@ -107,6 +64,12 @@ struct ParserContext {
     std::shared_ptr<sc::ast::ASTGraph> graph = std::make_shared<ASTGraph>(text_info);
 
     sc::util::IndexedVector<TokenIndex, Token> tokens {};
+
+    // Only filled when the tokens are kept, see tokenise.
+    sc::util::IndexedVector<CommentIndex, Comment> comments {};
+
+    // Closing brackets that close nothing, which the parser doesn't see, see tokenise.
+    std::vector<sc::src::SourceCodeRange> unmatched_brackets {};
 
     // In source order, see tokenise.
     std::vector<VersionDirective> directives {};

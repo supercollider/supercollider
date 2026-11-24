@@ -15,7 +15,7 @@
 namespace sc::ast {
 
 [[nodiscard]] std::tuple<std::shared_ptr<ASTGraph>, bool> parse(std::shared_ptr<const src::TextInfo> text_info,
-                                                                ::sc::lex::CodePointStream cps) {
+                                                                ::sc::lex::CodePointStream cps, KeepTokens keep) {
     const auto mode = [&] {
         using Mode = parser::ParserContext::Mode;
         switch (text_info->kind) {
@@ -29,7 +29,7 @@ namespace sc::ast {
         return Mode::CommandInitial;
     }();
     parser::ParserContext ctx { text_info, mode };
-    parser::tokenise(ctx, std::move(cps));
+    parser::tokenise(ctx, std::move(cps), keep);
     ctx.claim_file_version();
 
     parser::parser p { ctx };
@@ -41,21 +41,24 @@ namespace sc::ast {
     parser::error_recovery::report(ctx);
     ctx.report_misplaced_versions();
     const bool accepted = ret == 0 && ctx.graph;
+    if (keep == KeepTokens::Yes && ctx.graph)
+        ctx.graph->set_source_tokens(
+            SourceTokens { std::move(ctx.tokens), std::move(ctx.comments), std::move(ctx.unmatched_brackets) });
     return { std::move(ctx.graph), accepted };
 }
 
 
 std::tuple<std::shared_ptr<ASTGraph>, bool> parse(std::shared_ptr<const src::TextInfo> text_info,
-                                                  sc::src::SourceCodeRange r) {
-    return parse(text_info, sc::lex::CodePointStream { text_info->source, text_info->source_start_in_file, r });
+                                                  sc::src::SourceCodeRange r, KeepTokens keep) {
+    return parse(text_info, sc::lex::CodePointStream { text_info->source, text_info->source_start_in_file, r }, keep);
 };
 
 std::tuple<std::shared_ptr<ASTGraph>, bool> parse(std::shared_ptr<const src::TextInfo> text_info,
-                                                  sc::src::SourceCodeLocation r) {
-    return parse(text_info, { text_info->source, text_info->source_start_in_file, r });
+                                                  sc::src::SourceCodeLocation r, KeepTokens keep) {
+    return parse(text_info, sc::lex::CodePointStream { text_info->source, text_info->source_start_in_file, r }, keep);
 };
 
-std::tuple<std::shared_ptr<ASTGraph>, bool> parse(std::shared_ptr<const sc::src::TextInfo> text_info) {
-    return parse(text_info, { text_info->source, text_info->source_start_in_file });
+std::tuple<std::shared_ptr<ASTGraph>, bool> parse(std::shared_ptr<const sc::src::TextInfo> text_info, KeepTokens keep) {
+    return parse(text_info, sc::lex::CodePointStream { text_info->source, text_info->source_start_in_file }, keep);
 }
 }

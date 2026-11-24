@@ -3,9 +3,19 @@
 #include "sc_parser/details/nodes.hpp"
 #include "sc_source/normalise_source.hpp"
 #include "sc_parser/sc_parser.hpp"
+#include "sc_lexer/lexer.hpp"
 #include "sc_source/text_location.hpp"
+#include <algorithm>
+#include <cstdlib>
+#include <filesystem>
+#include <fstream>
+#include <iterator>
 #include <memory>
 #include <optional>
+#include <sstream>
+#include <string>
+#include <string_view>
+#include <vector>
 #define BOOST_TEST_MODULE sc_parser_tests
 #include <boost/test/included/unit_test.hpp>
 
@@ -622,4 +632,200 @@ BOOST_AUTO_TEST_CASE(interpreted_function) {
             BOOST_TEST(!(graph && graph->diagnostics().empty()));
         }
     }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Kept tokens and comments
+////////////////////////////////////////////////////////////////////////////////
+
+namespace {
+std::shared_ptr<sc::src::TextInfo> text_of(std::string src, sc::src::TextKind kind) {
+    return std::make_shared<sc::src::TextInfo>(sc::src::NormalisedSource(src), sc::src::FileCodeLocation {},
+                                               "test_file", kind);
+}
+
+// Every token the lexer finds.
+struct KeepEverything {
+    struct Output {
+        sc::lex::TokenType token;
+        sc::src::SourceCodeRange range;
+    };
+    template <sc::lex::TokenType T> [[nodiscard]] std::optional<Output> process(sc::src::SourceCodeRange r) {
+        return Output { T, r };
+    }
+};
+
+// The kept tokens, comments, and unmatched brackets are exactly the lexer's tokens but whitespace, range by range,
+// and the lexer's tokens cover the whole text. Returns what is wrong, or nothing.
+std::optional<std::string> check_source_tokens(const sc::src::TextInfo& text_info, const P::ASTGraph& graph) {
+    const auto& kept = graph.source_tokens();
+    if (!kept)
+        return "no tokens were kept";
+    const auto at = [](const sc::src::SourceCodeRange& r) {
+        return "line " + std::to_string(r.begin.line_number + 1) + ":" + std::to_string(r.begin.codepoint_in_line + 1);
+    };
+    const auto before = [](const sc::src::SourceCodeRange& a, const sc::src::SourceCodeRange& b) {
+        return a.begin.absolute < b.begin.absolute;
+    };
+
+    if (kept->tokens.empty() || kept->tokens.back().token != sc::lex::TokenType::EndOfFile)
+        return "the tokens don't end with EndOfFile";
+    std::vector<sc::src::SourceCodeRange> tokens;
+    for (const auto& t : kept->tokens.raw())
+        if (!t.inserted() && t.token != sc::lex::TokenType::EndOfFile)
+            tokens.push_back(t.range);
+    std::vector<sc::src::SourceCodeRange> comments;
+    for (const auto& c : kept->comments.raw()) {
+        if (!sc::lex::is_comment(c.kind))
+            return "a comment of a kind that isn't a comment at " + at(c.range);
+        comments.push_back(c.range);
+    }
+    const auto& unmatched = kept->unmatched_brackets;
+    if (!std::is_sorted(tokens.begin(), tokens.end(), before)
+        || !std::is_sorted(comments.begin(), comments.end(), before)
+        || !std::is_sorted(unmatched.begin(), unmatched.end(), before))
+        return "a list is out of order";
+    std::vector<sc::src::SourceCodeRange> tokens_and_comments;
+    std::merge(tokens.begin(), tokens.end(), comments.begin(), comments.end(), std::back_inserter(tokens_and_comments),
+               before);
+    std::vector<sc::src::SourceCodeRange> all;
+    std::merge(tokens_and_comments.begin(), tokens_and_comments.end(), unmatched.begin(), unmatched.end(),
+               std::back_inserter(all), before);
+
+    std::vector<sc::src::SourceCodeRange> lexed;
+    sc::lex::CodePointStream stream { text_info.source, text_info.source_start_in_file };
+    KeepEverything action;
+    std::uint32_t end { 0 };
+    for (auto t = sc::lex::lexer(stream, action);; t = sc::lex::lexer(stream, action)) {
+        if (t.range.begin.absolute != end)
+            return "the lexer skipped text before " + at(t.range);
+        end = t.range.end.absolute;
+        if (t.token == sc::lex::TokenType::EndOfFile)
+            break;
+        if (!sc::lex::is_whitespace(t.token))
+            lexed.push_back(t.range);
+    }
+    if (end != text_info.source.as_string().size())
+        return "the lexer stopped before the end of the text";
+
+    const auto same = [](const sc::src::SourceCodeRange& a, const sc::src::SourceCodeRange& b) {
+        return a.begin.absolute == b.begin.absolute && a.end.absolute == b.end.absolute;
+    };
+    const auto [k, l] = std::mismatch(all.begin(), all.end(), lexed.begin(), lexed.end(), same);
+    if (k != all.end() && l != lexed.end())
+        return "kept " + at(*k) + " where the lexer has " + at(*l);
+    if (k != all.end() || l != lexed.end())
+        return std::to_string(all.size()) + " kept, the lexer has " + std::to_string(lexed.size());
+    return std::nullopt;
+}
+
+// Checks every `.sc` and `.scd` file under a directory, returning how many there were and what was wrong.
+std::tuple<std::size_t, std::vector<std::string>> check_source_tokens_in(const std::filesystem::path& dir) {
+    std::size_t files { 0 };
+    std::vector<std::string> failures;
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(dir)) {
+        const auto ext = entry.path().extension();
+        if (!entry.is_regular_file() || (ext != ".sc" && ext != ".scd"))
+            continue;
+        std::ifstream file { entry.path(), std::ios::binary };
+        std::stringstream contents;
+        contents << file.rdbuf();
+        const auto text_info =
+            text_of(contents.str(), ext == ".sc" ? sc::src::TextKind::ClassFile : sc::src::TextKind::ScdFile);
+        const auto [graph, accepted] = P::parse(text_info, P::KeepTokens::Yes);
+        ++files;
+        if (const auto wrong = check_source_tokens(*text_info, *graph))
+            failures.push_back(entry.path().string() + ": " + *wrong);
+    }
+    return { files, failures };
+}
+}
+
+BOOST_AUTO_TEST_CASE(tokens_not_kept_unless_asked) {
+    const auto [graph, accepted] = P::parse(text_of("a = 1; // b", sc::src::TextKind::ScdFile));
+    BOOST_TEST(!graph->source_tokens().has_value());
+}
+
+BOOST_AUTO_TEST_CASE(kept_tokens_and_comments) {
+    const char* src = "//# VERSION 3.16\n"
+                      "// a comment\n"
+                      "(\n"
+                      "\tvar s = \"not // a comment\"; /* a /* nested */ block */\n"
+                      "\ts ++ \\sym; // trailing\n"
+                      ")\n";
+    const auto text_info = text_of(src, sc::src::TextKind::ScdFile);
+    const auto [graph, accepted] = P::parse(text_info, P::KeepTokens::Yes);
+    BOOST_TEST(accepted);
+    BOOST_TEST(graph->diagnostics().empty());
+    BOOST_TEST_REQUIRE(graph->source_tokens().has_value());
+    if (const auto wrong = check_source_tokens(*text_info, *graph))
+        BOOST_ERROR(*wrong);
+
+    using sc::lex::TokenType;
+    const auto described = [](TokenType kind, std::string_view text) {
+        return std::string { sc::lex::to_string(kind) } + " " + std::string { text };
+    };
+    const std::vector<std::string> expected {
+        described(TokenType::VersionComment, "//# VERSION 3.16"),
+        described(TokenType::Comment, "// a comment"),
+        described(TokenType::MultilineComment, "/* a /* nested */ block */"),
+        described(TokenType::Comment, "// trailing"),
+    };
+    std::vector<std::string> comments;
+    for (const auto& c : graph->source_tokens()->comments.raw())
+        comments.push_back(described(c.kind, text_info->read(c.range)));
+    BOOST_TEST(comments == expected, boost::test_tools::per_element());
+
+    // The tokens are the parser's, matching brackets included.
+    const auto& tokens = graph->source_tokens()->tokens;
+    BOOST_TEST_REQUIRE(tokens.size() == 12); // ( var s = "..." ; s ++ \sym ; ) EndOfFile
+    BOOST_TEST((tokens[P::TokenIndex { 0 }].token == TokenType::OpenParen));
+    BOOST_TEST((tokens[P::TokenIndex { 0 }].matching() == P::TokenIndex { 10 }));
+    BOOST_TEST((tokens[P::TokenIndex { 11 }].token == TokenType::EndOfFile));
+}
+
+BOOST_AUTO_TEST_CASE(kept_tokens_with_errors) {
+    // An inserted closing bracket, an unmatched one, a mismatched one, an unclosed string, an unclosed comment, a
+    // non-breaking space, and a class file.
+    for (const auto& [src, kind] : std::vector<std::tuple<const char*, sc::src::TextKind>> {
+             { "f = { 1 + 2", sc::src::TextKind::ScdFile },
+             { "f = 1 + 2);\ng = 3;", sc::src::TextKind::ScdFile },
+             { "f = [1, 2);", sc::src::TextKind::ScdFile },
+             { "f = {\xc2\xa0|a| a };", sc::src::TextKind::ScdFile },
+             { "a = \"unclosed\n", sc::src::TextKind::ScdFile },
+             { "a = 1; /* unclosed\n", sc::src::TextKind::ScdFile },
+             { "A { // c\n\tb { ^1 /* c */ }\n", sc::src::TextKind::ClassFile },
+         }) {
+        BOOST_TEST_CONTEXT(src) {
+            const auto text_info = text_of(src, kind);
+            const auto [graph, accepted] = P::parse(text_info, P::KeepTokens::Yes);
+            if (const auto wrong = check_source_tokens(*text_info, *graph))
+                BOOST_ERROR(*wrong);
+        }
+    }
+    const auto [inserted, a] = P::parse(text_of("f = { 1 + 2", sc::src::TextKind::ScdFile), P::KeepTokens::Yes);
+    const auto& tokens = inserted->source_tokens()->tokens.raw();
+    BOOST_TEST(std::any_of(tokens.begin(), tokens.end(), [](const P::Token& t) { return t.inserted(); }));
+    const auto [unmatched, b] = P::parse(text_of("f = 1 + 2);", sc::src::TextKind::ScdFile), P::KeepTokens::Yes);
+    BOOST_TEST(unmatched->source_tokens()->unmatched_brackets.size() == 1u);
+}
+
+BOOST_AUTO_TEST_CASE(kept_tokens_class_library) {
+    const auto [files, failures] = check_source_tokens_in(SC_CLASS_LIBRARY_DIR);
+    BOOST_TEST(files > 0);
+    for (const auto& f : failures)
+        BOOST_ERROR(f);
+}
+
+// Set SC_CORPUS to a directory of `.sc` and `.scd` files to check them too.
+// The corpus is not on github.
+BOOST_AUTO_TEST_CASE(kept_tokens_corpus) {
+    const char* corpus = std::getenv("SC_CORPUS");
+    if (!corpus)
+        return;
+    const auto [files, failures] = check_source_tokens_in(corpus);
+    BOOST_TEST_MESSAGE(std::to_string(files) + " corpus files, " + std::to_string(failures.size()) + " failures");
+    for (const auto& f : failures)
+        BOOST_ERROR(f);
 }

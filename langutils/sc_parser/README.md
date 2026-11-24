@@ -16,6 +16,7 @@ The parser recovers from syntax errors, so it nearly always returns a tree, if i
 | `ast.hpp` | `ASTGraph`, the tree, and the list of every node type. |
 | `details/nodes.hpp` | The node types, such as `IntNode`, `BinaryMessage`, and `Class`. Each says which children it accepts. |
 | `details/indexes_typed.hpp` | The typed indexes, such as `IntLitIndex`, and `maybe<T>`. |
+| `tokens.hpp` | `Token`, `Comment`, and `SourceTokens`, the tokens and comments a parse can keep. |
 | `src/sc_grammar.y` | The Bison grammar which is used to generate `sc_grammar_parser.*`. The generated files are committed. CMake runs Bison 3.8 or newer only when the grammar changes (tracked by `sc_grammar.y.sha256`). |
 
 ## Parsing
@@ -40,6 +41,14 @@ for (const auto& d : graph->diagnostics())
 
 There are three overloads. Besides the whole text, you can parse from a location to the end, or only a range.
 The graph keeps the text alive.
+
+Pass `KeepTokens::Yes` to keep the tokens and comments on the graph. Useful for formatting
+
+```cpp
+auto [graph, accepted] = sc::ast::parse(text, sc::ast::KeepTokens::Yes);
+for (const auto& c : graph->source_tokens()->comments.raw())
+    std::cout << text->read(c.range) << "\n";
+```
 
 `accepted` is false if Bison gave up. A tree with errors can still be accepted, so check `diagnostics()` for errors.
 `explicit operator bool` on the graph is false if a fatal diagnostic was added.

@@ -5,6 +5,7 @@
 #include "sc_source/text_location.hpp"
 
 #include "details/nodes.hpp"
+#include "tokens.hpp"
 
 #include "sc_util/details/typed_graph_helper.hpp"
 #include "sc_util/typed_graph.hpp"
@@ -240,6 +241,10 @@ public:
     [[nodiscard]] const std::optional<FileVersion>& file_version() const { return m_file_version; }
     void set_file_version(FileVersion v) { m_file_version = v; }
 
+    /// @brief The tokens and comments, when parse() was given KeepTokens::Yes.
+    [[nodiscard]] const std::optional<SourceTokens>& source_tokens() const { return m_source_tokens; }
+    void set_source_tokens(SourceTokens t) { m_source_tokens = std::move(t); }
+
     ////////////////////////////////////////////////////////////////////////////////
     // Children. This is the type safe way to walk the graph.
     ////////////////////////////////////////////////////////////////////////////////
@@ -333,6 +338,8 @@ private:
     bool m_has_curry { false };
 
     std::optional<FileVersion> m_file_version {};
+
+    std::optional<SourceTokens> m_source_tokens {};
 
     std::variant<std::monostate, RegionListIndex, ClassOrExtensionListIndex, FileAsFunctionIndex> m_roots {};
 

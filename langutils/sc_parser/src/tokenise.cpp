@@ -15,13 +15,20 @@ using sc::lex::TokenType;
 using sc::src::SourceCodeRange;
 
 // Drops the whitespace and comments, which the parser never sees, other than version comments, see tokenise.
+// Comments, version comments too, are collected when kept.
 struct Action {
     struct Output {
         TokenType token;
         SourceCodeRange range;
     };
 
+    sc::util::IndexedVector<CommentIndex, Comment>* comments { nullptr };
+
     template <TokenType T> [[nodiscard]] std::optional<Output> process(SourceCodeRange loc) {
+        if constexpr (sc::lex::is_comment(T)) {
+            if (comments)
+                comments->push_back(Comment { T, loc });
+        }
         if constexpr (T != TokenType::VersionComment && (sc::lex::is_whitespace(T) || sc::lex::is_comment(T)))
             return std::nullopt;
         else
@@ -132,6 +139,8 @@ struct BracketPairer {
 
     sc::util::IndexedVector<TokenIndex, Token> tokens {};
     std::vector<diag::Diagnostic> diagnostics {};
+    // Closing brackets that close nothing, which are reported and left out of the tokens.
+    std::vector<SourceCodeRange> unmatched {};
 
     // The brackets still open, as tokens, we do not support more tokens than fit in a TokenIndex.
     std::vector<TokenIndex> open {};
@@ -161,6 +170,7 @@ struct BracketPairer {
         const auto next = next_close(input, i);
         if (open.empty() || (next && closes(innermost(), *next))) {
             diagnostics.push_back(diag::unmatched_bracket(text_info, r));
+            unmatched.push_back(r);
             return;
         }
         const auto outer = std::find_if(open.rbegin(), open.rend(), [&](auto o) { return closes(tokens[o].token, t); });
@@ -201,6 +211,7 @@ struct BracketPairer {
 struct PairedBrackets {
     sc::util::IndexedVector<TokenIndex, Token> tokens;
     std::vector<diag::Diagnostic> diagnostics;
+    std::vector<SourceCodeRange> unmatched;
     // Brackets were still open at the end of the file.
     bool unclosed_at_end;
 };
@@ -235,12 +246,14 @@ PairedBrackets pair_brackets(std::shared_ptr<const sc::src::TextInfo> text_info,
             p.tokens.push_back(Token { t, r });
         }
     }
-    return { std::move(p.tokens), std::move(p.diagnostics), unclosed_at_end };
+    return { std::move(p.tokens), std::move(p.diagnostics), std::move(p.unmatched), unclosed_at_end };
 }
 }
 
-void tokenise(ParserContext& cxt, sc::lex::CodePointStream cps) {
+void tokenise(ParserContext& cxt, sc::lex::CodePointStream cps, KeepTokens keep) {
     Lexed lexed { cxt.text_info, *cxt.graph, std::move(cps) };
+    if (keep == KeepTokens::Yes)
+        lexed.action.comments = &cxt.comments;
     std::vector<Action::Output> input;
     while (true) {
         const auto out = lexed.lex();
@@ -270,5 +283,6 @@ void tokenise(ParserContext& cxt, sc::lex::CodePointStream cps) {
         cxt.graph->add_diagnostic(std::move(d));
 
     cxt.tokens = std::move(pairing.tokens);
+    cxt.unmatched_brackets = std::move(pairing.unmatched);
 }
 }
