@@ -270,7 +270,7 @@ SCClass (4:1): BytecodeInstanceVariableLast : Object, version 3.16
 |  |  |  |  SCExplicitReturn (7:24)
 |  |  |  |  |  SCRead (7:25): instance v255, declared (5:1429): v255
 |  |  SCMethod (8:5): touch, version 3.16: touch { }
-|  |  |  SCBody (8:13)
+|  |  |  SCBody (8:12)
 SCClass (10:1): BytecodeInstanceVariablePast : Object, version 3.16
 |  SCMemberList (10:1)
 |  |  SCMember (11:9): v0
@@ -551,7 +551,7 @@ SCClass (10:1): BytecodeInstanceVariablePast : Object, version 3.16
 |  |  |  |  SCExplicitReturn (13:24)
 |  |  |  |  |  SCRead (13:25): instance v256, declared (11:1435): v256
 |  |  SCMethod (14:5): touch, version 3.16: touch { }
-|  |  |  SCBody (14:13)
+|  |  |  SCBody (14:12)
 
 
 

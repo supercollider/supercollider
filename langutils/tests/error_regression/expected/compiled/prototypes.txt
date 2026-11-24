@@ -57,9 +57,9 @@ SCClass (4:1): Prototypes : Object
 |  |  |  |  |  |  SCRead (8:70): local c, declared (8:48): c = [a]
 |  |  |  |  |  |  SCRead (8:73): local d, declared (8:57): d = b.neg
 |  |  SCMethod (10:5): variadic: variadic { |a ...rest, kwargs| var b = 1; ^[a, rest, kwargs, b] }
-|  |  |  SCArgumentDeclareList (10:16)
+|  |  |  SCArgumentDeclareList (10:17)
 |  |  |  |  SCArgumentDeclare (10:17): a
-|  |  |  SCArgumentDeclareList (10:16)
+|  |  |  SCArgumentDeclareList (10:17)
 |  |  |  |  SCArgumentDeclare (10:22): rest
 |  |  |  |  SCArgumentDeclare (10:28): kwargs
 |  |  |  SCBody (10:36)

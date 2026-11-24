@@ -133,7 +133,7 @@ SCClass (4:1): StatementRecovery : Object, version 3.16
 |  |  |     19 │ }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (16:14)
+|  |  |  SCBody (16:11)
 |  |  SCMethod (18:5): after, version 3.16: after { ^5 } -> 5
 |  |  |  SCBody (18:13)
 |  |  |  |  SCExplicitReturn (18:13)

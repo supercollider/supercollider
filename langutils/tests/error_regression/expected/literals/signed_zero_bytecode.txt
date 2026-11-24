@@ -8,7 +8,7 @@ SCClass (5:1): SignedZeroBytecode : Object, version 3.16
 |  SCMemberList (5:1)
 |  SCMethodList (5:1)
 |  |  SCMethod (6:5): touch, version 3.16: touch { }
-|  |  |  SCBody (6:13)
+|  |  |  SCBody (6:12)
 |  |  SCMethod (7:5): positive, version 3.16: positive { this.touch; ^0.0 }
 |  |  |  SCBody (7:16)
 |  |  |  |  SCMessage (7:16): touch

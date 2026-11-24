@@ -21,7 +21,7 @@ SCClass (3:1): StatementUnbalanced : Object, version 3.16
 |  |  |      8 │ StatementUnbalancedCall {
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCBody (5:22)
+|  |  |  SCBody (5:19)
 SCClass (8:1): StatementUnbalancedCall : Object, version 3.16
 |  SCMemberList (8:1)
 |  SCMethodList (8:1)

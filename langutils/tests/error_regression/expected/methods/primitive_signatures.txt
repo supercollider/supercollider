@@ -56,7 +56,7 @@ SCClass (7:1): PrimitiveSignatures : Object
 |  |  |  |  |  SCMessage (15:33): primitiveFailed
 |  |  |  |  |  |  SCSpecial (15:33): this
 |  |  SCMethod (17:5): args: args { |...rest| _PrimArgs ^this.primitiveFailed }
-|  |  |  SCArgumentDeclareList (17:12)
+|  |  |  SCArgumentDeclareList (17:13)
 |  |  |  |  SCArgumentDeclare (17:16): rest
 |  |  |  SCBody (17:32)
 |  |  |  |  SCExplicitReturn (17:32)
@@ -82,7 +82,7 @@ SCClass (7:1): PrimitiveSignatures : Object
 |  |  |  |  |  SCMessage (20:30): primitiveFailed
 |  |  |  |  |  |  SCSpecial (20:30): this
 |  |  SCMethod (22:5): kwargs: kwargs { |...rest, kwargs| _PrimKwargs ^this.primitiveFailed }
-|  |  |  SCArgumentDeclareList (22:14)
+|  |  |  SCArgumentDeclareList (22:15)
 |  |  |  |  SCArgumentDeclare (22:18): rest
 |  |  |  |  SCArgumentDeclare (22:24): kwargs
 |  |  |  SCBody (22:44)
@@ -97,14 +97,14 @@ SCClass (7:1): PrimitiveSignatures : Object
 |  |  |     23 │     // expect: poisoned
 |  |  |     24 │     // expect-error: Primitive argument mismatch
 |  |  |     25 │     kwargsMissing { |...rest| _PrimKwargs ^this.primitiveFailed }
-|  |  |        ┆                     ^^^^^^^^^ ^^^^^^^^^^^ ...as this primitive takes them.
-|  |  |        ┆                     └ Insert variadic keyword arguments, `...args, kwargs`...
+|  |  |        ┆                      ^^^^^^^  ^^^^^^^^^^^ ...as this primitive takes them.
+|  |  |        ┆                      └ Insert variadic keyword arguments, `...args, kwargs`...
 |  |  |     26 │     // expect: no diagnostics
 |  |  |     27 │     unknown { |a, b, c| _NotInTheTable ^this.primitiveFailed }
 |  |  |     28 │ }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCArgumentDeclareList (25:21)
+|  |  |  SCArgumentDeclareList (25:22)
 |  |  |  |  SCArgumentDeclare (25:25): rest
 |  |  |  SCBody (25:43)
 |  |  |  |  SCExplicitReturn (25:43)

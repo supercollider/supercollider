@@ -78,7 +78,7 @@ SCClass (2:1): ConstantResults : Object, version 3.16
 |  |  |  SCBody (14:39)
 |  |  |  |  SCExplicitReturn (14:39)
 |  |  |  |  |  SCFunction (14:40)
-|  |  |  |  |  |  SCArgumentDeclareList (14:42)
+|  |  |  |  |  |  SCArgumentDeclareList (14:43)
 |  |  |  |  |  |  |  SCArgumentDeclare (14:46): x
 |  |  |  |  |  |  SCBody (14:40)
 |  |  |  |  |  |  |  SCLiteral (14:49) = 1
@@ -154,7 +154,7 @@ SCClass (2:1): ConstantResults : Object, version 3.16
 |  |  |  SCBody (27:30)
 |  |  |  |  SCLiteral (27:30) = 1
 |  |  SCMethod (29:5): method_empty, version 3.16: method_empty { }
-|  |  |  SCBody (29:20)
+|  |  |  SCBody (29:19)
 |  |  SCMethod (31:5): method_with_argument, version 3.16: method_with_argument { |x| ^1 }
 |  |  |  SCArgumentDeclareList (31:29)
 |  |  |  |  SCArgumentDeclare (31:29): x

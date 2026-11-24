@@ -39,5 +39,5 @@ SCClass (3:1): DeadCodeAfterReturn : Object, version 3.16
 |  |  |  |  SCMessage (13:30): foo
 |  |  |  |  |  SCSpecial (13:30): this
 |  |  SCMethod (14:5): foo, version 3.16: foo { }
-|  |  |  SCBody (14:11)
+|  |  |  SCBody (14:10)
 Successfully compiled 16 classes.

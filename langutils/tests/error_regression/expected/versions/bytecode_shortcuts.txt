@@ -142,7 +142,7 @@ SCClass (5:1): BytecodeShortcuts : Object
 |  |  |  |  SCExplicitReturn (59:37)
 |  |  |  |  |  SCLiteral (59:38) = 1
 |  |  SCMethod (61:5): variadic: variadic { |...a| ^1 }
-|  |  |  SCArgumentDeclareList (61:16)
+|  |  |  SCArgumentDeclareList (61:17)
 |  |  |  |  SCArgumentDeclare (61:20): a
 |  |  |  SCBody (61:23)
 |  |  |  |  SCExplicitReturn (61:23)

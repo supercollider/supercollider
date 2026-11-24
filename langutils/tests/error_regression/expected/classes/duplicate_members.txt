@@ -8,12 +8,12 @@ SCClass (2:1): Dup1 : Object, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Duplicate member in class
-|  classes/duplicate_members.sc:3:11
+|  classes/duplicate_members.sc:3:12
 |      1 │ //# VERSION 3.16
 |      2 │ Dup1 {
 |      3 │     var a, a;
-|        ┆        ^^ ^^ ...and again here.
-|        ┆        └ This member is declared here...
+|        ┆         ^  ^ ...and again here.
+|        ┆         └ This member is declared here...
 |      4 │ }
 |      5 │ 
 |      6 │ Dup2B {
@@ -53,12 +53,12 @@ SCClass (15:1): DupWithValues : Object, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Duplicate member in class
-|  classes/duplicate_members.sc:16:18
+|  classes/duplicate_members.sc:16:19
 |     14 │ // With initial values, which are declared by another path.
 |     15 │ DupWithValues {
 |     16 │     var both = 1, both = 2;
-|        ┆        ^^^^^^^^^ ^^^^^^^^^ ...and again here.
-|        ┆        └ This member is declared here...
+|        ┆         ^^^^^^^^  ^^^^^^^^ ...and again here.
+|        ┆         └ This member is declared here...
 |     17 │     var first;
 |     18 │     var first = 1;
 |     19 │     var second = 1;
@@ -68,13 +68,13 @@ SCClass (15:1): DupWithValues : Object, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Duplicate member in class
-|  classes/duplicate_members.sc:18:8
+|  classes/duplicate_members.sc:18:9
 |     15 │ DupWithValues {
 |     16 │     var both = 1, both = 2;
 |     17 │     var first;
-|        ┆        ^^^^^^ This member is declared here...
+|        ┆         ^^^^^ This member is declared here...
 |     18 │     var first = 1;
-|        ┆        ^^^^^^^^^^ ...and again here.
+|        ┆         ^^^^^^^^^ ...and again here.
 |     19 │     var second = 1;
 |     20 │     var second;
 |     21 │     classvar shared = 1, shared = 2;
@@ -84,13 +84,13 @@ SCClass (15:1): DupWithValues : Object, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Duplicate member in class
-|  classes/duplicate_members.sc:20:8
+|  classes/duplicate_members.sc:20:9
 |     17 │     var first;
 |     18 │     var first = 1;
 |     19 │     var second = 1;
-|        ┆        ^^^^^^^^^^^ This member is declared here...
+|        ┆         ^^^^^^^^^^ This member is declared here...
 |     20 │     var second;
-|        ┆        ^^^^^^^ ...and again here.
+|        ┆         ^^^^^^ ...and again here.
 |     21 │     classvar shared = 1, shared = 2;
 |     22 │ }
 |
@@ -99,12 +99,12 @@ SCClass (15:1): DupWithValues : Object, version 3.16
 |
 |  ──────────────────────────────────────────────────────────────────────────────────
 |  Error: Duplicate member in class
-|  classes/duplicate_members.sc:21:25
+|  classes/duplicate_members.sc:21:26
 |     19 │     var second = 1;
 |     20 │     var second;
 |     21 │     classvar shared = 1, shared = 2;
-|        ┆             ^^^^^^^^^^^ ^^^^^^^^^^^ ...and again here.
-|        ┆             └ This member is declared here...
+|        ┆              ^^^^^^^^^^  ^^^^^^^^^^ ...and again here.
+|        ┆              └ This member is declared here...
 |     22 │ }
 |
 |  Duplicate members are not allowed in a class definition. Please delete one.

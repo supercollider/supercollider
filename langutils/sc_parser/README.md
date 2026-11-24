@@ -91,6 +91,9 @@ graph->depth_first_traverse(*graph->root_any(),
 `depth_first_traverse` has optional callbacks before, after, and on leaving the children (useful for serialising the data to json).
 `flat_walk` visits every node in storage order, which is faster when the tree shape does not matter.
 
+`depth_first_traverse` is recursive so can overflow the stack, use `flat_walk` if that is a problem.
+
+
 ## Version comments
 
 A comment such as `//# VERSION 3.16` or `//# VERSION legacy` at the top of a file sets the language version. It is read

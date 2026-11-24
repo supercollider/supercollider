@@ -11,6 +11,13 @@
 #include "lexer_token.hpp"
 #include "sc_source/text_location.hpp"
 
+namespace sc::ast::parser {
+// Where something not written goes, e.g., the arguments of `f()`, after the `(`.
+[[nodiscard]] inline sc::src::SourceCodeRange empty_after(sc::src::SourceCodeRange r) { return { r.end, r.end }; }
+// E.g., the multiplier of `pi`, before it.
+[[nodiscard]] inline sc::src::SourceCodeRange empty_before(sc::src::SourceCodeRange r) { return { r.begin, r.begin }; }
+}
+
 inline sc::ast::parser::parser::token_kind_type to_parser_token(sc::lex::TokenType t) {
     using T = sc::ast::parser::parser::token_kind_type;
     using TokenType = sc::lex::TokenType;

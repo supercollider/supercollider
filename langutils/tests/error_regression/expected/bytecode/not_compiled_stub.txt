@@ -8,7 +8,7 @@ SCClass (6:1): PoisonedMethodError : Object, version 3.16
 |  SCMemberList (6:1)
 |  SCMethodList (6:1)
 |  |  SCMethod (8:5): throw, version 3.16: throw { }
-|  |  |  SCBody (8:13)
+|  |  |  SCBody (8:12)
 SCClass (6:1): Meta_PoisonedMethodError : Meta_Object, version 3.16
 |  SCMemberList (6:1)
 |  SCMethodList (6:1)
@@ -23,7 +23,7 @@ SCClass (11:1): NotCompiledStub : Object, version 3.16
 |  SCMemberList (11:1)
 |  SCMethodList (11:1)
 |  |  SCMethod (12:5): foo, version 3.16: foo { |... a| ^a }
-|  |  |  SCArgumentDeclareList (12:11)
+|  |  |  SCArgumentDeclareList (12:12)
 |  |  |  |  SCArgumentDeclare (12:16): a
 |  |  |  SCBody (12:19)
 |  |  |  |  SCExplicitReturn (12:19)

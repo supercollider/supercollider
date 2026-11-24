@@ -301,9 +301,9 @@ SCClass (84:1): ArrayedCollection : Object, version 3.16
 |  |  |
 |  |  |  The compiler replaces the code of some loop methods, e.g., `Integer:do` and `ArrayedCollection:do`, with special bytecode that uses the method's arguments and variables directly, so they must be declared as in the class library.
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  SCArgumentDeclareList (91:17)
+|  |  |  SCArgumentDeclareList (91:21)
 |  |  |  |  SCArgumentDeclare (91:21): function
-|  |  |  SCArgumentDeclareList (91:17)
+|  |  |  SCArgumentDeclareList (91:21)
 |  |  |  |  SCArgumentDeclare (91:33): rest
 |  |  |  SCBody (92:9)
 |  |  |  |  SCVariableDeclare (92:13): i, prototype

@@ -10,8 +10,10 @@
 #include <filesystem>
 #include <fstream>
 #include <iterator>
+#include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -720,10 +722,10 @@ std::optional<std::string> check_source_tokens(const sc::src::TextInfo& text_inf
     return std::nullopt;
 }
 
-// Checks every `.sc` and `.scd` file under a directory, returning how many there were and what was wrong.
-std::tuple<std::size_t, std::vector<std::string>> check_source_tokens_in(const std::filesystem::path& dir) {
+// Parses every `.sc` and `.scd` file under a directory, keeping the tokens, and calls f with its path, text, and graph.
+// Returns how many files there were.
+template <typename F> std::size_t parse_each_file(const std::filesystem::path& dir, F f) {
     std::size_t files { 0 };
-    std::vector<std::string> failures;
     for (const auto& entry : std::filesystem::recursive_directory_iterator(dir)) {
         const auto ext = entry.path().extension();
         if (!entry.is_regular_file() || (ext != ".sc" && ext != ".scd"))
@@ -735,10 +737,128 @@ std::tuple<std::size_t, std::vector<std::string>> check_source_tokens_in(const s
             text_of(contents.str(), ext == ".sc" ? sc::src::TextKind::ClassFile : sc::src::TextKind::ScdFile);
         const auto [graph, accepted] = P::parse(text_info, P::KeepTokens::Yes);
         ++files;
-        if (const auto wrong = check_source_tokens(*text_info, *graph))
-            failures.push_back(entry.path().string() + ": " + *wrong);
+        f(entry.path(), *text_info, *graph);
     }
+    return files;
+}
+
+// Checks the kept tokens of every `.sc` and `.scd` file under a directory, returning how many there were and what was
+// wrong.
+std::tuple<std::size_t, std::vector<std::string>> check_source_tokens_in(const std::filesystem::path& dir) {
+    std::vector<std::string> failures;
+    const auto files = parse_each_file(
+        dir, [&](const std::filesystem::path& path, const sc::src::TextInfo& text_info, const P::ASTGraph& graph) {
+            if (const auto wrong = check_source_tokens(text_info, graph))
+                failures.push_back(path.string() + ": " + *wrong);
+        });
     return { files, failures };
+}
+
+// A node range rule that doesn't hold, see broken_range_rules. `rule` names the rule and the node, with its parent
+// or sibling.
+struct BrokenRangeRule {
+    std::string rule;
+    std::string where;
+};
+
+// The node range rules, other than which tokens belong to which node:
+// - a non-empty range starts at the start of a token and ends at the end of one;
+// - a node lies inside its parent;
+// - a node doesn't overlap the sibling before it. Siblings needn't be in source order, e.g., a BinaryMessage's
+//   selector is its first child, so only neighbours are compared;
+// - something not written, a Missing node or a list of parts with nothing in it, has an empty range.
+// The root, which spans the whole text, and Error nodes and their children, whose ranges come from error recovery,
+// aren't checked.
+std::vector<BrokenRangeRule> broken_range_rules(const sc::src::TextInfo& text_info, const P::ASTGraph& graph) {
+    const auto& kept = graph.source_tokens();
+    if (!kept)
+        return { { "no tokens were kept", "" } };
+    std::vector<std::uint32_t> begins;
+    std::vector<std::uint32_t> ends;
+    for (const auto& t : kept->tokens.raw())
+        if (!t.inserted() && t.token != sc::lex::TokenType::EndOfFile) {
+            begins.push_back(t.range.begin.absolute);
+            ends.push_back(t.range.end.absolute);
+        }
+    const auto is_empty = [](const sc::src::SourceCodeRange& r) { return r.begin.absolute == r.end.absolute; };
+    const auto overlap = [&](const sc::src::SourceCodeRange& a, const sc::src::SourceCodeRange& b) {
+        if (is_empty(a) && is_empty(b))
+            return false;
+        if (is_empty(a) || is_empty(b)) {
+            const auto& point = is_empty(a) ? a : b;
+            const auto& other = is_empty(a) ? b : a;
+            return other.begin.absolute < point.begin.absolute && point.begin.absolute < other.end.absolute;
+        }
+        return a.begin.absolute < b.end.absolute && b.begin.absolute < a.end.absolute;
+    };
+    const auto where = [&](const sc::src::SourceCodeRange& r) {
+        std::string text { text_info.read(r) };
+        std::replace(text.begin(), text.end(), '\n', ' ');
+        if (text.size() > 60)
+            text = text.substr(0, 60) + "...";
+        return std::to_string(r.begin.line_number + 1) + ":" + std::to_string(r.begin.codepoint_in_line + 1) + " '"
+            + text + "'";
+    };
+    const auto name_of = [&](P::Index i) { return std::string { P::ASTGraph::node_name(graph.payload(i)) }; };
+    const std::set<std::string> lists_of_parts { "ArgumentList",
+                                                 "BigMemberList",
+                                                 "BlockContentsList",
+                                                 "BlockList",
+                                                 "DeclareArgumentList",
+                                                 "DeclareClassVarList",
+                                                 "DeclareVariableList",
+                                                 "ExprSeq",
+                                                 "GeneratorQualList",
+                                                 "MethodList",
+                                                 "NameList" };
+
+    std::vector<BrokenRangeRule> broken;
+    graph.flat_walk([&](const P::ASTGraph::Edges& e, const P::ASTGraph::Variant& v, const sc::src::SourceCodeRange& r,
+                        size_t) {
+        if (!e.parent)
+            return;
+        const std::string name = P::ASTGraph::node_name(v);
+        const P::Index parent { *e.parent };
+        const std::string parent_name = name_of(parent);
+        if (name == "Error" || parent_name == "Error")
+            return;
+        if (!is_empty(r)
+            && (!std::binary_search(begins.begin(), begins.end(), r.begin.absolute)
+                || !std::binary_search(ends.begin(), ends.end(), r.end.absolute)))
+            broken.push_back({ "not on token boundaries: " + name, where(r) });
+        const auto& p = graph.location(parent);
+        if (r.begin.absolute < p.begin.absolute || p.end.absolute < r.end.absolute)
+            broken.push_back({ "outside its parent: " + name + " in " + parent_name, where(r) });
+        if (e.prev_sibling) {
+            const P::Index sibling { *e.prev_sibling };
+            const auto sibling_name = name_of(sibling);
+            if (sibling_name != "Error" && overlap(r, graph.location(sibling)))
+                broken.push_back(
+                    { "overlaps a sibling: " + std::min(name, sibling_name) + " and " + std::max(name, sibling_name),
+                      where(r) });
+        }
+        const bool unwritten = name == "Missing" || (!e.first_child && lists_of_parts.count(name) > 0);
+        if (unwritten && !is_empty(r))
+            broken.push_back({ "not written but not empty: " + name, where(r) });
+    });
+    return broken;
+}
+
+// Checks the node ranges of every `.sc` and `.scd` file under a directory, reporting each broken rule once, with how
+// often it broke.
+void check_node_ranges_in(const std::filesystem::path& dir) {
+    std::map<std::string, std::tuple<std::size_t, std::string>> broken;
+    const auto files = parse_each_file(
+        dir, [&](const std::filesystem::path& path, const sc::src::TextInfo& text_info, const P::ASTGraph& graph) {
+            for (const auto& b : broken_range_rules(text_info, graph)) {
+                auto& [count, example] = broken[b.rule];
+                if (count++ == 0)
+                    example = path.string() + ":" + b.where;
+            }
+        });
+    BOOST_TEST(files > 0);
+    for (const auto& [rule, found] : broken)
+        BOOST_ERROR(rule + " (" + std::to_string(std::get<0>(found)) + " times), e.g., " + std::get<1>(found));
 }
 }
 
@@ -828,4 +948,77 @@ BOOST_AUTO_TEST_CASE(kept_tokens_corpus) {
     BOOST_TEST_MESSAGE(std::to_string(files) + " corpus files, " + std::to_string(failures.size()) + " failures");
     for (const auto& f : failures)
         BOOST_ERROR(f);
+}
+
+
+BOOST_AUTO_TEST_CASE(node_ranges_class_library) { check_node_ranges_in(SC_CLASS_LIBRARY_DIR); }
+
+// Set SC_CORPUS to a directory of `.sc` and `.scd` files to check them too.
+BOOST_AUTO_TEST_CASE(node_ranges_corpus) {
+    if (const char* corpus = std::getenv("SC_CORPUS"))
+        check_node_ranges_in(corpus);
+}
+
+// Which tokens belong to a node:
+// - a list of parts runs from its first part to its last, and the brackets, keyword, or terminator around it belong
+//   to its parent: `( )`, `| |`, `arg ;`, `{ }`, and `var`;
+// - an array or dictionary includes its brackets, the array in `Set[1, 2]` too;
+// - brackets around an expression belong to its parent, see ASTGraph::is_bracketed;
+// - something not written, a Missing node or an empty list, has an empty range where it would be.
+BOOST_AUTO_TEST_CASE(node_range_delimiters) {
+    // The text of every node with this name, in the order they were made, so inner nodes first.
+    const auto ranges_of = [](const char* src, sc::src::TextKind kind, std::string_view name) {
+        const auto text_info = text_of(src, kind);
+        const auto [graph, accepted] = P::parse(text_info);
+        std::vector<std::string> texts;
+        graph->flat_walk([&](const auto&, const auto& v, const sc::src::SourceCodeRange& r, size_t) {
+            if (P::ASTGraph::node_name(v) == name)
+                texts.emplace_back(text_info->read(r));
+        });
+        return texts;
+    };
+    const auto scd = sc::src::TextKind::ScdFile;
+    using Texts = std::vector<std::string>;
+
+    // A list of parts leaves out the brackets, keyword, or terminator around it.
+    BOOST_TEST(ranges_of("f = { |a, b| a }", scd, "DeclareArgumentList") == Texts { "a, b" },
+               boost::test_tools::per_element());
+    BOOST_TEST(ranges_of("f = { arg a, b; a }", scd, "DeclareArgumentList") == Texts { "a, b" },
+               boost::test_tools::per_element());
+    BOOST_TEST(ranges_of("f = { |a ... b| a }", scd, "DeclareArgumentList") == Texts { "a ... b" },
+               boost::test_tools::per_element());
+    BOOST_TEST(ranges_of("f = { arg ... b; b }", scd, "DeclareArgumentList") == Texts { "... b" },
+               boost::test_tools::per_element());
+    BOOST_TEST(ranges_of("f = { | | 1 }", scd, "DeclareArgumentList") == Texts { "" },
+               boost::test_tools::per_element());
+    BOOST_TEST(ranges_of("f = { arg; 1 }", scd, "DeclareArgumentList") == Texts { "" },
+               boost::test_tools::per_element());
+    BOOST_TEST(ranges_of("f(1, 2)", scd, "ArgumentList") == Texts { "1, 2" }, boost::test_tools::per_element());
+    BOOST_TEST(ranges_of("f = { var a = 1, b; a }", scd, "DeclareVariableList") == Texts { "a = 1, b" },
+               boost::test_tools::per_element());
+    BOOST_TEST(ranges_of("f = { 1; 2 }", scd, "BlockContentsList") == Texts { "1; 2" },
+               boost::test_tools::per_element());
+    BOOST_TEST(ranges_of("A { var <a, b; classvar c; }", sc::src::TextKind::ClassFile, "DeclareClassVarList")
+                   == (Texts { "<a, b", "c" }),
+               boost::test_tools::per_element());
+    BOOST_TEST(ranges_of("A { var <a, b; classvar c; }", sc::src::TextKind::ClassFile, "BigMemberList")
+                   == Texts { "var <a, b; classvar c" },
+               boost::test_tools::per_element());
+    BOOST_TEST(ranges_of("x = \"a\" \"b\"", scd, "StringLineList") == Texts { "\"a\" \"b\"" },
+               boost::test_tools::per_element());
+
+    // A literal includes its brackets.
+    BOOST_TEST(ranges_of("x = [1, 2]; y = Set[3]", scd, "ArrayList") == (Texts { "[1, 2]", "[3]" }),
+               boost::test_tools::per_element());
+    BOOST_TEST(ranges_of("x = (a: 1)", scd, "DictionaryNode") == Texts { "(a: 1)" }, boost::test_tools::per_element());
+
+    // Brackets around an expression belong to its parent.
+    BOOST_TEST(ranges_of("x = (1 + 2) * 3", scd, "BinaryMessage") == (Texts { "1 + 2", "(1 + 2) * 3" }),
+               boost::test_tools::per_element());
+
+    // Something not written is empty.
+    BOOST_TEST(ranges_of("x = Pfunc { 1 }; y.f { 2 }; z.f()", scd, "ArgumentList") == (Texts { "", "", "" }),
+               boost::test_tools::per_element());
+    BOOST_TEST(ranges_of("x = pi; #a, b = c", scd, "Missing") == (Texts { "", "" }), boost::test_tools::per_element());
+    BOOST_TEST(ranges_of("f = { }", scd, "BlockContentsList") == Texts { "" }, boost::test_tools::per_element());
 }
