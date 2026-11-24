@@ -104,13 +104,10 @@ public:
 
     const std::filesystem::path& path() const noexcept { return m_path; }
 
-    const std::filesystem::path& resourceDir() const noexcept { return m_resourceDir; }
-
 private:
     void* m_module = nullptr; // type-erased module handle
     std::string m_name;
     std::filesystem::path m_path;
-    std::filesystem::path m_resourceDir;
 };
 
 

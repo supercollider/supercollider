@@ -230,7 +230,6 @@ checkAPIVersion(const std::filesystem::path& path, const ServerPluginInfo* info,
                  ErrorMessage::majorApiVersionMismatch(path, info->mApiVersion) };
     }
 
-
     if (int minVersion = info->mMinRequiredApiVersion; minVersion > sc_api_version) {
         // min. required version not met
         return { ServerPluginError::MinRequiredAPIVersionNotMet, ErrorMessage::minApiVersionNotMet(minVersion) };
@@ -321,6 +320,8 @@ ServerPluginModule::ServerPluginModule(const std::filesystem::path& path): m_pat
         throw ServerPluginException(ServerPluginError::WrongServerType, "Wrong Server type.\n");
     }
 
+    // the legacy "api_version" function serves as a fallback in case the plugin does not
+    // export the "plugin_info" function (yet).
     auto apiVersionFunc = reinterpret_cast<PluginInfoFunctionOld>(getSymbol(handle, "api_version"));
 
     if (auto [errorCode, errorMessage] = checkAPIVersion(path, info, apiVersionFunc);
@@ -336,19 +337,6 @@ ServerPluginModule::ServerPluginModule(const std::filesystem::path& path): m_pat
     }
     m_name = info->mName;
 
-    if (info->mResourceDir == nullptr) {
-        throw ServerPluginException(ServerPluginError::BadPluginInfo, "resource dir is NULL");
-    }
-    try {
-        m_resourceDir = std::filesystem::u8path(info->mResourceDir);
-        if (m_resourceDir.empty() || m_resourceDir.is_relative()) {
-            // a relative resource dir is based on the plugin binary dir
-            m_resourceDir = m_path.parent_path() / m_resourceDir;
-        }
-    } catch (const std::exception& e) {
-        throw ServerPluginException(ServerPluginError::BadPluginInfo, "bad resource dir");
-    }
-
     // done!
     m_module = handle;
 }
@@ -357,14 +345,12 @@ ServerPluginModule::~ServerPluginModule() { close(); }
 
 ServerPluginModule::ServerPluginModule(ServerPluginModule&& other) noexcept:
     m_module(std::exchange(other.m_module, nullptr)),
-    m_path(std::move(other.m_path)),
-    m_resourceDir(std::move(other.m_resourceDir)) {}
+    m_path(std::move(other.m_path)) {}
 
 ServerPluginModule& ServerPluginModule::operator=(ServerPluginModule&& other) noexcept {
     close();
     m_module = std::exchange(other.m_module, nullptr);
     m_path = std::move(other.m_path);
-    m_resourceDir = std::move(other.m_resourceDir);
     return *this;
 }
 
@@ -376,13 +362,11 @@ void ServerPluginModule::load(InterfaceTable* interfaceTable) {
 
         auto path = m_path.u8string();
         auto binDir = m_path.parent_path().u8string();
-        auto resourceDir = m_resourceDir.u8string();
 
         ServerPluginContext ctx;
-        ctx.mStructSize = SC_IMPLEMENTED_STRUCT_SIZE(ServerPluginContext, mResourceDir);
-        ctx.mPath = path.c_str();
-        ctx.mBinDir = binDir.c_str();
-        ctx.mResourceDir = resourceDir.c_str();
+        ctx.mStructSize = SC_IMPLEMENTED_STRUCT_SIZE(ServerPluginContext, mPluginDir);
+        ctx.mPluginPath = path.c_str();
+        ctx.mPluginDir = binDir.c_str();
 
         loadFunc(interfaceTable, &ctx);
     } else {

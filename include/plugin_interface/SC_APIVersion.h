@@ -98,7 +98,7 @@
 //!
 //! Hypothetical example:
 //! @todo Replace this with an actual example once we add the first extension.
-//! @code
+//! @code{.c}
 //! struct Unit {
 //!     size_t mStructSize;
 //!     World* mWorld;
@@ -148,7 +148,7 @@
 //! of a member that actually does not exist.
 //!
 //! Example:
-//! @code
+//! @code{.c}
 //! struct Unit {
 //!     size_t mStructSize;
 //!     World* mWorld;
@@ -177,7 +177,7 @@
 //!
 //! Hypothetical example:
 //! @todo Replace this with an actual example once we add the first extension.
-//! @code
+//! @code{.c}
 //! struct Unit {
 //!     size_t mStructSize;
 //!     World* mWorld;

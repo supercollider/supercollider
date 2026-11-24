@@ -9,12 +9,12 @@
 #include <string>
 
 static InterfaceTable* ft;
-static std::string pluginPath;
 static float* globalData;
 
 PluginLoad(TestPlugin) {
     ft = inTable;
-    pluginPath = inContext->mPath;
+    std::string path = inContext->mPluginPath;
+    std::string dir = inContext->mPluginDir;
     globalData = new float[100] {};
 }
 

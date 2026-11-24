@@ -100,6 +100,7 @@ functionality to plugins. To prevent potential issues, the developer must mark t
 as API extensions and they must explicitly enabled by the plugin author.
 See the "Plugin versioning" section below for more information.
 
+
 # Server plugins
 
 A Server plugin (sometimes also called 'SC extensions') is a dynamic library (DLL on
@@ -130,31 +131,59 @@ to the interface table as the first argument. The plugin typically stores this p
 a (static) global variable called `ft`, as explained in the previous section.
 
 Since SC 3.15, the `load()` function also receives a context object as a second argument
-which contains the plugin binary directory as well as the plugin resource directory.
-This can be useful if the plugin requires additional resourches, such as sound files,
-textfiles or binary data, that are bundled together with the extension.
+which contains the plugin's file path and directory. This can be useful if the plugin
+requires additional data resources - such as sound files, textfiles or binary data -
+that are bundled together with the extension. Some plugins might even need to run custom
+executables or explicitly load shared libraries with dlopen()/LoadLibrary().
 
-`PluginLoad` is a macro that defines and exports the entry point function together with
+NOTE: It is recommended to allow overriding the data resource directory with the
+`SC_PLUGIN_DATA_DIR` preprocessor definition. (Linux packages often install binary and
+data resources to different directories. This is especially relevant if the data
+resources are shared between the Client and Server.)
+
+`PlugInLoad` is a macro that defines and exports the entry point function together with
 some other functions that are required for API versioning (more about that later).
 The actual signature of the generated entry point function is
 `void load(InterfaceTable* inTable, const ServerPluginContext* inContext)`.
+The parameters `inTable` and `inContext` are accessible in the macro function body.
 
 ```cpp
 static InterfaceTable* ft;
+static MyPluginData* gData;
 
-PluginLoad(MyPlugin) {
+PlugInLoad(MyPlugin) {
     // assign interface table
     ft = inTable;
 
-    // for example, read files in the resource directory
-    readDataFiles(inContext->mResourceDir);
+    // (optionally) load data resources
+#ifdef SC_PLUGIN_DATA_DIR
+    const char* dataDir = SC_PLUGIN_DATA_DIR
+#else
+    const char* dataDir = inContext->mPluginDir;
+#endif
+    gData = loadData(dataDir);
 
     // define UGens or commands...
 }
 ```
 
-Side note: the plugin's resource directory can be modified at compile time with the
-SC_PLUGIN_RESOURCE_DIR define. See SC_InterfaceTable.h for further documentation.
+### The unload function
+
+A plugin can optionally export an `unload` function with the `PlugInUnload` macro.
+This is necessary for safely deleting global resources that have been allocated in the
+`PlugInLoad` function. This is not only about preventing memory leaks. For example,
+if a plugin spawns a global helper thread, that thread can only be safely joined in the
+`unload` function.
+
+```cpp
+PlugInUnload(MyPlugin) {
+    delete gData;
+}
+```
+
+NOTE: relying on C++ global object destructors can be dangerous and is not recommended!
+Instead, release your global resources explicitly in the `unload` function.
+
 
 # API versioning
 

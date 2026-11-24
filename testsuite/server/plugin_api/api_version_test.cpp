@@ -133,21 +133,4 @@ BOOST_AUTO_TEST_CASE(api_v4_5_info_test) {
     BOOST_TEST(module.name() == "TestPlugin");
 
     BOOST_TEST(module.path() == path);
-
-    // by default, the resource dir should be the same as the plugin binary dir
-    BOOST_TEST(fs::equivalent(module.resourceDir(), path.parent_path()));
-}
-
-BOOST_AUTO_TEST_CASE(api_v4_5_rel_path_test) {
-    auto path = fs::absolute("./plugins/test_plugin_v4_5_rel_path.scx");
-    ServerPluginModule module(path);
-
-    BOOST_TEST(module.resourceDir().lexically_normal() == (path.parent_path() / "data").lexically_normal());
-}
-
-BOOST_AUTO_TEST_CASE(api_v4_5_abs_path_test) {
-    auto path = fs::absolute("./plugins/test_plugin_v4_5_abs_path.scx");
-    ServerPluginModule module(path);
-
-    BOOST_TEST(module.resourceDir().lexically_normal() == (path.parent_path() / "data").lexically_normal());
 }
