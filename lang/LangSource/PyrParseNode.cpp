@@ -354,6 +354,11 @@ void compilePyrMethodNode(CompilerContext& cxt, PyrMethodNode* node, PyrSlot* re
 void compilePyrLiteralNode(CompilerContext& cxt, PyrSlotNode* node, PyrSlot* result);
 
 PyrClass* getNodeSuperclass(CompilerContext& cxt, PyrClassNode* node);
+
+// A FunctionDef's file path is nil when the code has no file.
+static PyrSlot filePathSlot(const TextInfo& textInfo) {
+    return textInfo.filePath ? PyrSlot::make(*textInfo.filePath) : PyrSlot {};
+}
 void countNodeMethods(PyrClassNode* node, int* numClassMethods, int* numInstMethods);
 void compileExtNodeMethods(CompilerContext& cxt, PyrClassExtNode* node);
 void countVarDefs(PyrClassNode* node);
@@ -749,7 +754,7 @@ void fillClassPrototypes(CompilerContext& cxt, PyrClassNode* node, PyrClass* cla
             method->varNames = PyrSlot {};
             method->ownerclass = PyrSlot::make(owner_class);
             method->name = method_name;
-            method->filePath = PyrSlot::make(cxt.textInfo->filePathDescription);
+            method->filePath = PyrSlot::make(cxt.textInfo->classFilePath());
             method->isClosed = PyrSlot::make(false);
             method->sourceCodeFileOrSnippet = PyrSlot::make(cxt.textInfo->normalisedSourceAsPyr);
             method->sourceCodeStartIndex = PyrSlot::make(static_cast<int>(loc.begin.absolute));
@@ -1097,9 +1102,9 @@ void PyrClassNode::compile(CompilerContext& cxt, PyrSlot* result) {
     }
     cxt.currentClass = classobj;
     cxt.currentMetaClass = metaclassobj;
-    classobj->filenameSym = PyrSlot::make(cxt.textInfo->filePathDescription);
+    classobj->filenameSym = PyrSlot::make(cxt.textInfo->classFilePath());
     classobj->charPos = PyrSlot::make(static_cast<int>(mClassName->location.begin.absolute));
-    metaclassobj->filenameSym = PyrSlot::make(cxt.textInfo->filePathDescription);
+    metaclassobj->filenameSym = PyrSlot::make(cxt.textInfo->classFilePath());
     metaclassobj->charPos = PyrSlot::make(static_cast<int>(mClassName->location.begin.absolute));
 
     // fill inst and class prototypes
@@ -1543,7 +1548,7 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
             .append(":")
             .append(slotRawSymbol(&oldmethod->name)->name)
             .append("\t")
-            .append(cxt.textInfo->filePathDescription.name)
+            .append(cxt.textInfo->classFilePath().name)
             .append("\t")
             .append(slotRawSymbol(&oldmethod->filePath)->name)
             .append("\n");
@@ -1607,7 +1612,7 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
 
     method->contextDef = PyrSlot {}; // not a closure, the syntax isn't designed for this.
     method->name = mMethodName->mSlot;
-    method->filePath = PyrSlot::make(cxt.textInfo->filePathDescription);
+    method->filePath = PyrSlot::make(cxt.textInfo->classFilePath());
     method->isClosed = PyrSlot::make(false);
     method->sourceCodeStartIndex = PyrSlot::make(static_cast<int>(location.begin.absolute));
     method->sourceCodeEndIndex = PyrSlot::make(static_cast<int>(location.end.absolute));
@@ -2075,7 +2080,7 @@ void PyrCallNodeBase::compilePartialApplication(CompilerContext& cxt, unsigned c
 
         block->sourceCodeFileOrSnippet = PyrSlot::make(cxt.textInfo->normalisedSourceAsPyr);
         block->name = deduceNameOfFunctionFromParent(this->mParent);
-        block->filePath = PyrSlot::make(cxt.textInfo->filePathDescription);
+        block->filePath = filePathSlot(*cxt.textInfo);
         block->sourceCodeStartIndex = PyrSlot::make(static_cast<int>(location.begin.absolute));
         block->sourceCodeEndIndex = PyrSlot::make(static_cast<int>(location.end.absolute));
         block->fileLocation = cxt.textInfo->isClassFile ? PyrSlot {} : [&]() {
@@ -4089,7 +4094,7 @@ void PyrBlockNode::compile(CompilerContext& cxt, PyrSlot* slotResult) {
     // TODO: this needs updating to remove any \r
     block->sourceCodeFileOrSnippet = PyrSlot::make(cxt.textInfo->normalisedSourceAsPyr);
     block->name = deduceNameOfFunctionFromParent(this->mParent);
-    block->filePath = PyrSlot::make(cxt.textInfo->filePathDescription);
+    block->filePath = filePathSlot(*cxt.textInfo);
     block->sourceCodeStartIndex = PyrSlot::make(static_cast<int>(location.begin.absolute));
     block->sourceCodeEndIndex = PyrSlot::make(static_cast<int>(location.end.absolute));
 

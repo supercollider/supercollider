@@ -22,10 +22,14 @@
 #include "post_window.hpp"
 #include "util/gui_utilities.hpp"
 #include "../core/main.hpp"
+#include "../core/doc_manager.hpp"
 #include "../core/settings/manager.hpp"
 #include "../core/settings/theme.hpp"
 #include "../core/util/overriding_action.hpp"
 #include "editor.hpp"
+#ifdef SC_USE_QTWEBENGINE
+#    include "help_browser.hpp"
+#endif
 
 #include <QApplication>
 #include <QScreen>
@@ -38,11 +42,23 @@
 #include <QKeyEvent>
 #include <QTextDocumentFragment>
 #include <QMimeData>
+#include <QFileInfo>
 #include <qtextcursor.h>
 #include <qtextformat.h>
 #include <qurl.h>
 
 namespace ScIDE {
+
+// Only these schemes become links, as they are the ones openLink knows how to open.
+static bool isPostWindowLink(const QString& word) {
+    if (!word.contains("://"))
+        return false;
+    const QUrl url(word, QUrl::StrictMode);
+    if (!url.isValid())
+        return false;
+    const QString scheme = url.scheme();
+    return scheme == "file" || scheme == "scdoc" || scheme == "http" || scheme == "https";
+}
 
 PostWindow::PostWindow(QWidget* parent): QPlainTextEdit(parent) {
     setReadOnly(true);
@@ -213,21 +229,24 @@ void PostWindow::post(const QString& text) {
         const auto line_format = formatForPostLine(line);
         cursor.movePosition(QTextCursor::End);
 
-        // If there is some text that looks like a URI and contains '://' then turn it into a html anchor so we can
-        // click it.
+        // Words that are URIs with a known scheme become anchors, see mouseReleaseEvent.
+        // URIs never contain spaces (the compiler percent-encodes file paths), so splitting on spaces is enough.
         if (!line.contains("://")) {
             cursor.insertText(line, line_format);
         } else {
-            // words are just text separated by spaces.
             const auto words = line.split(" ");
             const auto words_count = words.size();
             for (size_t w { 0 }; w < words_count; ++w) {
                 const auto& word = words[w];
                 cursor.movePosition(QTextCursor::End);
 
-                if (const auto maybe_url = QUrl(word, QUrl::ParsingMode::StrictMode);
-                    maybe_url.isValid() && word.contains("://")) {
-                    cursor.insertHtml(QString("<a href='") + word + QString("'>") + word + QString("</a>"));
+                if (isPostWindowLink(word)) {
+                    QTextCharFormat link_format = line_format;
+                    link_format.setAnchor(true);
+                    link_format.setAnchorHref(word);
+                    link_format.setForeground(palette().link());
+                    link_format.setFontUnderline(true);
+                    cursor.insertText(word, link_format);
                 } else {
                     cursor.insertText(word, line_format);
                 }
@@ -356,13 +375,52 @@ void PostWindow::mousePressEvent(QMouseEvent* e) {
 
 void PostWindow::mouseReleaseEvent(QMouseEvent* e) {
     // Make sure that the release event was over the same anchor it started on.
-    if (e->button() & Qt::LeftButton && !clickedAnchor.isEmpty() && anchorAt(e->pos()) == clickedAnchor) {
-        QUrl url { clickedAnchor };
-        auto command =
-            QString("PostWindowURLHandler(\"") + url.scheme() + QString("\", \"") + clickedAnchor + QString("\");");
-        emit handleClickedURL(command, true);
-    }
+    if (e->button() & Qt::LeftButton && !clickedAnchor.isEmpty() && anchorAt(e->pos()) == clickedAnchor)
+        openLink(QUrl(clickedAnchor, QUrl::StrictMode));
     QPlainTextEdit::mouseReleaseEvent(e);
+}
+
+// file:///path/to/file.scd#line:column opens the file at that location (line and column are 1-based, both optional).
+// scdoc:///Classes/SinOsc#-ar opens that help page, adding .html when the path has no suffix.
+// http and https open in the help browser.
+void PostWindow::openLink(const QUrl& url) {
+    const QString scheme = url.scheme();
+
+    if (scheme == "file") {
+        QString path = url.toLocalFile();
+#ifdef Q_OS_WIN
+        // file:///C:/a.scd must give C:/a.scd, not /C:/a.scd.
+        if (path.size() > 2 && path[0] == '/' && path[2] == ':')
+            path.remove(0, 1);
+#endif
+        const QStringList location = url.fragment().split(':');
+        const int line = location.value(0).toInt();
+        const int column = location.value(1).toInt();
+        if (line > 0)
+            Main::documentManager()->openAtLine(path, line, column > 0 ? column : 1);
+        else
+            Main::documentManager()->open(path);
+        return;
+    }
+
+#ifdef SC_USE_QTWEBENGINE
+    HelpBrowserDocklet* helpDock = MainWindow::instance()->helpBrowserDocklet();
+    if (scheme == "scdoc") {
+        // Accept scdoc://Classes/SinOsc as well, where "Classes" parses as the host.
+        QString path = url.host(QUrl::FullyEncoded) + url.path(QUrl::FullyEncoded);
+        while (path.startsWith('/'))
+            path.remove(0, 1);
+        if (QFileInfo(path).suffix().isEmpty())
+            path += ".html";
+        if (url.hasFragment())
+            path += '#' + url.fragment(QUrl::FullyEncoded);
+        helpDock->browser()->gotoHelpPath(path);
+        helpDock->focus();
+    } else if (scheme == "http" || scheme == "https") {
+        helpDock->browser()->gotoUrl(url.toString(QUrl::FullyEncoded));
+        helpDock->focus();
+    }
+#endif // SC_USE_QTWEBENGINE
 }
 
 void PostWindow::focusOutEvent(QFocusEvent* event) {

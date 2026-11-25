@@ -1078,7 +1078,7 @@ struct ClassDependencyList {
                 buildLoops(it, toVisit, chain);
 
                 std::sort(chain.begin(), chain.end(), [](const ClassDependency& l, const ClassDependency& r) {
-                    const auto lex = strcmp(l.textInfo->filePathDescription.name, r.textInfo->filePathDescription.name);
+                    const auto lex = strcmp(l.textInfo->classFilePath().name, r.textInfo->classFilePath().name);
                     return lex == 0 ? l.rangeOfClassName < r.rangeOfClassName : lex;
                 });
 
@@ -1543,7 +1543,7 @@ bool passOne_ProcessOneFile(const fs::path& path, ClassLibraryFileMap& files, cl
     auto pyrString =
         newPyrString(gc, static_cast<const std::string&>(norm).c_str(), obj_immutable | obj_permanent, false);
 
-    auto textInfo = std::make_shared<TextInfo>(norm, *pyrString, *fileSym, sc::lex::FileCodeLocation {}, true);
+    auto textInfo = std::make_shared<TextInfo>(norm, *pyrString, fileSym, sc::lex::FileCodeLocation {}, true);
     files.emplace(fileSym, textInfo);
 
     sc::lex::CodePointStream cps { textInfo->normalisedSource, textInfo->offsetInFile };

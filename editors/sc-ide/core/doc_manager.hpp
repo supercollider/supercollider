@@ -187,6 +187,8 @@ public slots:
     // initialCursorPosition -1 means "don't change position if already open"
     Document* open(const QString& path, int initialCursorPosition = -1, int selectionLength = 0,
                    bool addToRecent = true, const QByteArray& id = QByteArray(), bool syncLang = true);
+    // line and column are 1-based; a column past the end of the line goes to the line's end.
+    Document* openAtLine(const QString& path, int line, int column = 1);
     void clearRecents();
     void storeSettings(Settings::Manager*);
     void handleScLangMessage(const QString& selector, const QString& data);
