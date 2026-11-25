@@ -367,6 +367,11 @@ target_link_libraries(sclang ${ICU_LIBRARIES})
 
 target_compile_definitions(sclang PUBLIC USE_SC_TERMINAL_CLIENT)
 
+# sclang's entry point is wmain on Windows, see cmdLineFuncs.cpp.
+if(WIN32 AND NOT MSVC)
+    target_link_options(sclang PRIVATE -municode)
+endif()
+
 if(LTO)
     set_property(TARGET sclang libsclang
         APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
