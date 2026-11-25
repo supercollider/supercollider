@@ -24,6 +24,7 @@
 #include "main_window.hpp"
 #include "../util/gui_utilities.hpp"
 #include "../../core/main.hpp"
+#include "../../core/code_formatter.hpp"
 #include "../../core/doc_manager.hpp"
 #include "../../core/settings/manager.hpp"
 #include "../../core/settings/theme.hpp"
@@ -35,7 +36,11 @@
 
 #include "QtCollider/hacks/hacks_qt.hpp"
 
+#include <QDir>
+#include <QFileInfo>
 #include <QKeyEvent>
+#include <QMessageBox>
+#include <QPushButton>
 #include <QStack>
 #include <QMimeData>
 #include <QUrl>
@@ -83,7 +88,7 @@ bool ScCodeEditor::event(QEvent* e) {
         switch (ke->key()) {
         case Qt::Key_Tab:
             if (!tabChangesFocus()) {
-                indent();
+                formatOrIndent(false);
                 e->accept();
                 return true;
             }
@@ -682,6 +687,122 @@ void ScCodeEditor::indent(const QTextCursor& selection, EditBlockMode editBlockM
     }
 
     cursor.endEditBlock();
+}
+
+void ScCodeEditor::formatOrIndent(bool rewrites) {
+    const QTextCursor selection = textCursor();
+    QTextDocument* doc = QPlainTextEdit::document();
+    const int first = doc->findBlock(selection.selectionStart()).blockNumber();
+    const int last = selection.hasSelection() ? doc->findBlock(selection.selectionEnd()).blockNumber() : first;
+    // toPlainText() would make non-breaking spaces plain ones. Either way positions are the document's.
+    QString text = doc->toRawText();
+    text.replace(QChar::ParagraphSeparator, QLatin1Char('\n'));
+
+    const auto result = CodeFormatter::format(mDoc, text, first, last, { mSpaceIndent, mDoc->indentWidth() }, rewrites);
+    if (result.status == CodeFormatter::Result::Formatted) {
+        applyFormatted(text, result.text);
+        if (result.keepsIndent)
+            indent();
+        return;
+    }
+    if (result.status == CodeFormatter::Result::Failed && !result.message.isEmpty())
+        MainWindow::instance()->showStatusMessage(result.message);
+    indent();
+}
+
+void ScCodeEditor::applyFormatted(const QString& text, const QString& formatted) {
+    // The changed span: lines outside the selection are as they were, so most of the text is.
+    int prefix = 0;
+    const int shorter = qMin(text.size(), formatted.size());
+    while (prefix < shorter && text[prefix] == formatted[prefix])
+        ++prefix;
+    if (prefix > 0 && text[prefix - 1].isHighSurrogate())
+        --prefix;
+    int suffix = 0;
+    while (suffix < shorter - prefix && text[text.size() - 1 - suffix] == formatted[formatted.size() - 1 - suffix])
+        ++suffix;
+    if (suffix > 0 && text[text.size() - suffix].isLowSurrogate())
+        --suffix;
+    const int end = text.size() - suffix;
+    if (prefix == end && prefix == formatted.size() - suffix)
+        return;
+
+    // A position before the span stays, one after it keeps its distance from the end, and one inside it keeps its
+    // line and its distance from the line's end.
+    QTextDocument* doc = QPlainTextEdit::document();
+    const QTextCursor before = textCursor();
+    struct Place {
+        int position;
+        int line;
+        int fromLineEnd;
+    };
+    const auto place = [&](int position) {
+        const QTextBlock block = doc->findBlock(position);
+        return Place { position, block.blockNumber(), block.position() + block.length() - 1 - position };
+    };
+    const Place anchor = place(before.anchor());
+    const Place cursorPlace = place(before.position());
+
+    QTextCursor cursor(doc);
+    cursor.beginEditBlock();
+    cursor.setPosition(prefix);
+    cursor.setPosition(end, QTextCursor::KeepAnchor);
+    cursor.insertText(formatted.mid(prefix, formatted.size() - suffix - prefix));
+    cursor.endEditBlock();
+
+    const int newEnd = formatted.size() - suffix;
+    const auto moved = [&](const Place& p) {
+        if (p.position <= prefix)
+            return p.position;
+        if (p.position >= end)
+            return p.position - end + newEnd;
+        const QTextBlock block = doc->findBlockByNumber(qMin(p.line, doc->blockCount() - 1));
+        const int lineEnd = block.position() + block.length() - 1;
+        return qMax(block.position(), lineEnd - p.fromLineEnd);
+    };
+    QTextCursor after(doc);
+    after.setPosition(moved(anchor));
+    after.setPosition(moved(cursorPlace), QTextCursor::KeepAnchor);
+    setTextCursor(after);
+}
+
+void ScCodeEditor::editFormatOptions() {
+    QString path = CodeFormatter::optionsFileFor(mDoc);
+    if (path.isEmpty()) {
+        const CodeFormatter::Indentation indentation { mSpaceIndent, mDoc->indentWidth() };
+        if (mDoc->filePath().isEmpty()) {
+            path = CodeFormatter::defaultOptionsFile(indentation);
+        } else {
+            const QString dir = QFileInfo(mDoc->filePath()).absolutePath();
+            QMessageBox box(QMessageBox::Question, tr("Format Options"),
+                            tr("No .sc-format.scd options file applies to %1. Formatting uses the IDE's own "
+                               "options file.\n\nAn options file in a folder applies to the files in it and in the "
+                               "folders inside it.")
+                                .arg(QFileInfo(mDoc->filePath()).fileName()),
+                            QMessageBox::Cancel, this);
+            QPushButton* create =
+                box.addButton(tr("Create in %1").arg(QDir::toNativeSeparators(dir)), QMessageBox::AcceptRole);
+            QPushButton* ide = box.addButton(tr("Edit the IDE's Options"), QMessageBox::AcceptRole);
+            box.exec();
+            if (box.clickedButton() == create) {
+                path = QDir(dir).filePath(".sc-format.scd");
+                const QString error = CodeFormatter::createOptionsFile(path);
+                if (!error.isEmpty()) {
+                    QMessageBox::warning(this, tr("Format Options"), error);
+                    return;
+                }
+            } else if (box.clickedButton() == ide) {
+                path = CodeFormatter::defaultOptionsFile(indentation);
+            } else {
+                return;
+            }
+        }
+        if (path.isEmpty()) {
+            QMessageBox::warning(this, tr("Format Options"), tr("Couldn't write the IDE's options file."));
+            return;
+        }
+    }
+    Main::documentManager()->open(path);
 }
 
 QString ScCodeEditor::makeIndentationString(int level) {

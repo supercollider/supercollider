@@ -81,6 +81,7 @@ public:
         Copy,
         Paste,
         IndentLineOrRegion,
+        EditFormatOptions,
         TriggerAutoCompletion,
         TriggerMethodCallAid,
         ToggleComment,

@@ -59,8 +59,15 @@ public slots:
     void applySettings(Settings::Manager*);
     void setSpaceIndent(bool on) { mSpaceIndent = on; }
 
-    /// Indents the currently-selected text.
+    /// Indents the currently-selected text by counting brackets, without sc_format, e.g., while typing.
     void indent(EditBlockMode = NewEditBlock);
+
+    /// Formats the selected lines, or the current line, with sc_format and the document's options file. Where that
+    /// can't be done, e.g., around a parse error, or the options keep indentation, indents them with indent() as
+    /// well. Autoindent calls this; Tab does the same without the options that change tokens.
+    void formatOrIndent() { formatOrIndent(true); }
+    /// Opens the document's sc_format options file, offering to make one if there is none.
+    void editFormatOptions();
 
     void triggerAutoCompletion();
     void triggerMethodCallAid();
@@ -93,6 +100,7 @@ private slots:
     void matchBrackets();
 
 private:
+    void formatOrIndent(bool rewrites);
     QTextCursor cursorAt(const TokenIterator, int offset = 0);
     QTextCursor selectionForPosition(int position);
     QTextCursor regionAroundCursor(const QTextCursor&);
@@ -116,6 +124,9 @@ private:
 
     /// Indents the text in \c selection according to editor preferences.
     void indent(const QTextCursor& selection, EditBlockMode = NewEditBlock);
+
+    /// Replaces the part of the document that differs from \c formatted, keeping the cursor or selection.
+    void applyFormatted(const QString& text, const QString& formatted);
 
     /** \brief Indents a line to a chosen level of indentation.
      *

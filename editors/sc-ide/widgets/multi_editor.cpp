@@ -380,9 +380,15 @@ void MultiEditor::createActions() {
 
     mActions[IndentLineOrRegion] = action =
         new QAction(QIcon::fromTheme("format-indent-line"), tr("Autoindent Line or Region"), this);
-    action->setStatusTip(tr("Autoindent Line or Region"));
-    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(indent()), SignalMultiplexer::ConnectionOptional);
+    action->setStatusTip(tr("Format the selected lines with the options file, or autoindent them"));
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(formatOrIndent()), SignalMultiplexer::ConnectionOptional);
     settings->addAction(action, "editor-indent-auto", editorCategory);
+
+    mActions[EditFormatOptions] = action = new QAction(tr("Format Options..."), this);
+    action->setStatusTip(tr("Edit the options file that autoindent formats this document with"));
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(editFormatOptions()),
+                           SignalMultiplexer::ConnectionOptional);
+    settings->addAction(action, "editor-format-options", editorCategory);
 
     mActions[TriggerAutoCompletion] = action = new QAction(tr("Trigger Autocompletion"), this);
     action->setStatusTip(tr("Suggest possible completions of text at cursor"));
@@ -703,6 +709,7 @@ void MultiEditor::updateActions() {
     mActions[GotoNextRegion]->setEnabled(editor && editorIsScCodeEditor);
     mActions[SelectRegion]->setEnabled(editor && editorIsScCodeEditor);
     mActions[IndentLineOrRegion]->setEnabled(editor && editorIsScCodeEditor);
+    mActions[EditFormatOptions]->setEnabled(editor && editorIsScCodeEditor);
 
     mActions[EvaluateCurrentDocument]->setEnabled(editor && editorIsScCodeEditor);
     mActions[EvaluateRegion]->setEnabled(editor && editorIsScCodeEditor);
