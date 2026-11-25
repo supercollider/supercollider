@@ -1,7 +1,19 @@
 class:: Pn
 summary:: repeatedly embed a pattern
-related:: Classes/Pdup
+related:: Classes/Pdup, Classes/Pseed
 categories:: Streams-Patterns-Events>Patterns>Repetition
+
+description::
+Repeat a pattern n times.
+
+All Patterns implement the link::Classes/Pattern#-repeat:: method,
+which is just another notation for code::Pn:::
+In other words, code::Pn(pat, n):: is equivalent to code::pat.repeat(n)::.
+
+For repetition strong::not:: of entire Patterns,
+but of individual values (which in turn emphasis::can:: be patterns),
+see link::Classes/Pdup:: and its equivalent link::Classes/Pattern#-dupEach::.
+
 
 ClassMethods::
 
@@ -14,17 +26,40 @@ argument::repeats
 Repeats the enclosed pattern strong::repeats:: times.
 
 argument::key
-If strong::key:: is non-nil, it sets the value of that key to true whenever it restarts the pattern. This can be used to advance Patterns enclosed by link::Classes/Pgate::.
+If strong::key:: is non-nil, it sets the value of that key to true whenever it restarts the pattern.
+This can be used to advance Patterns enclosed by link::Classes/Pgate::.
 
 Examples::
 
 code::
 (
 var a, b;
-a = Pn(Pseq(#[1, 2, 3], 1), 4);	// repeat pattern four times
+a = Pn(Pseq([1, 2, 3], 1), 4); // repeat pattern four times
 b = a.asStream;
 16.do({ b.next.postln });
 )
+::
+
+Anchor::Examples::
+
+code::
+// When the pattern involves randomness,
+// repetition of the Pattern does not entail repetition of output values:
+(
+var a, b;
+a = Pn(Pwhite(1, 6, 3)), 4); // "repeat" the randomness four times
+b = a.asStream;
+16.do({ b.next.postln }); // oh well.
+)
+
+// to avoid this, use Pseed:
+(
+var a, b;
+a = Pseed(Pn(1000, 4), Pwhite(1, 6, 3)); // repeat the randomness four times
+b = a.asStream;
+16.do({ b.next.postln }); // see?
+)
+
 
 // sound example
 (
