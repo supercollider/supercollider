@@ -635,6 +635,8 @@ SCDoc {
 			}
 		};
 
+		this.handleCopyMethods(root,doc);
+
 		^root;
 	}
 
