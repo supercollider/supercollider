@@ -229,7 +229,7 @@ using BigMemberListIndex = TypedIndex<NodeFlag::BigMemberList>;
 
 using ClassIndex = TypedIndex<NodeFlag::Class>;
 using ClassExtensionIndex = TypedIndex<NodeFlag::ClassExtension>;
-using ClassOrExtensionIndex = join<ClassIndex, ClassExtensionIndex>;
+using ClassOrExtensionIndex = join<ClassIndex, ClassExtensionIndex, ErrorIndex>;
 
 using ClassOrExtensionListIndex = TypedIndex<NodeFlag::ClassOrExtensionList>;
 

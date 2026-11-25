@@ -161,6 +161,8 @@ std::optional<sc::src::SourceCodeRange> statement(ParserContext&, sc::src::Sourc
 // Reports the error and skips the rest of a class's item that has one, up to the next method, or the closing curly of
 // the class, returning what was dropped, from the start of error, or nothing if the parse can't go on.
 std::optional<sc::src::SourceCodeRange> class_item(ParserContext&, sc::src::SourceCodeRange error);
+// The same for code between classes, up to the next class or class extension, or the end of the file.
+std::optional<sc::src::SourceCodeRange> class_list_item(ParserContext&, sc::src::SourceCodeRange error);
 // The same for a member declaration, which also ends at a semicolon, which is not skipped. The declaration starts at
 // keyword, i.e., `var`. Returns the error node holding what was dropped.
 std::optional<ErrorIndex> member(ParserContext&, sc::src::SourceCodeRange keyword, sc::src::SourceCodeRange error);

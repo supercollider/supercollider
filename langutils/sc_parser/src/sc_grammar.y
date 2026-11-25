@@ -366,6 +366,17 @@ classOrExtList.list
 classOrExtList.item
 	: class { $$ = $1; }
 	| class.extension { $$ = $1; }
+	| error[e]
+		{
+			// E.g., code outside a class. Skips to the next class or class extension.
+			const auto dropped = error_recovery::class_list_item(cxt, @e);
+			if (!dropped)
+				YYABORT;
+			@$ = *dropped;
+			$$ = cxt.create_error(*dropped, @e);
+			yyclearin;
+			yyerrok; // Recovered at the next class, so report its error.
+		}
 	;
 
 class 

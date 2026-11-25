@@ -114,21 +114,8 @@ SCClass (3:1): StatementEdges : Object, version 3.16
 |  |  |     12 │     // expect: poisoned
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
-|  |  |  Error: Nested too deeply
-|  |  |  parse_errors/statement_recovery_edges.sc:9:18
-|  |  |      7 │     consecutive_at_end { 1 + ; 2 + ; 3 + }
-|  |  |      8 │     // expect: poisoned
-|  |  |      9 │     only_error { + }
-|  |  |        ┆                  ^ this is nested more than 4096 deep.
-|  |  |     10 │     // expect: poisoned
-|  |  |     11 │     in_immediately_evaluated { (var a = 1; 1 + ; ^a) }
-|  |  |     12 │     // expect: poisoned
-|  |  |
-|  |  |  The compiler can't compile code nested this deeply, e.g., brackets inside brackets, or a long chain of binary operators, `a + b + c ...`, which is as deep as it is long. Split it up, e.g., into variables.
-|  |  |  ──────────────────────────────────────────────────────────────────────────────────
 |  |  |  SCBody (9:18)
+|  |  |  |  SCExprList (9:18)
 |  |  SCMethod (11:5): poisoned: in_immediately_evaluated, version 3.16: in_immediately_evaluated { (var a = 1; 1 + ; ^a) }
 |  |  |
 |  |  |  ──────────────────────────────────────────────────────────────────────────────────

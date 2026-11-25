@@ -534,6 +534,41 @@ std::optional<sc::src::SourceCodeRange> class_item(ParserContext& cxt, sc::src::
     return skip_class_item(cxt, error, false);
 }
 
+namespace {
+// Whether a class or a class extension starts at i: `Name {`, `Name :`, `Name [`, or `+ Name {`.
+bool starts_class(const ParserContext& cxt, TokenIndex i) {
+    using T = sc::lex::TokenType;
+    const auto is = [&](TokenIndex j, T t) { return cxt.tokens.contains(j) && cxt.tokens[j].token == t; };
+    const auto next = sc::util::advance(i);
+    if (is(i, T::ClassName))
+        return is(next, T::OpenCurly) || is(next, T::Colon) || is(next, T::OpenSquare);
+    return is(i, T::Add) && is(next, T::ClassName) && is(sc::util::advance(next), T::OpenCurly);
+}
+}
+
+std::optional<sc::src::SourceCodeRange> class_list_item(ParserContext& cxt, sc::src::SourceCodeRange error) {
+    using T = sc::lex::TokenType;
+    report(cxt);
+    const auto from = cxt.lookahead.value_or(cxt.next);
+    const auto is_end = [&](TokenIndex i) { return cxt.tokens[i].token == T::EndOfFile; };
+
+    // Erroring again where it last stopped, so the token must go for it to progress.
+    auto i = from;
+    if (cxt.recovered_at == from) {
+        if (is_end(from))
+            return std::nullopt;
+        i = skip_one(cxt, from);
+    }
+    while (!is_end(i) && !starts_class(cxt, i))
+        i = skip_one(cxt, i);
+
+    cxt.recovered_at = i;
+    cxt.next = i;
+    cxt.separator_inserted = false;
+    const auto end = i != TokenIndex { 0 } ? cxt.tokens[sc::util::retreat(i)].range.end : error.begin;
+    return sc::src::SourceCodeRange { error.begin, error.begin < end ? end : error.begin };
+}
+
 std::optional<ErrorIndex> member(ParserContext& cxt, sc::src::SourceCodeRange keyword, sc::src::SourceCodeRange error) {
     const auto dropped = skip_class_item(cxt, error, true);
     if (!dropped)

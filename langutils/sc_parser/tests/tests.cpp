@@ -443,6 +443,58 @@ BOOST_AUTO_TEST_CASE(invalid_utf8_reported_once) {
 }
 
 namespace {
+// Whether walking the tree from its root reaches no node twice, i.e., error recovery made no cycle.
+bool is_a_tree(const P::ASTGraph& graph) {
+    const auto root = graph.root_any();
+    if (!root)
+        return true;
+    const auto before = [](P::Index a, P::Index b) { return *a < *b; }; // StrongIndex has no operator<
+    std::set<P::Index, decltype(before)> seen { before };
+    std::vector<P::Index> todo { *root };
+    while (!todo.empty()) {
+        const auto i = todo.back();
+        todo.pop_back();
+        if (!seen.insert(i).second)
+            return false;
+        for (auto c = graph.edges(i).first_child; c; c = graph.edges(P::Index { *c }).next_sibling)
+            todo.push_back(P::Index { *c });
+    }
+    return true;
+}
+
+std::shared_ptr<P::ASTGraph> parse_class_file(const char* src) {
+    auto text_info = std::make_shared<sc::src::TextInfo>(sc::src::NormalisedSource(src), sc::src::FileCodeLocation {},
+                                                         "test_file", sc::src::TextKind::ClassFile);
+    return std::get<0>(P::parse(text_info));
+}
+}
+
+// An error at the start of a body, after nodes with empty ranges (no parameters, no primitive), adopts only what it
+// skipped, not those nodes, one of which then holds the error.
+BOOST_AUTO_TEST_CASE(error_recovery_makes_a_tree) {
+    const auto graph = parse_class_file("+ A {\n\tb { arg d;\n\t}\n\tc {\xca"
+                                        "arg d, e=false;\n}\n\tf {\n\t\tg[h] = i;\n\t}\n}\n");
+    BOOST_TEST_REQUIRE(graph != nullptr);
+    BOOST_TEST(is_a_tree(*graph));
+}
+
+// Code between classes is an error item of the class list, and the classes around it are kept.
+BOOST_AUTO_TEST_CASE(error_between_classes) {
+    const auto graph = parse_class_file("A {\n\tb { ^1 }\n}\n(\nx = 1;\n)\n+ B {\n\tc { ^2 }\n}\nA.new;\n");
+    BOOST_TEST_REQUIRE(graph != nullptr);
+    BOOST_TEST(is_a_tree(*graph));
+    const auto root = graph->root();
+    BOOST_TEST_REQUIRE(root.has_value());
+    const auto* list = std::get_if<P::ClassOrExtensionListIndex>(&*root);
+    BOOST_TEST_REQUIRE(list != nullptr);
+    std::vector<std::string> items;
+    for (auto it = graph->children(*list).iter(); it; ++it)
+        items.emplace_back(P::ASTGraph::node_name(graph->payload(*it)));
+    BOOST_TEST((items == std::vector<std::string> { "Class", "Error", "ClassExtension", "Error" }),
+               boost::test_tools::per_element());
+}
+
+namespace {
 using V = P::LanguageVersion;
 
 // The version of each class and extension, in order, and the names of the diagnostics.
@@ -814,9 +866,17 @@ std::vector<BrokenRangeRule> broken_range_rules(const sc::src::TextInfo& text_in
 
     std::vector<BrokenRangeRule> broken;
     graph.flat_walk([&](const P::ASTGraph::Edges& e, const P::ASTGraph::Variant& v, const sc::src::SourceCodeRange& r,
-                        size_t) {
+                        size_t index) {
         if (!e.parent)
             return;
+        const P::Index self { static_cast<std::uint32_t>(index) };
+        // A node isn't its own ancestor, which error recovery adopting a node still being built would make.
+        std::size_t depth { 0 };
+        for (auto a = e.parent; a && depth < 100000; a = graph.edges(P::Index { *a }).parent, ++depth)
+            if (P::Index { *a } == self) {
+                broken.push_back({ "its own ancestor: " + std::string { P::ASTGraph::node_name(v) }, where(r) });
+                break;
+            }
         const std::string name = P::ASTGraph::node_name(v);
         const P::Index parent { *e.parent };
         const std::string parent_name = name_of(parent);

@@ -1049,7 +1049,7 @@ namespace sc { namespace ast { namespace parser {
     {
       yylast_ = 2884,     ///< Last index in yytable_.
       yynnts_ = 82,  ///< Number of nonterminal symbols.
-      yyfinal_ = 95 ///< Termination state number.
+      yyfinal_ = 96 ///< Termination state number.
     };
 
 

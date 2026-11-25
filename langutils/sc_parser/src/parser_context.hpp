@@ -126,9 +126,10 @@ struct ParserContext {
         std::vector<Index> nodes;
         for (const auto i : graph->orphans()) {
             const auto& l = graph->location(i);
-            // Error rules must have a non-empty symbol before the error, e.g., a token, otherwise an empty value left
-            // on the stack, e.g., an empty list, could touch the error and be adopted.
-            const bool inside = error.begin <= l.begin && l.end <= error.end;
+            // Not an empty node: one left on the stack, e.g., an empty list or parameter list before a body's first
+            // statement, touches the error and would be adopted by the error its own rule then holds, a cycle. An
+            // empty node holds nothing skipped, so stays an orphan.
+            const bool inside = l.begin < l.end && error.begin <= l.begin && l.end <= error.end;
             // Only the head of a sibling chain, as appending it takes the rest of the chain.
             if (inside && i != kept && !graph->edges(i).prev_sibling)
                 nodes.push_back(i);
