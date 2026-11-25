@@ -1,22 +1,46 @@
 class:: Pdup
 summary:: repeat input stream values
-related:: Classes/Pn, Classes/Pattern#-dup
+related:: Classes/Pn, Classes/Pattern#-dupEach
 categories:: Streams-Patterns-Events>Patterns>Repetition
 
 description::
 
-repeat each element n times.
+Repeat strong::each element:: of a pattern n times.
+
+warning::
+code::Pdup:: and the code::.dupEach:: method are distinct from, and do not override, the link::Object/#-dup:: method: 
+Calling code::.dup(n):: on a pattern returns an Array of n patterns. 
+::
 
 code::
 (
-var a, b;
-a = Pdup(2, Pwhite(-1.0, 1.0));
+var a, x;
+a = Pdup(2, Pseq([1,2,3], 2));
 x = a.asStream;
-8.do { x.next.postln };
+12.do { x.next.postln }; // -> [1,1,2,2,3,3,1,1,2,2,3,3]
+)
+// compare to Pn:
+(
+var a, b;
+a = Pn(Pseq([1,2,3], 2), 2);
+x = a.asStream;
+12.do { x.next.postln }; // -> [1,2,3,1,2,3,1,2,3,1,2,3]
 )
 ::
 
-This is also a response to link::Classes/Pattern#-dup::
+code::Pdup(n, pat)::, where teletype::pat:: is some link::Classes/Pattern::, is equivalent to code::pat.dupEach(n)::; 
+in other words, the Pattern class implements a link::Classes/Pattern#-dupEach#.dupEach:: method, which should not be confused with link::Object/#-dup#.dup::.
+
+
+code::
+//Pdup called through the Pattern.dupEach method:
+p = Pseq([1,2,3]).dupEach(2).asStream; // a Routine
+p.nextN(6); // [1,1,2,2,3,3] 
+
+//Object.dup will get you something very different:
+p = Pseq([1,2,3]).dup(2).asStream; // [a Pseq, a Pseq]
+p.nextN(6) //[[a Pseq, a Pseq], [a Pseq, a Pseq], [a Pseq, a Pseq], [a Pseq, a Pseq], [a Pseq, a Pseq], [a Pseq, a Pseq]]
+::
 
 
 ClassMethods::
@@ -27,7 +51,7 @@ argument::n
 The number of repeats for each new element. n may be a pattern, so the number of times can vary each iteration.
 
 argument::pattern
-the pattern to repeat.
+the pattern whose stream values should be repeated.
 
 Examples::
 
@@ -37,9 +61,10 @@ code::
 (
 var a, b;
 a = Pdup(Prand([1, 2, 5], inf), Pwhite(-1.0, 1.0)); // repeat either once, twice, or five times
-x = a.asStream;
-20.do { x.next.postln };
+b = a.asStream;
+20.do { b.next.postln };
 )
+
 
 // using event patterns:
 (

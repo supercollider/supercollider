@@ -182,6 +182,11 @@ Output bus to hear the pattern while recording, default = 0.
 argument::outNumChannels
 the number of out channels to play to the recorder. If larger than numChannels, outNumChannels will wrap .
 
+method:: dupEach
+Repeats each value of the stream strong::n:: times; equivalent to link::Classes/Pdup::.
+Note the difference to link::Classes/Object#-dup::, which returns an array of Objects.
+
+
 Examples::
 
 Below are brief examples for most of the classes derived from Pattern. These examples all rely on the patterns assigned to the Interpreter variable p, q, and r in the first block of code.
