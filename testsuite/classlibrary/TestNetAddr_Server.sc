@@ -54,6 +54,7 @@ TestNetAddr_Server : UnitTest {
 		// bundleSize 28000
 		// 76 messages
 		//big.size.debug("big size");
+		// sc-format off
 		big = [
 			[
 				"/d_recv",
@@ -1327,6 +1328,7 @@ TestNetAddr_Server : UnitTest {
 			[ "/b_allocRead", 13, "sounds/a11wlk01.wav", 0, -1, nil ],
 			[ "/b_allocRead", 14, "sounds/a11wlk01.wav", 0, -1, nil ]
 		];
+		// sc-format on
 	}
 
 }

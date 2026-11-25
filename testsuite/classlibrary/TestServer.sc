@@ -51,6 +51,7 @@ TestServer : UnitTest {
 		// 76 messages
 		// big.size.debug("big size");
 
+		// sc-format off
 		big = [
 			[
 				"/d_recv",
@@ -1327,6 +1328,7 @@ TestServer : UnitTest {
 			[ "/b_allocRead", 13, ExampleFiles.child, 0, -1, nil ],
 			[ "/b_allocRead", 14, ExampleFiles.child, 0, -1, nil ]
 		];
+		// sc-format on
 
 	}
 

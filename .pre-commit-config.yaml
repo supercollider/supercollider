@@ -32,10 +32,18 @@ repos:
         language: python
         additional_dependencies: ['clang-format==14.0.6']
 
+    -   id: sc_format
+        name: Format sclang code
+        entry: python tools/sc_format.py
+        pass_filenames: true
+        files: '\.scd?$'
+        exclude: '^langutils/'
+        language: python
+
     -   id: sc_empty_blank_lines
         name:  Check trailing blank lines in sclang
         entry: python tools/remove_trailing_blank_lines.py
         pass_filenames: true
-        files: '\.sc((d|help)?)$'
-        exclude: '^langutils/sc_format/tests/(input|expected)/'
+        # sc_format does it for other .sc and .scd files; examples/ has no sc_format options.
+        files: '\.schelp$|^examples/.*\.scd?$'
         language: python
