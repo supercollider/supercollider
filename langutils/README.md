@@ -257,6 +257,7 @@ Tools:
 |---|---|
 | [sc_inspect](sc_inspect/README.md) | Runs the compiler and dumps each stage. Used to compare output between revisions. |
 | [sc_explorer](sc_explorer/README.md) | Browser view of the compiler's output. |
+| [sc_format](sc_format/README.md) | Formats SuperCollider code. |
 | [sc_bench_inspect](sc_bench_inspect/README.md) | Benchmarks every stage and shows the results. |
 | [sc_bench_interpreted](sc_bench_interpreted/README.md) | Benchmarks compiling interpreted code. |
 

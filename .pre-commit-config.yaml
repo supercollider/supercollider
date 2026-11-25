@@ -37,4 +37,5 @@ repos:
         entry: python tools/remove_trailing_blank_lines.py
         pass_filenames: true
         files: '\.sc((d|help)?)$'
+        exclude: '^langutils/sc_format/tests/(input|expected)/'
         language: python

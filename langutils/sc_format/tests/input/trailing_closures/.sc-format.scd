@@ -1,0 +1,1 @@
+(trailing_closures: \control)

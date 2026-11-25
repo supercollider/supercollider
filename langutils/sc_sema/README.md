@@ -23,7 +23,7 @@ There is information about the classes, but also a symbol and constants table.
 | `details/intrinsic_constraint.hpp` | What the VM requires of certain classes. |
 | `src/ast2ir/` | The translation from the AST. One file per area, `expr/` has one per kind of expression. |
 | `src/known_methods.*` | Methods the compiler assumes it knows, checked for extensions and overrides. |
-| `utils/describe`, `utils/consteval` | `describe` writes IR nodes as text, shared by `sc_inspect` and `sc_explorer`. `consteval` is a small tool. |
+| `utils/describe`, `utils/consteval` | `describe` writes IR nodes as text, shared by `sc_inspect` and `sc_explorer`. `consteval` evaluates interpreted code as a constant, for the `sc_consteval` tool and sc_format's options files. |
 
 ## Design
 

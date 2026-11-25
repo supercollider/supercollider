@@ -1,67 +1,14 @@
-#include "sc_diagnostic/sc_diagnostic.hpp"
-#include "sc_source/normalise_source.hpp"
-#include "sc_source/text_info.hpp"
-#include "sc_source/text_location.hpp"
-#include "sc_parser/ast.hpp"
-#include "sc_parser/details/indexes_typed.hpp"
-#include "sc_parser/sc_parser.hpp"
-#include "sc_sema/compiler.hpp"
-#include "sc_sema/context.hpp"
-#include "sc_sema/details/intrinsic_constraint.hpp"
-#include "sc_sema/ir.hpp"
-#include "sc_sema/symbol_table.hpp"
+#include "consteval/consteval.hpp"
+
+#include <cstdlib>
 #include <iostream>
-#include <memory>
 #include <string>
-#include <vector>
 #ifdef _MSC_VER
 #    include <windows.h>
 #endif // _MSC_VER
 
-// Evaluates a piece of interpreted code as a constant, printing the result as json. The code is compiled as 3.16, after
-// this basic class library, the classes the compiler requires, as in the regression tests' prelude.
+// Evaluates a piece of interpreted code as a constant, printing the result as json, see consteval.hpp.
 // Exits with failure, printing the diagnostics, if it isn't a constant.
-namespace {
-constexpr const char* prelude = R"(//# VERSION 3.16
-AbstractObjectExperimental {}
-Object : AbstractObjectExperimental {
-    classvar dependantsDictionary, currentEnvironment, topEnvironment, uniqueMethods;
-}
-Class {}
-String {}
-True {}
-False {}
-Nil {}
-Float {}
-Integer {}
-Char {}
-Symbol {}
-Ref {}
-Array {}
-Event {}
-Interpreter {
-    var <cmdLine, filePath, lineNumber, column, context;
-    var <>a, <>b, <>c, <>d, <>e, <>f, <>g, <>h, <>i, <>j;
-    var <>k, <>l, <>m, <>n, <>o, <>p, <>q, <>r, <>s, <>t;
-    var <>u, <>v, <>w, <>x, <>y, <>z;
-    var <>codeDump, <>preProcessor;
-
-    functionCompileContext {}
-}
-)";
-
-std::shared_ptr<const sc::ast::ASTGraph> parse(std::string source, const char* path, bool class_file,
-                                               std::vector<sc::diag::Diagnostic>& diagnostics) {
-    auto text_info = std::make_shared<sc::src::TextInfo>(
-        sc::src::NormalisedSource { std::move(source) }, sc::src::FileCodeLocation {}, path,
-        class_file ? sc::src::TextKind::ClassFile : sc::src::TextKind::ScdFile);
-    auto [ast_graph, _] = sc::ast::parse(text_info);
-    if (ast_graph)
-        for (const auto& d : ast_graph->diagnostics())
-            diagnostics.push_back(d);
-    return ast_graph;
-}
-}
 
 #ifdef _MSC_VER
 // utility function to convert default Windows stdin encoding to UTF-8
@@ -98,75 +45,15 @@ int main(int argc, char* argv[]) {
     const std::string source = argv[1];
 #endif // _MSC_VER
 
-    std::vector<sc::diag::Diagnostic> diagnostics;
-    const auto print_diagnostics = [&]() {
-        for (const auto& d : diagnostics)
-            std::cerr << d;
-    };
-
-    sc::ir::ClassLibrarySources entries;
-    {
-        const auto ast_graph = parse(prelude, "prelude.sc", true, diagnostics);
-        const auto root = ast_graph ? ast_graph->root() : std::nullopt;
-        assert(root && std::holds_alternative<sc::ast::ClassOrExtensionListIndex>(*root));
-        (void)entries.push_back(sc::ir::SourceEntry { ast_graph, std::get<sc::ast::ClassOrExtensionListIndex>(*root),
-                                                      sc::ir::ModuleIndex::from(0) });
-    }
-
-    // As in sc_inspect, just what the compiler needs, not the class library's constraints.
-    sc::ir::SymbolTable symbol_table;
-    sc::ir::IntrinsicConstraints constraints {};
-    const auto abstract_object = symbol_table.get_class_name("AbstractObjectExperimental");
-    constraints.insert({ abstract_object, sc::ir::IntrinsicConstraint { abstract_object, {}, {}, {} } });
-    {
-        const auto object = symbol_table.get_class_name("Object");
-        constraints.insert({ object, sc::ir::IntrinsicConstraint { object, { abstract_object }, {}, {} } });
-        const auto meta_obj = symbol_table.get_meta_class_name(object);
-        constraints.insert({ meta_obj,
-                             sc::ir::IntrinsicConstraint {
-                                 meta_obj, { symbol_table.get_meta_class_name(abstract_object) }, {}, {} } });
-    }
-
-    sc::ir::ModuleTable module_table {};
-    const auto ctx = sc::ir::make_context(symbol_table, abstract_object, module_table, entries);
-    sc::ir::IRCompiler comp { *ctx };
-
-    // Compile class library
-    for (auto& d : comp.compile_class_library(constraints, 1))
-        diagnostics.push_back(std::move(d));
-
-
-    // Compiler source
-    const auto ast_graph = parse(source, "consteval.scd", false, diagnostics);
-    const auto root = ast_graph ? ast_graph->root() : std::nullopt;
-    if (!root || std::holds_alternative<sc::ast::ClassOrExtensionListIndex>(*root)) {
-        print_diagnostics();
-        std::cerr << "Expected interpreted code, not a class file.\n";
-        return EXIT_FAILURE;
-    }
-
-    auto interpreted = comp.compile_interpreted(ast_graph, std::nullopt, sc::ast::LanguageVersion::V3_16);
-    for (auto& d : interpreted.diagnostics)
-        diagnostics.push_back(std::move(d));
-    print_diagnostics();
-    if (!interpreted.ir)
-        return EXIT_FAILURE;
-
-    // A list of regions, or a file as a function.
-    const auto& ir = *interpreted.ir;
-    const auto [code] = ir.children(std::get<sc::ir::SCInterpreted_I>(*ir.root()));
-    const sc::ir::NodeIndex code_i { *code };
-    sc::ir::OptionalConstExprIndex result {};
-    if (const auto regions = ir.as_a<sc::ir::SCRegionList_I>(code_i))
-        result = ir.payload(*regions).constant_result;
-    else if (const auto function = ir.as_a<sc::ir::SCFunction_I>(code_i))
-        result = ir.payload(*function).constant_result;
-
-    if (!result) {
+    const auto evaluated = sc::const_eval::evaluate(source, "consteval.scd");
+    for (const auto& d : evaluated->diagnostics())
+        std::cerr << d;
+    const auto* value = evaluated->value();
+    if (!value) {
         std::cerr << "Not a constant.\n";
         return EXIT_FAILURE;
     }
-    sc::ir::constant_table (*ctx)(*result).to_json(std::cout, symbol_table, sc::ir::constant_table(*ctx));
+    value->to_json(std::cout, evaluated->symbols(), evaluated->constants());
     std::cout << std::endl;
     return 0;
 }

@@ -3,3 +3,6 @@
 *.sc     text eol=lf
 *.scd    text eol=lf
 *.schelp text eol=lf
+# sc_format's golden tests are about whitespace, so their files are kept byte for byte.
+langutils/sc_format/tests/input/** -text
+langutils/sc_format/tests/expected/** -text

@@ -12,6 +12,7 @@ add_subdirectory(sc_sema)
 add_subdirectory(sc_backend)
 add_subdirectory(sc_compiler)
 add_subdirectory(sc_util)
+add_subdirectory(sc_format)
 
 if(ENABLE_TESTSUITE)
     add_subdirectory(tests)

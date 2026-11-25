@@ -15,7 +15,8 @@
     "\\.rc",
     "\\.nib",
     "\\.rtf",
-    "\\.l"
+    "\\.l",
+    "langutils/sc_format/tests/(input|expected)/"
   ],
   "AllowedContentTypes": [],
   "PassedFiles": [],
