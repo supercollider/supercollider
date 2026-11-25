@@ -1,4 +1,4 @@
-class:: BufIn
+class:: BufRdArray
 summary:: Reads Buffer samples as flat array
 related:: Classes/BufRd, Classes/Index
 categories:: UGens>Buffer
@@ -9,10 +9,10 @@ consecutive samples as separate channels. Like link::Classes/Index::, but
 for multiple indices as the same time, saving the overhead of making multiple UGens.
 
 In comparison to link::Classes/BufRd:::
-BufRd has a single reading head that moves through buffer samples, BufIn has
+BufRd has a single reading head that moves through buffer samples, BufRdArray has
 multiple heads, each staying still on a different sample.
 
-For multi-channel buffers, BufIn defaults to reading a single channel, but can
+For multi-channel buffers, BufRdArray defaults to reading a single channel, but can
 also read all of them as a flat, interleaved sequence of values, by setting the
 channel argument to -1. Note that the provided number of outputs has to take
 this into account, e.g. to read 2 frames of a 2-channel buffer,
@@ -55,14 +55,14 @@ code::
 b = Buffer.loadCollection(s, [34, 61, 104.3, 50]);
 
 // print those numbers
-x = { BufIn.kr(4, b).poll }.play;
+x = { BufRdArray.kr(4, b).poll }.play;
 
 x.free;
 
 // use as control signals for other UGens
 (
-{ 
-	var notes = BufIn.kr(4, b);
+{
+	var notes = BufRdArray.kr(4, b);
 	Splay.ar(SinOsc.ar(notes.midicps) * 0.2)
 }.play;
 )
@@ -75,26 +75,26 @@ b.free
 
 Reading a single channel from a multi-channel buffer:
 code::
-b = Buffer.loadCollection(s, [[1,2,3], [4,5,6]].lace);
+b = Buffer.loadCollection(s, [[1,2,3], [4,5,6]].lace, 2);
 
-x = { BufIn.kr(3, b, channel: 0).poll }.play;
+x = { BufRdArray.kr(3, b, channel: 0).poll }.play;
 // outputs [1, 2, 3]
 x.free;
 
-x = { BufIn.kr(3, b, channel: 1).poll }.play;
+x = { BufRdArray.kr(3, b, channel: 1).poll }.play;
 // outputs [4, 5, 6]
 x.free;
 
 // multichannel expansion
-x = { BufIn.kr(3, b, channel: [0,1]).poll }.play;
+x = { BufRdArray.kr(3, b, channel: [0,1]).poll }.play;
 // outputs [[1, 2, 3], [4, 5, 6]]
 x.free;
 
 // note that 'channel' is modulatable
 (
-x = { 
+x = {
 	var ch = ToggleFF.kr(Impulse.kr(1)).poll(label:'channel')).poll;
-	BufIn.kr(3, b, channel: ch)
+	BufRdArray.kr(3, b, channel: ch)
 }.play;
 )
 
@@ -108,17 +108,37 @@ will be a flat array with all channels interleaved.
 Note that they need to be interleaved manually when using link::Classes/Buffer#*loadCollection::
 
 code::
-b = Buffer.loadCollection(s, [[1,2,3], [4,5,6]].lace);
+b = Buffer.loadCollection(s, [[1,2,3], [4,5,6]].lace, 2);
 
-x = { BufIn.kr(6, b, channel: -1).poll }.play;
+x = { BufRdArray.kr(6, b, channel: -1).poll }.play;
 // outputs [1, 4, 2, 5, 3, 6]
 // i.e. [ch0_0, ch1_0, ch0_1, ch1_1, ch0_2, ch1_2]
 
 x.free;
 
 // user can de-interleave manually afterwards
-x = { BufIn.kr(6, b).unlace(2).poll }.play;
+x = { BufRdArray.kr(6, b).unlace(2).poll }.play;
 // outputs [1, 2, 3, 4, 5, 6]
 
 b.free
+::
+
+Linear interpolation between two channels:
+code::
+
+b = Buffer.loadCollection(s, [[1,2,3], [4,5,6]].lace, 2);
+
+(
+x = {
+	var chA = 0;
+	var chB = 1;
+	LinSelectX.kr(
+		MouseX.kr,
+		BufRdArray.kr(3, b, channel:[chA,chB])
+	).poll;
+}.play;
+)
+
+x.free;
+b.free;
 ::

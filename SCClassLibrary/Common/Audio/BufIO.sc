@@ -111,7 +111,7 @@ RecordBuf : UGen {
 }
 
 
-BufIn : MultiOutUGen {
+BufRdArray : MultiOutUGen {
 	*ar { arg numOutputs, bufnum=0, channel=0, offset=0;
 		^this.multiNew('audio', numOutputs, bufnum, channel, offset)
 	}

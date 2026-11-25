@@ -97,7 +97,7 @@ struct RecordBuf : public Unit {
     float** mIn;
 };
 
-struct BufIn : public Unit {
+struct BufRdArray : public Unit {
     float m_fbufnum;
     float m_failedBufNum;
     SndBuf* m_buf;
@@ -283,8 +283,8 @@ void RecordBuf_Dtor(RecordBuf* unit);
 void RecordBuf_next(RecordBuf* unit, int inNumSamples);
 void RecordBuf_next_10(RecordBuf* unit, int inNumSamples);
 
-void BufIn_Ctor(BufIn* unit);
-void BufIn_next(BufIn* unit, int inNumSamples);
+void BufRdArray_Ctor(BufRdArray* unit);
+void BufRdArray_next(BufRdArray* unit, int inNumSamples);
 
 void Pitch_Ctor(Pitch* unit);
 void Pitch_next_a(Pitch* unit, int inNumSamples);
@@ -1607,15 +1607,15 @@ void RecordBuf_next_10(RecordBuf* unit, int inNumSamples) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void BufIn_Ctor(BufIn* unit) {
+void BufRdArray_Ctor(BufRdArray* unit) {
     unit->m_fbufnum = -1e9f;
     unit->m_failedBufNum = -1e9f;
 
-    SETCALC(BufIn_next);
-    BufIn_next(unit, 1);
+    SETCALC(BufRdArray_next);
+    BufRdArray_next(unit, 1);
 }
 
-void BufIn_next(BufIn* unit, int inNumSamples) {
+void BufIn_next(BufRdArray* unit, int inNumSamples) {
     GET_BUF_SHARED
     const uint32 numOutputs = unit->mNumOutputs;
     const uint32 bufSize = buf->samples;
@@ -1626,7 +1626,7 @@ void BufIn_next(BufIn* unit, int inNumSamples) {
 
     if (!bufData) {
         if (unit->mWorld->mVerbosity > -1 && !unit->mDone && (unit->m_failedBufNum != fbufnum)) {
-            Print("BufIn: no buffer data\n");
+            Print("BufRdArray: no buffer data\n");
             unit->m_failedBufNum = fbufnum;
         }
         ClearUnitOutputs(unit, inNumSamples);
@@ -1634,8 +1634,8 @@ void BufIn_next(BufIn* unit, int inNumSamples) {
     }
 
     if (channel > buf->channels) {
-        Print("BufIn: requested channel %d, but buffer %d has only %d channels\n", channel, static_cast<int>(fbufnum),
-              buf->channels);
+        Print("BufRdArray: requested channel %d, but buffer %d has only %d channels\n", channel,
+              static_cast<int>(fbufnum), buf->channels);
         ClearUnitOutputs(unit, inNumSamples);
         return;
     }
@@ -6988,7 +6988,7 @@ PluginLoad(Delay) {
     DefineDtorUnit(RecordBuf);
     DefineSimpleUnit(BufRd);
     DefineSimpleUnit(BufWr);
-    DefineSimpleUnit(BufIn);
+    DefineSimpleUnit(BufRdArray);
     DefineDtorUnit(Pitch);
 
     DefineSimpleUnit(BufDelayN);
