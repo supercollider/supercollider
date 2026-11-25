@@ -1,186 +1,185 @@
 MultiSliderView : View {
-	var <editable=true;
-	var <elasticMode=false;
-	var <indexThumbSize=12, <valueThumbSize=12, <gap=1;
-	var <drawLines=false, <drawRects=true;
+	var <editable = true;
+	var <elasticMode = false;
+	var <indexThumbSize = 12, <valueThumbSize = 12, <gap = 1;
+	var <drawLines = false, <drawRects = true;
 	var <metaAction;
 
 
 	*qtClass { ^'QcMultiSlider' }
 
 	size { ^this.getProperty(\sliderCount) }
-	size_ { arg int; this.setProperty( \sliderCount, int ) }
+	size_ { |int| this.setProperty(\sliderCount, int) }
 
 	indexIsHorizontal { ^this.getProperty(\orientation) == QOrientation(\vertical) }
 
-	indexIsHorizontal_ { arg bool;
-		this.setProperty( \orientation, QOrientation(if(bool){\vertical}{\horizontal}) );
+	indexIsHorizontal_ { |bool|
+		this.setProperty(\orientation, QOrientation(if(bool) { \vertical } { \horizontal }))
 	}
 
-	editable_ { arg aBool;
+	editable_ { |aBool|
 		editable = aBool;
-		this.setProperty( \editable, aBool );
+		this.setProperty(\editable, aBool)
 	}
 
 	readOnly {
-		^editable.not;
+		^editable.not
 	}
 
-	readOnly_ { arg bool;
-		this.editable_( bool.not );
+	readOnly_ { |bool|
+		this.editable_(bool.not)
 	}
 
 	step { ^this.getProperty(\step) }
-	step_ { arg val; this.setProperty( \step, val ) }
+	step_ { |val| this.setProperty(\step, val) }
 
 	value {
-		^this.getProperty( \values );
+		^this.getProperty(\values)
 	}
 
-	value_ { arg array;
-		if( array.isKindOf(DoubleArray).not and: {array.isKindOf(FloatArray).not} )
-		{ array = array.as(DoubleArray) };
-		this.setProperty( \values, array );
+	value_ { |array|
+		if(array.isKindOf(DoubleArray).not and: { array.isKindOf(FloatArray).not })
+			{ array = array.as(DoubleArray) };
+		this.setProperty(\values, array)
 	}
 
-	valueAction_ { arg val;
+	valueAction_ { |val|
 		this.value_(val);
-		action.value(this);
+		action.value(this)
 	}
 
 	currentvalue {
-		^this.getProperty( \value );
+		^this.getProperty(\value)
 	}
 
-	currentvalue_ { arg aFloat;
-		this.setProperty( \value, aFloat );
+	currentvalue_ { |aFloat|
+		this.setProperty(\value, aFloat)
 	}
 
 	index {
-		^this.getProperty( \index );
+		^this.getProperty(\index)
 	}
 
-	index_ { arg anInt;
-		this.setProperty( \index, anInt );
+	index_ { |anInt|
+		this.setProperty(\index, anInt)
 	}
 
 	selectionSize {
-		^this.getProperty( \selectionSize );
+		^this.getProperty(\selectionSize)
 	}
 
-	selectionSize_ { arg anInt;
-		this.setProperty( \selectionSize, anInt );
+	selectionSize_ { |anInt|
+		this.setProperty(\selectionSize, anInt)
 	}
 
 	reference { ^this.getProperty(\reference) }
 
-	reference_ { arg array;
-		if( array.isKindOf(DoubleArray).not and: {array.isKindOf(FloatArray).not} )
-		{ array = array.as(DoubleArray) };
-		this.setProperty( \reference, array );
+	reference_ { |array|
+		if(array.isKindOf(DoubleArray).not and: { array.isKindOf(FloatArray).not })
+			{ array = array.as(DoubleArray) };
+		this.setProperty(\reference, array)
 	}
 
-	startIndex_ { arg anInt;
-		this.setProperty( \startIndex, anInt );
+	startIndex_ { |anInt|
+		this.setProperty(\startIndex, anInt)
 	}
 
-	elasticMode_ { arg int;
+	elasticMode_ { |int|
 		elasticMode = int.booleanValue;
-		this.setProperty( \elastic, elasticMode);
+		this.setProperty(\elastic, elasticMode)
 	}
 
-	thumbSize_ { arg float;
+	thumbSize_ { |float|
 		this.indexThumbSize_(float);
-		this.valueThumbSize_(float);
+		this.valueThumbSize_(float)
 	}
 
-	indexThumbSize_ { arg float;
+	indexThumbSize_ { |float|
 		indexThumbSize = float;
-		this.setProperty( \indexThumbSize, float );
+		this.setProperty(\indexThumbSize, float)
 	}
 
-	valueThumbSize_ { arg float;
+	valueThumbSize_ { |float|
 		valueThumbSize = float;
-		this.setProperty( \valueThumbSize, float );
+		this.setProperty(\valueThumbSize, float)
 	}
 
-	gap_ { arg anInt;
+	gap_ { |anInt|
 		gap = anInt;
-		this.setProperty( \gap, anInt );
+		this.setProperty(\gap, anInt)
 	}
 
 	// alias for 'gap'
-	xOffset_ { arg int; this.gap_(int); }
-	xOffset { arg int; ^this.gap; }
+	xOffset_ { |int| this.gap_(int) }
+	xOffset { |int| ^this.gap }
 
-	drawLines_ { arg bool;
+	drawLines_ { |bool|
 		drawLines = bool;
-		this.setProperty( \drawLines, bool );
+		this.setProperty(\drawLines, bool)
 	}
 
-	drawRects_ { arg bool;
+	drawRects_ { |bool|
 		drawRects = bool;
-		this.setProperty( \drawRects, bool );
+		this.setProperty(\drawRects, bool)
 	}
 
-	showIndex_ { arg aBool;
-		this.setProperty( \highlight, aBool );
+	showIndex_ { |aBool|
+		this.setProperty(\highlight, aBool)
 	}
 
-	isFilled_ { arg aBool;
-		this.setProperty( \isFilled, aBool );
+	isFilled_ { |aBool|
+		this.setProperty(\isFilled, aBool)
 	}
 
 	fillColor { ^this.getProperty(\fillColor) }
-	fillColor_ { arg color; this.setProperty( \fillColor, color ) }
+	fillColor_ { |color| this.setProperty(\fillColor, color) }
 
 	strokeColor { ^this.getProperty(\strokeColor) }
-	strokeColor_ { arg color; this.setProperty( \strokeColor, color ) }
+	strokeColor_ { |color| this.setProperty(\strokeColor, color) }
 
-	colors_ { arg colorStroke, colorFill;
-		this.strokeColor_( colorStroke );
-		this.fillColor_ ( colorFill );
+	colors_ { |colorStroke, colorFill|
+		this.strokeColor_(colorStroke);
+		this.fillColor_ (colorFill)
 	}
 
-	metaAction_ { arg func;
-		this.manageMethodConnection( metaAction, func, 'metaAction()', \doMetaAction );
-		metaAction = func;
+	metaAction_ { |func|
+		this.manageMethodConnection(metaAction, func, 'metaAction()', \doMetaAction);
+		metaAction = func
 	}
 
 	doMetaAction {
-		metaAction.value(this);
+		metaAction.value(this)
 	}
 
-	defaultKeyDownAction { arg char, mod, uni, keycode, key;
-		key.switch (
+	defaultKeyDownAction { |char, mod, uni, keycode, key|
+		switch(key,
 			QKey.left, { this.index = this.index - 1 },
 			QKey.right, { this.index = this.index + 1 },
 			QKey.up, { this.currentvalue = this.currentvalue + this.step },
 			QKey.down, { this.currentvalue = this.currentvalue - this.step }
-		);
+		)
 	}
 
 	defaultGetDrag {
 		var val = this.value;
 		var c, i;
-		if( val.size < 1 ) {^nil};
+		if(val.size < 1) { ^nil };
 		c = this.selectionSize;
-		if( c > 1 ) {
+		if(c > 1) {
 			i = this.index;
-			^val[i..(i+c-1)];
+			^val[i..(i + c - 1)]
 		}
-		^this.value;
+		^this.value
 	}
-	defaultCanReceiveDrag { ^true; }
-	defaultReceiveDrag {
-		arg data = View.currentDrag;
-		if( data.size > 0 ) {
-			if( data[0].size > 0 ) {
+	defaultCanReceiveDrag { ^true }
+	defaultReceiveDrag { |data = (View.currentDrag)|
+		if(data.size > 0) {
+			if(data[0].size > 0) {
 				this.value = data[0];
-				this.reference = data[1];
-			}{
-				this.value = data;
+				this.reference = data[1]
+			} {
+				this.value = data
 			}
-		};
+		}
 	}
 }

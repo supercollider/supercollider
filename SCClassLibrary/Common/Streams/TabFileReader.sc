@@ -5,16 +5,16 @@ FileReader : Stream {
 
 	*new { |pathOrFile, skipEmptyLines = false, skipBlanks = false, delimiter|
 		var stream;
-		if(pathOrFile.respondsTo(\getChar) ) {
+		if(pathOrFile.respondsTo(\getChar)) {
 			stream = pathOrFile
 		} {
 			stream = File(pathOrFile, "r");
 			if(stream.isOpen.not) {
 				warn(this.name ++ ": file" + pathOrFile + "not found.");
 				^nil
-			};
+			}
 		};
-		^super.newCopyArgs(stream, skipEmptyLines, skipBlanks,  delimiter ? this.delim)
+		^super.newCopyArgs(stream, skipEmptyLines, skipBlanks, delimiter ? this.delim)
 	}
 
 	reset { stream.reset }
@@ -29,45 +29,45 @@ FileReader : Stream {
 			c = stream.getChar;
 			c.notNil
 		} {
-			if (c == delimiter) {
-				if (skipBlanks.not or: { string.size > 0 }) {
+			if(c == delimiter) {
+				if(skipBlanks.not or: { string.size > 0 }) {
 					record = record.add(string);
-					string = String.new;
+					string = String.new
 				}
 			} {
-				if (c == $\n or: { c == $\r }) {
+				if(c == $\n or: { c == $\r }) {
 					record = record.add(string);
 					string = String.new;
-					if (skipEmptyLines.not or: { (record != [ "" ]) }) {
+					if(skipEmptyLines.not or: { (record != [""]) }) {
 						^record
 					};
-					record = nil;
-				}{
-					string = string.add(c);
+					record = nil
+				} {
+					string = string.add(c)
 				}
 			}
 		};
-		if (string.notEmpty) { ^record.add(string) };
-		^record;
+		if(string.notEmpty) { ^record.add(string) };
+		^record
 	}
 
 	read { ^this.all }
 
-	*read { | path, skipEmptyLines=false, skipBlanks=false, func, delimiter, startRow = 0, skipSize = 0 |
+	*read { |path, skipEmptyLines = false, skipBlanks = false, func, delimiter, startRow = 0, skipSize = 0|
 		var fr, table;
-		fr = this.new(path, skipEmptyLines, skipBlanks,  delimiter) ?? { ^nil };
+		fr = this.new(path, skipEmptyLines, skipBlanks, delimiter) ?? { ^nil };
 
-		if (func.notNil) {
-			table = fr.subSample(startRow, skipSize).collect(_.collect(func)).all;
+		if(func.notNil) {
+			table = fr.subSample(startRow, skipSize).collect(_.collect(func)).all
 		} {
-			table = fr.subSample(startRow, skipSize).all;
+			table = fr.subSample(startRow, skipSize).all
 		};
 		fr.close;
 		^table
 	}
 
-	*readInterpret { | path, skipEmptyLines=false, skipBlanks=false, delimiter, startRow = 0, skipSize = 0  |
-		^this.read(path, skipEmptyLines, skipBlanks, _.interpret, delimiter, startRow, skipSize )	}
+	*readInterpret { |path, skipEmptyLines = false, skipBlanks = false, delimiter, startRow = 0, skipSize = 0|
+		^this.read(path, skipEmptyLines, skipBlanks, _.interpret, delimiter, startRow, skipSize) }
 
 }
 

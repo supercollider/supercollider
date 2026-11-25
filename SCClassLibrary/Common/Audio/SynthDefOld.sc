@@ -1,7 +1,7 @@
 SynthDefOld : SynthDef {
-	writeDefFile { arg dir, overwrite(true);
+	writeDefFile { |dir, overwrite = (true)|
 		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
-			super.writeDefFileOld(name, dir, overwrite);
+			super.writeDefFileOld(name, dir, overwrite)
 		} {
 			// actual error, not just warning as in .send and .load,
 			// because you might try to write the file somewhere other than
@@ -11,7 +11,7 @@ SynthDefOld : SynthDef {
 		}
 	}
 
-	writeDef { arg file;
+	writeDef { |file|
 		// This describes the file format for the synthdef files.
 		var allControlNamesTemp, allControlNamesMap;
 
@@ -22,110 +22,110 @@ SynthDefOld : SynthDef {
 
 			//controls have been added by the Control UGens
 			file.putInt16(controls.size);
-			controls.do { | item |
-				file.putFloat(item);
+			controls.do { |item|
+				file.putFloat(item)
 			};
 
 			allControlNamesTemp = allControlNames.reject { |cn| cn.rate == \noncontrol };
 			file.putInt16(allControlNamesTemp.size);
-			allControlNamesTemp.do { | item |
-				if (item.name.notNil) {
+			allControlNamesTemp.do { |item|
+				if(item.name.notNil) {
 					file.putPascalString(item.name.asString);
-					file.putInt16(item.index);
-				};
+					file.putInt16(item.index)
+				}
 			};
 
 			file.putInt16(children.size);
-			children.do { | item |
-				item.writeDefOld(file);
+			children.do { |item|
+				item.writeDefOld(file)
 			};
 
 			file.putInt16(variants.size);
-			if (variants.size > 0) {
+			if(variants.size > 0) {
 				allControlNamesMap = ();
 				allControlNamesTemp.do { |cn|
-					allControlNamesMap[cn.name] = cn;
+					allControlNamesMap[cn.name] = cn
 				};
-				variants.keysValuesDo {|varname, pairs|
+				variants.keysValuesDo { |varname, pairs|
 					var varcontrols;
 
 					varname = name ++ "." ++ varname;
-					if (varname.size > 32) {
-						Error("variant '%' name too long".format(varname)).throw;
+					if(varname.size > 32) {
+						Error("variant '%' name too long".format(varname)).throw
 					};
 					varcontrols = controls.copy;
 					pairs.pairsDo { |cname, values|
 						var cn, index;
 						cn = allControlNamesMap[cname];
-						if (cn.notNil) {
+						if(cn.notNil) {
 							values = values.asArray;
-							if (values.size > cn.defaultValue.asArray.size) {
+							if(values.size > cn.defaultValue.asArray.size) {
 								Error("variant: '%' control: '%' size mismatch"
-									.format(varname, cname)).throw;
-							}{
+									.format(varname, cname)).throw
+							} {
 								index = cn.index;
-								values.do {|val, i|
-									varcontrols[index + i] = val;
+								values.do { |val, i|
+									varcontrols[index + i] = val
 								}
 							}
-						}{
+						} {
 							Error("variant: '%' control: '%' not found"
-								.format(varname, cname)).throw;
+								.format(varname, cname)).throw
 						}
 					};
 					file.putPascalString(varname);
-					varcontrols.do { | item |
-						file.putFloat(item);
-					};
-				};
+					varcontrols.do { |item|
+						file.putFloat(item)
+					}
+				}
 			}
 		} { // catch
-			arg e;
-			if (file.respondsTo(\close)) {
-				file.close;
+			|e|
+			if(file.respondsTo(\close)) {
+				file.close
 			};
-			Error("SynthDefOld: could not write def: %".format(e.what())).throw;
+			Error("SynthDefOld: could not write def: %".format(e.what())).throw
 		}
 	}
 
-	writeConstants { arg file;
+	writeConstants { |file|
 		var array = FloatArray.newClear(constants.size);
-		constants.keysValuesDo { arg value, index;
-			array[index] = value;
+		constants.keysValuesDo { |value, index|
+			array[index] = value
 		};
 
 		file.putInt16(constants.size);
-		array.do { | item |
+		array.do { |item|
 			file.putFloat(item)
-		};
+		}
 	}
 
 	asBytes {
 		var stream = CollStream.on(Int8Array.new(256));
 		this.asArray.writeDefOld(stream);
-		^stream.collection;
+		^stream.collection
 	}
 
 }
 
 + Collection {
 
-	writeDefOld { | file |
+	writeDefOld { |file|
 		file.putString("SCgf");
 		file.putInt32(1); // file version
 		file.putInt16(this.size); // number of defs in file.
 
-		this.do { | item | item.writeDef(file); }
+		this.do { |item| item.writeDef(file) }
 	}
 
-	writeInputSpecOld { | file, synthDef |
-		this.do { | item | item.writeInputSpecOld(file, synthDef) };
+	writeInputSpecOld { |file, synthDef|
+		this.do { |item| item.writeInputSpecOld(file, synthDef) }
 	}
 }
 
 + UGen {
 
-	writeDefOld { arg file;
+	writeDefOld { |file|
 		//[\WR, this.class.name, rate, this.numInputs, this.numOutputs].postln;
 		try {
 			file.putPascalString(this.name);
@@ -134,52 +134,51 @@ SynthDefOld : SynthDef {
 			file.putInt16(this.numOutputs);
 			file.putInt16(this.specialIndex);
 			// write wire spec indices.
-			inputs.do({ arg input;
-				input.writeInputSpecOld(file, synthDef);
-			});
-			this.writeOutputSpecs(file);
+			inputs.do { |input|
+				input.writeInputSpecOld(file, synthDef)
+			};
+			this.writeOutputSpecs(file)
 			//[this.class.name, file.length].postln;
 		} { // catch
-			arg e;
-			Error("UGen: could not write def: %".format(e.what())).throw;
+			|e|
+			Error("UGen: could not write def: %".format(e.what())).throw
 		}
 	}
 
-	writeInputSpecOld { arg file, synthDef;
+	writeInputSpecOld { |file, synthDef|
 		file.putInt16(synthIndex);
-		file.putInt16(this.outputIndex);
+		file.putInt16(this.outputIndex)
 	}
 }
 
 + SimpleNumber {
 
-	writeInputSpecOld { arg file, synth;
+	writeInputSpecOld { |file, synth|
 		var constIndex = synth.constants.at(this.asFloat);
-		if (constIndex.isNil) {
-			Error("SimpleNumber-writeInputSpec constant not found: " ++ this.asFloat).throw;		};
+		if(constIndex.isNil) {
+			Error("SimpleNumber-writeInputSpec constant not found: " ++ this.asFloat).throw };
 		//[\inpspc, this.class.name, constIndex, this].postln;
 		file.putInt16(-1);
-		file.putInt16(constIndex);
+		file.putInt16(constIndex)
 	}
 }
 
 + Object {
 
-	writeDefFileOld { arg name, dir, overwrite = (true);
+	writeDefFileOld { |name, dir, overwrite = (true)|
 
 		StartUp.defer { // make sure the synth defs are written to the right path
 			var file;
 			dir = dir ? SynthDef.synthDefDir;
-			if (name.isNil) { Error("missing SynthDef file name").throw } {
+			if(name.isNil) { Error("missing SynthDef file name").throw } {
 				name = dir +/+ name ++ ".scsyndef";
-				if(overwrite or: { pathMatch(name).isEmpty })
-					{
+				if(overwrite or: { pathMatch(name).isEmpty }) {
 					file = File(name, "w");
 					protect {
 						AbstractMDPlugin.clearMetadata(name);
-						this.asArray.writeDefOld(file);
-					}{
-						file.close;
+						this.asArray.writeDefOld(file)
+					} {
+						file.close
 					}
 				}
 			}

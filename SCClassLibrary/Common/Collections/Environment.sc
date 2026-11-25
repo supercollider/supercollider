@@ -1,14 +1,14 @@
 Environment : IdentityDictionary {
 	classvar <>stack;
 
-	*make { arg function;
+	*make { |function|
 		^this.new.make(function)
 	}
-	*use { arg function;
+	*use { |function|
 		^this.new.use(function)
 	}
 
-	make { arg function;
+	make { |function|
 		// pushes the Envir, executes function, returns the Envir
 		// usually used to create an environment by adding new variables to it.
 		var result, saveEnvir;
@@ -16,12 +16,12 @@ Environment : IdentityDictionary {
 		saveEnvir = currentEnvironment;
 		currentEnvironment = this;
 		protect {
-			function.value(this);
-		}{
-			currentEnvironment = saveEnvir;
-		};
+			function.value(this)
+		} {
+			currentEnvironment = saveEnvir
+		}
 	}
-	use { arg function;
+	use { |function|
 		// temporarily replaces the currentEnvironment with this,
 		// executes function, returns the result of the function
 		var result, saveEnvir;
@@ -29,34 +29,34 @@ Environment : IdentityDictionary {
 		saveEnvir = currentEnvironment;
 		currentEnvironment = this;
 		protect {
-			result = function.value(this);
-		}{
-			currentEnvironment = saveEnvir;
+			result = function.value(this)
+		} {
+			currentEnvironment = saveEnvir
 		};
 		^result
 	}
 
-	eventAt { arg key; ^this.at(key) }
-	composeEvents { arg event; ^this.copy.putAll(event) }
+	eventAt { |key| ^this.at(key) }
+	composeEvents { |event| ^this.copy.putAll(event) }
 
 	*pop {
-		if(stack.notNil and: { stack.notEmpty }) { currentEnvironment = stack.pop };
+		if(stack.notNil and: { stack.notEmpty }) { currentEnvironment = stack.pop }
 	}
-	*push { arg envir;
+	*push { |envir|
 		stack = stack.add(currentEnvironment);
-		currentEnvironment = envir;
+		currentEnvironment = envir
 	}
 	pop { ^this.class.pop }
 	push { this.class.push(this) }
 
-	linkDoc { arg doc;
+	linkDoc { |doc|
 		doc = doc ? Document.current;
-		doc.envir_(this);
+		doc.envir_(this)
 	}
 
-	unlinkDoc { arg doc;
+	unlinkDoc { |doc|
 		doc = doc ? Document.current;
-		if(doc.envir === this) { doc.envir_(nil) };
+		if(doc.envir === this) { doc.envir_(nil) }
 	}
 
 }

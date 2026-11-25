@@ -2,10 +2,10 @@
 // failing with doesNotUnderstand. It exits with 1 if a case fails.
 var failures = 0;
 var check = { |name, got, expected|
-	if (got != expected) {
+	if(got != expected) {
 		"FAILED: % gave %, expected %".format(name, got, expected).postln;
-		failures = failures + 1;
-	};
+		failures = failures + 1
+	}
 };
 var stub = UnsupportedMethodStub.new;
 var caught;
@@ -22,5 +22,5 @@ check.value("the message names the method", caught.errorString.find("Unsupported
 check.value("no arguments", try { stub.twoVariadic } { |e| e.class }, PoisonedMethodError);
 check.value("many arguments", try { stub.twoVariadic(1, 2, 3, 4) } { |e| e.class }, PoisonedMethodError);
 
-if (failures > 0) { 1.exit };
+if(failures > 0) { 1.exit };
 0.exit;

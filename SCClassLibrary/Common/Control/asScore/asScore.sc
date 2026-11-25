@@ -1,6 +1,6 @@
 + Pattern {
 
-	asScore{ | duration = 1.0, timeOffset = 0.0, protoEvent |
+	asScore{ |duration = 1.0, timeOffset = 0.0, protoEvent|
 		^ScoreStreamPlayer.new.makeScore(this.asStream, duration, protoEvent, timeOffset)
 	}
 
@@ -9,16 +9,16 @@
 
 + Object {
 
-	render { | path, maxTime=60, sampleRate = 44100,
-			headerFormat = "AIFF", sampleFormat = "int16", options, inputFilePath, action |
+	render { |path, maxTime = 60, sampleRate = 44100,
+			headerFormat = "AIFF", sampleFormat = "int16", options, inputFilePath, action|
 
 		var file, oscFilePath, score;
 		oscFilePath = PathName.tmp +/+ "temp_oscscore" ++ UniqueID.next;
 		score = this.asScore(maxTime);
 		score.recordNRT(
 			oscFilePath, path, inputFilePath, sampleRate, headerFormat, sampleFormat,
-			options, "", action: {File.delete(oscFilePath)}.addFunc(action);
-		);
+			options, "", action: { File.delete(oscFilePath) }.addFunc(action);
+		)
 	}
 
 }

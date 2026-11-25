@@ -8,7 +8,7 @@ TestServer : UnitTest {
 		var f, condition, bundleSize;
 		var condvar = CondVar();
 
-		f = big.copyRange(0, (size ? big.size)-1);
+		f = big.copyRange(0, (size ? big.size) - 1);
 		bundleSize = f.bundleSize;
 
 		condition = Condition.new;
@@ -38,7 +38,7 @@ TestServer : UnitTest {
 
 	tearDown {
 		server.quitSync;
-		server.remove;
+		server.remove
 	}
 
 	setUp {
@@ -1335,12 +1335,12 @@ TestServer : UnitTest {
 	// regression: recorder.recHeaderFormat didn't update after first time it's set
 	test_recorder_usesRecHeaderFormatFromServer {
 		var origFormat = server.recHeaderFormat,
-		    newFormat = if(origFormat == "wav"){ "aiff" }{ "wav" };
+			newFormat = if(origFormat == "wav") { "aiff" } { "wav" };
 		server.prepareForRecord();
 		server.recHeaderFormat = newFormat;
 		server.prepareForRecord();
 		this.assertEquals(server.recorder.recHeaderFormat, newFormat, "server.recorder should always use latest server.recHeaderFormat");
-		server.recHeaderFormat = origFormat;
+		server.recHeaderFormat = origFormat
 	}
 
 }

@@ -9,7 +9,7 @@ TestScore : UnitTest {
 		var score = pattern.asScore(4.0);
 		var s_new_messages = score.score.drop(1).select { |x| x[1][1] == \default };
 		var onsetTimes = s_new_messages.collect { |x| x.first };
-		this.assertEquals(onsetTimes, (0, 0.5..4), "onsets should be correctly derived from dur");
+		this.assertEquals(onsetTimes, (0, 0.5..4), "onsets should be correctly derived from dur")
 	}
 
 	test_pattern_asScore_lag {
@@ -17,7 +17,7 @@ TestScore : UnitTest {
 		var score = Pseq(events).asScore(3);
 		var s_new_messages = score.score.drop(1).select { |x| x[1][1] == \default };
 		var onsetTimes = s_new_messages.collect { |x| x.first };
-		this.assertEquals(onsetTimes, [0.5, 1, 2], "onsets should be correctly derived from lag and dur");
+		this.assertEquals(onsetTimes, [0.5, 1, 2], "onsets should be correctly derived from lag and dur")
 	}
 
 	test_pattern_asScore_timingOffset {
@@ -25,7 +25,7 @@ TestScore : UnitTest {
 		var score = Pseq(events).asScore(3);
 		var s_new_messages = score.score.drop(1).select { |x| x[1][1] == \default };
 		var onsetTimes = s_new_messages.collect { |x| x.first };
-		this.assertEquals(onsetTimes, [0.5, 1, 2], "onsets should be correctly derived from timingOffset and dur");
+		this.assertEquals(onsetTimes, [0.5, 1, 2], "onsets should be correctly derived from timingOffset and dur")
 	}
 
 	test_pattern_asScore_lag_multichannel {
@@ -33,7 +33,7 @@ TestScore : UnitTest {
 		var score = Pseq(events).asScore(3);
 		var s_new_messages = score.score.drop(1).select { |x| x[1][1] == \default };
 		var onsetTimes = s_new_messages.collect { |x| x.first };
-		this.assertEquals(onsetTimes, [0.5, 1, 2], "onsets should be correctly derived from lag in multichannel expanding");
+		this.assertEquals(onsetTimes, [0.5, 1, 2], "onsets should be correctly derived from lag in multichannel expanding")
 	}
 
 	test_pattern_asScore_timingOffset_multichannel {
@@ -41,7 +41,7 @@ TestScore : UnitTest {
 		var score = Pseq(events).asScore(3);
 		var s_new_messages = score.score.drop(1).select { |x| x[1][1] == \default };
 		var onsetTimes = s_new_messages.collect { |x| x.first };
-		this.assertEquals(onsetTimes, [0.5, 1, 2], "onsets should be correctly derived from timingOffset in multichannel expanding");
+		this.assertEquals(onsetTimes, [0.5, 1, 2], "onsets should be correctly derived from timingOffset in multichannel expanding")
 	}
 
 	test_pattern_asScore_timingValues_multichannel {
@@ -49,7 +49,7 @@ TestScore : UnitTest {
 		var score = Pseq(events).asScore(4);
 		var s_new_messages = score.score.drop(1).select { |x| x[1][1] == \default };
 		var onsetTimes = s_new_messages.collect { |x| x.first };
-		this.assertEquals(onsetTimes, [0.5, 1, 2] + [0.3, 0.7, 1], "onsets should be correctly derived from lag and timingOffset in multichannel expanding");
+		this.assertEquals(onsetTimes, [0.5, 1, 2] + [0.3, 0.7, 1], "onsets should be correctly derived from lag and timingOffset in multichannel expanding")
 	}
 
 }

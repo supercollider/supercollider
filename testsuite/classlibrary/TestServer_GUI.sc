@@ -12,14 +12,14 @@ TestServer_GUI : UnitTest {
 		button.states_([["a"], ["b"]]);
 		button.value_(0);
 
-		server = Server(this.class.name);
+		server = Server(this.class.name)
 	}
 
 	tearDown {
 		server.remove;
 
 		window.close;
-		window = button = server = nil;
+		window = button = server = nil
 	}
 
 	// Since we have no programmatic way to tell when ServerBoot/ServerTree have finished,
@@ -40,7 +40,7 @@ TestServer_GUI : UnitTest {
 		this.assert(button.value == 1, "ServerBoot should be able to update GUI objects in the main function");
 
 		ServerBoot.remove(updateFunc, server);
-		server.quitSync;
+		server.quitSync
 	}
 
 	// Test that a GUI function executed by ServerTree completes during boot.
@@ -58,7 +58,7 @@ TestServer_GUI : UnitTest {
 		this.assert(button.value == 1, "ServerTree should be able to update GUI objects in the main function during boot");
 
 		ServerTree.remove(updateFunc, server);
-		server.quitSync;
+		server.quitSync
 	}
 
 	// Test that a GUI function executed by ServerTree completes during cmd-period.
@@ -79,7 +79,7 @@ TestServer_GUI : UnitTest {
 		this.assert(button.value == 1, "ServerTree should be able to update GUI objects in the main function during CmdPeriod");
 
 		ServerTree.remove(updateFunc, server);
-		server.quitSync;
+		server.quitSync
 	}
 
 	// Test that a GUI function executed by ServerQuit completes.
@@ -97,6 +97,6 @@ TestServer_GUI : UnitTest {
 
 		this.assert(button.value == 1, "ServerQuit should be able to update GUI objects in the main function");
 
-		ServerQuit.remove(updateFunc, server);
+		ServerQuit.remove(updateFunc, server)
 	}
 }

@@ -67,24 +67,21 @@ TestParser : UnitTest {
 			"// /*\n*/"
 		];
 
-		openTests.do {
-			|commentString|
+		openTests.do { |commentString|
 			var message = "'%' should be an open-ended comment.".format(commentString);
 
 			this.assertEquals(commentString.interpret, nil, message);
-			this.assertEquals((commentString ++ testCs).interpret, nil, message);
+			this.assertEquals((commentString ++ testCs).interpret, nil, message)
 		};
 
-		closedTests.do {
-			|commentString|
+		closedTests.do { |commentString|
 			var message = "'%' should be a closed block comment.".format(commentString);
 
 			this.assertEquals(commentString.interpret, nil, message);
-			this.assertEquals((commentString ++ testCs).interpret, testCsValue, message);
+			this.assertEquals((commentString ++ testCs).interpret, testCsValue, message)
 		};
 
-		errorTests.do {
-			|commentString|
+		errorTests.do { |commentString|
 			var message = "'%' should throw a parsing error when interpreted.".format(commentString);
 			var courtesyMessage = "NOTE: The parsing errors thrown above are intentional — currently testing bizarre strings with .interpret";
 
@@ -92,7 +89,7 @@ TestParser : UnitTest {
 			this.assertEquals((commentString ++ testCs).interpret, nil, message);
 			this.assertEquals((testCs ++ commentString).interpret, nil, message);
 
-			courtesyMessage.postln;
+			courtesyMessage.postln
 		}
 	}
 }

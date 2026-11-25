@@ -4,10 +4,10 @@
 var failures = 0;
 var check = { |source, expected|
 	var got = try { source.interpret } { |e| e.errorString };
-	if (got != expected) {
+	if(got != expected) {
 		"FAILED: % gave %, expected %".format(source.quote, got, expected).postln;
-		failures = failures + 1;
-	};
+		failures = failures + 1
+	}
 };
 
 check.value("var a; a", nil);
@@ -31,4 +31,4 @@ check.value("var f = { |a ...rest| rest.size }; f.value(1, 2, 3)", 2);
 check.value("var a = 1; a = a + 1; a = a * 3; a", 6);
 check.value("var o = Object.new; o.isNil", false);
 
-if (failures > 0) { "% interpreted cases failed".format(failures).postln; 1.exit } { 0.exit };
+if(failures > 0) { "% interpreted cases failed".format(failures).postln; 1.exit } { 0.exit };

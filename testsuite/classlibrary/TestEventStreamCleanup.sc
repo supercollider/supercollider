@@ -42,7 +42,7 @@ TestEventStreamCleanup : UnitTest {
 			//{ |x| Psetpre(\zz, x, Pseq([ () ])) },
 		];
 		var patternGenFuncsDur = [ // these need a duration pre-set externally
-			{ |x| Ppar([x, Pseq([ () ])]) },
+			{ |x| Ppar([x, Pseq([()])]) },
 			{ |x| Ppar([x, x]) },
 			{ |x| Ppar([x, Plazy { x }]) },
 		];
@@ -50,41 +50,41 @@ TestEventStreamCleanup : UnitTest {
 		patternGenFuncs.do { |pgf|
 			var cntPairs = injectAndCountCleanupsVsInits.(pgf);
 			this.assertEquals(cntPairs[0], cntPairs[1], "Cleanup propagation" +
-				pgf.cs + "inits:" + cntPairs[0] ++ ", cleanups:" + cntPairs[1]);
+					pgf.cs + "inits:" + cntPairs[0] ++ ", cleanups:" + cntPairs[1])
 		};
 		patternGenFuncs.do { |pgf|
 			patternGenFuncs.do { |pgf2|
 				var cntPairs = injectAndCountCleanupsVsInits.(pgf <> pgf2);
 				this.assertEquals(cntPairs[0], cntPairs[1], "Cleanup propagation" +
-					// (pgf <> pgf2).cs doesn't print anything useful
-					pgf.cs + "<>" + pgf2.cs + "inits:" + cntPairs[0] ++ ", cleanups:" + cntPairs[1]);
-			};
+						// (pgf <> pgf2).cs doesn't print anything useful
+						pgf.cs + "<>" + pgf2.cs + "inits:" + cntPairs[0] ++ ", cleanups:" + cntPairs[1])
+			}
 		};
 		patternGenFuncsDur.do { |pgf|
 			var cntPairs = injectAndCountCleanupsVsInits.(pgf, (dur: 0.2));
 			this.assertEquals(cntPairs[0], cntPairs[1], "Cleanup propagation" +
-				pgf.cs + "inits:" + cntPairs[0] ++ ", cleanups:" + cntPairs[1]);
+					pgf.cs + "inits:" + cntPairs[0] ++ ", cleanups:" + cntPairs[1])
 		};
 		patternGenFuncsDur.do { |pgf|
 			patternGenFuncs.do { |pgf2|
 				var cntPairs = injectAndCountCleanupsVsInits.(pgf <> pgf2, (dur: 0.2));
 				this.assertEquals(cntPairs[0], cntPairs[1], "Cleanup propagation" +
-					pgf.cs + "<>" + pgf2.cs + "inits:" + cntPairs[0] ++ ", cleanups:" + cntPairs[1]);
-			};
+						pgf.cs + "<>" + pgf2.cs + "inits:" + cntPairs[0] ++ ", cleanups:" + cntPairs[1])
+			}
 		};
 		patternGenFuncs.do { |pgf|
 			patternGenFuncsDur.do { |pgf2|
 				var cntPairs = injectAndCountCleanupsVsInits.(pgf <> pgf2, (dur: 0.2));
 				this.assertEquals(cntPairs[0], cntPairs[1], "Cleanup propagation" +
-					pgf.cs + "<>" + pgf2.cs + "inits:" + cntPairs[0] ++ ", cleanups:" + cntPairs[1]);
-			};
+						pgf.cs + "<>" + pgf2.cs + "inits:" + cntPairs[0] ++ ", cleanups:" + cntPairs[1])
+			}
 		};
 		patternGenFuncsDur.do { |pgf|
 			patternGenFuncsDur.do { |pgf2|
 				var cntPairs = injectAndCountCleanupsVsInits.(pgf <> pgf2, (dur: 0.2));
 				this.assertEquals(cntPairs[0], cntPairs[1], "Cleanup propagation" +
-					pgf.cs + "<>" + pgf2.cs + "inits:" + cntPairs[0] ++ ", cleanups:" + cntPairs[1]);
-			};
-		};
+						pgf.cs + "<>" + pgf2.cs + "inits:" + cntPairs[0] ++ ", cleanups:" + cntPairs[1])
+			}
+		}
 	}
 }

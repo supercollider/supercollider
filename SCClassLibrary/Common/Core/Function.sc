@@ -14,8 +14,8 @@ Function : AbstractFunction {
 
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
-	checkCanArchive { if (this.isClosed.not) { "cannot archive open Functions".warn } }
-	storeOn { arg stream;
+	checkCanArchive { if(this.isClosed.not) { "cannot archive open Functions".warn } }
+	storeOn { |stream|
 		var args;
 		stream << (def.sourceCode ?? {
 			args = def.argumentString;
@@ -31,44 +31,44 @@ Function : AbstractFunction {
 
 
 	// evaluation
-	value { | ...args, kwargs|
+	value { |...args, kwargs|
 		_FunctionValue
 		// evaluate a function with args
 		^this.primitiveFailed
 	}
-	valueArray { arg ... args;
+	valueArray { |... args|
 		_FunctionValueArray
 		// evaluate a function, if the last argument is an array it will be
 		// expanded into separate args.
 		^this.primitiveFailed
 	}
 
-	valueEnvir { | ...args, kwargs|
+	valueEnvir { |...args, kwargs|
 		_FunctionValueEnvir
 		// evaluate a function with args.
 		// unsupplied argument names are looked up in the currentEnvironment
 		^this.primitiveFailed
 	}
-	valueArrayEnvir { arg ... args;
+	valueArrayEnvir { |... args|
 		_FunctionValueArrayEnvir
 		// evaluate a function, if the last argument is an array it will be
 		// expanded into separate args.
 		// unsupplied argument names are looked up in the currentEnvironment
 		^this.primitiveFailed
 	}
-	functionPerformList { | ...args, kwargs|
-        _ObjectPerformList;
-        this.primitiveFailed
+	functionPerformList { |...args, kwargs|
+		_ObjectPerformList;
+		this.primitiveFailed
 	}
 
-	valueWithEnvir { arg envir;
+	valueWithEnvir { |envir|
 		var prototypeFrame;
 		if(envir.isNil) { ^this.value };
 		prototypeFrame = def.prototypeFrame.copy;
 
-		def.argNames.do { |name,i|
+		def.argNames.do { |name, i|
 			var val = envir[name];
-			val !? { prototypeFrame[i] = val };
+			val !? { prototypeFrame[i] = val }
 		};
 		//	postf("argNames: % prototypeFrame: %\n", def.argNames, prototypeFrame);
 
@@ -101,11 +101,11 @@ Function : AbstractFunction {
 	loop {
 		// loop is supported magically by the compiler,
 		// thus it can be implemented in terms of itself
-		loop { this.value };
+		loop { this.value }
 	}
 
 	block {
-		^this.value {|val| ^val };
+		^this.value { |val| ^val }
 	}
 	//	block {
 	//		var result;
@@ -125,19 +125,19 @@ Function : AbstractFunction {
 		^Routine.new(this)
 	}
 
-	dup { arg n = 2;
+	dup { |n = 2|
 		^Array.fill(n, this)
 	}
-	sum { arg n = 2;
+	sum { |n = 2|
 		var sum = 0;
-		n.do {|i| sum = sum + this.value(i) };
+		n.do { |i| sum = sum + this.value(i) };
 		^sum
 	}
 
-	defer { arg delta;
-		if (delta.isNil and: {this.canCallOS}) {
+	defer { |delta|
+		if(delta.isNil and: { this.canCallOS }) {
 			this.value
-		}{
+		} {
 			AppClock.sched(delta ? 0, { this.value; nil })
 		}
 	}
@@ -145,31 +145,31 @@ Function : AbstractFunction {
 	thunk { ^Thunk(this) }
 
 	// Pattern support
-	transformEvent { arg event;
+	transformEvent { |event|
 		^this.value(event)
 	}
 
 	// ControlView support
-	set { arg ... args; ^this.valueArray(args) }
-	get { arg prevVal; ^prevVal }
+	set { |... args| ^this.valueArray(args) }
+	get { |prevVal| ^prevVal }
 
-	fork { arg clock, quant, stackSize;
-		^Routine(this, stackSize).play(clock, quant);
+	fork { |clock, quant, stackSize|
+		^Routine(this, stackSize).play(clock, quant)
 	}
 
-	forkIfNeeded { arg clock, quant, stackSize;
+	forkIfNeeded { |clock, quant, stackSize|
 		// We should fork if the clocks don't match.
 		// We should also fork if the quants/stackSize don't match, but that doesn't seem possible.
 		if(thisThread.isKindOf(Routine)
-			and: { clock.isNil or: { clock == thisThread.clock }},
+				and: { clock.isNil or: { clock == thisThread.clock } },
 			this,
 			{ ^this.fork(clock, quant, stackSize) }
 		);
-		^thisThread;
+		^thisThread
 	}
 
 
-	awake { arg beats, seconds, clock;
+	awake { |beats, seconds, clock|
 		var time = seconds; // prevent optimization
 		^this.value(beats, seconds, clock)
 	}
@@ -177,37 +177,37 @@ Function : AbstractFunction {
 	cmdPeriod { this.value }
 
 
-	bench { arg print = true;
+	bench { |print = true|
 		var dt;
 		var t0 = Main.elapsedTime;
 		this.value;
 		dt = Main.elapsedTime - t0;
-		if (print) { Post << "time to run: " << dt << " seconds.\n"; }
+		if(print) { Post << "time to run: " << dt << " seconds.\n" }
 		^dt
 	}
 
-	protect { arg handler;
+	protect { |handler|
 		var result;
 		result = this.prTry;
-		if (result.isException) {
+		if(result.isException) {
 			handler.value(result);
-			result.throw;
-		}{
+			result.throw
+		} {
 			handler.value; // argument should be nil if there was no exception.
 			^result
-		};
+		}
 	}
 
-	try { arg handler;
+	try { |handler|
 		var result = this.prTry;
-		if (result.isException) { ^handler.value(result); }
-		{ ^result }
+		if(result.isException) { ^handler.value(result) }
+			{ ^result }
 	}
 	prTry {
 		var result, thread = thisThread;
 		var next = thread.exceptionHandler,
-		wasInProtectedFunc = Exception.inProtectedFunction;
-		thread.exceptionHandler = {|error|
+			wasInProtectedFunc = Exception.inProtectedFunction;
+		thread.exceptionHandler = { |error|
 			thread.exceptionHandler = next; // pop
 			Exception.inProtectedFunction = wasInProtectedFunc;
 			^error
@@ -219,27 +219,27 @@ Function : AbstractFunction {
 		^result
 	}
 
-	handleError { arg error; ^this.value(error) }
+	handleError { |error| ^this.value(error) }
 
-	case { arg ... cases;
+	case { |... cases|
 		cases = [this] ++ cases;
-		cases.pairsDo { | test, trueFunc |
-			if (test.value) { ^trueFunc.value };
+		cases.pairsDo { |test, trueFunc|
+			if(test.value) { ^trueFunc.value }
 		};
-		if (cases.size.odd) { ^cases.last.value };
+		if(cases.size.odd) { ^cases.last.value };
 		^nil
 	}
 
 	r { ^Routine(this) }
 	p { ^Prout(this) }
 
-	matchItem { arg item;
+	matchItem { |item|
 		^this.value(item)
 	}
 
 	// scale suppoert
 
-	performDegreeToKey { arg scaleDegree, stepsPerOctave = 12, accidental = 0;
+	performDegreeToKey { |scaleDegree, stepsPerOctave = 12, accidental = 0|
 		^this.value(scaleDegree, stepsPerOctave, accidental)
 	}
 
@@ -259,11 +259,11 @@ Function : AbstractFunction {
 		var code, modifierString;
 		if(def.argNames.isNil) { ^{ [this.value] } };
 		modifierString = "\n	var arguments = %;\n"
-		"	if(arguments.any { |x| x.isSequenceableCollection and: { x.isString.not } }) {\n"
-		"		arguments.flop.collect { |x| func.valueArray(x) }\n"
-		"	} {\n"
-		"		func.valueArray(arguments)\n"
-		"	}\n";
+			"	if(arguments.any { |x| x.isSequenceableCollection and: { x.isString.not } }) {\n"
+			"		arguments.flop.collect { |x| func.valueArray(x) }\n"
+			"	} {\n"
+			"		func.valueArray(arguments)\n"
+			"	}\n";
 		code = def.makeFuncModifierString({ |str| modifierString.format(str) });
 		^"{ |func| % }".format(code).interpret.value(this)
 	}
@@ -323,7 +323,7 @@ Function : AbstractFunction {
 			RecordBuf.perform(
 				RecordBuf.methodSelectorForRate(defRate),
 				outputs, bufnum, loop: 0, doneAction: 2
-			);
+			)
 		});
 
 		buffer = Buffer.new(server);
@@ -354,8 +354,8 @@ Function : AbstractFunction {
 
 			OSCFunc({
 				action.value(buffer);
-				server.sendMsg("/d_free", name);
-			}, '/n_end', server.addr, nil, [synth.nodeID]).oneShot;
+				server.sendMsg("/d_free", name)
+			}, '/n_end', server.addr, nil, [synth.nodeID]).oneShot
 		};
 
 		^buffer
@@ -392,7 +392,7 @@ Thunk : AbstractFunction {
 	// thunks have no arguments.
 	var function, value;
 
-	*new { arg function;
+	*new { |function|
 		^super.newCopyArgs(function)
 	}
 	value {

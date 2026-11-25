@@ -14,7 +14,7 @@ TestPprotect : UnitTest {
 			routine,
 			{
 				success = routine.exceptionHandler.isNil;
-				condvar.signalOne;
+				condvar.signalOne
 			}
 		).asStream;
 		// Note that it is necessary to do this asynchronously!
@@ -22,7 +22,7 @@ TestPprotect : UnitTest {
 		stream.play;
 		condvar.waitFor(0.1);
 
-		this.assertEquals(success, true, "Pprotect should clear the stream's exceptionHandler");
+		this.assertEquals(success, true, "Pprotect should clear the stream's exceptionHandler")
 	}
 
 	test_stream_can_be_restarted_after_error {
@@ -48,7 +48,7 @@ TestPprotect : UnitTest {
 		stream.play;
 		condvar.waitFor(0.1);
 
-		this.assertEquals(wasReset, true, "stream should be resettable after an error");
+		this.assertEquals(wasReset, true, "stream should be resettable after an error")
 	}
 
 	test_task_proxy_play_after_error {
@@ -76,7 +76,7 @@ TestPprotect : UnitTest {
 		redefine.value;
 		condvar.waitFor(0.1);
 
-		this.assertEquals(didPlay, true, "task proxy should play again after an error");
+		this.assertEquals(didPlay, true, "task proxy should play again after an error")
 	}
 
 	test_nested_instances {
@@ -91,23 +91,23 @@ TestPprotect : UnitTest {
 						Error("dummy error").throw
 					}, {
 						innerHasBeenCalled = true;
-						condvar.signalOne;
+						condvar.signalOne
 					}
 				),
 				{
 					outerHasBeenCalled = true;
-					condvar.signalOne;
+					condvar.signalOne
 				}
 			).asStream;
 
-			stream.next;
+			stream.next
 
 		};
 
 		condvar.waitFor(0.1, { innerHasBeenCalled && outerHasBeenCalled });
 
 		this.assert(innerHasBeenCalled, "When nesting Pprotect, inner functions should be called");
-		this.assert(outerHasBeenCalled, "When nesting Pprotect, outer functions should be called");
+		this.assert(outerHasBeenCalled, "When nesting Pprotect, outer functions should be called")
 	}
 
 }

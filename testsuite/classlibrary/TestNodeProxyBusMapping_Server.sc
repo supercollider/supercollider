@@ -7,12 +7,12 @@ TestNodeProxyBusMapping_Server : UnitTest {
 		server = Server(this.class.name);
 		server.latency = 0.1;
 		this.bootServer(server);
-		server.sync;
+		server.sync
 	}
 
 
 	tearDown {
-		server.quitSync.remove;
+		server.quitSync.remove
 	}
 
 	test_audiorate_mapping {
@@ -26,7 +26,7 @@ TestNodeProxyBusMapping_Server : UnitTest {
 
 		proxy.source = {
 			var in = \in.ar(defaultValues);
-			A2K.kr(in);
+			A2K.kr(in)
 		};
 
 		var inputProxy = NodeProxy(server, \audio);
@@ -48,7 +48,7 @@ TestNodeProxyBusMapping_Server : UnitTest {
 
 		synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
 
-		this.assertEquals(synthValues, controlValues, "after mapping, synth should return mapped values");
+		this.assertEquals(synthValues, controlValues, "after mapping, synth should return mapped values")
 
 
 	}
@@ -64,7 +64,7 @@ TestNodeProxyBusMapping_Server : UnitTest {
 
 		proxy.source = {
 			var in = \in.ar(defaultValues);
-			A2K.kr(in);
+			A2K.kr(in)
 		};
 
 		var inputProxy = NodeProxy(server, \audio, 2);
@@ -89,6 +89,6 @@ TestNodeProxyBusMapping_Server : UnitTest {
 
 		synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
 
-		this.assertEquals(synthValues.round, controlValues.keep(synthValues.size).round, "after mapping, synth should return mapped values");
+		this.assertEquals(synthValues.round, controlValues.keep(synthValues.size).round, "after mapping, synth should return mapped values")
 	}
 }

@@ -37,27 +37,27 @@ JITGui {
 		Class.initClassTree(GUI);
 
 		GUI.skins.put(\jit, (
-			fontSpecs: 		["Helvetica", 12],
-			fontColor: 		Color.black,
-			background: 	Color(0.8, 0.85, 0.7, 0.5),
-			foreground:		Color.grey(0.95),
-			onColor:		Color(0.5, 1, 0.5),
-			onColor2:   	Color(1.0, 0.5, 0.5),
-			offColor:		Color.grey(0.8, 0.5),
-			hiliteColor:	Color.green(1.0, 0.5),
-			gap:			0 @ 0,
-			margin: 		2@2,
-			buttonHeight:	18,
-			headHeight: 	24
+			fontSpecs: ["Helvetica", 12],
+			fontColor: Color.black,
+			background: Color(0.8, 0.85, 0.7, 0.5),
+			foreground: Color.grey(0.95),
+			onColor: Color(0.5, 1, 0.5),
+			onColor2: Color(1.0, 0.5, 0.5),
+			offColor: Color.grey(0.8, 0.5),
+			hiliteColor: Color.green(1.0, 0.5),
+			gap: 0 @ 0,
+			margin: 2 @ 2,
+			buttonHeight: 18,
+			headHeight: 24
 
 		)
-		);
+		)
 	}
 
 	*new { |object, numItems = (0), parent, bounds, makeSkip = true, options = #[]|
 		^super.newCopyArgs(nil, numItems, parent, bounds)
 			.init(makeSkip, options)
-			.object_(object);
+			.object_(object)
 	}
 
 	init { |makeSkip, options|
@@ -70,39 +70,39 @@ JITGui {
 		this.setDefaults(options);
 		this.calcBounds(options);
 
-		if (parent.isNil) { this.makeWindow };
+		if(parent.isNil) { this.makeWindow };
 		this.makeZone;
 
-			// then put all the other gui items on it
+		// then put all the other gui items on it
 		this.makeViews(options);
-			// and start watching
-		if (makeSkip) { this.makeSkip };
+		// and start watching
+		if(makeSkip) { this.makeSkip }
 	}
 
-	accepts { |obj| ^true	}
+	accepts { |obj| ^true }
 
 	object_ { |obj|
-		if (this.accepts(obj)) {
+		if(this.accepts(obj)) {
 			object = obj;
-			this.checkUpdate;
+			this.checkUpdate
 		} {
-			"% : object % not accepted!".format(this.class, obj).warn;
+			"% : object % not accepted!".format(this.class, obj).warn
 		}
 	}
 
 	name_ { |name|
-		if (hasWindow) { parent.name_(this.winName(name)) };
-		if (nameView.notNil) {
+		if(hasWindow) { parent.name_(this.winName(name)) };
+		if(nameView.notNil) {
 			try { nameView.object_(object) };
-			nameView.string_(name);
-		};
+			nameView.string_(name)
+		}
 	}
 
 	hasName {
 		^nameView.notNil and: { nameView.string.notNil }
 	}
 
-	getName { ^if (object.respondsTo(\key)) { object.key } { 'anon' } }
+	getName { ^if(object.respondsTo(\key)) { object.key } { 'anon' } }
 	winName { |name| ^this.class.name ++ $_ ++ (name ?? { this.getName }) }
 
 	calcBounds {
@@ -113,74 +113,74 @@ JITGui {
 		};
 
 		defBounds = Rect.fromPoints(defPos, defPos + minSize + (skin.margin + skin.margin));
-		if (bounds.isNil) {
+		if(bounds.isNil) {
 			bounds = defBounds;
 			^this
 		};
 
-		if (bounds.isKindOf(Point)) {
-			bounds = defBounds.setExtent(max(bounds.x, minSize.x), max(bounds.y, minSize.y));
+		if(bounds.isKindOf(Point)) {
+			bounds = defBounds.setExtent(max(bounds.x, minSize.x), max(bounds.y, minSize.y))
 		}
 	}
 
 	makeWindow {
 		parent = Window(this.winName, bounds.copy.resizeBy(10, 10)).front;
 		parent.addFlowLayout;
-		hasWindow = true;
+		hasWindow = true
 	}
 
 	makeZone {
 		zone = CompositeView(parent, bounds).background_(skin.background);
 		zone.addFlowLayout(skin.margin, skin.gap);
 		zone.resize_(2);
-		zone.background_(skin.foreground);
+		zone.background_(skin.foreground)
 	}
 
 	moveTo { |h, v|
-		if (hasWindow) { parent.bounds = parent.bounds.moveTo(h, v); }
+		if(hasWindow) { parent.bounds = parent.bounds.moveTo(h, v) }
 	}
 
 	close {
-		if (hasWindow) { parent.close }
+		if(hasWindow) { parent.close }
 	}
 
 	makeSkip {
 		skipjack = SkipJack({
 			this.checkUpdate
 		},
-		0.1,
-		{ parent.isNil or: { parent.isClosed } },
-		this.getName
-		);
+			0.1,
+			{ parent.isNil or: { parent.isClosed } },
+			this.getName
+		)
 	}
 
 
-		// these methods should be overridden in subclasses:
+	// these methods should be overridden in subclasses:
 	setDefaults { |options|
-		if (parent.isNil) {
-			defPos = 10@260
+		if(parent.isNil) {
+			defPos = 10 @ 260
 		} {
-			defPos = skin.margin;
+			defPos = skin.margin
 		};
-		minSize = 250 @ (numItems * skin.buttonHeight + skin.headHeight);
+		minSize = 250 @ (numItems * skin.buttonHeight + skin.headHeight)
 		//	"minSize: %\n".postf(minSize);
 	}
 
 	makeViews {
 		var lineheight = max(
 			skin.buttonHeight * numItems + skin.headHeight,
-			zone.bounds.height)  - (skin.margin.y * 2);
+			zone.bounds.height) - (skin.margin.y * 2);
 
-		nameView = DragBoth(zone, Rect(0,0, 60, lineheight))
+		nameView = DragBoth(zone, Rect(0, 0, 60, lineheight))
 			.font_(font)
 			.align_(\center)
-			.receiveDragHandler_({ arg obj; this.object = View.currentDrag });
+			.receiveDragHandler_({ |obj| this.object = View.currentDrag });
 
 		csView = EZText(zone,
-			Rect(0,0, bounds.width - 65, lineheight),
-			nil, { |ez| object = ez.value; })
+			Rect(0, 0, bounds.width - 65, lineheight),
+			nil, { |ez| object = ez.value })
 			.font_(font);
-		csView.bounds;
+		csView.bounds
 	}
 
 	getState {
@@ -192,13 +192,13 @@ JITGui {
 		var newState = this.getState;
 
 		// compare newState and prevState, update gui items as needed
-		if (newState == prevState) { ^this };
+		if(newState == prevState) { ^this };
 
-		if (newState[\object] != prevState[\object]) {
+		if(newState[\object] != prevState[\object]) {
 			this.name_(this.getName);
-			if (csView.textField.hasFocus.not) { csView.value_(object) };
+			if(csView.textField.hasFocus.not) { csView.value_(object) }
 		};
-		prevState = newState;
+		prevState = newState
 	}
 
 	makeScroller {

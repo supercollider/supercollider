@@ -12,12 +12,12 @@ TestSCDoc : UnitTest {
 			// in userExtensionsDir, if it contains a HelpSource subfolder
 			// we create one just for this test
 			File.mkdir(tmpHelpSourcePath);
-			folderWasCreated = true;
+			folderWasCreated = true
 		};
-		var result = SCDoc.prRescanHelpSourceDirs.any { |p| extensionPaths.any { |ep| ("^"++ep.escapeChar($\\)).matchRegexp(p) } };
+		var result = SCDoc.prRescanHelpSourceDirs.any { |p| extensionPaths.any { |ep| ("^" ++ ep.escapeChar($\\)).matchRegexp(p) } };
 		LanguageConfig.excludeDefaultPaths = prevSetting;
 		if(folderWasCreated) { File.delete(tmpHelpSourcePath) };
-		this.assert(result.not, "should not search for extensions' HelpSource when LanguageConfig.excludeDefaultPaths = true");
+		this.assert(result.not, "should not search for extensions' HelpSource when LanguageConfig.excludeDefaultPaths = true")
 	}
 
 	test_helpSourceDirs_includedExtensions {
@@ -31,12 +31,12 @@ TestSCDoc : UnitTest {
 			// in userExtensionsDir, if it contains a HelpSource subfolder
 			// we create one just for this test
 			File.mkdir(tmpHelpSourcePath);
-			folderWasCreated = true;
+			folderWasCreated = true
 		};
-		var result = SCDoc.prRescanHelpSourceDirs.any { |p| extensionPaths.any { |ep| ("^"++ep.escapeChar($\\)).matchRegexp(p) } };
+		var result = SCDoc.prRescanHelpSourceDirs.any { |p| extensionPaths.any { |ep| ("^" ++ ep.escapeChar($\\)).matchRegexp(p) } };
 		LanguageConfig.excludeDefaultPaths = prevSetting;
 		if(folderWasCreated) { File.delete(tmpHelpSourcePath) };
-		this.assert(result, "should search for extensions' HelpSource when LanguageConfig.excludeDefaultPaths = false");
+		this.assert(result, "should search for extensions' HelpSource when LanguageConfig.excludeDefaultPaths = false")
 	}
 
 
@@ -62,7 +62,7 @@ TestSCDoc : UnitTest {
 		if(node.id == id) { ^node };
 		node.children.do { |child|
 			var found = this.prFind(child, id);
-			if(found.notNil) { ^found };
+			if(found.notNil) { ^found }
 		};
 		^nil
 	}
@@ -70,12 +70,12 @@ TestSCDoc : UnitTest {
 	test_codeVersion_block {
 		var node = this.prFind(this.prParse(this.prDocument("code#3.16::\n1 + 2\n::\n")), \CODEBLOCK);
 		this.assertEquals(node.text, "1 + 2", "a versioned code block keeps its text");
-		this.assertEquals(node.version, "3.16", "a code block's release is its version");
+		this.assertEquals(node.version, "3.16", "a code block's release is its version")
 	}
 
 	test_codeVersion_blockLegacy {
 		var node = this.prFind(this.prParse(this.prDocument("code#legacy::\n1 + 2\n::\n")), \CODEBLOCK);
-		this.assertEquals(node.version, "legacy", "legacy is a release");
+		this.assertEquals(node.version, "legacy", "legacy is a release")
 	}
 
 	test_codeVersion_blockWithoutVersion {
@@ -83,31 +83,31 @@ TestSCDoc : UnitTest {
 		this.assertEquals(node.text, "1 + 2", "a code block without a version keeps its text");
 		this.assertEquals(node.version, nil, "a code block without a version has none");
 		this.assertEquals(node.children, nil, "a code block without a version has no children");
-		this.assertEquals(node.isClassCode, false, "a code block without #class is code to evaluate");
+		this.assertEquals(node.isClassCode, false, "a code block without #class is code to evaluate")
 	}
 
 	test_codeVersion_classBlock {
 		var node = this.prFind(this.prParse(this.prDocument("code#3.16#class::\nFoo { }\n::\n")), \CODEBLOCK);
 		this.assertEquals(node.text, "Foo { }", "a class code block keeps its text");
 		this.assertEquals(node.version, "3.16", "a class code block's release is its version");
-		this.assertEquals(node.isClassCode, true, "#class marks class library code");
+		this.assertEquals(node.isClassCode, true, "#class marks class library code")
 	}
 
 	test_codeVersion_classBlockWithoutVersion {
 		var node = this.prFind(this.prParse(this.prDocument("code#class::\nFoo { }\n::\n")), \CODEBLOCK);
 		this.assertEquals(node.version, nil, "a class code block without a release has no version");
-		this.assertEquals(node.isClassCode, true, "code#class:: marks class library code");
+		this.assertEquals(node.isClassCode, true, "code#class:: marks class library code")
 	}
 
 	test_codeVersion_versionIsNotClassCode {
 		var node = this.prFind(this.prParse(this.prDocument("code#3.16::\n1 + 2\n::\n")), \CODEBLOCK);
-		this.assertEquals(node.isClassCode, false, "a version alone is code to evaluate");
+		this.assertEquals(node.isClassCode, false, "a version alone is code to evaluate")
 	}
 
 	test_codeVersion_inlineClass {
 		var node = this.prFind(this.prParse(this.prDocument("Try code#legacy#class:: Foo { } :: now.\n")), \CODE);
 		this.assertEquals(node.version, "legacy", "inline class code keeps its release");
-		this.assertEquals(node.isClassCode, true, "inline code can be class code");
+		this.assertEquals(node.isClassCode, true, "inline code can be class code")
 	}
 
 	test_codeVersion_fragmentBlock {
@@ -116,7 +116,7 @@ TestSCDoc : UnitTest {
 		this.assertEquals(node.version, nil, "a fragment without a release has no version");
 		this.assertEquals(node.isFragment, true, "#fragment marks a fragment");
 		this.assertEquals(node.isErrorCode, false, "a fragment is not error code");
-		this.assertEquals(node.isClassCode, false, "a fragment is not class code");
+		this.assertEquals(node.isClassCode, false, "a fragment is not class code")
 	}
 
 	test_codeVersion_errorBlock {
@@ -124,49 +124,58 @@ TestSCDoc : UnitTest {
 		this.assertEquals(node.version, "3.16", "error code keeps its release");
 		this.assertEquals(node.isClassCode, true, "error code can be class code");
 		this.assertEquals(node.isErrorCode, true, "#error marks code that must fail to compile");
-		this.assertEquals(node.isFragment, false, "error code is not a fragment");
+		this.assertEquals(node.isFragment, false, "error code is not a fragment")
 	}
 
 	test_codeVersion_inlineFragment {
 		var node = this.prFind(this.prParse(this.prDocument("Try code#legacy#fragment:: a.b :: now.\n")), \CODE);
 		this.assertEquals(node.version, "legacy", "an inline fragment keeps its release");
-		this.assertEquals(node.isFragment, true, "inline code can be a fragment");
+		this.assertEquals(node.isFragment, true, "inline code can be a fragment")
 	}
 
 	test_codeVersion_blockIndentedAndUpperCase {
 		var node = this.prFind(this.prParse(this.prDocument("  CODE#3.16::\n1 + 2\n::\n")), \CODEBLOCK);
-		this.assertEquals(node.version, "3.16", "the tag is case insensitive and may be indented");
+		this.assertEquals(node.version, "3.16", "the tag is case insensitive and may be indented")
 	}
 
 	test_codeVersion_inline {
 		var node = this.prFind(this.prParse(this.prDocument("Try code#3.16:: 1 + 2 :: now.\n")), \CODE);
 		this.assertEquals(node.text, "1 + 2", "versioned inline code keeps its text");
-		this.assertEquals(node.version, "3.16", "inline code's release is its version");
+		this.assertEquals(node.version, "3.16", "inline code's release is its version")
 	}
 
 	test_codeVersion_inlineWithoutVersion {
 		var node = this.prFind(this.prParse(this.prDocument("Try code:: 1 + 2 :: now.\n")), \CODE);
-		this.assertEquals(node.version, nil, "inline code without a version has none");
+		this.assertEquals(node.version, nil, "inline code without a version has none")
 	}
 
 	test_codeVersion_badRelease {
 		[
-			"code#3::\n1\n::\n", "code#latest::\n1\n::\n", "code#3.16 ::\n1\n::\n", "Try code#3.x:: 1 ::\n",
-			"code#class#3.16::\n1\n::\n", "code#3.16#Class::\n1\n::\n", "code#3.16#klass::\n1\n::\n", "code##class::\n1\n::\n",
-			"code#error#class::\n1\n::\n", "code#fragment#error::\n1\n::\n", "code#error#3.16::\n1\n::\n", "code#3.16#fragment#class::\n1\n::\n"
+			"code#3::\n1\n::\n",
+			"code#latest::\n1\n::\n",
+			"code#3.16 ::\n1\n::\n",
+			"Try code#3.x:: 1 ::\n",
+			"code#class#3.16::\n1\n::\n",
+			"code#3.16#Class::\n1\n::\n",
+			"code#3.16#klass::\n1\n::\n",
+			"code##class::\n1\n::\n",
+			"code#error#class::\n1\n::\n",
+			"code#fragment#error::\n1\n::\n",
+			"code#error#3.16::\n1\n::\n",
+			"code#3.16#fragment#class::\n1\n::\n"
 		].do { |body|
-			this.assertEquals(this.prParse(this.prDocument(body)), nil, "a bad release is a parse error: %".format(body.cs));
-		};
+			this.assertEquals(this.prParse(this.prDocument(body)), nil, "a bad release is a parse error: %".format(body.cs))
+		}
 	}
 
 	test_codeVersion_metadata {
 		var text = this.prDocument("code#3.16::\n1 + 2\n::\ncode#class::\nFoo { }\n::\ncode#fragment::\na\n::\nTry code#legacy#class#error:: 1 :: now.\n");
-		this.assert(this.prParse(text, 2).notNil, "metadata parsing skips versioned code");
+		this.assert(this.prParse(text, 2).notNil, "metadata parsing skips versioned code")
 	}
 
 	test_codeVersion_metadataBadRelease {
 		var text = this.prDocument("code#latest::\n1 + 2\n::\n");
-		this.assertEquals(this.prParse(text, 2), nil, "metadata parsing rejects a bad release");
+		this.assertEquals(this.prParse(text, 2), nil, "metadata parsing rejects a bad release")
 	}
 
 }

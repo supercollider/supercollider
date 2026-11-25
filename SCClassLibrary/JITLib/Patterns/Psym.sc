@@ -1,19 +1,19 @@
 Psym : FilterPattern {
 	var <>dict;
 
-	*new { arg pattern, dict;
+	*new { |pattern, dict|
 		^super.new(pattern).dict_(dict)
 	}
 
-	storeArgs { ^[pattern,dict] }
+	storeArgs { ^[pattern, dict] }
 
 	lookupClass { ^Pdef }
 
-	lookUp { arg key;
+	lookUp { |key|
 		^(dict ?? { this.lookupClass.all }).at(key.asSymbol) ?? { this.lookupClass.default }
 	}
 
-	embedInStream { arg inval;
+	embedInStream { |inval|
 		var str, outval, pat;
 		str = pattern.asStream;
 		while {
@@ -21,19 +21,19 @@ Psym : FilterPattern {
 			outval.notNil
 		} {
 			pat = this.getPattern(outval);
-			inval = pat.embedInStream(inval);
+			inval = pat.embedInStream(inval)
 		};
 		^inval
 
 	}
 
-	getPattern { arg key;
+	getPattern { |key|
 		^if(key.isSequenceableCollection) {
 			this.lookupClass.parallelise(
-				key.collect {|each|
+				key.collect { |each|
 					this.lookUp(each)
 				}
-			);
+			)
 		} {
 			this.lookUp(key)
 		}
@@ -48,13 +48,13 @@ Pnsym : Psym {
 Ptsym : Psym {
 	var <>quant, <>dur, <>tolerance;
 
-	*new { arg pattern, dict, quant, dur, tolerance = 0.001;
+	*new { |pattern, dict, quant, dur, tolerance = 0.001|
 		^super.newCopyArgs(pattern, dict, quant, dur, tolerance)
 	}
 
-	storeArgs { ^[ pattern, dict, quant, dur, tolerance ] }
+	storeArgs { ^[pattern, dict, quant, dur, tolerance] }
 
-	embedInStream { arg inval;
+	embedInStream { |inval|
 		var outval, pat, quantVal, durVal;
 		var str = pattern.asStream;
 		var quantStr = quant.asStream;
@@ -67,7 +67,7 @@ Ptsym : Psym {
 			outval.notNil
 		} {
 			pat = Psync(this.getPattern(outval), quantVal, durVal, tolerance);
-			inval = pat.embedInStream(inval);
+			inval = pat.embedInStream(inval)
 		};
 		^inval
 
@@ -76,7 +76,7 @@ Ptsym : Psym {
 
 Pnsym1 : Pnsym {
 
-	embedInStream { arg inval;
+	embedInStream { |inval|
 
 		var which, outval, pat, currentStream;
 		var str = pattern.asStream;
@@ -90,7 +90,7 @@ Pnsym1 : Pnsym {
 			currentStream = streams.at(pat);
 			if(currentStream.isNil) {
 				currentStream = pat.asStream;
-				streams.put(pat, currentStream);
+				streams.put(pat, currentStream)
 			};
 			outval = currentStream.next(inval);
 			outval ?? { ^inval };
@@ -103,7 +103,7 @@ Pnsym1 : Pnsym {
 
 Psym1 : Psym {
 
-	embedInStream { arg inval;
+	embedInStream { |inval|
 
 		var which, outval, pat, currentStream;
 		var str = pattern.asStream;
@@ -115,13 +115,13 @@ Psym1 : Psym {
 			which.notNil
 		} {
 			if(which.isSequenceableCollection) {
-				Error("Psym1 cannot embed arrayed keys: %\n".format(which)).throw;
+				Error("Psym1 cannot embed arrayed keys: %\n".format(which)).throw
 			};
 			pat = this.lookUp(which);
 			currentStream = streams.at(pat);
 			if(currentStream.isNil) {
 				currentStream = pat.asStream;
-				streams.put(pat, currentStream);
+				streams.put(pat, currentStream)
 			};
 			outval = currentStream.next(inval);
 			if(outval.isNil) { ^cleanup.exit(inval) };
@@ -130,6 +130,6 @@ Psym1 : Psym {
 			inval = outval.yield
 		};
 
-		^cleanup.exit(inval);
+		^cleanup.exit(inval)
 	}
 }

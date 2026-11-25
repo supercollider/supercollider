@@ -1,31 +1,31 @@
 Condition {
 	var <>test, waitingThreads;
 
-	*new { arg test=false;
+	*new { |test = false|
 		^super.newCopyArgs(test, Array(8))
 	}
 	wait {
-		if (test.value.not, {
+		if(test.value.not) {
 			waitingThreads = waitingThreads.add(thisThread.threadPlayer);
-			\hang.yield;
-		});
+			\hang.yield
+		}
 	}
-	hang { arg value = \hang;
+	hang { |value = \hang|
 		// ignore the test, just wait
 		waitingThreads = waitingThreads.add(thisThread.threadPlayer);
-		value.yield;
+		value.yield
 	}
 
 	signal {
 		var tempWaitingThreads, time;
-		if (test.value, {
+		if(test.value) {
 			time = thisThread.seconds;
 			tempWaitingThreads = waitingThreads;
 			waitingThreads = nil;
-			tempWaitingThreads.do({ arg thread;
-				thread.clock.sched(0, thread);
-			});
-		});
+			tempWaitingThreads.do { |thread|
+				thread.clock.sched(0, thread)
+			}
+		}
 	}
 	unhang {
 		var tempWaitingThreads, time;
@@ -33,9 +33,9 @@ Condition {
 		time = thisThread.seconds;
 		tempWaitingThreads = waitingThreads;
 		waitingThreads = nil;
-		tempWaitingThreads.do({ arg thread;
-			thread.clock.sched(0, thread);
-		});
+		tempWaitingThreads.do { |thread|
+			thread.clock.sched(0, thread)
+		}
 	}
 }
 
@@ -43,19 +43,19 @@ FlowVar {
 	var value = \unbound;
 	var condition;
 
-	*new { arg inVal = \unbound;
+	*new { |inVal = \unbound|
 		^super.new.init(inVal)
 	}
-	init { arg inVal;
+	init { |inVal|
 		value = inVal;
-		condition = Condition { value != \unbound };
+		condition = Condition { value != \unbound }
 	}
-	value_ { arg inVal;
-		if (value != \unbound) {
+	value_ { |inVal|
+		if(value != \unbound) {
 			Error("cannot rebind a FlowVar").throw
 		};
 		value = inVal;
-		condition.signal;
+		condition.signal
 	}
 	value {
 		condition.wait

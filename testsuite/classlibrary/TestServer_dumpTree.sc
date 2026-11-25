@@ -7,16 +7,16 @@ TestServer_dumpTree : UnitTest {
 	}
 
 	tearDown {
-		if (pipe.notNil) {
-			pipe.close;
-		};
+		if(pipe.notNil) {
+			pipe.close
+		}
 	}
 
 	getOutput { |program|
 		var actualOutput = List[],
-		oscPath = PathName.tmp +/+ "dumpTree_test.osc",
-		outPath = PathName.tmp +/+ "dummy_out.aiff",
-		cmd, line, score, nodeTreeOutputDetected = false;
+			oscPath = PathName.tmp +/+ "dumpTree_test.osc",
+			outPath = PathName.tmp +/+ "dummy_out.aiff",
+			cmd, line, score, nodeTreeOutputDetected = false;
 
 		score = Score();
 		// this overwrites the automatically created default group, so that we only get the root group in the output
@@ -30,22 +30,22 @@ TestServer_dumpTree : UnitTest {
 		// run it and capture stdout
 		pipe = Pipe.new(cmd, "r");
 		line = pipe.getLine;
-		while ({ line.notNil }) {
+		while { line.notNil } {
 			// line.postln; // inspect output
 			// ignore output until we see matching start
-			if (line.beginsWith("NODE TREE")) {nodeTreeOutputDetected = true};
+			if(line.beginsWith("NODE TREE")) { nodeTreeOutputDetected = true };
 			// once we see matching beginning, capture output
-			if (nodeTreeOutputDetected) {actualOutput.add(line)};
+			if(nodeTreeOutputDetected) { actualOutput.add(line) };
 			// stop capturing when we see matching end
-			if (line.beginsWith("END NODE")) {nodeTreeOutputDetected = false};
-			line = pipe.getLine;
+			if(line.beginsWith("END NODE")) { nodeTreeOutputDetected = false };
+			line = pipe.getLine
 		};
 		// cleanup
 		pipe.close;
-		if (File.exists(oscPath)) { File.delete(oscPath)};
-		if (File.exists(outPath)) { File.delete(outPath)};
+		if(File.exists(oscPath)) { File.delete(oscPath) };
+		if(File.exists(outPath)) { File.delete(outPath) };
 
-		^actualOutput;
+		^actualOutput
 	}
 
 	test_dumpTree_scsynth {
@@ -56,7 +56,7 @@ TestServer_dumpTree : UnitTest {
 				"END NODE TREE Group 0",
 			],
 			"scsynth /g_dumpTree output should match expected output",
-		);
+		)
 	}
 
 	test_dumpTree_supernova {
@@ -68,7 +68,7 @@ TestServer_dumpTree : UnitTest {
 				"END NODE TREE Group 0",
 			],
 			"supernova /g_dumpTree output should match expected output",
-		);
+		)
 	}
 
 }

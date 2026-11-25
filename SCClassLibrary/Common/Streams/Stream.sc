@@ -7,41 +7,41 @@ Stream : AbstractFunction {
 	iter { ^this }
 	streamArg { ^this }
 
-	value { arg inval; ^this.next(inval) }
+	value { |inval| ^this.next(inval) }
 	valueArray { ^this.next }
 
-	all { arg inval;
+	all { |inval|
 		// don't do this on infinite streams.
 		var array;
-		this.do({|item| array = array.add(item) }, inval);
+		this.do({ |item| array = array.add(item) }, inval);
 		^array
 	}
 
 	// writing
-	put { arg item;
+	put { |item|
 		^this.subclassResponsibility(thisMethod)
 	}
-	putN { arg n, item;
-		n.do({ this.put(item); });
+	putN { |n, item|
+		n.do { this.put(item) }
 	}
-	putAll { arg aCollection;
-		aCollection.do {|item| this.put(item); };
+	putAll { |aCollection|
+		aCollection.do { |item| this.put(item) }
 	}
 
-	do { arg function, inval;
-		var item, i=0;
+	do { |function, inval|
+		var item, i = 0;
 		while {
 			item = this.next(inval);
 			item.notNil
-		}{
+		} {
 			function.value(item, i);
-			i = i + 1;
-		};
+			i = i + 1
+		}
 	}
 
-	subSample {| offset= 0, skipSize = 0|
+	subSample { |offset = 0, skipSize = 0|
 		^Routine {
-			offset.do{ this.next };
+			offset.do { this.next };
 			loop {
 				this.next.yield;
 				skipSize.do { this.next }
@@ -49,175 +49,174 @@ Stream : AbstractFunction {
 		}
 	}
 
-	generate { arg function, item;
-		var i=0;
+	generate { |function, item|
+		var i = 0;
 		while {
 			item = this.next(item);
 			item.notNil
-		}{
+		} {
 			function.value(item, i);
-			i = i + 1;
-		};
+			i = i + 1
+		}
 	}
 
 	// combination
-	collect { arg argCollectFunc;
+	collect { |argCollectFunc|
 		// modify a stream
-		var nextFunc = { arg inval;
+		var nextFunc = { |inval|
 			var	nextval = this.next(inval);
-			if ( nextval.notNil, {
+			if(nextval.notNil) {
 				argCollectFunc.value(nextval, inval)
-			})
+			}
 		};
 		var resetFunc = { this.reset };
-		^FuncStream.new(nextFunc, resetFunc);
+		^FuncStream.new(nextFunc, resetFunc)
 	}
-	reject { arg function;
+	reject { |function|
 		// reject elements from a stream
-		var nextFunc = { arg inval;
+		var nextFunc = { |inval|
 			var	nextval = this.next(inval);
 			while {
 				nextval.notNil and: { function.value(nextval, inval) }
-			}{
-				nextval = this.next(inval);
+			} {
+				nextval = this.next(inval)
 			};
 			nextval
 		};
 		var resetFunc = { this.reset };
-		^FuncStream.new(nextFunc, resetFunc);
+		^FuncStream.new(nextFunc, resetFunc)
 	}
-	select { arg function;
+	select { |function|
 		// select elements from a stream
-		var nextFunc = { arg inval;
+		var nextFunc = { |inval|
 			var	nextval = this.next(inval);
 			while {
 				nextval.notNil and: { function.value(nextval, inval).not }
-			}{
-				nextval = this.next(inval);
+			} {
+				nextval = this.next(inval)
 			};
 			nextval
 		};
 		var resetFunc = { this.reset };
-		^FuncStream.new(nextFunc, resetFunc);
+		^FuncStream.new(nextFunc, resetFunc)
 	}
 
-	dot { arg function, stream;
+	dot { |function, stream|
 		// combine item by item with another stream
 		^FuncStream.new(
-			{ arg inval;
+			{ |inval|
 				var x = this.next(inval);
 				var y = stream.next(inval);
-				if ( x.notNil and: { y.notNil }, {
+				if(x.notNil and: { y.notNil }) {
 					function.value(x, y, inval)
-				});
+				}
 			},
-			{ this.reset; stream.reset; }
-		);
+			{ this.reset; stream.reset }
+		)
 	}
 
-	interlace { arg function, stream;
+	interlace { |function, stream|
 		// interlace with another stream
 		var nextx = this.next;
 		var nexty = stream.next;
 		^FuncStream.new({ |inval|
 			var val;
-			if ( nextx.isNil ) {
-				if ( nexty.isNil) {nil}{ val = nexty; nexty = stream.next(inval); val };
-			}{
-				if ( nexty.isNil or: { function.value(nextx, nexty, inval) },
-					{ val = nextx; nextx = this.next(inval); val },
+			if(nextx.isNil) {
+				if(nexty.isNil) { nil } { val = nexty; nexty = stream.next(inval); val }
+			} {
+				if(nexty.isNil or: { function.value(nextx, nexty, inval) })
+					{ val = nextx; nextx = this.next(inval); val }
 					{ val = nexty; nexty = stream.next(inval); val }
-				);
-			};
+			}
 		},
-		{
-			this.reset; stream.reset;
-			nextx = this.next;
-			nexty = stream.next;
-		});
+			{
+				this.reset; stream.reset;
+				nextx = this.next;
+				nexty = stream.next
+		})
 	}
 
-	++ { arg stream; ^this.appendStream(stream) }
+	++ { |stream| ^this.appendStream(stream) }
 
-	appendStream { arg stream;
+	appendStream { |stream|
 		var reset = false;
-		^Routine({ arg inval;
-			if (reset) {
+		^Routine({ |inval|
+			if(reset) {
 				this.reset;
-				stream.reset;
+				stream.reset
 			};
 			reset = true;
 			inval = this.embedInStream(inval);
-			stream.embedInStream(inval);
-		});
+			stream.embedInStream(inval)
+		})
 	}
 
-	collate { arg stream;
+	collate { |stream|
 		// ascending order merge of two streams
-		^this.interlace({|x y| x < y }, stream);
+		^this.interlace({ |x, y| x < y }, stream)
 	}
 
-	<> { arg obj; ^Pchain(this, obj).asStream }
+	<> { |obj| ^Pchain(this, obj).asStream }
 
 
 	// function composition
-	composeUnaryOp { arg argSelector;
+	composeUnaryOp { |argSelector|
 		^UnaryOpStream.new(argSelector, this)
 	}
-	composeBinaryOp { arg argSelector, argStream, adverb;
+	composeBinaryOp { |argSelector, argStream, adverb|
 		if(adverb.isNil) {
 			^BinaryOpStream.new(argSelector, this, argStream.asStream)
 		} {
-			if (adverb == 'x') {
-				^BinaryOpXStream.new(argSelector, this, argStream.asStream);
-			};
+			if(adverb == 'x') {
+				^BinaryOpXStream.new(argSelector, this, argStream.asStream)
+			}
 		};
 		^nil
 	}
-	reverseComposeBinaryOp { arg argSelector, argStream, adverb;
+	reverseComposeBinaryOp { |argSelector, argStream, adverb|
 		if(adverb.isNil) {
 			^BinaryOpStream.new(argSelector, argStream.asStream, this)
 		} {
-			if (adverb == 'x') {
-				^BinaryOpXStream.new(argSelector, argStream.asStream, this);
-			};
+			if(adverb == 'x') {
+				^BinaryOpXStream.new(argSelector, argStream.asStream, this)
+			}
 		};
 		^nil
 	}
-	composeNAryOp { arg argSelector, anArgList;
-		^NAryOpStream.new(argSelector, this, anArgList.collect(_.asStream));
+	composeNAryOp { |argSelector, anArgList|
+		^NAryOpStream.new(argSelector, this, anArgList.collect(_.asStream))
 	}
 
-	embedInStream { arg inval;
+	embedInStream { |inval|
 		var outval;
 		while {
 			outval = this.value(inval);
 			outval.notNil
-		}{
-			inval = outval.yield;
+		} {
+			inval = outval.yield
 		};
 		^inval
 	}
 
-	asEventStreamPlayer { arg protoEvent;
-		^EventStreamPlayer(this, protoEvent);
+	asEventStreamPlayer { |protoEvent|
+		^EventStreamPlayer(this, protoEvent)
 	}
 
-	play { arg clock, quant;
+	play { |clock, quant|
 		clock = clock ? TempoClock.default;
-		clock.play(this, quant.asQuant);
+		clock.play(this, quant.asQuant)
 	}
 
-	trace { arg key, printStream, prefix="";
+	trace { |key, printStream, prefix = ""|
 		^Ptrace(this, key, printStream, prefix).asStream
 	}
 
-//	constrain { arg sum, tolerance=0.001;
-//		^Pconst(sum, tolerance).asStream
-//	}
+	//	constrain { arg sum, tolerance=0.001;
+	//		^Pconst(sum, tolerance).asStream
+	//	}
 
-	repeat { arg repeats = inf;
-		^r { arg inval;
+	repeat { |repeats = inf|
+		^r { |inval|
 			repeats.value(inval).do {
 				inval = this.reset.embedInStream(inval)
 			}
@@ -229,25 +228,25 @@ Stream : AbstractFunction {
 
 OneShotStream : Stream {
 	var value, once = true;
-	*new { arg value;
+	*new { |value|
 		^super.newCopyArgs(value)
 	}
-	next { ^if (once) {once = false; value} }
+	next { ^if(once) { once = false; value } }
 	reset { once = true }
 	storeArgs { ^[value] }
 }
 
 EmbedOnce : Stream  {
 	var <stream, <cleanup;
-	*new { arg stream, cleanup;
+	*new { |stream, cleanup|
 		^super.newCopyArgs(stream.asStream, cleanup)
 	}
-	next { arg inval;
+	next { |inval|
 		var val = stream.next(inval);
 		if(val.isNil) { // embed once, then release memory
 			cleanup !? { cleanup.exit(inval) };
 			stream = nil;
-			cleanup = nil;
+			cleanup = nil
 		} {
 			cleanup.update(val)
 		};
@@ -267,7 +266,7 @@ FuncStream : Stream {
 	*new { |nextFunc, resetFunc|
 		^super.new.nextFunc_(nextFunc).resetFunc_(resetFunc).envir_(currentEnvironment)
 	}
-	next { arg inval;
+	next { |inval|
 		^envir.use({ nextFunc.value(inval) })
 	}
 	reset {
@@ -277,19 +276,19 @@ FuncStream : Stream {
 }
 
 StreamClutch : Stream {
-	var <>stream, <>connected, value, >reset=true;
+	var <>stream, <>connected, value, >reset = true;
 
-	*new { arg pattern, connected = true;
+	*new { |pattern, connected = true|
 		^super.newCopyArgs(pattern.asStream, connected)
 	}
 
-	next { arg inval;
+	next { |inval|
 		if(reset) {
 			reset = false;
 			value = stream.next(inval)
 		};
 		if(connected.value(inval)) {
-			value = stream.next(inval);
+			value = stream.next(inval)
 		};
 		^value
 	}
@@ -299,7 +298,7 @@ StreamClutch : Stream {
 		stream.reset;
 		reset = true
 	}
-	step { arg inval;
+	step { |inval|
 		value = stream.next(inval ?? { Event.default })
 	}
 
@@ -308,14 +307,14 @@ StreamClutch : Stream {
 CleanupStream : Stream {
 	var <stream, <>cleanup;
 
-	*new { arg stream, cleanup;
+	*new { |stream, cleanup|
 		^super.newCopyArgs(stream, cleanup)
 	}
-	next { arg inval;
+	next { |inval|
 		var outval = stream.next(inval);
-		if (outval.isNil) {
+		if(outval.isNil) {
 			cleanup.value(this, inval);
-			cleanup = nil;
+			cleanup = nil
 		}
 		^outval
 	}
@@ -327,30 +326,30 @@ CleanupStream : Stream {
 // PauseStream is a stream wrapper that can be started and stopped.
 
 PauseStream : Stream {
-	var <stream, <originalStream, <clock, <nextBeat, <>streamHasEnded=false;
-	var isWaiting = false, era=0;
+	var <stream, <originalStream, <clock, <nextBeat, <>streamHasEnded = false;
+	var isWaiting = false, era = 0;
 	var rescheduledTime;  // normally nil
 
-	*new { arg argStream, clock;
+	*new { |argStream, clock|
 		^super.newCopyArgs(nil, argStream, clock ? TempoClock.default)
 	}
 
 	isPlaying { ^stream.notNil }
 
-	play { arg argClock, doReset = (false), quant;
+	play { |argClock, doReset = (false), quant|
 		// check 'quant' first, before changing any state variables
 		// if there is an error, this object should be unaffected
 		var tempClock = argClock ? clock ? TempoClock.default;
 		var time = quant.asQuant.nextTimeOnGrid(tempClock);
 
-		if (stream.notNil, { "already playing".postln; ^this });
-		if (doReset, { this.reset });
+		if(stream.notNil) { "already playing".postln; ^this };
+		if(doReset) { this.reset };
 		clock = tempClock;
 		streamHasEnded = false;
 		this.refresh; //stream = originalStream;
 		stream.clock = clock;
 		isWaiting = true;	// make sure that accidental play/stop/play sequences
-						// don't cause memory leaks
+		// don't cause memory leaks
 		era = CmdPeriod.era;
 		clock.schedAbs(time, {
 			if(isWaiting and: { nextBeat.isNil }) {
@@ -367,7 +366,7 @@ PauseStream : Stream {
 	stop {
 		var saveStream = this.stream;
 		this.prStop;
- 		this.changed(\userStopped);
+		this.changed(\userStopped);
 		if(saveStream === thisThread) {
 			nil.alwaysYield
 		}
@@ -375,40 +374,40 @@ PauseStream : Stream {
 	prStop {
 		stream = nil;
 		rescheduledTime = nil;
-		isWaiting = false;
+		isWaiting = false
 	}
 	removedFromScheduler {
 		nextBeat = nil;
 		this.prStop;
-		this.changed(\stopped);
+		this.changed(\stopped)
 	}
-	streamError { this.removedFromScheduler; streamHasEnded = true;  }
+	streamError { this.removedFromScheduler; streamHasEnded = true }
 
 	wasStopped {
 		^streamHasEnded.not and: { stream.isNil } // stopped by clock or stop-message
-		or: { CmdPeriod.era != era } // stopped by cmd-period, after stream has ended
+			or: { CmdPeriod.era != era } // stopped by cmd-period, after stream has ended
 	}
 	canPause { ^this.streamHasEnded.not }
 
 	pause {
-		this.stop;
+		this.stop
 	}
-	resume { arg argClock, quant;
+	resume { |argClock, quant|
 		^this.play(clock ? argClock, false, quant)
 	}
-	reschedule { arg argClock, quant;
+	reschedule { |argClock, quant|
 		deferAwayFrom(this.stream) {
 			if(this.isPlaying.not) {
-				Error("% can't be rescheduled when idle; use 'play' instead".format(this.class.name)).throw;
+				Error("% can't be rescheduled when idle; use 'play' instead".format(this.class.name)).throw
 			};
 			rescheduledTime = quant.asQuant.nextTimeOnGrid(clock, this.nextBeat);
 			if(argClock.isNil) { argClock = clock };
 			if(argClock !== clock) {
 				// convert to new clock's time
-				rescheduledTime = argClock.secs2beats(clock.beats2secs(rescheduledTime));
+				rescheduledTime = argClock.secs2beats(clock.beats2secs(rescheduledTime))
 			};
-			clock = argClock;
-		};
+			clock = argClock
+		}
 	}
 
 	refresh {
@@ -419,33 +418,33 @@ PauseStream : Stream {
 			protect {
 				originalStream.embedInStream(inval)
 			} {
-				this.streamError;
+				this.streamError
 			}
 		};
-		originalStream.threadPlayer_(this);
+		originalStream.threadPlayer_(this)
 	}
 
-	start { arg argClock, quant;
+	start { |argClock, quant|
 		^this.play(argClock, true, quant)
 	}
 
-	stream_ { arg argStream;
+	stream_ { |argStream|
 		originalStream.threadPlayer_(nil);  // not owned any more
 		originalStream = argStream.threadPlayer_(this);
-		if (stream.notNil, { stream = argStream; streamHasEnded = argStream.isNil; });
+		if(stream.notNil) { stream = argStream; streamHasEnded = argStream.isNil }
 	}
 
-	next { arg inval;
+	next { |inval|
 		var nextTime = stream.next(inval);
-		if (nextTime.isNil) {
+		if(nextTime.isNil) {
 			streamHasEnded = stream.notNil;
-			this.removedFromScheduler;
+			this.removedFromScheduler
 		} {
 			nextBeat = inval + nextTime
 		};	// inval is current logical beat
 		^nextTime
 	}
-	awake { arg beats, seconds, inClock;
+	awake { |beats, seconds, inClock|
 		if(rescheduledTime.isNil) {
 			clock = inClock;
 			^this.next(beats)
@@ -464,24 +463,25 @@ PauseStream : Stream {
 Task : PauseStream {
 	// optimization:
 	// Task builds its own Routine, so 'protect' here
-	*new { arg func, clock;
+	*new { |func, clock|
 		var new = super.new(
 			Routine({ |inval|
 				protect {
 					func.value(inval)
 				} {
 					new.streamError
-				};
+				}
 			}
-		), clock);
+			), clock);
 		^new
 	}
 	// then there is no need to let PauseStream wrap it in another Routine
 	refresh {
-		stream = originalStream.threadPlayer_(this);
+		stream = originalStream.threadPlayer_(this)
 	}
-	storeArgs { ^originalStream.storeArgs
-		++ if(clock != TempoClock.default) { clock }
+	storeArgs {
+		^originalStream.storeArgs
+			++ if(clock != TempoClock.default) { clock }
 	}
 }
 
@@ -491,8 +491,8 @@ Task : PauseStream {
 EventStreamPlayer : PauseStream {
 	var <>event, <>muteCount = 0, <>cleanup, <>routine;
 
-	*new { arg stream, event;
-		^super.new(stream).event_(event ?? { Event.default }).init;
+	*new { |stream, event|
+		^super.new(stream).event_(event ?? { Event.default }).init
 	}
 
 	init {
@@ -505,82 +505,82 @@ EventStreamPlayer : PauseStream {
 					this.streamError
 				}
 			}
-		};
+		}
 	}
 
 	// freeNodes is passed as false from
 	//TempoClock:cmdPeriod
-	removedFromScheduler { | freeNodes = true |
+	removedFromScheduler { |freeNodes = true|
 		nextBeat = nil;
 		cleanup.terminate(freeNodes);
 		this.prStop;
-		this.changed(\stopped);
+		this.changed(\stopped)
 	}
 	prStop {
 		stream = nextBeat = nil;
-		isWaiting = false;
+		isWaiting = false
 	}
 
 	stop {
 		cleanup.terminate;
 		this.prStop;
-		this.changed(\userStopped);
+		this.changed(\userStopped)
 	}
 
 	reset { routine.reset; super.reset }
 
-	mute { muteCount = muteCount + 1; }
-	unmute { muteCount = muteCount - 1; }
+	mute { muteCount = muteCount + 1 }
+	unmute { muteCount = muteCount - 1 }
 	canPause { ^this.streamHasEnded.not and: { cleanup.functions.isEmpty } }
 
-	next { | inTime | ^routine.next(inTime) }
+	next { |inTime| ^routine.next(inTime) }
 
-	prNext { arg inTime;
+	prNext { |inTime|
 		var nextTime;
 		var outEvent = stream.next(event.copy);
 		var roundedBeat, deltaFromRounded;
-		if (outEvent.isNil) {
+		if(outEvent.isNil) {
 			streamHasEnded = stream.notNil;
 			cleanup.clear;
 			this.removedFromScheduler;
 			^nil
 		} {
 			nextTime = outEvent.playAndDelta(cleanup, muteCount > 0);
-			if (nextTime.isNil) { this.removedFromScheduler; ^nil };
+			if(nextTime.isNil) { this.removedFromScheduler; ^nil };
 			nextBeat = inTime + nextTime;	// inval is current logical beat
 			roundedBeat = nextBeat.round;
 			deltaFromRounded = roundedBeat - nextBeat;
-			if (deltaFromRounded.smallButNotZero) {
+			if(deltaFromRounded.smallButNotZero) {
 				nextBeat = roundedBeat;
-				nextTime = nextTime + deltaFromRounded;
+				nextTime = nextTime + deltaFromRounded
 			};
 			^nextTime
-		};
+		}
 	}
 
 	asEventStreamPlayer { ^this }
 
-	play { arg argClock, doReset = (false), quant;
+	play { |argClock, doReset = (false), quant|
 		// check 'quant' first, before changing any state variables
 		// if there is an error, this object should be unaffected
 		var tempClock = argClock ? clock ? TempoClock.default;
 		var time = quant.asQuant.nextTimeOnGrid(tempClock);
 
-		if (stream.notNil, { "already playing".postln; ^this });
-		if (doReset, { this.reset });
+		if(stream.notNil) { "already playing".postln; ^this };
+		if(doReset) { this.reset };
 		clock = tempClock;
 		streamHasEnded = false;
 		stream = originalStream;
 		stream.clock = clock;
 		isWaiting = true;	// make sure that accidental play/stop/play sequences
-						// don't cause memory leaks
+		// don't cause memory leaks
 		era = CmdPeriod.era;
 		quant = quant.asQuant;
 		event = event.synchWithQuant(quant);
 
 		clock.schedAbs(time, {
 			if(isWaiting and: { nextBeat.isNil }) {
-				thisThread.clock.sched(0, this );
+				thisThread.clock.sched(0, this);
 				isWaiting = false;
 				this.changed(\playing)
 			};

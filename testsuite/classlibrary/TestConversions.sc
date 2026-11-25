@@ -6,8 +6,8 @@ TestCollectionConversions : UnitTest {
 		var from = [1, 2, 3, 4]; // sorted.
 		var classes = [Array, Int8Array, List, Order, Set, IdentitySet, Bag, IdentityBag];
 		classes.do { |class|
-			this.assertEquals(class, from.as(class).class, "as(%) should return an object of that class".format(class));
-		};
+			this.assertEquals(class, from.as(class).class, "as(%) should return an object of that class".format(class))
+		}
 	}
 
 	test_newFrom_collection_reversible {
@@ -15,8 +15,8 @@ TestCollectionConversions : UnitTest {
 		var classes = [Array, Int8Array, List, Order, Set, IdentitySet, Bag, IdentityBag];
 		classes.do { |class|
 			this.assertEquals(from, from.as(class).as(Array).sort,
-				"as(%) should be reversible for an array like %".format(class, from));
-		};
+				"as(%) should be reversible for an array like %".format(class, from))
+		}
 	}
 
 	test_newFrom_dictionary_reversible {
@@ -25,8 +25,8 @@ TestCollectionConversions : UnitTest {
 		var classes = [Dictionary, IdentityDictionary]; // TwoWayIdentityDictionary fails.
 		classes.do { |class|
 			this.assertEquals(from, from.as(class).as(Dictionary),
-				"as(%) should be reversible for a dictionary like %".format(class, from));
-		};
+				"as(%) should be reversible for a dictionary like %".format(class, from))
+		}
 	}
 
 	test_asDict_reversible {
@@ -42,7 +42,7 @@ TestCollectionConversions : UnitTest {
 		functions.do { |test|
 			this.assertEquals(object, test.value(object),
 				"asDict should be compatible with key value pairs interface: " ++ test.asCompileString)
-		};
+		}
 	}
 
 	test_asPairs_reversible {
@@ -58,7 +58,7 @@ TestCollectionConversions : UnitTest {
 		functions.do { |test|
 			this.assertEquals(object, test.value(object),
 				"asPairs should be compatible with key value pairs interface: " ++ test.asCompileString)
-		};
+		}
 	}
 
 	test_asAssociations_reversible {
@@ -74,7 +74,7 @@ TestCollectionConversions : UnitTest {
 		functions.do { |test|
 			this.assertEquals(object, test.value(object),
 				"asAssociations should be compatible with key value pairs interface: " ++ test.asCompileString)
-		};
+		}
 	}
 
 

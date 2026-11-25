@@ -5,15 +5,15 @@ TestSoundFile_Normalize : UnitTest {
 	setUp {
 		path = PathName.tmp +/+ "testSFNorm%.aiff".format(this.hash.asHexString(8));
 		soundFile = SoundFile(path);
-		written = Signal.series(100, -0.5, 1/99);
+		written = Signal.series(100, -0.5, 1 / 99);
 		soundFile.openWrite;
 		soundFile.writeData(written);
-		soundFile.close;
+		soundFile.close
 	}
 
 	tearDown {
 		soundFile.close;
-		File.delete(path);
+		File.delete(path)
 	}
 
 	test_channelPeaks {
@@ -21,9 +21,9 @@ TestSoundFile_Normalize : UnitTest {
 		soundFile.openRead;
 		if(soundFile.isOpen) {
 			peaks = soundFile.channelPeaks;
-			this.assertEquals(peaks, [0.5], "Channel peaks test should read 0.5");
+			this.assertEquals(peaks, [0.5], "Channel peaks test should read 0.5")
 		};
-		soundFile.close;
+		soundFile.close
 	}
 
 	test_normalize {
@@ -42,6 +42,6 @@ TestSoundFile_Normalize : UnitTest {
 		file2.close;
 		this.assertEquals([read.first, read.last], [-0.75, 0.75], "Test file normalized to 0.75 should peak at +/-0.75");
 
-		File.delete(path2);
+		File.delete(path2)
 	}
 }

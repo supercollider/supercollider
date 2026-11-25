@@ -12,7 +12,7 @@ TestServer_clientID_booted : UnitTest {
 		this.bootServer(s);
 		this.assertEquals(s.clientID, 0, "clientID should be 0 by default");
 		s.quitSync;
-		s.remove;
+		s.remove
 	}
 
 	test_setWithSetter {
@@ -23,7 +23,7 @@ TestServer_clientID_booted : UnitTest {
 		this.bootServer(s);
 		this.assertEquals(s.clientID, 3, "clientID should be settable by clientID_ before boot.");
 		s.quitSync;
-		s.remove;
+		s.remove
 	}
 
 	test_setWithConstructor {
@@ -33,14 +33,14 @@ TestServer_clientID_booted : UnitTest {
 		this.bootServer(s);
 		this.assertEquals(s.clientID, 3, "clientID should be settable by Server constructor.");
 		s.quitSync;
-		s.remove;
+		s.remove
 	}
 
 	// TODO: find a better home for this test
 	test_nodeIDAlloc_ServerTree {
 		var s = Server(this.class.name);
 		var synth1;
-		var func = { synth1 = Synth("default"); };
+		var func = { synth1 = Synth("default") };
 
 		ServerTree.add(func, s);
 		this.bootServer(s);
@@ -53,7 +53,7 @@ TestServer_clientID_booted : UnitTest {
 		synth2.free;
 		s.quitSync;
 		ServerTree.remove(func, s);
-		s.remove;
+		s.remove
 	}
 
 	test_lockedWhileRunning {
@@ -68,7 +68,7 @@ TestServer_clientID_booted : UnitTest {
 			"clientID should be locked while server is running.");
 
 		s.quitSync;
-		s.remove;
+		s.remove
 	}
 
 	// test that repeated login from the same server object to a running server process
@@ -102,7 +102,7 @@ TestServer_clientID_booted : UnitTest {
 		server.doWhenBooted {
 			"% - server login timed out.\n".postf(thisMethod);
 			timer.stop;
-			cond.unhang;
+			cond.unhang
 		};
 
 		cond.hang;
@@ -120,7 +120,7 @@ TestServer_clientID_booted : UnitTest {
 		);
 
 		server.quitSync;
-		server.remove;
+		server.remove
 
 	}
 
@@ -144,7 +144,7 @@ TestServer_clientID_booted : UnitTest {
 		remote1.doWhenBooted {
 			"% - server first login timed out.\n".postf(thisMethod);
 			timer.stop;
-			cond.unhang;
+			cond.unhang
 		};
 		cond.hang;
 
@@ -159,7 +159,7 @@ TestServer_clientID_booted : UnitTest {
 		remote1.stopAliveThread.remove;
 		thisProcess.platform.killProcessByID(serverPid);
 		var testsFinished = exitCond.waitFor(10); // wait for the server process to exit
-		this.assert(testsFinished, "TIMEOUT: server process did not quit");
+		this.assert(testsFinished, "TIMEOUT: server process did not quit")
 	}
 
 	test_repeatedRemoteLogin {
@@ -180,7 +180,7 @@ TestServer_clientID_booted : UnitTest {
 		remote1.doWhenBooted {
 			"% - server first login timed out.\n".postf(thisMethod);
 			timer.stop;
-			cond.unhang;
+			cond.unhang
 		};
 		cond.hang;
 
@@ -199,7 +199,7 @@ TestServer_clientID_booted : UnitTest {
 		remote2.doWhenBooted {
 			"% - server repeated login timed out.\n".postf(thisMethod);
 			timer.stop;
-			cond.unhang;
+			cond.unhang
 		};
 
 		cond.hang;

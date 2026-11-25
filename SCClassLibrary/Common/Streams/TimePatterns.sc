@@ -1,35 +1,33 @@
 Pstep : Pattern {
-	var <>list, <>durs,  <>repeats;
+	var <>list, <>durs, <>repeats;
 
-	*new { arg levels, durs = 1, repeats = 1;
+	*new { |levels, durs = 1, repeats = 1|
 		^super.newCopyArgs(levels, durs, repeats).init
 	}
 	init {
-		if (list.isSequenceableCollection) { list = Pseq(list); };
-		if (durs.isSequenceableCollection) { durs = Pseq(durs); };
+		if(list.isSequenceableCollection) { list = Pseq(list) };
+		if(durs.isSequenceableCollection) { durs = Pseq(durs) }
 	}
 
-	embedInStream { arg inval;
-		var stream, val,dur;
+	embedInStream { |inval|
+		var stream, val, dur;
 		thisThread.endBeat = thisThread.endBeat ? thisThread.beats;
 		// endBeat > beats only if Pfindur ended something early
 		thisThread.endBeat = thisThread.endBeat min: thisThread.beats;
 
-		repeats.value(inval).do { | i |
+		repeats.value(inval).do { |i|
 			stream = Ptuple([list, durs]).asStream;
-			while (
-				{ #val, dur = stream.next(inval) ?? { #[nil, nil] };
-					val.notNil;
-				},
-				{
+			while {
+				#val, dur = stream.next(inval) ?? { #[nil, nil] };
+				val.notNil
+			} {
 				thisThread.endBeat = thisThread.endBeat + dur;
-					while(
-						{ thisThread.endBeat > thisThread.beats },
-						{ inval = val.embedInStream(inval) }
-					)
-				});
+				while
+					{ thisThread.endBeat > thisThread.beats }
+					{ inval = val.embedInStream(inval) }
+			}
 		};
-		^inval;
+		^inval
 	}
 	storeArgs {
 		^[list, durs, repeats]
@@ -39,10 +37,10 @@ Pstep : Pattern {
 Pseg : Pstep {
 	var <>curves;
 
-	*new { arg levels, durs = 1, curves = \lin,  repeats = 1 ;
+	*new { |levels, durs = 1, curves = \lin, repeats = 1|
 		^super.new(levels, durs, repeats).curves_(curves)
 	}
-	embedInStream { arg inval;
+	embedInStream { |inval|
 		var valStream, durStream, curveStream, startVal, val, dur, curve;
 		var env;
 		var startTime, curTime;
@@ -50,7 +48,7 @@ Pseg : Pstep {
 			valStream = list.asStream;
 			durStream = durs.asStream;
 			curveStream = curves.asStream;
-			val = valStream.next(inval) ?? {^inval};
+			val = valStream.next(inval) ?? { ^inval };
 			thisThread.endBeat = thisThread.endBeat ? thisThread.beats min: thisThread.beats;
 			while {
 				startVal = val;
@@ -62,11 +60,11 @@ Pseg : Pstep {
 			} {
 				startTime = thisThread.endBeat;
 				thisThread.endBeat = thisThread.endBeat + dur;
-				if (startVal.isArray) {
-					env = [startVal,val, dur, curve].flop.collect { | args |
+				if(startVal.isArray) {
+					env = [startVal, val, dur, curve].flop.collect { |args|
 						Env([args[0], args[1]], [args[2]], args[3]) };
 					while { thisThread.endBeat > curTime = thisThread.beats } {
-						inval = yield(env.collect{ | e | e.at(curTime - startTime)})
+						inval = yield(env.collect { |e| e.at(curTime - startTime) })
 					}
 				} {
 					env = Env([startVal, val], [dur], curve);

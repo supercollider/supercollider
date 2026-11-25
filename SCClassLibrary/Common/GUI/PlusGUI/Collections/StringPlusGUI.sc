@@ -1,28 +1,28 @@
 + String {
-	newTextWindow { arg title="Untitled", makeListener=false;
-		Document.new(title, this, makeListener);
+	newTextWindow { |title = "Untitled", makeListener = false|
+		Document.new(title, this, makeListener)
 	}
 
-	openHTMLFile{ arg selectionStart=0, selectionLength=0;
+	openHTMLFile{ |selectionStart = 0, selectionLength = 0|
 		var webView;
 
-		if (Platform.openHTMLFileAction.notNil) {
+		if(Platform.openHTMLFileAction.notNil) {
 			Platform.openHTMLFileAction.value(this, selectionStart, selectionLength);
 			^this
 		};
 
 		webView = \QWebView.asClass;
-		if (webView.notNil) {
+		if(webView.notNil) {
 			webView = webView.new;
 			webView.url_(this);
 			webView.front;
-			^this;
+			^this
 		};
 
 		this.openDocument(selectionStart, selectionLength)
 	}
 
-	openDocument { arg selectionStart=0, selectionLength=0;
+	openDocument { |selectionStart = 0, selectionLength = 0|
 		var ideClass;
 		if(Document.implementationClass.notNil) {
 			Document.open(this, selectionStart, selectionLength);
@@ -32,28 +32,28 @@
 	}
 
 	draw {
-		this.drawAtPoint(Point(0,0), Font.default, Color.black);
+		this.drawAtPoint(Point(0, 0), Font.default, Color.black)
 	}
-	drawAtPoint { arg point, font, color;
-		Pen.stringAtPoint( this, point, font, color )
+	drawAtPoint { |point, font, color|
+		Pen.stringAtPoint(this, point, font, color)
 	}
-	drawInRect { arg rect, font, color;
-		Pen.stringInRect( this, rect, font, color )
+	drawInRect { |rect, font, color|
+		Pen.stringInRect(this, rect, font, color)
 	}
-	drawCenteredIn { arg rect, font, color;
-		Pen.stringCenteredIn( this, rect, font, color )
+	drawCenteredIn { |rect, font, color|
+		Pen.stringCenteredIn(this, rect, font, color)
 	}
-	drawLeftJustIn { arg rect, font, color;
+	drawLeftJustIn { |rect, font, color|
 		var pos, bounds;
-		Pen.stringLeftJustIn( this, rect, font, color )
+		Pen.stringLeftJustIn(this, rect, font, color)
 	}
-	drawRightJustIn { arg rect, font, color;
+	drawRightJustIn { |rect, font, color|
 		var pos, bounds;
-		Pen.stringRightJustIn( this, rect, font, color )
+		Pen.stringRightJustIn(this, rect, font, color)
 	}
 
-	bounds { arg font;
-		if(GUI.id === \swing,{
+	bounds { |font|
+		if(GUI.id === \swing) {
 			// since Swing is not in svn and can't be easily updated
 			// let's put this temporary hack/if-statement here
 			// rather than pollute everybody else's code with hacks/if-statements
@@ -61,31 +61,31 @@
 			^Rect(0, 0, this.size * font.size * 0.52146, font.size * 1.25)
 			// width in Helvetica approx = string size * font size * 0.52146
 			// 0.52146 is average of all 32-127 ascii characters widths
-		},{
+		} {
 			^GUI.stringBounds(this, font)
-		});
+		}
 	}
 
 
 	findHelpFile {
-		^SCDoc.findHelpFile(this);
+		^SCDoc.findHelpFile(this)
 	}
 
 	findHelpFileOrElse {
-		this.findHelpFile;
+		this.findHelpFile
 	}
 
 	help {
-		if (Platform.openHelpFileAction.notNil) {
+		if(Platform.openHelpFileAction.notNil) {
 			Platform.openHelpFileAction.value(this)
 		} {
-			HelpBrowser.openHelpFor(this);
+			HelpBrowser.openHelpFor(this)
 		}
 	}
 }
 
 + Symbol {
-	openDocument { arg selectionStart=0, selectionLength=0;
+	openDocument { |selectionStart = 0, selectionLength = 0|
 		^this.asString.openDocument(selectionStart, selectionLength)
 	}
 }

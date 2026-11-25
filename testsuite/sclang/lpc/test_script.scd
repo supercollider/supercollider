@@ -8,7 +8,7 @@ TestLexerBrutal.run;
 TestLexerTargetedBrutal.run;
 TestParserBrutal.run;
 TestCompilerBrutal.run;
-)
+);
 
 (
 // other options

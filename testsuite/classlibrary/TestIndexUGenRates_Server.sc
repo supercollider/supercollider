@@ -6,14 +6,14 @@ TestIndexUGenRates_Server : UnitTest {
 	setUp {
 
 		server = Server(this.class.name);
-		this.bootServer(server);
+		this.bootServer(server)
 	}
 
 	tearDown {
 
 		Buffer.freeAll;
 		server.quitSync;
-		server.remove;
+		server.remove
 	}
 
 	addSynthDefs {
@@ -27,10 +27,10 @@ TestIndexUGenRates_Server : UnitTest {
 				),
 				buf,
 				phase,
-				loop:0
+				loop: 0
 			);
 			Line.kr(0, 1, 0.01, doneAction: Done.freeSelf);
-			Out.ar(0, Silent.ar);
+			Out.ar(0, Silent.ar)
 		}).add;
 
 		SynthDef(\indexKrPhaseAr, { |buf|
@@ -44,10 +44,10 @@ TestIndexUGenRates_Server : UnitTest {
 				),
 				buf,
 				phase,
-				loop:0
+				loop: 0
 			);
 			Line.kr(0, 1, 0.01, doneAction: Done.freeSelf);
-			Out.ar(0, Silent.ar);
+			Out.ar(0, Silent.ar)
 		}).add;
 
 		SynthDef(\indexArPhaseKr, { |buf|
@@ -59,10 +59,10 @@ TestIndexUGenRates_Server : UnitTest {
 				),
 				buf,
 				Phasor.ar(0, 1, 0, numFrames),
-				loop:0
+				loop: 0
 			);
 			Line.kr(0, 1, 0.01, doneAction: Done.freeSelf);
-			Out.ar(0, Silent.ar);
+			Out.ar(0, Silent.ar)
 		}).add;
 
 		SynthDef(\indexKrPhaseKr, { |buf|
@@ -76,11 +76,11 @@ TestIndexUGenRates_Server : UnitTest {
 				),
 				buf,
 				Phasor.ar(0, 1, 0, numFrames),
-				loop:0
+				loop: 0
 			);
 			Line.kr(0, 1, 0.01, doneAction: Done.freeSelf);
-			Out.ar(0, Silent.ar);
-		}).add;
+			Out.ar(0, Silent.ar)
+		}).add
 
 	}
 
@@ -89,8 +89,8 @@ TestIndexUGenRates_Server : UnitTest {
 		var value;
 
 		numFrames = server.options.blockSize;
-		var index = (numFrames/2).asInteger;
-		floats = Array.fill(numFrames, { |i| (numFrames-i)/numFrames });
+		var index = (numFrames / 2).asInteger;
+		floats = Array.fill(numFrames, { |i| (numFrames - i) / numFrames });
 		floats = Buffer.loadCollection(server, floats);
 		var writeBuf = Buffer.alloc(server, numFrames);
 
@@ -99,7 +99,7 @@ TestIndexUGenRates_Server : UnitTest {
 
 		var synth = Synth(\indexArPhaseAr, [\buf, writeBuf], target: server);
 		synth.waitForFree;
-		writeBuf.get(index, { |i| value = i});
+		writeBuf.get(index, { |i| value = i });
 		server.sync;
 		this.assertFloatEquals(value, 0.5, "Index.ar with audio rate input should output 0.5");
 		writeBuf.zero;
@@ -107,7 +107,7 @@ TestIndexUGenRates_Server : UnitTest {
 
 		synth = Synth(\indexKrPhaseAr, [\buf, writeBuf], target: server);
 		synth.waitForFree;
-		writeBuf.get(index, { |i| value = i});
+		writeBuf.get(index, { |i| value = i });
 		server.sync;
 		this.assertFloatEquals(value, 1.0, "Index.kr with audio rate input should output 1.0");
 		writeBuf.zero;
@@ -115,7 +115,7 @@ TestIndexUGenRates_Server : UnitTest {
 
 		synth = Synth(\indexArPhaseKr, [\buf, writeBuf], target: server);
 		synth.waitForFree;
-		writeBuf.get(index, { |i| value = i});
+		writeBuf.get(index, { |i| value = i });
 		server.sync;
 		this.assertFloatEquals(value, 1.0, "Index.ar with control rate input should output 1.0");
 		writeBuf.zero;
@@ -123,9 +123,9 @@ TestIndexUGenRates_Server : UnitTest {
 
 		synth = Synth(\indexKrPhaseKr, [\buf, writeBuf], target: server);
 		synth.waitForFree;
-		writeBuf.get(index, { |i| value = i});
+		writeBuf.get(index, { |i| value = i });
 		server.sync;
-		this.assertFloatEquals(value, 1.0, "Index.kr with control rate input should output 1.0");
+		this.assertFloatEquals(value, 1.0, "Index.kr with control rate input should output 1.0")
 
 	}
 

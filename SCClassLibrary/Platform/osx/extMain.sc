@@ -2,16 +2,16 @@
 	platformClass { ^OSXPlatform }
 
 	applicationStart {
-		ApplicationStart.run;
+		ApplicationStart.run
 	}
 
 	sleep {
 		this.platform.isSleeping = true;
-		^this.platform.sleepAction.value(this);
+		^this.platform.sleepAction.value(this)
 	}
 	wake {
 		this.platform.isSleeping = false;
-		^this.platform.wakeAction.value(this);
+		^this.platform.wakeAction.value(this)
 	}
 	isSleeping { ^this.platform.isSleeping }
 }

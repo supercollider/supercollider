@@ -4,11 +4,11 @@ TestServer_boot : UnitTest {
 	var s; // mock server for testing
 
 	setUp {
-		s = Server(this.class.name, nil, ServerOptions());
+		s = Server(this.class.name, nil, ServerOptions())
 	}
 
 	tearDown {
-		s.remove;
+		s.remove
 	}
 
 	cycleNotify { |server|
@@ -23,7 +23,7 @@ TestServer_boot : UnitTest {
 		while { server.notified.not } {
 			server.statusWatcher.sendNotifyRequest(true);
 			0.1.wait
-		};
+		}
 	}
 
 	test_waitForBoot {
@@ -37,7 +37,7 @@ TestServer_boot : UnitTest {
 			var synth = { SendTrig.ar(Impulse.ar(10), 4711, 1) }.play(s);
 			1.wait;
 			synth.free;
-			cond.unhang;
+			cond.unhang
 		});
 
 		cond.hang;
@@ -46,7 +46,7 @@ TestServer_boot : UnitTest {
 		);
 
 		of.free;
-		s.quitSync;
+		s.quitSync
 	}
 
 	test_bootSync {
@@ -64,7 +64,7 @@ TestServer_boot : UnitTest {
 		);
 
 		of.free;
-		s.quitSync;
+		s.quitSync
 	}
 
 	test_rebootOffServer {
@@ -74,7 +74,7 @@ TestServer_boot : UnitTest {
 		condvar.waitFor(5);
 
 		this.assertEquals(s.serverRunning, true, "Calling reboot should boot a non-booted Server.");
-		s.quitSync;
+		s.quitSync
 	}
 
 	test_rebootRunningServer {
@@ -84,16 +84,16 @@ TestServer_boot : UnitTest {
 			s.sync;
 			s.reboot {
 				s.doWhenBooted {
-					condvar.signalOne;
+					condvar.signalOne
 				}
-			};
+			}
 		};
 
 		// this can take a while, timeout needs to be generous
 		condvar.waitFor(10);
 
 		this.assertEquals(s.serverRunning, true, "Calling reboot should reboot a running Server.");
-		s.quitSync;
+		s.quitSync
 	}
 
 
@@ -112,7 +112,7 @@ TestServer_boot : UnitTest {
 		this.assertEquals(count, 1, "Toggling Server.notify should not cause ServerBoot actions to run.");
 
 		s.quitSync;
-		ServerBoot.remove(func, s);
+		ServerBoot.remove(func, s)
 	}
 
 	// test that setting notify=false, then notify=true doesn't cause ServerTree to be run
@@ -130,7 +130,7 @@ TestServer_boot : UnitTest {
 		this.assertEquals(count, 1, "Toggling Server.notify should not cause ServerTree actions to run.");
 
 		s.quitSync;
-		ServerTree.remove(func, s);
+		ServerTree.remove(func, s)
 	}
 
 	// Check that ServerBoot runs when the server is able to accept commands.
@@ -143,15 +143,15 @@ TestServer_boot : UnitTest {
 		var func = {
 			SynthDef(defName, {
 				Line.kr(0, 1, 2, doneAction: 2)
-			}).add;
+			}).add
 		};
 
 		ServerBoot.add(func, s);
 		s.waitForBoot {
 			var synth = Synth(defName);
 			of = OSCFunc({
-				cond.test_(true).signal;  // go immediately
-			}, '/n_go', s.addr, argTemplate: [synth.nodeID]);
+				cond.test_(true).signal  // go immediately
+			}, '/n_go', s.addr, argTemplate: [synth.nodeID])
 		};
 
 		// timout of 5 seconds;
@@ -163,7 +163,7 @@ TestServer_boot : UnitTest {
 		ServerBoot.remove(func, s);
 		of.free;
 
-		this.assert(cond.test, "ServerBoot should run when the server is able to accept commands.");
+		this.assert(cond.test, "ServerBoot should run when the server is able to accept commands.")
 	}
 
 	// Check that ServerQuit does not run when the server boots.
@@ -178,7 +178,7 @@ TestServer_boot : UnitTest {
 		ServerQuit.remove(func, s);
 		s.quitSync;
 
-		this.assert(cond.test.not, "ServerQuit should not run when the server boots.");
+		this.assert(cond.test.not, "ServerQuit should not run when the server boots.")
 	}
 
 	// Check that we can never create duplicate nodeIDs once server.serverRunning
@@ -196,7 +196,7 @@ TestServer_boot : UnitTest {
 				if(s.serverRunning) {
 					break.value
 				} {
-					0.001.wait;
+					0.001.wait
 				}
 			}
 		};
@@ -213,21 +213,21 @@ TestServer_boot : UnitTest {
 			if(nodeID <= prevNodeID) {
 				failed = true;
 				"failed: prevNodeID % and nodeID = %"
-				.format(prevNodeID, nodeID).warn;
+				.format(prevNodeID, nodeID).warn
 			};
-			prevNodeID = nodeID;
+			prevNodeID = nodeID
 		};
 
 		this.assert(failed.not,
 			"allocating nodeIDs while booting should not produce duplicate nodeIDs."
 		);
-		s.quitSync;
+		s.quitSync
 	}
 
 	// Check that with s.waitForBoot, the four most common ways of creating sound processes will work.
 	test_waitForBoot_fourWaysToPlaySound {
 		var amps; // holds measured amplitudes of the 8 channels
- // whether or not the amplitudes in each pair of channels was nonzero
+		// whether or not the amplitudes in each pair of channels was nonzero
 		var o = OSCFunc({ |msg| amps = msg.drop(3) }, '/the8Amps');
 		var pbindPlayer;
 		var cond = Condition(); // signalled at end of collecting results
@@ -254,7 +254,7 @@ TestServer_boot : UnitTest {
 			// clean up
 			pbindPlayer.stop;
 			Ndef.dictFor(s).clear;
-			cond.unhang;
+			cond.unhang
 		};
 
 		cond.hang;
@@ -276,6 +276,6 @@ TestServer_boot : UnitTest {
 		);
 		this.assert(flags[3],
 			"Server: Ndef should play right after booting."
-		);
+		)
 	}
 }

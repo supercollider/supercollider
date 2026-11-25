@@ -19,12 +19,12 @@ TestSerialPort : UnitTest {
 
 	setUp {
 		if(this.skipSerialTests) { ^this };
-		#input, output = this.createPorts();
+		#input, output = this.createPorts()
 	}
 
 	tearDown {
 		if(this.skipSerialTests) { ^this };
-		this.destroyPorts();
+		this.destroyPorts()
 	}
 
 	// Return if socat (macOS/Linux) or com0com (Windows) is not installed.
@@ -32,74 +32,74 @@ TestSerialPort : UnitTest {
 	// FIXME find better way to annotate/skip tests
 	skipSerialTests {
 		if(skipSerialTests.notNil) {
-			^skipSerialTests;
+			^skipSerialTests
 		};
 		skipSerialTests = false;
 		if(thisProcess.platform.name == \windows) {
 			com0comPath ?? { this.findCom0com };
 			com0comPath ?? {
 				"Skipping most SerialPort tests because com0com could not be found.".warn;
-				skipSerialTests = true;
+				skipSerialTests = true
 			}
 		} {
 			socatPath ?? { this.findSocat };
 			socatPath ?? {
 				"Skipping most SerialPort tests because socat could not be found.".warn;
-				skipSerialTests = true;
+				skipSerialTests = true
 			}
 		};
-		^skipSerialTests;
+		^skipSerialTests
 	}
 
 	findCom0com {
-		block {|break|
+		block { |break|
 			[
 				"C:\\Program Files\\com0com\\setupc.exe",
 				"C:\\Program Files (x86)\\com0com\\setupc.exe",
 				"C:\\Program Files (Arm)\\com0com\\setupc.exe"
-			].do({|thisPath|
-				if(File.exists(thisPath), {
+			].do { |thisPath|
+				if(File.exists(thisPath)) {
 					com0comPath = thisPath;
-					break.();
-				})
-			})
+					break.()
+				}
+			}
 		};
-		com0comPath !? {com0comPath = thisProcess.platform.formatPathForCmdLine(com0comPath)}
+		com0comPath !? { com0comPath = thisProcess.platform.formatPathForCmdLine(com0comPath) }
 	}
 
 	findSocat {
 		socatPath = "which socat".unixCmdGetStdOut.replace($\n);
-		if(socatPath.size == 0, {socatPath = nil}); //reset to nil if it's an empty string
+		if(socatPath.size == 0) { socatPath = nil }; //reset to nil if it's an empty string
 		socatPath ?? {
-			block {|break|
+			block { |break|
 				[
 					"/usr/bin/socat",
 					"/usr/local/bin/socat",
 					"/opt/homebrew/bin/socat"
-				].do({|thisPath|
-					if(File.exists(thisPath), {
+				].do { |thisPath|
+					if(File.exists(thisPath)) {
 						socatPath = thisPath;
-						break.();
-					})
-				})
+						break.()
+					}
+				}
 			}
 		};
-		socatPath !? {socatPath = thisProcess.platform.formatPathForCmdLine(socatPath)}
+		socatPath !? { socatPath = thisProcess.platform.formatPathForCmdLine(socatPath) }
 	}
 
 	// Create a pair of virtual serial ports and return their names
 	createPorts {
 		if(thisProcess.platform.name == \windows) {
-			^this.getCom0ComPorts;
+			^this.getCom0ComPorts
 		} {
-			^this.createSocatPorts;
+			^this.createSocatPorts
 		}
 	}
 
 	destroyPorts {
 		if(thisProcess.platform.name != \windows) {
-			"killall socat".unixCmdGetStdOut();
-		};
+			"killall socat".unixCmdGetStdOut()
+		}
 	}
 
 	getCom0ComPorts {
@@ -109,27 +109,27 @@ TestSerialPort : UnitTest {
 		var getNameFromLine;
 
 		if(allPorts.size == 0) {
-			Error("No virtual ports available, create ports first").throw;
+			Error("No virtual ports available, create ports first").throw
 		};
 
 		allPorts = allPorts.split($\n);
 
-		getNameFromLine = {|line|
+		getNameFromLine = { |line|
 			var thisPort = line.findRegexp("PortName=([^,\r\n]+)")[1][1];
-			if((thisPort == "-") || (thisPort == "COM#")) {thisPort = "\\\\.\\" ++ line.split($ ).first}; // use internal name if there's no alias;
+			if((thisPort == "-") || (thisPort == "COM#")) { thisPort = "\\\\.\\" ++ line.split($ ).first }; // use internal name if there's no alias;
 			thisPort
 		};
 
 		first = allPorts[0].stripWhiteSpace;
 		first = getNameFromLine.(first);
 		if(first.isEmpty) {
-			Error("Could not get the port name").throw;
+			Error("Could not get the port name").throw
 		};
 
 		var second = allPorts[1].stripWhiteSpace;
 		second = getNameFromLine.(second);
 		if(second.isEmpty) {
-			Error("Could not get the port name").throw;
+			Error("Could not get the port name").throw
 		};
 
 		"Using ports % and %\n".postf(first, second);
@@ -144,7 +144,7 @@ TestSerialPort : UnitTest {
 		var first = pipe.getLine;
 		first = first.findRegexp("/dev/(ttys|pts).*");
 		if(first.isEmpty) {
-			Error("socat is not installed").throw;
+			Error("socat is not installed").throw
 		};
 
 		first = first[0][1];
@@ -152,7 +152,7 @@ TestSerialPort : UnitTest {
 		var second = pipe.getLine;
 		second = second.findRegexp("/dev/(ttys|pts).*");
 		if(second.isEmpty) {
-			Error("couldn't read second tty from socat").throw;
+			Error("couldn't read second tty from socat").throw
 		};
 
 		second = second[0][1];
@@ -163,14 +163,14 @@ TestSerialPort : UnitTest {
 	// Sanitizes done action to avoid extra post
 	// args should be an event with keyword-arg pairs for SerialPort.new, or nil
 	mkPort { |dev, args = (Event())|
-		^SerialPort.performWithEnvir(\new, args ++ (port: dev)).doneAction_({});
+		^SerialPort.performWithEnvir(\new, args ++ (port: dev)).doneAction_({})
 	}
 
 	// ----------- tests -----------------------------------------------------------------------------------------
 
 	test_devices {
 		// used to hang forever on macOS (#4131)
-		SerialPort.devices;
+		SerialPort.devices
 	}
 
 	test_open_onExistingDevice_defaultArgs {
@@ -178,7 +178,7 @@ TestSerialPort : UnitTest {
 
 		var port = this.mkPort(input);
 		this.assert(port.isOpen);
-		port.close();
+		port.close()
 	}
 
 	// check that reasonable combinations of arguments are supported for opening ports
@@ -201,8 +201,8 @@ TestSerialPort : UnitTest {
 			this.assert(port.isOpen,
 				"Opening serial port with reasonable arguments should succeed",
 				details: details);
-			port.close();
-		};
+			port.close()
+		}
 	}
 
 	test_open_errorOnExistingDevice_crtsctsAndXonxoffBothTrue {
@@ -211,12 +211,12 @@ TestSerialPort : UnitTest {
 		this.assertException({ port = SerialPort(input, crtscts: true, xonxoff: true) },
 			PrimitiveFailedError,
 			"Trying to open a serial port with both xonxoff and crtscts should throw");
-		port !? { port.close() };
+		port !? { port.close() }
 	}
 
 	test_open_errorOnMissingDevice {
 		if(this.skipSerialTests) { ^this };
-		this.assertException( { SerialPort("/dev/doesnt_exist") }, PrimitiveFailedError, "Trying to open a missing serial port should throw");
+		this.assertException({ SerialPort("/dev/doesnt_exist") }, PrimitiveFailedError, "Trying to open a missing serial port should throw")
 	}
 
 	test_close {
@@ -224,7 +224,7 @@ TestSerialPort : UnitTest {
 
 		var port = this.mkPort(input);
 		port.close();
-		this.assert(port.isOpen.not);
+		this.assert(port.isOpen.not)
 	}
 
 	test_connectionLost {
@@ -237,7 +237,7 @@ TestSerialPort : UnitTest {
 		fork { 3.wait; cond.test_(true) };
 		while { in.isOpen or: cond.test.not } { 0.001.wait };
 
-		this.assert(in.isOpen.not);
+		this.assert(in.isOpen.not)
 	}
 
 	test_next_noData_producesNil {
@@ -245,7 +245,7 @@ TestSerialPort : UnitTest {
 
 		var port = this.mkPort(input);
 		this.assertEquals(port.next, nil);
-		port.close();
+		port.close()
 	}
 
 	test_putAndNext_oneByte {
@@ -264,7 +264,7 @@ TestSerialPort : UnitTest {
 				result = in.next;
 				0.01.wait
 			};
-			cond.test_(true).signal;
+			cond.test_(true).signal
 		};
 		fork { 3.wait; cond.test_(true).signal };
 
@@ -273,7 +273,7 @@ TestSerialPort : UnitTest {
 		rout.stop();
 
 		in.close();
-		out.close();
+		out.close()
 	}
 
 	test_putAndNext_twoBytes {
@@ -293,7 +293,7 @@ TestSerialPort : UnitTest {
 				result = in.next;
 				0.01.wait
 			};
-			cond.test_(true).signal;
+			cond.test_(true).signal
 		};
 		fork { 3.wait; cond.test_(true).signal };
 
@@ -303,7 +303,7 @@ TestSerialPort : UnitTest {
 		rout.stop();
 
 		in.close();
-		out.close();
+		out.close()
 	}
 
 	test_putAndRead_oneByte {
@@ -326,7 +326,7 @@ TestSerialPort : UnitTest {
 		rout.stop();
 
 		in.close();
-		out.close();
+		out.close()
 	}
 
 	test_rxErrors_noDataSent_isZero {
@@ -334,7 +334,7 @@ TestSerialPort : UnitTest {
 
 		var in = this.mkPort(input);
 		this.assertEquals(in.rxErrors, 0);
-		in.close();
+		in.close()
 	}
 
 	test_rxErrors_bufferOverflow {
@@ -349,16 +349,16 @@ TestSerialPort : UnitTest {
 		for(0, kBufferSize) { |i|
 			while { res = out.put($a); res == false } { // retry if writing failed
 				"retrying send...".postln;
-				0.001.wait;
+				0.001.wait
 			};
-			if(res) {written = written + 1};
-			0.0001.wait;
+			if(res) { written = written + 1 };
+			0.0001.wait
 		};
 
 		var now = thisProcess.mainThread.seconds;
 
 		// spin until all data has been read
-		while { (rxErrs == 0) and: ((thisProcess.mainThread.seconds - now) < timeoutTime) } { rxErrs = in.rxErrors; 0.01.wait; };
+		while { (rxErrs == 0) and: ((thisProcess.mainThread.seconds - now) < timeoutTime) } { rxErrs = in.rxErrors; 0.01.wait };
 
 		if((thisProcess.mainThread.seconds - now) > timeoutTime) { "TIMEOUT!".warn };
 		// "Written bytes: %\nrxErrs: %\n".postf(written,rxErrs);
@@ -366,7 +366,7 @@ TestSerialPort : UnitTest {
 		this.assert(rxErrs > 0);
 
 		in.close();
-		out.close();
+		out.close()
 	}
 
 	test_putAll {
@@ -386,7 +386,7 @@ TestSerialPort : UnitTest {
 				result = in.next;
 				0.01.wait
 			};
-			cond.test_(true).signal;
+			cond.test_(true).signal
 		};
 		fork { 3.wait; cond.test_(true).signal };
 
@@ -400,7 +400,7 @@ TestSerialPort : UnitTest {
 		rout.stop();
 
 		in.close();
-		out.close();
+		out.close()
 	}
 
 	test_doneAction_onNormalClose {
@@ -412,14 +412,14 @@ TestSerialPort : UnitTest {
 
 		in.doneAction_ {
 			ranAction = true;
-			cond.test_(true).signal;
+			cond.test_(true).signal
 		};
 		fork { 3.wait; cond.test_(true).signal };
 
 		in.close();
 		cond.wait();
 
-		this.assert(ranAction);
+		this.assert(ranAction)
 	}
 
 
@@ -432,13 +432,13 @@ TestSerialPort : UnitTest {
 
 		in.doneAction_ {
 			ranAction = true;
-			cond.test_(true).signal;
+			cond.test_(true).signal
 		};
 		fork { 3.wait; cond.test_(true).signal };
 
 		this.destroyPorts();
 		cond.wait();
 
-		this.assert(ranAction);
+		this.assert(ranAction)
 	}
 }

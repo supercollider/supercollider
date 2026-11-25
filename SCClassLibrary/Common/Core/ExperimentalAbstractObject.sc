@@ -10,18 +10,18 @@ AbstractObjectExperimental {
 	/////// 1. Core and Interpreter functionality, do not override.
 
 	*new { |maxSize = 0| _BasicNew; ^this.sc_abstract_object_primitive_failed }
-	*newCopyArgs { | ... args, kwargs | _BasicNewCopyArgsToInstVars; ^this.sc_abstract_object_primitive_failed }
+	*newCopyArgs { |... args, kwargs| _BasicNewCopyArgsToInstVars; ^this.sc_abstract_object_primitive_failed }
 
 	// AbstractObjectExperimental support identity, this is required by the interpreter and cannot actually be overridden.
 	// When you put AbstractObjectExperimentals into an identity dictionary the interpreter uses its own implementation, this should match the sclang implementation or things will get confusing.
 	// Identity operators are also provided, this isn't strictly necessary, but we usually think of identity and these operators as a set.
 	identityHash { _ObjectHash; ^this.sc_abstract_object_primitive_failed }
-	=== { arg obj; _Identical; ^this.sc_abstract_object_primitive_failed }
-	!== { arg obj;_NotIdentical; ^this.sc_abstract_object_primitive_failed }
+	=== { |obj| _Identical; ^this.sc_abstract_object_primitive_failed }
+	!== { |obj| _NotIdentical; ^this.sc_abstract_object_primitive_failed }
 
 	// Interpreter will engage in undefined behavior if this method does not throw.
 	// It is not possible to implement a boolean abstract object as the compiler assumes its internal slot layout.
-	mustBeBoolean {  MustBeBooleanError(nil, "AbstractObjectExperimental").throw }
+	mustBeBoolean { MustBeBooleanError(nil, "AbstractObjectExperimental").throw }
 
 	// It is not possible to implement a 'nil' abstract object due to the compiler inlining the definition of these when used inside 'if' control flow.
 	// You cannot override these methods.
@@ -61,7 +61,7 @@ AbstractObjectExperimental {
 
 	// Yielding from a routine — must be implemented as primitives as special methods are provided.
 	// Note that idle is not provided because it requires calling 'value' on the AbstractObjectExperimental'.
-	sc_abstract_object_yield {	_RoutineYield; ^this.sc_abstract_object_primitive_failed }
+	sc_abstract_object_yield { _RoutineYield; ^this.sc_abstract_object_primitive_failed }
 	sc_abstract_object_always_yield { _RoutineAlwaysYield; ^this.sc_abstract_object_primitive_failed }
 	sc_abstract_object_yield_and_reset { |reset = true| _RoutineYieldAndReset; ^this.sc_abstract_object_primitive_failed }
 
@@ -70,10 +70,10 @@ AbstractObjectExperimental {
 
 	// Needed when we want to do the normal method calling in an AbstractObjectExperimental.
 	// In many cases, the 'perform*' messages should defer to these as most of the time, you actually want to implement doesNotUnderstand.
-	sc_abstract_object_perform_args { |selector, args, kwargs|	_ObjectPerformArgs;	^this.sc_abstract_object_primitive_failed }
+	sc_abstract_object_perform_args { |selector, args, kwargs| _ObjectPerformArgs;	^this.sc_abstract_object_primitive_failed }
 	sc_abstract_object_super_perform_args { |selector, args, kwargs| _ObjectSuperPerformArgs; ^this.sc_abstract_object_primitive_failed }
 	sc_abstract_object_perform_msg { |msg| _ObjectPerformMsg; ^this.sc_abstract_object_primitive_failed }
 	sc_abstract_object_perform { |selector ... args, kwargs| _ObjectPerform; ^this.sc_abstract_object_primitive_failed }
 	// Note that this is used to implement syntax, it is very strange to change this, please don't.
-	sc_abstract_object_perform_list { | ...args, kwargs| _ObjectPerformList; ^this.sc_abstract_object_primitive_failed }
+	sc_abstract_object_perform_list { |...args, kwargs| _ObjectPerformList; ^this.sc_abstract_object_primitive_failed }
 }

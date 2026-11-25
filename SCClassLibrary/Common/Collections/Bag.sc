@@ -1,34 +1,34 @@
 Bag : Collection {
 	var <contents;
 
-	*new { arg n=4;
+	*new { |n = 4|
 		^super.new.setDictionary(n)
 	}
 
 	copy { ^this.class.newCopyArgs(contents.copy) }
 	// testing
-	includes { arg item;
+	includes { |item|
 		^contents.includesKey(item)
 	}
 	// adding
-	add { arg item, count=1;
-		if ( this.includes(item), {
-			contents.put(item, contents.at(item) + count);
-		},{
-			contents.put(item, count);
-		});
+	add { |item, count = 1|
+		if(this.includes(item)) {
+			contents.put(item, contents.at(item) + count)
+		} {
+			contents.put(item, count)
+		}
 	}
-	remove { arg item, count=1;
+	remove { |item, count = 1|
 		var newCount;
-		if ( this.includes(item), {
+		if(this.includes(item)) {
 			newCount = contents.at(item) - count;
-			if (newCount <= 0, {
-				contents.removeAt(item);
-			},{
-				contents.put(item, newCount);
-			});
+			if(newCount <= 0) {
+				contents.removeAt(item)
+			} {
+				contents.put(item, newCount)
+			};
 			^item
-		});
+		};
 		^nil
 	}
 
@@ -37,25 +37,25 @@ Bag : Collection {
 	atFail { ^this.shouldNotImplement(thisMethod) }
 	put { ^this.shouldNotImplement(thisMethod) }
 
-		// get something from the bag without removing it
-		// the item is the dictionary's key
+	// get something from the bag without removing it
+	// the item is the dictionary's key
 	choose {
 		var index, key, array;
-		if( this.isEmpty, { ^nil }); // empty dictionary
+		if(this.isEmpty) { ^nil }; // empty dictionary
 		array = contents.array;
-		while({
+		while {
 			index = (array.size >> 1).rand << 1; // generate an even index.
-			array.at(index).isNil;			  // key is at even index.
-		});
+			array.at(index).isNil			  // key is at even index.
+		};
 		// return the first non-nil key
-		^array.at(index);
+		^array.at(index)
 	}
 
 	wchoose {
 		var	items = Array(contents.size), counts = Array(contents.size);
 		contents.keysValuesDo({ |item, count|
 			items.add(item);
-			counts.add(count);
+			counts.add(count)
 		});
 		^items[counts.normalizeSum.windex]
 	}
@@ -67,28 +67,28 @@ Bag : Collection {
 	}
 
 	// enumerating
-	do { arg function;
+	do { |function|
 		var j = 0;
-		contents.associationsDo({ arg assn;
-			assn.value.do({
+		contents.associationsDo({ |assn|
+			assn.value.do {
 				function.value(assn.key, j);
-				j = j + 1;
-			})
-		});
+				j = j + 1
+			}
+		})
 	}
-	countsDo { arg function;
+	countsDo { |function|
 		var j = 0;
-		contents.associationsDo({ arg assn;
-			function.value(assn.key,assn.value,j);
-			j = j + 1;
-		});
+		contents.associationsDo({ |assn|
+			function.value(assn.key, assn.value, j);
+			j = j + 1
+		})
 	}
-	itemCount { arg item;
+	itemCount { |item|
 		^(contents.at(item) ? 0)
 	}
 
 	// PRIVATE IMPLEMENTATION
-	setDictionary { arg n;
+	setDictionary { |n|
 		contents = Dictionary.new(n)
 	}
 
@@ -97,7 +97,7 @@ Bag : Collection {
 
 IdentityBag : Bag {
 	// PRIVATE IMPLEMENTATION
-	setDictionary { arg n;
+	setDictionary { |n|
 		contents = IdentityDictionary.new(n)
 	}
 }

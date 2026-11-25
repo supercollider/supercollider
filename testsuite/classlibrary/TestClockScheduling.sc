@@ -7,7 +7,7 @@ TestClockScheduling : UnitTest {
 		var server = TestClockSchedulingHelper.new.start;
 
 		0.schedBundleArrayOnClock(clock, bundles, lag: 0, server: server, latency: 0);
-		this.assertEquals(server.data, [[0, bundles]], "bundles scheduled without delay should schedule immediately");
+		this.assertEquals(server.data, [[0, bundles]], "bundles scheduled without delay should schedule immediately")
 	}
 
 	test_delta_sched {
@@ -53,7 +53,7 @@ TestClockScheduling : UnitTest {
 		// when lags are an array, deltas are required to be an array, too.
 		[0, 0].schedBundleArrayOnClock(clock, bundles, lag: [0, 0.01], server: server, latency: 0);
 		0.02.wait;
-		this.assertEquals(server.data,  [[0, bundles], [0.01, bundles]],
+		this.assertEquals(server.data, [[0, bundles], [0.01, bundles]],
 			"bundles scheduled with lag array should match lag array"
 		)
 
@@ -91,7 +91,7 @@ TestClockSchedulingHelper {
 	var <>latency = 0.2, <>precision = 0.001;
 
 	start {
-		referenceTime = thisThread.seconds;
+		referenceTime = thisThread.seconds
 	}
 
 	sendBundle { |latency ... bundle|

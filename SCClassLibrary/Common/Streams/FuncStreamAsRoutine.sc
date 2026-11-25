@@ -2,8 +2,8 @@ FuncStreamAsRoutine : Routine {
 	var <>nextFunc;
 	var <>resetFunc;
 
-	*new { arg nextFunc, resetFunc;
-		^super.new({ arg inval;
+	*new { |nextFunc, resetFunc|
+		^super.new({ |inval|
 			loop {
 				inval = yield(thisThread.nextFunc.value(inval))
 			}

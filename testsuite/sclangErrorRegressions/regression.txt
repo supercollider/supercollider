@@ -331,12 +331,12 @@ ERROR: Primitive '_BasicPut' failed with message : 'Attempted write to immutable
 1   : Method Name: 'ArrayedCollection-put'
        args: this=[1], index=0, item=10
 		file:/
-		│ 	put { arg index, item;
+		│ 	put { |index, item|
 		│ 		_BasicPut;
-		│ 		^this.primitiveFailed;
+		│ 		^this.primitiveFailed
 		┆ 		 ^^^^^^^^^^^^^^^^^^^^ 
 		│ 	}
-		│ 	clipPut { arg index, item;
+		│ 	clipPut { |index, item|
 		│ 		_BasicClipPut;
 
 Primitive '_BasicPut' failed with message : 'Attempted write to immutable object.'.

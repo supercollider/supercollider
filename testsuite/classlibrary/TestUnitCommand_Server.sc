@@ -1,6 +1,6 @@
 //# VERSION 3.16
 TestUnitCommand_Server : UnitTest {
-	synchronousUnitCommand { arg serverName;
+	synchronousUnitCommand { |serverName|
 		var cond = CondVar();
 		var busValue = 0.0;
 		var server = Server(thisMethod.name ++ "_" ++ serverName);
@@ -10,7 +10,7 @@ TestUnitCommand_Server : UnitTest {
 		var bus = Bus.control(server, 1);
 
 		SynthDef(\u_cmd_test, { |bus|
-			Out.kr(bus, UnitCmdDemo.kr);
+			Out.kr(bus, UnitCmdDemo.kr)
 		}).add;
 		// UnitCmdDemo has index 1
 		var synthIndex = 1;
@@ -19,7 +19,7 @@ TestUnitCommand_Server : UnitTest {
 
 		// 1. test queued unit command
 
-		var u = Synth(\u_cmd_test, [ bus: bus ], server);
+		var u = Synth(\u_cmd_test, [bus: bus], server);
 
 		// send command
 		server.sendMsg('/u_cmd', u.nodeID, synthIndex, \setValue, 4.0);
@@ -27,7 +27,7 @@ TestUnitCommand_Server : UnitTest {
 		server.sync; // give the UGen a chance to output the value
 
 		bus.get { |f|
-			busValue = f;
+			busValue = f
 		};
 
 		server.sync;
@@ -42,30 +42,30 @@ TestUnitCommand_Server : UnitTest {
 		server.sync; // give the UGen a chance to output the value
 
 		bus.get { |f|
-			busValue = f;
+			busValue = f
 		};
 
 		server.sync;
 
 		this.assert(busValue == -3.0, "%: synchronous unit command (non-queued) works".format(serverName));
 
-		if (server.serverRunning) {
-			server.quitSync;
-		};
+		if(server.serverRunning) {
+			server.quitSync
+		}
 	}
 
 	test_synchronousUnitCommandInScsynth {
-		this.synchronousUnitCommand("scsynth");
+		this.synchronousUnitCommand("scsynth")
 	}
 
 	test_synchronousUnitCommandInSupernova{
 		Server.supernova;
 		this.synchronousUnitCommand("supernova");
 		// restore scsynth
-		Server.scsynth;
+		Server.scsynth
 	}
 
-	asynchronousUnitCommand { arg serverName;
+	asynchronousUnitCommand { |serverName|
 		var cond = CondVar();
 		var done = false;
 		var value = 1.0, busValue = 0.0, nodeID = 900;
@@ -76,11 +76,11 @@ TestUnitCommand_Server : UnitTest {
 		var bus = Bus.control(server, 1);
 
 		SynthDef(\number, { |bus|
-			Out.kr(bus, value);
+			Out.kr(bus, value)
 		}).add;
 
 		SynthDef(\u_cmd_test, { |bus|
-			Out.kr(bus, UnitCmdDemo.kr);
+			Out.kr(bus, UnitCmdDemo.kr)
 		}).add;
 		// UnitCmdDemo has index 1
 		var synthIndex = 1;
@@ -91,8 +91,8 @@ TestUnitCommand_Server : UnitTest {
 		OSCdef(\u_cmd_test, {
 			"testCommand done!".postln;
 			done = true;
-			cond.signalOne;
-		}, '/done', nil, nil, [ \testCommand ]);
+			cond.signalOne
+		}, '/done', nil, nil, [\testCommand]);
 
 		// 1. test unit command success
 
@@ -106,7 +106,7 @@ TestUnitCommand_Server : UnitTest {
 		this.assert(done, "%: async unit command finished and sent /done message".format(serverName));
 
 		bus.get { |f|
-			busValue = f;
+			busValue = f
 		};
 
 		server.sync;
@@ -129,7 +129,7 @@ TestUnitCommand_Server : UnitTest {
 		this.assert(done.not, "%: failed async unit command did not send /done message".format(serverName));
 
 		bus.get { |f|
-			busValue = f;
+			busValue = f
 		};
 
 		server.sync;
@@ -150,26 +150,26 @@ TestUnitCommand_Server : UnitTest {
 		this.assert(done.not, "%: cancelled async unit command did not send /done message".format(serverName));
 
 		bus.get { |f|
-			busValue = f;
+			busValue = f
 		};
 
 		server.sync;
 
 		this.assert(busValue == 0.0, "%: cancelled async unit command did not perform completion message".format(serverName));
 
-		if (server.serverRunning) {
-			server.quitSync;
-		};
+		if(server.serverRunning) {
+			server.quitSync
+		}
 	}
 
 	test_asynchronousUnitCommandInScsynth {
-		this.asynchronousUnitCommand("scsynth");
+		this.asynchronousUnitCommand("scsynth")
 	}
 
 	test_asynchronousUnitCommandInSupernova{
 		Server.supernova;
 		this.asynchronousUnitCommand("supernova");
 		// restore scsynth
-		Server.scsynth;
+		Server.scsynth
 	}
 }

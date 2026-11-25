@@ -4,7 +4,7 @@ TestUGen_RTAlloc_Server : UnitTest {
 	var server;
 
 	*initClass {
-		passVerbosity = UnitTest.brief;
+		passVerbosity = UnitTest.brief
 	}
 
 	setUp {
@@ -13,51 +13,51 @@ TestUGen_RTAlloc_Server : UnitTest {
 		// - tests fail with memSize < 256 (GVerb fails)
 		// - testing with memSize >= 2 ** 20 would require multiple allocations
 		//   (allocation size itself can overflow size_t for some UGens)
-		server.bootSync;
+		server.bootSync
 	}
 
 	tearDown {
 		server.quitSync;
-		server.remove;
+		server.remove
 	}
 
 	// Async helpers
 
-	awaitSynthOutput { |synthFn, runtimeSamples=(server.options.blockSize), timeout=1|
+	awaitSynthOutput { |synthFn, runtimeSamples = (server.options.blockSize), timeout = 1|
 		var cond = CondVar(), synthOutput = nil;
 		var runtimeSeconds = runtimeSamples / server.sampleRate;
 		// allow extra timeout for longer tests (e.g. testFFT with big memSize)
-		if (runtimeSeconds > timeout) {
+		if(runtimeSeconds > timeout) {
 			timeout = runtimeSeconds + timeout
 		};
 		synthFn.loadToFloatArray(runtimeSeconds, server) { |out|
 			synthOutput = out;
-			cond.signalOne();
+			cond.signalOne()
 		};
 		cond.waitFor(timeout) { synthOutput.notNil };
-		^synthOutput;
+		^synthOutput
 	}
 
-	assertAllocPass { |name, func, runtimeSamples=(server.options.blockSize)|
+	assertAllocPass { |name, func, runtimeSamples = (server.options.blockSize)|
 		var out = this.awaitSynthOutput(func, runtimeSamples);
-		if (out.isNil) {
+		if(out.isNil) {
 			this.assert(false, "% allocPass test should complete".format(name))
 		} {
 			this.assert(out.sum != 0,
 				"% allocPass test should produce non-zero output".format(name)
-			);
-		};
+			)
+		}
 	}
 
-	assertAllocFail { |name, func, runtimeSamples=(server.options.blockSize)|
+	assertAllocFail { |name, func, runtimeSamples = (server.options.blockSize)|
 		var out = this.awaitSynthOutput(func, runtimeSamples, 3);
-		if (out.isNil) {
+		if(out.isNil) {
 			this.assert(false, "% allocFail test should complete".format(name))
 		} {
 			this.assertEquals(out.sum, 0,
 				"% allocFail test should produce zero output".format(name)
-			);
-		};
+			)
+		}
 	}
 
 	// mem calc helpers
@@ -123,7 +123,7 @@ TestUGen_RTAlloc_Server : UnitTest {
 		var blockSize = server.options.blockSize;
 
 		var convBufFrames = blockSize * 8;
-		var convBuf = Buffer.loadCollection(server, 1!convBufFrames);
+		var convBuf = Buffer.loadCollection(server, 1 ! convBufFrames);
 
 		var testArgs = [
 			["AllpassC", { AllpassC.ar(DC.ar(1), allocSeconds, 0) }],
@@ -142,9 +142,9 @@ TestUGen_RTAlloc_Server : UnitTest {
 			["Limiter", { Limiter.ar(DC.ar(1), dur: allocSeconds) }],
 			["Normalizer", { Normalizer.ar(DC.ar(1), dur: allocSeconds) }],
 
-			["GrainBuf", { GrainBuf.ar(1, 1, 1, LocalBuf(1).set(1), maxGrains: 2)}],
+			["GrainBuf", { GrainBuf.ar(1, 1, 1, LocalBuf(1).set(1), maxGrains: 2) }],
 			["GrainFM", { GrainFM.ar(1, 1, 1, maxGrains: 2) }],
-			["GrainIn", { GrainIn.ar(1, 1, in:DC.ar(1), maxGrains:2) }],
+			["GrainIn", { GrainIn.ar(1, 1, in: DC.ar(1), maxGrains: 2) }],
 			["GrainSin", { GrainSin.ar(1, 1, maxGrains: 2) }],
 
 			["Gendy1", { Gendy1.ar(initCPs: 1) }],
@@ -156,19 +156,19 @@ TestUGen_RTAlloc_Server : UnitTest {
 			["GVerb", { GVerb.ar(DC.ar(1), 1, maxroomsize: 1) }],
 
 			// -- ONLY PASS UGENS: couldn't reliably test allocFail on these:
-			["IEnvGen", { IEnvGen.ar(Env([1,1]), 0) }],
+			["IEnvGen", { IEnvGen.ar(Env([1, 1]), 0) }],
 			["PanAz", { PanAz.ar(1, DC.ar(1)) }],
-			["Klank", { Klank.ar(`[100!2, nil, 1], DC.ar(1)) }],
-			["Klang", { Klang.ar(`[100!2, nil, 1]) }],
-			["Dshuf", { Demand.ar(DC.ar(1),0, Dshuf([1])) }],
+			["Klank", { Klank.ar(`[100 ! 2, nil, 1], DC.ar(1)) }],
+			["Klang", { Klang.ar(`[100 ! 2, nil, 1]) }],
+			["Dshuf", { Demand.ar(DC.ar(1), 0, Dshuf([1])) }],
 			// FFT UGens: only tested for allocPass (hard to make these fail before LocalBuf or FFT fails)
-			["Onsets", { K2A.ar(Onsets.kr(FFT(LocalBuf(blockSize*2), Impulse.ar(1)))) }],
-			["Loudness", { K2A.ar(Loudness.kr(FFT(LocalBuf(blockSize*2), SinOsc.ar))) }],
-			["BeatTrack", { K2A.ar(BeatTrack.kr(FFT(LocalBuf(blockSize*2)))) }],
+			["Onsets", { K2A.ar(Onsets.kr(FFT(LocalBuf(blockSize * 2), Impulse.ar(1)))) }],
+			["Loudness", { K2A.ar(Loudness.kr(FFT(LocalBuf(blockSize * 2), SinOsc.ar))) }],
+			["BeatTrack", { K2A.ar(BeatTrack.kr(FFT(LocalBuf(blockSize * 2)))) }],
 
 			["Convolution", { Convolution.ar(DC.ar(1), DC.ar(1), blockSize) }],
 			["Convolution2", { Convolution2.ar(DC.ar(1), convBuf, 0, blockSize) }],
-				// Convolution2L onset output is not predictable, might sum to zero sporadically: give extra time
+			// Convolution2L onset output is not predictable, might sum to zero sporadically: give extra time
 			["Convolution2L", { Convolution2L.ar(DC.ar(1), convBuf, 0, blockSize) }],
 			["Convolution3", { Convolution3.ar(DC.ar(1), convBuf, 0, blockSize) }],
 			["StereoConvolution2L", { StereoConvolution2L.ar(DC.ar(1), convBuf, convBuf, 0, blockSize) }],
@@ -180,7 +180,7 @@ TestUGen_RTAlloc_Server : UnitTest {
 		// testArgs.collect { |args| { this.assertAllocPass(*args) } }.fork;
 		testArgs.do { |args| this.assertAllocPass(*args) };
 
-		convBuf.free;
+		convBuf.free
 	}
 
 	test_allUGens_allocFail {
@@ -190,7 +190,7 @@ TestUGen_RTAlloc_Server : UnitTest {
 		var blockSize = server.options.blockSize;
 
 		var convBufFrames = blockSize * 8;
-		var convBuf = Buffer.loadCollection(server, 1!convBufFrames);
+		var convBuf = Buffer.loadCollection(server, 1 ! convBufFrames);
 
 		var testArgs = [
 			["AllpassC", { AllpassC.ar(DC.ar(1), allocSeconds) }],
@@ -213,10 +213,10 @@ TestUGen_RTAlloc_Server : UnitTest {
 			// grain UGens: allocFail with high maxGrains
 			// allocated memory = maxGrains * size(GrainStruct)
 			// magic numbers are approximated from the sizes of GrainStruct for each UGen (see GrainUGens.cpp)
-			["GrainBuf", { GrainBuf.ar(1, 1, 1, LocalBuf(1).set(1), maxGrains: allocSamples/20)}],
-			["GrainFM", { GrainFM.ar(1, 1, 1, maxGrains: allocSamples/20) }],
-			["GrainIn", { GrainIn.ar(1, 1, in:DC.ar(1), maxGrains: allocSamples/15) }],
-			["GrainSin", { GrainSin.ar(1, 1, maxGrains: allocSamples/15) }],
+			["GrainBuf", { GrainBuf.ar(1, 1, 1, LocalBuf(1).set(1), maxGrains: allocSamples / 20) }],
+			["GrainFM", { GrainFM.ar(1, 1, 1, maxGrains: allocSamples / 20) }],
+			["GrainIn", { GrainIn.ar(1, 1, in: DC.ar(1), maxGrains: allocSamples / 15) }],
+			["GrainSin", { GrainSin.ar(1, 1, maxGrains: allocSamples / 15) }],
 
 			["Gendy1", { Gendy1.ar(initCPs: allocSamples) }],
 			["Gendy2", { Gendy2.ar(initCPs: allocSamples) }],
@@ -243,7 +243,7 @@ TestUGen_RTAlloc_Server : UnitTest {
 		server.sync; // for convBuf;
 
 		// testArgs.collect { |args| { this.assertAllocFail(*args) } }.fork;
-		testArgs.do { |args| this.assertAllocFail(*args) };
+		testArgs.do { |args| this.assertAllocFail(*args) }
 	}
 
 	// special test for LocalBuf alloc
@@ -254,7 +254,7 @@ TestUGen_RTAlloc_Server : UnitTest {
 
 		out = this.awaitSynthOutput({ K2A.ar(LocalBuf(this.memSizeFloats * 10)) });
 		this.assert(out.notNil, "failed alloc test should complete", onFailure: \stop);
-		this.assertEquals(out[0], -1, "should return -1 on alloc fail");
+		this.assertEquals(out[0], -1, "should return -1 on alloc fail")
 	}
 
 	// FFT UGens: test RTAlloc success and fail
@@ -265,7 +265,7 @@ TestUGen_RTAlloc_Server : UnitTest {
 	test_FFT {
 		var blockSize = server.options.blockSize;
 		var fftSize = blockSize;
-		var out = this.awaitSynthOutput({ FFT(LocalBuf(fftSize), DC.ar(1), hop:1) });
+		var out = this.awaitSynthOutput({ FFT(LocalBuf(fftSize), DC.ar(1), hop: 1) });
 		this.assert(out.notNil,
 			"successful alloc test should complete (fftSize: %)".format(fftSize),
 			onFailure: \stop);
@@ -279,7 +279,7 @@ TestUGen_RTAlloc_Server : UnitTest {
 		this.assert(out.notNil,
 			"failed alloc test should complete (fftSize: %)".format(fftSize),
 			onFailure: \stop);
-		this.assert(out.every(_ == -1), "should only return -1 on alloc fail");
+		this.assert(out.every(_ == -1), "should only return -1 on alloc fail")
 	}
 
 	// PV_UGens
@@ -294,34 +294,34 @@ TestUGen_RTAlloc_Server : UnitTest {
 
 		var testAllocPass = { |ugen, testFunc|
 			var out = this.awaitSynthOutput(testFunc, blockSize * 4);
-			if (out.isNil) {
-				this.assert(false, "% successful alloc test should complete".format(ugen));
+			if(out.isNil) {
+				this.assert(false, "% successful alloc test should complete".format(ugen))
 			} {
 				noneIsInvalid = out.drop(1).any(_ == (-1)).not;
-				this.assert(noneIsInvalid, "% successful alloc should return a valid bufnum".format(ugen));
-			};
+				this.assert(noneIsInvalid, "% successful alloc should return a valid bufnum".format(ugen))
+			}
 		};
 
 		var testAllocFail = { |ugen, testFunc|
 			var allInvalid;
 			out = this.awaitSynthOutput(testFunc, blockSize * 4);
-			if (out.isNil) {
-				this.assert(false, "% failed alloc test should complete".format(ugen));
+			if(out.isNil) {
+				this.assert(false, "% failed alloc test should complete".format(ugen))
 			} {
 				allInvalid = out.drop(1).every(_ == (-1));
-				this.assert(allInvalid, "% should only return -1 on alloc fail".format(ugen));
-			};
+				this.assert(allInvalid, "% should only return -1 on alloc fail".format(ugen))
+			}
 		};
 
 		server.sync;
 
 		[PV_RandComb, PV_Diffuser, PV_MagFreeze, PV_BinScramble].do { |ugen|
 			testAllocPass.value(ugen, { ugen.new(smallBuf) });
-			testAllocFail.value(ugen, { ugen.new(bigBuf) });
+			testAllocFail.value(ugen, { ugen.new(bigBuf) })
 		};
 
-		testAllocPass.value(PV_RandWipe, {PV_RandWipe(smallBuf, smallBuf)});
-		testAllocFail.value(PV_RandWipe, {PV_RandWipe(bigBuf, bigBuf)});
+		testAllocPass.value(PV_RandWipe, { PV_RandWipe(smallBuf, smallBuf) });
+		testAllocFail.value(PV_RandWipe, { PV_RandWipe(bigBuf, bigBuf) })
 	}
 
 }

@@ -9,7 +9,7 @@ TestProxyNodeMap : UnitTest {
 		map.set(\x, otherProxy);
 		this.assert(map.mappingKeys.includes(\x));
 		proxy.clear;
-		otherProxy.clear;
+		otherProxy.clear
 	}
 
 	test_nodeMap_whenSetWithObject_sets {
@@ -18,28 +18,28 @@ TestProxyNodeMap : UnitTest {
 		var map = proxy.nodeMap;
 		map.set(\x, object);
 		this.assert(map.settingKeys.includes(\x));
-		proxy.clear;
+		proxy.clear
 	}
 
 	test_nodeMap_controlNamesDoesNotConvertObjectToControlInput {
 		var proxy = NodeProxy.new;
 		var map = proxy.nodeMap;
-		var buffer = Buffer.alloc(numFrames:1);
+		var buffer = Buffer.alloc(numFrames: 1);
 		map.set(\x, buffer);
 		this.assertEquals(map.controlNames.first.defaultValue, buffer);
 		buffer.free;
-		proxy.clear;
+		proxy.clear
 	}
 
 	test_nodeMap_controlNamesConvertObjectToControlInputFinally {
 		var proxy = NodeProxy.new;
 		var map = proxy.nodeMap;
-		var buffer = Buffer.new(bufnum: 42, numFrames:1);
+		var buffer = Buffer.new(bufnum: 42, numFrames: 1);
 		map.set(\x, buffer);
 		var args = map.asOSCArgArray;
 		var i = args.indexOf(\x);
-		this.assertEquals(args[i+1], buffer.bufnum);
+		this.assertEquals(args[i + 1], buffer.bufnum);
 		buffer.free;
-		proxy.clear;
+		proxy.clear
 	}
 }

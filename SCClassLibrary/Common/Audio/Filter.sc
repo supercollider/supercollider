@@ -4,20 +4,20 @@ Filter : PureUGen {
 
 Resonz : Filter {
 
-	*ar { arg in = 0.0, freq = 440.0, bwr = 1.0, mul = 1.0, add = 0.0;
+	*ar { |in = 0.0, freq = 440.0, bwr = 1.0, mul = 1.0, add = 0.0|
 		^this.multiNew('audio', in, freq, bwr).madd(mul, add)
 	}
-	*kr { arg in = 0.0, freq = 440.0, bwr = 1.0, mul = 1.0, add = 0.0;
+	*kr { |in = 0.0, freq = 440.0, bwr = 1.0, mul = 1.0, add = 0.0|
 		^this.multiNew('control', in, freq, bwr).madd(mul, add)
 	}
 }
 
 OnePole : Filter {
 
-	*ar { arg in = 0.0, coef = 0.5, mul = 1.0, add = 0.0;
+	*ar { |in = 0.0, coef = 0.5, mul = 1.0, add = 0.0|
 		^this.multiNew('audio', in, coef).madd(mul, add)
 	}
-	*kr { arg in = 0.0, coef = 0.5, mul = 1.0, add = 0.0;
+	*kr { |in = 0.0, coef = 0.5, mul = 1.0, add = 0.0|
 		^this.multiNew('control', in, coef).madd(mul, add)
 	}
 }
@@ -26,10 +26,10 @@ OneZero : OnePole {}
 
 TwoPole : Filter {
 
-	*ar { arg in = 0.0, freq = 440.0, radius = 0.8, mul = 1.0, add = 0.0;
+	*ar { |in = 0.0, freq = 440.0, radius = 0.8, mul = 1.0, add = 0.0|
 		^this.multiNew('audio', in, freq, radius).madd(mul, add)
 	}
-	*kr { arg in = 0.0, freq = 440.0, radius = 0.8, mul = 1.0, add = 0.0;
+	*kr { |in = 0.0, freq = 440.0, radius = 0.8, mul = 1.0, add = 0.0|
 		^this.multiNew('control', in, freq, radius).madd(mul, add)
 	}
 }
@@ -39,45 +39,45 @@ APF : TwoPole {}
 
 Integrator : Filter {
 
-	*ar { arg in = 0.0, coef = 1.0, mul = 1.0, add = 0.0;
+	*ar { |in = 0.0, coef = 1.0, mul = 1.0, add = 0.0|
 		^this.multiNew('audio', in, coef).madd(mul, add)
 	}
-	*kr { arg in = 0.0, coef = 1.0, mul = 1.0, add = 0.0;
+	*kr { |in = 0.0, coef = 1.0, mul = 1.0, add = 0.0|
 		^this.multiNew('control', in, coef).madd(mul, add)
 	}
 }
 
 Decay : Filter {
 
-	*ar { arg in = 0.0, decayTime = 1.0, mul = 1.0, add = 0.0;
+	*ar { |in = 0.0, decayTime = 1.0, mul = 1.0, add = 0.0|
 		^this.multiNew('audio', in, decayTime).madd(mul, add)
 	}
-	*kr { arg in = 0.0, decayTime = 1.0, mul = 1.0, add = 0.0;
+	*kr { |in = 0.0, decayTime = 1.0, mul = 1.0, add = 0.0|
 		^this.multiNew('control', in, decayTime).madd(mul, add)
 	}
 }
 
 Decay2 : Filter {
 
-	*ar { arg in = 0.0, attackTime = 0.01, decayTime = 1.0, mul = 1.0, add = 0.0;
+	*ar { |in = 0.0, attackTime = 0.01, decayTime = 1.0, mul = 1.0, add = 0.0|
 		^this.multiNew('audio', in, attackTime, decayTime).madd(mul, add)
 	}
-	*kr { arg in = 0.0, attackTime = 0.01, decayTime = 1.0, mul = 1.0, add = 0.0;
+	*kr { |in = 0.0, attackTime = 0.01, decayTime = 1.0, mul = 1.0, add = 0.0|
 		^this.multiNew('control', in, attackTime, decayTime).madd(mul, add)
 	}
 }
 
 Lag : Filter {
 
-	*ar { arg in = 0.0, lagTime = 0.1, mul = 1.0, add = 0.0;
-		if ( (in.rate == \scalar) || (lagTime == 0) ) {
+	*ar { |in = 0.0, lagTime = 0.1, mul = 1.0, add = 0.0|
+		if((in.rate == \scalar) || (lagTime == 0)) {
 			^in.madd(mul, add)
 		} {
 			^this.multiNew('audio', in, lagTime).madd(mul, add)
 		}
 	}
-	*kr { arg in = 0.0, lagTime = 0.1, mul = 1.0, add = 0.0;
-		if ( (in.rate == \scalar) || (lagTime == 0) ) {
+	*kr { |in = 0.0, lagTime = 0.1, mul = 1.0, add = 0.0|
+		if((in.rate == \scalar) || (lagTime == 0)) {
 			^in.madd(mul, add)
 		} {
 			^this.multiNew('control', in, lagTime).madd(mul, add)
@@ -91,15 +91,15 @@ Ramp : Lag {}
 
 LagUD : Filter {
 
-	*ar { arg in = 0.0, lagTimeU = 0.1, lagTimeD = 0.1,  mul = 1.0, add = 0.0;
-		if (in.rate == \scalar) {
+	*ar { |in = 0.0, lagTimeU = 0.1, lagTimeD = 0.1, mul = 1.0, add = 0.0|
+		if(in.rate == \scalar) {
 			^in.madd(mul, add)
 		} {
 			^this.multiNew('audio', in, lagTimeU, lagTimeD).madd(mul, add)
 		}
 	}
-	*kr { arg in = 0.0, lagTimeU = 0.1, lagTimeD = 0.1, mul = 1.0, add = 0.0;
-		if (in.rate == \scalar) {
+	*kr { |in = 0.0, lagTimeU = 0.1, lagTimeD = 0.1, mul = 1.0, add = 0.0|
+		if(in.rate == \scalar) {
 			^in.madd(mul, add)
 		} {
 			^this.multiNew('control', in, lagTimeU, lagTimeD).madd(mul, add)
@@ -111,24 +111,24 @@ Lag2UD : LagUD {}
 Lag3UD : LagUD {}
 
 VarLag : Filter {
-	*ar { arg in = 0.0, time = 0.1, curvature = 0, warp = 5, start, mul = 1.0, add = 0.0;
-		if ( (in.rate == \scalar) || (time == 0) ) {
+	*ar { |in = 0.0, time = 0.1, curvature = 0, warp = 5, start, mul = 1.0, add = 0.0|
+		if((in.rate == \scalar) || (time == 0)) {
 			^in.madd(mul, add)
 		} {
-			^this.multiNew('audio', in, time, curvature, warp, start).madd(mul, add);
+			^this.multiNew('audio', in, time, curvature, warp, start).madd(mul, add)
 		}
 	}
-	*kr { arg in = 0.0, time = 0.1, curvature = 0, warp = 5, start, mul = 1.0, add = 0.0;
-		if ( (in.rate == \scalar) || (time == 0) ) {
+	*kr { |in = 0.0, time = 0.1, curvature = 0, warp = 5, start, mul = 1.0, add = 0.0|
+		if((in.rate == \scalar) || (time == 0)) {
 			^in.madd(mul, add)
 		} {
-			^this.multiNew('control', in, time, curvature, warp, start).madd(mul, add);
+			^this.multiNew('control', in, time, curvature, warp, start).madd(mul, add)
 		}
 	}
 	// FIXME: Implement 'curve' input on VLag ugen instead of using EnvGen.
 	// Then \exp warp should probably behave as Lag ugen.
-	*new1 { arg rate, in, time, curvature, warp, start;
-		var e, curve, trig, sel = if(rate==\audio,\ar,\kr);
+	*new1 { |rate, in, time, curvature, warp, start|
+		var e, curve, trig, sel = if(rate == \audio, \ar, \kr);
 		start = start ? in;
 		curve = Env.shapeNames[warp] ? warp;
 		^if(curve != 1) {
@@ -137,19 +137,19 @@ VarLag : Filter {
 			e[7] = curvature;
 			trig = Changed.perform(sel, in) + Impulse.perform(sel, 0);
 			if(time.rate != \scalar) { trig = trig + Changed.kr(time) };
-			EnvGen.perform(sel, e, trig);
+			EnvGen.perform(sel, e, trig)
 		} {
-			^super.new.rate_(rate).addToSynth.init(in, time, start);
+			^super.new.rate_(rate).addToSynth.init(in, time, start)
 		}
 	}
 }
 
 LeakDC : Filter {
 
-	*ar { arg in = 0.0, coef = 0.995, mul = 1.0, add = 0.0;
+	*ar { |in = 0.0, coef = 0.995, mul = 1.0, add = 0.0|
 		^this.multiNew('audio', in, coef).madd(mul, add)
 	}
-	*kr { arg in = 0.0, coef = 0.9, mul = 1.0, add = 0.0;
+	*kr { |in = 0.0, coef = 0.9, mul = 1.0, add = 0.0|
 		^this.multiNew('control', in, coef).madd(mul, add)
 	}
 }
@@ -157,10 +157,10 @@ LeakDC : Filter {
 
 RLPF : Filter {
 
-	*ar { arg in = 0.0, freq = 440.0, rq = 1.0, mul = 1.0, add = 0.0;
+	*ar { |in = 0.0, freq = 440.0, rq = 1.0, mul = 1.0, add = 0.0|
 		^this.multiNew('audio', in, freq, rq).madd(mul, add)
 	}
-	*kr { arg in = 0.0, freq = 440.0, rq = 1.0, mul = 1.0, add = 0.0;
+	*kr { |in = 0.0, freq = 440.0, rq = 1.0, mul = 1.0, add = 0.0|
 		^this.multiNew('control', in, freq, rq).madd(mul, add)
 	}
 }
@@ -170,10 +170,10 @@ RHPF : RLPF {}
 
 LPF : Filter {
 
-	*ar { arg in = 0.0, freq = 440.0, mul = 1.0, add = 0.0;
+	*ar { |in = 0.0, freq = 440.0, mul = 1.0, add = 0.0|
 		^this.multiNew('audio', in, freq).madd(mul, add)
 	}
-	*kr { arg in = 0.0, freq = 440.0, mul = 1.0, add = 0.0;
+	*kr { |in = 0.0, freq = 440.0, mul = 1.0, add = 0.0|
 		^this.multiNew('control', in, freq).madd(mul, add)
 	}
 }
@@ -182,10 +182,10 @@ HPF : LPF {}
 
 BPF : Filter {
 
-	*ar { arg in = 0.0, freq = 440.0, rq = 1.0, mul = 1.0, add = 0.0;
+	*ar { |in = 0.0, freq = 440.0, rq = 1.0, mul = 1.0, add = 0.0|
 		^this.multiNew('audio', in, freq, rq).madd(mul, add)
 	}
-	*kr { arg in = 0.0, freq = 440.0, rq = 1.0, mul = 1.0, add = 0.0;
+	*kr { |in = 0.0, freq = 440.0, rq = 1.0, mul = 1.0, add = 0.0|
 		^this.multiNew('control', in, freq, rq).madd(mul, add)
 	}
 }
@@ -194,20 +194,20 @@ BRF : BPF {}
 
 MidEQ : Filter {
 
-	*ar { arg in = 0.0, freq = 440.0, rq = 1.0, db = 0.0, mul = 1.0, add = 0.0;
+	*ar { |in = 0.0, freq = 440.0, rq = 1.0, db = 0.0, mul = 1.0, add = 0.0|
 		^this.multiNew('audio', in, freq, rq, db).madd(mul, add)
 	}
-	*kr { arg in = 0.0, freq = 440.0, rq = 1.0, db = 0.0, mul = 1.0, add = 0.0;
+	*kr { |in = 0.0, freq = 440.0, rq = 1.0, db = 0.0, mul = 1.0, add = 0.0|
 		^this.multiNew('control', in, freq, rq, db).madd(mul, add)
 	}
 }
 
 LPZ1 : Filter {
 
-	*ar { arg in = 0.0, mul = 1.0, add = 0.0;
+	*ar { |in = 0.0, mul = 1.0, add = 0.0|
 		^this.multiNew('audio', in).madd(mul, add)
 	}
-	*kr { arg in = 0.0, mul = 1.0, add = 0.0;
+	*kr { |in = 0.0, mul = 1.0, add = 0.0|
 		^this.multiNew('control', in).madd(mul, add)
 	}
 }
@@ -216,29 +216,29 @@ HPZ1 : LPZ1 {}
 
 Slope : Filter {
 
-	*ar { arg in = 0.0, mul = 1.0, add = 0.0;
+	*ar { |in = 0.0, mul = 1.0, add = 0.0|
 		^this.multiNew('audio', in).madd(mul, add)
 	}
-	*kr { arg in = 0.0, mul = 1.0, add = 0.0;
+	*kr { |in = 0.0, mul = 1.0, add = 0.0|
 		^this.multiNew('control', in).madd(mul, add)
 	}
 }
 
 Changed : Filter {
-	*kr { arg input, threshold = 0;
+	*kr { |input, threshold = 0|
 		^HPZ1.kr(input).abs > threshold
 	}
-	*ar { arg input, threshold = 0;
+	*ar { |input, threshold = 0|
 		^HPZ1.ar(input).abs > threshold
 	}
 }
 
 LPZ2 : Filter {
 
-	*ar { arg in = 0.0, mul = 1.0, add = 0.0;
+	*ar { |in = 0.0, mul = 1.0, add = 0.0|
 		^this.multiNew('audio', in).madd(mul, add)
 	}
-	*kr { arg in = 0.0, mul = 1.0, add = 0.0;
+	*kr { |in = 0.0, mul = 1.0, add = 0.0|
 		^this.multiNew('control', in).madd(mul, add)
 	}
 }
@@ -250,18 +250,18 @@ BPZ2 : LPZ2 {}
 BRZ2 : LPZ2 {}
 
 Median : Filter {
-	*ar { arg length=3, in = 0.0, mul = 1.0, add = 0.0;
+	*ar { |length = 3, in = 0.0, mul = 1.0, add = 0.0|
 		^this.multiNew('audio', length, in).madd(mul, add)
 	}
-	*kr { arg length=3, in = 0.0, mul = 1.0, add = 0.0;
+	*kr { |length = 3, in = 0.0, mul = 1.0, add = 0.0|
 		^this.multiNew('control', length, in).madd(mul, add)
 	}
 	checkInputs {
-		if (rate == 'audio', {
-			if (inputs.at(1).rate != 'audio', {
-				^"input was not audio rate";
-			});
-		});
+		if(rate == 'audio') {
+			if(inputs.at(1).rate != 'audio') {
+				^"input was not audio rate"
+			}
+		};
 		^this.checkValidInputs
 	}
 
@@ -279,15 +279,15 @@ Median : Filter {
 //}
 
 Slew : Filter {
-	*ar { arg in = 0.0, up = 1.0, dn = 1.0, mul = 1.0, add = 0.0;
-		if (in.rate == \scalar) {
+	*ar { |in = 0.0, up = 1.0, dn = 1.0, mul = 1.0, add = 0.0|
+		if(in.rate == \scalar) {
 			^in.madd(mul, add)
 		} {
 			^this.multiNew('audio', in, up, dn).madd(mul, add)
 		}
 	}
-	*kr { arg in = 0.0, up = 1.0, dn = 1.0, mul = 1.0, add = 0.0;
-		if (in.rate == \scalar) {
+	*kr { |in = 0.0, up = 1.0, dn = 1.0, mul = 1.0, add = 0.0|
+		if(in.rate == \scalar) {
 			^in.madd(mul, add)
 		} {
 			^this.multiNew('control', in, up, dn).madd(mul, add)
@@ -304,19 +304,19 @@ Slew : Filter {
 //}
 
 FOS : Filter {
-	*ar { arg in = 0.0, a0 = 0.0, a1 = 0.0, b1 = 0.0, mul = 1.0, add = 0.0;
+	*ar { |in = 0.0, a0 = 0.0, a1 = 0.0, b1 = 0.0, mul = 1.0, add = 0.0|
 		^this.multiNew('audio', in, a0, a1, b1).madd(mul, add)
 	}
-	*kr { arg in = 0.0, a0 = 0.0, a1 = 0.0, b1 = 0.0, mul = 1.0, add = 0.0;
+	*kr { |in = 0.0, a0 = 0.0, a1 = 0.0, b1 = 0.0, mul = 1.0, add = 0.0|
 		^this.multiNew('control', in, a0, a1, b1).madd(mul, add)
 	}
 }
 
 SOS : Filter {
-	*ar { arg in = 0.0, a0 = 0.0, a1 = 0.0, a2 = 0.0, b1 = 0.0, b2 = 0.0, mul = 1.0, add = 0.0;
+	*ar { |in = 0.0, a0 = 0.0, a1 = 0.0, a2 = 0.0, b1 = 0.0, b2 = 0.0, mul = 1.0, add = 0.0|
 		^this.multiNew('audio', in, a0, a1, a2, b1, b2).madd(mul, add)
 	}
-	*kr { arg in = 0.0, a0 = 0.0, a1 = 0.0, a2 = 0.0, b1 = 0.0, b2 = 0.0, mul = 1.0, add = 0.0;
+	*kr { |in = 0.0, a0 = 0.0, a1 = 0.0, a2 = 0.0, b1 = 0.0, b2 = 0.0, mul = 1.0, add = 0.0|
 		^this.multiNew('control', in, a0, a1, a2, b1, b2).madd(mul, add)
 	}
 }
@@ -324,20 +324,20 @@ SOS : Filter {
 
 Ringz : Filter {
 
-	*ar { arg in = 0.0, freq = 440.0, decaytime = 1.0, mul = 1.0, add = 0.0;
+	*ar { |in = 0.0, freq = 440.0, decaytime = 1.0, mul = 1.0, add = 0.0|
 		^this.multiNew('audio', in, freq, decaytime).madd(mul, add)
 	}
-	*kr { arg in = 0.0, freq = 440.0, decaytime = 1.0, mul = 1.0, add = 0.0;
+	*kr { |in = 0.0, freq = 440.0, decaytime = 1.0, mul = 1.0, add = 0.0|
 		^this.multiNew('control', in, freq, decaytime).madd(mul, add)
 	}
 }
 
 Formlet : Filter {
 
-	*ar { arg in = 0.0, freq = 440.0, attacktime = 1.0, decaytime = 1.0, mul = 1.0, add = 0.0;
+	*ar { |in = 0.0, freq = 440.0, attacktime = 1.0, decaytime = 1.0, mul = 1.0, add = 0.0|
 		^this.multiNew('audio', in, freq, attacktime, decaytime).madd(mul, add)
 	}
-	*kr { arg in = 0.0, freq = 440.0, attacktime = 1.0, decaytime = 1.0, mul = 1.0, add = 0.0;
+	*kr { |in = 0.0, freq = 440.0, attacktime = 1.0, decaytime = 1.0, mul = 1.0, add = 0.0|
 		^this.multiNew('control', in, freq, attacktime, decaytime).madd(mul, add)
 	}
 }
@@ -357,10 +357,10 @@ DetectSilence : Filter {
 	optimizeGraph {
 	}
 
-	*ar { arg in = 0.0, amp = 0.0001, time = 0.1, doneAction = 0;
+	*ar { |in = 0.0, amp = 0.0001, time = 0.1, doneAction = 0|
 		^this.multiNew('audio', in, amp, time, doneAction)
 	}
-	*kr { arg in = 0.0, amp = 0.0001, time = 0.1, doneAction = 0;
+	*kr { |in = 0.0, amp = 0.0001, time = 0.1, doneAction = 0|
 		^this.multiNew('control', in, amp, time, doneAction)
 	}
 }

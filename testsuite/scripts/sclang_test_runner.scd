@@ -5,11 +5,11 @@ if(thisProcess.argv.size > 0) {
 	"passed args: %".format(thisProcess.argv).postln;
 	~testProto = thisProcess.argv[0];
 	~testResult = thisProcess.argv[1];
-	~exitWhenDone = true;
+	~exitWhenDone = true
 } {
 	~testProto = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "test_run_proto_gha.scd";
 	// ~testProto = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "test_run_proto_all.scd"; // for testing
-	~testResult = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "run" +/+ "test_result.scxtar";
+	~testResult = PathName(thisProcess.nowExecutingPath).pathOnly +/+ "run" +/+ "test_result.scxtar"
 };
 
 if(File.exists(~testProto).not) {
@@ -23,19 +23,19 @@ if(File.exists(~testProto).not) {
 
 ~useColors = \Document.asClass.isNil; // use colors if we're running outside of the IDE
 
-~makeBold = {|str|
+~makeBold = { |str|
 	if(~useColors) {
-		str = "%[1m%%[0m".format(27.asAscii, str, 27.asAscii);
+		str = "%[1m%%[0m".format(27.asAscii, str, 27.asAscii)
 	};
-	str;
+	str
 };
 
-~writeResult = {|results, path|
-	results.writeArchive(path);
+~writeResult = { |results, path|
+	results.writeArchive(path)
 };
 
 // extract the test record dictionary from the input file
-~getTestRecord = {|file|
+~getTestRecord = { |file|
 	var test_record, test_record_string;
 	var success = false;
 
@@ -43,7 +43,7 @@ if(File.exists(~testProto).not) {
 
 	test_record = test_record_string.interpret();
 
-	test_record;
+	test_record
 };
 
 
@@ -52,18 +52,18 @@ if(File.exists(~testProto).not) {
 	var all;
 	var suiteGlob = testsDict.select { |item| item[\suite] == "*" };
 
-	if (suiteGlob.notEmpty) {
-		all = UnitTest.allTestClasses.keys.select({ |t| t != "...All..." }).asArray.collect({ |className|
+	if(suiteGlob.notEmpty) {
+		all = UnitTest.allTestClasses.keys.select({ |t| t != "...All..." }).asArray.collect { |className|
 			Dictionary.newFrom((\suite: "Test" ++ className, \test: "*"))
-		});
+		};
 		testsDict.removeAll(suiteGlob);
-		testsDict = all ++ testsDict;
+		testsDict = all ++ testsDict
 	};
 
-	testsDict;
+	testsDict
 };
 
-~testrun = {|protoFile, resultFile|
+~testrun = { |protoFile, resultFile|
 	var tests = ~getTestRecord.(protoFile);
 	var skipped, toExpand, toExclude;
 	var currentSuite = "";
@@ -78,100 +78,100 @@ if(File.exists(~testProto).not) {
 	tests = List.newFrom(tests.collect(Dictionary.newFrom(_)));
 
 	// Expand *'s
-	toExpand = tests.select({|t| (t[\test] == "*") && (t[\completed] != true) });
-	~verboseSetup.if({"Expanding %\n".postf(toExpand)});
-	toExpand.do {|wildcardTest|
+	toExpand = tests.select({ |t| (t[\test] == "*") && (t[\completed] != true) });
+	if(~verboseSetup) { "Expanding %\n".postf(toExpand) };
+	toExpand.do { |wildcardTest|
 		var class;
 
 		class = wildcardTest[\suite].asSymbol.asClass;
 
-		if (class.respondsTo(\findTestMethods).not && class.notNil) {
-			class = ("Test" ++ class.name.asString).asSymbol.asClass;
+		if(class.respondsTo(\findTestMethods).not && class.notNil) {
+			class = ("Test" ++ class.name.asString).asSymbol.asClass
 		};
 
-		if (class.isNil) {
+		if(class.isNil) {
 			wildcardTest[\error] = "Class % not found".format(class);
-			wildcardTest[\completed] = true;
+			wildcardTest[\completed] = true
 		} {
-			~verboseSetup.if({"class: %".format(class).postln});
-			class.tryPerform(\findTestMethods).do {|testMethod|
-				~verboseSetup.if({"method: %".format(testMethod.name).postln});
+			if(~verboseSetup) { "class: %".format(class).postln };
+			class.tryPerform(\findTestMethods).do { |testMethod|
+				if(~verboseSetup) { "method: %".format(testMethod.name).postln };
 				newTests.add(Dictionary.newFrom((
 					\suite: class.name.asString,
 					\test: testMethod.name,
 					\skip: wildcardTest[\skip],
 					\skipReason: wildcardTest[\skipReason],
-				)));
-			};
-		};
+				)))
+			}
+		}
 	};
 
 	tests.removeAll(toExpand);
 	tests.addAll(newTests);
-	~verboseSetup.if({"tests.size after expansion: %".format(tests.size).postln});
+	if(~verboseSetup) { "tests.size after expansion: %".format(tests.size).postln };
 
 	// Ensure excluded tests are not run
-	toExclude = tests.select({|t|
+	toExclude = tests.select({ |t|
 		if(t.isKindOf(Set)) { // sometimes we don't get a dictionary here... it shouldn't be the case, but ?
-			t[\skip].() ? false;
+			t[\skip].() ? false
 		} {
 			"detected a non-dictionary entry: %. Skipping...".format(t.asCompileString).warn;
-			true;
+			true
 		}
 	});
 
-	~verboseSetup.if({"Excluding: %".format(toExclude.join(", ")).postln});
-	tests = tests.reject({|t|
+	if(~verboseSetup) { "Excluding: %".format(toExclude.join(", ")).postln };
+	tests = tests.reject({ |t|
 		if(t.isKindOf(Set)) { // sometimes we don't get a dictionary here... it shouldn't be the case, but ?
-			(toExclude.detect({|excluded|
+			(toExclude.detect({ |excluded|
 				(t[\suite].asString == excluded[\suite].asString)
-				&& (t[\test].asString == excluded[\test].asString)
-				&& (t !== excluded)
+					&& (t[\test].asString == excluded[\test].asString)
+					&& (t !== excluded)
 			}).size > 0)
 		} {
 			"detected a non-dictionary entry: %. Rejecting...".format(t.asCompileString).warn;
-			true;
+			true
 		}
 	});
 	// test_record["tests"] = tests;
 	// ~writeResult.(tests, file);
-	~verboseSetup.if({"After exclude: ".post; tests.do(_.postln)});
+	if(~verboseSetup) { "After exclude: ".post; tests.do(_.postln) };
 
 	"\n\n\t*** Running the tests ***\n\n".post;
 
 	// Okay, time to run the tests
-	tests.do {|test|
+	tests.do { |test|
 		var class, testname, script, result,
-		oldFailures, oldPasses, newPasses, newFailures,
-		startTime, endTime,
-		success = false;
+			oldFailures, oldPasses, newPasses, newFailures,
+			startTime, endTime,
+			success = false;
 
 		if(currentSuite != test[\suite]) {
 			"\n\n\tSuite: %\n".postf(~makeBold.(test[\suite]));
-			currentSuite = test[\suite];
+			currentSuite = test[\suite]
 		};
 
 		"\n\tTest: %\n".postf(~makeBold.(test[\test]));
 
-		if (test[\completed].isNil) {
-			if (test[\skip] == true) {
+		if(test[\completed].isNil) {
+			if(test[\skip] == true) {
 				test[\completed] = true;
 				test[\attemptsRemaining] = nil;
-				~writeResult.(tests, resultFile);
+				~writeResult.(tests, resultFile)
 			} {
 				test[\completed] = false;
 				class = test[\suite].asSymbol.asClass;
 				testname = test[\test].asSymbol;
-				if (class.isNil) {
+				if(class.isNil) {
 					test[\error] = "Class % not found".format(class);
 					test[\completed] = true;
-					~writeResult.(tests, resultFile);
+					~writeResult.(tests, resultFile)
 				} {
 					class.findTestMethods();
 					class.setUpClass();
 
 					script = class.findTestMethods().detect({ |m| m.name == testname });
-					if (script.notNil) {
+					if(script.notNil) {
 						// This is a bad way to get the results, but there's no other for now.
 						// One this is working end-to-end, then UnitTest can be improved incrementally.
 						oldPasses = IdentitySet.newFrom(class.passes);
@@ -182,9 +182,9 @@ if(File.exists(~testProto).not) {
 						startTime = Date.localtime();
 
 						try {
-							result = class.new.runTestMethod(script);
+							result = class.new.runTestMethod(script)
 						} { |error|
-							class.new.failed(script, error.errorString, true, nil);
+							class.new.failed(script, error.errorString, true, nil)
 						};
 
 						endTime = Date.localtime();
@@ -196,13 +196,13 @@ if(File.exists(~testProto).not) {
 						newPasses = IdentitySet.newFrom(class.passes).difference(oldPasses);
 						newFailures = IdentitySet.newFrom(class.failures).difference(oldFailures);
 						test[\results] = List();
-						newPasses.do {|pass|
+						newPasses.do { |pass|
 							test[\results].add((
 								\test: ("" ++ pass.message)[0..1000],
 								\pass: true,
 							))
 						};
-						newFailures.do {|fail|
+						newFailures.do { |fail|
 							test[\results].add((
 								\pass: false,
 								\test: ("" ++ fail.message.split($\n)[0])[0..1000],
@@ -210,17 +210,17 @@ if(File.exists(~testProto).not) {
 							))
 						};
 
-						~writeResult.(tests, resultFile);
+						~writeResult.(tests, resultFile)
 					} {
 						test[\error] = "Test not found.";
 						test[\completed] = true;
-						~writeResult.(tests, resultFile);
+						~writeResult.(tests, resultFile)
 					};
 
-					class.tearDownClass();
+					class.tearDownClass()
 				}
 			}
-		};
+		}
 	}
 };
 
@@ -230,7 +230,7 @@ if(File.exists(~testProto).not) {
 	"\n\n******** DONE ********\n\n".postln;
 	// 0.exit;
 	if(~exitWhenDone) {
-		0.exit;
-	}; // exit only if the script was called with arguments
+		0.exit
+	} // exit only if the script was called with arguments
 }.forkIfNeeded(AppClock);
 )

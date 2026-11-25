@@ -10,11 +10,11 @@ ServerMeterView {
 		^super.new.init(aserver, parent, leftUp, numIns, numOuts)
 	}
 
-	*getWidth { arg numIns, numOuts, server;
-		^20+((numIns + numOuts + 2) * (meterWidth + gapWidth))
+	*getWidth { |numIns, numOuts, server|
+		^20 + ((numIns + numOuts + 2) * (meterWidth + gapWidth))
 	}
 
-	init { arg aserver, parent, leftUp, anumIns, anumOuts;
+	init { |aserver, parent, leftUp, anumIns, anumOuts|
 		var innerView, viewWidth, levelIndic, palette;
 
 		server = aserver;
@@ -22,25 +22,25 @@ ServerMeterView {
 		numIns = anumIns ?? { server.options.numInputBusChannels };
 		numOuts = anumOuts ?? { server.options.numOutputBusChannels };
 
-		viewWidth= this.class.getWidth(anumIns, anumOuts);
+		viewWidth = this.class.getWidth(anumIns, anumOuts);
 
-		leftUp = leftUp ? (0@0);
+		leftUp = leftUp ? (0 @ 0);
 
-		view = CompositeView(parent, Rect(leftUp.x, leftUp.y, viewWidth, height) );
-		view.onClose_( { this.stop });
-		innerView = CompositeView(view, Rect(10, 25, viewWidth, height) );
-		innerView.addFlowLayout(0@0, gapWidth@gapWidth);
+		view = CompositeView(parent, Rect(leftUp.x, leftUp.y, viewWidth, height));
+		view.onClose_({ this.stop });
+		innerView = CompositeView(view, Rect(10, 25, viewWidth, height));
+		innerView.addFlowLayout(0 @ 0, gapWidth @ gapWidth);
 
 		// dB scale
-		UserView(innerView, Rect(0, 0, meterWidth, 195)).drawFunc_( {
+		UserView(innerView, Rect(0, 0, meterWidth, 195)).drawFunc_({
 			try {
-				Pen.color = \QPalette.asClass.new.windowText;
+				Pen.color = \QPalette.asClass.new.windowText
 			} {
-				Pen.color = Color.white;
+				Pen.color = Color.white
 			};
 			Pen.font = Font.sansSerif(10).boldVariant;
 			Pen.stringCenteredIn("0", Rect(0, 0, meterWidth, 12));
-			Pen.stringCenteredIn("-80", Rect(0, 170, meterWidth, 12));
+			Pen.stringCenteredIn("-80", Rect(0, 170, meterWidth, 12))
 		});
 
 		if(numIns > 0) {
@@ -48,30 +48,30 @@ ServerMeterView {
 			StaticText(view, Rect(10, 5, 100, 15))
 			.font_(Font.sansSerif(10).boldVariant)
 			.string_("Inputs");
-			inmeters = Array.fill( numIns, { arg i;
+			inmeters = Array.fill(numIns, { |i|
 				var comp;
 				comp = CompositeView(innerView, Rect(0, 0, meterWidth, 195)).resize_(5);
 				StaticText(comp, Rect(0, 180, meterWidth, 15))
 				.font_(Font.sansSerif(9).boldVariant)
 				.string_(i.asString);
-				levelIndic = LevelIndicator( comp, Rect(0, 0, meterWidth, 180) ).warning_(0.9).critical_(1.0)
+				levelIndic = LevelIndicator(comp, Rect(0, 0, meterWidth, 180)).warning_(0.9).critical_(1.0)
 				.drawsPeak_(true)
 				.numTicks_(9)
-				.numMajorTicks_(3);
-			});
+				.numMajorTicks_(3)
+			})
 		};
 
 		if((numIns > 0) && (numOuts > 0)) {
 			// divider
-			UserView(innerView, Rect(0, 0, meterWidth, 180)).drawFunc_( {
+			UserView(innerView, Rect(0, 0, meterWidth, 180)).drawFunc_({
 				try {
-					Pen.color = \QPalette.asClass.new.windowText;
+					Pen.color = \QPalette.asClass.new.windowText
 				} {
-					Pen.color = Color.white;
+					Pen.color = Color.white
 				};
-				Pen.line(((meterWidth + gapWidth) * 0.5)@0, ((meterWidth + gapWidth) * 0.5)@180);
-				Pen.stroke;
-			});
+				Pen.line(((meterWidth + gapWidth) * 0.5) @ 0, ((meterWidth + gapWidth) * 0.5) @ 180);
+				Pen.stroke
+			})
 		};
 
 		// outs
@@ -79,22 +79,22 @@ ServerMeterView {
 			StaticText(view, Rect(10 + if(numIns > 0) { (numIns + 2) * (meterWidth + gapWidth) } { 0 }, 5, 100, 15))
 			.font_(Font.sansSerif(10).boldVariant)
 			.string_("Outputs");
-			outmeters = Array.fill( numOuts, { arg i;
+			outmeters = Array.fill(numOuts, { |i|
 				var comp;
 				comp = CompositeView(innerView, Rect(0, 0, meterWidth, 195));
 				StaticText(comp, Rect(0, 180, meterWidth, 15))
 				.font_(Font.sansSerif(9).boldVariant)
 				.string_(i.asString);
-				levelIndic = LevelIndicator( comp, Rect(0, 0, meterWidth, 180) ).warning_(0.9).critical_(1.0)
+				levelIndic = LevelIndicator(comp, Rect(0, 0, meterWidth, 180)).warning_(0.9).critical_(1.0)
 				.drawsPeak_(true)
 				.numTicks_(9)
-				.numMajorTicks_(3);
-			});
+				.numMajorTicks_(3)
+			})
 		};
 
 		this.setSynthFunc(inmeters, outmeters);
-		startResponderFunc = {this.startResponders};
-		this.start;
+		startResponderFunc = { this.startResponders };
+		this.start
 	}
 
 	setSynthFunc {
@@ -107,31 +107,31 @@ ServerMeterView {
 			numRMSSamps = server.sampleRate / updateFreq;
 			numRMSSampsRecip = 1 / numRMSSamps;
 
-			server.bind( {
+			server.bind({
 				var insynth, outsynth;
-				if(numIns > 0, {
+				if(numIns > 0) {
 					insynth = SynthDef(server.name ++ "InputLevels", {
 						var in = In.ar(NumOutputBuses.ir, numIns);
 						SendPeakRMS.kr(in, updateFreq, 3, "/" ++ server.name ++ "InLevels")
-					}).play(RootNode(server), nil, \addToHead);
-				});
-				if(numOuts > 0, {
+					}).play(RootNode(server), nil, \addToHead)
+				};
+				if(numOuts > 0) {
 					outsynth = SynthDef(server.name ++ "OutputLevels", {
 						var in = In.ar(0, numOuts);
 						SendPeakRMS.kr(in, updateFreq, 3, "/" ++ server.name ++ "OutLevels")
-					}).play(RootNode(server), nil, \addToTail);
-				});
+					}).play(RootNode(server), nil, \addToTail)
+				};
 
-				if (serverCleanupFuncs.isNil) {
-					serverCleanupFuncs = IdentityDictionary.new;
+				if(serverCleanupFuncs.isNil) {
+					serverCleanupFuncs = IdentityDictionary.new
 				};
 				serverCleanupFuncs.put(server, {
 					insynth.free;
 					outsynth.free;
-					ServerTree.remove(synthFunc, server);
-				});
-			});
-		};
+					ServerTree.remove(synthFunc, server)
+				})
+			})
+		}
 	}
 
 	startResponders {
@@ -141,68 +141,68 @@ ServerMeterView {
 		numRMSSamps = server.sampleRate / updateFreq;
 		numRMSSampsRecip = 1 / numRMSSamps;
 		if(numIns > 0) {
-			inresp = OSCFunc( {|msg|
+			inresp = OSCFunc({ |msg|
 				{
 					try {
 						var channelCount = min(msg.size - 3 / 2, numIns);
 
-						channelCount.do {|channel|
-							var baseIndex = 3 + (2*channel);
+						channelCount.do { |channel|
+							var baseIndex = 3 + (2 * channel);
 							var peakLevel = msg.at(baseIndex);
 							var rmsValue = msg.at(baseIndex + 1);
 							var meter = inmeters.at(channel);
-							if (meter.notNil) {
-								if (meter.isClosed.not) {
+							if(meter.notNil) {
+								if(meter.isClosed.not) {
 									meter.peakLevel = peakLevel.ampdb.linlin(dBLow, 0, 0, 1, \min);
-									meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1);
+									meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1)
 								}
 							}
 						}
 					} { |error|
 						if(error.isKindOf(PrimitiveFailedError).not) { error.throw }
-					};
-				}.defer;
-			}, ("/" ++ server.name ++ "InLevels").asSymbol, server.addr).fix;
+					}
+				}.defer
+			}, ("/" ++ server.name ++ "InLevels").asSymbol, server.addr).fix
 		};
 		if(numOuts > 0) {
-			outresp = OSCFunc( {|msg|
+			outresp = OSCFunc({ |msg|
 				{
 					try {
 						var channelCount = min(msg.size - 3 / 2, numOuts);
 
-						channelCount.do {|channel|
-							var baseIndex = 3 + (2*channel);
+						channelCount.do { |channel|
+							var baseIndex = 3 + (2 * channel);
 							var peakLevel = msg.at(baseIndex);
 							var rmsValue = msg.at(baseIndex + 1);
 							var meter = outmeters.at(channel);
-							if (meter.notNil) {
-								if (meter.isClosed.not) {
+							if(meter.notNil) {
+								if(meter.isClosed.not) {
 									meter.peakLevel = peakLevel.ampdb.linlin(dBLow, 0, 0, 1, \min);
-									meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1);
+									meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1)
 								}
 							}
 						}
 					} { |error|
 						if(error.isKindOf(PrimitiveFailedError).not) { error.throw }
-					};
-				}.defer;
-			}, ("/" ++ server.name ++ "OutLevels").asSymbol, server.addr).fix;
-		};
+					}
+				}.defer
+			}, ("/" ++ server.name ++ "OutLevels").asSymbol, server.addr).fix
+		}
 	}
 
 	start {
 		if(serverMeterViews.isNil) {
-			serverMeterViews = IdentityDictionary.new;
+			serverMeterViews = IdentityDictionary.new
 		};
 		if(serverMeterViews[server].isNil) {
-			serverMeterViews.put(server, List());
+			serverMeterViews.put(server, List())
 		};
 		if(serverMeterViews[server].size == 0) {
 			ServerTree.add(synthFunc, server);
-			if(server.serverRunning, synthFunc); // otherwise starts when booted
+			if(server.serverRunning, synthFunc) // otherwise starts when booted
 		};
 		serverMeterViews[server].add(this);
-		if (server.serverRunning) {
+		if(server.serverRunning) {
 			this.startResponders
 		} {
 			ServerBoot.add (startResponderFunc, server)
@@ -213,11 +213,11 @@ ServerMeterView {
 		serverMeterViews[server].remove(this);
 		if(serverMeterViews[server].size == 0 and: (serverCleanupFuncs.notNil)) {
 			serverCleanupFuncs[server].value;
-			serverCleanupFuncs.removeAt(server);
+			serverCleanupFuncs.removeAt(server)
 		};
 
-		(numIns > 0).if( { inresp.free; });
-		(numOuts > 0).if( { outresp.free; });
+		if(numIns > 0) { inresp.free };
+		if(numOuts > 0) { outresp.free };
 
 		ServerBoot.remove(startResponderFunc, server)
 	}
@@ -242,12 +242,12 @@ ServerMeter {
 		.bounds_(Rect(0, 0, ServerMeterView.getWidth(numIns, numOuts), ServerMeterView.height))
 		.moveToBottom(freqScopeHeight);
 
-		meterView = ServerMeterView(server, window, 0@0, numIns, numOuts);
-		meterView.view.keyDownAction_( { arg view, char, modifiers;
+		meterView = ServerMeterView(server, window, 0 @ 0, numIns, numOuts);
+		meterView.view.keyDownAction_({ |view, char, modifiers|
 			if(modifiers & 16515072 == 0) {
 				case
-					{char === 27.asAscii } { window.close };
-			};
+					{ char === 27.asAscii } { window.close }
+			}
 		});
 
 		window.front;

@@ -10,7 +10,7 @@ WindowsPlatform : Platform {
 
 	initPlatform {
 		super.initPlatform;
-		recordingsDir = this.myDocumentsDir +/+ "Recordings";
+		recordingsDir = this.myDocumentsDir +/+ "Recordings"
 	}
 
 	startup {
@@ -21,27 +21,27 @@ WindowsPlatform : Platform {
 		Score.program = Server.program;
 
 		// load user startup file
-		this.loadStartupFiles;
+		this.loadStartupFiles
 	}
 
 	pathSeparator { ^$\\ }
-    pathDelimiter { ^$; }
+	pathDelimiter { ^$; }
 
 	isPathSeparator { |char|
 		^#[$\\, $/].includes(char)
 	}
 	clearMetadata { |path|
-		path = path.splitext[0].do({ |chr, i| if(chr == $/) { path[i] = $\\.asAscii } });
+		path = path.splitext[0].do { |chr, i| if(chr == $/) { path[i] = $\\.asAscii } };
 		// suppress error message if no files match the given pattern
-		"del \"%.*meta\" 2>nul".format(path).systemCmd;
+		"del \"%.*meta\" 2>nul".format(path).systemCmd
 	}
 
 	killProcessByID { |pid, force = true, subprocesses = true|
-		"taskkill % % /pid %".format(force.if({"/f"}, {""}), subprocesses.if({"/t"}, {""}), pid).unixCmd;
+		"taskkill % % /pid %".format(if(force) { "/f" } { "" }, if(subprocesses) { "/t" } { "" }, pid).unixCmd
 	}
 
 	killAll { |cmdLineArgs, force = true|
-		"taskkill % /im %".format(force.if({"/f"}, {""}), cmdLineArgs).unixCmd;
+		"taskkill % /im %".format(if(force) { "/f" } { "" }, cmdLineArgs).unixCmd
 	}
 
 	defaultTempDir {
@@ -56,6 +56,6 @@ WindowsPlatform : Platform {
 	}
 
 	formatPathForCmdLine { |path|
-		^path.quote;
+		^path.quote
 	}
 }

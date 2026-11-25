@@ -12,11 +12,11 @@ TestSynthAudioMapping_Server : UnitTest {
 	setUp {
 		server = Server(this.class.name);
 		this.bootServer(server);
-		server.sync;
+		server.sync
 	}
 
 	tearDown {
-		server.quitSync.remove;
+		server.quitSync.remove
 	}
 
 	sendSynthDef { |n1, n2|
@@ -24,22 +24,22 @@ TestSynthAudioMapping_Server : UnitTest {
 		SynthDef(\testNode, {
 			var input = \input.ar(0 ! n1);
 			var trig = T2A.ar(\trig.tr(0));
-			SendReply.ar(trig, "/tr", input);
+			SendReply.ar(trig, "/tr", input)
 		}).add;
 
 		SynthDef(\valueNode, {
 			var input = \input.ar(-1 ! n2);
 			var out = \out.kr(0);
-			Out.ar(out, input);
-		}).add;
+			Out.ar(out, input)
+		}).add
 
 	}
 
 	waitForOSCReply { |callback, timeout = 4|
 		var cond = Condition.new;
-		var oscRecv = OSCFunc({ |msg| msg.postcs; "----".postln; callback.(msg.drop(3)); cond.unhang; }, "/tr").oneShot;
-		SystemClock.sched(timeout, { oscRecv.free; cond.unhang; });
-		cond.hang;
+		var oscRecv = OSCFunc({ |msg| msg.postcs; "----".postln; callback.(msg.drop(3)); cond.unhang }, "/tr").oneShot;
+		SystemClock.sched(timeout, { oscRecv.free; cond.unhang });
+		cond.hang
 	}
 
 
@@ -54,8 +54,8 @@ TestSynthAudioMapping_Server : UnitTest {
 		synth.set(\trig, 1);
 		this.waitForOSCReply { |args|
 			var val = args.first.round.asInteger;
-			this.assertEquals(val, value, "value of synth after mapping should match");
-		};
+			this.assertEquals(val, value, "value of synth after mapping should match")
+		}
 	}
 
 	test_map_reverse_order {
@@ -69,8 +69,8 @@ TestSynthAudioMapping_Server : UnitTest {
 		synth.set(\trig, 1);
 		this.waitForOSCReply { |args|
 			var val = args.first.round.asInteger;
-			this.assertEquals(val, value, "value of synth after mapping should match");
-		};
+			this.assertEquals(val, value, "value of synth after mapping should match")
+		}
 	}
 
 	test_map_with_too_many_channels {
@@ -86,8 +86,8 @@ TestSynthAudioMapping_Server : UnitTest {
 		synth.set(\trig, 1);
 		this.waitForOSCReply { |args|
 			var synthVal = args.round.asInteger;
-			this.assertEquals(synthVal, value.keep(synthNumChannels), "more channels than available should be still mapped");
-		};
+			this.assertEquals(synthVal, value.keep(synthNumChannels), "more channels than available should be still mapped")
+		}
 	}
 
 	test_map_with_too_few_channels {
@@ -103,8 +103,8 @@ TestSynthAudioMapping_Server : UnitTest {
 		synth.set(\trig, 1);
 		this.waitForOSCReply { |args|
 			var synthVal = args.round.asInteger;
-			this.assertEquals(synthVal.keep(ctlNumChannels), value, "fewer channels than available should be still mapped");
-		};
+			this.assertEquals(synthVal.keep(ctlNumChannels), value, "fewer channels than available should be still mapped")
+		}
 	}
 
 	test_map_with_control_rate {
@@ -122,8 +122,8 @@ TestSynthAudioMapping_Server : UnitTest {
 		synth.set(\trig, 1);
 		this.waitForOSCReply { |args|
 			var synthVal = args.round.asInteger;
-			this.assertEquals(synthVal.keep(ctlNumChannels), value, "fewer channels than available should be still mapped");
-		};
+			this.assertEquals(synthVal.keep(ctlNumChannels), value, "fewer channels than available should be still mapped")
+		}
 	}
 
 }

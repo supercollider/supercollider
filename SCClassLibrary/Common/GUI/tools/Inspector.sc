@@ -1,21 +1,21 @@
 Inspector {
 	classvar <allInspectors;
 
-	var <object, <window, vpos=0;
+	var <object, <window, vpos = 0;
 
-	*new { arg object;
+	*new { |object|
 		var inspector;
 		inspector = this.inspectorFor(object) ?? {
-			super.newCopyArgs(object).init;
+			super.newCopyArgs(object).init
 		};
 		inspector.window.front;
 		^inspector
 	}
-	*initClass { allInspectors = []; }
-	*inspectorFor { arg object;
-		^allInspectors.detect({ arg item;
-				item.object === object
-		});
+	*initClass { allInspectors = [] }
+	*inspectorFor { |object|
+		^allInspectors.detect({ |item|
+			item.object === object
+		})
 	}
 	init {
 		allInspectors = allInspectors.add(this);
@@ -23,11 +23,11 @@ Inspector {
 		vpos = 4;
 		this.makeHead;
 		this.makeBody;
-		window.refresh;
+		window.refresh
 	}
 
 	didClose {
-		allInspectors.remove(this);
+		allInspectors.remove(this)
 	}
 	lineHeight { ^20 }
 	buttonHeight { ^this.lineHeight - 4 }
@@ -36,7 +36,7 @@ Inspector {
 		bounds = Rect(80, 80, 376, this.lineHeight * (this.numLines + 1) + 16);
 
 		window = Window.new(object.class.name.asString ++ " inspector", bounds);
-		window.onClose = Message(this, \didClose);
+		window.onClose = Message(this, \didClose)
 	}
 	//numLines{^0}
 	//makeHead{}
@@ -49,7 +49,7 @@ ObjectInspector : Inspector {
 	var stringView, slotInspectors;
 
 	numLines {
-		^min(30, object.slotSize); // don't display too many lines
+		^min(30, object.slotSize) // don't display too many lines
 	}
 
 	makeHead {
@@ -58,35 +58,35 @@ ObjectInspector : Inspector {
 		view.states = [[object.class.name]];
 		view.action = { object.class.inspect };
 
-		if (object.mutable, {
+		if(object.mutable) {
 			view = Button.new(window, Rect(140, vpos, 50, this.buttonHeight));
 			view.states = [["update"]];
-			view.action = Message(this, \update);
-		});
+			view.action = Message(this, \update)
+		};
 
 		view = DragSource.new(window, Rect(194, vpos, 174, this.buttonHeight));
 		view.object = object;
 		view.resize = 2;
 		stringView = view;
 
-		vpos = vpos + this.lineHeight;
+		vpos = vpos + this.lineHeight
 	}
 
 	makeBody {
-		this.numLines.do({ arg i;
+		this.numLines.do { |i|
 			slotInspectors = slotInspectors.add(
 				SlotInspector(this, i, vpos)
 			);
-			vpos = vpos + this.lineHeight;
-		});
+			vpos = vpos + this.lineHeight
+		}
 		// ... link to rest, or scroll view
 	}
 
 	update {
 		stringView.object = object;
-		slotInspectors.do({ arg slotinsp;
-			slotinsp.update;
-		});
+		slotInspectors.do { |slotinsp|
+			slotinsp.update
+		}
 	}
 }
 
@@ -106,18 +106,18 @@ ClassInspector : ObjectInspector {
 		view.states = [["edit"]];
 		view.action = Message(object, \openCodeFile);
 
-		if (object.superclass.notNil, {
+		if(object.superclass.notNil) {
 			view = Button.new(window, Rect(194, vpos, 70, this.buttonHeight));
 			view.states = [["superclass"]];
-			view.action = { object.superclass.inspect };
-		});
+			view.action = { object.superclass.inspect }
+		};
 
 		view = DragSource.new(window, Rect(268, vpos, 96, this.buttonHeight));
 		view.object = object;
 		view.resize = 2;
 		stringView = view;
 
-		vpos = vpos + this.lineHeight;
+		vpos = vpos + this.lineHeight
 	}
 
 }
@@ -132,18 +132,18 @@ FunctionDefInspector : ObjectInspector {
 		view.states = [[object.class.name]];
 		view.action = { object.class.inspect };
 
-		if (object.code.notNil, {
+		if(object.code.notNil) {
 			view = Button.new(window, Rect(194, vpos, 70, this.buttonHeight));
 			view.states = [["dump code"]];
-			view.action = Message(object, \dumpByteCodes);
-		});
+			view.action = Message(object, \dumpByteCodes)
+		};
 
 		view = DragSource.new(window, Rect(268, vpos, 96, this.buttonHeight));
 		view.object = object;
 		view.resize = 2;
 		stringView = view;
 
-		vpos = vpos + this.lineHeight;
+		vpos = vpos + this.lineHeight
 	}
 }
 
@@ -161,28 +161,28 @@ MethodInspector : ObjectInspector {
 		view.states = [["edit"]];
 		view.action = Message(object, \openCodeFile);
 
-		if (object.code.notNil, {
+		if(object.code.notNil) {
 			view = Button.new(window, Rect(194, vpos, 70, this.buttonHeight));
 			view.states = [["dump code"]];
-			view.action = Message(object, \dumpByteCodes);
-		});
+			view.action = Message(object, \dumpByteCodes)
+		};
 
 		view = DragSource.new(window, Rect(268, vpos, 96, this.buttonHeight));
 		view.object = object;
 		view.resize = 2;
 		stringView = view;
 
-		vpos = vpos + this.lineHeight;
+		vpos = vpos + this.lineHeight
 	}
 }
 
 SlotInspector {
 	var <object, <>index, <key, <slotKeyView, <slotValueView, <inspectButton;
 
-	*new { arg inspector, index, vpos;
+	*new { |inspector, index, vpos|
 		^super.newCopyArgs(inspector.object, index).init(inspector, vpos)
 	}
-	init { arg inspector, vpos;
+	init { |inspector, vpos|
 		var w, class, hasGetter, hasSetter, vbounds, value;
 
 		w = inspector.window;
@@ -191,34 +191,34 @@ SlotInspector {
 
 		slotKeyView = StaticText.new(w, Rect(8, vpos, 110, this.buttonHeight));
 		slotKeyView.align = \right;
-//		slotKeyView.font = Font.default ?? { Font.new("Helvetica", 12) };
+		//		slotKeyView.font = Font.default ?? { Font.new("Helvetica", 12) };
 
-		if (key.isKindOf(Symbol), {
+		if(key.isKindOf(Symbol)) {
 			hasGetter = class.findRespondingMethodFor(key).notNil;
-			hasSetter = class.findRespondingMethodFor(key.asSetter).notNil && object.mutable;
-		},{
+			hasSetter = class.findRespondingMethodFor(key.asSetter).notNil && object.mutable
+		} {
 			hasGetter = true;
-			hasSetter = object.mutable;
-		});
+			hasSetter = object.mutable
+		};
 		//slotKeyView.background = Color.grey(if(hasGetter,0.95,0.85));
 
 		vbounds = Rect(122, vpos, 218, this.buttonHeight);
-		if (hasSetter, {
-			if (hasGetter, {
-				slotValueView = DragBoth.new(w, vbounds);
-			},{
-				slotValueView =  DragSink.new(w, vbounds);
-			});
-			slotValueView.action = Message(this, \setSlot);
-		},{
-			if (hasGetter, {
-				slotValueView = DragSource.new(w, vbounds);
-			},{
-				slotValueView = StaticText.new(w, vbounds);
-			});
-		});
+		if(hasSetter) {
+			if(hasGetter) {
+				slotValueView = DragBoth.new(w, vbounds)
+			} {
+				slotValueView = DragSink.new(w, vbounds)
+			};
+			slotValueView.action = Message(this, \setSlot)
+		} {
+			if(hasGetter) {
+				slotValueView = DragSource.new(w, vbounds)
+			} {
+				slotValueView = StaticText.new(w, vbounds)
+			}
+		};
 		slotValueView.resize = 2;
-//		slotValueView.font = Dont.default ?? { Font.new("Helvetica", 12) };
+		//		slotValueView.font = Dont.default ?? { Font.new("Helvetica", 12) };
 		//slotValueView.background = Color.grey(if(hasSetter,0.95,0.85));
 
 		inspectButton = Button.new(w, Rect(344, vpos, this.buttonHeight, this.buttonHeight));
@@ -226,24 +226,24 @@ SlotInspector {
 		inspectButton.action = Message(this, \inspectSlot);
 		inspectButton.resize = 3;
 		//inspectButton.visible = true; //object.slotAt(index).canInspect;
-		this.update;
+		this.update
 	}
 	update {
 		key = object.slotKey(index);
 		slotKeyView.string = key;
-		slotValueView.object = object.slotAt(index);
+		slotValueView.object = object.slotAt(index)
 		//inspectButton.visible = true; //object.slotAt(index).canInspect;
 	}
 	inspectSlot {
 		object.slotAt(index).inspect
 	}
 	setSlot {
-		if (key.isKindOf(Symbol), {
-			object.perform(key.asSetter, View.currentDrag);
-		},{
-			object.put(key, View.currentDrag);
-		});
-		this.update;
+		if(key.isKindOf(Symbol)) {
+			object.perform(key.asSetter, View.currentDrag)
+		} {
+			object.put(key, View.currentDrag)
+		};
+		this.update
 	}
 	lineHeight { ^20 }
 	buttonHeight { ^this.lineHeight - 4 }
@@ -251,14 +251,14 @@ SlotInspector {
 
 FrameInspector : Inspector {
 
-	numLines{^0}
+	numLines{ ^0 }
 	makeHead {
 		var view;
 		view = Button.new(window, Rect(8, vpos, 128, this.buttonHeight));
 		view.states = [[object.class.name]];
 		view.action = { object.class.inspect };
 
-		vpos = vpos + this.lineHeight;
+		vpos = vpos + this.lineHeight
 	}
 	makeBody {}
 

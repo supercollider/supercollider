@@ -4,36 +4,36 @@ TextViewBase : View {
 	var <object, <>setBoth = true;
 	var <align;
 
-	object_  { arg obj;
-		if( setBoth ) { this.string = obj.asString };
+	object_  { |obj|
+		if(setBoth) { this.string = obj.asString };
 		object = obj
 	}
 
-	align_ { arg aSymbol;
+	align_ { |aSymbol|
 		align = aSymbol;
-		this.setProperty( \alignment, QAlignment(aSymbol) );
+		this.setProperty(\alignment, QAlignment(aSymbol))
 	}
 }
 
 ItemViewBase : View {
 	var <items;
 
-	items_ { arg stringArray;
+	items_ { |stringArray|
 		items = stringArray;
-		this.setProperty( \items, stringArray);
+		this.setProperty(\items, stringArray)
 	}
 
 	item {
-		^items.at( this.value );
+		^items.at(this.value)
 	}
 
-	valueAction_ { arg val;
+	valueAction_ { |val|
 		this.value_(val);
-		action.value(this);
+		action.value(this)
 	}
 
 	clear {
-		this.invokeMethod(\clear);
+		this.invokeMethod(\clear)
 	}
 }
 
@@ -41,81 +41,81 @@ AbstractScroll : View {
 	var <hasHorizontalScroller = true, <hasVerticalScroller = true;
 	var <autohidesScrollers = true;
 
-	autohidesScrollers_ { arg aBool;
-		if( aBool ) {
-			if( hasHorizontalScroller ) {
-				this.setProperty( \horizontalScrollBarPolicy, 0 );
+	autohidesScrollers_ { |aBool|
+		if(aBool) {
+			if(hasHorizontalScroller) {
+				this.setProperty(\horizontalScrollBarPolicy, 0)
 			};
-			if( hasVerticalScroller ) {
-				this.setProperty( \verticalScrollBarPolicy, 0 );
-			};
+			if(hasVerticalScroller) {
+				this.setProperty(\verticalScrollBarPolicy, 0)
+			}
 		} {
-			if( hasHorizontalScroller ) {
-				this.setProperty( \horizontalScrollBarPolicy, 2 )
+			if(hasHorizontalScroller) {
+				this.setProperty(\horizontalScrollBarPolicy, 2)
 			};
-			if( hasVerticalScroller ) {
-				this.setProperty( \verticalScrollBarPolicy, 2 );
-			};
+			if(hasVerticalScroller) {
+				this.setProperty(\verticalScrollBarPolicy, 2)
+			}
 		};
-		autohidesScrollers = aBool;
+		autohidesScrollers = aBool
 	}
 
-	hasHorizontalScroller_ { arg aBool;
+	hasHorizontalScroller_ { |aBool|
 		var policy;
-		if( aBool ) {
-			if( autohidesScrollers ) { policy = 0 } { policy = 2 };
-			this.setProperty( \horizontalScrollBarPolicy, policy );
+		if(aBool) {
+			if(autohidesScrollers) { policy = 0 } { policy = 2 };
+			this.setProperty(\horizontalScrollBarPolicy, policy)
 		} {
-			this.setProperty( \horizontalScrollBarPolicy, 1 );
+			this.setProperty(\horizontalScrollBarPolicy, 1)
 		};
-		hasHorizontalScroller = aBool;
+		hasHorizontalScroller = aBool
 	}
 
-	hasVerticalScroller_ { arg aBool;
+	hasVerticalScroller_ { |aBool|
 		var policy;
-		if( aBool ) {
-			if( autohidesScrollers ) { policy = 0 } { policy = 2 };
-			this.setProperty( \verticalScrollBarPolicy, policy );
+		if(aBool) {
+			if(autohidesScrollers) { policy = 0 } { policy = 2 };
+			this.setProperty(\verticalScrollBarPolicy, policy)
 		} {
-			this.setProperty( \verticalScrollBarPolicy, 1 );
+			this.setProperty(\verticalScrollBarPolicy, 1)
 		};
-		hasVerticalScroller = aBool;
+		hasVerticalScroller = aBool
 	}
 }
 
 AbstractStepValue : View {
 	var <step = 0.1, <shift_scale = 100.0, <ctrl_scale = 10.0, <alt_scale = 0.1;
 
-	step_ { arg aFloat;
+	step_ { |aFloat|
 		step = aFloat;
-		this.setProperty( \step, aFloat );
+		this.setProperty(\step, aFloat)
 	}
 
-	shift_scale_ { arg aFloat;
+	shift_scale_ { |aFloat|
 		shift_scale = aFloat;
-		this.setProperty( \shiftScale, aFloat );
+		this.setProperty(\shiftScale, aFloat)
 	}
 
-	ctrl_scale_ { arg aFloat;
+	ctrl_scale_ { |aFloat|
 		ctrl_scale = aFloat;
-		this.setProperty( \ctrlScale, aFloat );
+		this.setProperty(\ctrlScale, aFloat)
 	}
 
-	alt_scale_ { arg aFloat;
+	alt_scale_ { |aFloat|
 		alt_scale = aFloat;
-		this.setProperty( \altScale, aFloat );
+		this.setProperty(\altScale, aFloat)
 	}
 
 	getScale { |modifiers|
 		^case
-		{ modifiers.isShift } { shift_scale }
-		{ modifiers.isCtrl } { ctrl_scale }
-		{ modifiers.isAlt } { alt_scale }
-		{ 1 };
+			{ modifiers.isShift } { shift_scale }
+			{ modifiers.isCtrl } { ctrl_scale }
+			{ modifiers.isAlt } { alt_scale }
+			{ 1 }
 	}
 
-	increment { arg factor = 1.0; this.invokeMethod( \increment, factor.asFloat ); }
-	decrement { arg factor = 1.0; this.invokeMethod( \decrement, factor.asFloat ); }
+	increment { |factor = 1.0| this.invokeMethod(\increment, factor.asFloat) }
+	decrement { |factor = 1.0| this.invokeMethod(\decrement, factor.asFloat) }
 }
 
 /////////////////////// CONTAINERS ////////////////////////////////
@@ -131,65 +131,65 @@ VLayoutView : View {
 ScrollCanvas : QObject {
 	*qtClass { ^'QcScrollWidget' }
 
-	background { ^this.getProperty(\background); }
-	background_ { arg color; this.setProperty(\background, color); }
+	background { ^this.getProperty(\background) }
+	background_ { |color| this.setProperty(\background, color) }
 }
 
 ScrollView : AbstractScroll {
 	var <canvas;
-	var <hasBorder=true;
-	var actionConnected=false;
+	var <hasBorder = true;
+	var actionConnected = false;
 
-	*new { arg parent, bounds;
-		^super.new( parent, bounds ).initScrollView;
+	*new { |parent, bounds|
+		^super.new(parent, bounds).initScrollView
 	}
 
 	*qtClass { ^'QcScrollArea' }
 
-	children { arg class = View;
-		^canvas.children( class );
+	children { |class = (View)|
+		^canvas.children(class)
 	}
 
 	background { ^canvas.background }
-	background_ { arg color; canvas.background = color }
+	background_ { |color| canvas.background = color }
 
-	hasBorder_ { arg aBool;
+	hasBorder_ { |aBool|
 		hasBorder = aBool;
-		this.setProperty( \hasBorder, aBool );
+		this.setProperty(\hasBorder, aBool)
 	}
 
 	innerBounds {
-		^this.getProperty( \innerBounds );
+		^this.getProperty(\innerBounds)
 	}
 
 	visibleOrigin {
-		^this.getProperty( \visibleOrigin );
+		^this.getProperty(\visibleOrigin)
 	}
 
-	visibleOrigin_ { arg point;
-		this.setProperty( \visibleOrigin, point );
-		this.doAction;
+	visibleOrigin_ { |point|
+		this.setProperty(\visibleOrigin, point);
+		this.doAction
 	}
 
-	canvas_ { arg view;
-		if(view.notNil and: {view.parent == this}) {
-			Error("Can't set canvas to a view, whose parent is this ScrollView.").throw; // when that's the case, the interpreter crashes
+	canvas_ { |view|
+		if(view.notNil and: { view.parent == this }) {
+			Error("Can't set canvas to a view, whose parent is this ScrollView.").throw // when that's the case, the interpreter crashes
 		} {
 			canvas = view;
-			this.invokeMethod( \setWidget, view, true );
+			this.invokeMethod(\setWidget, view, true)
 		}
 	}
 
-	action_ { arg handler;
+	action_ { |handler|
 		action = handler;
-		if(actionConnected.not) { this.connectMethod( 'scrolled()', \doAction ) };
-		actionConnected = true;
+		if(actionConnected.not) { this.connectMethod('scrolled()', \doAction) };
+		actionConnected = true
 	}
 
 	initScrollView {
 		// NOTE: The canvas widget may not be a View, so that asking its
 		// children for parent will skip it and hit this view instead.
-		this.canvas = ScrollCanvas();
+		this.canvas = ScrollCanvas()
 	}
 }
 
@@ -198,33 +198,33 @@ ScrollView : AbstractScroll {
 StaticText : TextViewBase {
 	*qtClass { ^'QLabel' }
 
-	*new { arg parent, bounds;
-		var obj = super.new( parent, bounds );
+	*new { |parent, bounds|
+		var obj = super.new(parent, bounds);
 		obj.setProperty(\wordWrap, true);
-		^obj;
+		^obj
 	}
 
 	background {
 		var p = this.palette;
-		^if(p.hasColor(\window)) {p.window} {nil}
+		^if(p.hasColor(\window)) { p.window } { nil }
 	}
 
-	background_ { arg color;
+	background_ { |color|
 		var p = this.palette;
 		if(p.hasColor(\window).not)
-		{ this.setProperty( \autoFillBackground, true) };
-		this.palette = p.window_(color);
+			{ this.setProperty(\autoFillBackground, true) };
+		this.palette = p.window_(color)
 	}
 
 	string { ^this.getProperty(\text) }
-	string_ { arg text; this.setProperty( \text, text.asString ) }
+	string_ { |text| this.setProperty(\text, text.asString) }
 
 	stringColor {
-		^this.palette.windowText;
+		^this.palette.windowText
 	}
 
-	stringColor_ { arg color;
-		this.palette = this.palette.windowText_(color);
+	stringColor_ { |color|
+		this.palette = this.palette.windowText_(color)
 	}
 }
 
@@ -232,46 +232,46 @@ TextField : TextViewBase {
 	*qtClass { ^'QcTextField' }
 
 	string {
-		^this.getProperty( \text );
+		^this.getProperty(\text)
 	}
 
-	string_ { arg text;
-		this.setProperty( \text, text );
+	string_ { |text|
+		this.setProperty(\text, text)
 	}
 
 	stringColor {
-		^this.palette.baseText;
+		^this.palette.baseText
 	}
 
-	stringColor_ { arg color;
-		this.palette = this.palette.baseText_(color);
+	stringColor_ { |color|
+		this.palette = this.palette.baseText_(color)
 	}
 
 	background {
-		^this.palette.base;
+		^this.palette.base
 	}
 
-	background_ { arg color;
-		this.palette = this.palette.base_(color);
+	background_ { |color|
+		this.palette = this.palette.base_(color)
 	}
 
 	value {
-		^this.string;
+		^this.string
 	}
 
-	value_ { arg val;
-		this.string_( val.asString );
+	value_ { |val|
+		this.string_(val.asString)
 	}
 
-	valueAction_ { arg val;
-		this.string_( val.asString );
-		this.doAction;
+	valueAction_ { |val|
+		this.string_(val.asString);
+		this.doAction
 	}
 
-	defaultGetDrag { ^this.string; }
-	defaultCanReceiveDrag { ^true; }
+	defaultGetDrag { ^this.string }
+	defaultCanReceiveDrag { ^true }
 	defaultReceiveDrag {
-		this.valueAction = View.currentDrag;
+		this.valueAction = View.currentDrag
 	}
 }
 
@@ -281,29 +281,29 @@ Button : View {
 	*qtClass { ^'QcButton' }
 
 	value {
-		^this.getProperty( \value );
+		^this.getProperty(\value)
 	}
 
-	value_ { arg argVal;
-		this.setProperty( \value, argVal );
+	value_ { |argVal|
+		this.setProperty(\value, argVal)
 	}
 
-	valueAction_ { arg anInt;
-		this.value_( anInt );
-		action.value(this);
+	valueAction_ { |anInt|
+		this.value_(anInt);
+		action.value(this)
 	}
 
-	states_ { arg stateArray;
+	states_ { |stateArray|
 		states = stateArray;
-		super.setProperty( \states, stateArray );
+		super.setProperty(\states, stateArray)
 	}
 
-	string_ { arg string;
+	string_ { |string|
 		if(states.isNil) {
 			this.states = [[string]]
 		} {
 			states[this.value][0] = string;
-			this.states = states;
+			this.states = states
 		}
 	}
 
@@ -311,33 +311,33 @@ Button : View {
 		^states !? { states[this.value][0] }
 	}
 
-	action_ { arg func;
-		this.manageMethodConnection( action, func, 'action(int)', \prDoAction );
-		action = func;
+	action_ { |func|
+		this.manageMethodConnection(action, func, 'action(int)', \prDoAction);
+		action = func
 	}
 
-	doAction { arg modifiers;
-		action.value(this, modifiers);
+	doAction { |modifiers|
+		action.value(this, modifiers)
 	}
 
-	defaultGetDrag { ^this.value; }
-	defaultCanReceiveDrag { ^true; }
+	defaultGetDrag { ^this.value }
+	defaultCanReceiveDrag { ^true }
 	defaultReceiveDrag {
-		if( View.currentDrag.isNumber )
-		{ this.valueAction = View.currentDrag; }
-		{ this.action = View.currentDrag; };
+		if(View.currentDrag.isNumber)
+			{ this.valueAction = View.currentDrag }
+			{ this.action = View.currentDrag }
 	}
 
-	menu {				^this.getProperty(\menu); }
-	menu_{ |menu|		^this.setProperty(\menu, menu); }
+	menu { ^this.getProperty(\menu) }
+	menu_{ |menu| ^this.setProperty(\menu, menu) }
 
-	icon_{ |image|		^this.setProperty(\icon, image); }
+	icon_{ |image| ^this.setProperty(\icon, image) }
 
-	iconSize_{	|size|	^this.setProperty(\iconSize, size.asSize); }
-	iconSize { 			^this.getProperty(\iconSize); }
+	iconSize_{ |size| ^this.setProperty(\iconSize, size.asSize) }
+	iconSize { ^this.getProperty(\iconSize) }
 
-	prDoAction { arg mods;
-		this.doAction(QKeyModifiers.toCocoa(mods));
+	prDoAction { |mods|
+		this.doAction(QKeyModifiers.toCocoa(mods))
 	}
 }
 
@@ -345,8 +345,8 @@ CheckBox : View {
 
 	*qtClass { ^'QcCheckBox' }
 
-	*new{ |parent,bounds,text|
-		^super.new(parent,bounds).init(text)
+	*new{ |parent, bounds, text|
+		^super.new(parent, bounds).init(text)
 	}
 
 	init{ |text|
@@ -358,26 +358,26 @@ CheckBox : View {
 	}
 
 	value_{ |val|
-		this.setProperty(\value,val)
+		this.setProperty(\value, val)
 	}
 
 	valueAction_ { |val|
 		this.value_(val);
-		this.doAction;
+		this.doAction
 	}
 
 	string_{ |string|
-		this.setProperty(\text,string)
+		this.setProperty(\text, string)
 	}
 
 	string{
 		^this.getProperty(\text)
 	}
 
-	defaultGetDrag { ^this.value; }
-	defaultCanReceiveDrag { ^((View.currentDrag == true) || (View.currentDrag == false)); }
+	defaultGetDrag { ^this.value }
+	defaultCanReceiveDrag { ^((View.currentDrag == true) || (View.currentDrag == false)) }
 	defaultReceiveDrag {
-		this.valueAction = View.currentDrag;
+		this.valueAction = View.currentDrag
 	}
 }
 
@@ -385,34 +385,34 @@ PopUpMenu : ItemViewBase {
 
 	*qtClass { ^'QcPopUpMenu' }
 
-	allowsReselection { ^this.getProperty( \reactivationEnabled ) }
+	allowsReselection { ^this.getProperty(\reactivationEnabled) }
 
-	allowsReselection_ { arg flag; ^this.setProperty( \reactivationEnabled, flag ) }
+	allowsReselection_ { |flag| ^this.setProperty(\reactivationEnabled, flag) }
 
 	value {
-		var v = this.getProperty( \currentIndex );
-		if( v.isNil or: { v < 0 }) { ^nil } { ^v };
+		var v = this.getProperty(\currentIndex);
+		if(v.isNil or: { v < 0 }) { ^nil } { ^v }
 	}
 
-	value_ { arg val;
-		this.setProperty( \currentIndex, val ? -1 );
+	value_ { |val|
+		this.setProperty(\currentIndex, val ? -1)
 	}
 
-	background { ^this.palette.button; }
+	background { ^this.palette.button }
 
-	background_ { arg color; this.palette = this.palette.button_(color); }
+	background_ { |color| this.palette = this.palette.button_(color) }
 
 	stringColor {
-		^this.palette.buttonText;
+		^this.palette.buttonText
 	}
 
-	stringColor_ { arg color;
-		this.palette = this.palette.buttonText_(color);
+	stringColor_ { |color|
+		this.palette = this.palette.buttonText_(color)
 	}
 
-	defaultGetDrag { ^this.value; }
-	defaultCanReceiveDrag { ^View.currentDrag.isNumber; }
+	defaultGetDrag { ^this.value }
+	defaultCanReceiveDrag { ^View.currentDrag.isNumber }
 	defaultReceiveDrag {
-		this.valueAction = View.currentDrag;
+		this.valueAction = View.currentDrag
 	}
 }

@@ -7,12 +7,12 @@ TestMixedBundle_Server : UnitTest {
 		server = Server(this.class.name);
 		server.bootSync;
 		bundle = MixedBundle.new;
-		this.makeDefs(100);
+		this.makeDefs(100)
 	}
 
 	tearDown {
 		server.quitSync;
-		server.remove;
+		server.remove
 	}
 
 	// helper method, not a test
@@ -34,7 +34,7 @@ TestMixedBundle_Server : UnitTest {
 		cond.hang;
 		timeout.stop;
 
-		this.assertEquals(evaluated, true, "Sending the bundle should call functions");
+		this.assertEquals(evaluated, true, "Sending the bundle should call functions")
 	}
 
 	test_onSend {
@@ -48,7 +48,7 @@ TestMixedBundle_Server : UnitTest {
 		cond.hang;
 		timeout.stop;
 
-		this.assertEquals(evaluated, true, "Sending the bundle should call sendFunctions");
+		this.assertEquals(evaluated, true, "Sending the bundle should call sendFunctions")
 	}
 
 	test_send_synth_bundle {
@@ -64,7 +64,7 @@ TestMixedBundle_Server : UnitTest {
 		cond.hang;
 		timeout.stop;
 
-		this.assertEquals(synth.isPlaying, true, "Synth should be playing after sending bundle");
+		this.assertEquals(synth.isPlaying, true, "Synth should be playing after sending bundle")
 	}
 
 }

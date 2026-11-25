@@ -31,20 +31,20 @@ ReadableNodeIDAllocator {
 		permFreed = IdentitySet.new;
 		maxPermID = idOffset + lowestTempID - 1;
 		tempCount = -1;
-		permCount = 3;
+		permCount = 3
 	}
 
 	alloc {
 		tempCount = tempCount + 1;
 		// wraps after handing out (numIDs - lowestTempID) ids
-		^(lowestTempID + tempCount).wrap(lowestTempID, numIDs) + idOffset;
+		^(lowestTempID + tempCount).wrap(lowestTempID, numIDs) + idOffset
 	}
 
 	isPerm { |num|
 		// test whether num is a valid permanent nodeID for this client/allocator's range,
 		// which includes idOffset + 0 (for clientID 0, RootNode)
 		// and idOffset + 1, the defaultGroup for this allocator/client
-		^num.inclusivelyBetween(idOffset, maxPermID);
+		^num.inclusivelyBetween(idOffset, maxPermID)
 	}
 
 	allocPerm {
@@ -57,7 +57,7 @@ ReadableNodeIDAllocator {
 
 		permCount = (permCount + 1).min(lowestTempID);
 		perm = permCount;
-		if (perm >= lowestTempID) {
+		if(perm >= lowestTempID) {
 			warn("%: cannot create more than % permanent ids."
 				"\nPlease free some permanent ids first,"
 				"or set lowestTempID higher."
@@ -70,17 +70,17 @@ ReadableNodeIDAllocator {
 
 	freePerm { |id|
 		var topFreed;
-		if (this.isPerm(id).not) { ^this };
+		if(this.isPerm(id).not) { ^this };
 
 		permFreed.add(id);
 		while {
 			permFreed.notEmpty and: {
 				topFreed = permFreed.maxItem;
-				topFreed == permCount;
+				topFreed == permCount
 			}
 		} {
 			permFreed.remove(topFreed);
-			permCount = permCount - 1;
+			permCount = permCount - 1
 		}
 	}
 }

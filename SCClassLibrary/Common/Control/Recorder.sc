@@ -36,7 +36,7 @@ Recorder {
 				this.prRecord(bus, node, duration);
 				this.changedServer(\recording, true);
 				"Recording channels % ... \npath: \"%\"\n"
-				.postf(bus + (0..this.numChannels - 1), recordBuf.path);
+				.postf(bus + (0..this.numChannels - 1), recordBuf.path)
 			} {
 				if(paused) {
 					this.resumeRecording
@@ -69,11 +69,11 @@ Recorder {
 		if(recordNode.isPlaying) {
 			recordNode.run(false);
 			this.changedServer(\pausedRecording);
-			"... paused recording.\npath: \"%\"\n".postf(recordBuf.path);
+			"... paused recording.\npath: \"%\"\n".postf(recordBuf.path)
 		} {
 			"Not Recording".warn
 		};
-		paused = true;
+		paused = true
 	}
 
 	resumeRecording {
@@ -81,18 +81,18 @@ Recorder {
 			if(paused) {
 				recordNode.run(true);
 				this.changedServer(\recording, true);
-				"Resumed recording ...\npath: \"%\"\n".postf(recordBuf.path);
+				"Resumed recording ...\npath: \"%\"\n".postf(recordBuf.path)
 			}
 		} {
 			"Not Recording".warn
 		};
-		paused = false;
+		paused = false
 	}
 
 	stopRecording {
 		if(synthDef.notNil) {
 			this.prStopRecord;
-			this.changedServer(\recording, false);
+			this.changedServer(\recording, false)
 		} {
 			"Not Recording".warn
 		}
@@ -102,7 +102,7 @@ Recorder {
 	recSampleFormat { ^recSampleFormat ? server.recSampleFormat }
 	recBufSize { ^recBufSize ?? { server.recBufSize } ?? { server.sampleRate.nextPowerOfTwo } }
 
-	prepareForRecord { | path, numChannels |
+	prepareForRecord { |path, numChannels|
 		var dir;
 
 		numChannels = numChannels ? server.recChannels;
@@ -114,7 +114,7 @@ Recorder {
 		recordBuf = Buffer.alloc(server,
 			this.recBufSize,
 			numChannels,
-			{| buf |
+			{ |buf|
 				buf.writeMsg(path, this.recHeaderFormat, this.recSampleFormat, 0, 0, true)
 			}
 		);
@@ -127,12 +127,12 @@ Recorder {
 			var tick = Impulse.kr(1);
 			var timer = PulseCount.kr(tick) - 1;
 			var doneAction = if(duration <= 0, 0, 2);
-			Line.kr(0, 0, duration, doneAction:doneAction);
+			Line.kr(0, 0, duration, doneAction: doneAction);
 			SendReply.kr(tick, '/recordingDuration', timer, id);
 			DiskOut.ar(bufnum, In.ar(in, numChannels))
 		}).send(server);
 
-		"Preparing recording on '%'\n".postf(server.name);
+		"Preparing recording on '%'\n".postf(server.name)
 	}
 
 	/* private implementation */
@@ -145,12 +145,12 @@ Recorder {
 			responder = OSCFunc({ |msg|
 				if(msg[2] == id) {
 					duration = msg[3];
-					this.changedServer(\recordingDuration, duration);
+					this.changedServer(\recordingDuration, duration)
 				}
-			}, '/recordingDuration', server.addr);
+			}, '/recordingDuration', server.addr)
 		} {
-			responder.enable;
-		};
+			responder.enable
+		}
 	}
 
 	prStopRecord {
@@ -167,17 +167,17 @@ Recorder {
 		responder.disable;
 		paused = false;
 		duration = 0;
-		this.changedServer(\recordingDuration, 0);
+		this.changedServer(\recordingDuration, 0)
 	}
 
 	makePath {
 		var timestamp;
 		var dir = thisProcess.platform.recordingsDir;
 		timestamp = Date.localtime.stamp;
-		^dir +/+ filePrefix ++ timestamp ++ "." ++ this.recHeaderFormat;
+		^dir +/+ filePrefix ++ timestamp ++ "." ++ this.recHeaderFormat
 	}
 
-	changedServer { | what ... moreArgs |
+	changedServer { |what ... moreArgs|
 		if(notifyServer) { server.changed(what, *moreArgs) }
 	}
 

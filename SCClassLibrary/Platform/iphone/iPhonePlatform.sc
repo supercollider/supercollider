@@ -1,6 +1,6 @@
 IPhonePlatform : UnixPlatform {
 	initPlatform {
-		super.initPlatform;
+		super.initPlatform
 	}
 
 	name { ^\iphone }
@@ -23,16 +23,16 @@ IPhonePlatform : UnixPlatform {
 		Server.internal.options.blockSize = 256;
 		Server.default = Server.internal;
 		//Server.local.makeWindow;
-		this.loadStartupFiles;
+		this.loadStartupFiles
 	}
 	shutdown {
 		//HIDDeviceService.releaseDeviceList;
 	}
 
-		// only osx uses Cocoa guis
+	// only osx uses Cocoa guis
 	defaultGUIScheme { ^\iphone }
 
-	open {|aPath|
+	open { |aPath|
 		("open " ++ aPath.escapeChar($ )).systemCmd
 	}
 }

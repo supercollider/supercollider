@@ -1,7 +1,7 @@
 FileDialog : QObject {
 	*qtClass { ^'QcFileDialog' }
 
-	*new { arg okFunc, cancelFunc, fileMode = 1, acceptMode = 0, stripResult = false, path;
+	*new { |okFunc, cancelFunc, fileMode = 1, acceptMode = 0, stripResult = false, path|
 		/**
 		fileMode:
 			QFileDialog::AnyFile		0	The name of a file, whether it exists or not.
@@ -19,34 +19,33 @@ FileDialog : QObject {
 
 		var me = super.new([fileMode, acceptMode, path]);
 
-		if( okFunc.notNil ) {
-			me.connectFunction( 'accepted(QVariantList)', {
-				|me, result|
-				if( stripResult )
-				{ okFunc.performList(\value, result) }
-				{ okFunc.value(result) }
-			});
+		if(okFunc.notNil) {
+			me.connectFunction('accepted(QVariantList)', { |me, result|
+				if(stripResult)
+					{ okFunc.performList(\value, result) }
+					{ okFunc.value(result) }
+			})
 		};
 
-		if( cancelFunc.notNil ) {
-			me.connectFunction( 'rejected()', { cancelFunc.value() } );
+		if(cancelFunc.notNil) {
+			me.connectFunction('rejected()', { cancelFunc.value() })
 		};
 
-		me.invokeMethod('show', synchronous:false);
+		me.invokeMethod('show', synchronous: false);
 
-		^me;
+		^me
 	}
 }
 
 Dialog {
 
-	*openPanel { arg okFunc, cancelFunc, multipleSelection = false, path;
+	*openPanel { |okFunc, cancelFunc, multipleSelection = false, path|
 		var fileMode;
-		if( multipleSelection ) { fileMode = 3 } { fileMode = 1 };
-		^FileDialog.new( okFunc, cancelFunc, fileMode, 0, multipleSelection.not, path );
+		if(multipleSelection) { fileMode = 3 } { fileMode = 1 };
+		^FileDialog.new(okFunc, cancelFunc, fileMode, 0, multipleSelection.not, path)
 	}
 
-	*savePanel { arg okFunc, cancelFunc, path;
-		^FileDialog.new( okFunc, cancelFunc, 0, 1, true, path );
+	*savePanel { |okFunc, cancelFunc, path|
+		^FileDialog.new(okFunc, cancelFunc, 0, 1, true, path)
 	}
 }

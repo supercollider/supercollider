@@ -25,7 +25,7 @@ TestParserBrutal : AbstractLPCBrutalTest {
 				" var",
 				" arg",
 				// " while", // technically a keyword, but it doesn't get
-				             // treated any differently in practice
+				// treated any differently in practice
 				" true",
 				" false",
 				" nil",
@@ -122,29 +122,29 @@ TestParserBrutal : AbstractLPCBrutalTest {
 				" abc",
 				" def",
 			]
-		];
+		]
 	}
 
 	getStringLengthsPerAlphabet {
 		^stringLengthsPerAlphabet ? Dictionary[
 			// don't test on empty string - this is covered by compiler tests
-			\full ->  [1,2,3,4],
+			\full -> [1, 2, 3, 4],
 			\small -> [5],
-			\mini ->  [6,7]
-		];
+			\mini -> [6, 7]
+		]
 	}
 
 	// full alphabet tests
-	test_full_basic           { this.runTestsTogglingTCO("",      "",  "basic",           \full) }
-	test_full_block           { this.runTestsTogglingTCO("{",     "}", "block",           \full) }
+	test_full_basic           { this.runTestsTogglingTCO("", "", "basic", \full) }
+	test_full_block           { this.runTestsTogglingTCO("{", "}", "block", \full) }
 
 	// small alphabet tests
-	test_small_basic          { this.runTestsTogglingTCO("",      "",  "basic",           \small) }
-	test_small_block          { this.runTestsTogglingTCO("{",     "}", "block",           \small) }
+	test_small_basic          { this.runTestsTogglingTCO("", "", "basic", \small) }
+	test_small_block          { this.runTestsTogglingTCO("{", "}", "block", \small) }
 
 	// mini alphabet tests
-	test_mini_varPrefix       { this.runTestsTogglingTCO("var ",  "",  "varPrefix",       \mini) }
-	test_mini_blockVarPrefix  { this.runTestsTogglingTCO("{var ", "}", "blockVarPrefix",  \mini) }
-	test_mini_blockArgPrefix  { this.runTestsTogglingTCO("{arg ", "}", "blockArgPrefix",  \mini) }
-	test_mini_blockPipePrefix { this.runTestsTogglingTCO("{|",    "}", "blockPipePrefix", \mini) }
+	test_mini_varPrefix       { this.runTestsTogglingTCO("var ", "", "varPrefix", \mini) }
+	test_mini_blockVarPrefix  { this.runTestsTogglingTCO("{var ", "}", "blockVarPrefix", \mini) }
+	test_mini_blockArgPrefix  { this.runTestsTogglingTCO("{arg ", "}", "blockArgPrefix", \mini) }
+	test_mini_blockPipePrefix { this.runTestsTogglingTCO("{|", "}", "blockPipePrefix", \mini) }
 }

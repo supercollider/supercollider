@@ -1,24 +1,24 @@
 //# VERSION 3.16
 TestAbstractFunction : UnitTest {
-    test_function_list_remove_before_add {
-        var fl = FunctionList.new;
+	test_function_list_remove_before_add {
+		var fl = FunctionList.new;
 
-        this.assertEquals( fl.removeFunc(nil),
-            nil,
-            "Remove before add should return nil");
-    }
+		this.assertEquals(fl.removeFunc(nil),
+			nil,
+			"Remove before add should return nil")
+	}
 
-    test_function_list_add_before_remove {
-        var fl = FunctionList.new;
+	test_function_list_add_before_remove {
+		var fl = FunctionList.new;
 
-        var f = {};
+		var f = {};
 
-        fl.addFunc(f);
+		fl.addFunc(f);
 
-        this.assertEquals( fl.removeFunc(f),
-            nil,
-            "Removing function should return nil if only one");
-    }
+		this.assertEquals(fl.removeFunc(f),
+			nil,
+			"Removing function should return nil if only one")
+	}
 
 	test_rest_binop_return {
 		var args = [[1, Rest(1)], [Rest(1), 1], [Rest(1), Rest(1)], [1, Rest()], [Rest(), Rest()]];
@@ -34,12 +34,12 @@ TestAbstractFunction : UnitTest {
 				var res = func.valueArray(pair);
 				var ok = res.isKindOf(Rest);
 				if(ok.not) {
-					this.failed(thisMethod, "Calling % on % should return a Rest instance".format(func, pair));
+					this.failed(thisMethod, "Calling % on % should return a Rest instance".format(func, pair))
 				};
 				ok
 			};
 
-			this.assert(passed, "Rest should combine to Rest with objects and other Rest instances under binary ops");
+			this.assert(passed, "Rest should combine to Rest with objects and other Rest instances under binary ops")
 		}
 
 	}
@@ -60,12 +60,12 @@ TestAbstractFunction : UnitTest {
 				var res2 = func.valueArray(pair.collect(_.value));
 				var ok = res.value == res2;
 				if(ok.not) {
-					this.failed(thisMethod, "Calling % on % should have the same result as its values wold have".format(func, pair));
+					this.failed(thisMethod, "Calling % on % should have the same result as its values wold have".format(func, pair))
 				};
 				ok
 			};
 
-			this.assert(passed, "Rest should combine under binary ops to the same values as the values would");
+			this.assert(passed, "Rest should combine under binary ops to the same values as the values would")
 		}
 
 	}
@@ -77,14 +77,14 @@ TestAbstractFunction : UnitTest {
 		all = all ++ all.collect(_.reverse);
 		['<', '>', '<=', '>='].do { |op|
 			all.do { |args|
-				this.assert(func.(op, *args), "% should return a boolean for %".format(args, op));
+				this.assert(func.(op, *args), "% should return a boolean for %".format(args, op))
 			}
 		}
 	}
 
 	test_rest_event_delta {
 
-		this.assertEquals(Rest(),  Rest(1), "Rest default value should be 1");
+		this.assertEquals(Rest(), Rest(1), "Rest default value should be 1");
 
 		this.assertEquals(
 			(degree: Rest(0), parent: Event.default.parent).use { ~freq.value },
@@ -121,7 +121,7 @@ TestAbstractFunction : UnitTest {
 
 		this.assert((delta: nil).delta.isNil, "event delta matches delta value when dur is nil");
 
-		this.assertEquals((delta: Rest(1), stretch: 2).delta, 1,  "stretch applies to dur, not delta");
+		this.assertEquals((delta: Rest(1), stretch: 2).delta, 1, "stretch applies to dur, not delta");
 
 
 
@@ -145,7 +145,7 @@ TestAbstractFunction : UnitTest {
 
 		try { (dur: Rest("boo!")).delta } { |err|
 			this.assert(err.isKindOf(PrimitiveFailedError), "using a Rest with a string for dur should fail")
-		};
+		}
 	}
 
 	test_rest_event_isRest {
@@ -179,8 +179,8 @@ TestAbstractFunction : UnitTest {
 
 			this.assert(Pevent(b).asStream.nextN(8).every(_.isRest), "a rest in key '%' should be a rest".format(key));
 			this.assertEquals(f.(a).asStream.nextN(8), f.(c).asStream.nextN(8),
-				"rest values remain intact for key '%' after binary op".format(key));
-		};
+				"rest values remain intact for key '%' after binary op".format(key))
+		}
 
 	}
 
@@ -199,6 +199,6 @@ TestAbstractFunction : UnitTest {
 				assn.value,
 				"'1 |==| %' should return a composed operator".format(assn.key.asCompileString)
 			)
-		};
+		}
 	}
 }

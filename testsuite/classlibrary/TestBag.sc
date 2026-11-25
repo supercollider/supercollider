@@ -10,7 +10,7 @@ TestBag : UnitTest {
 			this.assertEquals(a, saveA,
 				"Set operation '%' on a Bag should not mutate the original receiver"
 				.format(op)
-			);
+			)
 		}
 	}
 }

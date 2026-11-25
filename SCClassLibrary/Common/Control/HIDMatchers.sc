@@ -16,51 +16,51 @@ HIDProto {
 	var <shouldMatch;
 
 	*new {
-		^super.new.init;
+		^super.new.init
 	}
 
 	*newType { |uName, pName| // from HIDFunc.usage
-		^super.new.init.addTypeMatch(uName, pName);
+		^super.new.init.addTypeMatch(uName, pName)
 	}
 
 	*newProduct { |pName, vName| // from HIDFunc.usageID, .device, .element
-		^super.new.init.addProductMatch(pName, vName);
+		^super.new.init.addProductMatch(pName, vName)
 	}
 
 	*newFromDict { |dict| // from any HIDFunc matcher
-		^super.new.init.addDictionaryMatch( dict );
+		^super.new.init.addDictionaryMatch(dict)
 	}
 
 	init {
-		shouldMatch = Set[];
+		shouldMatch = Set[]
 	}
 
 	addTypeMatch { |uName, pName|
-		if ( uName.notNil ) {
-			shouldMatch.add( \usageName );
-			usageName = uName;
+		if(uName.notNil) {
+			shouldMatch.add(\usageName);
+			usageName = uName
 		};
-		if ( pName.notNil ) {
-			shouldMatch.add( \pageName );
-			pageName = pName;
+		if(pName.notNil) {
+			shouldMatch.add(\pageName);
+			pageName = pName
 		}
 	}
 
 	addProductMatch { |pName, vName|
-		if ( pName.notNil ) {
-			shouldMatch.add( \productName );
-			productName = pName;
+		if(pName.notNil) {
+			shouldMatch.add(\productName);
+			productName = pName
 		};
-		if ( vName.notNil ) {
-			shouldMatch.add( \vendorName );
-			vendorName = vName;
+		if(vName.notNil) {
+			shouldMatch.add(\vendorName);
+			vendorName = vName
 		}
 	}
 
 	addDictionaryMatch { |dict|
 		dict.keysValuesArrayDo { |key, val|
-			shouldMatch.add( key );
-			this.performList( (key ++ "_").asSymbol, [ val ] );
+			shouldMatch.add(key);
+			this.performList((key ++ "_").asSymbol, [val])
 		}
 	}
 
@@ -69,26 +69,26 @@ HIDProto {
 		var keysToMatch, keyMatches;
 		var newShouldMatch;
 		shouldMatch.copy.do { |key|
-			if ( key != \id ) {
-				keysToMatch = this.perform( key );
-				if ( keysToMatch.isNil ) {
-					shouldMatch = shouldMatch.reject { |it| it == key };
+			if(key != \id) {
+				keysToMatch = this.perform(key);
+				if(keysToMatch.isNil) {
+					shouldMatch = shouldMatch.reject { |it| it == key }
 				} {
-					if ( keysToMatch.isKindOf( Array ) ) {
+					if(keysToMatch.isKindOf(Array)) {
 						keyMatches = false;
 						keysToMatch.do { |it|
-							keyMatches = keyMatches or: ( it == hid.info.perform( key ) );
+							keyMatches = keyMatches or: (it == hid.info.perform(key))
 						};
-						matches = matches and: keyMatches;
+						matches = matches and: keyMatches
 					} { // not an array
-						matches = matches and: ( keysToMatch == hid.info.perform( key ) );
+						matches = matches and: (keysToMatch == hid.info.perform(key))
 					}
 				}
 			} {
-				matches = matches and: ( this.id.matchItem( hid.id ) );
-			};
+				matches = matches and: (this.id.matchItem(hid.id))
+			}
 		};
-		^matches;
+		^matches
 	}
 
 }
@@ -105,119 +105,118 @@ HIDElementProto {
 	var <shouldMatch;
 
 	*new {
-		^super.new.init;
+		^super.new.init
 	}
 
 	*newType { |uName, pName| // from HIDFunc.usage
-		^super.new.init.addTypeMatch(uName, pName);
+		^super.new.init.addTypeMatch(uName, pName)
 	}
 
 	*newTypeID { |uID, pID| // from HIDFunc.usage
-		^super.new.init.addTypeIDMatch(uID, pID);
+		^super.new.init.addTypeIDMatch(uID, pID)
 	}
 
 	*newFromDict { |dict| // from any HIDFunc matcher
-		^super.new.init.addDictionaryMatch( dict );
+		^super.new.init.addDictionaryMatch(dict)
 	}
 
 	init {
-		shouldMatch = Set[];
+		shouldMatch = Set[]
 	}
 
 	id_ { |argid|
 		id = argid;
-		shouldMatch.add( \id );
+		shouldMatch.add(\id)
 	}
 
 	ioType_ { |argio|
 		ioType = argio;
-		shouldMatch.add( \ioType );
+		shouldMatch.add(\ioType)
 	}
 
 	type_ { |argio|
 		type = argio;
-		shouldMatch.add( \type );
+		shouldMatch.add(\type)
 	}
 
 	usagePage_ { |argup|
 		usagePage = argup;
-		shouldMatch.add( \usagePage );
+		shouldMatch.add(\usagePage)
 	}
 
 	usage_ { |argu|
 		usage = argu;
-		shouldMatch.add( \usage );
+		shouldMatch.add(\usage)
 	}
 
 	usageMin_ { |argup|
 		usageMin = argup;
-		shouldMatch.add( \usageMin );
+		shouldMatch.add(\usageMin)
 	}
 
 	usageMax_ { |argup|
 		usageMax = argup;
-		shouldMatch.add( \usageMax );
+		shouldMatch.add(\usageMax)
 	}
 
 	pageName_ { |argup|
 		pageName = argup;
-		shouldMatch.add( \pageName );
+		shouldMatch.add(\pageName)
 	}
 
 	usageName_ { |argup|
 		usageName = argup;
-		shouldMatch.add( \usageName );
+		shouldMatch.add(\usageName)
 	}
 
 	iotypeName_ { |argup|
 		iotypeName = argup;
-		shouldMatch.add( \iotypeName );
+		shouldMatch.add(\iotypeName)
 	}
 
 	typeSpec_ { |argup|
 		typeSpec = argup;
-		shouldMatch.add( \typeSpec );
+		shouldMatch.add(\typeSpec)
 	}
 
 	addTypeMatch { |uName, pName|
-		if ( uName.notNil ) {
-			this.usageName = uName;
+		if(uName.notNil) {
+			this.usageName = uName
 		};
-		if ( pName.notNil ) {
-			this.pageName = pName;
+		if(pName.notNil) {
+			this.pageName = pName
 		}
 	}
 
 	addTypeIDMatch { |uID, pID|
-		if ( uID.notNil ) {
-			this.usage = uID;
+		if(uID.notNil) {
+			this.usage = uID
 		};
-		if ( pID.notNil ) {
-			this.usagePage = pID;
+		if(pID.notNil) {
+			this.usagePage = pID
 		}
 	}
 
 	addDictionaryMatch { |dict|
 		dict.keysValuesArrayDo { |key, val|
-			this.performList( (key ++ "_").asSymbol, [ val ] );
+			this.performList((key ++ "_").asSymbol, [val])
 		}
 	}
 
 	matches { |ele|
 		var matches = true; // check all until a match is false
 		shouldMatch.copy.do { |key|
-			if ( this.perform( key ).isNil ) {
-				shouldMatch = shouldMatch.reject { |it| it == key };
+			if(this.perform(key).isNil) {
+				shouldMatch = shouldMatch.reject { |it| it == key }
 			} {
-				switch( key,
-					\usageMin, { matches = matches and: ( ele.usage >= this.usageMin ) },
-					\usageMax, { matches = matches and: ( ele.usage <= this.usageMax ) },
+				switch(key)
+					{ \usageMin } { matches = matches and: (ele.usage >= this.usageMin) }
+					{ \usageMax } { matches = matches and: (ele.usage <= this.usageMax) }
 					{ // default
-						matches = matches and: ( this.perform( key ).matchItem( ele.perform( key ) ) )
+						matches = matches and: (this.perform(key).matchItem(ele.perform(key)))
 					}
-				);
-			};
+			}
 		};
-		^matches;
+		^matches
 	}
 }

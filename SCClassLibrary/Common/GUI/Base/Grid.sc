@@ -1,67 +1,67 @@
 DrawGrid {
 
 	var <bounds, <>x, <>y;
-	var <>opacity=0.7, <>smoothing=false, <>linePattern;
+	var <>opacity = 0.7, <>smoothing = false, <>linePattern;
 	var uview; // private, only persists while -preview window is open
 
 	*new { |bounds, horzGrid, vertGrid|
 		^super.new.init(bounds, horzGrid, vertGrid)
 	}
-	init { arg bounds, h, v;
+	init { |bounds, h, v|
 		x = DrawGridX(h, bounds.asRect);
 		y = DrawGridY(v, bounds.asRect);
 		this.bounds = bounds;
 		this.font = Font(Font.defaultSansFace, 9);
 		this.fontColor = Color.grey(0.3);
-		this.gridColors = [Color.grey(0.7), Color.grey(0.7)];
+		this.gridColors = [Color.grey(0.7), Color.grey(0.7)]
 	}
-	bounds_ { arg b;
+	bounds_ { |b|
 		bounds = b.asRect;
 		x.bounds = bounds;
-		y.bounds = bounds;
+		y.bounds = bounds
 	}
 	draw {
 		Pen.push;
 		Pen.alpha = opacity;
 		Pen.smoothing = smoothing;
-		if(linePattern.notNil) {Pen.lineDash_(linePattern)};
-		x.commands.do({ arg cmd; Pen.perform(cmd) });
-		y.commands.do({ arg cmd; Pen.perform(cmd) });
-		Pen.pop;
+		if(linePattern.notNil) { Pen.lineDash_(linePattern) };
+		x.commands.do { |cmd| Pen.perform(cmd) };
+		y.commands.do { |cmd| Pen.perform(cmd) };
+		Pen.pop
 	}
-	font_ { arg f;
+	font_ { |f|
 		x.font = f;
-		y.font = f;
+		y.font = f
 	}
-	fontColor_ { arg c;
+	fontColor_ { |c|
 		x.fontColor = c;
-		y.fontColor = c;
+		y.fontColor = c
 	}
-	gridColors_ { arg colors;
+	gridColors_ { |colors|
 		colors = colors.as(Array);
 		x.gridColor = colors.wrapAt(0);
-		y.gridColor = colors.wrapAt(1);
+		y.gridColor = colors.wrapAt(1)
 	}
-	horzGrid_ { arg g;
-		x.grid = g;
+	horzGrid_ { |g|
+		x.grid = g
 	}
-	vertGrid_ { arg g;
-		y.grid = g;
+	vertGrid_ { |g|
+		y.grid = g
 	}
-	tickSpacing_ { arg x, y;
+	tickSpacing_ { |x, y|
 		this.x.tickSpacing = x;
-		this.y.tickSpacing = y;
+		this.y.tickSpacing = y
 	}
-	numTicks_ { arg x, y;
+	numTicks_ { |x, y|
 		this.x.numTicks = x;
-		this.y.numTicks = y;
+		this.y.numTicks = y
 	}
 	copy {
-		^DrawGrid(bounds,x.grid,y.grid).x_(x.copy).y_(y.copy).opacity_(opacity).smoothing_(smoothing).linePattern_(linePattern)
+		^DrawGrid(bounds, x.grid, y.grid).x_(x.copy).y_(y.copy).opacity_(opacity).smoothing_(smoothing).linePattern_(linePattern)
 	}
 	clearCache {
 		x.clearCache;
-		y.clearCache;
+		y.clearCache
 	}
 
 	// make a Window with a UserView that draws this DrawGrid
@@ -80,12 +80,12 @@ DrawGrid {
 		insetH = insetH + gridPad;
 		insetV = insetV + gridPad;
 		fcolor = Color.grey(0.3);               // match this.fontColor
-		font = Font( Font.defaultSansFace, 9 ); // match this.font
+		font = Font(Font.defaultSansFace, 9); // match this.font
 
 		// bounds of the grid lines, without its labels
 		this.bounds = this.bounds ?? { Rect(0, 0, 500, 400) };
 		// translate the grid to make room for tick labels
-		this.bounds = this.bounds.moveTo(insetH-gridPad, gridPad);
+		this.bounds = this.bounds.moveTo(insetH - gridPad, gridPad);
 
 		winBounds = this.bounds + Size(insetH, insetV);
 		win = Window("DrawGrid test",
@@ -97,17 +97,17 @@ DrawGrid {
 			win, winBounds.size.asRect
 		)
 		.drawFunc_({ |uv|
-			this.draw;
+			this.draw
 		})
 		.onResize_({ |uv|
 			this.bounds = uv.bounds
 			.insetBy(insetH.half, insetV.half)
-			.moveTo(insetH - gridPad, gridPad);
+			.moveTo(insetH - gridPad, gridPad)
 		})
 		.resize_(5)
 		.background_(Color.white)
 		.onClose_({ uview = nil })
-		;
+			;
 
 		^uview
 	}
@@ -116,9 +116,9 @@ DrawGrid {
 
 DrawGridX {
 
-	var <grid,<>bounds;
+	var <grid, <>bounds;
 	var <>range;
-	var <font,<fontColor,<gridColor;
+	var <font, <fontColor, <gridColor;
 	var <labelOffset, <labelAlign, <labelAnchor, <constrainLabelExtents;
 	var commands, cacheKey, lastLabelSize;
 	var <tickSpacing = 64;
@@ -129,7 +129,7 @@ DrawGridX {
 	var <drawBoundingRect = true, <drawBaseLine = false, <drawBoundingLines = false;
 
 
-	*new { arg grid, bounds;
+	*new { |grid, bounds|
 		^super.newCopyArgs(grid.asGrid, bounds).init
 	}
 
@@ -142,47 +142,47 @@ DrawGridX {
 		font = Font(Font.defaultSansFace, 9);
 		fontColor = Color.grey(0.3);
 		gridColor = Color.grey(0.7);
-		lastLabelSize = "000".bounds(font).asSize;
+		lastLabelSize = "000".bounds(font).asSize
 	}
-	grid_ { arg g;
+	grid_ { |g|
 		grid = g.asGrid;
 		range = [grid.spec.minval, grid.spec.maxval];
-		this.clearCache;
+		this.clearCache
 	}
-	setZoom { arg min,max;
-		range = [min, max];
+	setZoom { |min, max|
+		range = [min, max]
 	}
 	tickSpacing_ { |px|
 		px !? {
 			tickSpacing = px;
-			this.clearCache;
-		};
+			this.clearCache
+		}
 	}
 	numTicks_ { |num|
 		numTicks = num;
-		this.clearCache;
+		this.clearCache
 	}
 	font_ { |afont|
 		font = afont;
-		this.clearCache;
+		this.clearCache
 	}
 	fontColor_ { |color|
 		fontColor = color;
-		this.clearCache;
+		this.clearCache
 	}
 	gridColor_ { |color|
 		gridColor = color;
-		this.clearCache;
+		this.clearCache
 	}
 	labelOffset_ { |pnt|
 		try {
-			labelOffset = pnt.asPoint;
+			labelOffset = pnt.asPoint
 		} {
 			Error("[DrawGridX/Y:labelOffset_] "
 				"pt argument needs to be able to respond to the .asPoint method, "
 				"e.g. a Point, Size, Rect, or SimpleNumber.").throw
 		};
-		this.clearCache;
+		this.clearCache
 	}
 	labelAlign_ { |align|
 		var alignSym = align.asSymbol;
@@ -194,14 +194,24 @@ DrawGridX {
 			warn("[DrawGridX/Y:labelAlign_] "
 				"Invalid align argument, options are: %".format(alignList))
 		};
-		this.clearCache;
+		this.clearCache
 	}
 	labelAnchor_ { |anchor|
 		var anchorSym = anchor.asSymbol;
 		var anchorList = #[ // these need to match keys in Rect:-anchorTo
-			\center, \top, \bottom, \left, \right,
-			\topLeft, \topRight, \bottomLeft, \bottomRight,
-			\leftTop, \rightTop, \leftBottom, \rightBottom,
+			\center,
+			\top,
+			\bottom,
+			\left,
+			\right,
+			\topLeft,
+			\topRight,
+			\bottomLeft,
+			\bottomRight,
+			\leftTop,
+			\rightTop,
+			\leftBottom,
+			\rightBottom,
 		];
 
 		if(anchorList.includes(anchorSym)) {
@@ -210,58 +220,58 @@ DrawGridX {
 			warn("[DrawGridX/Y:labelAnchor_] "
 				"Invalid anchor argument, options are: %".format(anchorList))
 		};
-		this.clearCache;
+		this.clearCache
 	}
 	labelAppendString_ { |str|
 		this.grid.appendLabel_(str);
 		labelAppendString = str;
 		labelsShowUnits = false;
-		this.clearCache;
+		this.clearCache
 	}
 	labelsShowUnits_ { |bool|
 		var specUnits;
-		if (bool) {
+		if(bool) {
 			specUnits = grid.spec.units;
 			if(specUnits.isEmpty.not and: {
 				labelsShowUnits or: { this.labelAppendString.isNil }
 			}) {
 				this.labelAppendString = " " ++ specUnits;
-				labelsShowUnits = true;
-			};
+				labelsShowUnits = true
+			}
 		} {
 			if(labelsShowUnits) {
 				this.labelAppendString = nil;
-				labelsShowUnits = false;
+				labelsShowUnits = false
 			}
-		};
+		}
 	}
 	constrainLabelExtents_ { |bool|
 		constrainLabelExtents = bool;
-		this.clearCache;
+		this.clearCache
 	}
 	drawBaseLine_ { |bool|
 		drawBaseLine = bool;
 		if(bool) {
 			drawBoundingLines = false;
-			drawBoundingRect = false;
+			drawBoundingRect = false
 		};
-		this.clearCache;
+		this.clearCache
 	}
 	drawBoundingLines_ { |bool|
 		drawBoundingLines = bool;
 		if(bool) {
 			drawBaseLine = false;
-			drawBoundingRect = false;
+			drawBoundingRect = false
 		};
-		this.clearCache;
+		this.clearCache
 	}
 	drawBoundingRect_ { |bool|
 		drawBoundingRect = bool;
 		if(bool) {
 			drawBoundingLines = false;
-			drawBaseLine = false;
+			drawBaseLine = false
 		};
-		this.clearCache;
+		this.clearCache
 	}
 
 	commands {
@@ -272,23 +282,23 @@ DrawGridX {
 		var bottomBound = bounds.bottom;
 		var constrainedPad = 1;
 
-		if(cacheKey != [range,bounds],{ commands = nil });
+		if(cacheKey != [range, bounds]) { commands = nil };
 
 		^commands ?? {
-			cacheKey = [range,bounds];
+			cacheKey = [range, bounds];
 			commands = [];
 			p = grid.getParams(range[0], range[1], leftBound, rightBound, numTicks, tickSpacing);
 
 			// Lines
-			p['lines'].do { arg val, i;
+			p['lines'].do { |val, i|
 				val = val.asArray; // value, [color]
 				valNorm = grid.spec.unmap(val[0]);
 				x = valNorm.linlin(0, 1, leftBound, rightBound);
 				lineColor = val[1];
 
-				commands = this.prAddLineCmds(commands, x, lineColor);
+				commands = this.prAddLineCmds(commands, x, lineColor)
 			};
-			commands = commands.add( ['stroke'] );
+			commands = commands.add(['stroke']);
 
 			// Bounding lines
 			// This check ensures it obeys Plot:-gridOnX (e.g. toggling grids on/off)
@@ -299,64 +309,64 @@ DrawGridX {
 						['strokeColor_', lineColor ? gridColor],
 						['addRect', bounds],
 						['stroke']
-					]);
+					])
 				} {
 					if(drawBoundingLines) {
 						commands = this.prAddLineCmds(commands, leftBound, lineColor);
 						commands = this.prAddLineCmds(commands, rightBound, lineColor);
-						commands = commands.add(['stroke']);
+						commands = commands.add(['stroke'])
 					} {
 						if(drawBaseLine) {
 							commands = this.prAddLineCmds(commands, leftBound, lineColor);
-							commands = commands.add(['stroke']);
+							commands = commands.add(['stroke'])
 						}
 					}
-				};
+				}
 			};
 
 			// Tick labels
 			if(showLabels and: { labelsHiddenBySize.not and: { p['labels'].notNil } }) {
-				commands = commands.add(['font_',font ] );
-				commands = commands.add(['color_',fontColor ] );
+				commands = commands.add(['font_', font]);
+				commands = commands.add(['color_', fontColor]);
 
 				labelSz = this.labelSize(p['labels']);
 
-				p['labels'].do { arg val, i; // [value, label, (color, font, dropIfNeeded)]
+				p['labels'].do { |val, i| // [value, label, (color, font, dropIfNeeded)]
 					if(val[4].asBoolean.not) { // dropIfNeeded = false
 						if(val[2].notNil) {
-							commands = commands.add( ['color_',val[2] ] );
+							commands = commands.add(['color_', val[2]])
 						};
 						if(val[3].notNil) {
-							commands = commands.add( ['font_',val[3] ] );
+							commands = commands.add(['font_', val[3]])
 						};
 
 						x = grid.spec.unmap(val[0]).linlin(0, 1, leftBound, rightBound);
 						anchorPoint = Point(x, bottomBound);
 						labelRect = labelSz.asRect.anchorTo(anchorPoint + labelOffset, labelAnchor);
 
-						if(constrainLabelExtents, {
+						if(constrainLabelExtents) {
 							// left and rightmost xlabels are constrained to grid bounds
 							switch(x.asInteger,
 								rightBound, {
 									labelRect = labelRect.right_(
 										min(labelRect.right, rightBound - constrainedPad)
 									);
-									alignSym = this.prGetJustifySymbol(\right);
+									alignSym = this.prGetJustifySymbol(\right)
 								},
 								leftBound, {
 									labelRect = labelRect.left_(
 										max(labelRect.left, leftBound + constrainedPad)
 									);
-									alignSym = this.prGetJustifySymbol(\left);
+									alignSym = this.prGetJustifySymbol(\left)
 								}, {
 									alignSym = this.prGetJustifySymbol(labelAlign)
 								}
-							);
-						}, {
-							alignSym = this.prGetJustifySymbol(labelAlign);
-						});
+							)
+						} {
+							alignSym = this.prGetJustifySymbol(labelAlign)
+						};
 
-						commands = commands.add([alignSym, val[1], labelRect]);
+						commands = commands.add([alignSym, val[1], labelRect])
 					}
 				}
 			};
@@ -372,11 +382,11 @@ DrawGridX {
 		var strRect, rect;
 		var overhang = [0, 0, 0, 0]; // left, top, right, bottom
 
-		if (showLabels.not) {
+		if(showLabels.not) {
 			^overhang
 		};
 		strRect = if(labelStr.notNil) {
-			labelStr.bounds(font);
+			labelStr.bounds(font)
 		} {
 			this.labelSize.asRect
 		};
@@ -384,11 +394,11 @@ DrawGridX {
 
 		// top side: assumes label doesn't extend past top bound
 		overhang[3] = abs(max(rect.bottom, 0)); // bottom
-		if (constrainLabelExtents) {
-			overhang[[0,2]] = 0; // left, right
+		if(constrainLabelExtents) {
+			overhang[[0, 2]] = 0 // left, right
 		} {
 			overhang[0] = abs(min(rect.left, 0));  // left
-			overhang[2] = abs(max(rect.right, 0)); // right
+			overhang[2] = abs(max(rect.right, 0)) // right
 		};
 
 		^overhang
@@ -400,13 +410,13 @@ DrawGridX {
 		var protoLabel, labelSz;
 		var axisBounds = this.prGetAxisBounds;
 
-		if (labels.isNil) {
+		if(labels.isNil) {
 			labels = this.grid.getParams(
 				this.range[0], this.range[1], axisBounds[0], axisBounds[1]
-			).labels;
+			).labels
 		};
 
-		if (labels.isNil) {
+		if(labels.isNil) {
 			// There are currently no labels, return last used size
 			^lastLabelSize
 		} {
@@ -423,28 +433,27 @@ DrawGridX {
 			lastLabelSize = labelSz;
 
 			^labelSz
-		};
+		}
 	}
 
-	clearCache { cacheKey = nil; }
+	clearCache { cacheKey = nil }
 	copy { ^super.copy.clearCache }
 
 	prAddLineCmds { |cmds, val, color|
 		cmds = cmds.add(['strokeColor_', color ? gridColor]);
-		cmds = if (this.class == DrawGridX) {
-			cmds.add(['line', Point(val, bounds.top), Point(val, bounds.bottom)]);
+		cmds = if(this.class == DrawGridX) {
+			cmds.add(['line', Point(val, bounds.top), Point(val, bounds.bottom)])
 		} { // DrawGridY
-			cmds.add(['line', Point(bounds.left, val), Point(bounds.right, val)]);
+			cmds.add(['line', Point(bounds.left, val), Point(bounds.right, val)])
 		};
 		^cmds
 	}
 
 	prGetJustifySymbol { |alignSym|
-		^switch(alignSym,
-			\center, { 'stringCenteredIn' },
-			\left,   { 'stringLeftJustIn' },
-			\right,  { 'stringRightJustIn' }
-		);
+		^switch(alignSym)
+			{ \center } { 'stringCenteredIn' }
+			{ \left } { 'stringLeftJustIn' }
+			{ \right } { 'stringRightJustIn' }
 	}
 
 	prGetAxisBounds { ^[this.bounds.left, this.bounds.right] }
@@ -463,7 +472,7 @@ DrawGridY : DrawGridX {
 		font = Font(Font.defaultSansFace, 9);
 		fontColor = Color.grey(0.3);
 		gridColor = Color.grey(0.7);
-		lastLabelSize = "000".bounds(font).asSize;
+		lastLabelSize = "000".bounds(font).asSize
 	}
 
 	commands {
@@ -474,22 +483,22 @@ DrawGridY : DrawGridX {
 		var topBound = bounds.top.asInteger;
 		var constrainedPad = 1;
 
-		if(cacheKey != [range,bounds],{ commands = nil });
+		if(cacheKey != [range, bounds]) { commands = nil };
 
 		^commands ?? {
 			commands = [];
 			p = grid.getParams(range[0], range[1], topBound, bottomBound, numTicks, tickSpacing);
 
 			// Lines
-			p['lines'].do { arg val, i; // value, [color]
+			p['lines'].do { |val, i| // value, [color]
 				val = val.asArray;
 				valNorm = grid.spec.unmap(val[0]);
 				lineColor = val[1];
 				y = valNorm.linlin(0, 1, bottomBound, topBound);
 
-				commands = this.prAddLineCmds(commands, y, lineColor);
+				commands = this.prAddLineCmds(commands, y, lineColor)
 			};
-			commands = commands.add( ['stroke'] );
+			commands = commands.add(['stroke']);
 
 			// Bounding lines
 			// This check ensures it obeys Plot:-gridOnX (e.g. toggling grids on/off)
@@ -500,35 +509,35 @@ DrawGridY : DrawGridX {
 						['strokeColor_', lineColor ? gridColor],
 						['addRect', bounds],
 						['stroke']
-					]);
+					])
 				} {
 					if(drawBoundingLines) {
 						commands = this.prAddLineCmds(commands, topBound, lineColor);
 						commands = this.prAddLineCmds(commands, bottomBound, lineColor);
-						commands = commands.add(['stroke']);
+						commands = commands.add(['stroke'])
 					} {
 						if(drawBaseLine) {
 							commands = this.prAddLineCmds(commands, bottomBound, lineColor);
-							commands = commands.add(['stroke']);
+							commands = commands.add(['stroke'])
 						}
 					}
-				};
+				}
 			};
 
 			if(showLabels and: { labelsHiddenBySize.not and: { p['labels'].notNil } }) {
-				commands = commands.add(['font_',font ] );
-				commands = commands.add(['color_',fontColor ] );
+				commands = commands.add(['font_', font]);
+				commands = commands.add(['color_', fontColor]);
 
 				labelSz = this.labelSize(p['labels']);
 
-				p['labels'].do { arg val, i;
+				p['labels'].do { |val, i|
 					y = grid.spec.unmap(val[0]).linlin(0, 1, bottomBound, topBound);
 
 					if(val[2].notNil) {
-						commands = commands.add( ['color_', val[2]] );
+						commands = commands.add(['color_', val[2]])
 					};
 					if(val[3].notNil) {
-						commands = commands.add( ['font_', val[3]] );
+						commands = commands.add(['font_', val[3]])
 					};
 
 					anchorPoint = Point(bounds.left, y);
@@ -548,12 +557,12 @@ DrawGridY : DrawGridX {
 									max(labelRect.top, topBound + constrainedPad)
 								)
 							}
-						);
+						)
 					};
 
 					alignSym = this.prGetJustifySymbol(labelAlign);
-					commands = commands.add([alignSym, val[1], labelRect]);
-				};
+					commands = commands.add([alignSym, val[1], labelRect])
+				}
 			};
 
 			commands // return
@@ -565,7 +574,7 @@ DrawGridY : DrawGridX {
 		var strRect, rect;
 		var overhang = [0, 0, 0, 0]; // left, top, right, bottom
 
-		if (showLabels.not) {
+		if(showLabels.not) {
 			^overhang
 		};
 
@@ -574,11 +583,11 @@ DrawGridY : DrawGridX {
 
 		// right side: assume label doesn't extend past right bound
 		overhang[0] = abs(min(rect.left, 0)); // left
-		if (constrainLabelExtents) {
-			overhang[[1,3]] = 0; // top, bottom
+		if(constrainLabelExtents) {
+			overhang[[1, 3]] = 0 // top, bottom
 		} {
 			overhang[1] = abs(min(rect.top, 0)); // top
-			overhang[3] = abs(max(rect.bottom, 0)); // bottom
+			overhang[3] = abs(max(rect.bottom, 0)) // bottom
 		};
 
 		^overhang
@@ -590,8 +599,8 @@ DrawGridY : DrawGridX {
 // "Factory" class to return appropriate AbstractGridLines subclass based on the spec
 GridLines {
 
-	*new { arg spec;
-		^spec.gridClass.new(spec.asSpec);
+	*new { |spec|
+		^spec.gridClass.new(spec.asSpec)
 	}
 }
 
@@ -599,70 +608,70 @@ AbstractGridLines {
 
 	var <>spec, <appendLabel;
 
-	*new { arg spec;
-		^super.newCopyArgs(spec.asSpec).prCheckWarp;
+	*new { |spec|
+		^super.newCopyArgs(spec.asSpec).prCheckWarp
 	}
 
 	prCheckWarp {
 		if(this.class != this.spec.gridClass) {
 			"The ControlSpec 'warp' expected by this % does not match 'warp' of the supplied ControlSpec (%).".format(
 				this.class, this.spec.warp.class
-			).warn;
-		};
+			).warn
+		}
 	}
 
 	asGrid { ^this }
-	niceNum { arg val,round;
+	niceNum { |val, round|
 		// http://books.google.de/books?id=fvA7zLEFWZgC&pg=PA61&lpg=PA61
-		var exp,f,nf,rf;
+		var exp, f, nf, rf;
 		exp = floor(log10(val));
 		rf = 10.pow(exp);
 		f = val / rf;
-		if(round,{
-			if(f < 1.5,{
-				^rf *  1.0
-			});
-			if(f < 3.0,{
-				^rf *  2.0
-			});
-			if( f < 7.0,{
-				^rf *  5.0
-			});
-			^rf *  10.0
-		},{
-			if(f <= 1.0,{
-				^rf *  1.0;
-			});
-			if(f <= 2,{
-				^rf *  2.0
-			});
-			if(f <= 5,{
-				^rf *  5.0;
-			});
-			^rf *  10.0
-		});
+		if(round) {
+			if(f < 1.5) {
+				^rf * 1.0
+			};
+			if(f < 3.0) {
+				^rf * 2.0
+			};
+			if(f < 7.0) {
+				^rf * 5.0
+			};
+			^rf * 10.0
+		} {
+			if(f <= 1.0) {
+				^rf * 1.0
+			};
+			if(f <= 2) {
+				^rf * 2.0
+			};
+			if(f <= 5) {
+				^rf * 5.0
+			};
+			^rf * 10.0
+		}
 	}
-	ideals { arg min,max,ntick=5;
-		var nfrac,d,graphmin,graphmax,range,x;
-		range = this.niceNum(max - min,false);
-		d = this.niceNum(range / (ntick - 1),true);
+	ideals { |min, max, ntick = 5|
+		var nfrac, d, graphmin, graphmax, range, x;
+		range = this.niceNum(max - min, false);
+		d = this.niceNum(range / (ntick - 1), true);
 		graphmin = floor(min / d) * d;
 		graphmax = ceil(max / d) * d;
-		nfrac = max( floor(log10(d)).neg, 0 );
-		^[graphmin,graphmax,nfrac,d];
+		nfrac = max(floor(log10(d)).neg, 0);
+		^[graphmin, graphmax, nfrac, d]
 	}
-	looseRange { arg min,max,ntick=5;
-		^this.ideals(min,max,ntick).at( [ 0,1] )
+	looseRange { |min, max, ntick = 5|
+		^this.ideals(min, max, ntick).at([0, 1])
 	}
 	getParams {
 		^this.subclassResponsibility
 	}
-	formatLabel { arg val, numDecimalPlaces;
+	formatLabel { |val, numDecimalPlaces|
 		var str;
-		str = if (numDecimalPlaces == 0) {
+		str = if(numDecimalPlaces == 0) {
 			val.asInteger.asString
 		} {
-			val.round( (10**numDecimalPlaces).reciprocal).asString
+			val.round((10 ** numDecimalPlaces).reciprocal).asString
 		};
 		^if(appendLabel.notNil) { str = str ++ appendLabel } { str }
 	}
@@ -671,27 +680,27 @@ AbstractGridLines {
 
 LinearGridLines : AbstractGridLines {
 	getParams { |valueMin, valueMax, pixelMin, pixelMax, numTicks, tickSpacing = 64|
-		var lines,p,pixRange;
-		var nfrac,d,graphmin,graphmax,range;
+		var lines, p, pixRange;
+		var nfrac, d, graphmin, graphmax, range;
 		pixRange = pixelMax - pixelMin;
-		if(numTicks.isNil,{
+		if(numTicks.isNil) {
 			numTicks = (pixRange / tickSpacing);
-			numTicks = numTicks.max(3).round(1);
-		});
-		# graphmin,graphmax,nfrac,d = this.ideals(valueMin,valueMax,numTicks);
+			numTicks = numTicks.max(3).round(1)
+		};
+		# graphmin, graphmax, nfrac, d = this.ideals(valueMin, valueMax, numTicks);
 		lines = [];
-		if(d != inf,{
-			forBy(graphmin,graphmax + (0.5*d),d,{ arg tick;
-				if(tick.inclusivelyBetween(valueMin,valueMax),{
-					lines = lines.add( tick );
-				})
-			});
-		});
+		if(d != inf) {
+			forBy(graphmin, graphmax + (0.5 * d), d) { |tick|
+				if(tick.inclusivelyBetween(valueMin, valueMax)) {
+					lines = lines.add(tick)
+				}
+			}
+		};
 		p = ();
 		p['lines'] = lines;
 		if(pixRange / numTicks > 9) {
-			if (sum(lines % 1) == 0) { nfrac = 0 };
-			p['labels'] = lines.collect({ arg val; [val, this.formatLabel(val, nfrac)] });
+			if(sum(lines % 1) == 0) { nfrac = 0 };
+			p['labels'] = lines.collect { |val| [val, this.formatLabel(val, nfrac)] }
 		};
 		^p
 	}
@@ -700,8 +709,8 @@ LinearGridLines : AbstractGridLines {
 ExponentialGridLines : AbstractGridLines {
 
 	getParams { |valueMin, valueMax, pixelMin, pixelMax, numTicks, tickSpacing = 64|
-		var lines,p,pixRange;
-		var nfrac,d,graphmin,graphmax,range, nfracarr;
+		var lines, p, pixRange;
+		var nfrac, d, graphmin, graphmax, range, nfracarr;
 		var nDecades, first, step, tick, expRangeIsValid, expRangeIsPositive, roundFactor;
 		var drawLabel = true, maxNumTicks;
 
@@ -709,29 +718,29 @@ ExponentialGridLines : AbstractGridLines {
 		lines = [];
 		nfracarr = [];
 
-		expRangeIsValid = ((valueMin > 0) and: { valueMax > 0 }) or: {(valueMin < 0) and: { valueMax < 0 } };
+		expRangeIsValid = ((valueMin > 0) and: { valueMax > 0 }) or: { (valueMin < 0) and: { valueMax < 0 } };
 
 		if(expRangeIsValid) {
 			expRangeIsPositive = valueMin > 0;
 			if(expRangeIsPositive) {
-				nDecades = log10(valueMax/valueMin);
-				first = step = 10**(valueMin.abs.log10.trunc);
-				roundFactor = step;
+				nDecades = log10(valueMax / valueMin);
+				first = step = 10 ** (valueMin.abs.log10.trunc);
+				roundFactor = step
 			} {
-				nDecades = log10(valueMin/valueMax);
-				step = 10**(valueMin.abs.log10.trunc - 1);
+				nDecades = log10(valueMin / valueMax);
+				step = 10 ** (valueMin.abs.log10.trunc - 1);
 				first = 10 * step.neg;
-				roundFactor = 10**(valueMax.abs.log10.trunc);
+				roundFactor = 10 ** (valueMax.abs.log10.trunc)
 			};
 			//workaround for small ranges
 			if(nDecades < 1) {
 				step = step * 0.1;
 				roundFactor = roundFactor * 0.1;
-				nfrac = valueMin.abs.log10.floor.neg + 1;
+				nfrac = valueMin.abs.log10.floor.neg + 1
 			};
-			numTicks ?? {numTicks = (pixRange / (tickSpacing * nDecades))};
+			numTicks ?? { numTicks = (pixRange / (tickSpacing * nDecades)) };
 			tick = first;
-			while ({tick <= (valueMax + step)}) {
+			while { tick <= (valueMax + step) } {
 				if(round(tick, roundFactor).inclusivelyBetween(valueMin, valueMax)) {
 					if(
 						(numTicks > 4) or:
@@ -752,36 +761,36 @@ ExponentialGridLines : AbstractGridLines {
 							drawLabel = false // drop labels for tightly spaced upper area of the decade
 						};
 						lines = lines.add([tick, drawLabel])
-					};
+					}
 				};
 				if(tick >= (step * 9.9999)) { step = (step * 10) };
 				if(expRangeIsPositive) {
-					if((round(tick,roundFactor) >= (round(step*10,roundFactor))) and: { (nDecades > 1) }) { step = (step*10) };
+					if((round(tick, roundFactor) >= (round(step * 10, roundFactor))) and: { (nDecades > 1) }) { step = (step * 10) }
 				} {
-					if((round(tick.abs,roundFactor) <= (round(step,roundFactor))) and: { (nDecades > 1) }) { step = (step*0.1) };
+					if((round(tick.abs, roundFactor) <= (round(step, roundFactor))) and: { (nDecades > 1) }) { step = (step * 0.1) }
 				};
-				tick = (tick+step);
+				tick = (tick + step)
 			};
-			nfracarr = lines.collect({ arg arr;
+			nfracarr = lines.collect { |arr|
 				var val = arr[0];
 				val.abs.log10.floor.neg.max(0)
-			});
+			}
 
 		} {
 			format("Unable to get exponential GridLines for values between % and %", valueMin, valueMax).warn;
 			numTicks ?? {
 				numTicks = (pixRange / tickSpacing);
-				numTicks = numTicks.max(3).round(1);
-			}; // set numTicks regardless to avoid errors
+				numTicks = numTicks.max(3).round(1)
+			} // set numTicks regardless to avoid errors
 		};
 		p = ();
 		p['lines'] = lines.flop.first;
 		if(pixRange / numTicks > 9) {
-			if (sum(p['lines'] % 1) == 0) { nfrac = 0 };
-			p['labels'] = lines.collect({ arg arr, inc;
+			if(sum(p['lines'] % 1) == 0) { nfrac = 0 };
+			p['labels'] = lines.collect { |arr, inc|
 				var val, drawLabel, thisLabel;
 				#val, drawLabel = arr;
-				[val, this.formatLabel(val, nfrac ? nfracarr[inc] ? 1), nil, nil, drawLabel.not] });
+				[val, this.formatLabel(val, nfrac ? nfracarr[inc] ? 1), nil, nil, drawLabel.not] }
 		};
 		^p
 	}

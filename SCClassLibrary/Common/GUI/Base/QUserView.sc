@@ -1,51 +1,51 @@
 UserView : View {
-	var <drawFunc, <drawingEnabled=true, <animate=false;
+	var <drawFunc, <drawingEnabled = true, <animate = false;
 
 	*qtClass { ^'QcCustomPainted' }
 
-	*new { arg parent, bounds;
-		var me = super.new(parent, bounds ?? {this.sizeHint} );
+	*new { |parent, bounds|
+		var me = super.new(parent, bounds ?? { this.sizeHint });
 		me.canFocus = true;
-		^me;
+		^me
 	}
 
 	*sizeHint {
-		^Point(150,150);
+		^Point(150, 150)
 	}
 
-	drawingEnabled_ { arg boolean;
+	drawingEnabled_ { |boolean|
 		// Allow setting the property apart from the instance variable
 		// to optimize when drawFunc is nil. See drawFunc_ implementation.
 		drawingEnabled = boolean;
-		this.setProperty( \drawingEnabled, boolean );
+		this.setProperty(\drawingEnabled, boolean)
 	}
 
-	clearOnRefresh { ^this.getProperty( \clearOnRefresh ); }
-	clearOnRefresh_ { arg boolean; this.setProperty( \clearOnRefresh, boolean ); }
+	clearOnRefresh { ^this.getProperty(\clearOnRefresh) }
+	clearOnRefresh_ { |boolean| this.setProperty(\clearOnRefresh, boolean) }
 
-	clearDrawing { this.invokeMethod( \clear ); }
+	clearDrawing { this.invokeMethod(\clear) }
 
-	drawFunc_ { arg aFunction;
-		this.setProperty( \drawingEnabled, aFunction.notNil );
-		drawFunc = aFunction;
+	drawFunc_ { |aFunction|
+		this.setProperty(\drawingEnabled, aFunction.notNil);
+		drawFunc = aFunction
 	}
 
 	draw {
 		// NOTE: it is only allowed to call this while a QPaintEvent is being
 		// processed by this QWidget, or an error will be thrown.
-		drawFunc.value(this);
+		drawFunc.value(this)
 	}
 
-	animate_ { arg bool; this.invokeMethod( \animate, bool ); animate = bool; }
+	animate_ { |bool| this.invokeMethod(\animate, bool); animate = bool }
 
-	frameRate_ { arg fps; this.setProperty( \frameRate, fps.asFloat ); }
-	frameRate { ^this.getProperty( \frameRate ); }
+	frameRate_ { |fps| this.setProperty(\frameRate, fps.asFloat) }
+	frameRate { ^this.getProperty(\frameRate) }
 
-	frame { ^this.getProperty( \frameCount ); }
+	frame { ^this.getProperty(\frameCount) }
 
 	// override View's action_ to not connect to 'action()' signal
-	action_ { arg func;
-		action = func;
+	action_ { |func|
+		action = func
 	}
 
 	doDrawFunc { drawFunc.value(this) }

@@ -1,100 +1,100 @@
 RangeSlider : QAbstractStepValue {
 	*qtClass { ^'QcRangeSlider' }
 
-	*new { arg parent, bounds;
-		^super.new( parent, bounds ).initQRangeSlider( bounds );
+	*new { |parent, bounds|
+		^super.new(parent, bounds).initQRangeSlider(bounds)
 	}
 
-	initQRangeSlider { arg bounds;
+	initQRangeSlider { |bounds|
 		var r;
-		if( bounds.notNil ) {
+		if(bounds.notNil) {
 			r = bounds.asRect;
-			if( r.width > r.height ) {
-				this.orientation_( \horizontal );
+			if(r.width > r.height) {
+				this.orientation_(\horizontal)
 			} {
-				this.orientation_( \vertical );
+				this.orientation_(\vertical)
 			}
 		}
 	}
 
 	pixelStep {
 		// FIXME for now we are using step instead
-		^this.step;
+		^this.step
 	}
 
-	orientation_ { arg aSymbol;
-		this.setProperty( \orientation, QOrientation(aSymbol) );
+	orientation_ { |aSymbol|
+		this.setProperty(\orientation, QOrientation(aSymbol))
 	}
 
 	lo {
-		^this.getProperty( \loValue );
+		^this.getProperty(\loValue)
 	}
 
-	lo_ { arg aFloat;
-		this.setProperty( \loValue, aFloat );
+	lo_ { |aFloat|
+		this.setProperty(\loValue, aFloat)
 	}
 
-	activeLo_ { arg aFloat;
+	activeLo_ { |aFloat|
 		this.lo_(aFloat);
-		this.doAction;
+		this.doAction
 	}
 
 	hi {
-		^this.getProperty( \hiValue );
+		^this.getProperty(\hiValue)
 	}
 
-	hi_ { arg aFloat;
-		this.setProperty( \hiValue, aFloat );
+	hi_ { |aFloat|
+		this.setProperty(\hiValue, aFloat)
 	}
 
-	activeHi_ { arg aFloat;
+	activeHi_ { |aFloat|
 		this.hi_(aFloat);
-		this.doAction;
+		this.doAction
 	}
 
 	range {
-		^(this.hi - this.lo);
+		^(this.hi - this.lo)
 	}
 
-	range_ { arg aFloat;
-		this.hi_( this.lo + aFloat; )
+	range_ { |aFloat|
+		this.hi_(this.lo + aFloat;)
 	}
 
-	activeRange_ { arg aFloat;
+	activeRange_ { |aFloat|
 		this.range_(aFloat);
-		this.doAction;
+		this.doAction
 	}
 
-	setSpan { arg lo, hi;
+	setSpan { |lo, hi|
 		this.lo_(lo);
 
 		// setting lo may have flipped the roles of the endpoints
 		if(this.lo == lo) {
-			this.hi_(hi);
+			this.hi_(hi)
 		} {
-			this.lo_(hi);
+			this.lo_(hi)
 		}
 	}
 
-	setSpanActive { arg lo, hi;
-		this.setSpan(lo,hi);
-		this.doAction;
+	setSpanActive { |lo, hi|
+		this.setSpan(lo, hi);
+		this.doAction
 	}
 
-	setDeviation { arg deviation, average;
-		this.setSpan(average - deviation, average + deviation);
+	setDeviation { |deviation, average|
+		this.setSpan(average - deviation, average + deviation)
 	}
 
 	knobColor { ^this.getProperty(\knobColor) }
-	knobColor_ { arg color; this.setProperty(\knobColor, color) }
+	knobColor_ { |color| this.setProperty(\knobColor, color) }
 
 	background { ^this.getProperty(\grooveColor) }
-	background_ { arg color; this.setProperty(\grooveColor, color) }
+	background_ { |color| this.setProperty(\grooveColor, color) }
 
-	defaultGetDrag { ^Point(this.lo,this.hi); }
-	defaultCanReceiveDrag { ^(View.currentDrag.class === Point); }
+	defaultGetDrag { ^Point(this.lo, this.hi) }
+	defaultCanReceiveDrag { ^(View.currentDrag.class === Point) }
 	defaultReceiveDrag {
 		var pt = View.currentDrag;
-		this.setSpanActive( pt.x, pt.y );
+		this.setSpanActive(pt.x, pt.y)
 	}
 }

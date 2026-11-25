@@ -1,7 +1,7 @@
 //# VERSION 3.16
 TestPathName : UnitTest {
 	test_isAbsolutePath_Windows {
-		if (thisProcess.platform.name == \windows) {
+		if(thisProcess.platform.name == \windows) {
 			// absolute paths
 			this.assert(PathName("C:/test").isAbsolutePath, "absolute path <drive>:/");
 			this.assert(PathName("C:\\test").isAbsolutePath, "absolute path <drive>:\\");
@@ -14,7 +14,7 @@ TestPathName : UnitTest {
 			this.assert(PathName("./test").isAbsolutePath.not, "relative path with leading ./");
 			this.assert(PathName(".\\test").isAbsolutePath.not, "relative path with leading .\\");
 			this.assert(PathName("/test").isAbsolutePath.not, "path starting with / is relative (to the current drive)");
-			this.assert(PathName("\\test").isAbsolutePath.not, "path starting with \\ is relative (to the current drive)");
+			this.assert(PathName("\\test").isAbsolutePath.not, "path starting with \\ is relative (to the current drive)")
 		}
 	}
 }

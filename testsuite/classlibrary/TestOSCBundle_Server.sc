@@ -5,12 +5,12 @@ TestOSCBundle_Server : UnitTest {
 
 	setUp {
 		server = Server(this.class.name);
-		server.bootSync;
+		server.bootSync
 	}
 
 	tearDown {
 		server.quitSync;
-		server.remove;
+		server.remove
 	}
 
 	test_doPrepare {
@@ -25,12 +25,12 @@ TestOSCBundle_Server : UnitTest {
 		});
 		bundle.doPrepare(server, {
 			completed = true;
-			condvar.signalOne;
+			condvar.signalOne
 		});
 
 		condvar.waitFor(5);
 
-		this.assertEquals(completed, true, "'doPrepare' sent the prepare bundle to the server");
+		this.assertEquals(completed, true, "'doPrepare' sent the prepare bundle to the server")
 	}
 
 }

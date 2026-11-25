@@ -2,19 +2,19 @@
 
 + Window {
 
-	asFlowView { arg bounds;
-		^FlowView(this,bounds)
+	asFlowView { |bounds|
+		^FlowView(this, bounds)
 	}
-	flow { arg func,bounds;
+	flow { |func, bounds|
 		var f;
-		f = FlowView(this,bounds ?? { this.bounds.moveTo(0,0) });
+		f = FlowView(this, bounds ?? { this.bounds.moveTo(0, 0) });
 		func.value(f);
-		if(bounds.isNil,{ f.resizeToFit });
+		if(bounds.isNil) { f.resizeToFit };
 		^f
 	}
-	comp { arg func,bounds;
+	comp { |func, bounds|
 		var f;
-		f = View(this,bounds ?? { this.bounds.moveTo(0,0) });
+		f = View(this, bounds ?? { this.bounds.moveTo(0, 0) });
 		func.value(f);
 		^f
 	}
@@ -23,52 +23,52 @@
 
 + View {
 
-	asFlowView { arg bounds;
-		^FlowView(this,bounds ?? {this.bounds})
+	asFlowView { |bounds|
+		^FlowView(this, bounds ?? { this.bounds })
 	}
-	deepDo { arg function;
+	deepDo { |function|
 		// includes self
 		function.value(this);
-		this.children.do({arg child;
-			child.deepDo(function);
-		});
+		this.children.do { |child|
+			child.deepDo(function)
+		}
 	}
 	allChildren {
 		// includes self
 		var all;
 		all = Array.new;
-		this.deepDo({ arg child; all = all.add(child) });
+		this.deepDo({ |child| all = all.add(child) });
 		^all
 	}
-	flow { arg func,bounds;
-		var f,comp;
-		f = FlowView(this,bounds); // flow view intellegently calc defaults bounds
+	flow { |func, bounds|
+		var f, comp;
+		f = FlowView(this, bounds); // flow view intellegently calc defaults bounds
 		func.value(f);
-		if(bounds.isNil,{ f.resizeToFit });
+		if(bounds.isNil) { f.resizeToFit };
 		^f
 	}
-	horz { arg func,bounds;
+	horz { |func, bounds|
 		var comp;
-		comp = HLayoutView(this,bounds ?? { this.bounds });
+		comp = HLayoutView(this, bounds ?? { this.bounds });
 		func.value(comp);
 		^comp
 	}
-	vert { arg func,bounds;
+	vert { |func, bounds|
 		var comp;
-		comp = VLayoutView(this,bounds ?? { this.bounds });
+		comp = VLayoutView(this, bounds ?? { this.bounds });
 		func.value(comp);
 		^comp
 	}
-	comp { arg func,bounds;
+	comp { |func, bounds|
 		var comp;
-		comp = View(this,bounds ?? { this.bounds });
+		comp = View(this, bounds ?? { this.bounds });
 		func.value(comp);
 		^comp
 	}
-	scroll { arg func,bounds,autohidesScrollers=true,autoScrolls=true,
-					hasHorizontalScroller=true,hasVerticalScroller=true;
+	scroll { |func, bounds, autohidesScrollers = true, autoScrolls = true,
+			hasHorizontalScroller = true, hasVerticalScroller = true|
 		var comp;
-		comp = ScrollView(this,bounds ?? { this.bounds });
+		comp = ScrollView(this, bounds ?? { this.bounds });
 		comp.autohidesScrollers = autohidesScrollers;
 		comp.hasHorizontalScroller = hasHorizontalScroller;
 		comp.hasVerticalScroller = hasVerticalScroller;

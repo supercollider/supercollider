@@ -1,3 +1,3 @@
 + Object {
-	asNodeArg {^this.asUGenInput} // replaced by asUGenInput
+	asNodeArg { ^this.asUGenInput } // replaced by asUGenInput
 }

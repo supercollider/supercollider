@@ -2,6 +2,7 @@
 // Formatting is on purpose here to catch edge cases.
 // Don't change it.
 TestSourceCode : UnitTest {
+	// sc-format off
 	test_fn {
 
 		var f = { 1 + 1 };
@@ -49,9 +50,10 @@ TestSourceCode : UnitTest {
  		f = (_ + (_ + (_)) + _);
  		this.assertEquals(f.def.sourceCode.quote, "_ + (_ + (_)) + _".quote);
 	}
+	// sc-format on
 
 	test_compileString {
 		var func = { 1 + 1 };
-		this.assertEquals(func.asCompileString, "{ 1 + 1 }");
+		this.assertEquals(func.asCompileString, "{ 1 + 1 }")
 	}
 }

@@ -15,7 +15,7 @@ MixedLegacyBase {
 	*classHook { ^\legacyClassHook }
 	*viaClassHook { ^this.classHook }
 	firstGreater { |list, limit|
-		list.do { |item| if (item > limit) { ^item } };
+		list.do { |item| if(item > limit) { ^item } };
 		^nil
 	}
 }
@@ -44,19 +44,19 @@ MixedLegacyAlgos {
 			sq = i * i;
 			seen = seen ? 0;
 			total = total + sq;
-			result.add(seen);
+			result.add(seen)
 		};
 		^[a, b, total, result.asArray]
 	}
 
 	predeclaredInBranch { |flag|
 		var x, y = 1;
-		if (flag) {
+		if(flag) {
 			var inner;
 			inner = y + 1;
-			x = inner;
+			x = inner
 		} {
-			x = y;
+			x = y
 		};
 		^[x, y]
 	}
@@ -68,7 +68,7 @@ MixedLegacyAlgos {
 			c = c ? 0;
 			c = c + 1;
 			counts.add(c);
-			i = i + 1;
+			i = i + 1
 		};
 		^counts.asArray
 	}
@@ -78,7 +78,7 @@ MixedLegacyAlgos {
 		n.do { |i|
 			var c;
 			c = i * 10;
-			funcs.add({ c });
+			funcs.add({ c })
 		};
 		^funcs.collect { |f| f.value }.asArray
 	}
@@ -99,26 +99,26 @@ MixedLegacyAlgos {
 	}
 
 	fib { |n|
-		if (n < 2) { ^n };
+		if(n < 2) { ^n };
 		^this.fib(n - 1) + this.fib(n - 2)
 	}
 
 	find { |list, target|
-		list.do { |item, i| if (item == target) { ^i } };
+		list.do { |item, i| if(item == target) { ^i } };
 		^nil
 	}
 
 	nestedReturn { |list|
 		list.do { |a|
 			list.do { |b|
-				if ((a + b) == 7) { ^[a, b] };
-			};
+				if((a + b) == 7) { ^[a, b] }
+			}
 		};
 		^nil
 	}
 
 	classify { |x|
-		^switch (x)
+		^switch(x)
 			{ 1 } { \one }
 			{ 2 } { \two }
 			{ \many }

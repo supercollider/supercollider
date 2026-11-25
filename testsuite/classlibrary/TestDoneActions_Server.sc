@@ -9,15 +9,15 @@ TestDoneActions_Server : UnitTest {
 		server.sync;
 
 		SynthDef(this.class.name, { |doneAction|
-			Line.kr(0, 0, 0.01, doneAction:doneAction)
+			Line.kr(0, 0, 0.01, doneAction: doneAction)
 		}).send(server);
 
-		server.sync;
+		server.sync
 	}
 
 	tearDown {
 
-		server.quitSync.remove;
+		server.quitSync.remove
 
 	}
 
@@ -28,7 +28,7 @@ TestDoneActions_Server : UnitTest {
 				this.class.name,
 				[\doneAction, Done.freeSelfResumeNext],
 				server,
-				addAction:\addToTail
+				addAction: \addToTail
 			).register
 		});
 
@@ -41,7 +41,7 @@ TestDoneActions_Server : UnitTest {
 		var allEnded = synths.every { |x| x.isPlaying.not };
 
 		this.assert(allPlaying, "the chain of synths should first be playing");
-		this.assert(allEnded, "the chain of synths should have freed itself");
+		this.assert(allEnded, "the chain of synths should have freed itself")
 	}
 
 }

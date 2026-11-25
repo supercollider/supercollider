@@ -3,18 +3,18 @@ TestTWindex_Server : UnitTest {
 	var server;
 
 	setUp {
-		server = Server(this.class.name);
+		server = Server(this.class.name)
 	}
 
 	tearDown {
 		server.quitSync;
-		server.remove;
+		server.remove
 	}
 
 	test_TWindex_ar_skips_zero_probability {
 		var cond = Condition.new,
-		success = true,
-		node, failResp;
+			success = true,
+			node, failResp;
 
 		server.bootSync;
 
@@ -24,10 +24,10 @@ TestTWindex_Server : UnitTest {
 		// for a zero probability
 		node = {
 			var trig = Impulse.ar(ControlRate.ir * 2),  // 2 triggers / control block
-			index = TWindex.ar(trig, [0, 1]);
+				index = TWindex.ar(trig, [0, 1]);
 			SendReply.ar(trig * (index <= 0), '/badIndex');
 			Line.ar(0, 0, ControlDur.ir, doneAction: 2);
-			Silent.ar(1);
+			Silent.ar(1)
 		}.play(server);
 		node.onFree {
 			// success == true means the OSCFunc didn't unhang
@@ -37,11 +37,11 @@ TestTWindex_Server : UnitTest {
 
 		failResp = OSCFunc({
 			success = false;
-			cond.unhang;
+			cond.unhang
 		}, '/badIndex', argTemplate: [node.nodeID]);
 
 		cond.hang;
 
-		this.assert(success, "TWindex.ar should output only for nonzero probabilities");
+		this.assert(success, "TWindex.ar should output only for nonzero probabilities")
 	}
 }

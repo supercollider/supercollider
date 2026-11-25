@@ -20,7 +20,7 @@ Slew.scopeResponse
 */
 
 + Function {
-	scopeResponse { |server, freqMode=1, label="Empirical Frequency response", mute = false|
+	scopeResponse { |server, freqMode = 1, label = "Empirical Frequency response", mute = false|
 
 		var bus1, bus2, synth, win, fs;
 
@@ -39,7 +39,7 @@ Slew.scopeResponse
 
 		win.onClose_ {
 			fs.kill;
-			synth.release;
+			synth.release
 		};
 
 		win.front;
@@ -50,19 +50,19 @@ Slew.scopeResponse
 			var noise = PinkNoise.ar;
 			var filtered = this.value(noise);
 			var env = EnvGen.kr(Env.asr(0.1, 1, 0.1, \sine), gate, 0.1, doneAction: 2);
-			if (not(mute)) {
-				Out.ar(0, (filtered * env) ! 2);   // filter only
+			if(not(mute)) {
+				Out.ar(0, (filtered * env) ! 2)   // filter only
 			};
 			Out.ar(bus1, noise);
-			Out.ar(bus2, filtered);
+			Out.ar(bus2, filtered)
 		}.play(server.defaultGroup);
 		synth.register;
 		synth.onFree {
 			{
 				[bus1, bus2].do(_.free);
 				fs.active_(false);
-				win.close;
-			}.defer;
+				win.close
+			}.defer
 		}
 
 		^fs
@@ -71,20 +71,20 @@ Slew.scopeResponse
 
 
 + Filter {
-	*scopeResponse { |server, freqMode=1, label, args|
+	*scopeResponse { |server, freqMode = 1, label, args|
 		var argNames = this.class.findRespondingMethodFor(\ar).argNames;
 		var hasFreqInput = argNames.includes(\freq);
 
-		^if(hasFreqInput){
-			{|in| this.ar(in: in, freq:MouseX.kr(10, SampleRate.ir / 4, 1)) * Line.ar(0,1,0.1) }
+		^if(hasFreqInput) {
+			{ |in| this.ar(in: in, freq: MouseX.kr(10, SampleRate.ir / 4, 1)) * Line.ar(0, 1, 0.1) }
 				.scopeResponse(server, freqMode,
-					label ?? {"%: empirical frequency response (move mouse to change freq)".format(this.asString)}
-					)
-		}{ // no freq input
-			{|in| this.ar(in: in) * Line.ar(0,1,0.1) }
+					label ?? { "%: empirical frequency response (move mouse to change freq)".format(this.asString) }
+				)
+		} { // no freq input
+			{ |in| this.ar(in: in) * Line.ar(0, 1, 0.1) }
 				.scopeResponse(server, freqMode,
-					label ?? {"%: empirical frequency response".format(this.asString)}
-					)
+					label ?? { "%: empirical frequency response".format(this.asString) }
+				)
 		}
 	}
 }

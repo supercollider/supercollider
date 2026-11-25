@@ -1,13 +1,13 @@
 Char : Magnitude {
 
-	const <nl = $\n ;
-	const <ret = $\r ;
-	const <vtab = $\v ;
-	const <ff = $\f ;
-	const <tab = $\t ;
-	const <space = $  ;
-	const <comma = $, ;
-	const <bullet = $* ;
+	const <nl = $\n;
+	const <ret = $\r;
+	const <vtab = $\v;
+	const <ff = $\f;
+	const <tab = $\t;
+	const <space = $ ;
+	const <comma = $,;
+	const <bullet = $*;
 	const <binaryOpCharacters = "!@%&*-+=|<>?/";
 
 	*new { ^this.shouldNotImplement(thisMethod) }
@@ -71,7 +71,7 @@ Char : Magnitude {
 		^this.primitiveFailed
 	}
 	isVowel {
-		^"AEIOU".includes(this.toUpper);
+		^"AEIOU".includes(this.toUpper)
 	}
 	isDecDigit {
 		// is a decimal digit 0-9
@@ -89,24 +89,24 @@ Char : Magnitude {
 		^this.primitiveFailed
 	}
 	isFileSafe {
-		if(this.isPrint.not,{ ^false });
-		^this.ascii != 47 and: {this.ascii != 58} and: {this.ascii != 34}
+		if(this.isPrint.not) { ^false };
+		^this.ascii != 47 and: { this.ascii != 58 } and: { this.ascii != 34 }
 	}
 	isPathSeparator {
 		^thisProcess.platform.isPathSeparator(this)
 	}
-	< { arg aChar;
+	< { |aChar|
 		^this.ascii < aChar.ascii
 	}
-	== { arg aChar;  ^aChar respondsTo: \ascii and: { this.ascii == aChar.ascii } }
+	== { |aChar| ^aChar respondsTo: \ascii and: { this.ascii == aChar.ascii } }
 
 	++ { |that| ^this.asString ++ that }
 
-	printOn { arg stream;
-		stream.put(this);
+	printOn { |stream|
+		stream.put(this)
 	}
-	storeOn { arg stream;
-		stream.putAll(this.asCompileString);
+	storeOn { |stream|
+		stream.putAll(this.asCompileString)
 	}
 
 	archiveAsCompileString { ^true }

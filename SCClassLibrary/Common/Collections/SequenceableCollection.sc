@@ -1,110 +1,110 @@
 SequenceableCollection : Collection {
 	// synonyms
-	|@| { arg index; ^this.clipAt(index) }
-	@@ { arg index; ^this.wrapAt(index) }
-	@|@ { arg index; ^this.foldAt(index) }
+	|@| { |index| ^this.clipAt(index) }
+	@@ { |index| ^this.wrapAt(index) }
+	@|@ { |index| ^this.foldAt(index) }
 
 	// fill with ramp of values
-	*series { arg size, start=0, step=1;
+	*series { |size, start = 0, step = 1|
 		var obj = this.new(size);
-		size.do {|i|
-			obj.add(start + (step * i));
+		size.do { |i|
+			obj.add(start + (step * i))
 		};
 		^obj
 	}
 
 	// fill with geometric series
-	*geom { arg size, start, grow;
-		var i=0;
+	*geom { |size, start, grow|
+		var i = 0;
 		var obj = this.new(size);
-		while ({ i < size },{
+		while { i < size } {
 			obj.add(start);
 			start = start * grow;
-			i = i + 1;
-		});
+			i = i + 1
+		};
 		^obj
 	}
 	// fill with fibonacci series
-	*fib { arg size, a=0.0, b=1.0;
-		var i=0, temp;
+	*fib { |size, a = 0.0, b = 1.0|
+		var i = 0, temp;
 		var obj = this.new(size);
-		while { i < size }{
+		while { i < size } {
 			obj.add(b);
 			temp = b;
 			b = a + b;
 			a = temp;
-			i = i + 1;
+			i = i + 1
 		};
 		^obj
 	}
-	*rand { arg size, minVal, maxVal;
-		var i=0;
+	*rand { |size, minVal, maxVal|
+		var i = 0;
 		var obj = this.new(size);
-		while ({ i < size },{
+		while { i < size } {
 			obj.add(rrand(minVal, maxVal));
-			i = i + 1;
-		});
+			i = i + 1
+		};
 		^obj
 	}
-	*exprand { arg size, minVal, maxVal;
-		var i=0;
+	*exprand { |size, minVal, maxVal|
+		var i = 0;
 		var obj = this.new(size);
-		while ({ i < size },{
+		while { i < size } {
 			obj.add(exprand(minVal, maxVal));
-			i = i + 1;
-		});
+			i = i + 1
+		};
 		^obj
 	}
-	*rand2 { arg size, val;
-		var i=0;
+	*rand2 { |size, val|
+		var i = 0;
 		var obj = this.new(size);
-		while ({ i < size },{
+		while { i < size } {
 			obj.add(val.rand2);
-			i = i + 1;
-		});
+			i = i + 1
+		};
 		^obj
 	}
-	*linrand { arg size, minVal, maxVal;
-		var i=0;
+	*linrand { |size, minVal, maxVal|
+		var i = 0;
 		var range = maxVal - minVal;
 		var obj = this.new(size);
-		while ({ i < size },{
+		while { i < size } {
 			obj.add(minVal + range.linrand);
-			i = i + 1;
-		});
+			i = i + 1
+		};
 		^obj
 	}
 
 	// fill with interpolation of values between start and end
-	*interpolation { arg size, start=0.0, end=1.0;
+	*interpolation { |size, start = 0.0, end = 1.0|
 		var obj = this.new(size), step;
 		if(size == 1) { ^obj.add(start) };
 		step = (end - start) / (size - 1);
-		size.do {|i|
-			obj.add(start + (i * step));
+		size.do { |i|
+			obj.add(start + (i * step))
 		};
 		^obj
 	}
 
 
-	++ { arg aSequenceableCollection;
+	++ { |aSequenceableCollection|
 		var newlist = this.species.new(this.size + aSequenceableCollection.size);
 		newlist = newlist.addAll(this).addAll(aSequenceableCollection);
 		^newlist
 	}
-	+++ { arg aSequenceableCollection, adverb;
+	+++ { |aSequenceableCollection, adverb|
 		aSequenceableCollection = aSequenceableCollection.asSequenceableCollection;
 		if(adverb.notNil) {
 			if(adverb == 0) { ^this ++ aSequenceableCollection };
 			if(adverb == 1) { ^this +++ aSequenceableCollection };
 			if(adverb < 0) { ^aSequenceableCollection.perform('+++', this, adverb.neg) };
 			^this.deepCollect(adverb - 1, { |sublist|
-				sublist.asSequenceableCollection.collect {|item, i|
+				sublist.asSequenceableCollection.collect { |item, i|
 					item.asSequenceableCollection ++ aSequenceableCollection.wrapAt(i)
 				}
 			})
 		};
-		^this.collect {|item, i|
+		^this.collect { |item, i|
 			item.asSequenceableCollection ++ aSequenceableCollection.wrapAt(i)
 		}
 	}
@@ -115,7 +115,7 @@ SequenceableCollection : Collection {
 		^this.at(this.size.rand)
 	}
 	// select an element at random using an array of weights
-	wchoose { arg weights;
+	wchoose { |weights|
 		^this.at(weights.windex)
 	}
 	// select an element at random using an array of weights that is determined at call and normalized
@@ -129,12 +129,12 @@ SequenceableCollection : Collection {
 		}
 	}
 
-	== { | aCollection |
-		if (this === aCollection) { ^true };
-		if (aCollection.class != this.class) { ^false };
-		if (this.size != aCollection.size) { ^false };
-		this.do { | item, i |
-			if (item != aCollection[i]) { ^false };
+	== { |aCollection|
+		if(this === aCollection) { ^true };
+		if(aCollection.class != this.class) { ^false };
+		if(this.size != aCollection.size) { ^false };
+		this.do { |item, i|
+			if(item != aCollection[i]) { ^false }
 		};
 		^true
 	}
@@ -145,22 +145,22 @@ SequenceableCollection : Collection {
 		// other is the smaller array
 
 		if(this.size < other.size) {
-			^other.editDistance(this, compareFunc);
+			^other.editDistance(this, compareFunc)
 		};
 
 		if(compareFunc.isNil) {
 			// call the primitive
-			^this.prEditDistance(other, compareFunc);
+			^this.prEditDistance(other, compareFunc)
 		} {
 			// call the sclang implementation
-			^this.prLevenshteinDistance(other, compareFunc);
-		};
+			^this.prLevenshteinDistance(other, compareFunc)
+		}
 	}
 
 	prEditDistance { |other, compareFunc|
 		_ArrayLevenshteinDistance
 		// primitive only fails if types cannot be compared
-		^this.prLevenshteinDistance(other, compareFunc);
+		^this.prLevenshteinDistance(other, compareFunc)
 	}
 
 	prLevenshteinDistance { |other, compareFunc|
@@ -170,11 +170,11 @@ SequenceableCollection : Collection {
 		var upper, corner;
 
 		if(this.isEmpty || other.isEmpty) {
-			^this.size;
+			^this.size
 		};
 
 		// use identity if not given another way to compare
-		compareFunc = compareFunc ? { |a, b| a === b; };
+		compareFunc = compareFunc ? { |a, b| a === b };
 
 		this.size.do { |indX|
 			corner = indX;
@@ -184,16 +184,16 @@ SequenceableCollection : Collection {
 				upper = matrix[indY + 1];
 
 				matrix[indY + 1] = if(compareFunc.value(this.at(indX), other.at(indY))) {
-					corner;
+					corner
 				} {
-					[upper, corner, matrix[indY]].minItem + 1;
+					[upper, corner, matrix[indY]].minItem + 1
 				};
 
-				corner = upper;
-			};
+				corner = upper
+			}
 		};
 
-		^matrix[other.size];
+		^matrix[other.size]
 	}
 
 	similarity { |other, compareFunc|
@@ -201,106 +201,106 @@ SequenceableCollection : Collection {
 		var simVal = 1; // assume they're the same
 
 		if(maxDistance > 0) { // prevent div-by-zero
-			simVal = 1 - (this.editDistance(other, compareFunc) / maxDistance);
+			simVal = 1 - (this.editDistance(other, compareFunc) / maxDistance)
 		};
 
-		^simVal;
+		^simVal
 	}
 
 	hash {
 		var hash = this.class.hash;
-		this.do { | item |
+		this.do { |item|
 			hash = hash << 1 bitXor: item.hash // encode item order by left shifting
 		};
 		^hash
 	}
 
-	copyRange { arg start, end;
+	copyRange { |start, end|
 		var newColl;
 		var i = start;
 		newColl = this.species.new(end - start);
-		while ({ i <= end },{
+		while { i <= end } {
 			newColl.add(this.at(i));
-			i = i + 1;
-		});
+			i = i + 1
+		};
 		^newColl
 	}
-	keep { arg n;
+	keep { |n|
 		var size;
-		if (n>=0) {
-			^this.copyRange(0, n-1)
-		}{
+		if(n >= 0) {
+			^this.copyRange(0, n - 1)
+		} {
 			size = this.size;
-			^this.copyRange(size+n, size-1)
+			^this.copyRange(size + n, size - 1)
 		}
 	}
-	drop { arg n;
+	drop { |n|
 		var size = this.size;
-		if (n>=0) {
-			^this.copyRange(n, size-1)
-		}{
-			^this.copyRange(0, size+n-1)
+		if(n >= 0) {
+			^this.copyRange(n, size - 1)
+		} {
+			^this.copyRange(0, size + n - 1)
 		}
 	}
-	copyToEnd { arg start;
+	copyToEnd { |start|
 		^this.copyRange(start, this.size - 1)
 	}
-	copyFromStart { arg end;
+	copyFromStart { |end|
 		^this.copyRange(0, end)
 	}
 
-	indexOf { arg item;
-		this.do({ arg elem, i;
-			if ( item === elem, { ^i })
-		});
+	indexOf { |item|
+		this.do { |elem, i|
+			if(item === elem) { ^i }
+		};
 		^nil
 	}
 
-	indexOfEqual { arg item, offset=0;
-		(this.size - offset).do ({ arg i;
+	indexOfEqual { |item, offset = 0|
+		(this.size - offset).do { |i|
 			i = i + offset;
-			if ( item == this[i], { ^i })
-		});
+			if(item == this[i]) { ^i }
+		};
 		^nil
 	}
 
 	indicesOfEqual { |item|
 		var indices;
-		this.do { arg val, i;
-			if (item == val) { indices = indices.add(i) }
+		this.do { |val, i|
+			if(item == val) { indices = indices.add(i) }
 		};
 		^indices
 	}
 
 
-	find { |sublist, offset=0|
+	find { |sublist, offset = 0|
 		var subSize_1 = sublist.size - 1, first = sublist.first, index;
 		(this.size - offset).do { |i|
 			index = i + offset;
-			if (this[index] == first) {
-				if (this.copyRange(index, index + subSize_1) == sublist) { ^index }
-			};
+			if(this[index] == first) {
+				if(this.copyRange(index, index + subSize_1) == sublist) { ^index }
+			}
 		};
 		^nil
 	}
 
-	findAll { arg arr, offset=0;
-		var indices, i=0;
+	findAll { |arr, offset = 0|
+		var indices, i = 0;
 		while {
 			i = this.find(arr, offset);
 			i.notNil
-		}{
+		} {
 			indices = indices.add(i);
-			offset = i + 1;
+			offset = i + 1
 		}
 		^indices
 	}
 
-	indexOfGreaterThan { arg val;
-		^this.detectIndex { |item| item > val };
+	indexOfGreaterThan { |val|
+		^this.detectIndex { |item| item > val }
 	}
 
-	indexIn { arg val; // collection is sorted, returns closest index
+	indexIn { |val| // collection is sorted, returns closest index
 		var i, a, b;
 		var j = this.indexOfGreaterThan(val);
 		if(j.isNil) { ^this.size - 1 };
@@ -309,37 +309,37 @@ SequenceableCollection : Collection {
 		^if((val - this[i]) < (this[j] - val)) { i } { j }
 	}
 
-	indexInBetween { arg val; // collection is sorted, returns linearly interpolated index
+	indexInBetween { |val| // collection is sorted, returns linearly interpolated index
 		var a, b, div, i;
 		if(this.isEmpty) { ^nil };
 		i = this.indexOfGreaterThan(val);
 		if(i.isNil) { ^this.size - 1 };
 		if(i == 0) { ^i };
-		a = this[i-1]; b = this[i];
+		a = this[i - 1]; b = this[i];
 		div = b - a;
 		if(div == 0) { ^i };
 		^((val - a) / div) + i - 1
 	}
 
-	selectIndices { | function |
-		^this.selectIndicesAs(function, this.species);
+	selectIndices { |function|
+		^this.selectIndicesAs(function, this.species)
 	}
-	selectIndicesAs { | function, class |
+	selectIndicesAs { |function, class|
 		var res = class.new(this.size);
-		this.do {|elem, i| if (function.value(elem, i)) { res.add(i) } }
-		^res;
+		this.do { |elem, i| if(function.value(elem, i)) { res.add(i) } }
+		^res
 	}
 
-	rejectIndices { | function |
-		^this.rejectIndicesAs(function, this.species);
+	rejectIndices { |function|
+		^this.rejectIndicesAs(function, this.species)
 	}
-	rejectIndicesAs { | function, class |
+	rejectIndicesAs { |function, class|
 		var res = class.new(this.size);
-		this.do {|elem, i| if (function.value(elem, i).not) { res.add(i) } }
-		^res;
+		this.do { |elem, i| if(function.value(elem, i).not) { res.add(i) } }
+		^res
 	}
 
-	isSeries { arg step;
+	isSeries { |step|
 		if(this.size <= 1) { ^true };
 		this.doAdjacentPairs { |a, b|
 			var diff = b - a;
@@ -350,12 +350,12 @@ SequenceableCollection : Collection {
 		^true
 	}
 
-	resamp0 { arg newSize;
+	resamp0 { |newSize|
 		var factor = this.size - 1 / (newSize - 1).max(1);
 		^this.species.fill(newSize, { |i| this.at((i * factor).round(1.0).asInteger) })
 	}
 
-	resamp1 { arg newSize;
+	resamp1 { |newSize|
 		var factor = this.size - 1 / (newSize - 1).max(1);
 		^this.species.fill(newSize, { |i| this.blendAt(i * factor) })
 	}
@@ -363,155 +363,155 @@ SequenceableCollection : Collection {
 	removeAt { |index| this.subclassResponsibility(thisMethod) }
 	remove { |item|
 		var index = this.indexOf(item);
-		^if ( index.notNil, {
+		^if(index.notNil) {
 			this.removeAt(index);
 			item
-		},{
+		} {
 			nil
-		});
+		}
 	}
-	removing { arg item;
+	removing { |item|
 		var coll = this.copy;
 		coll.remove(item);
 		^coll
 	}
-	take { arg item;
+	take { |item|
 		var index = this.indexOf(item);
-		^if ( index.notNil, {
-			this.takeAt(index);
-		},{
+		^if(index.notNil) {
+			this.takeAt(index)
+		} {
 			nil
-		});
+		}
 	}
 
 	// accessing
 	lastIndex { ^if(this.size > 0) { this.size - 1 } { nil } }
 	middleIndex { ^if(this.size > 0) { (this.size - 1) div: 2 } { nil } }
 
-	first { if (this.size > 0, { ^this.at(0) }, { ^nil }) }
-	last { if (this.size > 0, { ^this.at(this.size - 1) }, { ^nil }) }
-	middle { if (this.size > 0, { ^this.at((this.size - 1) div: 2) }, { ^nil }) }
+	first { if(this.size > 0) { ^this.at(0) } { ^nil } }
+	last { if(this.size > 0) { ^this.at(this.size - 1) } { ^nil } }
+	middle { if(this.size > 0) { ^this.at((this.size - 1) div: 2) } { ^nil } }
 
 	top { ^this.last }
-	putFirst { arg obj; if (this.size > 0, { ^this.put(0, obj) }) }
-	putLast { arg obj; if (this.size > 0, { ^this.put(this.size - 1, obj) }) }
+	putFirst { |obj| if(this.size > 0) { ^this.put(0, obj) } }
+	putLast { |obj| if(this.size > 0) { ^this.put(this.size - 1, obj) } }
 
 
 	// compatibility with isolated objects
 
-	obtain { arg index, default; ^this[index] ? default }
+	obtain { |index, default| ^this[index] ? default }
 
-	instill { arg index, item, default;
-		var res = if (index >= this.size) {
+	instill { |index, item, default|
+		var res = if(index >= this.size) {
 			this.extend(index + 1, default)
-		}{
+		} {
 			this.copy
 		};
 		^res.put(index, item)
 	}
 
 	// ordering
-	pairsDo { arg function;
-		forBy(0, this.size-2, 2) {|i|
-			function.value(this[i], this[i+1], i);
+	pairsDo { |function|
+		forBy(0, this.size - 2, 2) { |i|
+			function.value(this[i], this[i + 1], i)
 		}
 	}
-	keysValuesDo { arg function;
+	keysValuesDo { |function|
 		^this.pairsDo(function)
 	}
 
-	doAdjacentPairs { arg function;
-		(this.size - 1).do({ arg i;
-			function.value(this.at(i), this.at(i+1), i);
-		})
+	doAdjacentPairs { |function|
+		(this.size - 1).do { |i|
+			function.value(this.at(i), this.at(i + 1), i)
+		}
 	}
-	separate { arg function = true;
+	separate { |function = true|
 		var list = Array.new;
 		var sublist = this.species.new;
-		this.doAdjacentPairs({ arg a, b, i;
+		this.doAdjacentPairs({ |a, b, i|
 			sublist = sublist.add(a);
-			if ( function.value(a, b, i), {
+			if(function.value(a, b, i)) {
 				list = list.add(sublist);
-				sublist = this.species.new;
-			});
+				sublist = this.species.new
+			}
 		});
 		if(this.notEmpty) { sublist = sublist.add(this.last) };
 		list = list.add(sublist);
 		^list
 	}
 
-	delimit { arg function;
+	delimit { |function|
 		var list, sublist;
 		list = Array.new;
 		sublist = this.species.new;
-		this.do({ arg item, i;
-			if ( function.value(item, i), {
+		this.do { |item, i|
+			if(function.value(item, i)) {
 				list = list.add(sublist);
-				sublist = this.species.new;
-			},{
-				sublist = sublist.add(item);
-			});
-		});
+				sublist = this.species.new
+			} {
+				sublist = sublist.add(item)
+			}
+		};
 		list = list.add(sublist);
 		^list
 	}
-	clump { arg groupSize;
+	clump { |groupSize|
 		var list = Array.new((this.size / groupSize).roundUp.asInteger);
 		var sublist = this.species.new(groupSize);
-		this.do({ arg item;
+		this.do { |item|
 			sublist.add(item);
-			if (sublist.size >= groupSize, {
+			if(sublist.size >= groupSize) {
 				list.add(sublist);
-				sublist = this.species.new(groupSize);
-			});
-		});
-		if (sublist.size > 0, { list = list.add(sublist); });
+				sublist = this.species.new(groupSize)
+			}
+		};
+		if(sublist.size > 0) { list = list.add(sublist) };
 		^list
 	}
-	clumps { arg groupSizeList;
+	clumps { |groupSizeList|
 		var i = 0;
 		var list = Array.new(groupSizeList.size); // still better estimate than default
 		var subSize = groupSizeList.at(0);
 		var sublist = this.species.new(subSize);
-		this.do({ arg item;
+		this.do { |item|
 			sublist = sublist.add(item);
-			if (sublist.size >= subSize, {
+			if(sublist.size >= subSize) {
 				i = i + 1;
 				list = list.add(sublist);
 				subSize = groupSizeList.wrapAt(i);
-				sublist = this.species.new(subSize);
-			});
-		});
-		if (sublist.size > 0, { list = list.add(sublist); });
+				sublist = this.species.new(subSize)
+			}
+		};
+		if(sublist.size > 0) { list = list.add(sublist) };
 		^list
 	}
-	curdle { arg probability;
-		^this.separate({ probability.coin });
+	curdle { |probability|
+		^this.separate({ probability.coin })
 	}
 
-	flatten { arg numLevels=1;
+	flatten { |numLevels = 1|
 		var list;
 
-		if (numLevels <= 0, { ^this });
+		if(numLevels <= 0) { ^this };
 		numLevels = numLevels - 1;
 
 		list = this.species.new(this.size);
-		this.do({ arg item;
-			if (item.respondsTo('flatten'), {
-				list = list.addAll(item.flatten(numLevels));
-			},{
-				list = list.add(item);
-			});
-		});
+		this.do { |item|
+			if(item.respondsTo('flatten')) {
+				list = list.addAll(item.flatten(numLevels))
+			} {
+				list = list.add(item)
+			}
+		};
 		^list
 	}
 
 	flatBelow { |level = 1|
 
-		if (level <=0) { ^this.flat };
+		if(level <= 0) { ^this.flat };
 		level = level - 1;
 		^this.collect { |item|
-			if (item.respondsTo(\flatBelow)) {
+			if(item.respondsTo(\flatBelow)) {
 				item.flatBelow(level)
 			} {
 				item
@@ -520,10 +520,10 @@ SequenceableCollection : Collection {
 	}
 
 	// bidirectional flattening
-	flatten2 { arg numLevels=1;
-		if (numLevels == 0) { ^this };
-		if (numLevels > 0) { ^this.flatten(numLevels) };
-		^this.flatBelow(this.maxDepth - 1 + numLevels);
+	flatten2 { |numLevels = 1|
+		if(numLevels == 0) { ^this };
+		if(numLevels > 0) { ^this.flatten(numLevels) };
+		^this.flatBelow(this.maxDepth - 1 + numLevels)
 	}
 
 	flat {
@@ -531,25 +531,25 @@ SequenceableCollection : Collection {
 	}
 
 	prFlat { |list|
-		this.do({ arg item, i;
-			if (item.respondsTo('prFlat'), {
-				list = item.prFlat(list);
-			},{
-				list = list.add(item);
-			});
-		});
+		this.do { |item, i|
+			if(item.respondsTo('prFlat')) {
+				list = item.prFlat(list)
+			} {
+				list = list.add(item)
+			}
+		};
 		^list
 	}
 
 	flatIf { |func|
 		var list = this.species.new(this.size); // as we don't know the size, just guess
-		this.do({ arg item, i;
-			if (item.respondsTo('flatIf') and: { func.value(item, i) }, {
-				list = list.addAll(item.flatIf(func));
-			},{
-				list = list.add(item);
-			});
-		});
+		this.do { |item, i|
+			if(item.respondsTo('flatIf') and: { func.value(item, i) }) {
+				list = list.addAll(item.flatIf(func))
+			} {
+				list = list.add(item)
+			}
+		};
 		^list
 	}
 
@@ -558,24 +558,24 @@ SequenceableCollection : Collection {
 
 		size = this.size;
 		maxsize = 0;
-		this.do({ arg sublist;
+		this.do { |sublist|
 			var sz;
-			sz = if(sublist.isSequenceableCollection, { sublist.size }, { 1 });
-			if (sz > maxsize, { maxsize = sz });
-		});
+			sz = if(sublist.isSequenceableCollection) { sublist.size } { 1 };
+			if(sz > maxsize) { maxsize = sz }
+		};
 
 		list = this.species.fill(maxsize, { this.species.new(size) });
-		this.do({ arg isublist, i;
-			if(isublist.isSequenceableCollection, {
-				list.do({ arg jsublist, j;
-					jsublist.add( isublist.wrapAt(j) );
-				});
-			},{
-				list.do({ arg jsublist, j;
-					jsublist.add( isublist );
-				});
-			});
-		});
+		this.do { |isublist, i|
+			if(isublist.isSequenceableCollection) {
+				list.do { |jsublist, j|
+					jsublist.add(isublist.wrapAt(j))
+				}
+			} {
+				list.do { |jsublist, j|
+					jsublist.add(isublist)
+				}
+			}
+		};
 		^list
 	}
 
@@ -585,7 +585,7 @@ SequenceableCollection : Collection {
 		};
 
 		^this.species.fill(maxsize, { |i|
-			func.value( *this.collect { |sublist|
+			func.value(*this.collect { |sublist|
 				if(sublist.isSequenceableCollection) {
 					sublist.wrapAt(i)
 				} {
@@ -595,7 +595,7 @@ SequenceableCollection : Collection {
 		})
 	}
 
-	flopTogether { arg ... moreArrays;
+	flopTogether { |... moreArrays|
 		var standIn, maxSize = 0, array;
 		array = [this] ++ moreArrays;
 		array.do { |sublist|
@@ -607,10 +607,10 @@ SequenceableCollection : Collection {
 		array = array.collect { |sublist| sublist.add(standIn) };
 		^array.collect { |sublist|
 			sublist.flop.collect { |each| each.drop(-1) } // remove stand-in
-		};
+		}
 	}
 
-	flopDeep { arg rank;
+	flopDeep { |rank|
 		var size, maxsize;
 		if(rank.isNil) { rank = this.maxDepth - 1 };
 		if(rank <= 1) { ^this.flop };
@@ -622,7 +622,7 @@ SequenceableCollection : Collection {
 		})
 	}
 
-	wrapAtDepth { arg rank, index;
+	wrapAtDepth { |rank, index|
 		if(rank == 0) { ^this.wrapAt(index) };
 		^this.collect { |item, i|
 			if(item.isSequenceableCollection) {
@@ -633,39 +633,39 @@ SequenceableCollection : Collection {
 		}
 	}
 
-	unlace { arg numlists, clumpSize=1, clip=false;
+	unlace { |numlists, clumpSize = 1, clip = false|
 		var size, list, sublist, self;
 
 		size = (this.size + numlists - 1) div: numlists;
 		list = this.species.fill(numlists, { this.species.new(size) });
-		self = if(clip) { this.keep(this.size.trunc(clumpSize * numlists).postln)} { this };
-		self.do({ arg item, i;
+		self = if(clip) { this.keep(this.size.trunc(clumpSize * numlists).postln) } { this };
+		self.do { |item, i|
 			sublist = list.at(i div: clumpSize % numlists);
-			sublist.add(item);
-		});
+			sublist.add(item)
+		};
 		^list
 	}
 
 	integrate {
 		var list, sum = 0;
 		list = this.class.new(this.size);
-		this.do {|item|
+		this.do { |item|
 			sum = sum + item;
-			list.add( sum );
+			list.add(sum)
 		};
 		^list
 	}
 	differentiate {
 		var list, prev = 0;
 		list = this.class.new(this.size);
-		this.do {|item|
-			list.add( item - prev );
-			prev = item;
+		this.do { |item|
+			list.add(item - prev);
+			prev = item
 		};
 		^list
 	}
 	// complement to Integer:asDigits
-	convertDigits { arg base=10;
+	convertDigits { |base = 10|
 		var lastIndex = this.lastIndex;
 		^this.sum { |x, i|
 			if(x >= base) { Error("digit too large for base").throw };
@@ -677,55 +677,55 @@ SequenceableCollection : Collection {
 		// if this is shorter than that, size difference should be included
 		// (if this is longer, the do loop will take care of it)
 		var	count = (that.size - this.size).max(0);
-		this.do({ |elem, i|
-			if(elem != that[i]) { count = count + 1 };
-		});
+		this.do { |elem, i|
+			if(elem != that[i]) { count = count + 1 }
+		};
 		^count
 	}
 
 	// pitch operations
-	degreeToKey { arg scale, stepsPerOctave=12;
-		^this.collect({ arg scaleDegree;
-			scaleDegree.degreeToKey(scale, stepsPerOctave);
-		});
+	degreeToKey { |scale, stepsPerOctave = 12|
+		^this.collect { |scaleDegree|
+			scaleDegree.degreeToKey(scale, stepsPerOctave)
+		}
 	}
-	keyToDegree { arg scale, stepsPerOctave=12;
-		^this.collect { arg val; val.keyToDegree(scale, stepsPerOctave) }
+	keyToDegree { |scale, stepsPerOctave = 12|
+		^this.collect { |val| val.keyToDegree(scale, stepsPerOctave) }
 	}
 
-	nearestInScale { arg scale, stepsPerOctave=12; // collection is sorted
+	nearestInScale { |scale, stepsPerOctave = 12| // collection is sorted
 		var key, root;
 		root = this.trunc(stepsPerOctave);
 		key = this % stepsPerOctave;
 		^key.nearestInList(scale) + root
 	}
-	nearestInList { arg list;  // collection is sorted
-		^this.collect({ arg item; list.at(list.indexIn(item)) })
+	nearestInList { |list|  // collection is sorted
+		^this.collect { |item| list.at(list.indexIn(item)) }
 	}
 
-	transposeKey { arg amount, octave=12;
+	transposeKey { |amount, octave = 12|
 		^((this + amount) % octave).sort
 	}
-	mode { arg degree, octave=12;
+	mode { |degree, octave = 12|
 		^(rotate(this, degree.neg) - this.wrapAt(degree)) % octave
 	}
 
-	performDegreeToKey { arg scaleDegree, stepsPerOctave = 12, accidental = 0;
+	performDegreeToKey { |scaleDegree, stepsPerOctave = 12, accidental = 0|
 		var baseKey = (stepsPerOctave * (scaleDegree div: this.size)) + this.wrapAt(scaleDegree);
 		^if(accidental == 0) { baseKey } { baseKey + (accidental * (stepsPerOctave / 12.0)) }
 	}
 
-	performKeyToDegree { | degree, stepsPerOctave = 12 |
+	performKeyToDegree { |degree, stepsPerOctave = 12|
 		var n = degree div: stepsPerOctave * this.size;
 		var key = degree % stepsPerOctave;
 		^this.indexInBetween(key) + n
 	}
 
-	performNearestInList { | degree |
+	performNearestInList { |degree|
 		^this.at(this.indexIn(degree))
 	}
 
-	performNearestInScale { arg degree, stepsPerOctave=12; // collection is sorted
+	performNearestInScale { |degree, stepsPerOctave = 12| // collection is sorted
 		var root = degree.trunc(stepsPerOctave);
 		var key = degree % stepsPerOctave;
 		^key.nearestInList(this) + root
@@ -736,40 +736,40 @@ SequenceableCollection : Collection {
 		var list, tie;
 		list = List.new;
 		tie = this.convertOneRhythm(list);
-		if (tie > 0.0, { list.add(tie) });  // check for tie at end of rhythm
+		if(tie > 0.0) { list.add(tie) };  // check for tie at end of rhythm
 		^list
 	}
 	sumRhythmDivisions {
 		var sum = 0;
-		this.do {|beats|
-			sum = sum + abs(if (beats.isSequenceableCollection) {
-				beats[0];
-			}{
+		this.do { |beats|
+			sum = sum + abs(if(beats.isSequenceableCollection) {
+				beats[0]
+			} {
 				beats
-			});
+			})
 		};
 		^sum
 	}
-	convertOneRhythm { arg list, tie = 0.0, stretch = 1.0;
+	convertOneRhythm { |list, tie = 0.0, stretch = 1.0|
 		var beats, divisions, repeats;
 		#beats, divisions, repeats = this;
 		repeats = repeats ? 1;
 		stretch = stretch * beats / divisions.sumRhythmDivisions;
-		repeats.do({
+		repeats.do {
 			divisions.do { |val|
-				if (val.isSequenceableCollection) {
+				if(val.isSequenceableCollection) {
 					tie = val.convertOneRhythm(list, tie, stretch)
-				}{
+				} {
 					val = val * stretch;
-					if (val > 0.0) {
+					if(val > 0.0) {
 						list.add(val + tie);
-						tie = 0.0;
-					}{
+						tie = 0.0
+					} {
 						tie = tie - val
-					};
-				};
-			};
-		});
+					}
+				}
+			}
+		};
 		^tie
 	}
 
@@ -856,60 +856,60 @@ SequenceableCollection : Collection {
 	raddeg { ^this.performUnaryOp('raddeg') }
 
 	// binary math ops
-	+ { arg aNumber, adverb; ^this.performBinaryOp('+', aNumber, adverb) }
-	- { arg aNumber, adverb; ^this.performBinaryOp('-', aNumber, adverb) }
-	* { arg aNumber, adverb; ^this.performBinaryOp('*', aNumber, adverb) }
-	/ { arg aNumber, adverb; ^this.performBinaryOp('/', aNumber, adverb) }
-	div { arg aNumber, adverb; ^this.performBinaryOp('div', aNumber, adverb) }
-	mod { arg aNumber, adverb; ^this.performBinaryOp('mod', aNumber, adverb) }
-	modSeaside { arg aNumber, adverb; ^this.performBinaryOp('modSeaside', aNumber, adverb) }
-	pow { arg aNumber, adverb; ^this.performBinaryOp('pow', aNumber, adverb) }
-	min { arg aNumber, adverb; ^this.performBinaryOp('min', aNumber, adverb) }
-	max { arg aNumber=0, adverb; ^this.performBinaryOp('max', aNumber, adverb) }
+	+ { |aNumber, adverb| ^this.performBinaryOp('+', aNumber, adverb) }
+	- { |aNumber, adverb| ^this.performBinaryOp('-', aNumber, adverb) }
+	* { |aNumber, adverb| ^this.performBinaryOp('*', aNumber, adverb) }
+	/ { |aNumber, adverb| ^this.performBinaryOp('/', aNumber, adverb) }
+	div { |aNumber, adverb| ^this.performBinaryOp('div', aNumber, adverb) }
+	mod { |aNumber, adverb| ^this.performBinaryOp('mod', aNumber, adverb) }
+	modSeaside { |aNumber, adverb| ^this.performBinaryOp('modSeaside', aNumber, adverb) }
+	pow { |aNumber, adverb| ^this.performBinaryOp('pow', aNumber, adverb) }
+	min { |aNumber, adverb| ^this.performBinaryOp('min', aNumber, adverb) }
+	max { |aNumber = 0, adverb| ^this.performBinaryOp('max', aNumber, adverb) }
 
 
-	<  { arg aNumber, adverb; ^this.performBinaryOp('<', aNumber, adverb) }
-	<= { arg aNumber, adverb; ^this.performBinaryOp('<=', aNumber, adverb) }
-	>  { arg aNumber, adverb; ^this.performBinaryOp('>', aNumber, adverb) }
-	>= { arg aNumber, adverb; ^this.performBinaryOp('>=', aNumber, adverb) }
+	<  { |aNumber, adverb| ^this.performBinaryOp('<', aNumber, adverb) }
+	<= { |aNumber, adverb| ^this.performBinaryOp('<=', aNumber, adverb) }
+	>  { |aNumber, adverb| ^this.performBinaryOp('>', aNumber, adverb) }
+	>= { |aNumber, adverb| ^this.performBinaryOp('>=', aNumber, adverb) }
 
-	bitAnd { arg aNumber, adverb; ^this.performBinaryOp('bitAnd', aNumber, adverb) }
-	bitOr { arg aNumber, adverb; ^this.performBinaryOp('bitOr', aNumber, adverb) }
-	bitXor { arg aNumber, adverb; ^this.performBinaryOp('bitXor', aNumber, adverb) }
-	bitHammingDistance { arg aNumber, adverb;
+	bitAnd { |aNumber, adverb| ^this.performBinaryOp('bitAnd', aNumber, adverb) }
+	bitOr { |aNumber, adverb| ^this.performBinaryOp('bitOr', aNumber, adverb) }
+	bitXor { |aNumber, adverb| ^this.performBinaryOp('bitXor', aNumber, adverb) }
+	bitHammingDistance { |aNumber, adverb|
 		^this.performBinaryOp('hammingDistance', aNumber, adverb)
 	}
 
-	lcm { arg aNumber, adverb; ^this.performBinaryOp('lcm', aNumber, adverb) }
-	gcd { arg aNumber, adverb; ^this.performBinaryOp('gcd', aNumber, adverb) }
-	round { arg aNumber=1, adverb; ^this.performBinaryOp('round', aNumber, adverb) }
-	roundUp { arg aNumber=1, adverb; ^this.performBinaryOp('roundUp', aNumber, adverb) }
-	trunc { arg aNumber=1, adverb; ^this.performBinaryOp('trunc', aNumber, adverb) }
-	atan2 { arg aNumber, adverb; ^this.performBinaryOp('atan2', aNumber, adverb) }
-	hypot { arg aNumber, adverb; ^this.performBinaryOp('hypot', aNumber, adverb) }
-	hypotApx { arg aNumber, adverb; ^this.performBinaryOp('hypotApx', aNumber, adverb) }
-	leftShift { arg aNumber, adverb; ^this.performBinaryOp('leftShift', aNumber, adverb) }
-	rightShift { arg aNumber, adverb; ^this.performBinaryOp('rightShift', aNumber, adverb) }
-	unsignedRightShift { arg aNumber, adverb; ^this.performBinaryOp('unsignedRightShift', aNumber, adverb) }
-	ring1 { arg aNumber, adverb; ^this.performBinaryOp('ring1', aNumber, adverb) }
-	ring2 { arg aNumber, adverb; ^this.performBinaryOp('ring2', aNumber, adverb) }
-	ring3 { arg aNumber, adverb; ^this.performBinaryOp('ring3', aNumber, adverb) }
-	ring4 { arg aNumber, adverb; ^this.performBinaryOp('ring4', aNumber, adverb) }
-	difsqr { arg aNumber, adverb; ^this.performBinaryOp('difsqr', aNumber, adverb) }
-	sumsqr { arg aNumber, adverb; ^this.performBinaryOp('sumsqr', aNumber, adverb) }
-	sqrsum { arg aNumber, adverb; ^this.performBinaryOp('sqrsum', aNumber, adverb) }
-	sqrdif { arg aNumber, adverb; ^this.performBinaryOp('sqrdif', aNumber, adverb) }
-	absdif { arg aNumber, adverb; ^this.performBinaryOp('absdif', aNumber, adverb) }
-	thresh { arg aNumber, adverb; ^this.performBinaryOp('thresh', aNumber, adverb) }
-	amclip { arg aNumber, adverb; ^this.performBinaryOp('amclip', aNumber, adverb) }
-	scaleneg { arg aNumber, adverb; ^this.performBinaryOp('scaleneg', aNumber, adverb) }
-	clip2 { arg aNumber=1, adverb; ^this.performBinaryOp('clip2', aNumber, adverb) }
-	fold2 { arg aNumber=1, adverb; ^this.performBinaryOp('fold2', aNumber, adverb) }
-	wrap2 { arg aNumber=1, adverb; ^this.performBinaryOp('wrap2', aNumber, adverb) }
-	excess { arg aNumber=1, adverb; ^this.performBinaryOp('excess', aNumber, adverb) }
-	firstArg { arg aNumber, adverb; ^this.performBinaryOp('firstArg', aNumber, adverb) }
-	rrand { arg aNumber, adverb; ^this.performBinaryOp('rrand', aNumber, adverb) }
-	exprand { arg aNumber, adverb; ^this.performBinaryOp('exprand', aNumber, adverb) }
+	lcm { |aNumber, adverb| ^this.performBinaryOp('lcm', aNumber, adverb) }
+	gcd { |aNumber, adverb| ^this.performBinaryOp('gcd', aNumber, adverb) }
+	round { |aNumber = 1, adverb| ^this.performBinaryOp('round', aNumber, adverb) }
+	roundUp { |aNumber = 1, adverb| ^this.performBinaryOp('roundUp', aNumber, adverb) }
+	trunc { |aNumber = 1, adverb| ^this.performBinaryOp('trunc', aNumber, adverb) }
+	atan2 { |aNumber, adverb| ^this.performBinaryOp('atan2', aNumber, adverb) }
+	hypot { |aNumber, adverb| ^this.performBinaryOp('hypot', aNumber, adverb) }
+	hypotApx { |aNumber, adverb| ^this.performBinaryOp('hypotApx', aNumber, adverb) }
+	leftShift { |aNumber, adverb| ^this.performBinaryOp('leftShift', aNumber, adverb) }
+	rightShift { |aNumber, adverb| ^this.performBinaryOp('rightShift', aNumber, adverb) }
+	unsignedRightShift { |aNumber, adverb| ^this.performBinaryOp('unsignedRightShift', aNumber, adverb) }
+	ring1 { |aNumber, adverb| ^this.performBinaryOp('ring1', aNumber, adverb) }
+	ring2 { |aNumber, adverb| ^this.performBinaryOp('ring2', aNumber, adverb) }
+	ring3 { |aNumber, adverb| ^this.performBinaryOp('ring3', aNumber, adverb) }
+	ring4 { |aNumber, adverb| ^this.performBinaryOp('ring4', aNumber, adverb) }
+	difsqr { |aNumber, adverb| ^this.performBinaryOp('difsqr', aNumber, adverb) }
+	sumsqr { |aNumber, adverb| ^this.performBinaryOp('sumsqr', aNumber, adverb) }
+	sqrsum { |aNumber, adverb| ^this.performBinaryOp('sqrsum', aNumber, adverb) }
+	sqrdif { |aNumber, adverb| ^this.performBinaryOp('sqrdif', aNumber, adverb) }
+	absdif { |aNumber, adverb| ^this.performBinaryOp('absdif', aNumber, adverb) }
+	thresh { |aNumber, adverb| ^this.performBinaryOp('thresh', aNumber, adverb) }
+	amclip { |aNumber, adverb| ^this.performBinaryOp('amclip', aNumber, adverb) }
+	scaleneg { |aNumber, adverb| ^this.performBinaryOp('scaleneg', aNumber, adverb) }
+	clip2 { |aNumber = 1, adverb| ^this.performBinaryOp('clip2', aNumber, adverb) }
+	fold2 { |aNumber = 1, adverb| ^this.performBinaryOp('fold2', aNumber, adverb) }
+	wrap2 { |aNumber = 1, adverb| ^this.performBinaryOp('wrap2', aNumber, adverb) }
+	excess { |aNumber = 1, adverb| ^this.performBinaryOp('excess', aNumber, adverb) }
+	firstArg { |aNumber, adverb| ^this.performBinaryOp('firstArg', aNumber, adverb) }
+	rrand { |aNumber, adverb| ^this.performBinaryOp('rrand', aNumber, adverb) }
+	exprand { |aNumber, adverb| ^this.performBinaryOp('exprand', aNumber, adverb) }
 
 
 	/*  Boost Special Functions  */
@@ -990,9 +990,9 @@ SequenceableCollection : Collection {
 	//  "http://mathworld.wolfram.com/ChebyshevPolynomialoftheFirstKind.html"
 	chebyshevTZeros {
 		var n = this.asInteger;
-		^(1..n).collect({ arg k;
-			cos(pi* ((2*k) - 1) / (2*n))
-		});
+		^(1..n).collect { |k|
+			cos(pi * ((2 * k) - 1) / (2 * n))
+		}
 	}
 
 	//  Spherical Harmonics:
@@ -1099,41 +1099,41 @@ SequenceableCollection : Collection {
 
 
 	// math op dispatch support
-	performUnaryOp { arg aSelector;
-		^this.collect({ arg item; item.perform(aSelector) });
+	performUnaryOp { |aSelector|
+		^this.collect { |item| item.perform(aSelector) }
 	}
 
-	performBinaryOp { arg aSelector, theOperand, adverb;
-		^theOperand.performBinaryOpOnSeqColl(aSelector, this, adverb);
+	performBinaryOp { |aSelector, theOperand, adverb|
+		^theOperand.performBinaryOpOnSeqColl(aSelector, this, adverb)
 	}
 
-	performBinaryOpOnSeqColl { arg aSelector, theOperand, adverb;
+	performBinaryOpOnSeqColl { |aSelector, theOperand, adverb|
 		var size, newList;
-		if (adverb == nil) {
+		if(adverb == nil) {
 			size = this.size max: theOperand.size;
 			newList = this.species.new(size);
-			size.do({ arg i;
-				newList.add(theOperand.wrapAt(i).perform(aSelector, this.wrapAt(i)));
-			});
+			size.do { |i|
+				newList.add(theOperand.wrapAt(i).perform(aSelector, this.wrapAt(i)))
+			};
 			^newList
 		};
-		if (adverb.isInteger) {
-			if (adverb == 0) {
+		if(adverb.isInteger) {
+			if(adverb == 0) {
 				size = this.size max: theOperand.size;
 				newList = this.species.new(size);
-				size.do({ arg i;
-					newList.add(theOperand.wrapAt(i).perform(aSelector, this.wrapAt(i)));
-				});
+				size.do { |i|
+					newList.add(theOperand.wrapAt(i).perform(aSelector, this.wrapAt(i)))
+				};
 				^newList
-			}{
-				if (adverb > 0) {
-					^theOperand.collect {|item, i| item.perform(aSelector, this, adverb-1) }
-				}{
-					^this.collect {|item, i| theOperand.perform(aSelector, item, adverb+1) }
+			} {
+				if(adverb > 0) {
+					^theOperand.collect { |item, i| item.perform(aSelector, this, adverb - 1) }
+				} {
+					^this.collect { |item, i| theOperand.perform(aSelector, item, adverb + 1) }
 				}
 			}
 		};
-		if (adverb == 't') {
+		if(adverb == 't') {
 			//			size = this.size;
 			//			newList = this.species.new(size);
 			//			size.do({ arg i;
@@ -1142,12 +1142,12 @@ SequenceableCollection : Collection {
 			//			^newList
 			size = theOperand.size;
 			newList = this.species.new(size);
-			size.do({ arg i;
-				newList.add(theOperand.at(i).perform(aSelector, this));
-			});
+			size.do { |i|
+				newList.add(theOperand.at(i).perform(aSelector, this))
+			};
 			^newList
 		};
-		if (adverb == 'x') {
+		if(adverb == 'x') {
 			//			size = this.size;
 			//			newList = this.species.new(size);
 			//			size.do({ arg i;
@@ -1156,50 +1156,50 @@ SequenceableCollection : Collection {
 			//			^newList
 			size = theOperand.size * this.size;
 			newList = this.species.new(size);
-			theOperand.do({ arg a;
-				this.do({ arg b;
-					newList.add(a.perform(aSelector, b));
-				});
-			});
+			theOperand.do { |a|
+				this.do { |b|
+					newList.add(a.perform(aSelector, b))
+				}
+			};
 			^newList
 		};
-		if (adverb == 's') {
+		if(adverb == 's') {
 			size = this.size min: theOperand.size;
 			newList = this.species.new(size);
-			size.do({ arg i;
-				newList.add(theOperand.wrapAt(i).perform(aSelector, this.wrapAt(i)));
-			});
+			size.do { |i|
+				newList.add(theOperand.wrapAt(i).perform(aSelector, this.wrapAt(i)))
+			};
 			^newList
 		};
-		if (adverb == 'f') {
+		if(adverb == 'f') {
 			size = this.size max: theOperand.size;
 			newList = this.species.new(size);
-			size.do({ arg i;
-				newList.add(theOperand.foldAt(i).perform(aSelector, this.foldAt(i)));
-			});
+			size.do { |i|
+				newList.add(theOperand.foldAt(i).perform(aSelector, this.foldAt(i)))
+			};
 			^newList
 		};
 		Error("unrecognized adverb: '" ++ adverb ++ "' for operator '" ++ aSelector ++ "'\n").throw;
 		^nil
 	}
-	performBinaryOpOnSimpleNumber { arg aSelector, aNumber, adverb;
-		^this.collect({ arg item;
+	performBinaryOpOnSimpleNumber { |aSelector, aNumber, adverb|
+		^this.collect { |item|
 			aNumber.perform(aSelector, item, adverb)
-		})
+		}
 	}
-	performBinaryOpOnComplex { arg aSelector, aComplex, adverb;
-		^this.collect({ arg item;
+	performBinaryOpOnComplex { |aSelector, aComplex, adverb|
+		^this.collect { |item|
 			aComplex.perform(aSelector, item, adverb)
-		})
+		}
 	}
 
-	asFraction { arg denominator=100, fasterBetter=true;
+	asFraction { |denominator = 100, fasterBetter = true|
 		^this.collect { |item| item.asFraction(denominator, fasterBetter) }
 	}
 
 	asPoint { ^Point(this[0] ? 0, this[1] ? 0) }
 	asRect { ^Rect(this[0] ? 0, this[1] ? 0, this[2] ? 0, this[3] ? 0) }
-	ascii { ^this.collect { arg item; item.ascii } }
+	ascii { ^this.collect { |item| item.ascii } }
 
 
 	// support UGen rate access
@@ -1207,15 +1207,15 @@ SequenceableCollection : Collection {
 	rate {
 		var rate, rates;
 		if(this.size == 1) { ^this.first.rate };
-		^this.collect({ arg item; item.rate ? 'scalar' }).minItem
+		^this.collect { |item| item.rate ? 'scalar' }.minItem
 		// 'scalar' > 'control' > 'audio'
 	}
 
 	// if we don't catch the special case of an empty array,
 	// Object:multiChannelPerform goes into infinite recursion
-	multiChannelPerform { arg selector ... args;
+	multiChannelPerform { |selector ... args|
 		if(this.size > 0) {
-			^super.multiChannelPerform(selector, *args);
+			^super.multiChannelPerform(selector, *args)
 		} {
 			^this.class.new
 		}
@@ -1223,219 +1223,212 @@ SequenceableCollection : Collection {
 
 	// this method is for UGen inputs that require Refs to block direct multichannel expansion.
 	// here, we assume this is already an array of Refs, which we simply return.
-	multichannelExpandRef { arg rank;
+	multichannelExpandRef { |rank|
 		^this
 	}
 
 	// support some UGen convenience methods.
 	// NOTE: don't forget to add a wrapper here when adding a method to UGen or AbstractFunction
-	clip { arg ... args; ^this.multiChannelPerform('clip', *args) }
-	wrap { arg ... args; ^this.multiChannelPerform('wrap', *args) }
-	fold { arg ... args; ^this.multiChannelPerform('fold', *args) }
-	linlin { arg ... args; ^this.multiChannelPerform('linlin', *args) }
-	linexp { arg ... args; ^this.multiChannelPerform('linexp', *args) }
-	explin { arg ... args; ^this.multiChannelPerform('explin', *args) }
-	expexp { arg ... args; ^this.multiChannelPerform('expexp', *args) }
-	lincurve { arg ... args; ^this.multiChannelPerform('lincurve', *args) }
-	curvelin { arg ... args; ^this.multiChannelPerform('curvelin', *args) }
-	bilin { arg ... args; ^this.multiChannelPerform('bilin', *args) }
-	biexp { arg ... args; ^this.multiChannelPerform('biexp', *args) }
-	moddif { arg ... args; ^this.multiChannelPerform('moddif', *args) }
-	range { arg ... args; ^this.multiChannelPerform('range', *args) }
-	exprange { arg ... args; ^this.multiChannelPerform('exprange', *args) }
-	curverange { arg ... args; ^this.multiChannelPerform('curverange', *args) }
-	unipolar { arg ... args; ^this.multiChannelPerform('unipolar', *args) }
-	bipolar { arg ... args; ^this.multiChannelPerform('bipolar', *args) }
-	lag { arg ... args; ^this.multiChannelPerform('lag', *args) }
-	lag2 { arg ... args; ^this.multiChannelPerform('lag2', *args) }
-	lag3 { arg ... args; ^this.multiChannelPerform('lag3', *args) }
-	lagud { arg ... args; ^this.multiChannelPerform('lagud', *args) }
-	lag2ud { arg ... args; ^this.multiChannelPerform('lag2ud', *args) }
-	lag3ud { arg ... args; ^this.multiChannelPerform('lag3ud', *args) }
-	varlag { arg ... args; ^this.multiChannelPerform('varlag', *args) }
-	slew { arg ... args; ^this.multiChannelPerform('slew', *args) }
-	blend { arg ... args; ^this.multiChannelPerform('blend', *args) }
-	checkBadValues { arg ... args; ^this.multiChannelPerform('checkBadValues', *args) }
-	prune { arg ... args; ^this.multiChannelPerform('prune', *args) }
+	clip { |... args| ^this.multiChannelPerform('clip', *args) }
+	wrap { |... args| ^this.multiChannelPerform('wrap', *args) }
+	fold { |... args| ^this.multiChannelPerform('fold', *args) }
+	linlin { |... args| ^this.multiChannelPerform('linlin', *args) }
+	linexp { |... args| ^this.multiChannelPerform('linexp', *args) }
+	explin { |... args| ^this.multiChannelPerform('explin', *args) }
+	expexp { |... args| ^this.multiChannelPerform('expexp', *args) }
+	lincurve { |... args| ^this.multiChannelPerform('lincurve', *args) }
+	curvelin { |... args| ^this.multiChannelPerform('curvelin', *args) }
+	bilin { |... args| ^this.multiChannelPerform('bilin', *args) }
+	biexp { |... args| ^this.multiChannelPerform('biexp', *args) }
+	moddif { |... args| ^this.multiChannelPerform('moddif', *args) }
+	range { |... args| ^this.multiChannelPerform('range', *args) }
+	exprange { |... args| ^this.multiChannelPerform('exprange', *args) }
+	curverange { |... args| ^this.multiChannelPerform('curverange', *args) }
+	unipolar { |... args| ^this.multiChannelPerform('unipolar', *args) }
+	bipolar { |... args| ^this.multiChannelPerform('bipolar', *args) }
+	lag { |... args| ^this.multiChannelPerform('lag', *args) }
+	lag2 { |... args| ^this.multiChannelPerform('lag2', *args) }
+	lag3 { |... args| ^this.multiChannelPerform('lag3', *args) }
+	lagud { |... args| ^this.multiChannelPerform('lagud', *args) }
+	lag2ud { |... args| ^this.multiChannelPerform('lag2ud', *args) }
+	lag3ud { |... args| ^this.multiChannelPerform('lag3ud', *args) }
+	varlag { |... args| ^this.multiChannelPerform('varlag', *args) }
+	slew { |... args| ^this.multiChannelPerform('slew', *args) }
+	blend { |... args| ^this.multiChannelPerform('blend', *args) }
+	checkBadValues { |... args| ^this.multiChannelPerform('checkBadValues', *args) }
+	prune { |... args| ^this.multiChannelPerform('prune', *args) }
 
 	minNyquist { ^min(this, SampleRate.ir * 0.5) }
 
 	// sorting
-	sort { arg function;
-		if (function.isNil) { function = { arg a, b; a <= b }; };
+	sort { |function|
+		if(function.isNil) { function = { |a, b| a <= b } };
 		^this.mergeSort(function)
 	}
-	sortBy { arg key;
-		^this.sort({| a, b | a[key] <= b[key] })
+	sortBy { |key|
+		^this.sort({ |a, b| a[key] <= b[key] })
 	}
-	sortMap { arg function;
-		^this.sort({| a, b | function.value(a) <= function.value(b) })
+	sortMap { |function|
+		^this.sort({ |a, b| function.value(a) <= function.value(b) })
 	}
 	sortedMedian {
 		var index;
-		if (this.size.odd) {
+		if(this.size.odd) {
 			^this.middle
-		}{
+		} {
 			index = this.middleIndex;
-			^(this[index] + this[index+1]) / 2;
+			^(this[index] + this[index + 1]) / 2
 		}
 	}
-	median { arg function;
+	median { |function|
 		//^this.sort(function).sortedMedian
 		// Note the copy, to prevent changing the input.
 		^this.copy.hoareMedian(function)
 	}
 
-	quickSort { arg function;
+	quickSort { |function|
 		this.quickSortRange(0, this.size - 1, function)
 	}
-	order { arg function;
+	order { |function|
 		var array, orderFunc;
 		// returns an array of indices that would sort the collection into order.
 		if(this.isEmpty) { ^[] };
-		if (function.isNil) { function = { arg a, b; a <= b }; };
+		if(function.isNil) { function = { |a, b| a <= b } };
 		array = [this.asArray, (0..this.lastIndex)].flop;
-		orderFunc = {|a,b| function.value(a[0], b[0]) };
+		orderFunc = { |a, b| function.value(a[0], b[0]) };
 		^array.mergeSort(orderFunc).flop[1]
 	}
 
-	swap { arg i, j;
+	swap { |i, j|
 		var temp;
 		temp = this[i];
 		this[i] = this[j];
-		this[j] = temp;
+		this[j] = temp
 	}
 
-	quickSortRange { arg i, j, function;
+	quickSortRange { |i, j, function|
 		//Sort elements i through j of this to be nondescending according to
 		// function.
 		var di, dij, dj, tt, ij, k, l, n;
 
 		// The prefix d means the data at that index.
-		if ((n = j + 1  - i) <= 1, { ^this });	// Nothing to sort.
+		if((n = j + 1 - i) <= 1) { ^this };	// Nothing to sort.
 
 		//Sort di,dj.
 		di = this.at(i);
 		dj = this.at(j);
-		if (function.value(di, dj).not, { // i.e., should di precede dj?
-			this.swap(i,j);
+		if(function.value(di, dj).not) { // i.e., should di precede dj?
+			this.swap(i, j);
 			tt = di;
 			di = dj;
-			dj = tt;
-		});
-		if ( n > 2, { // More than two elements.
+			dj = tt
+		};
+		if(n > 2) { // More than two elements.
 			ij = (i + j) div: 2;  // ij is the midpoint of i and j.
 			dij = this.at(ij);  // Sort di,dij,dj.  Make dij be their median.
-			if (function.value(di,  dij), {  // i.e. should di precede dij?
-				if (function.value(dij, dj).not, {  // i.e., should dij precede dj?
+			if(function.value(di, dij)) {  // i.e. should di precede dij?
+				if(function.value(dij, dj).not) {  // i.e., should dij precede dj?
 					this.swap(j, ij);
-					dij = dj;
-				})
-			},{ // i.e. di should come after dij"
+					dij = dj
+				}
+			} { // i.e. di should come after dij"
 				this.swap(i, ij);
-				dij = di;
-			});
-			if ( n > 3, { // More than three elements.
+				dij = di
+			};
+			if(n > 3) { // More than three elements.
 				// Find k>i and l<j such that dk,dij,dl are in reverse order.
 				// Swap k and l.  Repeat this procedure until k and l pass each other.
 				k = i;
 				l = j;
-				while ({
-					while ({
+				while {
+					while {
 						l = l - 1;
 						k <= l and: { function.value(dij, this.at(l)) }
-					}); // i.e. while dl succeeds dij
-					while ({
+					}; // i.e. while dl succeeds dij
+					while {
 						k = k + 1;
-						k <= l and: { function.value(this.at(k), dij) };
-					}); // i.e. while dij succeeds dk
+						k <= l and: { function.value(this.at(k), dij) }
+					}; // i.e. while dij succeeds dk
 					k <= l
-				},{
-					this.swap(k, l);
-				});
+				} {
+					this.swap(k, l)
+				};
 				// Now l<k (either 1 or 2 less), and di through dl are all less than or equal to dk
 				// through dj.  Sort those two segments.
 				this.quickSortRange(i, l, function);
-				this.quickSortRange(k, j, function);
-			});
-		});
+				this.quickSortRange(k, j, function)
+			}
+		}
 	}
 
 
 
-	mergeSort { arg function;
+	mergeSort { |function|
 		var tempArray;
 		tempArray = this.class.newClear(this.size);
-		this.mergeSortTemp(function, tempArray, 0, this.size - 1);
+		this.mergeSortTemp(function, tempArray, 0, this.size - 1)
 	}
 
-	mergeSortTemp { arg function, tempArray, left, right;
+	mergeSortTemp { |function, tempArray, left, right|
 		var mid, size;
 
 		size = right - left;
-		if (size <= 0) { ^this };
-		if (size <= 8) { ^this.insertionSortRange(function, left, right) };
+		if(size <= 0) { ^this };
+		if(size <= 8) { ^this.insertionSortRange(function, left, right) };
 
 		mid = (right + left) >> 1;
 		this.mergeSortTemp(function, tempArray, left, mid);
-		this.mergeSortTemp(function, tempArray, mid+1, right);
-		this.mergeTemp(function, tempArray, left, mid+1, right);
+		this.mergeSortTemp(function, tempArray, mid + 1, right);
+		this.mergeTemp(function, tempArray, left, mid + 1, right)
 	}
 
-	mergeTemp { arg function, tempArray, left, mid, right;
+	mergeTemp { |function, tempArray, left, mid, right|
 		var i, leftEnd, size, tempPos;
 		leftEnd = mid - 1;
 		tempPos = left;
 		size = right - left + 1;
-		while { (left <= leftEnd) && (mid <= right) }
-		{
-			if (function.value( this[left], this[mid] ))
-			{
+		while { (left <= leftEnd) && (mid <= right) } {
+			if(function.value(this[left], this[mid])) {
 				tempArray[tempPos] = this[left];
 				tempPos = tempPos + 1;
-				left = left + 1;
-			}
-			{
+				left = left + 1
+			} {
 				tempArray[tempPos] = this[mid];
 				tempPos = tempPos + 1;
-				mid = mid + 1;
+				mid = mid + 1
 			}
 		};
-		while { left <= leftEnd }
-		{
+		while { left <= leftEnd } {
 			tempArray[tempPos] = this[left];
 			tempPos = tempPos + 1;
-			left = left + 1;
+			left = left + 1
 		};
-		while { mid <= right }
-		{
+		while { mid <= right } {
 			tempArray[tempPos] = this[mid];
 			tempPos = tempPos + 1;
-			mid = mid + 1;
+			mid = mid + 1
 		};
 		size.do {
 			this[right] = tempArray[right];
-			right = right - 1;
-		};
+			right = right - 1
+		}
 	}
 
-	insertionSort { arg function;
+	insertionSort { |function|
 		^this.insertionSortRange(function, 0, this.size - 1)
 	}
-	insertionSortRange { arg function, left, right;
+	insertionSortRange { |function, left, right|
 		var i, j, test;
 		i = left + 1;
-		while { i <= right }
-		{
+		while { i <= right } {
 			test = this[i];
 			j = i;
-			while { (j > left) && { function.value(this[j-1], test).not } }
-			{
-				this[j] = this[j-1];
-				j = j - 1;
+			while { (j > left) && { function.value(this[j - 1], test).not } } {
+				this[j] = this[j - 1];
+				j = j - 1
 			};
 			this[j] = test;
-			i = i + 1;
+			i = i + 1
 		}
 	}
 
@@ -1443,12 +1436,14 @@ SequenceableCollection : Collection {
 	// Finds the median efficiently, by rearranging the array IN-PLACE.
 	hoareMedian { |function|
 		if(this.isEmpty) { ^nil };
-		^if(this.size.even, {
-			[this.hoareFind(this.size/ 2 - 1, function),
-				this.hoareFind(this.size/ 2,     function)].mean;
-		}, {
-			this.hoareFind(this.size - 1 / 2, function);
-		});
+		^if(this.size.even) {
+			[
+				this.hoareFind(this.size / 2 - 1, function),
+				this.hoareFind(this.size / 2, function)
+			].mean
+		} {
+			this.hoareFind(this.size - 1 / 2, function)
+		}
 	}
 
 	// Finds the kth element in the array, according to a given sorting function.
@@ -1456,27 +1451,27 @@ SequenceableCollection : Collection {
 	// doesn't attempt to completely sort the array. Method is due to C. A. F. Hoare.
 	// Note: this rearranges array elements IN PLACE.
 	hoareFind { |k, function, left, right|
-		var i,j,p,r,l;
+		var i, j, p, r, l;
 
-		if (function.isNil) { function = { | a, b | a < b } };
+		if(function.isNil) { function = { |a, b| a < b } };
 
-		i = left  ?  0;
-		j = right ?? {this.size-1};
+		i = left ? 0;
+		j = right ?? { this.size - 1 };
 
-		while{ i < j }{
+		while { i < j } {
 			p = this[k];
-			# l, r = this.hoarePartition(i,j,p, function);
-			if(r < k, {
+			# l, r = this.hoarePartition(i, j, p, function);
+			if(r < k) {
 				// kth smallest is in right split
-				i = l;
-			});
-			if(k < l, {
+				i = l
+			};
+			if(k < l) {
 				// kth smallest is in left split
-				j = r;
-			});
+				j = r
+			}
 		};
 		// The desired element is in desired position
-		^this[k];
+		^this[k]
 	}
 
 	// In-place partitioning method used by hoareFind.
@@ -1488,38 +1483,38 @@ SequenceableCollection : Collection {
 		l = l0;
 		r = r0;
 
-		while({ l <= r }, {
+		while { l <= r } {
 			// left_scan
-			while { (l < this.size) and: { function.value(this[l], p) } }{
-				l = l + 1;
+			while { (l < this.size) and: { function.value(this[l], p) } } {
+				l = l + 1
 			};
 			// right_scan
-			while { (r >= 0) and: { function.value(p, this[r]) } }{
-				r = r - 1;
+			while { (r >= 0) and: { function.value(p, this[r]) } } {
+				r = r - 1
 			};
 			// check and exchange
-			if(l <= r){
+			if(l <= r) {
 				tmp = this[l];
 				this[l] = this[r];
 				this[r] = tmp;
 				// then
 				l = l + 1;
-				r = r - 1;
-			};
-		});
+				r = r - 1
+			}
+		};
 
-		^[l,r];
+		^[l, r]
 	}
 
 
 	// streaming
-	*streamContents { arg function;
+	*streamContents { |function|
 		var stream;
 		stream = CollStream.on(this.new(100));
 		function.value(stream);
 		^stream.contents
 	}
-	*streamContentsLimit { arg function, limit=2000;
+	*streamContentsLimit { |function, limit = 2000|
 		var stream;
 		stream = LimitedWriteStream.on(this.new(100 min: limit));
 		stream.limit_(limit).limitFunc_({ ^stream.contents });
@@ -1527,46 +1522,46 @@ SequenceableCollection : Collection {
 		^stream.contents
 	}
 
-	wrapAt { arg index;
+	wrapAt { |index|
 		index = index % this.size;
 		^this.at(index)
 	}
-	wrapPut { arg index, value;
+	wrapPut { |index, value|
 		index = index % this.size;
 		^this.put(index, value)
 	}
-	reduce { arg operator, adverb;
+	reduce { |operator, adverb|
 		var once = true, result;
-		if(this.size==1){ ^this[0] };
-		this.doAdjacentPairs {|a, b|
-			if (once) {
+		if(this.size == 1) { ^this[0] };
+		this.doAdjacentPairs { |a, b|
+			if(once) {
 				once = false;
-				result = operator.applyTo(a, b, adverb);
-			}{
-				result =  operator.applyTo(result, b, adverb);
-			};
+				result = operator.applyTo(a, b, adverb)
+			} {
+				result = operator.applyTo(result, b, adverb)
+			}
 		};
 		^result
 	}
-	join { arg joiner;
-		^String.streamContents { arg stream;
+	join { |joiner|
+		^String.streamContents { |stream|
 			var stop;
 			if(joiner.isNil) {
-				this.do { arg item; stream << item };
+				this.do { |item| stream << item }
 			} {
 				stop = this.size - 1;
-				this.do { arg item,i;
+				this.do { |item, i|
 					stream << item;
-					if(i < stop) { stream << joiner };
-				};
+					if(i < stop) { stream << joiner }
+				}
 			}
 		}
 	}
 
 
 	// TempoClock play quantization
-	nextTimeOnGrid { arg clock;
-		^clock.nextTimeOnGrid(*this);
+	nextTimeOnGrid { |clock|
+		^clock.nextTimeOnGrid(*this)
 	}
 
 	// we break up the array so that missing elements are set to nil in the Quant
@@ -1586,7 +1581,7 @@ SequenceableCollection : Collection {
 		latency = latency ? server.latency;
 		sendBundle = { |i| server.sendBundle(latency, bundleArray.wrapAt(i)) };
 
-		if (lag != 0) {
+		if(lag != 0) {
 			lag = lag.asArray;
 
 			this.do { |delta, i|
@@ -1613,12 +1608,12 @@ SequenceableCollection : Collection {
 		}
 	}
 
-	unixCmd { arg action, postOutput = true;
+	unixCmd { |action, postOutput = true|
 		var pid;
 		if(this.notEmpty) {
 			pid = this.prUnixCmd(postOutput);
 			if(action.notNil) {
-				String.unixCmdActions.put(pid, action);
+				String.unixCmdActions.put(pid, action)
 			};
 			^pid
 		} {
@@ -1626,14 +1621,14 @@ SequenceableCollection : Collection {
 		}
 	}
 
-	unixCmdGetStdOut { arg maxLineLength=1024;
+	unixCmdGetStdOut { |maxLineLength = 1024|
 		var pipe, lines, line, pid;
 
 		if(this.notEmpty) {
 			pipe = Pipe.argv(this, "r");
 			lines = "";
 			line = pipe.getLine(maxLineLength);
-			while({line.notNil}, {lines = lines ++ line ++ "\n"; line = pipe.getLine; });
+			while { line.notNil } { lines = lines ++ line ++ "\n"; line = pipe.getLine };
 			pipe.close;
 			^lines
 		} {
@@ -1641,12 +1636,12 @@ SequenceableCollection : Collection {
 		}
 	}
 
-	prUnixCmd { arg postOutput = true;
+	prUnixCmd { |postOutput = true|
 		_ArrayPOpen
 		^this.primitiveFailed
 	}
 
-	sanitize { arg ... args;
-		^this.multiChannelPerform(\sanitize, *args);
+	sanitize { |... args|
+		^this.multiChannelPerform(\sanitize, *args)
 	}
 }

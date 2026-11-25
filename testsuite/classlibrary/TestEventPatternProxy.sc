@@ -1,17 +1,17 @@
 //# VERSION 3.16
 TestEventPatternProxy : UnitTest{
 
-    test_playOnInstanceClock {
-        var actualClock;
-        var clock = TempoClock(2);
-        var cond = Condition();
-        var proxy = EventPatternProxy(
-            Pbind(\dummy, Pfuncn{ actualClock = thisThread.clock; cond.unhang }, \dur, 0)
-        );
-        proxy.clock_(clock).play;
-        cond.hang;
-        this.assertEquals(actualClock, clock, "EventPatternProxy.play() should use instance's clock if no argClock is given");
-    }
+	test_playOnInstanceClock {
+		var actualClock;
+		var clock = TempoClock(2);
+		var cond = Condition();
+		var proxy = EventPatternProxy(
+			Pbind(\dummy, Pfuncn { actualClock = thisThread.clock; cond.unhang }, \dur, 0)
+		);
+		proxy.clock_(clock).play;
+		cond.hang;
+		this.assertEquals(actualClock, clock, "EventPatternProxy.play() should use instance's clock if no argClock is given")
+	}
 
 	test_EventPatternProxy_xfade_cleanupNotPremature {
 
@@ -31,7 +31,7 @@ TestEventPatternProxy : UnitTest{
 		// end the cross-fade, but "just in case" we pull 6.
 		6 do: { r.next(()) };
 		this.assert(stream2CleanupCalled.not,
-			"EventPatternProxy xfade 2nd source cleanup should be not called prematurely.");
+			"EventPatternProxy xfade 2nd source cleanup should be not called prematurely.")
 		// todo: might also wanna check that the cleanup was sent downstream (addToCleanup seen)
 	}
 

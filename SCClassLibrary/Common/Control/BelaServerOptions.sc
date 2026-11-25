@@ -12,7 +12,7 @@ BelaServerOptions : ServerOptions {
 	var <>belaPRU = 1;
 	var <>belaMaxScopeChannels = 0;
 
-	asOptionsString { | port = 57110 |
+	asOptionsString { |port = 57110|
 		var o = super.asOptionsString(port);
 		o = o ++ " -J " ++ numAnalogInChannels.asInteger;
 		o = o ++ " -K " ++ numAnalogOutChannels.asInteger;

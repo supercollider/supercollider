@@ -15,7 +15,7 @@ Platform {
 		classLibraryDir = thisMethod.filenameSymbol.asString.dirname.dirname;
 		helpDir = thisMethod.filenameSymbol.asString.dirname.dirname.dirname ++ "/Help";
 		features = IdentityDictionary.new;
-		recordingsDir = this.userAppSupportDir +/+ "Recordings";
+		recordingsDir = this.userAppSupportDir +/+ "Recordings"
 	}
 
 	name { ^this.subclassResponsibility }
@@ -24,8 +24,8 @@ Platform {
 		_Recompile
 		^this.primitiveFailed
 	}
-	*case { | ... cases |
-		^thisProcess.platform.name.switch(*cases)
+	*case { |... cases|
+		^switch(thisProcess.platform.name, *cases)
 	}
 
 	// directories
@@ -107,41 +107,42 @@ Platform {
 	shutdown { }
 
 	startupFiles {
-		^[defaultStartupFile];
+		^[defaultStartupFile]
 	}
 
-	*deprecatedStartupFiles {|paths|
+	*deprecatedStartupFiles { |paths|
 		var postWarning = false;
-		paths.do {|path|
-			if (File.exists(path.standardizePath)) {
+		paths.do { |path|
+			if(File.exists(path.standardizePath)) {
 				warn("Deprecated startup file found: %\n".format(path));
-				postWarning = true;
+				postWarning = true
 			}
 		};
-		if (postWarning) {
-			postln("Please use % as startup file.\nDeprecated startup files will be ignored in future versions.\n".format(defaultStartupFile));
+		if(postWarning) {
+			postln("Please use % as startup file.\nDeprecated startup files will be ignored in future versions.\n".format(defaultStartupFile))
 		}
 	}
 
-	loadStartupFiles { this.startupFiles.do{|afile|
-		afile = afile.standardizePath;
-		if(File.exists(afile), {afile.load})
+	loadStartupFiles {
+		this.startupFiles.do { |afile|
+			afile = afile.standardizePath;
+			if(File.exists(afile)) { afile.load }
 		}
 	}
 
 	// features
-	declareFeature { | aFeature |
+	declareFeature { |aFeature|
 		var str = aFeature.asString;
-		if (str.first.isUpper) {
-			Error("cannot declare class name features").throw;
+		if(str.first.isUpper) {
+			Error("cannot declare class name features").throw
 		};
-		if (str.first == $_) {
-			Error("cannot declare primitive name features").throw;
+		if(str.first == $_) {
+			Error("cannot declare primitive name features").throw
 		};
-		features.put(aFeature, true);
+		features.put(aFeature, true)
 	}
-	hasFeature { | symbol |
-		if (features.includesKey(symbol).not) {
+	hasFeature { |symbol|
+		if(features.includesKey(symbol).not) {
 			features.put(
 				symbol,
 				symbol.asSymbol.asClass.notNil or: { symbol.isPrimitive }
@@ -149,17 +150,17 @@ Platform {
 		};
 		^features.at(symbol)
 	}
-	when { | features, ifFunction, elseFunction |
-		^features.asArray.inject(true, { |v,x|
+	when { |features, ifFunction, elseFunction|
+		^if(features.asArray.inject(true, { |v, x|
 			v and: { this.hasFeature(x) }
-		}).if(ifFunction, elseFunction)
+		}), ifFunction, elseFunction)
 	}
-	*when {  | features, ifFunction, elseFunction |
+	*when { |features, ifFunction, elseFunction|
 		^thisProcess.platform.when(features, ifFunction, elseFunction)
 	}
 
 	// Prefer qt but fall back to swing if qt not installed.
-	defaultGUIScheme { if (GUI.get(\qt).notNil) {^\qt} {^\swing} }
+	defaultGUIScheme { if(GUI.get(\qt).notNil) { ^\qt } { ^\swing } }
 
 	// Predicate to check if SuperCollider was built with Qt.
 	*hasQt {
@@ -189,10 +190,10 @@ Platform {
 	// used on systems to deduce a svn directory path, if system wide location is used for installed version. (tested on Linux).
 	devLoc{ |inpath|
 		var outpath;
-		if ( devpath.isNil ){ ^inpath };
-		outpath = inpath.copyToEnd( inpath.find( "SuperCollider") );
-		outpath = outpath.replace( "SuperCollider", devpath );
-		^outpath;
+		if(devpath.isNil) { ^inpath };
+		outpath = inpath.copyToEnd(inpath.find("SuperCollider"));
+		outpath = outpath.replace("SuperCollider", devpath);
+		^outpath
 	}
 
 	// hook for clients to write frontend.css
@@ -216,12 +217,12 @@ Platform {
 		^(
 			version: Main.version,
 			buildString: Main.scBuildString,
-			qtVersion:  if(\QtGUI.asClass.isNil, { nil }, { QtGUI.version }),
+			qtVersion: if(\QtGUI.asClass.isNil) { nil } { QtGUI.version },
 			platform: thisProcess.platform.name,
 			platformVersion: thisProcess.platform.version,
 			platformArchitecture: this.architecture,
 			argv: thisProcess.argv,
-			audioDevices: if(thisProcess.platform.name == \linux, {[]}, {ServerOptions.devices}),
+			audioDevices: if(thisProcess.platform.name == \linux) { [] } { ServerOptions.devices },
 			server: case
 				{ Server.program.contains("scsynth") } { "scsynth" }
 				{ Server.program.contains("supernova") } { "supernova" }
@@ -232,7 +233,7 @@ Platform {
 		)
 	}
 
-	*postBugReportInfo { |includePaths=true, includeDevices=false|
+	*postBugReportInfo { |includePaths = true, includeDevices = false|
 		var info = this.systemInformation;
 
 		"Copy the content between the ### lines".postln;
@@ -252,32 +253,32 @@ Platform {
 		"	* argv: %".format(info[\argv].join(" ")).postln;
 		"	* server: %".format(info[\server]).postln;
 
-		if(includePaths, {
-			"	* includes: %".format(info[\includes].join(", ")).postln;
-		});
+		if(includePaths) {
+			"	* includes: %".format(info[\includes].join(", ")).postln
+		};
 
-		if(includeDevices, {
-			"	* devices: %".format(info[\audioDevices].join(", ")).postln;
-		});
+		if(includeDevices) {
+			"	* devices: %".format(info[\audioDevices].join(", ")).postln
+		};
 
-		"#".dup(40).join.postln;
+		"#".dup(40).join.postln
 	}
 
 	*exampleDir {
- 		^(Platform.resourceDir +/+ "examples")
- 	}
+		^(Platform.resourceDir +/+ "examples")
+	}
 }
 
 UnixPlatform : Platform {
 	pathSeparator { ^$/ }
-    pathDelimiter { ^$: }
+	pathDelimiter { ^$: }
 
 	isPathSeparator { |char|
 		^(char === this.pathSeparator)
 	}
 
 	clearMetadata { |path|
-		"rm -f %\.*meta".format(path.splitext[0].escapeChar($ )).systemCmd;
+		"rm -f %\.*meta".format(path.splitext[0].escapeChar($ )).systemCmd
 	}
 
 	arch {
@@ -285,24 +286,24 @@ UnixPlatform : Platform {
 		pipe = Pipe("arch", "r");
 		arch = pipe.getLine;
 		pipe.close;
-		^arch.asSymbol;
+		^arch.asSymbol
 	}
 
 	// killProcessByID moved to LinuxPlatform and OSXPlatform due to different implementations
 
 	killAll { |cmdLineArgs, force = true|
-		"killall -% %".format(force.if({"KILL"}, {"TERM"}), cmdLineArgs).unixCmd;
+		"killall -% %".format(if(force) { "KILL" } { "TERM" }, cmdLineArgs).unixCmd
 	}
 
 	defaultTempDir {
 		// +/+ "" looks funny but ensures trailing slash
 		^["/tmp/", this.userAppSupportDir +/+ ""].detect({ |path|
-			File.exists(path);
-		});
+			File.exists(path)
+		})
 	}
 
 	formatPathForCmdLine { |path|
-		^path.escapeChar($ );
+		^path.escapeChar($ )
 	}
 
 }

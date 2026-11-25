@@ -1,10 +1,10 @@
 + History {
 
-	*makeWin { |where, numItems=8| ^current.makeWin(where, numItems) }
+	*makeWin { |where, numItems = 8| ^current.makeWin(where, numItems) }
 
-	makeWin { |where, numItems=8|
+	makeWin { |where, numItems = 8|
 		var gui = HistoryGui(this, numItems);
-		if (where.notNil) { gui.moveTo(where.x, where.y) };
+		if(where.notNil) { gui.moveTo(where.x, where.y) };
 		^gui
 	}
 

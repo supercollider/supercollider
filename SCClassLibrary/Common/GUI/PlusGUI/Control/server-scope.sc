@@ -1,40 +1,40 @@
 + Server {
-	scope { arg numChannels, index = 0, bufsize = 4096, zoom = (1), rate = \audio;
-		numChannels = numChannels ?? { if (index == 0) { options.numOutputBusChannels } { 2 } };
+	scope { |numChannels, index = 0, bufsize = 4096, zoom = (1), rate = \audio|
+		numChannels = numChannels ?? { if(index == 0) { options.numOutputBusChannels } { 2 } };
 
 		if(scopeWindow.isNil) {
 			scopeWindow = Stethoscope(this, numChannels, index, bufsize, zoom, rate, nil,
 				this.options.numBuffers);
-				// prevent buffer conflicts by using reserved bufnum
-			scopeWindow.window.onClose = scopeWindow.window.onClose.addFunc({ scopeWindow = nil });
+			// prevent buffer conflicts by using reserved bufnum
+			scopeWindow.window.onClose = scopeWindow.window.onClose.addFunc({ scopeWindow = nil })
 		} {
 			scopeWindow.setProperties(numChannels, index, bufsize, zoom, rate);
 			scopeWindow.run;
-			scopeWindow.window.front;
+			scopeWindow.window.front
 		};
 		^scopeWindow
 	}
 
 	freqscope {
-		^FreqScope.new(server: this);
+		^FreqScope.new(server: this)
 	}
 }
 
 + Bus {
-	scope { arg bufsize = 4096, zoom;
-		^server.scope(numChannels, index, bufsize, zoom, rate);
+	scope { |bufsize = 4096, zoom|
+		^server.scope(numChannels, index, bufsize, zoom, rate)
 	}
 }
 
 
 + Function {
-	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom, bounds;
+	scope { |numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom, bounds|
 		var server, synth, synthDef, bytes, synthMsg, outUGen;
 
 		server = Server.default;
 		if(server.warnIfNotRunning(thisMethod)) { ^this };
 
-		synthDef = this.asSynthDef(name: SystemSynthDefs.generateTempName, fadeTime:fadeTime);
+		synthDef = this.asSynthDef(name: SystemSynthDefs.generateTempName, fadeTime: fadeTime);
 		outUGen = synthDef.children.detect { |ugen| ugen.class === Out };
 
 		numChannels = numChannels ?? { if(outUGen.notNil) { (outUGen.inputs.size - 1) } { 1 } };

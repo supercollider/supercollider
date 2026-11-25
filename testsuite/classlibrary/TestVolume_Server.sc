@@ -3,7 +3,7 @@ TestVolume_Server : UnitTest {
 
 	test_booting {
 		var s = Server(thisMethod.name);
-		var correctReply = [ '/g_queryTree.reply', 0, 0, 2, 1, 0, 2, 1, 3, -1, 'volumeAmpControl2' ];
+		var correctReply = ['/g_queryTree.reply', 0, 0, 2, 1, 0, 2, 1, 3, -1, 'volumeAmpControl2'];
 		var queryReply;
 		var nodeIDidx = 6;
 
@@ -16,8 +16,8 @@ TestVolume_Server : UnitTest {
 		0.2.wait;
 
 		OSCFunc({ |msg|
-			queryReply = msg;
-		},'/g_queryTree.reply', s.addr).oneShot;
+			queryReply = msg
+		}, '/g_queryTree.reply', s.addr).oneShot;
 		s.sendMsg("/g_queryTree", 0, 0);
 		s.sync;
 
@@ -27,7 +27,7 @@ TestVolume_Server : UnitTest {
 			"Server boot should send volume synthdef and create synth immediately when set to nonzero volume.");
 
 		s.volume.reset;
-		s.quitSync.remove;
+		s.quitSync.remove
 	}
 
 	test_setVolume {
@@ -48,7 +48,7 @@ TestVolume_Server : UnitTest {
 		this.assertFloatEquals(ampSynthVolume, s.volume.volume.dbamp, "volume level correctly set", 0.0001);
 
 		s.volume.reset;
-		s.quitSync.remove;
+		s.quitSync.remove
 	}
 
 	test_numOutputs {
@@ -63,7 +63,7 @@ TestVolume_Server : UnitTest {
 
 		this.assert(s.outputBus.numChannels == s.volume.numOutputChannels, "volume synth has correct number of channels");
 
-		s.quitSync.remove;
+		s.quitSync.remove
 	}
 
 	test_remoteSetVolume {
@@ -78,16 +78,16 @@ TestVolume_Server : UnitTest {
 		// create ampSynth
 		s.bind {
 			s.volume = -3;
-			s.sync;
+			s.sync
 		};
 
 		// send from outside like a remote client
 		s.sendMsg(15, 3, \volumeAmp, 0.25);
 
 		s.volume.ampSynth.addDependant({ |synth, changer|
-			if (changer == 'n_end') {
-				condition.signalOne;
-			};
+			if(changer == 'n_end') {
+				condition.signalOne
+			}
 		});
 		condition.waitFor(1);
 
@@ -95,7 +95,7 @@ TestVolume_Server : UnitTest {
 			"server should update volume level when set from remote client."
 		);
 
-		s.quitSync.remove;
+		s.quitSync.remove
 	}
 
 	test_resetVolumeAfterKill {
@@ -110,7 +110,7 @@ TestVolume_Server : UnitTest {
 		// create ampSynth
 		s.bind {
 			s.volume = -3;
-			s.sync;
+			s.sync
 		};
 
 		// kill ampSynth irregularly
@@ -122,7 +122,7 @@ TestVolume_Server : UnitTest {
 			"server should reset volume level when ampSynth dies irregularly."
 		);
 
-		s.quitSync.remove;
+		s.quitSync.remove
 	}
 
 

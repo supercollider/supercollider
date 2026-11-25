@@ -20,7 +20,7 @@ TestBus_Server : UnitTest {
 		var get_value = 0;
 		bus.get({ |value|
 			get_value = value;
-			condition.signalOne;
+			condition.signalOne
 		});
 
 		condition.waitFor(1);
@@ -31,7 +31,7 @@ TestBus_Server : UnitTest {
 
 		bus.free;
 		s.quitSync;
-		s.remove;
+		s.remove
 	}
 
 	test_getn {
@@ -49,7 +49,7 @@ TestBus_Server : UnitTest {
 		var get_values = [0, 0];
 		bus.getn(2, { |values|
 			get_values = values;
-			condition.signalOne;
+			condition.signalOne
 		});
 
 		condition.waitFor(1);
@@ -59,7 +59,7 @@ TestBus_Server : UnitTest {
 
 		bus.free;
 		s.quitSync;
-		s.remove;
+		s.remove
 	}
 
 }

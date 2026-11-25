@@ -27,79 +27,79 @@ OSCresponder {
 	var <>addr, <cmdName, <>action;
 	var <cmdNameWithoutSlash;
 
-	*new { arg addr, cmdName, action;
+	*new { |addr, cmdName, action|
 		this.deprecated(thisMethod, OSCFunc.class.findMethod(\new));
-		^super.new.init(addr, cmdName, action);
+		^super.new.init(addr, cmdName, action)
 	}
 
 	*initClass {
-		all = Set.new;
+		all = Set.new
 	}
 
-	init { arg argAddr, argCmdName, argAction;
+	init { |argAddr, argCmdName, argAction|
 		addr = argAddr;
 		action = argAction;
-		this.cmdName = argCmdName;
+		this.cmdName = argCmdName
 	}
 
-	cmdName_ { arg string;
+	cmdName_ { |string|
 		string = string.asString;
 		if(string[0] == $/) { string = string.drop(1) };
 		cmdNameWithoutSlash = string.asSymbol;
-		cmdName = ("/" ++ string).asSymbol;
+		cmdName = ("/" ++ string).asSymbol
 	}
 
 
-	*respond { arg time, addr, msg;
+	*respond { |time, addr, msg|
 		var cmdName, hit = false;
 		#cmdName = msg;
 		all.do { |resp|
 			if(
 				(resp.cmdName === cmdName)
-				or:
+					or:
 				{ resp.cmdNameWithoutSlash === cmdName }
-				and: { addr.matches(resp.addr) }
+					and: { addr.matches(resp.addr) }
 			) {
 				resp.value(time, msg, addr);
-				hit = true;
-			};
+				hit = true
+			}
 		};
 		^hit
 	}
 
-	*add { arg responder;
+	*add { |responder|
 		var old;
 		old = all.findMatch(responder);
-		if(old.notNil,{ all.remove(old) });
-		all.add(responder);
+		if(old.notNil) { all.remove(old) };
+		all.add(responder)
 	}
-	*remove { arg responder;
-		all.remove(responder);
+	*remove { |responder|
+		all.remove(responder)
 	}
-	*removeAddr { arg addr;
-		all = all.reject({ arg item;
+	*removeAddr { |addr|
+		all = all.reject({ |item|
 			item.addr == addr
-		});
+		})
 	}
 
-	value { arg time, msg, addr;
-		action.value(time, this, msg, addr);
+	value { |time, msg, addr|
+		action.value(time, this, msg, addr)
 	}
-	== { arg that;
+	== { |that|
 		^that respondsTo: #[\cmdName, \addr]
-			and: { cmdName == that.cmdName and: { addr == that.addr }}
+			and: { cmdName == that.cmdName and: { addr == that.addr } }
 	}
 	hash {
 		^addr.hash bitXor: cmdName.hash
 	}
-	add { this.class.add(this); }
+	add { this.class.add(this) }
 	remove { all.remove(this) }
 	removeWhenDone {
 		var func;
 		func = action;
-		action = { arg time, responder, msg, addr;
+		action = { |time, responder, msg, addr|
 			func.value(time, responder, msg, addr);
-			this.remove;
+			this.remove
 		}
 	}
 }
@@ -110,10 +110,10 @@ OSCresponder {
 OSCMultiResponder : OSCresponder {
 	var <>nodes;
 
-	value { arg time, msg, addr;
+	value { |time, msg, addr|
 		var iterlist;
 		iterlist = nodes.copy;
-		iterlist.do({ arg node; node.value(time, msg, addr) });
+		iterlist.do { |node| node.value(time, msg, addr) }
 	}
 	isEmpty { ^nodes.size == 0 }
 
@@ -126,27 +126,27 @@ OSCresponderNode : OSCresponder {
 
 	add {
 		var made, found;
-		if(added.not, {
+		if(added.not) {
 			made = OSCMultiResponder(addr, cmdName);
 			found = all.findMatch(made);
-			if(found.isNil, { made.nodes = [this]; made.add; added = true; ^this });
-			if (found.class === OSCresponder, {
+			if(found.isNil) { made.nodes = [this]; made.add; added = true; ^this };
+			if(found.class === OSCresponder) {
 				found.remove;
 				made.nodes = [found, this];
-				made.add;
-			},{
+				made.add
+			} {
 				found.nodes = found.nodes.add(this)
-			});
-			added = true;
-		})
+			};
+			added = true
+		}
 	}
 
 	removeWhenDone {
 		var func;
 		func = action;
-		action = { arg time, responder, msg, addr;
+		action = { |time, responder, msg, addr|
 			func.value(time, responder, msg, addr);
-			this.remove;
+			this.remove
 		}
 	}
 
@@ -154,16 +154,15 @@ OSCresponderNode : OSCresponder {
 		var resp, alreadyThere;
 		resp = OSCMultiResponder(addr, cmdName);
 		alreadyThere = all.findMatch(resp);
-		if(alreadyThere.notNil)
-		{
+		if(alreadyThere.notNil) {
 			alreadyThere.nodes.remove(this);
-			if(alreadyThere.isEmpty, { alreadyThere.remove });
-			added = false;
-		};
+			if(alreadyThere.isEmpty) { alreadyThere.remove };
+			added = false
+		}
 	}
 
-	value { arg time, msg, addr;
-		action.value(time, this, msg, addr);
+	value { |time, msg, addr|
+		action.value(time, this, msg, addr)
 	}
 
 }

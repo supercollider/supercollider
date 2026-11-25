@@ -2,7 +2,7 @@
 RingBuffer : SequenceableCollection {
 	var <array, <readPos, <writePos;
 
-	*new { | size, collectionClass(Array) |
+	*new { |size, collectionClass = (Array)|
 		^this.newCopyArgs(collectionClass.newClear(size), 0, 0)
 	}
 
@@ -17,9 +17,9 @@ RingBuffer : SequenceableCollection {
 
 	// return number of readble items.
 	readable {
-		^if (readPos <= writePos)
-		{ writePos - readPos }
-		{ array.size - readPos + writePos }
+		^if(readPos <= writePos)
+			{ writePos - readPos }
+			{ array.size - readPos + writePos }
 	}
 	// return number of writable items.
 	writable {
@@ -28,39 +28,39 @@ RingBuffer : SequenceableCollection {
 
 	// add value and increase writePos.
 	// do nothing if no items can be written.
-	add { | value |
-		if (this.writable > 0) {
+	add { |value|
+		if(this.writable > 0) {
 			array.put(writePos, value);
-			writePos = (writePos + 1) % array.size;
+			writePos = (writePos + 1) % array.size
 		}
 	}
 	// return next readable item and increase readPos.
 	// return nil if no items can be read.
 	pop {
 		var result;
-		if (this.readable > 0) {
+		if(this.readable > 0) {
 			result = array.at(readPos);
-			readPos = (readPos + 1) % array.size;
+			readPos = (readPos + 1) % array.size
 		};
 		^result
 	}
 	// add value and increase writePos by overwriting oldest readable
 	// item.
-	overwrite { | value |
+	overwrite { |value|
 		var result;
-		if (this.writable == 0) {
-			result = this.pop;
+		if(this.writable == 0) {
+			result = this.pop
 		};
 		this.add(value);
 		^result
 	}
 
 	// iterate over the currently readable items.
-	do { | function |
+	do { |function|
 		var n = this.readable, i = 0;
 		while { i < n } {
 			function.value(array.wrapAt(readPos + i), i);
-			i = i + 1;
+			i = i + 1
 		}
 	}
 }

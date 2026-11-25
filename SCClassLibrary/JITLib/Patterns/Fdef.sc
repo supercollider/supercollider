@@ -93,7 +93,7 @@ Maybe : Ref {
 				outval = str.next(inval);
 				outval.notNil
 			} {
-				inval = outval.yield;
+				inval = outval.yield
 			}
 		}.embedInStream(inval)
 	}
@@ -103,10 +103,10 @@ Maybe : Ref {
 		^UnaryOpFunctionProxy.new(aSelector, this)
 	}
 	composeBinaryOp { |aSelector, something, adverb|
-		^BinaryOpFunctionProxy.new(aSelector, this, something, adverb);
+		^BinaryOpFunctionProxy.new(aSelector, this, something, adverb)
 	}
 	reverseComposeBinaryOp { |aSelector, something, adverb|
-		^BinaryOpFunctionProxy.new(aSelector, something, this, adverb);
+		^BinaryOpFunctionProxy.new(aSelector, something, this, adverb)
 	}
 	composeNAryOp { |aSelector, anArgList, aKeywordArgList|
 		^NAryOpFunctionProxy.new(aSelector, this, anArgList, aKeywordArgList)
@@ -124,7 +124,7 @@ Maybe : Ref {
 		}
 	}
 
-	reduceFuncProxy { |args, protect=true, kwargs|
+	reduceFuncProxy { |args, protect = true, kwargs|
 		if(verbose and: { value.isNil }) {
 			("Maybe: incomplete definition: %\n").postf(this.infoString(args))
 		};
@@ -151,26 +151,26 @@ Maybe : Ref {
 						.postf(this.infoString)
 					};
 					callFunc.value(this, callers, \recursion);
-					this.throw;
+					this.throw
 				};
 				// add this to the list of current callers
 				callers = callers.add(this);
 				// evaluate function
 				val = func.value;
 
-				callFunc.value(this, callers, val);
+				callFunc.value(this, callers, val)
 
 			} { |exception|
-				if(verbose and: { exception.isKindOf(Exception)} ) {
-					("Error or incomplete specification" + exception.errorString).postln;
+				if(verbose and: { exception.isKindOf(Exception) }) {
+					("Error or incomplete specification" + exception.errorString).postln
 				};
 				/*	if(exception.isKindOf(this.class).not) {
 				Exception.throw;
 				}*/
 				// remove again
 				callers.pop;
-				current = previous;
-			};
+				current = previous
+			}
 		}
 		^val
 	}
@@ -185,12 +185,12 @@ Maybe : Ref {
 	}
 
 	infoString { |args|
-		var who, str="", src;
+		var who, str = "", src;
 		who = this.findKey;
 		if(who.isNil) { ^this.asString };
 		who = "~" ++ who;
 		src = this.source.postString;
-		if(args.notNil and: {args.notEmpty}) {
+		if(args.notNil and: { args.notEmpty }) {
 			args = args.collect(_.postString);
 			str = "\nArguments passed: %".format(args)
 		};
@@ -221,7 +221,7 @@ Fdef : Maybe {
 			res = super.new.source_(val);
 			all[key] = res
 		} {
-			if(val.notNil) { res.source = val };
+			if(val.notNil) { res.source = val }
 		}
 		^res
 	}

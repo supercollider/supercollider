@@ -4,10 +4,10 @@
 WidthFirstUGen : UGen {
 	addToSynth {
 		synthDef = buildSynthDef;
-		if (synthDef.notNil, {
+		if(synthDef.notNil) {
 			synthDef.addUGen(this);
-			synthDef.widthFirstUGens = synthDef.widthFirstUGens.add(this);
-		});
+			synthDef.widthFirstUGens = synthDef.widthFirstUGens.add(this)
+		}
 	}
 
 	addCopiesIfNeeded { }
@@ -15,7 +15,7 @@ WidthFirstUGen : UGen {
 
 
 FFT : PV_ChainUGen {
-	*new { | buffer, in = 0.0 , hop = 0.5, wintype = 0 , active = 1, winsize=0|
+	*new { |buffer, in = 0.0, hop = 0.5, wintype = 0, active = 1, winsize = 0|
 		^this.multiNew('control', buffer, in, hop, wintype, active, winsize)
 	}
 
@@ -23,22 +23,22 @@ FFT : PV_ChainUGen {
 }
 
 IFFT : WidthFirstUGen {
-	*new { | buffer, wintype = 0, winsize=0|
+	*new { |buffer, wintype = 0, winsize = 0|
 		^this.ar(buffer, wintype, winsize)
 	}
 
-	*ar { | buffer, wintype = 0, winsize=0|
+	*ar { |buffer, wintype = 0, winsize = 0|
 		^this.multiNew('audio', buffer, wintype, winsize)
 	}
 
-	*kr { | buffer, wintype = 0, winsize=0|
+	*kr { |buffer, wintype = 0, winsize = 0|
 		^this.multiNew('control', buffer, wintype, winsize)
 	}
 
 }
 
 PV_MagAbove : PV_ChainUGen {
-	*new { arg buffer, threshold = 0.0;
+	*new { |buffer, threshold = 0.0|
 		^this.multiNew('control', buffer, threshold)
 	}
 }
@@ -48,25 +48,25 @@ PV_MagClip : PV_MagAbove {}
 PV_LocalMax : PV_MagAbove {}
 
 PV_MagSmear : PV_ChainUGen {
-	*new { arg buffer, bins = 0.0;
+	*new { |buffer, bins = 0.0|
 		^this.multiNew('control', buffer, bins)
 	}
 }
 
 PV_BinShift : PV_ChainUGen {
-	*new { arg buffer, stretch = 1.0, shift = 0.0, interp = 0;
+	*new { |buffer, stretch = 1.0, shift = 0.0, interp = 0|
 		^this.multiNew('control', buffer, stretch, shift, interp)
 	}
 }
 
 PV_MagShift : PV_ChainUGen {
-	*new { arg buffer, stretch = 1.0, shift = 0.0;
+	*new { |buffer, stretch = 1.0, shift = 0.0|
 		^this.multiNew('control', buffer, stretch, shift)
 	}
 }
 
 PV_MagSquared : PV_ChainUGen {
-	*new { arg buffer;
+	*new { |buffer|
 		^this.multiNew('control', buffer)
 	}
 }
@@ -77,25 +77,25 @@ PV_PhaseShift270 : PV_MagSquared {}
 PV_Conj : PV_MagSquared {}
 
 PV_PhaseShift : PV_ChainUGen {
-	*new { arg buffer, shift, integrate=0;
+	*new { |buffer, shift, integrate = 0|
 		^this.multiNew('control', buffer, shift, integrate)
 	}
 }
 
 PV_BrickWall : PV_ChainUGen {
-	*new { arg buffer, wipe = 0.0;
+	*new { |buffer, wipe = 0.0|
 		^this.multiNew('control', buffer, wipe)
 	}
 }
 
 PV_BinWipe : PV_ChainUGen {
-	*new { arg bufferA, bufferB, wipe = 0.0;
+	*new { |bufferA, bufferB, wipe = 0.0|
 		^this.multiNew('control', bufferA, bufferB, wipe)
 	}
 }
 
 PV_MagMul : PV_ChainUGen {
-	*new { arg bufferA, bufferB;
+	*new { |bufferA, bufferB|
 		^this.multiNew('control', bufferA, bufferB)
 	}
 }
@@ -109,56 +109,56 @@ PV_Div : PV_MagMul {}
 PV_Add : PV_MagMul {}
 
 PV_MagDiv : PV_ChainUGen {
-	*new { arg bufferA, bufferB, zeroed = 0.0001;
+	*new { |bufferA, bufferB, zeroed = 0.0001|
 		^this.multiNew('control', bufferA, bufferB, zeroed)
 	}
 }
 
 PV_RandComb : PV_ChainUGen {
-	*new { arg buffer, wipe = 0.0, trig = 0.0;
+	*new { |buffer, wipe = 0.0, trig = 0.0|
 		^this.multiNew('control', buffer, wipe, trig)
 	}
 }
 
 PV_RectComb : PV_ChainUGen {
-	*new { arg buffer, numTeeth = 0.0, phase = 0.0, width = 0.5;
+	*new { |buffer, numTeeth = 0.0, phase = 0.0, width = 0.5|
 		^this.multiNew('control', buffer, numTeeth, phase, width)
 	}
 }
 
 
 PV_RectComb2 : PV_ChainUGen {
-	*new { arg bufferA, bufferB, numTeeth = 0.0, phase = 0.0, width = 0.5;
+	*new { |bufferA, bufferB, numTeeth = 0.0, phase = 0.0, width = 0.5|
 		^this.multiNew('control', bufferA, bufferB, numTeeth, phase, width)
 	}
 }
 
 PV_RandWipe : PV_ChainUGen {
-	*new { arg bufferA, bufferB, wipe = 0.0, trig = 0.0;
+	*new { |bufferA, bufferB, wipe = 0.0, trig = 0.0|
 		^this.multiNew('control', bufferA, bufferB, wipe, trig)
 	}
 }
 
 PV_Diffuser : PV_ChainUGen {
-	*new { arg buffer, trig = 0.0;
+	*new { |buffer, trig = 0.0|
 		^this.multiNew('control', buffer, trig)
 	}
 }
 
 PV_MagFreeze : PV_ChainUGen {
-	*new { arg buffer, freeze = 0.0;
+	*new { |buffer, freeze = 0.0|
 		^this.multiNew('control', buffer, freeze)
 	}
 }
 
 PV_BinScramble : PV_ChainUGen {
-	*new { arg buffer, wipe = 0.0, width = 0.2, trig = 0.0;
+	*new { |buffer, wipe = 0.0, width = 0.2, trig = 0.0|
 		^this.multiNew('control', buffer, wipe, width, trig)
 	}
 }
 
 FFTTrigger : PV_ChainUGen {
-	*new { | buffer, hop = 0.5, polar = 0.0|
+	*new { |buffer, hop = 0.5, polar = 0.0|
 		^this.multiNew('control', buffer, hop, polar)
 	}
 }

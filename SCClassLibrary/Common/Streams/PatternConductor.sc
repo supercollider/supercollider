@@ -13,7 +13,7 @@ PatternConductor  {
 		^super.new
 			.patterns_(patterns.asArray)
 			.event_(event ?? { Event.default })
-			.quant_(quant ? 0).tempo_(1).defaultPauseTempo_(1e-8).defaultStopTempo_(1e+8);
+			.quant_(quant ? 0).tempo_(1).defaultPauseTempo_(1e-8).defaultStopTempo_(1e+8)
 	}
 
 	play {
@@ -22,29 +22,29 @@ PatternConductor  {
 	}
 
 	prPlay {
-		if (clock.notNil) { this.stop };
+		if(clock.notNil) { this.stop };
 		CmdPeriod.add(this);
 		clock = TempoClock(tempo);
-		eventStreamPlayers = patterns.collect { | p | p.asEventStreamPlayer(event) };
-		eventStreamPlayers.do { | p | p.play(clock, false, 0) };
+		eventStreamPlayers = patterns.collect { |p| p.asEventStreamPlayer(event) };
+		eventStreamPlayers.do { |p| p.play(clock, false, 0) }
 	}
-	pause { | pauseTempo| clock.tempo = pauseTempo ? defaultPauseTempo }
-	resume {  clock.tempo = tempo }
+	pause { |pauseTempo| clock.tempo = pauseTempo ? defaultPauseTempo }
+	resume { clock.tempo = tempo }
 
 	stop { |stopTempo|
 		var oldClock;
 		oldClock = clock;
-		eventStreamPlayers.do { | p | p.stop };
+		eventStreamPlayers.do { |p| p.stop };
 		clock.tempo = stopTempo ? defaultStopTempo;
-		Task({ while {oldClock.queue.size >= 2 } { yield(1) }; oldClock.stop }).play(clock);
+		Task({ while { oldClock.queue.size >= 2 } { yield(1) }; oldClock.stop }).play(clock);
 		clock = nil;
 		eventStreamPlayers = nil;
-		CmdPeriod.remove(this);
+		CmdPeriod.remove(this)
 	}
 
-	tempo_ { | temp |
+	tempo_ { |temp|
 		tempo = temp;
-		if (clock.notNil) { clock.tempo_(tempo) };
+		if(clock.notNil) { clock.tempo_(tempo) }
 	}
 	cmdPeriod { clock = nil }
 }

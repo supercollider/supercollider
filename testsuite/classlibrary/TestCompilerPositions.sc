@@ -31,21 +31,21 @@ TestCompilerPositions : UnitTest {
 
 	check { |frame, text, message|
 		this.assertEquals(this.textAt(frame), text, message ? text);
-		this.assertEquals(this.lineAt(frame), this.lineOf(text), (message ? text) ++ ": line");
+		this.assertEquals(this.lineAt(frame), this.lineOf(text), (message ? text) ++ ": line")
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Methods under test
 	////////////////////////////////////////////////////////////////////////////////
 
-	inIf { |x| if (x) { ^this.where(\inIf) } { ^this.where(\inElse) } }
-	inHoistedInitialiser { |x| if (x) { var h = this.where(\hoisted); ^h }; ^nil }
+	inIf { |x| if(x) { ^this.where(\inIf) } { ^this.where(\inElse) } }
+	inHoistedInitialiser { |x| if(x) { var h = this.where(\hoisted); ^h }; ^nil }
 	inWhileCondition { var found; while { found = this.where(\whileCondition); false } { }; ^found }
 	inWhileBody { var i = 0, found; while { i < 2 } { i = i + 1; found = this.where(\whileBody) }; ^found }
-	inLoop { var found; 3.do { |i| if (i == 1) { found = this.where(\inLoop) } }; ^found }
+	inLoop { var found; 3.do { |i| if(i == 1) { found = this.where(\inLoop) } }; ^found }
 	inArrayLoop { var found; [1, 2].do { |x| found = this.where(\inArrayLoop) }; ^found }
 	inCase { |x| ^case { x == 1 } { this.where(\case1) } { x == 2 } { this.where(\case2) } }
-	inSwitch { |x| ^switch (x) { 1 } { this.where(\switch1) } { this.where(\switchDefault) } }
+	inSwitch { |x| ^switch(x) { 1 } { this.where(\switch1) } { this.where(\switchDefault) } }
 	inNilTests { |x| ^[x !? { this.where(\notNil) }, x ?? { this.where(\isNil) }] }
 	inAndOr { |x| ^[x and: { this.where(\and) }, x or: { this.where(\or) }] }
 	// é → 音: multi-byte characters before these two.
@@ -66,26 +66,26 @@ TestCompilerPositions : UnitTest {
 	////////////////////////////////////////////////////////////////////////////////
 
 	test_plain_call {
-		this.check(this.where(\plain), "this.where(\\plain)");
+		this.check(this.where(\plain), "this.where(\\plain)")
 	}
 
 	test_inlined_if {
 		this.check(this.inIf(true), "this.where(\\inIf)");
-		this.check(this.inIf(false), "this.where(\\inElse)");
+		this.check(this.inIf(false), "this.where(\\inElse)")
 	}
 
 	test_hoisted_variable_initialiser {
-		this.check(this.inHoistedInitialiser(true), "this.where(\\hoisted)");
+		this.check(this.inHoistedInitialiser(true), "this.where(\\hoisted)")
 	}
 
 	test_inlined_while {
 		this.check(this.inWhileCondition, "this.where(\\whileCondition)");
-		this.check(this.inWhileBody, "this.where(\\whileBody)");
+		this.check(this.inWhileBody, "this.where(\\whileBody)")
 	}
 
 	test_loops {
 		this.check(this.inLoop, "this.where(\\inLoop)");
-		this.check(this.inArrayLoop, "this.where(\\inArrayLoop)");
+		this.check(this.inArrayLoop, "this.where(\\inArrayLoop)")
 	}
 
 	test_case_switch_and_nil_tests {
@@ -96,53 +96,53 @@ TestCompilerPositions : UnitTest {
 		this.check(this.inNilTests(1)[0], "this.where(\\notNil)");
 		this.check(this.inNilTests(nil)[1], "this.where(\\isNil)");
 		this.check(this.inAndOr(true)[0], "this.where(\\and)");
-		this.check(this.inAndOr(false)[1], "this.where(\\or)");
+		this.check(this.inAndOr(false)[1], "this.where(\\or)")
 	}
 
 	test_folding {
 		this.check(this.withFolding, "this.where(\\folded, 4 * 5)");
-		this.check(this.afterFolding, "this.where(\\afterFolding, k)");
+		this.check(this.afterFolding, "this.where(\\afterFolding, k)")
 	}
 
 	test_closures {
 		this.check(this.inClosure, "this.where(\\inClosure)");
-		this.check(this.inNestedClosure, "this.where(\\nested)");
+		this.check(this.inNestedClosure, "this.where(\\nested)")
 	}
 
 	test_call_over_several_lines {
-		this.check(this.multiLine, "this.where(\n\t\t\t\\multiLine)");
+		this.check(this.multiLine, "this.where(\n\t\t\t\\multiLine)")
 	}
 
 	test_generators {
 		this.check(this.inGenerator, "this.where(\\generator)");
-		this.check(this.inGeneratorGuard, "this.where(\\guard)");
+		this.check(this.inGeneratorGuard, "this.where(\\guard)")
 	}
 
 	test_closure_passed_to_a_send {
-		this.check(this.inArgumentOfSend, "this.where(\\argument, v)");
+		this.check(this.inArgumentOfSend, "this.where(\\argument, v)")
 	}
 
 	test_callers_point_at_their_calls {
 		var frame = this.inClosure;
 		this.assertEquals(this.textAt(frame.caller), "{ this.where(\\inClosure) }.value", "the method, at the value");
-		this.assertEquals(frame.caller.functionDef.name, \inClosure);
+		this.assertEquals(frame.caller.functionDef.name, \inClosure)
 	}
 
 	test_exception_backtrace {
 		var frame, texts = List.new;
-		try { var q = 1; if (q == 1) { nil.notAMethodAnywhere(\fromTest) } } { |e| frame = e.backtrace };
+		try { var q = 1; if(q == 1) { nil.notAMethodAnywhere(\fromTest) } } { |e| frame = e.backtrace };
 		while { frame.notNil } { texts.add(try { this.textAt(frame) }); frame = frame.caller };
-		this.assert(texts.includesEqual("nil.notAMethodAnywhere(\\fromTest)"), "the failing send is in the backtrace");
+		this.assert(texts.includesEqual("nil.notAMethodAnywhere(\\fromTest)"), "the failing send is in the backtrace")
 	}
 
 	test_error_string_has_the_line {
 		var frame = this.inIf(true), string = frame.prAsErrorString("", nil, false, true);
-		this.assert(string.contains(":" ++ this.lineOf("this.where(\\inIf)") ++ ":"), "the printed location has the line");
+		this.assert(string.contains(":" ++ this.lineOf("this.where(\\inIf)") ++ ":"), "the printed location has the line")
 	}
 
 	test_interpreted_code {
 		var frame = "var q = 1;\nif (q == 1) { TestCompilerPositions.where(\\interpreted) }".interpret;
 		this.assertEquals(this.textAt(frame), "TestCompilerPositions.where(\\interpreted)");
-		this.assertEquals(this.lineAt(frame), 2);
+		this.assertEquals(this.lineAt(frame), 2)
 	}
 }

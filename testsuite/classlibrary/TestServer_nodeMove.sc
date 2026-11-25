@@ -4,17 +4,17 @@ TestServer_nodeMove : UnitTest {
 	var pipe;
 
 	tearDown {
-		if (pipe.notNil) {
-			pipe.close;
-		};
+		if(pipe.notNil) {
+			pipe.close
+		}
 	}
 
 	treeAfter { |program, moves|
 		var order = List[],
-		oscPath = PathName.tmp +/+ "dumpTree_test.osc",
-		outPath = PathName.tmp +/+ "dummy_out.aiff",
-		stepDur = 0.1,
-		cmd, line, score, match, nodeTreeOutputDetected = false;
+			oscPath = PathName.tmp +/+ "dumpTree_test.osc",
+			outPath = PathName.tmp +/+ "dummy_out.aiff",
+			stepDur = 0.1,
+			cmd, line, score, match, nodeTreeOutputDetected = false;
 
 		score = Score();
 		// build a known tree, then apply the moves and read back the resulting
@@ -23,7 +23,8 @@ TestServer_nodeMove : UnitTest {
 		// the result is two sibling groups under the root, each holding two child groups:
 		//   1000 ( 2000 2001 )   1001 ( 3000 3001 )
 		score.score = ([
-			[0.0,
+			[
+				0.0,
 				['/g_new', 1000, 0, 0],
 				['/g_new', 1001, 1, 0],
 				['/g_new', 2000, 0, 1000],
@@ -32,7 +33,7 @@ TestServer_nodeMove : UnitTest {
 				['/g_new', 3001, 1, 1001]
 			],
 		]);
-		moves.do({ |m, i| score.add([stepDur * i, m])});
+		moves.do { |m, i| score.add([stepDur * i, m]) };
 		score.add([stepDur * (1 + moves.size), ['/g_dumpTree', 0, 0]]); // dump after moves
 		score.writeOSCFile(oscPath, 0, stepDur * (2 + moves.size));
 
@@ -41,25 +42,25 @@ TestServer_nodeMove : UnitTest {
 		// run it and capture stdout
 		pipe = Pipe.new(cmd, "r");
 		line = pipe.getLine;
-		while ({ line.notNil }) {
+		while { line.notNil } {
 			// line.postln; // inspect output
 			// ignore output until we see matching start
-			if (line.beginsWith("NODE TREE")) {nodeTreeOutputDetected = true};
+			if(line.beginsWith("NODE TREE")) { nodeTreeOutputDetected = true };
 			// once we see matching beginning, capture output
-			if (nodeTreeOutputDetected) {
+			if(nodeTreeOutputDetected) {
 				// line.postln; // inspect output
 				match = line.findRegexp("^\\s+([0-9]+) group");
-				if (match.notEmpty and: { match[1][1].asInteger != 0 }) {
-					order.add(match[1][1].asInteger);
-				};
+				if(match.notEmpty and: { match[1][1].asInteger != 0 }) {
+					order.add(match[1][1].asInteger)
+				}
 			};
 			// stop capturing when we see matching end
-			if (line.beginsWith("END NODE")) {nodeTreeOutputDetected = false};
-			line = pipe.getLine;
+			if(line.beginsWith("END NODE")) { nodeTreeOutputDetected = false };
+			line = pipe.getLine
 		};
 		pipe.close;
-		if (File.exists(oscPath)) { File.delete(oscPath)};
-		if (File.exists(outPath)) { File.delete(outPath)};
+		if(File.exists(oscPath)) { File.delete(oscPath) };
+		if(File.exists(outPath)) { File.delete(outPath) };
 		^order
 	}
 
@@ -72,8 +73,8 @@ TestServer_nodeMove : UnitTest {
 				this.treeAfter(program, moves),
 				List[1000, 2000, 1001, 3000, 2001, 3001],
 				program.basename ++ " /n_after across groups should move the node into the target's group",
-			);
-		};
+			)
+		}
 	}
 
 	// first move 2000 into group 1001, then move it again within 1001. the second
@@ -86,8 +87,8 @@ TestServer_nodeMove : UnitTest {
 				this.treeAfter(program, moves),
 				List[1000, 2001, 1001, 3000, 3001, 2000],
 				program.basename ++ " a second /n_after should follow the node's real parent, not a stale one",
-			);
-		};
+			)
+		}
 	}
 
 }

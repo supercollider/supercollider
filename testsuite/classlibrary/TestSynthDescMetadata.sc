@@ -16,24 +16,24 @@ TestSynthDescMetadata : UnitTest {
 		SynthDesc.mdPlugin = TextArchiveMDPlugin;
 
 		original.writeDefFile(dir);
-		SynthDescLib.global.removeAt(defname);
+		SynthDescLib.global.removeAt(defname)
 	}
 
 	tearDown {
 		File.delete(path);
 		File.delete(mdPath);
-		SynthDesc.mdPlugin = oldMdPlugin;
+		SynthDesc.mdPlugin = oldMdPlugin
 	}
 
 	test_SynthDesc_read_restores_metadata_in_desc_and_def {
 		var synthdesc = SynthDesc.read(path, keepDefs: true)[defname];
-		this.checkMetadata(synthdesc, metadata, SynthDesc);
+		this.checkMetadata(synthdesc, metadata, SynthDesc)
 	}
 
 	test_SynthDescLib_read_restores_metadata_in_desc_and_def {
 		var synthdesc = SynthDescLib.read(dir +/+ "*.scsyndef").global;
 		synthdesc = synthdesc[defname];
-		this.checkMetadata(synthdesc, metadata, SynthDescLib);
+		this.checkMetadata(synthdesc, metadata, SynthDescLib)
 	}
 
 	checkMetadata { |synthdesc, metadata, class|
@@ -47,10 +47,10 @@ TestSynthDescMetadata : UnitTest {
 
 		// def metadata has extra elements; check key by key
 		metadata.keysValuesDo { |key, value|
-			if(synthdesc.def.metadata[key] != value) { found = false };
+			if(synthdesc.def.metadata[key] != value) { found = false }
 		};
 		this.assert(found,
 			"% should restore metadata into its SynthDef when reading from disk".format(class.name)
-		);
+		)
 	}
 }

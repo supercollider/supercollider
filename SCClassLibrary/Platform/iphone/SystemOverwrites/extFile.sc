@@ -2,10 +2,10 @@
 //using the old sclang implementation for file exists until fixed.
 
 + File {
-	*exists { arg pathName;
+	*exists { |pathName|
 		var file;
-		file = File(pathName,"r");
-		if (file.isOpen, { file.close; ^true });
+		file = File(pathName, "r");
+		if(file.isOpen) { file.close; ^true };
 		^false
 	}
 }

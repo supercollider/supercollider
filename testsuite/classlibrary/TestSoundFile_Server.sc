@@ -7,13 +7,13 @@ TestSoundFile_Server : UnitTest {
 		server = Server(this.class.name);
 		this.bootServer(server);
 
-		soundFile = SoundFile(ExampleFiles.child);
+		soundFile = SoundFile(ExampleFiles.child)
 	}
 
 	tearDown {
 		soundFile.close;
 		Buffer.freeAll;
-		server.quitSync.remove;
+		server.quitSync.remove
 	}
 
 	test_cue_passInEvent {
@@ -21,7 +21,7 @@ TestSoundFile_Server : UnitTest {
 
 		var testEvent = (foo: true);
 		var cueEvent = soundFile.cue(testEvent);
-		this.assert(cueEvent[\foo], "Cue should take an Event as first argument");
+		this.assert(cueEvent[\foo], "Cue should take an Event as first argument")
 	}
 
 	test_cue_playNow {
@@ -34,7 +34,7 @@ TestSoundFile_Server : UnitTest {
 		this.assert(cueEvent.isRunning, "Event should play immediately after cueing");
 		timeout.stop;
 		OSCdef(\isPlaying).free;
-		cueEvent.stop;
+		cueEvent.stop
 	}
 
 	test_cue_eventConfiguration {
@@ -45,7 +45,7 @@ TestSoundFile_Server : UnitTest {
 		var cueEvent = soundFile.cue(testEvent);
 		testEvent.keysDo { |key|
 			this.assertEquals(cueEvent[key], testEvent[key], "Control '%' was correclty set".format(key))
-		};
+		}
 	}
 
 }

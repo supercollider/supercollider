@@ -18,12 +18,12 @@ TestCoreUGens_Server : UnitTest {
 	var server;
 
 	setUp {
-		server = Server(this.class.name);
+		server = Server(this.class.name)
 	}
 
 	tearDown {
 		server.quitSync;
-		server.remove;
+		server.remove
 	}
 
 	test_ugen_generator_equivalences {
@@ -31,31 +31,31 @@ TestCoreUGens_Server : UnitTest {
 		var completed = 0;
 		var blockSize, sampleRate;
 		var n, v, tests;
- // for Env/Line equivalence tests
+		// for Env/Line equivalence tests
 
 		// These pairs should generate the same shapes, so subtracting should give zero.
 		// Of course there's some rounding error due to floating-point accuracy.
 		tests = Dictionary[
 			//////////////////////////////////////////
 			// Ramp generators:
-			"Line.ar can match LFSaw.ar" -> {Line.ar(0,1,1) - LFSaw.ar(0.5)},
-			"Line.kr can match LFSaw.kr" -> {Line.kr(0,1,1) - LFSaw.kr(0.5)},
-			"Line can match crossfaded DC" -> {Line.ar(0,1,1) - LinXFade2.ar(DC.ar(0), DC.ar(1), Line.ar(-1,1,1))},
+			"Line.ar can match LFSaw.ar" -> { Line.ar(0, 1, 1) - LFSaw.ar(0.5) },
+			"Line.kr can match LFSaw.kr" -> { Line.kr(0, 1, 1) - LFSaw.kr(0.5) },
+			"Line can match crossfaded DC" -> { Line.ar(0, 1, 1) - LinXFade2.ar(DC.ar(0), DC.ar(1), Line.ar(-1, 1, 1)) },
 			// (Integrator goes a bit off ramp cos of roundoff error accumulations)
-			"Line.ar can match integrated DC" -> {Line.ar(SampleDur.ir,1,1) - Integrator.ar(DC.ar(SampleDur.ir))},
-			"Line.ar can match EnvGen.ar with slope Env" -> {Line.ar - EnvGen.ar(Env([0,1],[1]))},
+			"Line.ar can match integrated DC" -> { Line.ar(SampleDur.ir, 1, 1) - Integrator.ar(DC.ar(SampleDur.ir)) },
+			"Line.ar can match EnvGen.ar with slope Env" -> { Line.ar - EnvGen.ar(Env([0, 1], [1])) },
 
 			//////////////////////////////////////////
 			// Triggers:
 			"Trig.ar(_,0) is no-op when applied to Impulse.ar, whatever the amplitude of the impulses"
-			-> {n = Impulse.ar(400)*SinOsc.ar(0.713,0.001).range(0,1); Trig.ar(n,0) - n},
+				-> { n = Impulse.ar(400) * SinOsc.ar(0.713, 0.001).range(0, 1); Trig.ar(n, 0) - n },
 			"Trig1.ar(_,0) has same effect as (_>0) on variable-amplitude impulses"
-			-> {n = Impulse.ar(400)*SinOsc.ar(0.713,0.001).range(0,1); Trig1.ar(n,0) - (n>0)},
-			"Trig1.ar(_,0) is no-op when applied to Impulse.ar" -> {Impulse.ar(300) - Trig1.ar(Impulse.ar(300), 0)},
-			"Latch applied to LFPulse.ar on its own changes is no-op" -> {n=LFPulse.ar(23, 0.5); n - Latch.ar(n, HPZ1.ar(n).abs)},
-			"Latch applied to LFPulse.kr on its own changes is no-op" -> {n=LFPulse.kr(23, 0.5); n - Latch.kr(n, HPZ1.kr(n).abs)},
-			"Gate applied to LFPulse.ar on its own changes is no-op" -> {n=LFPulse.ar(23, 0.5); n - Gate.ar(n, HPZ1.ar(n).abs)},
-			"Gate applied to LFPulse.kr on its own changes is no-op" -> {n=LFPulse.kr(23, 0.5); n - Gate.kr(n, HPZ1.kr(n).abs)},
+				-> { n = Impulse.ar(400) * SinOsc.ar(0.713, 0.001).range(0, 1); Trig1.ar(n, 0) - (n > 0) },
+			"Trig1.ar(_,0) is no-op when applied to Impulse.ar" -> { Impulse.ar(300) - Trig1.ar(Impulse.ar(300), 0) },
+			"Latch applied to LFPulse.ar on its own changes is no-op" -> { n = LFPulse.ar(23, 0.5); n - Latch.ar(n, HPZ1.ar(n).abs) },
+			"Latch applied to LFPulse.kr on its own changes is no-op" -> { n = LFPulse.kr(23, 0.5); n - Latch.kr(n, HPZ1.kr(n).abs) },
+			"Gate applied to LFPulse.ar on its own changes is no-op" -> { n = LFPulse.ar(23, 0.5); n - Gate.ar(n, HPZ1.ar(n).abs) },
+			"Gate applied to LFPulse.kr on its own changes is no-op" -> { n = LFPulse.kr(23, 0.5); n - Gate.kr(n, HPZ1.kr(n).abs) },
 			"T2A should recover an ar signal passed through T2K" -> {
 				// note this freq has to be less than half critical sampling at control rate
 				// so that the kr signal goes to zero between frames so it's interpreted
@@ -72,33 +72,33 @@ TestCoreUGens_Server : UnitTest {
 
 			//////////////////////////////////////////
 			// Linear-to-exponential equivalences:
-			"XLine.ar == Line.ar.linexp" -> {XLine.ar(0.01, 10, 1) - Line.ar( 0, 1, 1).linexp(0,1, 0.01, 10)},
-			"XLine.kr == Line.kr.linexp" -> {XLine.kr(0.01, 10, 1) - Line.kr( 0, 1, 1).linexp(0,1, 0.01, 10)},
-			"XLine.ar == Line.ar.exprange" -> {XLine.ar(0.01, 10, 1) - Line.ar(-1, 1, 1).exprange(   0.01, 10)},
-			"XLine.kr == Line.kr.exprange" -> {XLine.kr(0.01, 10, 1) - Line.kr(-1, 1, 1).exprange(   0.01, 10)},
-			"Line.ar == XLine.ar.explin" -> {Line.ar(0, 1, 1) - XLine.ar(0.01, 10, 1).explin(0.01, 10, 0, 1)},
-			"Line.kr == XLine.kr.explin" -> {Line.kr(0, 1, 1) - XLine.kr(0.01, 10, 1).explin(0.01, 10, 0, 1)},
+			"XLine.ar == Line.ar.linexp" -> { XLine.ar(0.01, 10, 1) - Line.ar(0, 1, 1).linexp(0, 1, 0.01, 10) },
+			"XLine.kr == Line.kr.linexp" -> { XLine.kr(0.01, 10, 1) - Line.kr(0, 1, 1).linexp(0, 1, 0.01, 10) },
+			"XLine.ar == Line.ar.exprange" -> { XLine.ar(0.01, 10, 1) - Line.ar(-1, 1, 1).exprange(0.01, 10) },
+			"XLine.kr == Line.kr.exprange" -> { XLine.kr(0.01, 10, 1) - Line.kr(-1, 1, 1).exprange(0.01, 10) },
+			"Line.ar == XLine.ar.explin" -> { Line.ar(0, 1, 1) - XLine.ar(0.01, 10, 1).explin(0.01, 10, 0, 1) },
+			"Line.kr == XLine.kr.explin" -> { Line.kr(0, 1, 1) - XLine.kr(0.01, 10, 1).explin(0.01, 10, 0, 1) },
 
 			//////////////////////////////////////////
 			// Trigonometric:
-			"SinOsc.ar can match Line.ar.sin" -> {SinOsc.ar(1) - Line.ar(0,2pi,1).sin},
-			"SinOsc.kr can match Line.kr.sin" -> {SinOsc.kr(1) - Line.kr(0,2pi,1).sin},
-			"SinOsc.ar can match Line.ar.cos" -> {SinOsc.ar(1, pi/2) - Line.ar(0,2pi,1).cos},
-			"SinOsc.kr can match Line.kr.cos" -> {SinOsc.kr(1, pi/2) - Line.kr(0,2pi,1).cos},
-			"atan undoes tan" -> {n = WhiteNoise.ar; n - n.tan.atan},
-			"EnvGen.ar can recreate SinOsc with piecewise sin envelope" -> {EnvGen.ar(Env([-1,1,-1],[0.5,0.5],'sin')) - SinOsc.ar(1, -pi/2)},
+			"SinOsc.ar can match Line.ar.sin" -> { SinOsc.ar(1) - Line.ar(0, 2pi, 1).sin },
+			"SinOsc.kr can match Line.kr.sin" -> { SinOsc.kr(1) - Line.kr(0, 2pi, 1).sin },
+			"SinOsc.ar can match Line.ar.cos" -> { SinOsc.ar(1, pi / 2) - Line.ar(0, 2pi, 1).cos },
+			"SinOsc.kr can match Line.kr.cos" -> { SinOsc.kr(1, pi / 2) - Line.kr(0, 2pi, 1).cos },
+			"atan undoes tan" -> { n = WhiteNoise.ar; n - n.tan.atan },
+			"EnvGen.ar can recreate SinOsc with piecewise sin envelope" -> { EnvGen.ar(Env([-1, 1, -1], [0.5, 0.5], 'sin')) - SinOsc.ar(1, -pi / 2) },
 
 			//////////////////////////////////////////
 			// Simple scaling and multiply-adds:
-			"(_+1)*2 == _.madd(2,2)" -> {n=WhiteNoise.ar; ((n+1)*2) - (n.madd(2,2)) },
-			"(_+1)*2 == _.madd(2,2)" -> {n=WhiteNoise.kr; ((n+1)*2) - (n.madd(2,2)) },
+			"(_+1)*2 == _.madd(2,2)" -> { n = WhiteNoise.ar; ((n + 1) * 2) - (n.madd(2, 2)) },
+			"(_+1)*2 == _.madd(2,2)" -> { n = WhiteNoise.kr; ((n + 1) * 2) - (n.madd(2, 2)) },
 			// NOTE: .pow(2) is unconventional in producing neg values on neg inputs (hence use .abs below). It's weird but intentional:
-			"_.pow(2).abs == _ * _" -> {n=WhiteNoise.ar; n.pow(2).abs - (n*n) },
-			"_.pow(2).abs == _ * _" -> {n=WhiteNoise.kr; n.pow(2).abs - (n*n) },
+			"_.pow(2).abs == _ * _" -> { n = WhiteNoise.ar; n.pow(2).abs - (n * n) },
+			"_.pow(2).abs == _ * _" -> { n = WhiteNoise.kr; n.pow(2).abs - (n * n) },
 			// DC scaling and K2A:
-			"DC equivalence" -> {DC.ar(2) - K2A.ar(DC.kr(1)) - 1 },
-			"sum and rescale ar signal is identity" -> {n=WhiteNoise.ar; [n, n].sum.madd(0.5, 0) - n },
-			"sum and rescale kr signal is identity" -> {n=WhiteNoise.kr; [n, n].sum.madd(0.5, 0) - n },
+			"DC equivalence" -> { DC.ar(2) - K2A.ar(DC.kr(1)) - 1 },
+			"sum and rescale ar signal is identity" -> { n = WhiteNoise.ar; [n, n].sum.madd(0.5, 0) - n },
+			"sum and rescale kr signal is identity" -> { n = WhiteNoise.kr; [n, n].sum.madd(0.5, 0) - n },
 
 			// Audio rate demand ugens
 			// FIXME
@@ -109,128 +109,146 @@ TestCoreUGens_Server : UnitTest {
 			//////////////////////////////////////////
 			// Panners (linear panners easy to verify - sum should recover original):
 			// FAILS on sc 3.3.1 - first 64 samples don't seem to pan as intended, upon first run. Subsequent runs OK - uses unintialised memory?:
-			"LinPan2.sum is identity (<=3.3.1 fails this)" -> {n=WhiteNoise.ar; LinPan2.ar(n, Line.kr(-1,1,1)).sum - n },
+			"LinPan2.sum is identity (<=3.3.1 fails this)" -> { n = WhiteNoise.ar; LinPan2.ar(n, Line.kr(-1, 1, 1)).sum - n },
 			// These next two verify the fix I applied to LinPan2's constructor, revealed by the above. So 3.3.1 will also fail these:
 			"LinPan2_aa's action can be replicated by manually modulating amplitude (<=3.3.1 fails this)" ->
-			{n=DC.ar(1); v=Line.ar(Rand(),Rand(),1); LinPan2.ar(n, v)[1]*2-1 - v },
+			{ n = DC.ar(1); v = Line.ar(Rand(), Rand(), 1); LinPan2.ar(n, v)[1] * 2 - 1 - v },
 			"LinPan2_ak's action can be replicated by manually modulating amplitude (<=3.3.1 fails this)" ->
-			{n=DC.ar(1); v=Line.kr(Rand(),Rand(),1); LinPan2.ar(n, v)[1]*2-1 - v },
+			{ n = DC.ar(1); v = Line.kr(Rand(), Rand(), 1); LinPan2.ar(n, v)[1] * 2 - 1 - v },
 
 			//////////////////////////////////////////
 			// Peak-followers etc:
-			"Peak.ar on increasing pos signal is identity" -> {n=Line.ar(0,1,1); Peak.ar(n) - n },
-			"Peak.kr on increasing pos signal is identity" -> {n=Line.kr(0,1,1); Peak.kr(n) - n },
-			"Amplitude.ar on increasing pos signal (w sharp attack) is identity" -> {n=Line.ar(0,1,1); Amplitude.ar(n,0,1) - n },
-			"Amplitude.kr on increasing pos signal (w sharp attack) is identity" -> {n=Line.kr(0,1,1); Amplitude.kr(n,0,1) - n },
-			"Amplitude.ar on decreasing pos signal (w sharp decay ) is identity" -> {n=Line.ar(1,0,1); Amplitude.ar(n,1,0) - n },
-			"Amplitude.kr on decreasing pos signal (w sharp decay ) is identity" -> {n=Line.kr(1,0,1); Amplitude.kr(n,1,0) - n },
-			"Amplitude.ar never non-negative (fixed in svn rev 9703)" -> {n=SinOsc.ar(440, -0.5pi); Amplitude.ar(n) < 0 },
+			"Peak.ar on increasing pos signal is identity" -> { n = Line.ar(0, 1, 1); Peak.ar(n) - n },
+			"Peak.kr on increasing pos signal is identity" -> { n = Line.kr(0, 1, 1); Peak.kr(n) - n },
+			"Amplitude.ar on increasing pos signal (w sharp attack) is identity" -> { n = Line.ar(0, 1, 1); Amplitude.ar(n, 0, 1) - n },
+			"Amplitude.kr on increasing pos signal (w sharp attack) is identity" -> { n = Line.kr(0, 1, 1); Amplitude.kr(n, 0, 1) - n },
+			"Amplitude.ar on decreasing pos signal (w sharp decay ) is identity" -> { n = Line.ar(1, 0, 1); Amplitude.ar(n, 1, 0) - n },
+			"Amplitude.kr on decreasing pos signal (w sharp decay ) is identity" -> { n = Line.kr(1, 0, 1); Amplitude.kr(n, 1, 0) - n },
+			"Amplitude.ar never non-negative (fixed in svn rev 9703)" -> { n = SinOsc.ar(440, -0.5pi); Amplitude.ar(n) < 0 },
 
 			//////////////////////////////////////////
 			// Clipping and distortion:
-			".clip2() doesn't affect signals that lie within +-1" -> {n=WhiteNoise.ar;   n.clip2(1) - n},
-			".clip2() on a loud LFPulse is same as scaling" -> {n=LFPulse.ar(LFNoise0.kr(50), mul:100);   n.clip2(1) - (n/100)},
-			".clip2(_) == .clip(-_,_) (fixed in svn rev 9838)" -> {n=WhiteNoise.ar;   n.clip2(0.4) - n.clip(-0.4, 0.4)},
-			"_.clip2().abs never greater than _.abs" -> {n=WhiteNoise.ar;   n.clip2(0.3).abs > n.abs },
-			"_.clip( ).abs never greater than _.abs (fixed in svn rev 9838)" -> {n=WhiteNoise.ar;   n.clip(-0.7,0.6).abs > n.abs },
+			".clip2() doesn't affect signals that lie within +-1" -> { n = WhiteNoise.ar;   n.clip2(1) - n },
+			".clip2() on a loud LFPulse is same as scaling" -> { n = LFPulse.ar(LFNoise0.kr(50), mul: 100);   n.clip2(1) - (n / 100) },
+			".clip2(_) == .clip(-_,_) (fixed in svn rev 9838)" -> { n = WhiteNoise.ar;   n.clip2(0.4) - n.clip(-0.4, 0.4) },
+			"_.clip2().abs never greater than _.abs" -> { n = WhiteNoise.ar;   n.clip2(0.3).abs > n.abs },
+			"_.clip( ).abs never greater than _.abs (fixed in svn rev 9838)" -> { n = WhiteNoise.ar;   n.clip(-0.7, 0.6).abs > n.abs },
 
 			//////////////////////////////////////////
 			// FFT:
-			"IFFT(FFT(_)) == Delay(_, buffersize-blocksize)" -> {n =  PinkNoise.ar(1,0,1); DelayN.ar(n, 1984*SampleDur.ir, 1984*SampleDur.ir) - IFFT(FFT(LocalBuf(2048), n))  },
-			"IFFT(FFT(_)) == Delay(_, buffersize-blocksize)" -> {n = WhiteNoise.ar(1,0,1); DelayN.ar(n, 4032*SampleDur.ir, 4032*SampleDur.ir) - IFFT(FFT(LocalBuf(4096), n))  },
+			"IFFT(FFT(_)) == Delay(_, buffersize-blocksize)" -> { n = PinkNoise.ar(1, 0, 1); DelayN.ar(n, 1984 * SampleDur.ir, 1984 * SampleDur.ir) - IFFT(FFT(LocalBuf(2048), n)) },
+			"IFFT(FFT(_)) == Delay(_, buffersize-blocksize)" -> { n = WhiteNoise.ar(1, 0, 1); DelayN.ar(n, 4032 * SampleDur.ir, 4032 * SampleDur.ir) - IFFT(FFT(LocalBuf(4096), n)) },
 
 			//////////////////////////////////////////
 			// CheckBadValues:
 			"CheckBadValues.ar()" -> {
-				var trig=Impulse.ar(10);
-				var f=ToggleFF.ar(trig);
-				var g=ToggleFF.ar(PulseDivider.ar(trig));
-				var predicted = Demand.ar(trig,0,Dseq([2,0,0,1],inf));
-				CheckBadValues.ar(f/g, post: 0) - predicted
+				var trig = Impulse.ar(10);
+				var f = ToggleFF.ar(trig);
+				var g = ToggleFF.ar(PulseDivider.ar(trig));
+				var predicted = Demand.ar(trig, 0, Dseq([2, 0, 0, 1], inf));
+				CheckBadValues.ar(f / g, post: 0) - predicted
 			},
 			"CheckBadValues.kr()" -> {
-				var trig=Impulse.kr(10);
-				var f=ToggleFF.kr(trig);
-				var g=ToggleFF.kr(PulseDivider.kr(trig));
-				var predicted = Demand.kr(trig,0,Dseq([2,0,0,1],inf));
-				CheckBadValues.kr(f/g, post: 0) - predicted
+				var trig = Impulse.kr(10);
+				var f = ToggleFF.kr(trig);
+				var g = ToggleFF.kr(PulseDivider.kr(trig));
+				var predicted = Demand.kr(trig, 0, Dseq([2, 0, 0, 1], inf));
+				CheckBadValues.kr(f / g, post: 0) - predicted
 			},
 
 			//////////////////////////////////////////
 			// Delay
-			"DelayN" -> {	var sig = Impulse.ar(4);
+			"DelayN" -> {
+				var sig = Impulse.ar(4);
 				sig - DelayN.ar(sig, 1, 0.25) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
 			},
-			"DelayN (audio rate delay time) " -> {	var sig = Impulse.ar(4);
+			"DelayN (audio rate delay time) " -> {
+				var sig = Impulse.ar(4);
 				sig - DelayN.ar(sig, 1, DC.ar(0.25)) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
 			},
-			"DelayL" -> {	var sig = Impulse.ar(4);
+			"DelayL" -> {
+				var sig = Impulse.ar(4);
 				sig - DelayL.ar(sig, 1, 0.25) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
 			},
-			"DelayL (audio rate delay time) " -> {	var sig = Impulse.ar(4);
+			"DelayL (audio rate delay time) " -> {
+				var sig = Impulse.ar(4);
 				sig - DelayL.ar(sig, 1, DC.ar(0.25)) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
 			},
-			"DelayC" -> {	var sig = Impulse.ar(4);
+			"DelayC" -> {
+				var sig = Impulse.ar(4);
 				sig - DelayC.ar(sig, 1, 0.25) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
 			},
-			"DelayC (audio rate delay time) " -> {	var sig = Impulse.ar(4);
+			"DelayC (audio rate delay time) " -> {
+				var sig = Impulse.ar(4);
 				sig - DelayC.ar(sig, 1, DC.ar(0.25)) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
 			},
-			"BufDelayN" -> { var sig = Impulse.ar(4);
+			"BufDelayN" -> {
+				var sig = Impulse.ar(4);
 				var buf = LocalBuf(SampleRate.ir * 1);
 				sig - BufDelayN.ar(buf, sig, 0.25) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
 			},
-			"BufDelayN (audio rate delay time) " -> { var sig = Impulse.ar(4);
+			"BufDelayN (audio rate delay time) " -> {
+				var sig = Impulse.ar(4);
 				var buf = LocalBuf(SampleRate.ir * 1);
 				sig - BufDelayN.ar(buf, sig, DC.ar(0.25)) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
 			},
-			"BufDelayL" -> { var sig = Impulse.ar(4);
+			"BufDelayL" -> {
+				var sig = Impulse.ar(4);
 				var buf = LocalBuf(SampleRate.ir * 1);
 				sig - BufDelayL.ar(buf, sig, 0.25) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
 			},
-			"BufDelayL (audio rate delay time) " -> { var sig = Impulse.ar(4);
+			"BufDelayL (audio rate delay time) " -> {
+				var sig = Impulse.ar(4);
 				var buf = LocalBuf(SampleRate.ir * 1);
 				sig - BufDelayL.ar(buf, sig, DC.ar(0.25)) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
 			},
-			"BufDelayC" -> { var sig = Impulse.ar(4);
+			"BufDelayC" -> {
+				var sig = Impulse.ar(4);
 				var buf = LocalBuf(SampleRate.ir * 1);
 				sig - BufDelayC.ar(buf, sig, 0.25) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
 			},
-			"BufDelayC (audio rate delay time) " -> { var sig = Impulse.ar(4);
+			"BufDelayC (audio rate delay time) " -> {
+				var sig = Impulse.ar(4);
 				var buf = LocalBuf(SampleRate.ir * 1);
 				sig - BufDelayC.ar(buf, sig, DC.ar(0.25)) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
 			},
-			"DelTapRd " -> { var sig = Impulse.ar(4);
+			"DelTapRd " -> {
+				var sig = Impulse.ar(4);
 				var buf = LocalBuf(SampleRate.ir * 1);
 				var phase = DelTapWr.ar(buf, sig);
 				var delayed = DelTapRd.ar(buf, phase, 0.25);
 				(sig - delayed) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
 			},
-			"DelTapRd (audio rate delay time) " -> { var sig = Impulse.ar(4);
+			"DelTapRd (audio rate delay time) " -> {
+				var sig = Impulse.ar(4);
 				var buf = LocalBuf(SampleRate.ir * 1);
 				var phase = DelTapWr.ar(buf, sig);
 				var delayed = DelTapRd.ar(buf, phase, DC.ar(0.25));
 				(sig - delayed) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
 			},
-			"DelTapRd (linear)" -> { var sig = Impulse.ar(4);
+			"DelTapRd (linear)" -> {
+				var sig = Impulse.ar(4);
 				var buf = LocalBuf(SampleRate.ir * 1);
 				var phase = DelTapWr.ar(buf, sig);
 				var delayed = DelTapRd.ar(buf, phase, 0.25, 2);
 				(sig - delayed) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
 			},
-			"DelTapRd (linear, audio rate delay time) " -> { var sig = Impulse.ar(4);
+			"DelTapRd (linear, audio rate delay time) " -> {
+				var sig = Impulse.ar(4);
 				var buf = LocalBuf(SampleRate.ir * 1);
 				var phase = DelTapWr.ar(buf, sig);
 				var delayed = DelTapRd.ar(buf, phase, DC.ar(0.25), 2);
 				(sig - delayed) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
 			},
-			"DelTapRd (cubic) " -> { var sig = Impulse.ar(4);
+			"DelTapRd (cubic) " -> {
+				var sig = Impulse.ar(4);
 				var buf = LocalBuf(SampleRate.ir * 1);
 				var phase = DelTapWr.ar(buf, sig);
 				var delayed = DelTapRd.ar(buf, phase, 0.25, 4);
 				(sig - delayed) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
 			},
-			"DelTapRd (cubic, audio rate delay time) " -> { var sig = Impulse.ar(4);
+			"DelTapRd (cubic, audio rate delay time) " -> {
+				var sig = Impulse.ar(4);
 				var buf = LocalBuf(SampleRate.ir * 1);
 				var phase = DelTapWr.ar(buf, sig);
 				var delayed = DelTapRd.ar(buf, phase, DC.ar(0.25), 4);
@@ -242,7 +260,7 @@ TestCoreUGens_Server : UnitTest {
 		//////////////////////////////////////////
 		// Delay1, Delay2
 		// More test in test_delay1_2_predelayValues
-		[\ar, \kr].do{ |rate|
+		[\ar, \kr].do { |rate|
 			tests.add(
 				("Delay1." ++ rate ++ " first frame is 0 at .ar and matches the input at .kr") -> {
 					var dc = DC.perform(rate, 1);       // all 1's
@@ -269,7 +287,7 @@ TestCoreUGens_Server : UnitTest {
 					// target is equivalent to DC(1) delayed by 2 samples
 					Delay2.perform(rate, dc) - target
 				}
-			);
+			)
 		};
 
 		//////////////////////////////////////////
@@ -277,7 +295,7 @@ TestCoreUGens_Server : UnitTest {
 		[
 			[\reciprocal, \reciprocal],
 			[\squared, \sqrt],
-			[\cubed, { |x| x ** (1/3) }],
+			[\cubed, { |x| x ** (1 / 3) }],
 			[\exp, \log],
 			[\midicps, \cpsmidi], // this test currently limits passing tolerance for all tests
 			[\midiratio, \ratiomidi],
@@ -288,13 +306,13 @@ TestCoreUGens_Server : UnitTest {
 			[\tan, \atan]
 		].do { |selectors|
 			[selectors, selectors.reverse].do { |pair|
-				[\ar, \kr].do{ |rate|
+				[\ar, \kr].do { |rate|
 					tests.add(
 						"x == %(%(x)) [%]".format(pair[0], pair[1], rate) -> {
 							var n = WhiteNoise.perform(rate).range(0.3, 0.9);
 							n - pair[1].applyTo(pair[0].applyTo(n))
 						}
-					);
+					)
 				}
 			}
 		};
@@ -306,7 +324,7 @@ TestCoreUGens_Server : UnitTest {
 			[DelayL, BufDelayL],
 			// [DelayC, BufDelayC] // not equivalent, FIXME
 		].do { |classes|
-			[\ar, \kr].do{ |rate|
+			[\ar, \kr].do { |rate|
 				tests.add(
 					"% == % [%]".format(classes[0], classes[1], rate) -> {
 						var sig = SinOsc.perform(rate) + 1;
@@ -315,7 +333,7 @@ TestCoreUGens_Server : UnitTest {
 						var bufdelay = classes[1].perform(rate, LocalBuf.new(0.02 * SampleRate.ir * 2), sig, delayTime);
 						delay - bufdelay
 					}
-				);
+				)
 			}
 		};
 
@@ -333,9 +351,9 @@ TestCoreUGens_Server : UnitTest {
 					within: -90.dbamp, // could go to -100 if not for midicps(cpsmidi()) test
 					report: false);
 				completed = completed + 1;
-				cond.signalOne;
+				cond.signalOne
 			});
-			server.sync;
+			server.sync
 		};
 
 		var testsFinished = cond.waitFor((1.5 * numTests * testDur).max(minTimeOut), { completed == numTests });
@@ -353,45 +371,44 @@ TestCoreUGens_Server : UnitTest {
 		completed = 0; // reset counter
 
 		[\ar, \kr].do { |rate|
-			sampleDursToTest.do{ |numSamps|
-				var sampleDur = switch(rate,
-					\ar, { 1 / sampleRate },
-					\kr, { blockSize / sampleRate }
-				);
+			sampleDursToTest.do { |numSamps|
+				var sampleDur = switch(rate)
+					{ \ar } { 1 / sampleRate }
+					{ \kr } { blockSize / sampleRate };
 				var lineDur = numSamps * sampleDur;
 
 				{   // ensure values change enough to meaningfully exceed 'within' threshold
 					EnvGen.perform(rate, Env([1.5, 100], lineDur)) -
-					Line.perform(rate, 1.5, 100, lineDur)
+						Line.perform(rate, 1.5, 100, lineDur)
 				}.loadToFloatArray(testDur, server, { |data|
 					this.assertArrayFloatEquals(data, 0,
 						"EnvGen should be equal to Line over short durations [% samples] with fast phase change. [%]".format(numSamps, rate),
 						within: -90.dbamp, report: false
 					);
 					completed = completed + 1;
-					cond.signalOne;
+					cond.signalOne
 				});
 				server.sync;
 
-				if (numSamps == 2) {
+				if(numSamps == 2) {
 					// When duration is 2 samples, skip EnvGen vs. XLine test.
 					// In this exceptional case, EnvGen is forced to a linear shape (could probably be fixed).
 					completed = completed + 1;
-					cond.signalOne;
+					cond.signalOne
 				} {
 					{   // ensure values change enough to meaningfully exceed 'within' threshold
 						EnvGen.perform(rate, Env([1.5, 100], lineDur, \exp)) -
-						XLine.perform(rate, 1.5, 100, lineDur)
+							XLine.perform(rate, 1.5, 100, lineDur)
 					}.loadToFloatArray(testDur, server, { |data|
 						this.assertArrayFloatEquals(data, 0,
 							"EnvGen should be equal to XLine over short durations [% samples] with fast phase change. [%]".format(numSamps, rate),
 							within: -90.dbamp, report: false
 						);
 						completed = completed + 1;
-						cond.signalOne;
-					});
+						cond.signalOne
+					})
 				};
-				server.sync;
+				server.sync
 			}
 		};
 
@@ -399,7 +416,7 @@ TestCoreUGens_Server : UnitTest {
 			(1.5 * numTests * sampleDursToTest.maxItem / server.sampleRate).max(minTimeOut),
 			{ completed == numTests }
 		);
-		this.assert(testsFinished, "TIMEOUT: ugen_generator_equivalences EnvGen/Line tests", report: false);
+		this.assert(testsFinished, "TIMEOUT: ugen_generator_equivalences EnvGen/Line tests", report: false)
 	}
 
 	test_exact_convergence {
@@ -413,7 +430,7 @@ TestCoreUGens_Server : UnitTest {
 			//////////////////////////////////////////
 			// Pan2 amplitude convergence to zero test, unearthed by JH on sc-dev 2009-10-19.
 			"Pan2.ar(ar, 0, kr) should converge properly to zero when amp set to zero" -> {
-				(Line.ar(1,0,0.2)<=0)*Pan2.ar(BrownNoise.ar, 0, Line.kr(1,0, 0.1)>0).mean
+				(Line.ar(1, 0, 0.2) <= 0) * Pan2.ar(BrownNoise.ar, 0, Line.kr(1, 0, 0.1) > 0).mean
 			},
 
 			// add more tests here
@@ -422,17 +439,17 @@ TestCoreUGens_Server : UnitTest {
 		server.bootSync;
 		var testDur = defaultNumBlocksToTest * server.options.blockSize / server.sampleRate;
 
-		tests.keysValuesDo{ |text, func|
+		tests.keysValuesDo { |text, func|
 			func.loadToFloatArray(testDur, server, { |data|
 				this.assertArrayFloatEquals(data, 0, text.quote, within: 0.0, report: false);
 				completed = completed + 1;
-				cond.signalOne;
+				cond.signalOne
 			});
-			server.sync;
+			server.sync
 		};
 
 		var testsFinished = cond.waitFor((1.5 * tests.size * testDur).max(minTimeOut), { completed == tests.size });
-		this.assert(testsFinished, "TIMEOUT: exact_convergence tests", report: false);
+		this.assert(testsFinished, "TIMEOUT: exact_convergence tests", report: false)
 	}
 
 
@@ -442,25 +459,25 @@ TestCoreUGens_Server : UnitTest {
 		var n, v;
 
 		var tests = Dictionary[];
-		[[\ar,\kr], [2,0,5], [\ar,\kr], [2,0,5], [\ar,\kr], [2,0,5]].allTuples.do{|tup|
+		[[\ar, \kr], [2, 0, 5], [\ar, \kr], [2, 0, 5], [\ar, \kr], [2, 0, 5]].allTuples.do { |tup|
 			tests["%%.madd(%%, %%)".format(*tup)] =
-			"{DC.%(%).madd(DC.%(%), DC.%(%)) - (% * % + %)}".format(*(tup ++ tup[1,3..])).interpret;
+				"{DC.%(%).madd(DC.%(%), DC.%(%)) - (% * % + %)}".format(*(tup ++ tup[1, 3..])).interpret
 		};
 
 		server.bootSync;
 		var testDur = defaultNumBlocksToTest * server.options.blockSize / server.sampleRate;
 
-		tests.keysValuesDo{|name, func|
+		tests.keysValuesDo { |name, func|
 			func.loadToFloatArray(testDur, server, { |data|
 				this.assertArrayFloatEquals(data, 0, name.quote, report: false);
 				completed = completed + 1;
-				cond.signalOne;
+				cond.signalOne
 			});
-			server.sync;
+			server.sync
 		};
 
 		var testsFinished = cond.waitFor((1.5 * tests.size * testDur).max(minTimeOut), { completed == tests.size });
-		this.assert(testsFinished, "TIMEOUT: muladd tests", report: false);
+		this.assert(testsFinished, "TIMEOUT: muladd tests", report: false)
 	}
 
 
@@ -473,7 +490,7 @@ TestCoreUGens_Server : UnitTest {
 		server.bootSync;
 
 		// channel sizes for test:
-		tests.do{ |numchans|
+		tests.do { |numchans|
 			var data, dataBuf, recBuf;
 			// random data for test
 			data = { 1.0.rand }.dup((server.sampleRate * bufDur).round * numchans);
@@ -485,7 +502,7 @@ TestCoreUGens_Server : UnitTest {
 
 			// copying data from dataBuf to recBuf:
 			{
-				RecordBuf.ar(PlayBuf.ar(numchans, dataBuf, BufRateScale.ir(dataBuf), doneAction: 2), recBuf, loop: 0) * 0.1;
+				RecordBuf.ar(PlayBuf.ar(numchans, dataBuf, BufRateScale.ir(dataBuf), doneAction: 2), recBuf, loop: 0) * 0.1
 			}.play(server, outbus: server.options.numInputBusChannels + server.options.numOutputBusChannels); // avoid hw output: write to first virutal bus
 
 			server.sync;
@@ -499,18 +516,18 @@ TestCoreUGens_Server : UnitTest {
 					dataBuf.free;
 					recBuf.free;
 					completed = completed + 1;
-					cond.signalOne;
-				});
-			};
+					cond.signalOne
+				})
+			}
 		};
 
 		var testsFinished = cond.waitFor((1.5 * tests.size * bufDur).max(minTimeOut), { completed == tests.size });
-		this.assert(completed == tests.size, "TIMEOUT: bufugens tests", report: false);
+		this.assert(completed == tests.size, "TIMEOUT: bufugens tests", report: false)
 	}
 
 	test_impulse {
 		var funcs, results, testDur, testsFinished;
-		var rates = [\kr,\ar];
+		var rates = [\kr, \ar];
 		var cond = CondVar();
 		var numBlocksToTest = 5;
 
@@ -520,32 +537,32 @@ TestCoreUGens_Server : UnitTest {
 		var frq = blockRate * 2.123; // impulses per block
 		var phs = 0;
 
-		rates.do{ |rate|
+		rates.do { |rate|
 			var completed = 0;
 
-			funcs = [{DC.ar(frq)}, {DC.kr(frq)}, frq].collect({ |in0|
-				[{DC.ar(phs)}, {DC.kr(phs)}, phs].collect{ |in1|
+			funcs = [{ DC.ar(frq) }, { DC.kr(frq) }, frq].collect { |in0|
+				[{ DC.ar(phs) }, { DC.kr(phs) }, phs].collect { |in1|
 					{ Impulse.perform(rate, in0, in1) }
 				}
-			}).flat;
+			}.flat;
 			results = Array.newClear(funcs.size);
 
 			testDur = numBlocksToTest * blockRate.reciprocal;
 
-			funcs.do{ |func, i|
+			funcs.do { |func, i|
 				func.loadToFloatArray(testDur, server, { |arr|
 					results[i] = arr;
 					completed = completed + 1;
-					cond.signalOne;
+					cond.signalOne
 				});
-				server.sync;
+				server.sync
 			};
 			testsFinished = cond.waitFor((1.5 * funcs.size * testDur).max(minTimeOut), { completed == funcs.size });
 			this.assert(testsFinished, "TIMEOUT: impulse tests", report: false);
 
 			this.assert(results.every(_ == results[0]),
 				"Impulse.%: all rate combinations of identical unmodulated input values should have identical output".format(rate),
-				report: false);
+				report: false)
 		};
 
 		/* Tests in response to historical bugs */
@@ -558,54 +575,54 @@ TestCoreUGens_Server : UnitTest {
 			server, { |arr|
 				this.assert(arr.sum == 1.0, "Impulse.kr: phase that is far out-of-range should wrap immediately in-range, and not cause multiple impulses to fire.", report: false);
 				this.assert(arr[0] != 1.0, "Impulse.kr: a phase offset other than 0 or 1 should not produce an impulse on the first output sample.", report: false);
-				cond.signalOne;
+				cond.signalOne
 			}
 		);
 		cond.wait;
 
 		// Phase offset of 0,1,-1 should be equal on first sample
-		rates.do{ |rate|
+		rates.do { |rate|
 			var phases = [0, 1, -1];
-			phases.do{ |phs|
+			phases.do { |phs|
 				{ Impulse.perform(rate, frq, phs) }.loadToFloatArray(
 					frq.reciprocal, // 1 freq period
 					server, { |arr|
 						this.assert(arr[0] == 1.0,
 							"Impulse.%: initial phase of % should produce and impulse on the first frame.".format(rate, phs), report: false);
-						cond.signalOne;
+						cond.signalOne
 					}
 				);
-				cond.wait;
+				cond.wait
 			}
 		};
 
 		// Freq = 0 should produce a single impulse on first frame
 		// https://github.com/supercollider/supercollider/pull/4150#issuecomment-582905976
-		rates.do{ |rate|
+		rates.do { |rate|
 			{ Impulse.perform(rate, 0) }.loadToFloatArray(
 				3 * server.options.blockSize / server.sampleRate, // 3 blocks
 				server, { |arr|
 					this.assert(arr[0] == 1.0 and: { arr.sum == 1.0 },
 						"Impulse.%: freq = 0 should produce a single impulse on the first frame and no more.".format(rate), report: false);
-					cond.signalOne;
+					cond.signalOne
 				}
 			);
-			cond.wait;
+			cond.wait
 		};
 
 		// Positive and negative freqs should produce the same output
-		rates.do{ |rate|
-			{ Impulse.perform(rate, 100 * [1,-1]) }.loadToFloatArray(
+		rates.do { |rate|
+			{ Impulse.perform(rate, 100 * [1, -1]) }.loadToFloatArray(
 				5 * frq.reciprocal,
 				server, { |arr|
 					arr = arr.clump(2).flop; // de-interleave
 					this.assertArrayFloatEquals(arr[0], arr[1],
 						"Impulse.%: positive and negative frequencies should produce the same output.".format(rate), report: false);
-					cond.signalOne;
+					cond.signalOne
 				}
 			);
-			cond.wait;
-		};
+			cond.wait
+		}
 	}
 
 	test_demand {
@@ -618,16 +635,16 @@ TestCoreUGens_Server : UnitTest {
 			if(nodesToFree.indexOf(message[1]).notNil) {
 				nodesToFree.removeAt(nodesToFree.indexOf(message[1]))
 			};
-			nodesToFree.postln;
+			nodesToFree.postln
 		}, \n_end, server.addr).oneShot;
 
 		var dutyDur = 0.05;
 		var seq = (1..5);
 		var tests = [
-			{LPF.ar(LeakDC.ar(Duty.ar(dutyDur, 0, Dseq(seq), doneAction: 2)))}
+			{ LPF.ar(LeakDC.ar(Duty.ar(dutyDur, 0, Dseq(seq), doneAction: 2))) }
 		];
 
-		tests.do{|item| nodesToFree = nodesToFree.add(item.play(server).nodeID) };
+		tests.do { |item| nodesToFree = nodesToFree.add(item.play(server).nodeID) };
 
 		server.sync;
 		(dutyDur * seq.size).wait;
@@ -639,10 +656,9 @@ TestCoreUGens_Server : UnitTest {
 		var testNaN = false;
 
 		OSCFunc({ |message|
-			switch(message[2],
-				5453, { testNaN = message[3] <= 0.0 or: { message[3] >= 1.0 } }
-			);
-			cond.signalOne;
+			switch(message[2])
+				{ 5453 } { testNaN = message[3] <= 0.0 or: { message[3] >= 1.0 } };
+			cond.signalOne
 		}, \tr, server.addr).oneShot;
 
 		{
@@ -652,7 +668,7 @@ TestCoreUGens_Server : UnitTest {
 		server.sync;
 		cond.wait;
 
-		this.assert(testNaN.not, "Duty+LFTri should not output NaN");
+		this.assert(testNaN.not, "Duty+LFTri should not output NaN")
 	}
 
 	test_pitchtrackers {
@@ -669,41 +685,41 @@ TestCoreUGens_Server : UnitTest {
 				var freq = XLine.ar(fromFreq, toFreq, testDur);
 				var son = SinOsc.ar(freq);
 				var val = ZeroCrossing.ar(son);
-				var dev = (freq-val).abs;
+				var dev = (freq - val).abs;
 				// gate the startup period of ZeroCrossing (just over one period of the input oscillator)
 				var gate = ToggleFF.ar(TDelay.ar(Impulse.ar(0), dur: (fromFreq).reciprocal * 1.25));
 				// normalize deviation by 10% of the target frequency
 				dev = dev / (freq / 10);
-				dev = dev * gate;
+				dev = dev * gate
 				// [freq, val, dev] // for plotting/debugging
 			},
 			"Pitch.kr() tracking a Saw" -> {
 				var freq = XLine.kr(fromFreq, toFreq, testDur);
 				var son = Saw.ar(freq);
 				var val = Pitch.kr(son, initFreq: fromFreq).at(0);
-				var dev = (freq-val).abs;
+				var dev = (freq - val).abs;
 				// normalize deviation by 10% of the target frequency
-				dev = dev / (freq / 10);
+				dev = dev / (freq / 10)
 				// [freq, val, dev] // for plotting/debugging
 			}//.plot(testDur, separately: true); // <-to observe/debug
 		];
 
 		server.bootSync;
 
-		tests.keysValuesDo{ |text, func|
+		tests.keysValuesDo { |text, func|
 			func.loadToFloatArray(testDur, server, { |pitchDeviation|
 				this.assertArrayFloatEquals(
 					pitchDeviation, 0.0, text,
 					within: 1.0 // deviation should be less than 1.0 (dev is normalized to 10% of target freq)
 				);
 				completed = completed + 1;
-				cond.signalOne;
+				cond.signalOne
 			});
-			server.sync;
+			server.sync
 		};
 
 		var testsFinished = cond.waitFor((1.5 * testDur * tests.size).max(minTimeOut), { completed == tests.size });
-		this.assert(testsFinished, "TIMEOUT: pitchtrackers tests", report: false);
+		this.assert(testsFinished, "TIMEOUT: pitchtrackers tests", report: false)
 	}
 
 	test_out_ugens {
@@ -741,7 +757,7 @@ TestCoreUGens_Server : UnitTest {
 
 		testAudioRate = {
 			var failing = [nil, []];
-			var working = [{DC.ar(0)}, {DC.ar([0, 0])}];
+			var working = [{ DC.ar(0) }, { DC.ar([0, 0]) }];
 			var stubs = [
 				{ |args| LocalOut.ar(*args) },
 				{ |args| Out.ar(0, *args) },
@@ -772,8 +788,8 @@ TestCoreUGens_Server : UnitTest {
 
 		server.bootSync;
 
-		this.assert(testAudioRate.value, report:true, onFailure:"test_out_ugens: failed with audio rate ugens");
-		this.assert(testControlRate.value, report:true, onFailure:"test_out_ugens: failed with control rate ugens");
+		this.assert(testAudioRate.value, report: true, onFailure: "test_out_ugens: failed with audio rate ugens");
+		this.assert(testControlRate.value, report: true, onFailure: "test_out_ugens: failed with control rate ugens")
 	}
 
 	test_delay1_2_predelayValues {
@@ -793,13 +809,13 @@ TestCoreUGens_Server : UnitTest {
 		server.bootSync;
 		var testDur = defaultNumBlocksToTest * server.options.blockSize / server.sampleRate;
 
-		testParams.do{ |params|
+		testParams.do { |params|
 			var ugen, inVal, xArgs, numPredelaySamples;
 			#ugen, inVal = params[0..1];
 			xArgs = params[2..];
 			numPredelaySamples = switch(ugen, Delay1, { 1 }, Delay2, { 2 });
 
-			[\ar, \kr].do{ |rate|
+			[\ar, \kr].do { |rate|
 				var cond = CondVar();
 				{
 					ugen.perform(rate,
@@ -810,17 +826,16 @@ TestCoreUGens_Server : UnitTest {
 
 					if(xArgs.size == 0) {
 						// no args specified, check defaults
-						switch(rate,
-							\ar, {
+						switch(rate)
+							{ \ar } {
 								target = 0.0 ! numPredelaySamples;
-								errmsg = "%.ar: predelay sample% should default to 0.0.";
-							},
-							\kr, {
-								target = inVal ! numPredelaySamples;
-								errmsg = "%.kr: predelay sample% should defaults to the input value (%).";
+								errmsg = "%.ar: predelay sample% should default to 0.0."
 							}
-						);
-						errmsg = errmsg.format(ugen, if(ugen == Delay2){ "s" }{ "" }, inVal);
+							{ \kr } {
+								target = inVal ! numPredelaySamples;
+								errmsg = "%.kr: predelay sample% should defaults to the input value (%)."
+							};
+						errmsg = errmsg.format(ugen, if(ugen == Delay2) { "s" } { "" }, inVal)
 					} {
 						// x1/x2 args are specified, partially or fully
 						target = switch(rate,
@@ -829,18 +844,18 @@ TestCoreUGens_Server : UnitTest {
 						);
 						errmsg = format(
 							"%.%: when x1% (%) is a number, the corresponding predelay sample equals that number.",
-							ugen, rate, if(ugen == Delay2){ " or x2" }{ "" }, xArgs, inVal
-						);
+							ugen, rate, if(ugen == Delay2) { " or x2" } { "" }, xArgs, inVal
+						)
 					};
 
 					this.assertArrayFloatEquals(
 						data.keep(numPredelaySamples), target, errmsg, within: tolerance, report: false
 					);
-					cond.signalOne;
+					cond.signalOne
 				});
 
-				cond.wait;
-			};
+				cond.wait
+			}
 		}
 	}
 
@@ -854,17 +869,17 @@ TestCoreUGens_Server : UnitTest {
 		var testDur = defaultNumBlocksToTest * server.options.blockSize / server.sampleRate;
 
 		from.size.do { |i|
-			this.assert(from[i].binaryValue.value == to[i], "% should correspond to %".format(text[i], to[i]));
+			this.assert(from[i].binaryValue.value == to[i], "% should correspond to %".format(text[i], to[i]))
 		};
 
 		from.size.do { |i|
 
 			{ DC.ar(from[i]).binaryValue }.loadToFloatArray(testDur, server, { |data|
-				this.assertFloatEquals(data[0], to[i],"% signal should correspond to %".format(text[i], to[i]), within: 0.1, report: false);
-				cond.signalOne;
+				this.assertFloatEquals(data[0], to[i], "% signal should correspond to %".format(text[i], to[i]), within: 0.1, report: false);
+				cond.signalOne
 			});
-			cond.wait;
-		};
+			cond.wait
+		}
 	}
 
 	// Test for correct arrival time of Envs with numerous stages
@@ -889,12 +904,11 @@ TestCoreUGens_Server : UnitTest {
 
 		server.bootSync;
 
-		shapes.do{ |shape|
-			rates.do{ |rate|
-				var fs = switch(rate,
-					\ar, { server.sampleRate },
-					\kr, { server.sampleRate / server.options.blockSize }
-				);
+		shapes.do { |shape|
+			rates.do { |rate|
+				var fs = switch(rate)
+					{ \ar } { server.sampleRate }
+					{ \kr } { server.sampleRate / server.options.blockSize };
 				// We expect the env to arrive at exactly this sample index.
 				var envDur_smp = timesInSamps.sum.asInteger;
 
@@ -907,7 +921,7 @@ TestCoreUGens_Server : UnitTest {
 					EnvGen.perform(rate,
 						Env(levels, timesInSamps.normalizeSum, shape),
 						timeScale: envDur_smp / fs
-					);
+					)
 				}.loadToFloatArray(renderDur, server,
 					action: { |data|
 						var test1, test2, test3;
@@ -915,8 +929,8 @@ TestCoreUGens_Server : UnitTest {
 						// the end val is reached after the total env duration has elapsed,
 						// which is index envDur_smp
 						var dataEndVal = data[envDur_smp];
-						var dataEndVal_p1 = data[envDur_smp+1];
-						var dataEndVal_m1 = data[envDur_smp-1];
+						var dataEndVal_p1 = data[envDur_smp + 1];
+						var dataEndVal_m1 = data[envDur_smp - 1];
 						var envEndVal = levels.last;
 
 						// store local vars to avoid async overwrites
@@ -932,7 +946,7 @@ TestCoreUGens_Server : UnitTest {
 						// first value is the end value. See GH Issue #4279.
 						test2 = (dataEndVal - dataEndVal_m1).abs > tolerance;
 						// test 2 doesn't apply to step or hold shapes
-						if (shp == \step or: { shp == \hold }) { test2 = true };
+						if(shp == \step or: { shp == \hold }) { test2 = true };
 
 						// Test 3: one sample after the env dur is the end val
 						test3 = (dataEndVal_p1 - envEndVal).abs < tolerance;
@@ -942,7 +956,7 @@ TestCoreUGens_Server : UnitTest {
 						// falls before or after the segment duration (there's a theoretical
 						// "correct" answer, which would go against the how the docs say it behaves,
 						// but modifying this would make a breaking change)
-						if (shp == \hold and: { test3 or: { test1 } }) { test1 = test3 = true };
+						if(shp == \hold and: { test3 or: { test1 } }) { test1 = test3 = true };
 
 						this.assert(test1,
 							format(
@@ -954,19 +968,19 @@ TestCoreUGens_Server : UnitTest {
 						this.assert(test3, format("EnvGen should not end late. (%, %)", shp, rt), report: false);
 
 						// Test 4: While we're here, let's confirm EnvGen's first output sample is accurate.
-						if (shp != \step) {
+						if(shp != \step) {
 							this.assertFloatEquals(data.first, levels.first,
 								format(
 									"EnvGen's first output sample should be its given start value. (%, %)",
 									shp, rt
 								), report: false
-							);
+							)
 						};
 
 						completed = completed + 1;
-						cond.signalOne;
+						cond.signalOne
 				});
-				server.sync;
+				server.sync
 			} // end rates
 		}; // end shapes
 
@@ -975,7 +989,7 @@ TestCoreUGens_Server : UnitTest {
 			(1.5 * numTests * timesInSamps.sum * (server.sampleRate / server.options.blockSize)).max(minTimeOut),
 			{ completed == numTests }
 		);
-		this.assert(testsFinished, "TIMEOUT: test_env_endsOnTime", report: false);
+		this.assert(testsFinished, "TIMEOUT: test_env_endsOnTime", report: false)
 	}
 
 	test_oscillators_startAtCorrectPhase {
@@ -985,12 +999,11 @@ TestCoreUGens_Server : UnitTest {
 
 		server.bootSync;
 
-		[\ar, \kr].do{ |rate|
+		[\ar, \kr].do { |rate|
 			var period, period_sec, freq, halfPeriod, iPhase, maxIdx, target, ugen, phaseRange;
-			var fs = switch(rate,
-				\ar, { server.sampleRate },
-				\kr, { server.sampleRate / server.options.blockSize }
-			);
+			var fs = switch(rate)
+				{ \ar } { server.sampleRate }
+				{ \kr } { server.sampleRate / server.options.blockSize };
 
 			period = 10; // oscillator period, in samples (should be even)
 			period_sec = period / fs; // oscillator period, in seconds
@@ -1007,7 +1020,7 @@ TestCoreUGens_Server : UnitTest {
 				this.assert(data[0] == 1.0 and: { data[1] == 0.0 },
 					"LFPulse.% should start at the correct initial phase".format(rate), report: false
 				);
-				cond.signalOne;
+				cond.signalOne
 			});
 			cond.wait;
 
@@ -1019,7 +1032,7 @@ TestCoreUGens_Server : UnitTest {
 				this.assert(data[0] > 0.0 and: { data[1] < 0.0 },
 					"LFSaw.% should start at the correct initial phase".format(rate), report: false
 				);
-				cond.signalOne;
+				cond.signalOne
 			});
 			cond.wait;
 
@@ -1031,7 +1044,7 @@ TestCoreUGens_Server : UnitTest {
 				[2, -1.0],
 				[3, 0.0],
 				[4, 1.0]
-			].do{ |pair|
+			].do { |pair|
 				#iPhase, target = pair;
 				{
 					LFPar.perform(rate, freq, iPhase)
@@ -1040,9 +1053,9 @@ TestCoreUGens_Server : UnitTest {
 						"LFPar.% should be % at initial phase of %".format(rate, target, iPhase),
 						within: tolerance, report: false
 					);
-					cond.signalOne;
+					cond.signalOne
 				});
-				cond.wait;
+				cond.wait
 			};
 
 			// LFCub, LFTri, SinOsc: testing initial phase
@@ -1053,13 +1066,13 @@ TestCoreUGens_Server : UnitTest {
 				[0.50, 0.0],
 				[0.75, -1.0],
 				[1.00, 0.0]
-			].do{ |pair|
+			].do { |pair|
 				#iPhase, target = pair;
 				[
 					[LFCub, 2.0],  // LFPar phase is 0->2
 					[LFTri, 4.0],  // LFTri phase is 0->4
 					[SinOsc, 2pi], // SinOsc phase is 0->2pi
-				].do{ |ugenPhaseRangePair|
+				].do { |ugenPhaseRangePair|
 					#ugen, phaseRange = ugenPhaseRangePair;
 					{
 						ugen.perform(rate, freq, iPhase * phaseRange)
@@ -1068,9 +1081,9 @@ TestCoreUGens_Server : UnitTest {
 							"%.% should be % at initial phase of %".format(ugen, rate, target, iPhase * phaseRange),
 							within: tolerance, report: false
 						);
-						cond.signalOne;
+						cond.signalOne
 					});
-					cond.wait;
+					cond.wait
 				}
 			};
 
@@ -1081,7 +1094,7 @@ TestCoreUGens_Server : UnitTest {
 				[0.0, period / 2],  // max occurs in the middle
 				[0.5, 0],           // max occurs at the beginning
 				[1.0, period / 2]   // iphase:0.0 == iphase:1.0
-			].do{ |pair|
+			].do { |pair|
 				#iPhase, maxIdx = pair;
 				{
 					VarSaw.perform(rate, freq, iPhase, 0.5) // width must be 0.5 for this test
@@ -1091,10 +1104,10 @@ TestCoreUGens_Server : UnitTest {
 						this.assertEquals(data.indexOf(data.maxItem), maxIdx,
 							"VarSaw.% should start correct phase (initPhase: %, maxIdx: %)".format(rate, iPhase, maxIdx)
 						);
-						cond.signalOne;
+						cond.signalOne
 					}
 				);
-				cond.wait;
+				cond.wait
 			};
 
 			// more phase tests here...
@@ -1102,19 +1115,19 @@ TestCoreUGens_Server : UnitTest {
 			// EnvGen, standard Env and using Env:*circle and Env:-circle
 			target = 42; // first output sample should be the first level of the Env
 			[
-				{ EnvGen.perform(rate, Env([target, target*100], period_sec)) },
+				{ EnvGen.perform(rate, Env([target, target * 100], period_sec)) },
 				// circular envs have to be instantiated from within the function in order for them to be interpreted as dynamic UGen inputs
-				{ EnvGen.perform(rate, Env([target, target*100], period_sec).circle(period_sec)) },
-				{ EnvGen.perform(rate, Env.circle([target, target*100], [period_sec, period_sec])) },
-			].do{ |testFunc, i|
+				{ EnvGen.perform(rate, Env([target, target * 100], period_sec).circle(period_sec)) },
+				{ EnvGen.perform(rate, Env.circle([target, target * 100], [period_sec, period_sec])) },
+			].do { |testFunc, i|
 				testFunc.loadToFloatArray(period_sec * 1.5, server, { |data|
 					this.assertFloatEquals(data[0], target,
 						"EnvGen's first sample, should be its first level [%, env %]".format(rate, i),
 						within: tolerance, report: false
 					);
-					cond.signalOne;
+					cond.signalOne
 				});
-				cond.wait;
+				cond.wait
 			}
 		}
 	}

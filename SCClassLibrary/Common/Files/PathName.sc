@@ -5,38 +5,38 @@ PathName {
 	classvar <>scroot;
 	classvar <>tmp;
 
-	*new { | path = "" |
+	*new { |path = ""|
 		^super.newCopyArgs(path.standardizePath)
 	}
 
 	*initClass {
 		scroot = File.getcwd;
 		tmp = Platform.defaultTempDir;
-		if(tmp.isNil, {
+		if(tmp.isNil) {
 			"No valid temp directory found. Please set it manually using PathName.tmp_".warn
-		})
+		}
 	}
 
 	colonIndices {
 		^colonIndices ?? {
 			colonIndices = List.new;
-			fullPath.do({ | eachChar, i |
-				if(eachChar.isPathSeparator, { colonIndices.add(i) })
-			});
+			fullPath.do { |eachChar, i|
+				if(eachChar.isPathSeparator) { colonIndices.add(i) }
+			};
 			colonIndices
 		}
 	}
 
 	fileName {
-		^fullPath.copyRange((this.lastColonIndex) + 1, (fullPath.size -1).max(0))
+		^fullPath.copyRange((this.lastColonIndex) + 1, (fullPath.size - 1).max(0))
 	}
 
 	fileNameWithoutExtension {
 		var fileName = this.fileName;
-		fileName.reverseDo({ | char, i |
-			if(char == $.,{
-				^fileName.copyRange(0,fileName.size - (i + 2))
-			})
+		fileName.reverseDo({ |char, i|
+			if(char == $.) {
+				^fileName.copyRange(0, fileName.size - (i + 2))
+			}
 		});
 		^fileName
 	}
@@ -44,17 +44,17 @@ PathName {
 	fileNameWithoutDoubleExtension {
 		var fileName, pathName;
 		fileName = this.fileNameWithoutExtension;
-		pathName = PathName( fileName );
+		pathName = PathName(fileName);
 		^pathName.fileNameWithoutExtension
 	}
 
 	extension {
 		var fileName;
 		fileName = this.fileName;
-		fileName.reverseDo({ | char, i |
-			if(char == $., {
-				^fileName.copyRange(fileName.size - i,fileName.size - 1)
-			})
+		fileName.reverseDo({ |char, i|
+			if(char == $.) {
+				^fileName.copyRange(fileName.size - i, fileName.size - 1)
+			}
 		});
 		^""
 	}
@@ -80,7 +80,7 @@ PathName {
 	asRelativePath { |relativeTo|
 		var r, a, b, i, mePath;
 		mePath = this.fullPath.absolutePath;
-		relativeTo = (relativeTo ? scroot ).absolutePath;
+		relativeTo = (relativeTo ? scroot).absolutePath;
 		r = thisProcess.platform.pathSeparator;
 
 		a = mePath.split(r);
@@ -88,18 +88,18 @@ PathName {
 
 		i = 0;
 		while { a[i] == b[i] and: { i < a.size } } {
-			i = i + 1;
+			i = i + 1
 		};
 		^(".." ++ r).dup(b.size - i).join ++ a[i..].join(r)
 	}
 
 	asAbsolutePath {
-		if(this.isAbsolutePath,{
+		if(this.isAbsolutePath) {
 			^fullPath
-		},{
+		} {
 			// this assumes relative to the sc app
 			^fullPath.absolutePath
-		})
+		}
 	}
 
 	allFolders {
@@ -107,8 +107,8 @@ PathName {
 		folderNames = List.new;
 		pathCopy = fullPath;
 
-		this.colonIndices.doAdjacentPairs({ | startColon, endColon |
-			folderNames.add( fullPath.copyRange(startColon + 1, endColon - 1) )
+		this.colonIndices.doAdjacentPairs({ |startColon, endColon|
+			folderNames.add(fullPath.copyRange(startColon + 1, endColon - 1))
 		});
 
 		^folderNames
@@ -117,25 +117,25 @@ PathName {
 	folderName {
 		var indexBeforeFolder;
 		var ci = this.colonIndices;
-		if (ci.isEmpty, { ^"" });
+		if(ci.isEmpty) { ^"" };
 
 		indexBeforeFolder =
-		if (ci.size == 1, 0, { ci.at(ci.size - 2) + 1 });
+			if(ci.size == 1, 0, { ci.at(ci.size - 2) + 1 });
 
 		^fullPath.copyRange(indexBeforeFolder, this.lastColonIndex - 1)
 	}
 
 	lastColonIndex {
 		var ci = this.colonIndices;
-		^if(ci.isEmpty, { -1 }, { ci.last }) ;
+		^if(ci.isEmpty) { -1 } { ci.last }
 	}
 
 	nextName {
-		^if(fullPath.last.isDecDigit, {
+		^if(fullPath.last.isDecDigit) {
 			this.noEndNumbers ++ (this.endNumber + 1)
-		}, {
+		} {
 			fullPath ++ "1"
-		})
+		}
 	}
 
 	noEndNumbers {
@@ -148,24 +148,24 @@ PathName {
 
 	endNumberIndex {
 		var index = fullPath.lastIndex;
-		while({
+		while {
 			index > 0 and: { fullPath.at(index).isDecDigit }
-		}, {
+		} {
 			index = index - 1
-		});
+		};
 		^index
 	}
 
 	/* concatenation */
-	+/+ { | path |
-		var otherFullPath = path.respondsTo(\fullPath).if({ path.fullPath }, { path.asString });
+	+/+ { |path|
+		var otherFullPath = if(path.respondsTo(\fullPath)) { path.fullPath } { path.asString };
 		^this.class.new(fullPath +/+ otherFullPath)
 	}
 
 	entries {
 		var path = fullPath;
 		if(path.isEmpty) { ^[] };
-		^pathMatch(path +/+ "*").collect({ | item | PathName(item) })
+		^pathMatch(path +/+ "*").collect { |item| PathName(item) }
 	}
 
 	pathMatch {
@@ -174,73 +174,73 @@ PathName {
 
 	isFolder {
 		var path = this.pathMatch;
-		^if(path.notEmpty, {
+		^if(path.notEmpty) {
 			path.at(0).last.isPathSeparator
-		}, { false })
+		} { false }
 	}
 
 	isFile {
 		var path = this.pathMatch;
-		^if(path.notEmpty, {
+		^if(path.notEmpty) {
 			path.at(0).last.isPathSeparator.not
-		}, { false })
+		} { false }
 	}
 
 	files {
-		^this.entries.select({ | item | item.isFile })
+		^this.entries.select({ |item| item.isFile })
 	}
 
 	folders {
-		^this.entries.select({ | item | item.isFolder })
+		^this.entries.select({ |item| item.isFolder })
 	}
 
 	deepFiles {
-		^this.entries.collect({ | item |
-			if(item.isFile, {
+		^this.entries.collect { |item|
+			if(item.isFile) {
 				item
-			},{
+			} {
 				item.deepFiles
-			})
-		}).flat
+			}
+		}.flat
 	}
 
 	parentPath {
 		var ci = this.colonIndices;
 
-		^if((fullPath.last.isPathSeparator) and: { ci.size > 1 }, {
+		^if((fullPath.last.isPathSeparator) and: { ci.size > 1 }) {
 			fullPath.copyRange(0, ci[ci.size - 2])
-		}, {
+		} {
 			fullPath.copyRange(0, this.lastColonIndex)
-		})
+		}
 	}
 
-	filesDo { | func |
+	filesDo { |func|
 		this.files.do(func);
-		this.folders.do { | pathname |
+		this.folders.do { |pathname|
 			pathname.filesDo(func)
-		};
+		}
 	}
 
-	streamTree { | str, tabs = 0 |
+	streamTree { |str, tabs = 0|
 		str << this.fullPath << Char.nl;
-		this.files.do({ | item |
-			tabs.do({ str << Char.tab });
-			str << item.fileNameWithoutExtension  << Char.nl
-		});
-		this.folders.do({ | item |
-			item.streamTree(str, tabs + 1);
-		});
+		this.files.do { |item|
+			tabs.do { str << Char.tab };
+			str << item.fileNameWithoutExtension << Char.nl
+		};
+		this.folders.do { |item|
+			item.streamTree(str, tabs + 1)
+		}
 	}
 
 	dumpTree {
 		this.streamTree(Post)
 	}
 
-	printOn { | stream |
+	printOn { |stream|
 		stream << "PathName(" << fullPath << ")"
 	}
 
-	dumpToDoc { | title="Untitled" |
+	dumpToDoc { |title = "Untitled"|
 		var str, doc;
 		doc = Document.new(title);
 		str = CollStream.new;

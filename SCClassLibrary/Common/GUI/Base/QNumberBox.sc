@@ -6,121 +6,120 @@ NumberBox : QAbstractStepValue {
 
 	*qtClass { ^'QcNumberBox' }
 
-	*new { arg parent, bounds;
-		var obj = super.new( parent, bounds );
+	*new { |parent, bounds|
+		var obj = super.new(parent, bounds);
 		obj.initNumberBox;
-		^obj;
+		^obj
 	}
 
 	initNumberBox {
 		scroll = true;
 		scroll_step = 1;
 		normalColor = Color.black;
-		typingColor = Color.red;
+		typingColor = Color.red
 	}
 
-	object_  { arg obj;
-		if( setBoth ) {
-			if( obj.isNumber ) { this.value = obj } { this.string = obj.asString }
+	object_  { |obj|
+		if(setBoth) {
+			if(obj.isNumber) { this.value = obj } { this.string = obj.asString }
 		};
 		object = obj
 	}
 
 	value {
-		var type = this.getProperty( \valueType );
+		var type = this.getProperty(\valueType);
 		var val;
-		switch( type,
-			0 /* Number */, { val = this.getProperty( \value ) },
+		switch(type,
+			0 /* Number */, { val = this.getProperty(\value) },
 			1 /* Inf */, { val = inf },
 			2 /* -Inf */, { val = -inf },
 			3 /* NaN */, { val = 0 },
 			4 /* Text */, { val = 0 }
 		);
-		^val;
+		^val
 	}
 
-	value_ { arg value;
+	value_ { |value|
 		case
-		// isNaN has to be on the first plase, because a NaN is also equal to inf and -inf
-		{ value.isNaN } { this.invokeMethod( \setNaN ); }
-		{ value == inf } { this.invokeMethod( \setInfinite, true ); }
-		{ value == -inf } { this.invokeMethod( \setInfinite, false ); }
-		{ this.setProperty( \value, value.asFloat ); }
-		;
+			// isNaN has to be on the first plase, because a NaN is also equal to inf and -inf
+			{ value.isNaN } { this.invokeMethod(\setNaN) }
+			{ value == inf } { this.invokeMethod(\setInfinite, true) }
+			{ value == -inf } { this.invokeMethod(\setInfinite, false) }
+			{ this.setProperty(\value, value.asFloat) }
 	}
 
-	valueAction_ { arg val;
+	valueAction_ { |val|
 		this.value_(val);
-		action.value(this);
+		action.value(this)
 	}
 
-	string { ^this.getProperty( \text ); }
+	string { ^this.getProperty(\text) }
 
-	string_ { arg string; this.setProperty( \text, string ); }
+	string_ { |string| this.setProperty(\text, string) }
 
 	clipLo { ^this.getProperty(\minimum) }
-	clipLo_ { arg aFloat; this.setProperty( \minimum, aFloat ) }
+	clipLo_ { |aFloat| this.setProperty(\minimum, aFloat) }
 
 	clipHi { ^this.getProperty(\maximum) }
-	clipHi_ { arg aFloat; this.setProperty( \maximum, aFloat ) }
+	clipHi_ { |aFloat| this.setProperty(\maximum, aFloat) }
 
-	scroll_ { arg aBool;
+	scroll_ { |aBool|
 		scroll = aBool;
-		this.setProperty( \scroll, aBool );
+		this.setProperty(\scroll, aBool)
 	}
 
-	scroll_step_ { arg aFloat;
+	scroll_step_ { |aFloat|
 		scroll_step = aFloat;
-		this.setProperty( \scrollStep, aFloat );
+		this.setProperty(\scrollStep, aFloat)
 	}
 
-	decimals { ^this.getProperty(\decimals); }
-	minDecimals { ^this.getProperty(\minDecimals); }
-	maxDecimals { ^this.getProperty(\maxDecimals); }
+	decimals { ^this.getProperty(\decimals) }
+	minDecimals { ^this.getProperty(\minDecimals) }
+	maxDecimals { ^this.getProperty(\maxDecimals) }
 
-	decimals_ {  arg decimals; this.setProperty( \decimals, decimals ); }
-	minDecimals_ { arg decimals; this.setProperty( \minDecimals, decimals ); }
-	maxDecimals_ { arg decimals; this.setProperty( \maxDecimals, decimals ); }
+	decimals_ { |decimals| this.setProperty(\decimals, decimals) }
+	minDecimals_ { |decimals| this.setProperty(\minDecimals, decimals) }
+	maxDecimals_ { |decimals| this.setProperty(\maxDecimals, decimals) }
 
-	align_ { arg alignment;
+	align_ { |alignment|
 		align = alignment;
-		this.setProperty( \alignment, QAlignment(alignment));
+		this.setProperty(\alignment, QAlignment(alignment))
 	}
 
 	stringColor {
-		^this.palette.baseText;
+		^this.palette.baseText
 	}
 
-	stringColor_ { arg color;
-		this.palette = this.palette.baseText_(color);
+	stringColor_ { |color|
+		this.palette = this.palette.baseText_(color)
 	}
 
-	normalColor_ { arg aColor;
+	normalColor_ { |aColor|
 		normalColor = aColor;
-		this.setProperty( \normalColor, aColor );
+		this.setProperty(\normalColor, aColor)
 	}
 
-	typingColor_ { arg aColor;
+	typingColor_ { |aColor|
 		typingColor = aColor;
-		this.setProperty( \editingColor, aColor );
+		this.setProperty(\editingColor, aColor)
 	}
 
 	background {
-		^this.palette.base;
+		^this.palette.base
 	}
 
-	background_ { arg color;
-		this.palette = this.palette.base_(color);
+	background_ { |color|
+		this.palette = this.palette.base_(color)
 	}
 
-	buttonsVisible_ { arg aBool;
+	buttonsVisible_ { |aBool|
 		buttonsVisible = aBool;
-		this.setProperty( \buttonsVisible, aBool );
+		this.setProperty(\buttonsVisible, aBool)
 	}
 
-	defaultGetDrag { ^this.value; }
-	defaultCanReceiveDrag { ^View.currentDrag.isNumber; }
+	defaultGetDrag { ^this.value }
+	defaultCanReceiveDrag { ^View.currentDrag.isNumber }
 	defaultReceiveDrag {
-		this.valueAction = View.currentDrag;
+		this.valueAction = View.currentDrag
 	}
 }

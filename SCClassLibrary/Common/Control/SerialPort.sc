@@ -7,8 +7,8 @@ SerialPort {
 	*initClass {
 		allPorts = Array[];
 		ShutDown.add {
-			this.closeAll;
-		};
+			this.closeAll
+		}
 	}
 
 	// device listing
@@ -18,7 +18,7 @@ SerialPort {
 
 		// Backward compatibility
 		if(devicePattern.notNil) {
-			^devicePattern.pathMatch;
+			^devicePattern.pathMatch
 		};
 
 		if(thisProcess.platform.name == \windows) {
@@ -44,45 +44,44 @@ SerialPort {
 				var match;
 				match = line.findRegexp("\\bREG_SZ {4}(.*)$");
 				if(match.notEmpty) {
-					devices = devices.add(match[1][1]);
-				};
+					devices = devices.add(match[1][1])
+				}
 			};
-			^devices;
+			^devices
 		} {
 			// These regexps are also taken from the Arduino IDE:
 			// https://github.com/arduino/Arduino/blob/ec2e9a642a085b32701cf81297ee7c1570177195/arduino-core/src/processing/app/SerialPortList.java#L48
-			regexp = thisProcess.platform.name.switch(
-				\linux,   "^(ttyS|ttyUSB|ttyACM|ttyAMA|rfcomm|ttyO)[0-9]{1,3}",
-				\osx,     "^(tty|cu)\\..*"
+			regexp = switch(thisProcess.platform.name,
+				\linux, "^(ttyS|ttyUSB|ttyACM|ttyAMA|rfcomm|ttyO)[0-9]{1,3}",
+				\osx, "^(tty|cu)\\..*"
 			);
 			devices = [];
 			PathName("/dev/").files.do { |path|
 				if(regexp.matchRegexp(path.fileName)) {
-					devices = devices.add(path.fullPath);
-				};
+					devices = devices.add(path.fullPath)
+				}
 			};
-			^devices;
-		};
+			^devices
+		}
 	}
 	*listDevices {
-		this.devices.do(_.postln);
+		this.devices.do(_.postln)
 	}
 
-	*new {
-		| port,
-			baudrate(9600),
-			databits(8),
-			stopbit(true),
-			parity(nil),
-			crtscts(false),
-			xonxoff(false)
-			exclusive(false) |
+	*new { |port,
+			baudrate = (9600),
+			databits = (8),
+			stopbit = (true),
+			parity = (nil),
+			crtscts = (false),
+			xonxoff = (false),
+			exclusive = (false)|
 
-		if (port.isNumber) {
+		if(port.isNumber) {
 			"Using integers to identify serial ports is deprecated. Please pass strings instead.".warn;
 			port = this.devices[port] ?? {
-				Error("invalid port index").throw;
-			};
+				Error("invalid port index").throw
+			}
 		}
 
 		^super.new.prInit(
@@ -91,32 +90,32 @@ SerialPort {
 			baudrate,
 			databits,
 			stopbit,
-			( even: 1, odd: 2 ).at(parity) ? 0,
+			(even: 1, odd: 2).at(parity) ? 0,
 			crtscts,
 			xonxoff
 		)
 	}
 
-	prInit { | ... args |
+	prInit { |... args|
 		semaphore = Semaphore(0);
-		if ( isOpen.not ){
+		if(isOpen.not) {
 			this.prOpen(*args);
 			allPorts = allPorts.add(this);
-			isOpen = true;
+			isOpen = true
 		}
 	}
 
 	close {
-		if (this.isOpen) {
+		if(this.isOpen) {
 			this.prClose;
-			isOpen = false;
+			isOpen = false
 		}
 	}
 
 	*closeAll {
 		var ports = allPorts;
 		allPorts = Array[];
-		ports.do(_.close);
+		ports.do(_.close)
 	}
 
 	*cleanupAll {
@@ -133,42 +132,42 @@ SerialPort {
 	read {
 		var byte;
 		while { (byte = this.next).isNil } {
-			semaphore.wait;
+			semaphore.wait
 		};
 		^byte
 	}
 	// rx errors since last query
 	rxErrors {
 		_SerialPort_RXErrors
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
 	// always blocks
-	put { | byte, timeout=0.005 |
-		if (timeout != 0.005) {
+	put { |byte, timeout = 0.005|
+		if(timeout != 0.005) {
 			"SerialPort:-put: the timeout argument is deprecated and will be removed in a future release".warn
 		};
 
-		if (isOpen) {
-			^this.prPut(byte);
-		}{
+		if(isOpen) {
+			^this.prPut(byte)
+		} {
 			"SerialPort not open".warn;
-			^false;
+			^false
 		}
 	}
 
-	putAll { | bytes, timeout=0.005 |
-		if (timeout != 0.005) {
+	putAll { |bytes, timeout = 0.005|
+		if(timeout != 0.005) {
 			"SerialPort:-putAll: the timeout argument is deprecated and will be removed in a future release".warn
 		};
 
 		bytes.do { |byte|
-			this.put(byte);
+			this.put(byte)
 		}
 	}
 
 	// PRIMITIVE
-	prOpen { | portName, exclusive, baudrate, databits, stopBits, parity, crtscts, xonxoff |
+	prOpen { |portName, exclusive, baudrate, databits, stopBits, parity, crtscts, xonxoff|
 		_SerialPort_Open
 		^this.primitiveFailed
 	}
@@ -179,7 +178,7 @@ SerialPort {
 		^this.primitiveFailed
 	}
 
-	prPut { | byte |
+	prPut { |byte|
 		_SerialPort_Put
 		^this.primitiveFailed
 	}
@@ -192,7 +191,7 @@ SerialPort {
 
 	// callback from C++ read thread
 	prDataAvailable {
-		semaphore.signal;
+		semaphore.signal
 	}
 
 	// callback from C++ read thread when done
@@ -207,7 +206,7 @@ SerialPort {
 			// Needs to run after this callback; otherwise crash when
 			// we try to wait for this thread to join, from itself.
 			// Remove reference as last act, otherwise we risk GC running early.
-			{ this.prCleanup; allPorts.remove(this) }.defer(0);
+			{ this.prCleanup; allPorts.remove(this) }.defer(0)
 		}
 	}
 }

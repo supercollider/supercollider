@@ -1,8 +1,8 @@
 QMetaObject {
 	var className;
 
-	*new { arg className;
-		^super.newCopyArgs(className);
+	*new { |className|
+		^super.newCopyArgs(className)
 	}
 
 	properties {
@@ -10,7 +10,7 @@ QMetaObject {
 		^this.primitiveFailed
 	}
 
-	methods { arg plain = true, signals = false, slots = true;
+	methods { |plain = true, signals = false, slots = true|
 		_QMetaObject_Methods
 		^this.primitiveFailed
 	}
@@ -18,20 +18,20 @@ QMetaObject {
 
 QObject {
 	classvar
-	heap,
-	<closeEvent = 19,
-	<showEvent = 17,
-	<windowActivateEvent = 24,
-	<windowDeactivateEvent = 25,
-	<mouseDownEvent = 2,
-	<mouseUpEvent = 3,
-	<mouseDblClickEvent = 4,
-	<mouseMoveEvent = 5,
-	<mouseEnterEvent = 10,
-	<mouseLeaveEvent = 11,
-	<mouseWheelEvent = 31,
-	<keyDownEvent = 6,
-	<keyUpEvent = 7;
+		heap,
+		<closeEvent = 19,
+		<showEvent = 17,
+		<windowActivateEvent = 24,
+		<windowDeactivateEvent = 25,
+		<mouseDownEvent = 2,
+		<mouseUpEvent = 3,
+		<mouseDblClickEvent = 4,
+		<mouseMoveEvent = 5,
+		<mouseEnterEvent = 10,
+		<mouseLeaveEvent = 11,
+		<mouseWheelEvent = 31,
+		<keyDownEvent = 6,
+		<keyUpEvent = 7;
 
 	var qObject, finalizer;
 	var virtualSlots;
@@ -40,12 +40,12 @@ QObject {
 
 	*meta { ^QMetaObject(this.qtClass) }
 
-	*new { arg argumentArray;
+	*new { |argumentArray|
 		var className = this.qtClass;
-		if( className.isNil ) {
-			Error("Qt:" + this.name + "is an abstract class and can not be instantiated.").throw;
+		if(className.isNil) {
+			Error("Qt:" + this.name + "is an abstract class and can not be instantiated.").throw
 		};
-		^super.new.initQObject( className, argumentArray );
+		^super.new.initQObject(className, argumentArray)
 	}
 
 	*newCopyArgs { |...args, kwargs|
@@ -54,9 +54,9 @@ QObject {
 
 	*heap { ^heap.copy }
 
-	initQObject{ arg className, argumentArray;
-		this.prConstruct( className, argumentArray );
-		heap = heap.add( this );
+	initQObject{ |className, argumentArray|
+		this.prConstruct(className, argumentArray);
+		heap = heap.add(this)
 	}
 
 	destroy {
@@ -69,15 +69,15 @@ QObject {
 		^this.primitiveFailed
 	}
 
-	parent { arg class;
-		^this.prGetParent( if( class.notNil ){class.name}{nil} );
+	parent { |class|
+		^this.prGetParent(if(class.notNil) { class.name } { nil })
 	}
 
-	children { arg class;
-		^this.prGetChildren( if( class.notNil ){class.name}{nil} );
+	children { |class|
+		^this.prGetChildren(if(class.notNil) { class.name } { nil })
 	}
 
-	setParent { arg parent;
+	setParent { |parent|
 		_QObject_SetParent
 		^this.primitiveFailed
 	}
@@ -87,89 +87,89 @@ QObject {
 		^this.primitiveFailed
 	}
 
-	methods { arg plain = true, signals = false, slots = true;
+	methods { |plain = true, signals = false, slots = true|
 		_QObject_GetMethods
 		^this.primitiveFailed
 	}
 
-	getProperty { arg property;
+	getProperty { |property|
 		_QObject_GetProperty
 		^this.primitiveFailed
 	}
 
-	setProperty { arg property, value, direct=true;
+	setProperty { |property, value, direct = true|
 		_QObject_SetProperty
 		^this.primitiveFailed
 	}
 
-	setEventHandler{ arg event, method, direct=false, enabled=true;
+	setEventHandler{ |event, method, direct = false, enabled = true|
 		_QObject_SetEventHandler
 		^this.primitiveFailed
 	}
 
-	setEventHandlerEnabled { arg event, enabled=true;
+	setEventHandlerEnabled { |event, enabled = true|
 		_QObject_SetEventHandlerEnabled
 		^this.primitiveFailed
 	}
 
-	connectMethod { arg signal, handler, direct=false;
+	connectMethod { |signal, handler, direct = false|
 		_QObject_ConnectMethod
 		^this.primitiveFailed
 	}
 
-	disconnectMethod { arg signal, method;
+	disconnectMethod { |signal, method|
 		_QObject_DisconnectMethod;
 		^this.primitiveFailed
 	}
 
-	connectFunction { arg signal, object, synchronous = false;
-		virtualSlots = virtualSlots.add( object );
-		this.prConnectObject( signal, object, synchronous );
+	connectFunction { |signal, object, synchronous = false|
+		virtualSlots = virtualSlots.add(object);
+		this.prConnectObject(signal, object, synchronous)
 	}
 
-	disconnectFunction { arg signal, object;
-		virtualSlots.remove( object );
-		this.prDisconnectObject( signal, object );
+	disconnectFunction { |signal, object|
+		virtualSlots.remove(object);
+		this.prDisconnectObject(signal, object)
 	}
 
-	connectSlot { arg signal, receiver, slot;
+	connectSlot { |signal, receiver, slot|
 		_QObject_ConnectSlot;
 		^this.primitiveFailed
 	}
 
-	invokeMethod { arg method, arguments, synchronous = true;
+	invokeMethod { |method, arguments, synchronous = true|
 		_QObject_InvokeMethod
 		^this.primitiveFailed
 	}
 
 	////////////////////// private //////////////////////////////////
 
-	prConstruct { arg className, argumentArray;
+	prConstruct { |className, argumentArray|
 		_QObject_New
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	prConnectObject { arg signal, object, synchronous = false;
+	prConnectObject { |signal, object, synchronous = false|
 		_QObject_ConnectObject;
 		^this.primitiveFailed
 	}
 
-	prDisconnectObject { arg signal, object;
+	prDisconnectObject { |signal, object|
 		_QObject_DisconnectObject;
 		^this.primitiveFailed
 	}
 
-	prGetChildren { arg className;
+	prGetChildren { |className|
 		_QObject_GetChildren
 		^this.primitiveFailed
 	}
 
-	prGetParent { arg className;
+	prGetParent { |className|
 		_QObject_GetParent
 		^this.primitiveFailed
 	}
 
-	prRelease { heap.remove(this); }
+	prRelease { heap.remove(this) }
 
-	doFunction { arg f ... args; f.performList(\value, this, args); }
+	doFunction { |f ... args| f.performList(\value, this, args) }
 }

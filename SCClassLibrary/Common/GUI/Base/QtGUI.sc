@@ -3,12 +3,12 @@ QtGUI {
 	classvar <style;
 
 	*initClass {
-		if(Platform.hasQt.not) { ^nil; };	// skip init on Qt-less builds
+		if(Platform.hasQt.not) { ^nil };	// skip init on Qt-less builds
 
-		Class.initClassTree( GUI );
-		GUI.add( this );
+		Class.initClassTree(GUI);
+		GUI.add(this);
 		this.style = "Fusion";
-		this.palette = QPalette.light;
+		this.palette = QPalette.light
 	}
 
 	*id { ^\qt }
@@ -20,15 +20,15 @@ QtGUI {
 		^this.primitiveFailed
 	}
 
-	*debugLevel_ { arg level;
+	*debugLevel_ { |level|
 		_QtGUI_SetDebugLevel
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-    *version {
-        _Qt_Version
-        ^this.primitiveFailed;
-    }
+	*version {
+		_Qt_Version
+		^this.primitiveFailed
+	}
 
 	///////////////////// redirection of GUI classes /////////////////////////////
 
@@ -37,22 +37,22 @@ QtGUI {
 	*hLayoutView { ^QHLayoutView }
 	*vLayoutView { ^QVLayoutView }
 	*window { ^QWindow }
-	*scrollView { ^QScrollView; }
+	*scrollView { ^QScrollView }
 
 	*staticText { ^QStaticText }
-	*button { ^QButton; }
-	*checkBox { ^QCheckBox; }
+	*button { ^QButton }
+	*checkBox { ^QCheckBox }
 	*textField { ^QTextField }
 	*numberBox { ^QNumberBox }
 	*slider { ^QSlider }
 	*multiSliderView { ^QMultiSliderView }
 	*rangeSlider { ^QRangeSlider }
 	*slider2D { ^QSlider2D }
-	*knob { ^QKnob; }
+	*knob { ^QKnob }
 	*listView { ^QListView }
 	*treeView { ^QTreeView }
 	*popUpMenu { ^QPopUpMenu }
-	*textView { ^QTextView; }
+	*textView { ^QTextView }
 
 	*freqScope     { ^PlusFreqScopeWindow }
 	*freqScopeView { ^PlusFreqScope }
@@ -66,17 +66,17 @@ QtGUI {
 
 	*userView { ^QUserView }
 
-	*dragSource { ^QDragSource; }
-	*dragSink { ^QDragSink; }
-	*dragBoth { ^QDragBoth; }
+	*dragSource { ^QDragSource }
+	*dragSink { ^QDragSink }
+	*dragBoth { ^QDragBoth }
 
 	*dialog { ^QDialog }
 
 	*ezScroller { ^EZScroller }
 	*ezSlider { ^EZSlider }
 	*ezListView { ^EZListView }
-	*ezPopUpMenu { ^EZPopUpMenu}
-	*ezNumber { ^EZNumber}
+	*ezPopUpMenu { ^EZPopUpMenu }
+	*ezNumber { ^EZNumber }
 	*ezRanger { ^EZRanger }
 
 	*hLayout { ^QHLayout }
@@ -89,11 +89,11 @@ QtGUI {
 	*font { ^QFont }
 	*image { ^QImage }
 
-	*qcView {^QQuartzComposerView }
+	*qcView { ^QQuartzComposerView }
 
-	*notImplemented { arg class;
+	*notImplemented { |class|
 		//("QtGUI: " ++ class.asString ++ " is not implemented yet").postln;
-		^nil;
+		^nil
 	}
 
 	//////////////////////////////////////////////////////////////////////
@@ -105,15 +105,15 @@ QtGUI {
 
 	*availableStyles {
 		_Qt_AvailableStyles
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*style_ { arg styleName;
-		protect { this.prSetStyle(styleName) } { |err| if(err.isNil){style = styleName} };
+	*style_ { |styleName|
+		protect { this.prSetStyle(styleName) } { |err| if(err.isNil) { style = styleName } }
 	}
 
-	*stringBounds { arg aString, aFont;
-		var bounds = this.prStringBounds( aString, aFont );
+	*stringBounds { |aString, aFont|
+		var bounds = this.prStringBounds(aString, aFont);
 		bounds.left = 0;
 		bounds.top = 0;
 		^bounds
@@ -121,37 +121,37 @@ QtGUI {
 
 	*palette {
 		_Qt_GlobalPalette
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*palette_ { arg p;
+	*palette_ { |p|
 		_Qt_SetGlobalPalette
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
 	*focusView {
 		_Qt_FocusWidget
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
 	*selectedText {
 		var view = this.focusView;
-		if( view.notNil ) {
-			if( view.respondsTo(\selectedText) ) { ^view.selectedText };
-			if( view.respondsTo(\selectedString) ) { ^view.selectedString };
+		if(view.notNil) {
+			if(view.respondsTo(\selectedText)) { ^view.selectedText };
+			if(view.respondsTo(\selectedString)) { ^view.selectedString }
 		};
-		^"";
+		^""
 	}
 
 	// private ///////////////////////////////////////////////////////////
 
-	*prStringBounds { arg aString, aFont;
+	*prStringBounds { |aString, aFont|
 		_Qt_StringBounds
 		^this.primitiveFailed
 	}
 
-	*prSetStyle { arg name;
+	*prSetStyle { |name|
 		_Qt_SetStyle
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 }

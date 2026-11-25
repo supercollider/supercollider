@@ -16,7 +16,7 @@ MixedModernBase {
 	*classHook { ^\modernClassHook }
 	*viaClassHook { ^this.classHook }
 	firstGreater { |list, limit|
-		list.do { |item| var big = item > limit; if (big) { ^item } };
+		list.do { |item| var big = item > limit; if(big) { ^item } };
 		^nil
 	}
 	pair { var #a, b = [tag, count]; ^[a, b] }
@@ -49,19 +49,19 @@ MixedModernAlgos {
 			sq = i * i;
 			seen = seen ? 0;
 			total = total + sq;
-			result.add(seen);
+			result.add(seen)
 		};
 		^[a, b, total, result.asArray]
 	}
 
 	predeclaredInBranch { |flag|
 		var x, y = 1;
-		if (flag) {
+		if(flag) {
 			var inner;
 			inner = y + 1;
-			x = inner;
+			x = inner
 		} {
-			x = y;
+			x = y
 		};
 		^[x, y]
 	}
@@ -73,7 +73,7 @@ MixedModernAlgos {
 			c = c ? 0;
 			c = c + 1;
 			counts.add(c);
-			i = i + 1;
+			i = i + 1
 		};
 		^counts.asArray
 	}
@@ -83,7 +83,7 @@ MixedModernAlgos {
 		n.do { |i|
 			var c;
 			c = i * 10;
-			funcs.add({ c });
+			funcs.add({ c })
 		};
 		^funcs.collect { |f| f.value }.asArray
 	}
@@ -104,26 +104,26 @@ MixedModernAlgos {
 	}
 
 	fib { |n|
-		if (n < 2) { ^n };
+		if(n < 2) { ^n };
 		^this.fib(n - 1) + this.fib(n - 2)
 	}
 
 	find { |list, target|
-		list.do { |item, i| if (item == target) { ^i } };
+		list.do { |item, i| if(item == target) { ^i } };
 		^nil
 	}
 
 	nestedReturn { |list|
 		list.do { |a|
 			list.do { |b|
-				if ((a + b) == 7) { ^[a, b] };
-			};
+				if((a + b) == 7) { ^[a, b] }
+			}
 		};
 		^nil
 	}
 
 	classify { |x|
-		^switch (x)
+		^switch(x)
 			{ 1 } { \one }
 			{ 2 } { \two }
 			{ \many }
@@ -165,7 +165,7 @@ MixedModern316Algos {
 			var sq = i * i;
 			seen = seen ? 0;
 			total = total + sq;
-			result.add(seen);
+			result.add(seen)
 		};
 		^[a, b, total, result.asArray]
 	}
@@ -173,11 +173,11 @@ MixedModern316Algos {
 	predeclaredInBranch { |flag|
 		var x;
 		var y = 1;
-		if (flag) {
+		if(flag) {
 			var inner = y + 1;
-			x = inner;
+			x = inner
 		} {
-			x = y;
+			x = y
 		};
 		^[x, y]
 	}
@@ -190,7 +190,7 @@ MixedModern316Algos {
 			c = c ? 0;
 			c = c + 1;
 			counts.add(c);
-			i = i + 1;
+			i = i + 1
 		};
 		^counts.asArray
 	}
@@ -199,7 +199,7 @@ MixedModern316Algos {
 		var funcs = List.new;
 		n.do { |i|
 			var c = i * 10;
-			funcs.add({ c });
+			funcs.add({ c })
 		};
 		^funcs.collect { |f| f.value }.asArray
 	}
@@ -218,12 +218,12 @@ MixedModern316Algos {
 	}
 
 	fib { |n|
-		if (n < 2) { ^n };
+		if(n < 2) { ^n };
 		^this.fib(n - 1) + this.fib(n - 2)
 	}
 
 	find { |list, target|
-		list.do { |item, i| if (item == target) { ^i } };
+		list.do { |item, i| if(item == target) { ^i } };
 		^nil
 	}
 
@@ -231,8 +231,8 @@ MixedModern316Algos {
 		list.do { |a|
 			list.do { |b|
 				var total = a + b;
-				if (total == 7) { ^[a, b] };
-			};
+				if(total == 7) { ^[a, b] }
+			}
 		};
 		^nil
 	}
@@ -268,7 +268,7 @@ TestMixedVersions : UnitTest {
 		this.assertEquals(o.tag, "m", "legacy init ran from a modern subclass");
 		this.assertEquals(o.bump, \modernOverLegacy, "a modern override is called from a legacy method");
 		this.assertEquals(o.count, 1, "the inherited instance variable is shared");
-		this.assertEquals(o.viaSuper, \base, "super reaches the legacy method");
+		this.assertEquals(o.viaSuper, \base, "super reaches the legacy method")
 	}
 
 	test_legacy_subclass_of_modern {
@@ -276,7 +276,7 @@ TestMixedVersions : UnitTest {
 		this.assertEquals(o.tag, "l");
 		this.assertEquals(o.bump, \legacyOverModern, "a legacy override is called from a modern method");
 		this.assertEquals(o.count, 1);
-		this.assertEquals(o.viaSuper, \base);
+		this.assertEquals(o.viaSuper, \base)
 	}
 
 	test_three_levels_alternate {
@@ -285,7 +285,7 @@ TestMixedVersions : UnitTest {
 		this.assertEquals(o.count, 2);
 		o = MixedModernLeaf.new("y");
 		this.assertEquals(o.bumpTwice, \modernLeaf);
-		this.assertEquals(o.count, 2);
+		this.assertEquals(o.count, 2)
 	}
 
 	// Class side
@@ -299,7 +299,7 @@ TestMixedVersions : UnitTest {
 		this.assertEquals(MixedLegacyBase.makeShared, [\legacy]);
 		this.assertEquals(MixedModernBase.makeShared, [\modern]);
 		this.assertEquals(MixedLegacyBase.shared, [\legacy], "each class has its own class variable");
-		this.assertEquals(MixedModernBase.shared, [\modern]);
+		this.assertEquals(MixedModernBase.shared, [\modern])
 	}
 
 	// Extensions
@@ -307,7 +307,7 @@ TestMixedVersions : UnitTest {
 	test_extension_in_other_version {
 		this.assertEquals(MixedLegacyBase.new("a").extendedFromModern, "a.modern");
 		this.assertEquals(MixedModernBase.new("b").extendedFromLegacy, "b.legacy");
-		this.assertEquals(MixedLegacyLeaf.new("c").extendedFromModern, "c.modern", "and it is inherited");
+		this.assertEquals(MixedLegacyLeaf.new("c").extendedFromModern, "c.modern", "and it is inherited")
 	}
 
 	// Functions and returns across the boundary
@@ -315,7 +315,7 @@ TestMixedVersions : UnitTest {
 	test_function_made_in_one_version_called_in_the_other {
 		var fromModern = { |o| o.tag ++ "!" };
 		this.assertEquals(MixedLegacyBase.new("q").run(fromModern), "q!");
-		this.assertEquals(MixedModernBase.new("r").run(MixedLegacyBase.new("z").run { |o| { |p| p.tag ++ o.tag } }), "rz");
+		this.assertEquals(MixedModernBase.new("r").run(MixedLegacyBase.new("z").run { |o| { |p| p.tag ++ o.tag } }), "rz")
 	}
 
 	test_nonlocal_return_inside_each_version {
@@ -323,7 +323,7 @@ TestMixedVersions : UnitTest {
 		this.assertEquals(MixedLegacyBase.new("a").firstGreater(list, 5), 8);
 		this.assertEquals(MixedModernBase.new("a").firstGreater(list, 5), 8);
 		this.assertEquals(MixedLegacyBase.new("a").firstGreater(list, 50), nil);
-		this.assertEquals(MixedModernBase.new("a").firstGreater(list, 50), nil);
+		this.assertEquals(MixedModernBase.new("a").firstGreater(list, 50), nil)
 	}
 
 	test_nonlocal_return_from_function_passed_across_versions {
@@ -331,11 +331,11 @@ TestMixedVersions : UnitTest {
 		var result = this.findFirstEven(MixedLegacyBase.new("a"), [1, 3, 4, 5]);
 		this.assertEquals(result, 4);
 		result = this.findFirstEven(MixedModernBase.new("a"), [1, 3, 4, 5]);
-		this.assertEquals(result, 4);
+		this.assertEquals(result, 4)
 	}
 
 	findFirstEven { |holder, list|
-		holder.run { list.do { |x| if (x.even) { ^x } } };
+		holder.run { list.do { |x| if(x.even) { ^x } } };
 		^\none
 	}
 
@@ -364,16 +364,16 @@ TestMixedVersions : UnitTest {
 		this.assertSame(\predeclared, 0);
 		this.assertEquals(this.assertSame(\predeclaredInBranch, true), [2, 1]);
 		this.assertEquals(this.assertSame(\predeclaredInBranch, false), [1, 1]);
-		this.assertEquals(this.assertSame(\predeclaredReinitialised, 3), [1, 1, 1]);
+		this.assertEquals(this.assertSame(\predeclaredReinitialised, 3), [1, 1, 1])
 	}
 
 	test_closures_capture {
 		this.assertEquals(this.assertSame(\closures, 3), [0, 10, 20]);
-		this.assertEquals(this.assertSame(\sharedCounter), 2);
+		this.assertEquals(this.assertSame(\sharedCounter), 2)
 	}
 
 	test_shadowing_an_instance_variable {
-		this.assertEquals(this.assertSame(\shadowing, "abc"), [3, "abc"]);
+		this.assertEquals(this.assertSame(\shadowing, "abc"), [3, "abc"])
 	}
 
 	test_recursion_and_returns {
@@ -381,7 +381,7 @@ TestMixedVersions : UnitTest {
 		this.assertEquals(this.assertSame(\find, [4, 5, 6], 6), 2);
 		this.assertEquals(this.assertSame(\find, [4, 5, 6], 7), nil);
 		this.assertEquals(this.assertSame(\nestedReturn, [1, 2, 3, 4, 5, 6]), [1, 6]);
-		this.assertEquals(this.assertSame(\nestedReturn, [1, 2]), nil);
+		this.assertEquals(this.assertSame(\nestedReturn, [1, 2]), nil)
 	}
 
 	test_switch_case_and_or {
@@ -392,12 +392,12 @@ TestMixedVersions : UnitTest {
 		this.assertEquals(this.assertSame(\caseOf, 0), \zero);
 		this.assertEquals(this.assertSame(\caseOf, 4), \positive);
 		this.assertEquals(this.assertSame(\andOr, true, false), [false, true, false, true]);
-		this.assertEquals(this.assertSame(\andOr, true, true), [true, true, true, true]);
+		this.assertEquals(this.assertSame(\andOr, true, true), [true, true, true, true])
 	}
 
 	test_building_values {
 		this.assertEquals(this.assertSame(\build, 4), ["0123", [0, 2, 4, 6]]);
-		this.assertEquals(this.assertSame(\applyTwice, { |x| x * 3 }, 2), 18);
+		this.assertEquals(this.assertSame(\applyTwice, { |x| x * 3 }, 2), 18)
 	}
 
 	// The same, with vars where they are first used
@@ -414,7 +414,7 @@ TestMixedVersions : UnitTest {
 		this.assertEquals(this.assertSame316Style(\find, [4, 5, 6], 6), 2);
 		this.assertEquals(this.assertSame316Style(\nestedReturn, [1, 2, 3, 4, 5, 6]), [1, 6]);
 		this.assertEquals(this.assertSame316Style(\nestedReturn, [1, 2]), nil);
-		this.assertEquals(this.assertSame316Style(\build, 4), ["0123", [0, 2, 4, 6]]);
+		this.assertEquals(this.assertSame316Style(\build, 4), ["0123", [0, 2, 4, 6]])
 	}
 
 	// 3.16 only features in classes that cross the boundary
@@ -425,7 +425,7 @@ TestMixedVersions : UnitTest {
 		legacy.bump;
 		this.assertEquals(legacy.pair, ["a", 1], "an extension with var #a, b on a Legacy class");
 		this.assertEquals(modern.pair, ["b", 0]);
-		this.assertEquals(MixedModern316Algos.new.pack([1, 2, 3]), [1, 2]);
+		this.assertEquals(MixedModern316Algos.new.pack([1, 2, 3]), [1, 2])
 	}
 
 	test_generator_and_closed_function_in_modern_class {
@@ -433,6 +433,6 @@ TestMixedVersions : UnitTest {
 		this.assertEquals(MixedLegacyOverModern.new("a").doubled([4]), [8], "inherited by a Legacy subclass");
 		this.assertEquals(MixedModern316Algos.new.generated([1, 2, 3, 4, 5]), [[1, 1], [3, 9], [5, 25]]);
 		this.assertEquals(MixedModernBase.new("a").adder.value(1, 2), 3);
-		this.assertEquals(MixedLegacyBase.new("z").run(MixedModernBase.new("a").tagReader), "z", "a closed function run by a Legacy method");
+		this.assertEquals(MixedLegacyBase.new("z").run(MixedModernBase.new("a").tagReader), "z", "a closed function run by a Legacy method")
 	}
 }

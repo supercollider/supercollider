@@ -6,14 +6,14 @@ TestQuery_Server : UnitTest {
 	setUp {
 
 		server = Server(this.class.name);
-		this.bootServer(server);
+		this.bootServer(server)
 
 	}
 
 	tearDown {
 
 		Buffer.freeAll;
-		server.quitSync.remove;
+		server.quitSync.remove
 
 	}
 
@@ -25,7 +25,7 @@ TestQuery_Server : UnitTest {
 		buffer.query({ |...args| response = args });
 		server.sync;
 
-		this.assertEquals(response, ['/b_info', buffer.bufnum, 512, 1, server.sampleRate], "Buffer.query should post correct info");
+		this.assertEquals(response, ['/b_info', buffer.bufnum, 512, 1, server.sampleRate], "Buffer.query should post correct info")
 
 	}
 
@@ -39,19 +39,19 @@ TestQuery_Server : UnitTest {
 		buffers.do { |buf| buf.query({ |...args| responses.add(args[1]) }) };
 		server.sync;
 
-		this.assertEquals(responses, bufnums, "All requested buffers must be queried");
+		this.assertEquals(responses, bufnums, "All requested buffers must be queried")
 
 	}
 
 	test_synthQuery {
 
-		var response, synth = Synth(\default, target:server);
+		var response, synth = Synth(\default, target: server);
 		server.sync;
 
 		synth.query({ |...args| response = args });
 		server.sync;
 
-		this.assertEquals(response, ['/n_info', synth.nodeID, server.defaultGroupID, -1, -1, 0], "Synth.query should post correct info");
+		this.assertEquals(response, ['/n_info', synth.nodeID, server.defaultGroupID, -1, -1, 0], "Synth.query should post correct info")
 
 	}
 
@@ -63,21 +63,21 @@ TestQuery_Server : UnitTest {
 		group.query({ |...args| response = args });
 		server.sync;
 
-		this.assertEquals(response, ['/n_info', group.nodeID, server.defaultGroupID, -1, -1, 1, -1, -1], "Group.query should post correct info");
+		this.assertEquals(response, ['/n_info', group.nodeID, server.defaultGroupID, -1, -1, 1, -1, -1], "Group.query should post correct info")
 
 	}
 
 	test_multiNodeQuery {
 
 		var responses = Array(4);
-		var nodes = 4.collect { |i| if (i%2 == 0) { Synth(\default, target:server) } { Group(server) } };
+		var nodes = 4.collect { |i| if(i % 2 == 0) { Synth(\default, target: server) } { Group(server) } };
 		server.sync;
 
 		var nodeIDs = nodes.collect { |node| node.nodeID };
 		nodes.do { |node| node.query({ |...args| responses.add(args[1]) }) };
 		server.sync;
 
-		this.assertEquals(responses, nodeIDs, "All requested nodes must be queried");
+		this.assertEquals(responses, nodeIDs, "All requested nodes must be queried")
 
 	}
 

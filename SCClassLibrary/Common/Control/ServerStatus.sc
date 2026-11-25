@@ -7,7 +7,7 @@ ServerStatusWatcher {
 
 	var <hasBooted = false, <>serverBooting = false, <unresponsive = false;
 
-	var <numUGens=0, <numSynths=0, <numGroups=0, <numSynthDefs=0;
+	var <numUGens = 0, <numSynths = 0, <numGroups = 0, <numSynthDefs = 0;
 	var <avgCPU, <peakCPU;
 	var <sampleRate, <actualSampleRate;
 
@@ -23,7 +23,7 @@ ServerStatusWatcher {
 			this.watchQuit(onComplete, onFailure)
 		} {
 			this.stopStatusWatcher;
-			onComplete.value;
+			onComplete.value
 		};
 		this.stopAliveThread;
 		this.serverRunning = false;
@@ -36,17 +36,17 @@ ServerStatusWatcher {
 		// server.changed(\serverRunning) should be deferred in dependants!
 		//  just in case some don't, defer here to avoid gui updates breaking.
 		defer { server.changed(\serverRunning) };
-		bootNotifyFirst = true;
+		bootNotifyFirst = true
 	}
 
 	notify_ { |flag = true|
 		notify = flag;
-		this.sendNotifyRequest(flag);
+		this.sendNotifyRequest(flag)
 	}
 
 	// flag true requests notification, false turns it off
 	sendNotifyRequest { |flag = true|
-		this.prSendNotifyRequest(flag, false);
+		this.prSendNotifyRequest(flag, false)
 	}
 
 	doWhenBooted { |onComplete, limit = 100, onFailure, clock|
@@ -65,23 +65,23 @@ ServerStatusWatcher {
 				*/
 
 			} {
-				0.2.wait;
+				0.2.wait
 			};
 
-			if(server.serverRunning.not, {
+			if(server.serverRunning.not) {
 				if(onFailure.notNil) {
-					postError = (onFailure.value(server) == false);
+					postError = (onFailure.value(server) == false)
 				};
 				if(postError) {
-					"Server '%' on failed to start. You may need to kill all servers".format(server.name).error;
+					"Server '%' on failed to start. You may need to kill all servers".format(server.name).error
 				};
 				serverBooting = false;
-				server.changed(\serverRunning);
-			}, {
+				server.changed(\serverRunning)
+			} {
 				// make sure the server process finishes all pending tasks from Server.tree before running onComplete
 				server.sync;
-				onComplete.value;
-			});
+				onComplete.value
+			}
 
 		}.play(clock)
 	}
@@ -97,16 +97,16 @@ ServerStatusWatcher {
 						statusWatcher !? { statusWatcher.enable };
 						serverReallyQuit = true;
 						serverReallyQuitWatcher.free;
-						onComplete.value;
+						onComplete.value
 					}
 				}, '/done', server.addr);
 
 				AppClock.sched(timeoutBeforeConsideredDeadOnExit, {
 					if(serverReallyQuit.not) {
 						if(unresponsive) {
-							"Server '%' remained unresponsive during quit.".format(server.name).warn;
+							"Server '%' remained unresponsive during quit.".format(server.name).warn
 						} {
-							"Server '%' failed to quit after % seconds.".format(server.name, timeoutBeforeConsideredDeadOnExit).warn;
+							"Server '%' failed to quit after % seconds.".format(server.name, timeoutBeforeConsideredDeadOnExit).warn
 						};
 						// don't accumulate quit-watchers if /done doesn't come back
 						serverReallyQuitWatcher.free;
@@ -122,19 +122,19 @@ ServerStatusWatcher {
 	addStatusWatcher {
 		if(statusWatcher.isNil) {
 			statusWatcher =
-			OSCFunc({ arg msg;
-				var cmd, one;
-				if(notify and: { notified.not }) { this.prSendNotifyRequest(true,true) };
-				alive = true;
-				#cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
-				avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
-				{
-					this.updateRunningState(true);
-					server.changed(\counts);
-				}.defer;
-			}, '/status.reply', server.addr).fix;
+				OSCFunc({ |msg|
+					var cmd, one;
+					if(notify and: { notified.not }) { this.prSendNotifyRequest(true, true) };
+					alive = true;
+					#cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
+						avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
+					{
+						this.updateRunningState(true);
+						server.changed(\counts)
+					}.defer
+				}, '/status.reply', server.addr).fix
 		} {
-			statusWatcher.enable;
+			statusWatcher.enable
 		}
 	}
 
@@ -142,7 +142,7 @@ ServerStatusWatcher {
 		statusWatcher !? { statusWatcher.disable }
 	}
 
-	startAliveThread { | delay = 0.0 |
+	startAliveThread { |delay = 0.0|
 		this.addStatusWatcher;
 		^aliveThread ?? {
 			aliveThread = Routine {
@@ -152,8 +152,8 @@ ServerStatusWatcher {
 					alive = false;
 					server.sendStatusMsg;
 					aliveThreadPeriod.wait;
-					this.updateRunningState(alive);
-				};
+					this.updateRunningState(alive)
+				}
 			}.play(AppClock);
 			aliveThread
 		}
@@ -166,25 +166,25 @@ ServerStatusWatcher {
 
 		aliveThread.stop;
 		alive = false;
-		aliveThread = nil;
+		aliveThread = nil
 	}
 
 	resumeThread {
 		aliveThread !? {
 			this.stopAliveThread;
-			this.startAliveThread;
+			this.startAliveThread
 		}
 	}
 
 	serverRunning { ^hasBooted and: notified }
 
-	serverRunning_ { | running |
+	serverRunning_ { |running|
 		if(running != server.serverRunning) {
 			this.unresponsive = false;
 
 			hasBooted = running;
 
-			if (running.not) {
+			if(running.not) {
 				hasBooted = running;
 				ServerQuit.run(server);
 
@@ -195,42 +195,42 @@ ServerStatusWatcher {
 				NotificationCenter.notify(server, \didQuit); // why here "NotificationCenter" and below "changed"?
 
 				if(server.isLocal.not) {
-					notified = false;
-				};
-			};
+					notified = false
+				}
+			}
 		}
 
 	}
 
-	updateRunningState { | running |
+	updateRunningState { |running|
 		if(server.addr.hasBundle) {
-			{ server.changed(\bundling) }.defer;
+			{ server.changed(\bundling) }.defer
 		} {
 			if(running) {
 				this.serverRunning = true;
 				this.unresponsive = false;
-				reallyDeadCount = server.options.pingsBeforeConsideredDead;
+				reallyDeadCount = server.options.pingsBeforeConsideredDead
 			} {
 				// parrot
 				reallyDeadCount = reallyDeadCount - 1;
-				this.unresponsive = (reallyDeadCount <= 0);
+				this.unresponsive = (reallyDeadCount <= 0)
 			}
 		}
 	}
 
-	unresponsive_ { | val |
-		if (val != unresponsive) {
+	unresponsive_ { |val|
+		if(val != unresponsive) {
 			unresponsive = val;
 			// when remote server reboots, remote clients lose
 			// notification, so renew it when recovering
-			if (server.remoteControlled) {
-				if (unresponsive) {
+			if(server.remoteControlled) {
+				if(unresponsive) {
 					notified = false
 				} {
 					this.prSendNotifyRequest
 				}
 			};
-			{ server.changed(\serverRunning) }.defer;
+			{ server.changed(\serverRunning) }.defer
 		}
 	}
 
@@ -244,7 +244,7 @@ ServerStatusWatcher {
 			server.initTree;
 
 			this.notified = true;
-			server.changed(\serverRunning);
+			server.changed(\serverRunning)
 		}, AppClock)
 	}
 
@@ -255,13 +255,13 @@ ServerStatusWatcher {
 	prHandleLoginWhenAlreadyRegistered { |clientIDFromProcess|
 		"% - handling login request though already registered - \n".postf(server);
 
-		if (clientIDFromProcess.isNil) {
+		if(clientIDFromProcess.isNil) {
 			"% - notify response did not contain already-registered clientID from server process.\n"
-			"Assuming all is well.\n".postf(server);
+			"Assuming all is well.\n".postf(server)
 		} {
 
 			// by default, only reset clientID if changed, to leave allocators untouched:
-			if (clientIDFromProcess != server.clientID) {
+			if(clientIDFromProcess != server.clientID) {
 				// make sure we can set the clientID, and set it
 				notified = false;
 				server.clientID_(clientIDFromProcess);
@@ -269,18 +269,18 @@ ServerStatusWatcher {
 				"*** so you may want to release currently running synths by hand:".postln;
 				"%.defaultGroup.release;\n".postf(server.cs);
 				"*** and you may want to redo server boot finalization by hand:".postln;
-				"%.statusWatcher.prFinalizeBoot;\n\n".postf(server.cs);
+				"%.statusWatcher.prFinalizeBoot;\n\n".postf(server.cs)
 			} {
 				// same clientID, so leave all server resources in the state they were in!
 				"This seems to be a login after a loss of network contact - \n"
-				"- reconnected with the same clientID as before, so probably all is well.\n".postln;
-			};
+				"- reconnected with the same clientID as before, so probably all is well.\n".postln
+			}
 		};
 
 		// ensure that statuswatcher is in the correct state immediately.
 		this.notified = true;
 		unresponsive = false;
-		server.changed(\serverRunning);
+		server.changed(\serverRunning)
 	}
 
 	prSendNotifyRequest { |flag = true, addingStatusWatcher|
@@ -305,30 +305,30 @@ ServerStatusWatcher {
 				// XXX: this is a workaround because using `serverBooting` is not reliable
 				// when server is rebooted quickly.
 				if(addingStatusWatcher) {
-					this.prFinalizeBoot;
+					this.prFinalizeBoot
 				} {
-					notified = true;
+					notified = true
 				}
 
 			} {
-				notified = false;
-			};
+				notified = false
+			}
 
-		}, '/done', server.addr, argTemplate:['/notify', nil]).oneShot;
+		}, '/done', server.addr, argTemplate: ['/notify', nil]).oneShot;
 
-		failOSCFunc = OSCFunc({|msg|
+		failOSCFunc = OSCFunc({ |msg|
 
 			doneOSCFunc.free;
-			server.prHandleNotifyFailString(msg[2], msg);
+			server.prHandleNotifyFailString(msg[2], msg)
 
-		}, '/fail', server.addr, argTemplate:['/notify', nil, nil]).oneShot;
+		}, '/fail', server.addr, argTemplate: ['/notify', nil, nil]).oneShot;
 
 		server.sendMsg("/notify", flag.binaryValue, server.clientID);
 
-		if(flag){
+		if(flag) {
 			"Requested notification messages from server '%'\n".postf(server.name)
 		} {
-			"Switched off notification messages from server '%'\n".postf(server.name);
-		};
+			"Switched off notification messages from server '%'\n".postf(server.name)
+		}
 	}
 }

@@ -2,7 +2,7 @@
 TestResample_Server : TestReblockBase_Server {
 	test_resampleWithConstantFactorWorks {
 		var bus = Bus.control(server);
-		var factors = [ 0, 1, 2, 4, 8 ];
+		var factors = [0, 1, 2, 4, 8];
 		var results = Array.fill(factors.size, nil);
 		var sr = server.options.sampleRate;
 		sr.postln;
@@ -11,32 +11,32 @@ TestResample_Server : TestReblockBase_Server {
 			var cond = Condition(), synth;
 			SynthDef(\testResampleConstant, { |out|
 				Resample(factor);
-				Out.kr(out, SampleRate.ir);
+				Out.kr(out, SampleRate.ir)
 			}).add;
 			server.sync;
-			synth = Synth(\testResampleConstant, [ out: bus ]);
+			synth = Synth(\testResampleConstant, [out: bus]);
 			server.sync; // let it compute at least one block
 			bus.get { |f|
 				results[index] = f;
-				cond.test_(true).signal;
+				cond.test_(true).signal
 			};
 			cond.wait;
-			synth.free;
+			synth.free
 		};
 		this.assert(results[0] == sr, "Resample with argument 0.0 matches Server sample rate");
-		var success = [ factors[1..], results[1..] ].flop.every { |pair|
+		var success = [factors[1..], results[1..]].flop.every { |pair|
 			(pair[0] * sr) == pair[1]
 		};
-		this.assert(success, "Resample with constant argument matches SampleRate output");
+		this.assert(success, "Resample with constant argument matches SampleRate output")
 	}
 
 	test_resampleWithBadInputThrows {
 		this.assertException({
-			SynthDef(\test, { Resample(-1) });
+			SynthDef(\test, { Resample(-1) })
 		}, Error, "Resample with negative factor throws exception");
 
 		this.assertException({
-			SynthDef(\test, { Resample(3) });
+			SynthDef(\test, { Resample(3) })
 		}, Error, "Resample with non-power-of-two factor throws exception");
 
 		this.assertException({
@@ -45,79 +45,79 @@ TestResample_Server : TestReblockBase_Server {
 
 		this.assertException({
 			SynthDef(\test, { Resample(DC.ar(2)) })
-		}, Error, "Resample with UGen other than OutputProxy throws exception");
+		}, Error, "Resample with UGen other than OutputProxy throws exception")
 	}
 
 	test_resampleWithControlFactorWorks {
 		var bus = Bus.control(server);
-		var factors = [ 0, 1, 2, 4, 8 ];
+		var factors = [0, 1, 2, 4, 8];
 		var results = Array.fill(factors.size, nil);
 		var sr = server.options.sampleRate;
 
 		SynthDef(\testResampleControl, { |out, resample|
 			Resample(resample);
-			Out.kr(out, SampleRate.ir);
+			Out.kr(out, SampleRate.ir)
 		}).add;
 		server.sync;
 
 		factors.do { |factor, index|
 			var cond = Condition();
-			var synth = Synth(\testResampleControl, [ out: bus, resample: factor ]);
+			var synth = Synth(\testResampleControl, [out: bus, resample: factor]);
 			server.sync; // let it compute at least one block
 			bus.get { |f|
 				results[index] = f;
-				cond.test_(true).signal;
+				cond.test_(true).signal
 			};
 			cond.wait;
-			synth.free;
+			synth.free
 		};
 		this.assert(results[0] == sr, "Resample with control default argument matches Server sample rate");
-		var success = [ factors[1..], results[1..] ].flop.every { |pair| (pair[0] * sr) == pair[1] };
-		this.assert(success, "Resample with control argument matches SampleRate output");
+		var success = [factors[1..], results[1..]].flop.every { |pair| (pair[0] * sr) == pair[1] };
+		this.assert(success, "Resample with control argument matches SampleRate output")
 	}
 
 	test_resampleWithBadControlFactorUsesDefault {
 		var bus = Bus.control(server);
-		var factors = [ -1, 0.9, 3, 7 ];
+		var factors = [-1, 0.9, 3, 7];
 		var results = Array.fill(factors.size, nil);
 		var sr = server.options.sampleRate;
 		SynthDef(\testResampleControlFail, { |out, resample|
 			Resample(resample);
-			Out.kr(out, SampleRate.ir);
+			Out.kr(out, SampleRate.ir)
 		}).add;
 		server.sync;
 		factors.do { |factor, index|
 			var cond = Condition();
-			var synth = Synth(\testResampleControlFail, [ out: bus, resample: factor ]);
+			var synth = Synth(\testResampleControlFail, [out: bus, resample: factor]);
 			server.sync; // let it compute at least one block
 			bus.get { |f|
 				results[index] = f;
-				cond.test_(true).signal;
+				cond.test_(true).signal
 			};
 			cond.wait;
-			synth.free;
+			synth.free
 		};
 		var success = results.every { |x| x == sr };
-		this.assert(success, "Resample with bad control argument falls back to Server sample rate");
+		this.assert(success, "Resample with bad control argument falls back to Server sample rate")
 	}
 
 	test_resampleIgnoresDuplicates {
 		var bus = Bus.control(server);
-		var factors = [ 1, 2, 4, 8 ];
+		var factors = [1, 2, 4, 8];
 		var cond = Condition(), value;
 		var sr = server.options.sampleRate;
 		var synth = {
 			factors.do { |x| Resample(x) };
-			Out.kr(bus, SampleRate.ir);
+			Out.kr(bus, SampleRate.ir)
 		}.play(server);
 		server.sync; // let it compute at least one block
 		bus.get { |f|
 			value = f;
-			cond.test_(true).signal;
+			cond.test_(true).signal
 		};
 		cond.wait;
 		synth.free;
-		this.assert(value == (factors[0] * sr), "Duplicate Resample instances are ignored with a warning");
+		this.assert(value == (factors[0] * sr), "Duplicate Resample instances are ignored with a warning")
 	}
 
 	test_IOUGensWithResampling {
@@ -130,8 +130,8 @@ TestResample_Server : TestReblockBase_Server {
 		var simpleAB = { |defName|
 			{ |busA, busB|
 				[
-					Synth(defName, [ out: busA, resample: testFactor ], server, \addToTail),
-					Synth(defName, [ out: busB ], server, \addToTail)
+					Synth(defName, [out: busA, resample: testFactor], server, \addToTail),
+					Synth(defName, [out: busB], server, \addToTail)
 				]
 			}
 		};
@@ -147,11 +147,11 @@ TestResample_Server : TestReblockBase_Server {
 		// Out.ar/Out.kr
 
 		SynthDef(\testOutAr, { |out, resample|
-			var sig = [ Line.ar, SinOsc.ar ];
+			var sig = [Line.ar, SinOsc.ar];
 			Resample(resample);
 			// make sure that summing works
 			Out.ar(out, sig);
-			Out.ar(out, sig);
+			Out.ar(out, sig)
 		}).add;
 
 		server.sync;
@@ -159,11 +159,11 @@ TestResample_Server : TestReblockBase_Server {
 		this.performABTest(simpleAB.(\testOutAr), \ar, "Out.ar works with resampling");
 
 		SynthDef(\testOutKr, { |out, resample|
-			var sig = [ Line.kr, SinOsc.kr ];
+			var sig = [Line.kr, SinOsc.kr];
 			Resample(resample);
 			// make sure that summing works
 			Out.kr(out, sig);
-			Out.kr(out, sig);
+			Out.kr(out, sig)
 		}).add;
 
 		server.sync;
@@ -174,7 +174,7 @@ TestResample_Server : TestReblockBase_Server {
 
 		SynthDef(\testReplaceOutAr, { |out, resample|
 			Resample(resample);
-			ReplaceOut.ar(out, [ Line.ar, SinOsc.ar ]);
+			ReplaceOut.ar(out, [Line.ar, SinOsc.ar])
 		}).add;
 
 		server.sync;
@@ -183,7 +183,7 @@ TestResample_Server : TestReblockBase_Server {
 
 		SynthDef(\testReplaceOutKr, { |out, resample|
 			Resample(resample);
-			ReplaceOut.kr(out, [ Line.kr, SinOsc.kr ]);
+			ReplaceOut.kr(out, [Line.kr, SinOsc.kr])
 		}).add;
 
 		server.sync;
@@ -193,11 +193,11 @@ TestResample_Server : TestReblockBase_Server {
 		// OffsetOut.ar
 
 		SynthDef(\testOffsetOutAr, { |out, resample|
-			var sig = [ Line.ar, SinOsc.ar ];
+			var sig = [Line.ar, SinOsc.ar];
 			Resample(resample);
 			// make sure that summing works
 			OffsetOut.ar(out, sig);
-			OffsetOut.ar(out, sig);
+			OffsetOut.ar(out, sig)
 		}).add;
 
 		server.sync;
@@ -208,7 +208,7 @@ TestResample_Server : TestReblockBase_Server {
 
 		SynthDef(\testXOutAr, { |out, resample|
 			Resample(resample);
-			XOut.ar(out, 0.5, [ Line.ar, SinOsc.ar ]);
+			XOut.ar(out, 0.5, [Line.ar, SinOsc.ar])
 		}).add;
 
 		server.sync;
@@ -217,7 +217,7 @@ TestResample_Server : TestReblockBase_Server {
 
 		SynthDef(\testXOutKr, { |out, resample|
 			Resample(resample);
-			XOut.kr(out, 0.5, [ Line.kr, SinOsc.kr ]);
+			XOut.kr(out, 0.5, [Line.kr, SinOsc.kr])
 		}).add;
 
 		server.sync;
@@ -228,7 +228,7 @@ TestResample_Server : TestReblockBase_Server {
 
 		SynthDef(\testInAr, { |out, resample|
 			Resample(resample);
-			ReplaceOut.ar(out, In.ar(arTestBus, 2));
+			ReplaceOut.ar(out, In.ar(arTestBus, 2))
 		}).add;
 
 		server.sync;
@@ -237,7 +237,7 @@ TestResample_Server : TestReblockBase_Server {
 
 		SynthDef(\testInKr, { |out, resample|
 			Resample(resample);
-			ReplaceOut.kr(out, In.kr(krTestBus, 2));
+			ReplaceOut.kr(out, In.kr(krTestBus, 2))
 		}).add;
 
 		server.sync;
@@ -248,7 +248,7 @@ TestResample_Server : TestReblockBase_Server {
 
 		SynthDef(\testInFeedbackAr, { |out, resample|
 			Resample(resample);
-			ReplaceOut.ar(out, InFeedback.ar(arTestBus, 2));
+			ReplaceOut.ar(out, InFeedback.ar(arTestBus, 2))
 		}).add;
 
 		server.sync;
@@ -259,7 +259,7 @@ TestResample_Server : TestReblockBase_Server {
 
 		SynthDef(\testLagInKr, { |out, resample|
 			Resample(resample);
-			ReplaceOut.kr(out, LagIn.kr(krTestBus, 2));
+			ReplaceOut.kr(out, LagIn.kr(krTestBus, 2))
 		}).add;
 
 		server.sync;
@@ -270,7 +270,7 @@ TestResample_Server : TestReblockBase_Server {
 
 		SynthDef(\testInTrigKr, { |in, out, resample|
 			Resample(resample);
-			ReplaceOut.kr(out, InTrig.kr(in, 2));
+			ReplaceOut.kr(out, InTrig.kr(in, 2))
 		}).add;
 
 		server.sync;
@@ -279,8 +279,8 @@ TestResample_Server : TestReblockBase_Server {
 			trigBusA.set(1, 1);
 			trigBusB.set(1, 1);
 			[
-				Synth(\testInTrigKr, [ in: trigBusA, out: busA, resample: testFactor ], server, \addToTail),
-				Synth(\testInTrigKr, [ in: trigBusB, out: busB ], server, \addToTail)
+				Synth(\testInTrigKr, [in: trigBusA, out: busA, resample: testFactor], server, \addToTail),
+				Synth(\testInTrigKr, [in: trigBusB, out: busB], server, \addToTail)
 			]
 		}, \kr, "InTrig.kr works with resampling");
 
@@ -288,7 +288,7 @@ TestResample_Server : TestReblockBase_Server {
 
 		SynthDef(\testControl, { |out, resample|
 			Resample(resample);
-			ReplaceOut.kr(out, \ctl.kr([ 0.5, 1.5 ]));
+			ReplaceOut.kr(out, \ctl.kr([0.5, 1.5]))
 		}).add;
 
 		server.sync;
@@ -296,16 +296,16 @@ TestResample_Server : TestReblockBase_Server {
 		this.performABTest(simpleAB.(\testControl), \kr, "Control with default value works with resampling");
 
 		this.performABTest({ |busA, busB|
-			var a = Synth(\testControl, [ out: busA, resample: testFactor ], server, \addToTail).map(\ctl, krTestBus);
-			var b = Synth(\testControl, [ out: busB ], server, \addToTail).map(\ctl, krTestBus);
-			[ a, b ]
+			var a = Synth(\testControl, [out: busA, resample: testFactor], server, \addToTail).map(\ctl, krTestBus);
+			var b = Synth(\testControl, [out: busB], server, \addToTail).map(\ctl, krTestBus);
+			[a, b]
 		}, \kr, "Control mapped to control bus works with resampling");
 
 		// AudioControl
 
 		SynthDef(\testAudioControl, { |out, resample|
 			Resample(resample);
-			ReplaceOut.ar(out, \ctl.ar([ 0.5, 1.5 ]));
+			ReplaceOut.ar(out, \ctl.ar([0.5, 1.5]))
 		}).add;
 
 		server.sync;
@@ -313,22 +313,22 @@ TestResample_Server : TestReblockBase_Server {
 		this.performABTest(simpleAB.(\testAudioControl), \ar, "AudioControl with default value works with resampling");
 
 		this.performABTest({ |busA, busB|
-			var a = Synth(\testAudioControl, [ out: busA, resample: testFactor ], server, \addToTail).map(\ctl, arTestBus);
-			var b = Synth(\testAudioControl, [ out: busB ], server, \addToTail).map(\ctl, arTestBus);
-			[ a, b ]
+			var a = Synth(\testAudioControl, [out: busA, resample: testFactor], server, \addToTail).map(\ctl, arTestBus);
+			var b = Synth(\testAudioControl, [out: busB], server, \addToTail).map(\ctl, arTestBus);
+			[a, b]
 		}, \ar, "AudioControl mapped to audio bus works with resampling");
 
 		this.performABTest({ |busA, busB|
-			var a = Synth(\testAudioControl, [ out: busA, resample: testFactor ], server, \addToTail).map(\ctl, krTestBus);
-			var b = Synth(\testAudioControl, [ out: busB ], server, \addToTail).map(\ctl, krTestBus);
-			[ a, b ]
+			var a = Synth(\testAudioControl, [out: busA, resample: testFactor], server, \addToTail).map(\ctl, krTestBus);
+			var b = Synth(\testAudioControl, [out: busB], server, \addToTail).map(\ctl, krTestBus);
+			[a, b]
 		}, \ar, "AudioControl mapped to control bus works with resampling");
 
 		// LagControl
 
 		SynthDef(\testLagControl, { |out, resample|
 			Resample(resample);
-			ReplaceOut.kr(out, \ctl.kr([ 0.5, 1.5 ], 0.1, true));
+			ReplaceOut.kr(out, \ctl.kr([0.5, 1.5], 0.1, true))
 		}).add;
 
 		server.sync;
@@ -336,16 +336,16 @@ TestResample_Server : TestReblockBase_Server {
 		this.performABTest(simpleAB.(\testLagControl), \kr, "LagControl with default value works with resampling");
 
 		this.performABTest({ |busA, busB|
-			var a = Synth(\testLagControl, [ out: busA, resample: testFactor ], server, \addToTail).map(\ctl, krTestBus);
-			var b = Synth(\testLagControl, [ out: busB ], server, \addToTail).map(\ctl, krTestBus);
-			[ a, b ]
+			var a = Synth(\testLagControl, [out: busA, resample: testFactor], server, \addToTail).map(\ctl, krTestBus);
+			var b = Synth(\testLagControl, [out: busB], server, \addToTail).map(\ctl, krTestBus);
+			[a, b]
 		}, \kr, "LagControl mapped to control bus works with resampling");
 
 		// TrigControl
 
 		SynthDef(\testTrigControl, { |out, resample|
 			Resample(resample);
-			ReplaceOut.kr(out, \ctl.tr([1, 1]));
+			ReplaceOut.kr(out, \ctl.tr([1, 1]))
 		}).add;
 
 		server.sync;
@@ -356,9 +356,9 @@ TestResample_Server : TestReblockBase_Server {
 			var a, b;
 			trigBusA.set(1, 1);
 			trigBusB.set(1, 1);
-			a = Synth(\testTrigControl, [ out: busA, resample: testFactor ], server, \addToTail).map(\ctl, trigBusA);
-			b = Synth(\testTrigControl, [ out: busB ], server, \addToTail).map(\ctl, trigBusB);
-			[ a, b ]
+			a = Synth(\testTrigControl, [out: busA, resample: testFactor], server, \addToTail).map(\ctl, trigBusA);
+			b = Synth(\testTrigControl, [out: busB], server, \addToTail).map(\ctl, trigBusB);
+			[a, b]
 		}, \kr, "TrigControl mapped to control bus works with resampling");
 
 		// LocalIn / LocalOut
@@ -369,7 +369,7 @@ TestResample_Server : TestReblockBase_Server {
 			// make sure that summing works
 			LocalOut.ar(sig);
 			LocalOut.ar(sig);
-			Out.ar(out, LocalIn.ar(2));
+			Out.ar(out, LocalIn.ar(2))
 		}).add;
 
 		server.sync;
@@ -382,11 +382,11 @@ TestResample_Server : TestReblockBase_Server {
 			// make sure that summing works
 			LocalOut.kr(sig);
 			LocalOut.kr(sig);
-			Out.kr(out, LocalIn.kr(2));
+			Out.kr(out, LocalIn.kr(2))
 		}).add;
 
 		server.sync;
 
-		this.performABTest(simpleAB.(\testLocalBusKr), \kr, "LocalIn.kr and LocalOut.kr work with reblocking");
+		this.performABTest(simpleAB.(\testLocalBusKr), \kr, "LocalIn.kr and LocalOut.kr work with reblocking")
 	}
 }

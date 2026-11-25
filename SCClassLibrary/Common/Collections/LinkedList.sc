@@ -2,13 +2,13 @@ LinkedListNode {
 	var <>prev, <>next, <>obj;
 	// this class supports the LinkedList class
 
-	*new { arg item;
+	*new { |item|
 		^super.new.obj_(item)
 	}
 	remove {
-		if (prev.notNil, { prev.next_(next); });
-		if (next.notNil, { next.prev_(prev); });
-		next = prev = nil;
+		if(prev.notNil) { prev.next_(next) };
+		if(next.notNil) { next.prev_(prev) };
+		next = prev = nil
 	}
 }
 
@@ -18,153 +18,153 @@ LinkedList : SequenceableCollection {
 
 	copy {
 		var copy = LinkedList.new;
-		this.do {|item| copy.add(item) }
+		this.do { |item| copy.add(item) }
 		^copy
 	}
 	species { ^this.class }
-	do { arg function;
+	do { |function|
 		var i = 0;
 		var node = head;
-		while ({ node.notNil },{
+		while { node.notNil } {
 			function.value(node.obj, i);
 			node = node.next;
-			i = i + 1;
-		});
+			i = i + 1
+		}
 	}
-	reverseDo { arg function;
+	reverseDo { |function|
 		var i = size - 1;
 		var node = tail;
-		while ({ node.notNil },{
+		while { node.notNil } {
 			function.value(node.obj, i);
 			node = node.prev;
-			i = i - 1;
-		});
+			i = i - 1
+		}
 	}
-	addFirst { arg obj;
+	addFirst { |obj|
 		var node = LinkedListNode.new(obj);
-		if (head.notNil, {
+		if(head.notNil) {
 			node.next_(head);
-			head.prev_(node);
-		});
+			head.prev_(node)
+		};
 		head = node;
-		if (tail.isNil, {
-			tail = node;
-		});
-		size = size + 1;
+		if(tail.isNil) {
+			tail = node
+		};
+		size = size + 1
 	}
-	add { arg obj;
+	add { |obj|
 		var node = LinkedListNode.new(obj);
-		if (tail.notNil, {
+		if(tail.notNil) {
 			node.prev_(tail);
-			tail.next_(node);
-		});
+			tail.next_(node)
+		};
 		tail = node;
-		if (head.isNil, {
-			head = node;
-		});
-		size = size + 1;
+		if(head.isNil) {
+			head = node
+		};
+		size = size + 1
 	}
 	remove { |obj|
 		var node = this.findNodeOfObj(obj);
-		if ( node.notNil, {
-			if (head == node, { head = node.next; });
-			if (tail == node, { tail = node.prev; });
+		if(node.notNil) {
+			if(head == node) { head = node.next };
+			if(tail == node) { tail = node.prev };
 			node.remove;
 			size = size - 1;
 			^obj
-		});
+		};
 		^nil
 	}
 	pop {
 		var node;
-		if ( tail.notNil, {
+		if(tail.notNil) {
 			node = tail;
 			tail = node.prev;
-			if (head == node, { head = nil; });
+			if(head == node) { head = nil };
 			node.remove;
 			size = size - 1;
 			^node.obj
-		},{
+		} {
 			^nil
-		});
+		}
 
 	}
 	popFirst {
 		var node;
-		if ( head.notNil, {
+		if(head.notNil) {
 			node = head;
 			head = node.next;
-			if (tail == node, { tail = nil; });
+			if(tail == node) { tail = nil };
 			node.remove;
 			size = size - 1;
 			^node.obj
-		},{
+		} {
 			^nil
-		});
+		}
 
 	}
 
-	first { if (head.notNil, { ^head.obj },{ ^nil }) }
-	last  { if (tail.notNil, { ^tail.obj },{ ^nil }) }
+	first { if(head.notNil) { ^head.obj } { ^nil } }
+	last  { if(tail.notNil) { ^tail.obj } { ^nil } }
 
-	at { arg index;
+	at { |index|
 		var node = this.nodeAt(index);
-		if (node.notNil, {
+		if(node.notNil) {
 			^node.obj
-		},{
+		} {
 			^nil
-		})
+		}
 	}
-	put { arg index, item;
+	put { |index, item|
 		var node = this.nodeAt(index);
-		if (node.notNil, {
-			node.obj_(item);
-		});
+		if(node.notNil) {
+			node.obj_(item)
+		}
 	}
-	removeAt { arg index;
+	removeAt { |index|
 		var node = this.nodeAt(index);
-		if (node.notNil, {
-			if (head == node, { head = node.next; });
-			if (tail == node, { tail = node.prev; });
+		if(node.notNil) {
+			if(head == node) { head = node.next };
+			if(tail == node) { tail = node.prev };
 			node.remove;
 			size = size - 1;
 			^node.obj
-		},{
+		} {
 			^nil
-		});
+		}
 	}
 	// private
-	nodeAt { arg index;
+	nodeAt { |index|
 		var i = 0, node;
-		if ( index >= 0 and: { index < size }, {
-			if (index < (size - index), {
+		if(index >= 0 and: { index < size }) {
+			if(index < (size - index)) {
 				node = head;
-				while ({ i != index },{
+				while { i != index } {
 					node = node.next;
-					i = i + 1;
-				});
+					i = i + 1
+				};
 				^node
-			},{
+			} {
 				i = size - 1;
 				node = tail;
-				while ({ i != index },{
+				while { i != index } {
 					node = node.prev;
-					i = i - 1;
-				});
+					i = i - 1
+				};
 				^node
-			});
-		},{
+			}
+		} {
 			this.indexOutOfRange;
 			^nil
-		})
+		}
 	}
 
-	findNodeOfObj { arg obj;
+	findNodeOfObj { |obj|
 		var node = head;
-		while ({ node.notNil },{
-			if (node.obj == obj, { ^node });
-			node = node.next;
-		});
+		while { node.notNil } {
+			if(node.obj == obj) { ^node };
+			node = node.next
+		};
 		^nil
 	}
 }

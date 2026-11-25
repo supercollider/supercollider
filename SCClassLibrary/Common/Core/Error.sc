@@ -16,12 +16,12 @@ Exception {
 	// It is kept only for backwards compatibility and should no longer be used, instead use the backtrace.
 	var <>path;
 
-	*new { |what(""), callFrameAnnotations(#[]), methodBeforeBacktraceStart, methodBacktraceEnd|
+	*new { |what = (""), callFrameAnnotations = (#[]), methodBeforeBacktraceStart, methodBacktraceEnd|
 		var thisThrow; // used to create the methodBeforeBacktraceStart
 
-		if (Exception.reporting) {
+		if(Exception.reporting) {
 			"Attempting to construct and error while reporting one. This is not allowed, please file a bug report.".error;
-			this.halt; // Just quit the thread here, we might get stuck in an infinite loop.
+			this.halt // Just quit the thread here, we might get stuck in an infinite loop.
 		};
 
 		^this.newCopyArgs(
@@ -33,7 +33,7 @@ Exception {
 			},
 			methodBacktraceEnd: methodBacktraceEnd ?? {
 				// Skip all the interpreter stuff, that isn't useful for this error (or if it is, there is an issue in the class library).
-				{ |method| method.ownerClass === Interpreter or: {method.ownerClass == Function and: { method.name === 'protect' or: {method.name == 'try'} or: {method.name == 'prTry'} }} }
+				{ |method| method.ownerClass === Interpreter or: { method.ownerClass == Function and: { method.name === 'protect' or: { method.name == 'try' } or: { method.name == 'prTry' } } } }
 			},
 			path: thisProcess.nowExecutingPath // backwards compatible.
 		)
@@ -41,7 +41,7 @@ Exception {
 
 	throw {
 		backtrace ?? { backtrace = this.getBackTrace };
-		super.throw;
+		super.throw
 	}
 
 
@@ -57,14 +57,14 @@ Exception {
 	}
 
 	reportStage2 { |stream, prefix|
-		stream << prefix << what << $\n;
+		stream << prefix << what << $\n
 	}
 
 	// Just does what.error.
 	// This probably shouldn't be used anymore.
 	errorString { ^what.error }
 
-	reportError { |stream(Post), prefix("")|
+	reportError { |stream = (Post), prefix = ("")|
 		var oldReporting = Exception.reporting;
 
 		Exception.reporting = true;
@@ -79,7 +79,7 @@ Exception {
 		stream << $\n << prefix << "────────────────────────────────────────────────────────────────────────────────\n";
 
 		Exception.reporting = oldReporting;
-		^stream;
+		^stream
 	}
 
 	// in the class library it is equivalent to x.isKindOf(Exception), so this is useless, don't use.
@@ -115,14 +115,14 @@ MethodError : Error {
 	}
 
 	reportStage2 { |stream, prefix|
-		stream << prefix << what << $\n;
+		stream << prefix << what << $\n
 	}
 }
 
 PrimitiveFailedError : MethodError {
 	var <>failedPrimitiveName;
 
-	*new { |receiver, failedPrimitive(thisThread.failedPrimitiveName), errorString(Thread.primitiveErrorString)|
+	*new { |receiver, failedPrimitive = (thisThread.failedPrimitiveName), errorString = (Thread.primitiveErrorString)|
 		var thisThrow = this.class.findMethod(\new);
 		^super.new(
 			what: errorString
@@ -139,14 +139,14 @@ SubclassResponsibilityError : MethodError {
 	var <>method;
 	var <>class;
 
-	*new { |receiver, method(thisMethod), class(SubclassResponsibilityError)|
+	*new { |receiver, method = (thisMethod), class = (SubclassResponsibilityError)|
 		var thisThrow = this.class.findMethod(\new);
 		^super.new(
 			what: "'%' should have been implemented by %.".format(method.name, class.name),
 			receiver: receiver,
 			callFrameAnnotations: [nil, "Please implement this method for the class '%'".format(class.name)],
 			methodBeforeBacktraceStart: { |m|
-				m === thisThrow or: {m.ownerClass === Object and: {m.name === 'subclassResponsibility'}}
+				m === thisThrow or: { m.ownerClass === Object and: { m.name === 'subclassResponsibility' } }
 			}
 		)
 			.method_(method)
@@ -158,13 +158,13 @@ ShouldNotImplementError : MethodError {
 	var <>method;
 	var <>class;
 
-	*new { |receiver, method(thisMethod), class(SubclassResponsibilityError)|
+	*new { |receiver, method = (thisMethod), class = (SubclassResponsibilityError)|
 		var thisThrow = this.class.findMethod(\new);
 		^super.new(
 			what: "'%-%' is not a valid message for the subclass '%'".format(method.ownerClass.name, method.name, class.name),
 			callFrameAnnotations: [nil, "'%' cannot respond to this message, please remove the call.".format(class.name)],
 			receiver: receiver,
-			methodBeforeBacktraceStart: { |m| m === thisThrow or: {m.ownerClass === Object and: {m.name === 'shouldNotImplement'}} },
+			methodBeforeBacktraceStart: { |m| m === thisThrow or: { m.ownerClass === Object and: { m.name === 'shouldNotImplement' } } },
 		)
 			.method_(method)
 			.class_(class)
@@ -176,7 +176,7 @@ DoesNotUnderstandError : MethodError {
 	var <>args;
 	var <>keywordArgumentPairs;
 
-	*new { |receiver, selector, args([]), keywordArgumentPairs([])|
+	*new { |receiver, selector, args = ([]), keywordArgumentPairs = ([])|
 		var thisThrow = this.class.findMethod(\new);
 		var msg = "% does not understand the message '%'.".format(receiver.class.name, selector);
 
@@ -187,7 +187,7 @@ DoesNotUnderstandError : MethodError {
 			what: msg,
 			callFrameAnnotations: [msg],
 			// We don't need to print Object.doesNotUnderstand.
-			methodBeforeBacktraceStart: { |m| m === thisThrow or: {m.ownerClass === Object and: {m.name === 'doesNotUnderstand'}} },
+			methodBeforeBacktraceStart: { |m| m === thisThrow or: { m.ownerClass === Object and: { m.name === 'doesNotUnderstand' } } },
 			receiver: receiver
 		)
 			.selector_(selector.asSymbol)
@@ -199,17 +199,17 @@ DoesNotUnderstandError : MethodError {
 		var methodSuggestions = receiver.class.findSimilarSelectors(selector, minSimilarity: 0.5, maxEditDistance: 2);
 		var classSuggestions = Object.findRespondingUpperSubclasses(selector).collect(_.name);
 		if(methodSuggestions.notEmpty) {
-			stream << "Message% with a similar name understood by the receiver:".format( if(methodSuggestions.size > 1) { "s" } { "" } );
+			stream << "Message% with a similar name understood by the receiver:".format(if(methodSuggestions.size > 1) { "s" } { "" });
 			stream << "\n" << prefix << "  ";
-			stream << methodSuggestions.join("\n" ++ prefix ++ "  ");
+			stream << methodSuggestions.join("\n" ++ prefix ++ "  ")
 		};
 		if(classSuggestions.notEmpty) {
 			if(classSuggestions.size < 8) {
 				stream << "\n" << prefix << "Objects which respond to the selector '%' derive from:".format(selector);
 				stream << "\n" << prefix << "  ";
-				stream << classSuggestions.join("\n" ++ prefix ++ "  ");
+				stream << classSuggestions.join("\n" ++ prefix ++ "  ")
 			} {
-				stream << "\n" << prefix << "Many other objects respond to the message '%' (found % superclasses).".format(selector, classSuggestions.size);
+				stream << "\n" << prefix << "Many other objects respond to the message '%' (found % superclasses).".format(selector, classSuggestions.size)
 			}
 		}
 	}
@@ -220,10 +220,10 @@ MustBeBooleanError : MethodError {
 	*new { |what, receiver|
 		var thisThrow = this.class.findMethod(\throw);
 		^super.new(
-			what: what ?? { "Non boolean in test "},
+			what: what ?? { "Non boolean in test " },
 			receiver: receiver,
 			callFrameAnnotations: ["Expected this to be either `true` or `false`, instead got %(%).".format(receiver.class, receiver)],
-			methodBeforeBacktraceStart: { |m| m === thisThrow or: {m.ownerClass === Object and: {m.name === 'mustBeBoolean'}} },
+			methodBeforeBacktraceStart: { |m| m === thisThrow or: { m.ownerClass === Object and: { m.name === 'mustBeBoolean' } } },
 		)
 	}
 }
@@ -232,27 +232,27 @@ NotYetImplementedError : MethodError {
 	*new { |what, receiver|
 		var thisThrow = this.class.findMethod(\throw);
 		^super.new(
-			what: what ?? {"Not yet implemented"},
+			what: what ?? { "Not yet implemented" },
 			callFrameAnnotations: ["This method has not yet been implemented."],
 			receiver: receiver,
-			methodBeforeBacktraceStart: { |m| m === thisThrow or: {m.ownerClass === Object and: {m.name === 'notYetImplemented'}} },
+			methodBeforeBacktraceStart: { |m| m === thisThrow or: { m.ownerClass === Object and: { m.name === 'notYetImplemented' } } },
 		)
 	}
 
- }
+}
 
 OutOfContextReturnError : MethodError {
 	var <>method, <>result;
 	*new { |receiver, method, result|
 		var thisThrow = this.class.findMethod(\throw);
-		if (method.isKindOf(Method).not) {
+		if(method.isKindOf(Method).not) {
 			Error("OutOfContextReturnError excepts a method").throw
 		};
 		^super.new(
 			what: "'%-%' tried to return to a call frame that has expired with a value of: %".format(method.ownerClass),
 			callFrameAnnotations: ["Could not complete this return as the parent method is no longer active."],
 			receiver: receiver,
-			methodBeforeBacktraceStart: { |m| m === thisThrow or: {m.ownerClass === Object and: {m.name === 'outOfContextReturn'}} },
+			methodBeforeBacktraceStart: { |m| m === thisThrow or: { m.ownerClass === Object and: { m.name === 'outOfContextReturn' } } },
 		)
 			.method_(method)
 			.result_(result)
@@ -267,7 +267,7 @@ ImmutableError : MethodError {
 			what: "Cannot mutate an immutable object",
 			callFrameAnnotations: ["Make a copy of this object before mutating it."],
 			receiver: receiver,
-			methodBeforeBacktraceStart: { |m| m === thisThrow or: {m.ownerClass === Object and: {m.name === 'immutableError'}} },
+			methodBeforeBacktraceStart: { |m| m === thisThrow or: { m.ownerClass === Object and: { m.name === 'immutableError' } } },
 		)
 			.value_(value)
 	}
@@ -285,7 +285,7 @@ DeprecatedError : MethodError {
 			what: "The method '%-%' is deprecated, instead use '%-%'.".format(method.ownerClass.name, method.name, alternateMethod.ownerClass.name, alternateMethod.name),
 			callFrameAnnotations: ["Replace this with '*.%".format(alternateMethod.name)],
 			receiver: receiver,
-			methodBeforeBacktraceStart: { |m| m === thisThrow or: {m == method} },
+			methodBeforeBacktraceStart: { |m| m === thisThrow or: { m == method } },
 		)
 			.method_(method)
 			.alternateMethod_(alternateMethod)
@@ -295,7 +295,7 @@ DeprecatedError : MethodError {
 	// This means that DeprecatedErrors are *not* exceptions, despite inheriting from Exception.
 	throw {
 		this.reportError;
-		if (Error.debug) { this.halt }
+		if(Error.debug) { this.halt }
 	}
 }
 
@@ -305,7 +305,7 @@ CompileError : Error {
 	reportStage1 { }
 	reportStage2 { }
 	// Just the problems, they are the report.
-	reportError { |stream(Post), prefix("")|
+	reportError { |stream = (Post), prefix = ("")|
 		what.split($\n).do { |line| stream << prefix << line << $\n };
 		^stream
 	}
@@ -322,7 +322,7 @@ PoisonedMethodError : ErrorWrapper {
 		var unsupported = errors.isNil;
 		^super.new(
 			CompileError(errors ? "The compiler doesn't support something in this method yet."),
-			if (unsupported) {
+			if(unsupported) {
 				"% was not compiled, as the compiler doesn't support something in it yet.".format(method.asString)
 			} {
 				"% was not compiled, as it has an error in its source.".format(method.asString)

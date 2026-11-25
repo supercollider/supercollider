@@ -1,13 +1,13 @@
 ExampleFiles {
 	*apollo11 {
-		^Platform.resourceDir +/+ "sounds" +/+ "a11wlk01-44_1.aiff";
+		^Platform.resourceDir +/+ "sounds" +/+ "a11wlk01-44_1.aiff"
 	}
 
 	*sinedPink {
-		^Platform.resourceDir +/+ "sounds" +/+ "SinedPink.aiff";
+		^Platform.resourceDir +/+ "sounds" +/+ "SinedPink.aiff"
 	}
 
 	*child {
-		^Platform.resourceDir +/+ "sounds" +/+ "a11wlk01.wav";
+		^Platform.resourceDir +/+ "sounds" +/+ "a11wlk01.wav"
 	}
 }

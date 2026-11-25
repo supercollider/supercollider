@@ -9,12 +9,12 @@ TestFunction_Server : UnitTest {
 			b.get(3, { |val|
 				this.assertEquals(val, 0, "unspecified function arguments should pass as 0 when function is written to a buffer");
 				b.free;
-				condition.signalOne;
+				condition.signalOne
 			})
 		});
 		condition.waitFor(2);
 		server.quitSync;
-		server.remove;
+		server.remove
 	}
 
 }

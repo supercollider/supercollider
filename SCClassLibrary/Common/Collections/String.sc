@@ -2,39 +2,39 @@ String[char] : RawArray {
 	classvar <>unixCmdActions;
 
 	*initClass {
-		unixCmdActions = IdentityDictionary.new;
+		unixCmdActions = IdentityDictionary.new
 	}
 
-	*doUnixCmdAction { arg res, pid;
+	*doUnixCmdAction { |res, pid|
 		unixCmdActions[pid].value(res, pid);
-		unixCmdActions.removeAt(pid);
+		unixCmdActions.removeAt(pid)
 	}
 
-	prUnixCmd { arg postOutput = true;
+	prUnixCmd { |postOutput = true|
 		_String_POpen
 		^this.primitiveFailed
 	}
 
 	// runs a unix command and sends stdout to the post window
-	unixCmd { arg action, postOutput = true;
+	unixCmd { |action, postOutput = true|
 		var pid;
 		pid = this.prUnixCmd(postOutput);
 		if(action.notNil) {
-			unixCmdActions.put(pid, action);
+			unixCmdActions.put(pid, action)
 		};
-		^pid;
+		^pid
 	}
 
 	// Like unixCmd but gets the result into a string
-	unixCmdGetStdOut { arg maxLineLength=1024;
+	unixCmdGetStdOut { |maxLineLength = 1024|
 		var pipe, lines, line;
 
 		pipe = Pipe.new(this, "r");
 		lines = "";
 		line = pipe.getLine(maxLineLength);
-		while({line.notNil}, {lines = lines ++ line ++ "\n"; line = pipe.getLine; });
+		while { line.notNil } { lines = lines ++ line ++ "\n"; line = pipe.getLine };
 		pipe.close;
-		^lines;
+		^lines
 	}
 
 	asSymbol {
@@ -63,32 +63,32 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 
-	compare { arg aString, ignoreCase=false;
+	compare { |aString, ignoreCase = false|
 		_StringCompare
-		this.primitiveFailed;
+		this.primitiveFailed
 	}
-	< { arg aString;
+	< { |aString|
 		if(aString.isString.not) { ^false };
 		^this.compare(aString, false) < 0
 	}
-	> { arg aString;
+	> { |aString|
 		if(aString.isString.not) { ^false };
 		^this.compare(aString, false) > 0
 	}
-	<= { arg aString;
+	<= { |aString|
 		if(aString.isString.not) { ^false };
 		^this.compare(aString, false) <= 0
 	}
-	>= { arg aString;
+	>= { |aString|
 		if(aString.isString.not) { ^false };
 		^this.compare(aString, false) >= 0
 	}
-	== { arg aString;
-		if (this === aString) { ^true };
+	== { |aString|
+		if(this === aString) { ^true };
 		if(aString.isString.not) { ^false };
 		^this.compare(aString, false) == 0
 	}
-	!= { arg aString;
+	!= { |aString|
 		if(aString.isString.not) { ^true }
 		^this.compare(aString, false) != 0
 	}
@@ -97,14 +97,14 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 	// no sense doing collect as per superclass collection
-	performBinaryOpOnSimpleNumber { arg aSelector, aNumber;
-		^aNumber.asString.perform(aSelector, this);
+	performBinaryOpOnSimpleNumber { |aSelector, aNumber|
+		^aNumber.asString.perform(aSelector, this)
 	}
-	performBinaryOpOnComplex { arg aSelector, aComplex;
-		^aComplex.asString.perform(aSelector, this);
+	performBinaryOpOnComplex { |aSelector, aComplex|
+		^aComplex.asString.perform(aSelector, this)
 	}
-	multiChannelPerform { arg selector ... args;
-		Error("String:multiChannelPerform. Cannot expand strings.").throw;
+	multiChannelPerform { |selector ... args|
+		Error("String:multiChannelPerform. Cannot expand strings.").throw
 	}
 
 	isString { ^true }
@@ -121,7 +121,7 @@ String[char] : RawArray {
 			out = "[";
 			this.clump(safeLiteralSize).do { |substr, i|
 				if(i > 0) { out = out ++ ", " };
-				out = out ++ substr.prAsCompileString;
+				out = out ++ substr.prAsCompileString
 			};
 			out ++ "].join"
 		}
@@ -140,16 +140,16 @@ String[char] : RawArray {
 		_PostString
 		^this.primitiveFailed
 	}
-	postcln { "// ".post; this.postln; }
-	postc { "// ".post; this.post; }
+	postcln { "// ".post; this.postln }
+	postc { "// ".post; this.post }
 
-	postf { arg ... items;  ^this.prFormat( items.collect(_.asString) ).post }
-	format { arg ... items; ^this.prFormat( items.collect(_.asString) ) }
-	prFormat { arg items; _String_Format ^this.primitiveFailed }
-	matchRegexp { arg string, start = 0, end; _String_Regexp ^this.primitiveFailed }
+	postf { |... items| ^this.prFormat(items.collect(_.asString)).post }
+	format { |... items| ^this.prFormat(items.collect(_.asString)) }
+	prFormat { |items| _String_Format ^this.primitiveFailed }
+	matchRegexp { |string, start = 0, end| _String_Regexp ^this.primitiveFailed }
 	replaceRegexp { |regex, with| _String_ReplaceRegex ^this.primitiveFailed }
 
-	fformat { arg ... args;
+	fformat { |... args|
 		var str, resArgs, val, func;
 		var suffixes, sig = false;
 
@@ -163,103 +163,103 @@ String[char] : RawArray {
 				} {
 					resArgs = resArgs.add(func.value(val))
 				};
-				sig = false;
+				sig = false
 			} {
 				str = str ++ char
 			};
-			if(char == $%) { sig = true };
+			if(char == $%) { sig = true }
 		};
 		^str.format(*resArgs)
 	}
 
-	die { arg ... culprits;
-		if(culprits.notEmpty,{
+	die { |... culprits|
+		if(culprits.notEmpty) {
 			("\n\nFATAL ERROR: ").postln;
-			culprits.do({ arg c; if(c.isString,{c.postln},{c.dump}) });
-		});
-		Error(this).throw;
+			culprits.do { |c| if(c.isString) { c.postln } { c.dump } }
+		};
+		Error(this).throw
 	}
-	error { "ERROR: ".post; this.postln; }
+	error { "ERROR: ".post; this.postln }
 	warn { "WARNING: ".post; this.postln }
 	inform { ^this.postln }
-	++ { arg anObject; ^this prCat: anObject.asString; }
-	+ { arg anObject; ^this prCat: " " prCat: anObject.asString; }
-	catArgs { arg ... items; ^this.catList(items) }
-	scatArgs { arg ... items; ^this.scatList(items) }
-	ccatArgs { arg ... items; ^this.ccatList(items) }
-	catList { arg list;
+	++ { |anObject| ^this prCat: anObject.asString }
+	+ { |anObject| ^this prCat: " " prCat: anObject.asString }
+	catArgs { |... items| ^this.catList(items) }
+	scatArgs { |... items| ^this.scatList(items) }
+	ccatArgs { |... items| ^this.ccatList(items) }
+	catList { |list|
 		// concatenate this with a list as a string
 		var string = this.copy;
-		list.do({ arg item, i;
-			string = string ++ item;
-		});
+		list.do { |item, i|
+			string = string ++ item
+		};
 		^string
 	}
-	scatList { arg list;
+	scatList { |list|
 		var string = this.copy;
-		list.do({ arg item, i;
-			string = string prCat: " " ++ item;
-		});
+		list.do { |item, i|
+			string = string prCat: " " ++ item
+		};
 		^string
 	}
-	ccatList { arg list;
+	ccatList { |list|
 		var string = this.copy;
-		list.do({ arg item, i;
-			string = string prCat: ", " ++ item;
-		});
+		list.do { |item, i|
+			string = string prCat: ", " ++ item
+		};
 		^string
 	}
-	split { arg separator=$/;
-		var word="";
-		var array=[];
-		separator=separator.ascii;
+	split { |separator = $/|
+		var word = "";
+		var array = [];
+		separator = separator.ascii;
 
-		this.do({arg let,i;
-			if(let.ascii != separator ,{
-				word=word++let;
-			},{
-				array=array.add(word);
-				word="";
-			});
-		});
-		^array.add(word);
+		this.do { |let, i|
+			if(let.ascii != separator) {
+				word = word ++ let
+			} {
+				array = array.add(word);
+				word = ""
+			}
+		};
+		^array.add(word)
 	}
 
-	containsStringAt { arg index, string;
-		^compare( this[index..index + string.size-1], string, false) == 0
+	containsStringAt { |index, string|
+		^compare(this[index..index + string.size - 1], string, false) == 0
 	}
 
-	icontainsStringAt { arg index, string;
-		^compare( this[index..index + string.size-1], string, true) == 0
+	icontainsStringAt { |index, string|
+		^compare(this[index..index + string.size - 1], string, true) == 0
 	}
 
 
-	contains { arg string, offset = 0;
+	contains { |string, offset = 0|
 		^this.find(string, false, offset).notNil
 	}
-	containsi { arg string, offset = 0;
+	containsi { |string, offset = 0|
 		^this.find(string, true, offset).notNil
 	}
 
-	findRegexpAt { arg regexp, offset = 0;
+	findRegexpAt { |regexp, offset = 0|
 		_String_FindRegexpAt
 		^this.primitiveFailed
 	}
 
-	findRegexp { arg regexp, offset = 0;
+	findRegexp { |regexp, offset = 0|
 		_String_FindRegexp
 		^this.primitiveFailed
 	}
 
-	findAllRegexp { arg string, offset = 0;
+	findAllRegexp { |string, offset = 0|
 		^this.findRegexp(string, offset).collect { |pair| pair[0] }
 	}
 
-	find { arg string, ignoreCase = false, offset = 0;
+	find { |string, ignoreCase = false, offset = 0|
 		_String_Find
 		^this.primitiveFailed
 	}
-	findBackwards { arg string, ignoreCase = false, offset = 0x7FFFFFFE;
+	findBackwards { |string, ignoreCase = false, offset = 0x7FFFFFFE|
 		_String_FindBackwards
 		^this.primitiveFailed
 	}
@@ -267,71 +267,71 @@ String[char] : RawArray {
 		var names, editDistances, bestMatchIndices, searchFor;
 		if(prioritizeCapitalization) {
 			names = array.collect { |x| x.asString.toLower };
-			searchFor = this.toLower;
+			searchFor = this.toLower
 		} {
 			names = array.collect { |x| x.asString };
-			searchFor = this;
+			searchFor = this
 		};
 
 		editDistances = names.collect(editDistance(_, searchFor));
 		bestMatchIndices = editDistances.order;
 		bestMatchIndices = bestMatchIndices.select { |i|
 			maxEditDistance.isNil or: { editDistances[i] <= maxEditDistance }
-			and:
+				and:
 			{ minSimilarity.isNil or: { similarity(names[i], searchFor) >= minSimilarity } }
 		}
 		^array[bestMatchIndices]
 	}
-	endsWith { arg string;
+	endsWith { |string|
 		^this.contains(string, this.size - string.size)
 	}
-	beginsWith { arg string;
+	beginsWith { |string|
 		^this.containsStringAt(0, string)
 	}
-	findAll { arg string, ignoreCase = false, offset=0;
-		var indices, i=0;
+	findAll { |string, ignoreCase = false, offset = 0|
+		var indices, i = 0;
 		while {
 			i = this.find(string, ignoreCase, offset);
 			i.notNil
-		}{
+		} {
 			indices = indices.add(i);
-			offset = i + 1;
+			offset = i + 1
 		}
 		^indices
 	}
-	replace { arg find, replace = "";
+	replace { |find, replace = ""|
 		var index, out = "", array = this, findSize = max(find.size, 1);
 		while {
 			(index = array.find(find)).notNil
-		}{
+		} {
 			out = out ++ array.keep(index) ++ replace;
-			array = array.drop(index + findSize);
+			array = array.drop(index + findSize)
 		};
 		^out ++ array
 	}
 
 
-	escapeChar { arg charToEscape; // $"
+	escapeChar { |charToEscape| // $"
 		_String_EscapeChar
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 	shellQuote {
-		^"'"++this.replace("'","'\\''")++"'"
+		^"'" ++ this.replace("'", "'\\''") ++ "'"
 	}
 	quote {
 		^"\"" ++ this ++ "\""
 	}
-	tr { arg from,to;
-		^this.collect({ arg char;
-			if(char == from,{to},{char})
-		})
+	tr { |from, to|
+		^this.collect { |char|
+			if(char == from) { to } { char }
+		}
 	}
 
-	insert { arg index, string;
+	insert { |index, string|
 		^this.keep(index) ++ string ++ this.drop(index)
 	}
 
-	wrapExtend { arg size;
+	wrapExtend { |size|
 		^this.dup(size div: this.size).join ++ this.keep(size % this.size)
 	}
 
@@ -339,15 +339,15 @@ String[char] : RawArray {
 		^" " ++ this ++ " "
 	}
 
-	padLeft { arg size, string = " ";
+	padLeft { |size, string = " "|
 		^string.wrapExtend(max(0, size - this.size)) ++ this
 	}
 
-	padRight { arg size, string = " ";
+	padRight { |size, string = " "|
 		^this ++ string.wrapExtend(max(0, size - this.size))
 	}
 
-	underlined { arg char = $-;
+	underlined { |char = $-|
 		^this ++ "\n" ++ String.fill(this.size, char)
 	}
 
@@ -355,24 +355,24 @@ String[char] : RawArray {
 		^this.as(Array).scramble.as(String)
 	}
 
-	rotate { arg n = 1;
+	rotate { |n = 1|
 		^this.as(Array).rotate(n).as(String)
 	}
 
-	compile { |version| ^thisProcess.interpreter.compile(this, version: version); }
-	interpret { |version| ^thisProcess.interpreter.interpret(this, version: version); }
-	interpretPrint { |version| ^thisProcess.interpreter.interpretPrint(this, version: version); }
+	compile { |version| ^thisProcess.interpreter.compile(this, version: version) }
+	interpret { |version| ^thisProcess.interpreter.interpret(this, version: version) }
+	interpretPrint { |version| ^thisProcess.interpreter.interpretPrint(this, version: version) }
 
-	*readNew { arg file;
-		^file.readAllString;
+	*readNew { |file|
+		^file.readAllString
 	}
-	prCat { arg aString; _ArrayCat; ^this.primitiveFailed; }
+	prCat { |aString| _ArrayCat; ^this.primitiveFailed }
 
-	printOn { arg stream;
-		stream.putAll(this);
+	printOn { |stream|
+		stream.putAll(this)
 	}
-	storeOn { arg stream;
-		stream.putAll(this.asCompileString);
+	storeOn { |stream|
+		stream.putAll(this.asCompileString)
 	}
 
 	inspectorClass { ^StringInspector }
@@ -404,9 +404,9 @@ String[char] : RawArray {
 		var first, sep;
 		sep = thisProcess.platform.pathSeparator;
 		first = this[0];
-		if(first == sep){^this};
-		if(first == $~){^this.standardizePath};
-		^File.getcwd ++ sep ++ this;
+		if(first == sep) { ^this };
+		if(first == $~) { ^this.standardizePath };
+		^File.getcwd ++ sep ++ this
 	}
 
 	pathMatch { _StringPathMatch ^this.primitiveFailed } // glob
@@ -414,16 +414,16 @@ String[char] : RawArray {
 	load { |... args, kwargs|
 		^thisProcess.interpreter.performArgs(\prExecuteFile, [this] ++ args, kwargs)
 	}
-	loadPaths { | warn = true, action, args, kwargs |
+	loadPaths { |warn = true, action, args, kwargs|
 		var paths = this.pathMatch;
-		if(warn and:{paths.isEmpty}) { ("no files found for this path:" + this.quote).warn };
-		^paths.collect({ arg path;
+		if(warn and: { paths.isEmpty }) { ("no files found for this path:" + this.quote).warn };
+		^paths.collect { |path|
 			var result = thisProcess.interpreter.performArgs(\prExecuteFile, [path] ++ args, kwargs);
 			action.value(path, result);
 			result
-		});
+		}
 	}
-	loadRelative { | warn = true, action, args, kwargs |
+	loadRelative { |warn = true, action, args, kwargs|
 		var path = thisProcess.nowExecutingPath;
 		if(path.isNil) { Error("can't load relative to an unsaved file.\nPath to resolve: \"%\"\n".format(this)).throw };
 		if(path.basename == this) { Error("should not load a file from itself").throw };
@@ -433,9 +433,9 @@ String[char] : RawArray {
 		var path, caller;
 		caller = thisMethod.getBackTrace.caller.functionDef;
 		if(caller.isKindOf(Method) && (caller != Interpreter.findMethod(\interpretPrintCmdLine))) {
-			path = caller.filenameSymbol.asString;
+			path = caller.filenameSymbol.asString
 		} {
-			path = thisProcess.nowExecutingPath;
+			path = thisProcess.nowExecutingPath
 		};
 		if(this[0] == thisProcess.platform.pathSeparator) { ^this };
 		if(path.isNil) { Error("can't resolve relative to an unsaved file.\nPath to resolve: \"%\"\n".format(this)).throw };
@@ -444,14 +444,14 @@ String[char] : RawArray {
 	include {
 		if(Quarks.isInstalled(this).not) {
 			Quarks.install(this);
-			"... the class library may have to be recompiled.".postln;
+			"... the class library may have to be recompiled.".postln
 			// maybe check later whether there are .sc files included.
 		}
 	}
 	exclude {
 		if(Quarks.isInstalled(this)) {
 			Quarks.uninstall(this);
-			"... the class library may have to be recompiled.".postln;
+			"... the class library may have to be recompiled.".postln
 		}
 	}
 	basename {
@@ -463,24 +463,24 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 	splitext {
-		this.reverseDo({ arg char, i;
+		this.reverseDo({ |char, i|
 			// Return early after the first path separator
-			if (Platform.isPathSeparator(char), {^[this, nil]});
+			if(Platform.isPathSeparator(char)) { ^[this, nil] };
 
-			if (char == $\., {
+			if(char == $\.) {
 				^[this.copyFromStart(this.size - 2 - i), this.copyToEnd(this.size - i)]
-			});
+			}
 		});
 
 		^[this, nil]
 	}
 
 	// path concatenate
-	+/+ { arg path;
+	+/+ { |path|
 		var sep = thisProcess.platform.pathSeparator;
 		var hasLeftSep, hasRightSep;
 
-		if (path.respondsTo(\fullPath)) {
+		if(path.respondsTo(\fullPath)) {
 			^PathName(this +/+ path.fullPath)
 		};
 
@@ -504,8 +504,8 @@ String[char] : RawArray {
 		^PathName(this).asRelativePath(relativeTo)
 	}
 	asAbsolutePath {
-			// changed because there is no need to create a separate object
-		^this.absolutePath;  // was ^PathName(this).asAbsolutePath
+		// changed because there is no need to create a separate object
+		^this.absolutePath  // was ^PathName(this).asAbsolutePath
 	}
 
 	// runs a unix command and returns the result code.
@@ -520,7 +520,7 @@ String[char] : RawArray {
 	}
 	// sets value of environment variable
 	// value may be nil to unset the variable
-	setenv { arg value;
+	setenv { |value|
 		_String_Setenv
 		^this.primitiveFailed
 	}
@@ -529,10 +529,10 @@ String[char] : RawArray {
 	}
 
 	/// code gen
-	codegen_UGenCtorArg { arg stream;
-		stream << this.asCompileString;
+	codegen_UGenCtorArg { |stream|
+		stream << this.asCompileString
 	}
-	ugenCodeString { arg ugenIndex, isDecl, inputNames=#[], inputStrings=#[];
+	ugenCodeString { |ugenIndex, isDecl, inputNames = #[], inputStrings = #[]|
 		_UGenCodeString
 		^this.primitiveFailed
 	}
@@ -543,23 +543,23 @@ String[char] : RawArray {
 		var scaling = [1.0, 60.0, 3600.0, 86400.0];
 		var slotNames = [\seconds, \minutes, \hours, \days];
 
-		if (this.first == $-) {
+		if(this.first == $-) {
 			str = this.drop(1);
 			sign = -1
 		};
 
 		str.split($:).reverseDo { |num, i|
 			num = num.asFloat;
-			if (num < 0) {
+			if(num < 0) {
 				format("%.asSecs: negative numbers within slots not supported, using absolute value", this).warn;
-				num = num.abs;
+				num = num.abs
 			};
-			if (num > limits[i]) {
-				format("%.asSecs: number of % greater than %", this, slotNames[i], limits[i]).warn;
+			if(num > limits[i]) {
+				format("%.asSecs: number of % greater than %", this, slotNames[i], limits[i]).warn
 			};
-			time = time + (num * scaling[i]);
+			time = time + (num * scaling[i])
 		};
-		^time * sign;
+		^time * sign
 	}
 
 	toLower {
@@ -570,7 +570,7 @@ String[char] : RawArray {
 	}
 
 	mkdir {
-		File.mkdir(this);
+		File.mkdir(this)
 	}
 
 	parseYAML {

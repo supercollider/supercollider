@@ -12,12 +12,12 @@ TestWebView : UnitTest {
 		webView.onLoadFinished = {
 			webView.findText("abc", true, { |found|
 				cond.unhang;
-				wasFound = found;
-			});
+				wasFound = found
+			})
 		};
 		var timeout = fork {
 			2.wait;
-			cond.unhang;
+			cond.unhang
 		};
 
 		cond.hang;
@@ -40,12 +40,12 @@ TestWebView : UnitTest {
 		webView.onLoadFinished = {
 			webView.findText("def", true, { |found|
 				cond.unhang;
-				wasFound = found;
-			});
+				wasFound = found
+			})
 		};
 		var timeout = fork {
 			2.wait;
-			cond.unhang;
+			cond.unhang
 		};
 
 		cond.hang;
@@ -53,7 +53,7 @@ TestWebView : UnitTest {
 		window.close;
 		this.assert(wasFound.notNil, "test timeout check");
 		if(wasFound.notNil) {
-			this.assert(wasFound.not, "findText should not find");
+			this.assert(wasFound.not, "findText should not find")
 		}
 	}
 
@@ -68,9 +68,9 @@ TestWebView : UnitTest {
 			var returnedResult;
 			var condvar = CondVar();
 
-			WebView().runJavaScript(jsCode){ |res|
+			WebView().runJavaScript(jsCode) { |res|
 				returnedResult = res;
-				condvar.signalOne;
+				condvar.signalOne
 			};
 
 			condvar.waitFor(2);
@@ -82,7 +82,7 @@ TestWebView : UnitTest {
 			this.assert(returnedResult.class == expectedClass,
 				"runJavaScript(\"%\") should return an instance of %. Returned: %"
 				.format(jsCode, expectedClass, returnedResult.class)
-			);
+			)
 		}
 	}
 }

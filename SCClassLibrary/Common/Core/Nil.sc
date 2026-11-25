@@ -3,15 +3,15 @@ Nil {
 
 	isNil { ^true }
 	notNil { ^false }
-	? { arg obj; ^obj }
-	?? { arg obj; ^obj.value }
+	? { |obj| ^obj }
+	?? { |obj| ^obj.value }
 	!? {}
 	asBoolean    { ^false }
 	booleanValue { ^false } // TODO in the long-run, deprecate for asBoolean
 
 	// support a nil Environment
-	push { arg function; ^function.value }
-	appendStream { arg stream; ^stream }
+	push { |function| ^function.value }
+	appendStream { |stream| ^stream }
 	pop {}
 
 	// support a nil Plug
@@ -47,34 +47,34 @@ Nil {
 	update {}
 
 	// nil Event support
-	transformEvent { arg event;
+	transformEvent { |event|
 		^event
 	}
-	awake { arg inBeats, inSeconds, inClock;
+	awake { |inBeats, inSeconds, inClock|
 		var temp;
 		temp = inBeats; // prevent optimization
 		^nil
 	}
 	play {}
 
-	nextTimeOnGrid { arg clock; ^clock !? { clock.nextTimeOnGrid } }
+	nextTimeOnGrid { |clock| ^clock !? { clock.nextTimeOnGrid } }
 	asQuant { ^Quant.default }  //  { ^Quant.new }
 
 	swapThisGroup {}
 
 	performMsg {}
 
-	printOn { arg stream;
-		stream.putAll("nil");
+	printOn { |stream|
+		stream.putAll("nil")
 	}
-	storeOn { arg stream;
-		stream.putAll("nil");
+	storeOn { |stream|
+		stream.putAll("nil")
 	}
 
 	matchItem { ^true } // nil matches anything
 
 	// Array support
-	add { arg value;
+	add { |value|
 		// This makes it unecessary to check for array.isNil when doing:
 		// array = array.add(thing);     Instead, it just works.
 		^[value]
@@ -87,17 +87,17 @@ Nil {
 			result
 		}
 	}
-	++ { arg array; ^array }
+	++ { |array| ^array }
 	asCollection { ^[] }
 	remove {}
 
 	// ControlView support
 	set {}
-	get { arg prevVal; ^prevVal }
+	get { |prevVal| ^prevVal }
 
 	// FunctionList support
-	addFunc { arg ... functions;
-		^if(functions.size <= 1) {functions[0] } { FunctionList(functions) }
+	addFunc { |... functions|
+		^if(functions.size <= 1) { functions[0] } { FunctionList(functions) }
 	}
 	removeFunc { ^this }
 
@@ -111,21 +111,21 @@ Nil {
 	// throwing Nil
 	throw {}
 
-	handleError { arg error;
+	handleError { |error|
 		Error.handling = true;
-		if (Error.debug) {
-			{ error.inspect }.defer;
+		if(Error.debug) {
+			{ error.inspect }.defer
 		} {
 			error.reportError
 		};
 		Error.handling = false;
-		this.halt;
+		this.halt
 	}
 
 	archiveAsCompileString { ^true }
 
 	asSpec {
-		^ControlSpec.new;
+		^ControlSpec.new
 	}
 
 	superclassesDo {}

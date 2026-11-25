@@ -16,7 +16,7 @@ TestCompilerFrames : UnitTest {
 		var keep;
 		20.do { |i|
 			keep = Array.fill(5000, { |j| [i, j, i + j] });
-			this.frameReuser(i);
+			this.frameReuser(i)
 		};
 		^keep.size
 	}
@@ -55,13 +55,13 @@ TestCompilerFrames : UnitTest {
 		while { i < 5 } {
 			var j = i * 2;
 			functions = functions.add({ j });
-			i = i + 1;
+			i = i + 1
 		};
 		^functions
 	}
 
 	capturedInIfBody { |x|
-		if (x) {
+		if(x) {
 			var y = 7, z = 8;
 			^[{ y }, { z = z + 1 }]
 		};
@@ -70,7 +70,7 @@ TestCompilerFrames : UnitTest {
 
 	notCapturedInIfBody { |x|
 		var f = { 3 };
-		if (x) { var y = 7; ^[f, y] };
+		if(x) { var y = 7; ^[f, y] };
 		^nil
 	}
 
@@ -86,7 +86,7 @@ TestCompilerFrames : UnitTest {
 	// answer of `foo { ^thisFunction }` after foo returned hangs the VM (compiler-tests finding 9). Not tested here,
 	// as the hang would stop the whole class.
 
-	recursive { var base = 100; ^{ |n| if (n <= 0) { base } { n + thisFunction.(n - 1) } } }
+	recursive { var base = 100; ^{ |n| if(n <= 0) { base } { n + thisFunction.(n - 1) } } }
 
 	// A closure made by a function frame, which itself has finished.
 	fromFunctionFrame { ^{ |a| var b = a + 1; { a + b } }.value(5) }
@@ -106,7 +106,7 @@ TestCompilerFrames : UnitTest {
 			var a = Array.fill(100, { |i| [i] }), b = "a string";
 			a.yield;
 			this.churn;
-			(a.collect(_.first).sum.asString ++ b).yield;
+			(a.collect(_.first).sum.asString ++ b).yield
 		}
 	}
 
@@ -117,14 +117,14 @@ TestCompilerFrames : UnitTest {
 	test_closures_made_in_a_collect_survive_a_collection {
 		var adders = this.adders;
 		this.churn;
-		this.assertEquals(adders.collect { |f| f.value(100) }, (101..110));
+		this.assertEquals(adders.collect { |f| f.value(100) }, (101..110))
 	}
 
 	test_closures_two_and_three_deep_keep_the_method_frame {
 		var two = this.twoDeep(3).value, three = this.threeDeep(4).value.value;
 		this.churn;
 		this.assertEquals(two.value, 9);
-		this.assertEquals(three.value, 4);
+		this.assertEquals(three.value, 4)
 	}
 
 	test_closures_sharing_a_frame_see_each_others_writes {
@@ -133,7 +133,7 @@ TestCompilerFrames : UnitTest {
 		3.do { increment.value };
 		this.churn;
 		increment.value;
-		this.assertEquals(read.value, 4);
+		this.assertEquals(read.value, 4)
 	}
 
 	test_closures_over_this_and_instance_variables_survive_a_collection {
@@ -146,13 +146,13 @@ TestCompilerFrames : UnitTest {
 		setter.value(11);
 		this.churn;
 		this.assertEquals(value, 11, "write through the closure");
-		this.assertEquals(iv.value, 11, "read through the closure");
+		this.assertEquals(iv.value, 11, "read through the closure")
 	}
 
 	test_closures_over_inlined_body_variables_are_fresh_each_pass {
 		var functions = this.capturedInLoopBody;
 		this.churn;
-		this.assertEquals(functions.collect(_.value), [0, 2, 4, 6, 8]);
+		this.assertEquals(functions.collect(_.value), [0, 2, 4, 6, 8])
 	}
 
 	test_closures_over_an_if_body_survive_a_collection {
@@ -160,14 +160,14 @@ TestCompilerFrames : UnitTest {
 		#read, increment = this.capturedInIfBody(true);
 		this.churn;
 		increment.value;
-		this.assertEquals([read.value, increment.value], [7, 10]);
+		this.assertEquals([read.value, increment.value], [7, 10])
 	}
 
 	test_variable_not_captured_in_an_if_body {
 		var f, y;
 		#f, y = this.notCapturedInIfBody(true);
 		this.churn;
-		this.assertEquals([f.value, y], [3, 7]);
+		this.assertEquals([f.value, y], [3, 7])
 	}
 
 	test_frame_shared_by_a_closure_and_a_routine {
@@ -179,26 +179,26 @@ TestCompilerFrames : UnitTest {
 		this.assertEquals(read.value, 2);
 		this.churn;
 		this.assertEquals(routine.next, 3);
-		this.assertEquals(read.value, 3);
+		this.assertEquals(read.value, 3)
 	}
 
 	test_this_function_recursion_after_its_method_returned {
 		var f = this.recursive;
 		this.churn;
-		this.assertEquals(f.value(4), 110);
+		this.assertEquals(f.value(4), 110)
 	}
 
 	test_closure_from_a_finished_function_frame {
 		var f = this.fromFunctionFrame, many = this.manyFunctionFrames;
 		this.churn;
 		this.assertEquals(f.value, 11);
-		this.assertEquals(many.collect(_.value), (1..50).collect { |i| i * 5 });
+		this.assertEquals(many.collect(_.value), (1..50).collect { |i| i * 5 })
 	}
 
 	test_non_local_return_through_frames_during_collection {
 		var results = (1..20).collect { |n| this.callsReturnThrough(n) };
 		this.churn;
-		this.assertEquals(results, (1..20).collect { |n| 4950 + n });
+		this.assertEquals(results, (1..20).collect { |n| 4950 + n })
 	}
 
 	test_dead_return_ends_its_thread_after_a_collection {
@@ -210,7 +210,7 @@ TestCompilerFrames : UnitTest {
 		this.assertEquals(result, 1, "the routine answers the value of the ^");
 		this.assertEquals(routine.next, nil, "the routine has ended");
 		// The thread that ran the test is still usable.
-		this.assertEquals(this.adders.first.value(1), 2);
+		this.assertEquals(this.adders.first.value(1), 2)
 	}
 
 	test_suspended_routine_keeps_its_locals {
@@ -218,7 +218,7 @@ TestCompilerFrames : UnitTest {
 		first = r.next;
 		this.churn;
 		this.assertEquals(first.size, 100);
-		this.assertEquals(r.next, "4950a string");
+		this.assertEquals(r.next, "4950a string")
 	}
 
 	test_routine_locals_without_closures {
@@ -229,14 +229,14 @@ TestCompilerFrames : UnitTest {
 		this.churn;
 		40.do { values.add(r.next) };
 		this.assertEquals(values.last, 1225);
-		this.assertEquals(values.size, 50);
+		this.assertEquals(values.size, 50)
 	}
 
 	test_closures_in_nested_loops_after_collection {
 		var functions = List.new;
 		4.do { |i| 4.do { |j| var k = i * 4 + j; functions.add({ k }) } };
 		this.churn;
-		this.assertEquals(functions.collect(_.value).asArray, (0..15));
+		this.assertEquals(functions.collect(_.value).asArray, (0..15))
 	}
 
 	test_closures_in_a_while_with_hoisted_and_captured_variables {
@@ -245,16 +245,16 @@ TestCompilerFrames : UnitTest {
 			var notCaptured = i * 10, captured = i;
 			functions.add({ captured + 100 });
 			notCaptured = notCaptured + 1;
-			i = i + 1;
+			i = i + 1
 		};
 		this.churn;
-		this.assertEquals(functions.collect(_.value).asArray, (100..105));
+		this.assertEquals(functions.collect(_.value).asArray, (100..105))
 	}
 
 	test_interpreted_closures_survive_a_collection {
 		var f = thisProcess.interpreter.interpret("(1..5).collect { |i| var j = i * i; { j + i } }");
 		this.churn;
-		this.assertEquals(f.collect(_.value), [2, 6, 12, 20, 30]);
+		this.assertEquals(f.collect(_.value), [2, 6, 12, 20, 30])
 	}
 
 	test_interpreted_this_function_survives_a_collection {
@@ -263,14 +263,14 @@ TestCompilerFrames : UnitTest {
 		this.churn;
 		inner = f.value;
 		this.churn;
-		this.assert(inner.isKindOf(Function), "thisFunction is a Function");
+		this.assert(inner.isKindOf(Function), "thisFunction is a Function")
 	}
 
 	test_many_frames_alive_at_once {
 		// Deep recursion, each level keeping a closure over its own frame.
-		var make = { |n| if (n == 0) { [] } { [{ n }] ++ make.(n - 1) } };
+		var make = { |n| if(n == 0) { [] } { [{ n }] ++ make.(n - 1) } };
 		var functions = make.(200);
 		this.churn;
-		this.assertEquals(functions.collect(_.value), (200..1));
+		this.assertEquals(functions.collect(_.value), (200..1))
 	}
 }

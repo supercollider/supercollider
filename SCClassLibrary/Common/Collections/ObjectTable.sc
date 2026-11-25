@@ -2,18 +2,18 @@ TwoWayIdentityDictionary : Collection {
 	var idToObj, objToID;
 
 	*new {
-		^super.new.init;
+		^super.new.init
 	}
 
-	add { arg anAssociation;
-		this.put(anAssociation.key, anAssociation.value);
+	add { |anAssociation|
+		this.put(anAssociation.key, anAssociation.value)
 	}
-	put { arg key, obj;
+	put { |key, obj|
 		idToObj.put(key, obj);
-		objToID.put(obj, key);
+		objToID.put(obj, key)
 	}
 
-	remove { arg obj;
+	remove { |obj|
 		var key, out;
 		key = this.getID(obj);
 		out = idToObj.removeAt(key);
@@ -21,29 +21,29 @@ TwoWayIdentityDictionary : Collection {
 		^out
 	}
 
-	removeAt { arg key;
+	removeAt { |key|
 		var obj = this.at(key);
 		idToObj.removeAt(key);
-		objToID.removeAt(obj);
+		objToID.removeAt(obj)
 	}
 
-	do { arg function;
-		^idToObj.do(function);
+	do { |function|
+		^idToObj.do(function)
 	}
 
-	at { arg id;
-		^idToObj.at(id);
+	at { |id|
+		^idToObj.at(id)
 	}
 
-	getID { arg obj;
-		^objToID.at(obj);
+	getID { |obj|
+		^objToID.at(obj)
 	}
 
-	storeItemsOn { arg stream, itemsPerLine = 5;
+	storeItemsOn { |stream, itemsPerLine = 5|
 		^idToObj.storeItemsOn(stream, itemsPerLine)
 	}
 
-	printItemsOn { arg stream, itemsPerLine = 5;
+	printItemsOn { |stream, itemsPerLine = 5|
 		^idToObj.printItemsOn(stream, itemsPerLine)
 	}
 
@@ -51,14 +51,14 @@ TwoWayIdentityDictionary : Collection {
 	// PRIVATE
 	init {
 		idToObj = IdentityDictionary.new;
-		objToID = IdentityDictionary.new;
+		objToID = IdentityDictionary.new
 	}
 }
 
 UniqueID {
-	classvar <id=1000;
-	*initClass { id = 1000; }
-	*next  { ^id = id + 1; }
+	classvar <id = 1000;
+	*initClass { id = 1000 }
+	*next  { ^id = id + 1 }
 }
 
 ObjectTable : TwoWayIdentityDictionary {
@@ -66,37 +66,37 @@ ObjectTable : TwoWayIdentityDictionary {
 
 
 	*new {
-		^super.new;
+		^super.new
 	}
 
-	add { arg obj;
-		this.put(UniqueID.next, obj);
+	add { |obj|
+		this.put(UniqueID.next, obj)
 	}
 
 	*initClass {
-		global = this.new;
+		global = this.new
 	}
-	*add { arg obj;
+	*add { |obj|
 		global.add(obj);
 		^UniqueID.id
 	}
-	*put { arg key, obj;
-		global.put(key, obj);
+	*put { |key, obj|
+		global.put(key, obj)
 	}
-	*remove { arg obj;
-		global.remove(obj);
+	*remove { |obj|
+		global.remove(obj)
 	}
-	*at { arg id;
-		^global.at(id);
+	*at { |id|
+		^global.at(id)
 	}
-	*getID { arg obj;
-		^global.getID(obj);
+	*getID { |obj|
+		^global.getID(obj)
 	}
-	*objPerform { arg id, selector ... args;
+	*objPerform { |id, selector ... args|
 		var obj;
 		obj = global.at(id);
-		if (obj.notNil, {
-			obj.performList(selector, args);
-		});
+		if(obj.notNil) {
+			obj.performList(selector, args)
+		}
 	}
 }

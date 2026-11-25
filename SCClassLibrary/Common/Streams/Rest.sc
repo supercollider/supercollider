@@ -21,7 +21,7 @@ Rest : Operand  {
 	// DEPRECATION
 	*embedInStream { |inval|
 		"Please use \"Rest()\" instances instead of the \"Rest\" class".warn;
-		^this.new.embedInStream(inval);
+		^this.new.embedInStream(inval)
 	}
 
 	*asStream {

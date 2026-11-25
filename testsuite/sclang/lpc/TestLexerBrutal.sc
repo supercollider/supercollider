@@ -29,35 +29,34 @@ TestLexerBrutal : AbstractLPCBrutalTest {
 
 		// convert each alphabet to correct string representation,
 		// and also remove `^` if necessary.
-		^tmp.keysValuesChange {
-			arg name, alphabet;
+		^tmp.keysValuesChange { |name, alphabet|
 
 			if(ignoringCaret) {
-				alphabet = alphabet.reject(_==caretAscii);
+				alphabet = alphabet.reject(_ == caretAscii)
 			};
 
-			alphabet.collect(_.asAscii).collect(_.asString);
-		};
+			alphabet.collect(_.asAscii).collect(_.asString)
+		}
 	}
 
 	getStringLengthsPerAlphabet {
 		^stringLengthsPerAlphabet ? Dictionary[
-			\full -> [0,1,2],
+			\full -> [0, 1, 2],
 			\half -> [3],
 			\mini -> [4]
-		];
+		]
 	}
 
 	// full tests: just basic. the others are covered for all practical purposes by half/mini
-	test_full_basic              { this.runTestsOnAlphabet("",          "",          "basic",              \full) }
+	test_full_basic              { this.runTestsOnAlphabet("", "", "basic", \full) }
 
 	// half alphabet tests
-	test_half_basic              { this.runTestsOnAlphabet("",          "",          "basic",              \half) }
-	test_half_blockCommentPrefix { this.runTestsOnAlphabet("/*",        "",          "blockCommentPrefix", \half) }
-	test_half_semanticPrefix     { this.runTestsOnAlphabet("\\unique;", "",          "semanticPrefix",     \half) }
-	test_half_semanticSuffix     { this.runTestsOnAlphabet("",          ";\\unique", "semanticSuffix",     \half) }
+	test_half_basic              { this.runTestsOnAlphabet("", "", "basic", \half) }
+	test_half_blockCommentPrefix { this.runTestsOnAlphabet("/*", "", "blockCommentPrefix", \half) }
+	test_half_semanticPrefix     { this.runTestsOnAlphabet("\\unique;", "", "semanticPrefix", \half) }
+	test_half_semanticSuffix     { this.runTestsOnAlphabet("", ";\\unique", "semanticSuffix", \half) }
 
 	// mini alphabet tests
-	test_mini_basic              { this.runTestsOnAlphabet("",          "",          "basic",              \mini) }
+	test_mini_basic              { this.runTestsOnAlphabet("", "", "basic", \mini) }
 
 }

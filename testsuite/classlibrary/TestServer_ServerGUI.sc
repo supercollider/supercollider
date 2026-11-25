@@ -24,13 +24,13 @@ TestServer_ServerGUI : UnitTest {
 			buttonNames[killButtonIdx] = "kill";
 			buttonNames[defaultButtonIdx] = "default";
 			buttonNames[recordButtonIdx] = "record";
-			buttonNames[volumeButtonIdx] = "volume";
+			buttonNames[volumeButtonIdx] = "volume"
 		};
 
 		server = Server(this.class.name);
 		server.makeGui;
 		window = server.window;
-		buttons = this.getButtons(window);
+		buttons = this.getButtons(window)
 	}
 
 	tearDown {
@@ -38,14 +38,14 @@ TestServer_ServerGUI : UnitTest {
 		server.remove;
 		window.close;
 		0.5.wait; // XXX: wait for window to execute its onClose
-		window = buttons = server = nil;
+		window = buttons = server = nil
 	}
 
 	// Puts the buttons from the window in the same order as the indices expected
 	// by this class. If the order ever changes, it would be much easier to adjust
 	// here than to edit the values in each test method.
 	getButtons { |w|
-		^w.view.children.select(_.isKindOf(QButton));
+		^w.view.children.select(_.isKindOf(QButton))
 	}
 
 	// Asserts states (values & enabled/disabled) of buttons. `testName` is the
@@ -59,7 +59,7 @@ TestServer_ServerGUI : UnitTest {
 				"%: '%' button should have correct value".format(testName, buttonNames[i]));
 			this.assert(actEnabled[i] == expEnabled[i],
 				"%: '%' button should be %".format(
-					testName, buttonNames[i], expEnabled[i].if("enabled", "disabled")));
+					testName, buttonNames[i], if(expEnabled[i], "enabled", "disabled")))
 		}
 	}
 
@@ -67,7 +67,7 @@ TestServer_ServerGUI : UnitTest {
 	test_noBoot {
 		var expValues = [0, 0, 0, 0, 0];
 		var expEnabled = [true, true, true, false, true];
-		this.assertButtonStates(expValues, expEnabled, "Before booting");
+		this.assertButtonStates(expValues, expEnabled, "Before booting")
 	}
 
 	// GUI state after booting
@@ -76,7 +76,7 @@ TestServer_ServerGUI : UnitTest {
 		var expEnabled = [true, true, true, true, true];
 		this.bootServer(server);
 		this.assertButtonStates(expValues, expEnabled, "After booting");
-		server.quitSync;
+		server.quitSync
 	}
 
 	// GUI state after booting and muting the server
@@ -87,7 +87,7 @@ TestServer_ServerGUI : UnitTest {
 		server.volume.mute;
 		this.assertButtonStates(expValues, expEnabled, "After muting");
 		server.volume.unmute;
-		server.quitSync;
+		server.quitSync
 	}
 
 	// GUI state after booting, muting, then unmuting the server
@@ -98,7 +98,7 @@ TestServer_ServerGUI : UnitTest {
 		server.volume.mute;
 		server.volume.unmute;
 		this.assertButtonStates(expValues, expEnabled, "After muting and unmuting");
-		server.quitSync;
+		server.quitSync
 	}
 
 	// GUI state after booting then quitting
@@ -107,7 +107,7 @@ TestServer_ServerGUI : UnitTest {
 		var expEnabled = [true, true, true, false, true];
 		this.bootServer(server);
 		server.quitSync;
-		this.assertButtonStates(expValues, expEnabled, "After quitting");
+		this.assertButtonStates(expValues, expEnabled, "After quitting")
 	}
 
 	// GUI state after setting default
@@ -120,7 +120,7 @@ TestServer_ServerGUI : UnitTest {
 
 		this.assertButtonStates(expValues, expEnabled, "After defaulting this server");
 
-		Server.default = oldDefault;
+		Server.default = oldDefault
 	}
 
 	// GUI state after setting not default
@@ -132,7 +132,7 @@ TestServer_ServerGUI : UnitTest {
 		Server.default = server;
 		Server.default = oldDefault;
 
-		this.assertButtonStates(expValues, expEnabled, "After un-defaulting this server");
+		this.assertButtonStates(expValues, expEnabled, "After un-defaulting this server")
 	}
 
 }

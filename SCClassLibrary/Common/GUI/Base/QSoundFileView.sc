@@ -7,228 +7,228 @@ SoundFileView : View {
 
 	*qtClass { ^'QcWaveform' }
 
-	load { arg filename, startFrame, frames, block, doneAction;
-		if( filename.isString && filename != "" ) {
-			if( curDoneAction.notNil )
-			{ this.disconnectFunction( 'loadingDone()', curDoneAction ) };
-			if( doneAction.notNil ) {
-				this.connectFunction( 'loadingDone()', doneAction );
+	load { |filename, startFrame, frames, block, doneAction|
+		if(filename.isString && filename != "") {
+			if(curDoneAction.notNil)
+				{ this.disconnectFunction('loadingDone()', curDoneAction) };
+			if(doneAction.notNil) {
+				this.connectFunction('loadingDone()', doneAction)
 			};
 
 			curDoneAction = doneAction;
 
-			if( startFrame.notNil && frames.notNil ) {
-				this.invokeMethod( \load, [filename, startFrame.asInteger, frames.asInteger] );
-			}{
-				this.invokeMethod( \load, filename );
+			if(startFrame.notNil && frames.notNil) {
+				this.invokeMethod(\load, [filename, startFrame.asInteger, frames.asInteger])
+			} {
+				this.invokeMethod(\load, filename)
 			}
 		}
 	}
 
-	alloc { arg frames, channels=1, samplerate=44100;
-		this.invokeMethod( \allocate, [frames.asInteger, channels.asInteger, samplerate.asInteger] );
+	alloc { |frames, channels = 1, samplerate = 44100|
+		this.invokeMethod(\allocate, [frames.asInteger, channels.asInteger, samplerate.asInteger])
 	}
 
-	data_ { arg data;
-		this.setData(data);
+	data_ { |data|
+		this.setData(data)
 	}
 
-	setData { arg data, block, startFrame=0, channels=1, samplerate=44100;
-		if( data.isKindOf(DoubleArray).not and: {data.isKindOf(FloatArray).not} )
-		{ data = data.as(DoubleArray) };
-		this.invokeMethod( \load, [data, startFrame, channels, samplerate.asInteger] );
+	setData { |data, block, startFrame = 0, channels = 1, samplerate = 44100|
+		if(data.isKindOf(DoubleArray).not and: { data.isKindOf(FloatArray).not })
+			{ data = data.as(DoubleArray) };
+		this.invokeMethod(\load, [data, startFrame, channels, samplerate.asInteger])
 	}
 
-	set { arg offset=0, data;
-		if( data.isKindOf(DoubleArray).not and: {data.isKindOf(FloatArray).not} )
-		{ data = data.as(DoubleArray) };
-		this.invokeMethod( \write, [data, offset.asInteger] );
+	set { |offset = 0, data|
+		if(data.isKindOf(DoubleArray).not and: { data.isKindOf(FloatArray).not })
+			{ data = data.as(DoubleArray) };
+		this.invokeMethod(\write, [data, offset.asInteger])
 	}
 
-	readFile { arg aSoundFile, startFrame, frames, block, closeFile, doneAction;
-		this.load( aSoundFile.path, startFrame, frames, block, doneAction );
+	readFile { |aSoundFile, startFrame, frames, block, closeFile, doneAction|
+		this.load(aSoundFile.path, startFrame, frames, block, doneAction)
 	}
 
-	read { arg startFrame, frames, block, closeFile, doneAction;
-		if( soundfile.notNil ) {
-			this.readFile( soundfile, startFrame, frames, block, nil, doneAction );
-		};
+	read { |startFrame, frames, block, closeFile, doneAction|
+		if(soundfile.notNil) {
+			this.readFile(soundfile, startFrame, frames, block, nil, doneAction)
+		}
 	}
 
-	readFileWithTask { arg soundFile, startFrame, frames, block, doneAction, showProgress;
-		this.readFile( soundFile, startFrame, frames, block, nil, doneAction );
+	readFileWithTask { |soundFile, startFrame, frames, block, doneAction, showProgress|
+		this.readFile(soundFile, startFrame, frames, block, nil, doneAction)
 	}
 
-	readWithTask { arg startFrame, frames, block, doneAction, showProgress;
-		this.read( startFrame, frames, block, nil, doneAction );
+	readWithTask { |startFrame, frames, block, doneAction, showProgress|
+		this.read(startFrame, frames, block, nil, doneAction)
 	}
 
-	drawsWaveForm { ^this.getProperty( \drawsWaveform ); }
-	drawsWaveForm_ { arg boolean; this.setProperty( \drawsWaveform, boolean ); }
+	drawsWaveForm { ^this.getProperty(\drawsWaveform) }
+	drawsWaveForm_ { |boolean| this.setProperty(\drawsWaveform, boolean) }
 
-	drawsRMS { ^this.getProperty( \drawsRMS ); }
-	drawsRMS_ { arg boolean; this.setProperty( \drawsRMS, boolean ); }
+	drawsRMS { ^this.getProperty(\drawsRMS) }
+	drawsRMS_ { |boolean| this.setProperty(\drawsRMS, boolean) }
 
-	drawsCenterLine { ^this.getProperty( \drawsCenterLine ); }
-	drawsCenterLine_ { arg boolean; this.setProperty( \drawsCenterLine, boolean ); }
+	drawsCenterLine { ^this.getProperty(\drawsCenterLine) }
+	drawsCenterLine_ { |boolean| this.setProperty(\drawsCenterLine, boolean) }
 
-	drawsBoundingLines { ^this.getProperty( \drawsBoundingLines ); }
-	drawsBoundingLines_ { arg boolean; this.setProperty( \drawsBoundingLines, boolean ); }
+	drawsBoundingLines { ^this.getProperty(\drawsBoundingLines) }
+	drawsBoundingLines_ { |boolean| this.setProperty(\drawsBoundingLines, boolean) }
 
-	waveColors { ^this.getProperty( \waveColors ) }
-	waveColors_ { arg colors; this.setProperty( \waveColors, colors ) }
+	waveColors { ^this.getProperty(\waveColors) }
+	waveColors_ { |colors| this.setProperty(\waveColors, colors) }
 
 	//// Info
 
-	startFrame { ^this.getProperty( \startFrame ); }
+	startFrame { ^this.getProperty(\startFrame) }
 
-	numFrames { ^this.getProperty( \frames ); }
+	numFrames { ^this.getProperty(\frames) }
 
-	scrollPos { ^this.getProperty( \scrollPos ); } // a fraction of the full scrolling range
+	scrollPos { ^this.getProperty(\scrollPos) } // a fraction of the full scrolling range
 
-	viewFrames { ^this.getProperty( \viewFrames ); }
+	viewFrames { ^this.getProperty(\viewFrames) }
 
-	readProgress { ^this.getProperty( \readProgress ); }
+	readProgress { ^this.getProperty(\readProgress) }
 
 	//// Navigation
 
-	zoom { arg factor; this.invokeMethod( \zoomBy, factor.asFloat ); }
+	zoom { |factor| this.invokeMethod(\zoomBy, factor.asFloat) }
 
-	zoomToFrac { arg fraction; this.invokeMethod( \zoomTo, fraction.asFloat ); }
+	zoomToFrac { |fraction| this.invokeMethod(\zoomTo, fraction.asFloat) }
 
-	zoomAllOut { this.invokeMethod( \zoomAllOut ); }
+	zoomAllOut { this.invokeMethod(\zoomAllOut) }
 
-	zoomSelection { arg selection;
-		if( selection.isNil ) { selection = this.currentSelection };
-		this.invokeMethod( \zoomSelection, selection );
+	zoomSelection { |selection|
+		if(selection.isNil) { selection = this.currentSelection };
+		this.invokeMethod(\zoomSelection, selection)
 	}
 
-	scrollTo { arg fraction; // a fraction of the full scrolling range
-		this.setProperty( \scrollPos, fraction );
+	scrollTo { |fraction| // a fraction of the full scrolling range
+		this.setProperty(\scrollPos, fraction)
 	}
 
-	scroll { arg fraction; // a fraction of the visible range
+	scroll { |fraction| // a fraction of the visible range
 		var frames = this.viewFrames * fraction + this.getProperty(\viewStartFrame);
-		this.setProperty( \viewStartFrame, frames );
+		this.setProperty(\viewStartFrame, frames)
 	}
 
-	scrollToStart { this.invokeMethod( \scrollToStart ); }
+	scrollToStart { this.invokeMethod(\scrollToStart) }
 
-	scrollToEnd { this.invokeMethod( \scrollToEnd ); }
+	scrollToEnd { this.invokeMethod(\scrollToEnd) }
 
-	xZoom { ^this.getProperty( \xZoom ); }
+	xZoom { ^this.getProperty(\xZoom) }
 
-	xZoom_ { arg seconds; this.setProperty( \xZoom, seconds ); }
+	xZoom_ { |seconds| this.setProperty(\xZoom, seconds) }
 
-	yZoom { ^this.getProperty( \yZoom ); }
+	yZoom { ^this.getProperty(\yZoom) }
 
-	yZoom_ { arg factor; this.setProperty( \yZoom, factor.asFloat ); }
+	yZoom_ { |factor| this.setProperty(\yZoom, factor.asFloat) }
 
-	yOffset { ^this.getProperty( \yOffset ); }
+	yOffset { ^this.getProperty(\yOffset) }
 
-	yOffset_ { arg offset; this.setProperty( \yOffset, offset.asFloat ); }
+	yOffset_ { |offset| this.setProperty(\yOffset, offset.asFloat) }
 
-	spacing { ^this.getProperty( \spacing ); }
+	spacing { ^this.getProperty(\spacing) }
 
-	spacing_ { arg factor; this.setProperty( \spacing, factor.asFloat ); }
+	spacing_ { |factor| this.setProperty(\spacing, factor.asFloat) }
 
 	//// Selections
 
-	selections { ^this.getProperty( \selections ); }
+	selections { ^this.getProperty(\selections) }
 
-	currentSelection { ^this.getProperty( \currentSelection ); }
+	currentSelection { ^this.getProperty(\currentSelection) }
 
-	currentSelection_ { arg index; this.setProperty( \currentSelection, index ); }
+	currentSelection_ { |index| this.setProperty(\currentSelection, index) }
 
-	selection { arg index; ^this.invokeMethod( \selection, index, true ); }
+	selection { |index| ^this.invokeMethod(\selection, index, true) }
 
-	setSelection { arg index, selection;
-		this.invokeMethod( \setSelection, [index, selection] );
+	setSelection { |index, selection|
+		this.invokeMethod(\setSelection, [index, selection])
 	}
 
-	selectionStart { arg index;
-		var sel = this.selection( index );
-		^sel.at(0);
+	selectionStart { |index|
+		var sel = this.selection(index);
+		^sel.at(0)
 	}
 
-	setSelectionStart { arg index, frame;
-		var sel = this.selection( index );
-		sel.put( 0, frame );
-		this.setSelection( index, sel );
+	setSelectionStart { |index, frame|
+		var sel = this.selection(index);
+		sel.put(0, frame);
+		this.setSelection(index, sel)
 	}
 
-	selectionSize { arg index;
-		var sel = this.selection( index );
-		^sel.at(1);
+	selectionSize { |index|
+		var sel = this.selection(index);
+		^sel.at(1)
 	}
 
-	setSelectionSize { arg index, frames;
-		var sel = this.selection( index );
-		sel.put( 1, frames );
-		this.setSelection( index, sel );
+	setSelectionSize { |index, frames|
+		var sel = this.selection(index);
+		sel.put(1, frames);
+		this.setSelection(index, sel)
 	}
 
-	selectAll { arg index; this.setSelection( index, [0, this.numFrames] ); }
+	selectAll { |index| this.setSelection(index, [0, this.numFrames]) }
 
-	selectNone { arg index; this.setSelection( index, [0, 0] ); }
-
-
-	setEditableSelectionStart { arg index, editable; ^this.nonimpl("setEditableSelectionStart"); }
-
-	setEditableSelectionSize { arg index, editable; ^this.nonimpl("setEditableSelectionSize"); }
-
-	setSelectionColor { arg index, color; this.invokeMethod( \setSelectionColor, [index,color] ); }
+	selectNone { |index| this.setSelection(index, [0, 0]) }
 
 
-	selectionStartTime { arg index; ^this.nonimpl("selectionStartTime"); }
+	setEditableSelectionStart { |index, editable| ^this.nonimpl("setEditableSelectionStart") }
 
-	selectionDuration { arg index; ^this.nonimpl("selectionDuration"); }
+	setEditableSelectionSize { |index, editable| ^this.nonimpl("setEditableSelectionSize") }
+
+	setSelectionColor { |index, color| this.invokeMethod(\setSelectionColor, [index, color]) }
 
 
-	readSelection { arg block, closeFile; ^this.nonimpl("readSelection"); }
+	selectionStartTime { |index| ^this.nonimpl("selectionStartTime") }
 
-	readSelectionWithTask { ^this.nonimpl("readSelectionWithTask"); }
+	selectionDuration { |index| ^this.nonimpl("selectionDuration") }
+
+
+	readSelection { |block, closeFile| ^this.nonimpl("readSelection") }
+
+	readSelectionWithTask { ^this.nonimpl("readSelectionWithTask") }
 
 	// cursor
 
-	timeCursorOn { ^this.getProperty( \cursorVisible ); }
-	timeCursorOn_ { arg flag; this.setProperty( \cursorVisible, flag ) }
+	timeCursorOn { ^this.getProperty(\cursorVisible) }
+	timeCursorOn_ { |flag| this.setProperty(\cursorVisible, flag) }
 
-	timeCursorEditable { ^this.getProperty( \cursorEditable ); }
-	timeCursorEditable_ { arg flag; this.setProperty( \cursorEditable, flag ) }
+	timeCursorEditable { ^this.getProperty(\cursorEditable) }
+	timeCursorEditable_ { |flag| this.setProperty(\cursorEditable, flag) }
 
-	timeCursorPosition { ^this.getProperty( \cursorPosition ); }
-	timeCursorPosition_ { arg frame; this.setProperty( \cursorPosition, frame ) }
+	timeCursorPosition { ^this.getProperty(\cursorPosition) }
+	timeCursorPosition_ { |frame| this.setProperty(\cursorPosition, frame) }
 
 	// grid
 
-	gridOn { ^this.getProperty( \gridVisible ); }
-	gridOn_ { arg flag; this.setProperty( \gridVisible, flag ) }
+	gridOn { ^this.getProperty(\gridVisible) }
+	gridOn_ { |flag| this.setProperty(\gridVisible, flag) }
 
-	gridResolution { ^this.getProperty( \gridResolution ) }
-	gridResolution_ { arg seconds; this.setProperty( \gridResolution, seconds ) }
+	gridResolution { ^this.getProperty(\gridResolution) }
+	gridResolution_ { |seconds| this.setProperty(\gridResolution, seconds) }
 
-	gridOffset { ^this.getProperty( \gridOffset ) }
-	gridOffset_ { arg seconds; this.setProperty( \gridOffset, seconds ) }
+	gridOffset { ^this.getProperty(\gridOffset) }
+	gridOffset_ { |seconds| this.setProperty(\gridOffset, seconds) }
 
 	// colors
 
 	peakColor { ^this.getProperty(\peakColor) }
-	peakColor_ { arg color; this.setProperty(\peakColor, color) }
+	peakColor_ { |color| this.setProperty(\peakColor, color) }
 
 	rmsColor { ^this.getProperty(\rmsColor) }
-	rmsColor_ { arg color; this.setProperty(\rmsColor, color) }
+	rmsColor_ { |color| this.setProperty(\rmsColor, color) }
 
-	timeCursorColor { ^this.getProperty( \cursorColor ); }
-	timeCursorColor_ { arg color; this.setProperty( \cursorColor, color ) }
+	timeCursorColor { ^this.getProperty(\cursorColor) }
+	timeCursorColor_ { |color| this.setProperty(\cursorColor, color) }
 
-	gridColor { ^this.getProperty( \gridColor ) }
-	gridColor_ { arg color; this.setProperty( \gridColor, color ) }
+	gridColor { ^this.getProperty(\gridColor) }
+	gridColor_ { |color| this.setProperty(\gridColor, color) }
 
 	// actions
 
-	metaAction_ { arg action;
-		this.manageFunctionConnection( metaAction, action, 'metaAction()' );
+	metaAction_ { |action|
+		this.manageFunctionConnection(metaAction, action, 'metaAction()');
 		metaAction = action
 	}
 }

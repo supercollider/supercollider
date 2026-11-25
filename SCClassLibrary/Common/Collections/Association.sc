@@ -1,11 +1,11 @@
 Association : Magnitude {
 	var <>key, <>value;
 
-	*new { arg key, value;
+	*new { |key, value|
 		^super.newCopyArgs(key, value)
 	}
 
-	== { arg anAssociation;
+	== { |anAssociation|
 		^anAssociation respondsTo: \key and: { key == anAssociation.key }
 	}
 
@@ -13,22 +13,22 @@ Association : Magnitude {
 		^key.hash
 	}
 
-	< { arg anAssociation;
+	< { |anAssociation|
 		^key < anAssociation.key
 	}
 
-	printOn { arg stream;
-		stream << "(" << key << " -> " << value << ")";
+	printOn { |stream|
+		stream << "(" << key << " -> " << value << ")"
 	}
-	storeOn { arg stream;
-		stream << "(" <<< key << " -> " <<< value << ")";
+	storeOn { |stream|
+		stream << "(" <<< key << " -> " <<< value << ")"
 	}
 
 	// Pattern support
-	embedInStream { arg inval;
-		^inval.add(this).yield;
+	embedInStream { |inval|
+		^inval.add(this).yield
 	}
-	transformEvent { arg event;
-		^event.add(this);
+	transformEvent { |event|
+		^event.add(this)
 	}
 }

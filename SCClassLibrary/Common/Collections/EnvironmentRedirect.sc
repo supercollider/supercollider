@@ -5,49 +5,49 @@ EnvironmentRedirect {
 	var <envir;
 	var <dispatch;
 
-	*new { arg envir;
+	*new { |envir|
 		^super.newCopyArgs(envir ?? { Environment.new(32, Environment.new) })
 	}
-	*make { arg function;
+	*make { |function|
 		^this.new.make(function)
 	}
-	*use { arg function;
+	*use { |function|
 		^this.new.use(function)
 	}
-	*newFrom { arg aCollection;
+	*newFrom { |aCollection|
 		var newCollection = this.new;
-		aCollection.keysValuesDo({ arg k,v, i; newCollection.put(k,v) });
+		aCollection.keysValuesDo({ |k, v, i| newCollection.put(k, v) });
 		^newCollection
 	}
 
 	// override in subclasses
 
-	at { arg key;
+	at { |key|
 		^envir.at(key)
 	}
 
-	put { arg key, obj;
+	put { |key, obj|
 		var allNil = obj.isNil and: { envir.at(key).isNil };
 		if(allNil.not) {
 			envir.put(key, obj);
-			dispatch.value(key, obj);
+			dispatch.value(key, obj)
 		}
 	}
 
-	removeAt { arg key;
+	removeAt { |key|
 		var result = envir.removeAt(key);
-		if (result.notNil) { dispatch.value(key, nil) };
+		if(result.notNil) { dispatch.value(key, nil) };
 		^result
 	}
 
 	// if used in a distributed system, these local methods act without
 	// calling the dispatch and thereby redistributing the data recursively
 
-	localPut { arg key, obj;
+	localPut { |key, obj|
 		envir.put(key, obj)
 	}
 
-	localRemoveAt { arg key;
+	localRemoveAt { |key|
 		^envir.removeAt(key)
 	}
 
@@ -55,11 +55,11 @@ EnvironmentRedirect {
 
 
 	*push {
-		^this.new.push;
+		^this.new.push
 	}
 
 	*pop {
-		^Environment.pop;
+		^Environment.pop
 	}
 
 	pop {
@@ -73,7 +73,7 @@ EnvironmentRedirect {
 	}
 
 
-	make { arg function;
+	make { |function|
 		// pushes the Envir, executes function, returns the Envir
 		// usually used to create an environment by adding new variables to it.
 		var result, saveEnvir;
@@ -81,13 +81,13 @@ EnvironmentRedirect {
 		saveEnvir = currentEnvironment;
 		currentEnvironment = this;
 		protect {
-			function.value(this);
-		}{
-			currentEnvironment = saveEnvir;
-		};
+			function.value(this)
+		} {
+			currentEnvironment = saveEnvir
+		}
 	}
 
-	use { arg function;
+	use { |function|
 		// temporarily replaces the currentEnvironment with this,
 		// executes function, returns the result of the function
 		var result, saveEnvir;
@@ -95,43 +95,43 @@ EnvironmentRedirect {
 		saveEnvir = currentEnvironment;
 		currentEnvironment = this;
 		protect {
-			result = function.value(this);
-		}{
-			currentEnvironment = saveEnvir;
+			result = function.value(this)
+		} {
+			currentEnvironment = saveEnvir
 		};
 		^result
 	}
 
-	do { arg function;
+	do { |function|
 		envir.do(function)
 	}
 
-	keysValuesDo { arg function;
-		envir.keysValuesDo(function);
+	keysValuesDo { |function|
+		envir.keysValuesDo(function)
 	}
 
-	keysValuesArrayDo { arg argArray, function;
-		envir.keysValuesArrayDo(argArray, function);
+	keysValuesArrayDo { |argArray, function|
+		envir.keysValuesArrayDo(argArray, function)
 	}
 
-	findKeyForValue { arg val;
+	findKeyForValue { |val|
 		^envir.findKeyForValue(val)
 	}
 
-	sortedKeysValuesDo { arg function;
-		envir.sortedKeysValuesDo(function);
+	sortedKeysValuesDo { |function|
+		envir.sortedKeysValuesDo(function)
 	}
 
-	putAll { arg ... dictionaries;
-		dictionaries.do {|dict|
-			dict.keysValuesDo { arg key, value;
+	putAll { |... dictionaries|
+		dictionaries.do { |dict|
+			dict.keysValuesDo { |key, value|
 				this.put(key, value)
 			}
 		}
 	}
 
-	add { arg anAssociation;
-		this.put(anAssociation.key, anAssociation.value);
+	add { |anAssociation|
+		this.put(anAssociation.key, anAssociation.value)
 	}
 
 	choose {
@@ -140,7 +140,7 @@ EnvironmentRedirect {
 
 	clear { envir.clear }
 
-	keys { arg species(Set);
+	keys { |species = (Set)|
 		^envir.keys(species)
 	}
 
@@ -148,56 +148,56 @@ EnvironmentRedirect {
 		^envir.values
 	}
 
-	know_ { arg flag; envir.know = flag }
+	know_ { |flag| envir.know = flag }
 	know { ^envir.know }
 
-	doesNotUnderstand { arg selector ... args;
+	doesNotUnderstand { |selector ... args|
 		var func;
-		if (this.know) {
-			if (selector.isSetter) {
+		if(this.know) {
+			if(selector.isSetter) {
 				selector = selector.asGetter;
-				^this[selector] = args[0];
+				^this[selector] = args[0]
 			};
 			^this.doFunctionPerform(selector, args)
 
 		};
-		^this.superPerformList(\doesNotUnderstand, selector, args);
+		^this.superPerformList(\doesNotUnderstand, selector, args)
 	}
 
-	doFunctionPerform { arg selector, args;
+	doFunctionPerform { |selector, args|
 		envir[\forward] !? {
 			if(envir[selector].isNil) {
-				^envir[\forward].functionPerformList(\value, this, selector, args);
+				^envir[\forward].functionPerformList(\value, this, selector, args)
 			}
 		};
-		^this[selector].functionPerformList(\value, this, args);
+		^this[selector].functionPerformList(\value, this, args)
 	}
 
-	printOn { arg stream;
-		if (stream.atLimit) { ^this };
-		stream << this.class.name << "[" ;
+	printOn { |stream|
+		if(stream.atLimit) { ^this };
+		stream << this.class.name << "[";
 		envir.printItemsOn(stream);
-		stream << "]" ;
+		stream << "]"
 	}
 
-	linkDoc { arg doc;
+	linkDoc { |doc|
 		doc = doc ? Document.current;
-		doc.envir_(this);
+		doc.envir_(this)
 	}
 
-	unlinkDoc { arg doc;
+	unlinkDoc { |doc|
 		doc = doc ? Document.current;
-		if(doc.envir === this) { doc.envir_(nil) };
+		if(doc.envir === this) { doc.envir_(nil) }
 	}
 
 	// networking
-	dispatch_ { arg disp;
+	dispatch_ { |disp|
 		dispatch = disp;
-		if(disp.respondsTo(\envir_)) { disp.envir_(this) };
+		if(disp.respondsTo(\envir_)) { disp.envir_(this) }
 	}
-	envir_ { arg argEnvir;
+	envir_ { |argEnvir|
 		envir = argEnvir;
-		if(dispatch.notNil) { this.dispatch = dispatch };
+		if(dispatch.notNil) { this.dispatch = dispatch }
 	}
 
 }
@@ -206,24 +206,24 @@ EnvironmentRedirect {
 
 
 LazyEnvir : EnvironmentRedirect {
-	var <>proxyClass=\Maybe;
+	var <>proxyClass = \Maybe;
 
 	makeProxy {
 		^proxyClass.asClass.new
 	}
 
-	at { arg key;
+	at { |key|
 		var proxy;
 		proxy = super.at(key);
 		if(proxy.isNil) {
 			proxy = this.makeProxy(key);
-			envir.put(key, proxy);
+			envir.put(key, proxy)
 		};
 		^proxy
 
 	}
 
-	put { arg key, obj;
+	put { |key, obj|
 		var proxy = this.at(key);
 		var allNil = obj.isNil and: { proxy.source.isNil };
 		if(allNil.not) {
@@ -232,10 +232,10 @@ LazyEnvir : EnvironmentRedirect {
 		}
 	}
 
-	removeAt { arg key;
+	removeAt { |key|
 		var proxy;
 		proxy = envir.removeAt(key);
-		if (proxy.notNil and: { proxy.source.notNil }) {
+		if(proxy.notNil and: { proxy.source.notNil }) {
 			proxy.clear;
 			dispatch.value(key, nil)
 		};
@@ -245,31 +245,31 @@ LazyEnvir : EnvironmentRedirect {
 	// if used in a distributed system, these local methods act without
 	// calling the dispatch and thereby redistributing the data recursively
 
-	localRemoveAt { arg key;
+	localRemoveAt { |key|
 		var proxy;
 		proxy = envir.removeAt(key);
 		if(proxy.notNil) { proxy.clear };
 		^proxy
 	}
 
-	localPut { arg key, obj;
-		this.at(key).source_(obj);
+	localPut { |key, obj|
+		this.at(key).source_(obj)
 	}
 
 	copy {
 		var result = this.class.new;
 		dispatch !? { result.dispatch = dispatch };
 		envir.keysValuesDo { |key, val|
-			result.envir[key] = val.copy;
+			result.envir[key] = val.copy
 		};
 		^result
 	}
 
-	storeOn { arg stream;
-		if (stream.atLimit) { ^this };
-		stream << this.class.name << ".newFrom([" ;
+	storeOn { |stream|
+		if(stream.atLimit) { ^this };
+		stream << this.class.name << ".newFrom([";
 		stream <<<* envir.getPairs.collect { |x, i| if(i.even) { x } { x.source } };
-		stream << "])" ;
+		stream << "])"
 	}
 
 }

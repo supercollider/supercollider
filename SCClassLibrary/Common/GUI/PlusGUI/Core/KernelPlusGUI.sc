@@ -1,7 +1,7 @@
 + Process{
-//this called when the menu item file-new or file-open is called
+	//this called when the menu item file-new or file-open is called
 	addDocument {
-		Document.prGetLast;
+		Document.prGetLast
 	}
 }
 

@@ -1,16 +1,16 @@
 OSXPlatform : UnixPlatform {
 	var <>preferencesAction; // Warning: scapp only
-	var <>sleepAction, <>wakeAction, <>isSleeping=false;
+	var <>sleepAction, <>wakeAction, <>isSleeping = false;
 
 	initPlatform {
 		super.initPlatform;
 		recordingsDir = "~/Music/SuperCollider Recordings".standardizePath;
-		this.declareFeature(\unixPipes); // pipes are possible (can't declare in UnixPlatform since IPhonePlatform is unixy yet can't support pipes)
+		this.declareFeature(\unixPipes) // pipes are possible (can't declare in UnixPlatform since IPhonePlatform is unixy yet can't support pipes)
 	}
 
 	name { ^\osx }
 	version {
-		^"sw_vers -productVersion".unixCmdGetStdOut.replace($\n, "");
+		^"sw_vers -productVersion".unixCmdGetStdOut.replace($\n, "")
 	}
 
 	startupFiles {
@@ -26,25 +26,25 @@ OSXPlatform : UnixPlatform {
 		Score.program = Server.program;
 
 		if(Platform.ideName == "scapp") {
-			Document.implementationClass.startup;
+			Document.implementationClass.startup
 		};
 		this.loadStartupFiles;
 		if(Platform.ideName == "scapp") {
 			// make server window
 			Server.internal.makeWindow;
-			Server.local.makeWindow;
-		};
+			Server.local.makeWindow
+		}
 	}
 	shutdown {
-		if(Platform.ideName == "scapp"){
-			CocoaMenuItem.clearCustomItems;
-		};
+		if(Platform.ideName == "scapp") {
+			CocoaMenuItem.clearCustomItems
+		}
 	}
 
 	defaultGUIScheme { ^\qt }
 
-	findHelpFile { | string |
-		^string.findHelpFile;
+	findHelpFile { |string|
+		^string.findHelpFile
 	}
 
 	// for now just write syntax colours. Could be other things.
@@ -77,17 +77,17 @@ OSXPlatform : UnixPlatform {
 			theme.environColor.hexString
 		);
 		file.putString(string);
-		file.close;
+		file.close
 	}
 
 	killProcessByID { |pid, force = true, subprocesses = true|
 		var cmd;
-		var sig = force.if({"KILL"}, {"TERM"});
+		var sig = if(force) { "KILL" } { "TERM" };
 		cmd = "kill -% %".format(sig, pid);
 		if(subprocesses) {
-			cmd = "pkill -% -P %; %".format(sig, pid, cmd);
+			cmd = "pkill -% -P %; %".format(sig, pid, cmd)
 		};
-		cmd.unixCmd;
+		cmd.unixCmd
 	}
 
 	defaultTempDir {
@@ -96,6 +96,6 @@ OSXPlatform : UnixPlatform {
 		// see discussion at https://github.com/supercollider/supercollider/pull/4221
 		dir = Platform.userAppSupportDir +/+ "tmp/";
 		if(File.exists(dir).not) { dir.mkdir };
-		^dir;
+		^dir
 	}
 }

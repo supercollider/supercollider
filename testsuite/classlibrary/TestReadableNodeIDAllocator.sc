@@ -22,7 +22,7 @@ TestReadableNodeIDAllocator : UnitTest {
 		);
 
 		s.remove;
-		Server.nodeAllocClass = prevClass;
+		Server.nodeAllocClass = prevClass
 	}
 
 	test_permIDs {
@@ -33,20 +33,20 @@ TestReadableNodeIDAllocator : UnitTest {
 
 		this.assert(
 			alloc.isPerm(alloc.idOffset - 1).not
-			and: alloc.isPerm(alloc.idOffset)
-			and: alloc.isPerm(alloc.idOffset + alloc.lowestTempID - 1)
-			and: alloc.isPerm(alloc.idOffset + alloc.lowestTempID).not,
+				and: alloc.isPerm(alloc.idOffset)
+				and: alloc.isPerm(alloc.idOffset + alloc.lowestTempID - 1)
+				and: alloc.isPerm(alloc.idOffset + alloc.lowestTempID).not,
 			"ReadableNodeIDAllocator should identify its permanent IDs."
 		);
 		while {
-			if (0.5.coin and: { permIDs.size > 0 }) {
+			if(0.5.coin and: { permIDs.size > 0 }) {
 				permIDToFree = permIDs.remove(permIDs.choose);
-				alloc.freePerm(permIDToFree);
+				alloc.freePerm(permIDToFree)
 			};
 			nextPermID = alloc.allocPerm;
-			nextPermID.notNil;
+			nextPermID.notNil
 		} {
-			permIDs.add(nextPermID);
+			permIDs.add(nextPermID)
 		};
 		this.assert(
 			permIDs.size == (alloc.lowestTempID - 4),
@@ -54,21 +54,21 @@ TestReadableNodeIDAllocator : UnitTest {
 		);
 
 		while {
-			if (0.5.coin) {
+			if(0.5.coin) {
 				nextPermID = alloc.allocPerm;
-				if (nextPermID.notNil) {
-					permIDs.add(nextPermID);
-				};
+				if(nextPermID.notNil) {
+					permIDs.add(nextPermID)
+				}
 			};
-			permIDs.size > 0;
+			permIDs.size > 0
 		} {
 			permIDToFree = permIDs.remove(permIDs.choose);
-			alloc.freePerm(permIDToFree);
+			alloc.freePerm(permIDToFree)
 		};
 		this.assert(
 			alloc.allocPerm == (alloc.idOffset + 4),
 			"ReadableNodeIDAllocator should begin at first permID after freeing all permanent IDs in mixed alloc/free use."
-		);
+		)
 	}
 
 	test_fullRange {
@@ -80,12 +80,12 @@ TestReadableNodeIDAllocator : UnitTest {
 			tempID > prevID
 		} {
 			count = count + 1;
-			prevID = tempID;
+			prevID = tempID
 		};
 		this.assert(
 			count == (alloc.numIDs - alloc.lowestTempID + 1)
-			and: tempID == (alloc.idOffset + alloc.lowestTempID),
+				and: tempID == (alloc.idOffset + alloc.lowestTempID),
 			"ReadableNodeIDAllocator should recycle tempIDs after its full range has been used."
-		);
+		)
 	}
 }

@@ -2,15 +2,15 @@
 TestFloat : UnitTest {
 
 	test_storeOn {
-		var stored = String.streamContents({ arg stream; stream <<< 1e-05});
-		this.assert(stored !=  "1e-05.0", "scientific notation should not have a .0 at the end");
-		this.assertEquals(stored ,  "1e-05", "scientific notation");
+		var stored = String.streamContents({ |stream| stream <<< 1e-05 });
+		this.assert(stored != "1e-05.0", "scientific notation should not have a .0 at the end");
+		this.assertEquals(stored, "1e-05", "scientific notation");
 
-		stored = String.streamContents({ arg stream; stream <<< 2.0 });
-		this.assertEquals(stored ,  "2.0", "2.0 should be stored as 2.0");
+		stored = String.streamContents({ |stream| stream <<< 2.0 });
+		this.assertEquals(stored, "2.0", "2.0 should be stored as 2.0");
 
-		stored = String.streamContents({ arg stream; stream <<< 2 });
-		this.assertEquals(stored ,  "2", "2 should be stored as 2");
+		stored = String.streamContents({ |stream| stream <<< 2 });
+		this.assertEquals(stored, "2", "2 should be stored as 2")
 
 	}
 
@@ -43,16 +43,16 @@ TestFloat : UnitTest {
 	}
 
 	test_asString_nan {
-		var zeroDivString = (0/0).asString;
-		this.assertEquals(zeroDivString, "nan");
+		var zeroDivString = (0 / 0).asString;
+		this.assertEquals(zeroDivString, "nan")
 	}
 
 	test_nan {
-	    this.assertEquals((1.0/0.0), inf);
-	    this.assertEquals((-1.0/0.0), -inf);
-	    this.assert((0.0/0.0).isNaN);
-	    this.assert((-0.0/0.0).isNaN);
-	    this.assert(((-0.0/0.0) + (0.0/0.0)).isNaN);
+		this.assertEquals((1.0 / 0.0), inf);
+		this.assertEquals((-1.0 / 0.0), -inf);
+		this.assert((0.0 / 0.0).isNaN);
+		this.assert((-0.0 / 0.0).isNaN);
+		this.assert(((-0.0 / 0.0) + (0.0 / 0.0)).isNaN)
 	}
 
 	test_asString_largeNumberUsesExp {
@@ -62,7 +62,7 @@ TestFloat : UnitTest {
 	test_asCompileString {
 		this.assertEquals(1.0.asCompileString.compile.(), 1.0, "1.0 as compile string");
 		this.assertEquals(inf.asCompileString.compile.(), inf, "inf as compile string");
-		this.assertEquals(-inf.asCompileString.compile.(), -inf, "-inf as compile string");
+		this.assertEquals(-inf.asCompileString.compile.(), -inf, "-inf as compile string")
 
 		// Since 'nan' isn't a keyword in sc, there is no way to perform this check.
 		// This means the conversion from value to string to value isn't complete over the float type.
@@ -73,26 +73,26 @@ TestFloat : UnitTest {
 		var out = List[];
 
 		3.0.reverseDo { |v, i|
-			out.add([v, i]);
+			out.add([v, i])
 		};
 		this.assertEquals(out, List[
 			[2.0, 0.0],
 			[1.0, 1.0],
 			[0.0, 2.0]
-		]);
+		])
 
 	}
 
 	test_from32Bits {
 		var bits = 0x40490FDB;
 		var f = Float.from32Bits(bits);
-		this.assertEquals(f.as32Bits, bits, "convertion from/to 32 bits");
+		this.assertEquals(f.as32Bits, bits, "convertion from/to 32 bits")
 	}
 
 	test_from64Bits {
 		var hi = pi.high32Bits;
 		var lo = pi.low32Bits;
 		var f = Float.from64Bits(hi, lo);
-		this.assertEquals(f, pi, "conversion from/to 64 bits");
+		this.assertEquals(f, pi, "conversion from/to 64 bits")
 	}
 }

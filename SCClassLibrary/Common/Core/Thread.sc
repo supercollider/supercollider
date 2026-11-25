@@ -8,31 +8,31 @@
 // behave like a Stream. Thread itself is not used like a Stream.
 
 Thread : Stream {
-	var <state=0, func, stack, method, block, frame, ip=0, sp=0;
-	var numpop=0, receiver, numArgsPushed=0;
+	var <state = 0, func, stack, method, block, frame, ip = 0, sp = 0;
+	var numpop = 0, receiver, numArgsPushed = 0;
 	var <parent, terminalValue;
-	var <primitiveError=0, <primitiveIndex=0, randData=0;
-	var <beats=0.0, <seconds=0.0, <clock, <nextBeat, <>endBeat, <>endValue;
+	var <primitiveError = 0, <primitiveIndex = 0, randData = 0;
+	var <beats = 0.0, <seconds = 0.0, <clock, <nextBeat, <>endBeat, <>endValue;
 	var environment;
 	var <>exceptionHandler, >threadPlayer;
 	var <executingPath, <oldExecutingPath;
 	var rescheduledTime;
 
-	*new { arg func, stackSize = (512);
+	*new { |func, stackSize = (512)|
 		^super.new.init(func, stackSize)
 	}
-	init { arg argFunc, argStackSize = 512;
+	init { |argFunc, argStackSize = 512|
 		_Thread_Init
 		^this.primitiveFailed
 	}
 	copy { ^this } // sorry cannot copy
 
-	clock_ { arg inClock;
+	clock_ { |inClock|
 		clock = inClock;
-		beats = clock.secs2beats(seconds);
+		beats = clock.secs2beats(seconds)
 	}
-	seconds_ { arg inSeconds; seconds = inSeconds; beats = clock.secs2beats(inSeconds); }
-	beats_ { arg inBeats; beats = inBeats; seconds = clock.beats2secs(inBeats); }
+	seconds_ { |inSeconds| seconds = inSeconds; beats = clock.secs2beats(inSeconds) }
+	beats_ { |inBeats| beats = inBeats; seconds = clock.beats2secs(inBeats) }
 	isPlaying { ^state == 5 }
 
 	threadPlayer { ^threadPlayer ?? { this.findThreadPlayer } }
@@ -53,7 +53,7 @@ Thread : Stream {
 		}
 	}
 
-	randSeed_ { arg seed;
+	randSeed_ { |seed|
 		// You supply an integer seed.
 		// This method creates a new state vector and stores it in randData.
 		// A state vector is an Int32Array of three 32 bit words.
@@ -61,10 +61,9 @@ Thread : Stream {
 		// period of 2**88, and passes all standard statistical tests.
 		// Normally Threads inherit the randData state vector from the Thread that created it.
 		_Thread_RandSeed
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
-	randData_ {
-		arg data;
+	randData_ { |data|
 		_Thread_SetRandData
 		^this.primitiveFailed
 	}
@@ -76,7 +75,7 @@ Thread : Stream {
 		_PrimName
 		^this.primitiveFailed
 	}
-	handleError { arg error;
+	handleError { |error|
 		(exceptionHandler ? parent).handleError(error)
 	}
 
@@ -94,53 +93,53 @@ Thread : Stream {
 		^this.primitiveFailed
 	}
 
-	storeOn { arg stream; stream << "nil"; }
+	storeOn { |stream| stream << "nil" }
 	archiveAsCompileString { ^true }
 	checkCanArchive { "cannot archive Threads".warn }
 }
 
 Routine : Thread {
 
-	*run { arg func, stackSize, clock, quant;
+	*run { |func, stackSize, clock, quant|
 		var routine = super.new(func, stackSize);
-		^routine.play(clock ? SystemClock, quant);
+		^routine.play(clock ? SystemClock, quant)
 	}
 
 	// resume, next, value, run are synonyms
-	next { arg inval;
+	next { |inval|
 		_RoutineResume
 		^this.primitiveFailed
 	}
-	value { arg inval;
+	value { |inval|
 		_RoutineResume
 		^this.primitiveFailed
 	}
-	resume { arg inval;
+	resume { |inval|
 		_RoutineResume
 		^this.primitiveFailed
 	}
-	reschedule { arg argClock, quant;
+	reschedule { |argClock, quant|
 		deferAwayFrom(this) {
 			// Thread:isPlaying only answers if the thread is waiting
 			// It *doesn't* confirm that it is actually scheduled on a clock
 			if(this.nextBeat.isNil) {
-				Error("% can't be rescheduled when idle; use 'play' instead".format(this.class.name)).throw;
+				Error("% can't be rescheduled when idle; use 'play' instead".format(this.class.name)).throw
 			};
 			rescheduledTime = quant.asQuant.nextTimeOnGrid(clock, this.nextBeat);
 			if(argClock.isNil) { argClock = clock };
 			if(argClock !== clock) {
 				// convert to new clock's time
-				rescheduledTime = argClock.secs2beats(clock.beats2secs(rescheduledTime));
+				rescheduledTime = argClock.secs2beats(clock.beats2secs(rescheduledTime))
 			};
-			clock = argClock;
+			clock = argClock
 		}
 	}
-	run { arg inval;
+	run { |inval|
 		_RoutineResume
 		^this.primitiveFailed
 	}
 
-	valueArray { arg inval;
+	valueArray { |inval|
 		^this.value(inval)
 	}
 
@@ -148,11 +147,11 @@ Routine : Thread {
 		_RoutineReset
 		^this.primitiveFailed
 	}
-		// the _RoutineStop primitive can't stop the currently running Routine
-		// but a user should be able to use .stop anywhere
+	// the _RoutineStop primitive can't stop the currently running Routine
+	// but a user should be able to use .stop anywhere
 	stop {
 		if(this === thisThread) { nil.alwaysYield }
-			{ this.prStop };
+			{ this.prStop }
 	}
 	prStop {
 		_RoutineStop
@@ -162,14 +161,14 @@ Routine : Thread {
 	p { ^Prout(func) }
 
 	storeArgs { ^[func] }
-	storeOn { arg stream;
+	storeOn { |stream|
 		stream << this.class.name;
 		this.storeParamsOn(stream);
-		this.storeModifiersOn(stream);
+		this.storeModifiersOn(stream)
 	}
 
 	// PRIVATE
-	awake { arg inBeats, inSeconds, inClock;
+	awake { |inBeats, inSeconds, inClock|
 		if(rescheduledTime.isNil) {
 			clock = inClock;
 			^this.next(inBeats)
@@ -180,9 +179,9 @@ Routine : Thread {
 			^nil
 		}
 	}
-	prStart { arg inval;
+	prStart { |inval|
 		func.value(inval);
 		// if the user's function returns then always yield nil
-		nil.alwaysYield;
+		nil.alwaysYield
 	}
 }

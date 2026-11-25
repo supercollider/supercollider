@@ -8,20 +8,17 @@ SCSA_Demo : SCWindow {
 
 	var button, synth, server;
 
-	*new {
-		|name, bounds, server|
-		^super.new(name, bounds).init(server);
+	*new { |name, bounds, server|
+		^super.new(name, bounds).init(server)
 	}
 
-	init {
-		|serverArg|
+	init { |serverArg|
 		server = serverArg;
 
-		SynthDef(\demoSynth, {
-			|gate = 1.0, out = 0|
+		SynthDef(\demoSynth, { |gate = 1.0, out = 0|
 			var env;
 			env = EnvGen.kr(Env.adsr(0, 0, 1, 0), gate: gate, doneAction: 2);
-			Out.ar(out, [SinOsc.ar(1000), SinOsc.ar(1500)] * env * 0.125);
+			Out.ar(out, [SinOsc.ar(1000), SinOsc.ar(1500)] * env * 0.125)
 		}).send(server);
 
 		button = SCButton(this, Rect(
@@ -34,13 +31,11 @@ SCSA_Demo : SCWindow {
 			["Hit me!", Color.black, Color.gray],
 			["Make it stop!", Color.black, Color.red]
 		];
-		button.action = {
-			|theButton|
-			theButton.value.switch(
-				1, { synth = Synth.new(\demoSynth, target: server) },
-				0, { synth.set(\gate, 0.0) }
-			)
-		};
+		button.action = { |theButton|
+			switch(theButton.value)
+				{ 1 } { synth = Synth.new(\demoSynth, target: server) }
+				{ 0 } { synth.set(\gate, 0.0) }
+		}
 	}
 
 }

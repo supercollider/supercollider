@@ -1,9 +1,9 @@
-~f = {|i|
-	if (i == 0) {
+~f = { |i|
+	if(i == 0) {
 		Exception("test").throw
 	} {
-		~f.(i-1)
-	};
+		~f.(i - 1)
+	}
 };
 
 try {

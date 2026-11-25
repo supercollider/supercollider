@@ -7,13 +7,13 @@ TestNodeProxyRoles_Server : UnitTest {
 		server = Server(this.class.name);
 		server.bootSync;
 		proxy = NodeProxy(server);
-		server.sync;
+		server.sync
 	}
 
 	tearDown {
 		proxy.clear;
 		server.quitSync;
-		server.remove;
+		server.remove
 	}
 
 	test_proxyroles_xfade_smoothly {
@@ -38,12 +38,12 @@ TestNodeProxyRoles_Server : UnitTest {
 		fadeTime.wait;
 
 		fork {
-			forBy(0, (buffer.numFrames - 1), (buffer.numFrames / (numSegments*2)).asInteger, { |index|
+			forBy(0, (buffer.numFrames - 1), (buffer.numFrames / (numSegments * 2)).asInteger) { |index|
 				buffer.get(index, { |val| result.add(val) });
-				server.sync;
-			});
+				server.sync
+			};
 			cond.unhang;
-			buffer.free;
+			buffer.free
 		};
 
 		cond.hang;
@@ -53,7 +53,7 @@ TestNodeProxyRoles_Server : UnitTest {
 			[0.0, 0.05, 0.1, 0.15, 0.2, 0.15, 0.1, 0.05],
 			"Signal should fade smoothly over 'fadeTime' duration when adding/removing roles.",
 			within: 0.02
-		);
+		)
 	}
 
 }

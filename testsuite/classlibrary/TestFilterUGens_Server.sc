@@ -4,12 +4,12 @@ TestFilterUGens_Server : UnitTest {
 
 	setUp {
 		server = Server(this.class.name);
-		server.bootSync;
+		server.bootSync
 	}
 
 	tearDown {
 		server.quitSync;
-		server.remove;
+		server.remove
 	}
 
 	// check time invariance of all subClasses of Filter, particularly during the first 64 samples.
@@ -41,7 +41,7 @@ TestFilterUGens_Server : UnitTest {
 			\LPZ2,
 			\Decay2,
 			\Resonz,
-		//	\Friction, // fixme
+			//	\Friction, // fixme
 			\Lag,
 			\LPZ1,
 			\Ringz,
@@ -55,14 +55,14 @@ TestFilterUGens_Server : UnitTest {
 			\OneZero,
 			\RHPF,
 			\TwoZero,
-		//	\APF, // fixme
+			//	\APF, // fixme
 			\BRF,
 			\HPF,
 			\HPZ2,
 			\BPZ2,
 			\BRZ2,
 			\Lag2,
-		//	\Ramp, // fixme
+			//	\Ramp, // fixme
 			\Lag3,
 			\HPZ1,
 			\BHiPass,
@@ -85,35 +85,32 @@ TestFilterUGens_Server : UnitTest {
 			// \Streson, // fixme
 		].collect(_.asClass).reject(_.isNil);
 
-		var delay_times = [1,64]; // in samples
+		var delay_times = [1, 64]; // in samples
 		var numTests = delay_times.size * filters.size;
 		var completed = 0;
 		var impFrq = 500;
 
-		filters.do {
-			arg filter;
-			delay_times.do {
-				arg delay_samples;
+		filters.do { |filter|
+			delay_times.do { |delay_samples|
 
 				var message = filter.asString ++ ".ar is time invariant when delayed by "
 					++ delay_samples ++ " sample(s).";
 
 				{
-					var deltime = delay_samples/SampleRate.ir;
+					var deltime = delay_samples / SampleRate.ir;
 					// should be silent - FP rounding errors are ok.
 					// Note: impulse phase offset to avoid errors associated with
 					//  	 initialization sample bugs in filter UGens (and others).
 					//       https://github.com/supercollider/rfcs/pull/19
 					DelayN.ar(filter.ar(Impulse.ar(impFrq, 0.25)), deltime, deltime)
-					- filter.ar(DelayN.ar(Impulse.ar(impFrq, 0.25), deltime, deltime));
+						- filter.ar(DelayN.ar(Impulse.ar(impFrq, 0.25), deltime, deltime))
 					// DelayN.ar(filter.ar(Impulse.ar(0)), deltime, deltime)
 					// - filter.ar(DelayN.ar(Impulse.ar(0), deltime, deltime));
-				}.loadToFloatArray(2*impFrq.reciprocal, server, {
-					arg data;
-					this.assertArrayFloatEquals(data, 0, message, within:1e-10, report:true);
+				}.loadToFloatArray(2 * impFrq.reciprocal, server, { |data|
+					this.assertArrayFloatEquals(data, 0, message, within: 1e-10, report: true);
 					completed = completed + 1;
-					condvar.signalOne;
-				});
+					condvar.signalOne
+				})
 			}
 		};
 
@@ -123,17 +120,16 @@ TestFilterUGens_Server : UnitTest {
 		postln("Please note: the following subclasses of Filter are not included in TestFilterUgens.");
 		postln("Please consider adding them unless there is a good reason not to");
 		postln("(i.e. the class is not intended as a time invariant filter UGen).");
-		Filter.allSubclasses.do {
-			arg filter;
-			if (filters.includes(filter).not) {
-				filter.postln;
+		Filter.allSubclasses.do { |filter|
+			if(filters.includes(filter).not) {
+				filter.postln
 			}
 		};
-		"".postln;
+		"".postln
 	}
 
 	test_Integrator_add_presample_once_only {
-  // use a buffer to guarantee exactly 1 input value of 1
+		// use a buffer to guarantee exactly 1 input value of 1
 		var synth;
 		var testResp;
 		var result;
@@ -155,14 +151,14 @@ TestFilterUGens_Server : UnitTest {
 
 		testResp = OSCFunc({ |msg|
 			result = msg[3];
-			cond.signalOne;
+			cond.signalOne
 		}, '/testIntegrator', server.addr, argTemplate: [synth.nodeID]);
 
 		cond.waitFor(0.5);
 		testResp.free;
 		buffer.free;
 
-		this.assertEquals(result, 1, "Integral of a single 1 should be 1");
+		this.assertEquals(result, 1, "Integral of a single 1 should be 1")
 	}
 
 	// A length below 1 left the insertion index at -1 in Median_InsertMedian,
@@ -185,7 +181,7 @@ TestFilterUGens_Server : UnitTest {
 		this.assert(
 			signal.notNil and: { signal.every { |sample| sample == 0.0 } },
 			"a length below 1 should clip to 1, which passes the input through unchanged"
-		);
+		)
 	}
 
 	test_ugen_generator_equivalences {
@@ -202,7 +198,7 @@ TestFilterUGens_Server : UnitTest {
 			"Decay2 is the difference of two Decays" -> {
 				var att = 0.001, dec = 0.01;
 				var in = Impulse.ar(30);
-				Decay2.ar(in, att, dec) - (Decay.ar(in, dec) - Decay.ar(in, att));
+				Decay2.ar(in, att, dec) - (Decay.ar(in, dec) - Decay.ar(in, att))
 			},
 
 			// Add more equivalence tests here. See TestCoreUGens_Server:test_ugen_generator_equivalences
@@ -210,15 +206,15 @@ TestFilterUGens_Server : UnitTest {
 
 		server.bootSync;
 
-		tests.keysValuesDo{ |name, func|
+		tests.keysValuesDo { |name, func|
 			func.loadToFloatArray(testDur, server, { |data|
 				this.assertArrayFloatEquals(data, 0, name.quote, within: tolerance, report: true);
 				completed = completed + 1;
-				condvar.signalOne;
-			});
+				condvar.signalOne
+			})
 		};
 
-		condvar.waitFor(1, { completed == tests.size });
+		condvar.waitFor(1, { completed == tests.size })
 	}
 
 }

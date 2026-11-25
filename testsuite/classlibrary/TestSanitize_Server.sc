@@ -5,12 +5,12 @@ TestSanitize_Server : UnitTest {
 
 	setUp {
 		server = Server(this.class.name);
-		server.bootSync;
+		server.bootSync
 	}
 
 	tearDown {
 		server.quitSync;
-		server.remove;
+		server.remove
 	}
 
 	test_sanitize {
@@ -40,11 +40,11 @@ TestSanitize_Server : UnitTest {
 			ugenGraphFunc.loadToFloatArray(duration, server, { |samples|
 				this.assertArrayFloatEquals(samples, expected, text);
 				completed = completed + 1;
-				condvar.signalOne;
-			});
+				condvar.signalOne
+			})
 		};
 
-		condvar.waitFor(1, { completed == tests.size });
+		condvar.waitFor(1, { completed == tests.size })
 	}
 
 }

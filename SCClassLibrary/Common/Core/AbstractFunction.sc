@@ -2,30 +2,30 @@ AbstractFunction {
 
 	// function compositions
 	// override these in subclasses to perform different kinds of function compositions
-	composeUnaryOp { arg aSelector;
+	composeUnaryOp { |aSelector|
 		^UnaryOpFunction.new(aSelector, this)
 	}
-	composeBinaryOp { arg aSelector, something, adverb;
-		^BinaryOpFunction.new(aSelector, this, something, adverb);
+	composeBinaryOp { |aSelector, something, adverb|
+		^BinaryOpFunction.new(aSelector, this, something, adverb)
 	}
-	reverseComposeBinaryOp { arg aSelector, something, adverb;
-		^BinaryOpFunction.new(aSelector, something, this, adverb);
+	reverseComposeBinaryOp { |aSelector, something, adverb|
+		^BinaryOpFunction.new(aSelector, something, this, adverb)
 	}
-	composeNAryOp { arg aSelector, anArgList;
+	composeNAryOp { |aSelector, anArgList|
 		^NAryOpFunction.new(aSelector, this, anArgList)
 	}
 
 	// double dispatch for mixed operations
-	performBinaryOpOnSimpleNumber { arg aSelector, aNumber, adverb;
+	performBinaryOpOnSimpleNumber { |aSelector, aNumber, adverb|
 		^this.reverseComposeBinaryOp(aSelector, aNumber, adverb)
 	}
-	performBinaryOpOnSignal { arg aSelector, aSignal, adverb;
+	performBinaryOpOnSignal { |aSelector, aSignal, adverb|
 		^this.reverseComposeBinaryOp(aSelector, aSignal, adverb)
 	}
-	performBinaryOpOnComplex { arg aSelector, aComplex, adverb;
+	performBinaryOpOnComplex { |aSelector, aComplex, adverb|
 		^this.reverseComposeBinaryOp(aSelector, aComplex, adverb)
 	}
-	performBinaryOpOnSeqColl { arg aSelector, aSeqColl, adverb;
+	performBinaryOpOnSeqColl { |aSelector, aSeqColl, adverb|
 		^this.reverseComposeBinaryOp(aSelector, aSeqColl, adverb)
 	}
 
@@ -89,26 +89,26 @@ AbstractFunction {
 	isStrictlyPositive { ^this.composeUnaryOp('isStrictlyPositive') }
 	binaryValue { ^this.composeUnaryOp('binaryValue') }
 
-	rho {  ^this.composeUnaryOp('rho') }
-	theta {  ^this.composeUnaryOp('theta') }
-	rotate { arg function; ^this.composeBinaryOp('rotate', function) }
-	dist { arg function; ^this.composeBinaryOp('dist', function) }
+	rho { ^this.composeUnaryOp('rho') }
+	theta { ^this.composeUnaryOp('theta') }
+	rotate { |function| ^this.composeBinaryOp('rotate', function) }
+	dist { |function| ^this.composeBinaryOp('dist', function) }
 
-	+ { arg function, adverb; ^this.composeBinaryOp('+', function, adverb) }
-	- { arg function, adverb; ^this.composeBinaryOp('-', function, adverb) }
-	* { arg function, adverb; ^this.composeBinaryOp('*', function, adverb) }
-	/ { arg function, adverb; ^this.composeBinaryOp('/', function, adverb) }
-	div { arg function, adverb; ^this.composeBinaryOp('div', function, adverb) }
-	mod { arg function, adverb; ^this.composeBinaryOp('mod', function, adverb) }
-	modSeaside { arg function, adverb; ^this.composeBinaryOp('modSeaside', function, adverb) }
-	pow { arg function, adverb; ^this.composeBinaryOp('pow', function, adverb) }
-	min { arg function, adverb; ^this.composeBinaryOp('min', function, adverb) }
-	max { arg function=0, adverb; ^this.composeBinaryOp('max', function, adverb) }
+	+ { |function, adverb| ^this.composeBinaryOp('+', function, adverb) }
+	- { |function, adverb| ^this.composeBinaryOp('-', function, adverb) }
+	* { |function, adverb| ^this.composeBinaryOp('*', function, adverb) }
+	/ { |function, adverb| ^this.composeBinaryOp('/', function, adverb) }
+	div { |function, adverb| ^this.composeBinaryOp('div', function, adverb) }
+	mod { |function, adverb| ^this.composeBinaryOp('mod', function, adverb) }
+	modSeaside { |function, adverb| ^this.composeBinaryOp('modSeaside', function, adverb) }
+	pow { |function, adverb| ^this.composeBinaryOp('pow', function, adverb) }
+	min { |function, adverb| ^this.composeBinaryOp('min', function, adverb) }
+	max { |function = 0, adverb| ^this.composeBinaryOp('max', function, adverb) }
 
-	<  { arg function, adverb; ^this.composeBinaryOp('<',  function, adverb) }
-	<= { arg function, adverb; ^this.composeBinaryOp('<=', function, adverb) }
-	>  { arg function, adverb; ^this.composeBinaryOp('>',  function, adverb) }
-	>= { arg function, adverb; ^this.composeBinaryOp('>=', function, adverb) }
+	<  { |function, adverb| ^this.composeBinaryOp('<', function, adverb) }
+	<= { |function, adverb| ^this.composeBinaryOp('<=', function, adverb) }
+	>  { |function, adverb| ^this.composeBinaryOp('>', function, adverb) }
+	>= { |function, adverb| ^this.composeBinaryOp('>=', function, adverb) }
 
 	|==| { |that|
 		^this.composeBinaryOp('|==|', that)
@@ -118,114 +118,114 @@ AbstractFunction {
 		^this.composeBinaryOp('|==|', that)
 	}
 
-	bitAnd { arg function, adverb; ^this.composeBinaryOp('bitAnd', function, adverb) }
-	bitOr { arg function, adverb; ^this.composeBinaryOp('bitOr', function, adverb) }
-	bitXor { arg function, adverb; ^this.composeBinaryOp('bitXor', function, adverb) }
-	bitHammingDistance { arg function, adverb; ^this.composeBinaryOp('hammingDistance', function, adverb) }
+	bitAnd { |function, adverb| ^this.composeBinaryOp('bitAnd', function, adverb) }
+	bitOr { |function, adverb| ^this.composeBinaryOp('bitOr', function, adverb) }
+	bitXor { |function, adverb| ^this.composeBinaryOp('bitXor', function, adverb) }
+	bitHammingDistance { |function, adverb| ^this.composeBinaryOp('hammingDistance', function, adverb) }
 
-	lcm { arg function, adverb; ^this.composeBinaryOp('lcm', function, adverb) }
-	gcd { arg function, adverb; ^this.composeBinaryOp('gcd', function, adverb) }
-	round { arg function=1, adverb; ^this.composeBinaryOp('round', function, adverb) }
-	roundUp { arg function=1, adverb; ^this.composeBinaryOp('roundUp', function, adverb) }
-	trunc { arg function=1, adverb; ^this.composeBinaryOp('trunc', function, adverb) }
-	atan2 { arg function, adverb; ^this.composeBinaryOp('atan2', function, adverb) }
-	hypot { arg function, adverb; ^this.composeBinaryOp('hypot', function, adverb) }
-	hypotApx { arg function, adverb; ^this.composeBinaryOp('hypotApx', function, adverb) }
-	leftShift { arg function, adverb; ^this.composeBinaryOp('leftShift', function, adverb) }
-	rightShift { arg function, adverb; ^this.composeBinaryOp('rightShift', function, adverb) }
-	unsignedRightShift { arg function, adverb; ^this.composeBinaryOp('unsignedRightShift', function, adverb) }
-	ring1 { arg function, adverb; ^this.composeBinaryOp('ring1', function, adverb) }
-	ring2 { arg function, adverb; ^this.composeBinaryOp('ring2', function, adverb) }
-	ring3 { arg function, adverb; ^this.composeBinaryOp('ring3', function, adverb) }
-	ring4 { arg function, adverb; ^this.composeBinaryOp('ring4', function, adverb) }
-	difsqr { arg function, adverb; ^this.composeBinaryOp('difsqr', function, adverb) }
-	sumsqr { arg function, adverb; ^this.composeBinaryOp('sumsqr', function, adverb) }
-	sqrsum { arg function, adverb; ^this.composeBinaryOp('sqrsum', function, adverb) }
-	sqrdif { arg function, adverb; ^this.composeBinaryOp('sqrdif', function, adverb) }
-	absdif { arg function, adverb; ^this.composeBinaryOp('absdif', function, adverb) }
-	thresh { arg function, adverb; ^this.composeBinaryOp('thresh', function, adverb) }
-	amclip { arg function, adverb; ^this.composeBinaryOp('amclip', function, adverb) }
-	scaleneg { arg function, adverb; ^this.composeBinaryOp('scaleneg', function, adverb) }
-	clip2 { arg function=1, adverb; ^this.composeBinaryOp('clip2', function, adverb) }
-	fold2 { arg function=1, adverb; ^this.composeBinaryOp('fold2', function, adverb) }
-	wrap2 { arg function=1, adverb; ^this.composeBinaryOp('wrap2', function, adverb) }
-	excess { arg function=1, adverb; ^this.composeBinaryOp('excess', function, adverb) }
-	firstArg { arg function, adverb; ^this.composeBinaryOp('firstArg', function, adverb) }
-	rrand { arg function, adverb; ^this.composeBinaryOp('rrand', function, adverb) }
-	exprand { arg function, adverb; ^this.composeBinaryOp('exprand', function, adverb) }
-	@ { arg function, adverb; ^this.composeBinaryOp('@', function, adverb) }
+	lcm { |function, adverb| ^this.composeBinaryOp('lcm', function, adverb) }
+	gcd { |function, adverb| ^this.composeBinaryOp('gcd', function, adverb) }
+	round { |function = 1, adverb| ^this.composeBinaryOp('round', function, adverb) }
+	roundUp { |function = 1, adverb| ^this.composeBinaryOp('roundUp', function, adverb) }
+	trunc { |function = 1, adverb| ^this.composeBinaryOp('trunc', function, adverb) }
+	atan2 { |function, adverb| ^this.composeBinaryOp('atan2', function, adverb) }
+	hypot { |function, adverb| ^this.composeBinaryOp('hypot', function, adverb) }
+	hypotApx { |function, adverb| ^this.composeBinaryOp('hypotApx', function, adverb) }
+	leftShift { |function, adverb| ^this.composeBinaryOp('leftShift', function, adverb) }
+	rightShift { |function, adverb| ^this.composeBinaryOp('rightShift', function, adverb) }
+	unsignedRightShift { |function, adverb| ^this.composeBinaryOp('unsignedRightShift', function, adverb) }
+	ring1 { |function, adverb| ^this.composeBinaryOp('ring1', function, adverb) }
+	ring2 { |function, adverb| ^this.composeBinaryOp('ring2', function, adverb) }
+	ring3 { |function, adverb| ^this.composeBinaryOp('ring3', function, adverb) }
+	ring4 { |function, adverb| ^this.composeBinaryOp('ring4', function, adverb) }
+	difsqr { |function, adverb| ^this.composeBinaryOp('difsqr', function, adverb) }
+	sumsqr { |function, adverb| ^this.composeBinaryOp('sumsqr', function, adverb) }
+	sqrsum { |function, adverb| ^this.composeBinaryOp('sqrsum', function, adverb) }
+	sqrdif { |function, adverb| ^this.composeBinaryOp('sqrdif', function, adverb) }
+	absdif { |function, adverb| ^this.composeBinaryOp('absdif', function, adverb) }
+	thresh { |function, adverb| ^this.composeBinaryOp('thresh', function, adverb) }
+	amclip { |function, adverb| ^this.composeBinaryOp('amclip', function, adverb) }
+	scaleneg { |function, adverb| ^this.composeBinaryOp('scaleneg', function, adverb) }
+	clip2 { |function = 1, adverb| ^this.composeBinaryOp('clip2', function, adverb) }
+	fold2 { |function = 1, adverb| ^this.composeBinaryOp('fold2', function, adverb) }
+	wrap2 { |function = 1, adverb| ^this.composeBinaryOp('wrap2', function, adverb) }
+	excess { |function = 1, adverb| ^this.composeBinaryOp('excess', function, adverb) }
+	firstArg { |function, adverb| ^this.composeBinaryOp('firstArg', function, adverb) }
+	rrand { |function, adverb| ^this.composeBinaryOp('rrand', function, adverb) }
+	exprand { |function, adverb| ^this.composeBinaryOp('exprand', function, adverb) }
+	@ { |function, adverb| ^this.composeBinaryOp('@', function, adverb) }
 
 	// complex support
 	real { ^this }
 	imag { ^0.0 }
 
 
-	|| { arg function, adverb; ^this.composeBinaryOp('||', function, adverb) }
-	&& { arg function, adverb; ^this.composeBinaryOp('&&', function, adverb) }
-	xor { arg function, adverb; ^this.composeBinaryOp('xor', function, adverb) }
-	nand { arg function, adverb; ^this.composeBinaryOp('nand', function, adverb) }
+	|| { |function, adverb| ^this.composeBinaryOp('||', function, adverb) }
+	&& { |function, adverb| ^this.composeBinaryOp('&&', function, adverb) }
+	xor { |function, adverb| ^this.composeBinaryOp('xor', function, adverb) }
+	nand { |function, adverb| ^this.composeBinaryOp('nand', function, adverb) }
 	not { ^this.composeUnaryOp('not') }
 	ref { ^this.composeUnaryOp('asRef') }
 
 	// nary operators
-	clip { arg lo, hi; ^this.composeNAryOp('clip', [lo,hi])  }
-	wrap { arg lo, hi; ^this.composeNAryOp('wrap', [lo,hi])  }
-	fold { arg lo, hi; ^this.composeNAryOp('fold', [lo,hi])  }
-	blend { arg that, blendFrac = 0.5;
+	clip { |lo, hi| ^this.composeNAryOp('clip', [lo, hi]) }
+	wrap { |lo, hi| ^this.composeNAryOp('wrap', [lo, hi]) }
+	fold { |lo, hi| ^this.composeNAryOp('fold', [lo, hi]) }
+	blend { |that, blendFrac = 0.5|
 		^this.composeNAryOp('blend', [that, blendFrac])
 	}
-	linlin { arg inMin, inMax, outMin, outMax, clip=\minmax;
+	linlin { |inMin, inMax, outMin, outMax, clip = \minmax|
 		^this.composeNAryOp('linlin', [inMin, inMax, outMin, outMax, clip])
 	}
-	linexp { arg inMin, inMax, outMin, outMax, clip=\minmax;
+	linexp { |inMin, inMax, outMin, outMax, clip = \minmax|
 		^this.composeNAryOp('linexp', [inMin, inMax, outMin, outMax, clip])
 	}
-	explin { arg inMin, inMax, outMin, outMax, clip=\minmax;
+	explin { |inMin, inMax, outMin, outMax, clip = \minmax|
 		^this.composeNAryOp('explin', [inMin, inMax, outMin, outMax, clip])
 	}
-	expexp { arg inMin, inMax, outMin, outMax, clip=\minmax;
+	expexp { |inMin, inMax, outMin, outMax, clip = \minmax|
 		^this.composeNAryOp('expexp', [inMin, inMax, outMin, outMax, clip])
 	}
-	lincurve { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
+	lincurve { |inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax|
 		^this.composeNAryOp('lincurve', [inMin, inMax, outMin, outMax, curve, clip])
 	}
-	curvelin { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
+	curvelin { |inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax|
 		^this.composeNAryOp('curvelin', [inMin, inMax, outMin, outMax, curve, clip])
 	}
-	bilin { arg inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax;
+	bilin { |inCenter, inMin, inMax, outCenter, outMin, outMax, clip = \minmax|
 		^this.composeNAryOp('bilin', [inCenter, inMin, inMax, outCenter, outMin, outMax, clip])
 	}
-	biexp { arg inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax;
+	biexp { |inCenter, inMin, inMax, outCenter, outMin, outMax, clip = \minmax|
 		^this.composeNAryOp('biexp', [inCenter, inMin, inMax, outCenter, outMin, outMax, clip])
 	}
-	moddif { arg function = 0.0, mod = 1.0;
+	moddif { |function = 0.0, mod = 1.0|
 		^this.composeNAryOp('moddif', [function, mod])
 	}
 
-	degreeToKey { arg scale, stepsPerOctave=12;
+	degreeToKey { |scale, stepsPerOctave = 12|
 		^this.composeNAryOp('degreeToKey', [scale, stepsPerOctave])
 	}
 
 	degrad { ^this.composeUnaryOp('degrad') }
 	raddeg { ^this.composeUnaryOp('raddeg') }
 
-	applyTo { arg ... args;
+	applyTo { |... args|
 		^this.valueArray(args)
 	}
 
-	<> { arg that;
+	<> { |that|
 		// function composition
-		^{|...args| this.value(that.value(*args)) }
+		^{ |...args| this.value(that.value(*args)) }
 	}
 
-	sampled{ |n=80,from=0.0,to=1.0|
+	sampled{ |n = 80, from = 0.0, to = 1.0|
 		var valueArray;
-		valueArray = (from,(to-from)/(n-1) .. to).collect{|x| this.value(x) };
-		^{ |x| valueArray.blendAt( ((x.clip(from,to)-from)/(to-from))*(n-1) ) }
+		valueArray = (from, (to - from) / (n - 1) .. to).collect { |x| this.value(x) };
+		^{ |x| valueArray.blendAt(((x.clip(from, to) - from) / (to - from)) * (n - 1)) }
 	}
 
 	// embed in ugen graph
-	asUGenInput { arg for; ^this.value(for) }
+	asUGenInput { |for| ^this.value(for) }
 	asAudioRateInput { |for|
 		var result = this.value(for);
 		^if(result.rate != \audio) { K2A.ar(result) } { result }
@@ -239,26 +239,26 @@ AbstractFunction {
 UnaryOpFunction : AbstractFunction {
 	var selector, a;
 
-	*new { arg selector, a;
+	*new { |selector, a|
 		^super.newCopyArgs(selector, a)
 	}
-	value { | ... args, kwargs |
+	value { |... args, kwargs|
 		^a.valueArgs(args, kwargs).perform(selector)
 	}
-	valueArray { arg args;
+	valueArray { |args|
 		^a.valueArray(args).perform(selector)
 	}
-	valueEnvir { arg ... args;
+	valueEnvir { |... args|
 		^a.valueArrayEnvir(args).perform(selector)
 	}
-	valueArrayEnvir { arg ... args;
+	valueArrayEnvir { |... args|
 		^a.valueArrayEnvir(args).perform(selector)
 	}
-	functionPerformList { arg selector, arglist;
+	functionPerformList { |selector, arglist|
 		^this.performList(selector, arglist)
 	}
-	storeOn { arg stream;
-		stream <<< a << "." << selector;
+	storeOn { |stream|
+		stream <<< a << "." << selector
 	}
 
 
@@ -267,25 +267,25 @@ UnaryOpFunction : AbstractFunction {
 BinaryOpFunction : AbstractFunction {
 	var selector, a, b, adverb;
 
-	*new { arg selector, a, b, adverb;
+	*new { |selector, a, b, adverb|
 		^super.newCopyArgs(selector, a, b, adverb)
 	}
-	value { | ... args, kwargs |
+	value { |... args, kwargs|
 		^a.valueArgs(args, kwargs).perform(selector, b.valueArgs(args, kwargs), adverb)
 	}
-	valueArray { arg args;
+	valueArray { |args|
 		^a.valueArray(args).perform(selector, b.valueArray(args), adverb)
 	}
-	valueEnvir { arg ... args;
+	valueEnvir { |... args|
 		^a.valueArrayEnvir(args).perform(selector, b.valueArrayEnvir(args), adverb)
 	}
-	valueArrayEnvir { arg ... args;
+	valueArrayEnvir { |... args|
 		^a.valueArrayEnvir(args).perform(selector, b.valueArrayEnvir(args), adverb)
 	}
-	functionPerformList { arg selector, arglist;
+	functionPerformList { |selector, arglist|
 		^this.performList(selector, arglist)
 	}
-	storeOn { arg stream;
+	storeOn { |stream|
 		stream << "(" <<< a << " " << selector.asBinOpString;
 		if(adverb.notNil) { stream << "." << adverb };
 		stream << " " <<< b << ")"
@@ -296,41 +296,41 @@ BinaryOpFunction : AbstractFunction {
 NAryOpFunction : AbstractFunction {
 	var selector, a, arglist, kwarglist;
 
-	*new { arg selector, a, arglist, kwarglist;
+	*new { |selector, a, arglist, kwarglist|
 		^super.newCopyArgs(selector, a, arglist, kwarglist)
 	}
-	value { | ... args, kwargs |
+	value { |... args, kwargs|
 		^a.valueArgs(args, kwargs).performArgs(
 			selector,
 			arglist.collect(_.valueArgs(args, kwargs)),
 			kwarglist.collect(_.valueArgs(args, kwargs))
 		)
 	}
-	valueArray { arg args;
+	valueArray { |args|
 		^a.valueArray(args).performArgs(
 			selector,
 			arglist.collect(_.valueArray(args)),
 			kwarglist.collect(_.valueArray(args))
 		)
 	}
-	valueEnvir { arg ... args;
+	valueEnvir { |... args|
 		^a.valueArrayEnvir(args).performArgs(
 			selector,
 			arglist.collect(_.valueArrayEnvir(args)),
 			kwarglist.collect(_.valueArrayEnvir(args))
 		)
 	}
-	valueArrayEnvir { arg args;
+	valueArrayEnvir { |args|
 		^a.valueArrayEnvir(args).performArgs(
 			selector,
 			arglist.collect(_.valueArrayEnvir(args)),
 			kwarglist.collect(_.valueArrayEnvir(args))
 		)
 	}
-	functionPerformList { arg selector, arglist;
+	functionPerformList { |selector, arglist|
 		^this.performArgs(selector, arglist, kwarglist)
 	}
-	storeOn { arg stream;
+	storeOn { |stream|
 		stream <<< a << "." << selector << "(" <<<* arglist << ")"
 
 	}
@@ -338,48 +338,48 @@ NAryOpFunction : AbstractFunction {
 }
 
 FunctionList : AbstractFunction {
-	var <>array, <flopped=false;
+	var <>array, <flopped = false;
 
-	*new { arg functions;
+	*new { |functions|
 		^super.newCopyArgs(functions ?? { Array.new })
 	}
-	addFunc { arg ... functions;
+	addFunc { |... functions|
 		if(flopped) { Error("cannot add a function to a flopped FunctionList").throw };
 		array = array.addAll(functions)
 	}
-	removeFunc { arg function;
+	removeFunc { |function|
 		array.remove(function);
-		if(array.size < 2) { ^array[0] };
+		if(array.size < 2) { ^array[0] }
 	}
 
-	replaceFunc { arg find, replace;
-		array = array.replace(find, replace);
+	replaceFunc { |find, replace|
+		array = array.replace(find, replace)
 	}
 
-	value { | ... args, kwargs |
+	value { |... args, kwargs|
 		var res = array.collectCopy(_.valueArgs(args, kwargs));
 		^if(flopped) { res.flop } { res }
 	}
-	valueArray { arg args;
+	valueArray { |args|
 		var res = array.collectCopy(_.valueArray(args));
 		^if(flopped) { res.flop } { res }
 	}
-	valueEnvir { arg ... args;
+	valueEnvir { |... args|
 		var res = array.collectCopy(_.valueArrayEnvir(args));
 		^if(flopped) { res.flop } { res }
 	}
-	valueArrayEnvir { arg args;
+	valueArrayEnvir { |args|
 		var res = array.collectCopy(_.valueArrayEnvir(args));
 		^if(flopped) { res.flop } { res }
 	}
-	do { arg function;
+	do { |function|
 		array.do(function)
 	}
 	flop {
-		if(flopped.not) { array = array.collect(_.flop) }; flopped = true;
+		if(flopped.not) { array = array.collect(_.flop) }; flopped = true
 	}
 	envirFlop {
-		if(flopped.not) { array = array.collect(_.envirFlop) }; flopped = true;
+		if(flopped.not) { array = array.collect(_.envirFlop) }; flopped = true
 	}
 	storeArgs { ^[array] }
 	copy { ^super.copy.array_(array.copy) }

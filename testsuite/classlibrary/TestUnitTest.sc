@@ -6,19 +6,19 @@ TestUnitTest : UnitTest {
 	classvar <>classTearDownHappened = false;
 
 	*setUpClass {
-		this.classSetUpHappened = true;
+		this.classSetUpHappened = true
 	}
 
 	*tearDownClass {
-		this.classTearDownHappened = true;
+		this.classTearDownHappened = true
 	}
 
 	setUp {
-		setUpHappened = true;
+		setUpHappened = true
 	}
 
 	test_setUpClass_already_happened {
-		this.assert(this.class.classSetUpHappened, "setUpClass should have happened");
+		this.assert(this.class.classSetUpHappened, "setUpClass should have happened")
 	}
 
 	test_setUpClass {
@@ -26,7 +26,7 @@ TestUnitTest : UnitTest {
 		this.class.prRunWithinSetUpClass {
 			this.assert(this.class.classSetUpHappened,
 				"setUpClass should have happened before prRunWithinSetUpClass function is called"
-			);
+			)
 		}
 	}
 
@@ -35,7 +35,7 @@ TestUnitTest : UnitTest {
 		this.class.prRunWithinSetUpClass;
 		this.assert(this.class.classTearDownHappened,
 			"tearDownClass should have happened after prRunWithinSetUpClass function is called"
-		);
+		)
 	}
 
 	test_setUp {
@@ -77,11 +77,11 @@ TestUnitTest : UnitTest {
 		var unblock = false;
 		var r = Routine {
 			0.01.yield;
-			unblock = true;
+			unblock = true
 		};
 		r.play;
 		this.wait({ unblock }, maxTime: 0.02);
-		this.assertEquals(unblock, true, "UnitTest.wait should continue when test is true");
+		this.assertEquals(unblock, true, "UnitTest.wait should continue when test is true")
 	}
 
 

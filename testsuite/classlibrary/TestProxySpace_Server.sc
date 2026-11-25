@@ -4,19 +4,19 @@ TestProxySpace_Server : UnitTest {
 
 	setUp {
 		server = Server(this.class.name);
-		this.bootServer(server);
+		this.bootServer(server)
 	}
 
 	tearDown {
 		server.quitSync;
-		server.remove;
+		server.remove
 	}
 
 	test_storeOn_recoversState {
 		var psA, stream, bValue, bNodeMap, aMapString, bMapString;
 
 		psA = ProxySpace(server).make {
-			~out = { \in.ar(0!2) };
+			~out = { \in.ar(0 ! 2) };
 			~osc = { |freq = 440| SinOsc.ar(freq).dup };
 			~out.set(\in, ~osc);
 			~freqmod = { LFDNoise3.kr(14).exprange(200, 800) };
@@ -25,11 +25,11 @@ TestProxySpace_Server : UnitTest {
 			// must do this inside the ProxySpace environment
 			// otherwise it can't identify the ~keys
 			stream = CollStream.new;
-			currentEnvironment.storeOn(stream);
+			currentEnvironment.storeOn(stream)
 		};
 
 		var psB = ProxySpace(server).make {
-			stream.collection.interpret;
+			stream.collection.interpret
 		};
 
 		psA.keysValuesDo { |key, value|
@@ -49,15 +49,15 @@ TestProxySpace_Server : UnitTest {
 						aMapString, aMapString,
 						"Restored NodeProxy's nodeMap should match original (%, parameter %)"
 						.format(key, parm)
-					);
-				};
-			};
+					)
+				}
+			}
 		};
 
 		psA.clear;
 		psB.clear;
 
-		server.sync; // we quit only after clear, avoiding unnecessary warnings
+		server.sync // we quit only after clear, avoiding unnecessary warnings
 	}
 
 	test_copy_as_currentEnvironment {
@@ -90,7 +90,7 @@ TestProxySpace_Server : UnitTest {
 		proxySpace.clear;
 		copySpace.clear;
 
-		currentEnvironment = environment;
+		currentEnvironment = environment
 
 	}
 

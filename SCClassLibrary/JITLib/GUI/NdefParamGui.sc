@@ -3,25 +3,25 @@ NdefParamGui : EnvirGui {
 	var <drags;
 
 	setDefaults {
-		defPos = 530@660;
+		defPos = 530 @ 660;
 		minSize = 320 @ (numItems * skin.buttonHeight);
 
-		if (parent.notNil) { skin = skin.copy.margin = 0@0; };
+		if(parent.notNil) { skin = skin.copy.margin = 0 @ 0 }
 	}
 
 	accepts { |obj|
-		^obj.isNil or: { obj.isKindOf(NodeProxy) };
+		^obj.isNil or: { obj.isKindOf(NodeProxy) }
 	}
 
 	dragAction { |i|
 		^{ |drag|
 			var key = prevState[\editKeys][i];
 			var dragged = drag.object;
-			if (dragged.isKindOf(String)) { dragged = dragged.interpret };
-			if (dragged.notNil) {
+			if(dragged.isKindOf(String)) { dragged = dragged.interpret };
+			if(dragged.notNil) {
 				if(dragged.nodeMapMapsToControl) { drag.string = "->" + dragged.key };
 				object.xset(key, dragged);
-				this.checkUpdate;
+				this.checkUpdate
 			}
 		}
 	}
@@ -32,7 +32,7 @@ NdefParamGui : EnvirGui {
 
 		specs = ();
 		replaceKeys = ();
-		prevState = ( settings: [], overflow: 0, keysRotation: 0, editKeys: []);
+		prevState = (settings: [], overflow: 0, keysRotation: 0, editKeys: []);
 
 		labelWidth = zone.bounds.width * 0.15;
 
@@ -50,7 +50,7 @@ NdefParamGui : EnvirGui {
 
 			parView.zone.visible_(false);
 
-			[drag, parView];
+			[drag, parView]
 
 		}.dup(numItems).flop;
 
@@ -61,16 +61,16 @@ NdefParamGui : EnvirGui {
 			numItems, numItems,
 			{ |sc|
 				keysRotation = sc.value.asInteger.max(0);
-				prevState.put(\dummy, \dummy);
+				prevState.put(\dummy, \dummy)
 			}
 		).visible_(false);
-		scroller.slider.resize_(3);
+		scroller.slider.resize_(3)
 	}
 
 	getState {
 		var settings, newKeys, overflow, currSpecs;
 
-		if (object.isNil) {
+		if(object.isNil) {
 			^(name: 'anon', settings: [], editKeys: [], overflow: 0, keysRotation: 0)
 		};
 
@@ -82,7 +82,7 @@ NdefParamGui : EnvirGui {
 		newKeys = newKeys.drop(keysRotation).keep(numItems);
 		currSpecs = newKeys.collect { |key|
 			var pair = settings.detect { |pair| pair[0] == key };
-			[key, this.getSpec(key, pair[1])];
+			[key, this.getSpec(key, pair[1])]
 		};
 
 		^(object: object, editKeys: newKeys, settings: settings,
@@ -96,35 +96,35 @@ NdefParamGui : EnvirGui {
 		var newKeys = newState[\editKeys];
 		var newSpecs = newState[\specs];
 
-		if (newState == prevState) {
+		if(newState == prevState) {
 			^this
 		};
 
-		if (object.isNil) {
+		if(object.isNil) {
 			prevState = newState;
-			^this.showFields(0);
+			^this.showFields(0)
 		};
 
-		if (newState[\overflow] > 0) {
+		if(newState[\overflow] > 0) {
 			scroller.visible_(true);
 			scroller.numItems_(newState[\settings].size);
-			scroller.value_(newState[\keysRotation]);
+			scroller.value_(newState[\keysRotation])
 
 		} {
-			scroller.visible_(false);
+			scroller.visible_(false)
 		};
 
-		if (newKeys == prevState[\editKeys]) {
-			this.setByKeys(newKeys, newState[\settings]);
+		if(newKeys == prevState[\editKeys]) {
+			this.setByKeys(newKeys, newState[\settings])
 		} {
 			this.setByKeys(newKeys, newState[\settings]);
-			this.showFields(newKeys.size);
+			this.showFields(newKeys.size)
 		};
 
-		if (newSpecs != prevState[\specs]) {
-			this.updateViewSpecs(newSpecs);
+		if(newSpecs != prevState[\specs]) {
+			this.updateViewSpecs(newSpecs)
 		};
-		prevState = newState;
+		prevState = newState
 	}
 
 	setByKeys { |newKeys, newSettings|
@@ -136,30 +136,30 @@ NdefParamGui : EnvirGui {
 			var paramView = paramViews[i];
 
 			newVal = newSettings.detect { |pair| pair[0] == newKey };
-			if (newVal.notNil) { newVal = newVal[1] };
+			if(newVal.notNil) { newVal = newVal[1] };
 
 			oldKey = prevState[\editKeys][i];
-			if (oldKey.notNil) {
+			if(oldKey.notNil) {
 				oldVal = prevSettings.detect { |pair| pair[0] == oldKey };
-				if (oldVal.notNil) { oldVal = oldVal[1] };
+				if(oldVal.notNil) { oldVal = oldVal[1] }
 			};
 
-			if (oldKey != newKey) {
+			if(oldKey != newKey) {
 				paramView.label_(replaceKeys[newKey] ? newKey);
 				paramView.spec_(this.getSpec(newKey, newVal));
 				paramView.value_(newVal);
-				paramView.action = this.setFunc(newKey);
+				paramView.action = this.setFunc(newKey)
 			} {
-				if (oldVal != newVal) { paramView.value_(newVal) };
-			};
-		};
+				if(oldVal != newVal) { paramView.value_(newVal) }
+			}
+		}
 	}
 
 	showFields { |num = 0|
 		paramViews.do { |pv, i|
 			var isInUse = i < num;
 			pv.visible_(isInUse);
-			drags[i].visible_(isInUse);
+			drags[i].visible_(isInUse)
 		}
 	}
 

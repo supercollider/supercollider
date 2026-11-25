@@ -3,12 +3,12 @@ TestNoiseUGens_Server : UnitTest {
 	var server;
 
 	setUp {
-		server = Server(this.class.name);
+		server = Server(this.class.name)
 	}
 
 	tearDown {
 		server.quit;
-		server.remove;
+		server.remove
 	}
 
 	test_RandSeed_sets_seed {
@@ -45,10 +45,10 @@ TestNoiseUGens_Server : UnitTest {
 			buffer.getn(0, size, { |data|
 				serverValues = data;
 				ok = true;
-				cond.signalAll;
+				cond.signalAll
 			});
 			cond.waitFor(0.1, { ok });
-			if(ok.not) { Exception("b_getn failed").throw };
+			if(ok.not) { Exception("b_getn failed").throw }
 		} { |error|
 			if(error.isMemberOf(Exception)) {
 				err = error  // my error
@@ -62,7 +62,7 @@ TestNoiseUGens_Server : UnitTest {
 		this.assert(
 			ok and: { testValues == serverValues.as(Array) },
 			err.tryPerform(\errorString) ?? { "random values on server were seeded identically to the language" }
-		);
+		)
 	}
 
 	test_RandID_setsIDForEveryBlock {
@@ -94,16 +94,16 @@ TestNoiseUGens_Server : UnitTest {
 		osc = OSCFunc({ |msg|
 			countNonMatching = msg[3];
 			ok = true;
-			cond.signalAll;
+			cond.signalAll
 		}, '/count', server.addr);
 		cond.waitFor(0.1, { ok });
 
 		osc.free;
 
 		if(ok) {
-			this.assertEquals(countNonMatching, 0, "Two RNG IDs, seeded equally, should produce 0 non-matching values");
+			this.assertEquals(countNonMatching, 0, "Two RNG IDs, seeded equally, should produce 0 non-matching values")
 		} {
 			this.assert(false, "timed out")
-		};
+		}
 	}
 }

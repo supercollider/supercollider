@@ -1,15 +1,15 @@
 + Server {
-	onBootAdd { arg object;
-		ServerBoot.add(object, this);
+	onBootAdd { |object|
+		ServerBoot.add(object, this)
 	}
-	onBootRemove { arg object;
-		ServerBoot.remove(object, this);
+	onBootRemove { |object|
+		ServerBoot.remove(object, this)
 	}
-	onQuitAdd { arg object;
-		ServerQuit.add(object, this);
+	onQuitAdd { |object|
+		ServerQuit.add(object, this)
 	}
-	onQuitRemove { arg object;
-		ServerQuit.remove(object, this);
+	onQuitRemove { |object|
+		ServerQuit.remove(object, this)
 	}
 }
 
@@ -19,9 +19,9 @@
 	doOnCmdPeriod { this.value }
 	doOnShutDown { this.value }
 	doOnError { this.value }
-	doOnServerBoot { arg server; this.value(server) }
-	doOnServerQuit { arg server; this.value(server) }
-	doOnServerTree { arg server; this.value(server) }
+	doOnServerBoot { |server| this.value(server) }
+	doOnServerQuit { |server| this.value(server) }
+	doOnServerTree { |server| this.value(server) }
 
 }
 

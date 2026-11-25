@@ -1,63 +1,63 @@
 Array2D : Collection {
 	var <rows, <cols, <array;
-	*new { arg rows=1, cols=1;
-		^super.new.init(rows, cols);
+	*new { |rows = 1, cols = 1|
+		^super.new.init(rows, cols)
 	}
-	init { arg argRows, argCols;
+	init { |argRows, argCols|
 		rows = argRows;
 		cols = argCols;
-		array = Array.newClear(rows * cols);
+		array = Array.newClear(rows * cols)
 	}
 
-	at { arg row, col;
-		^array.at(row*cols + col)
+	at { |row, col|
+		^array.at(row * cols + col)
 	}
-	put { arg row, col, val;
-		array.put(row*cols + col, val)
+	put { |row, col, val|
+		array.put(row * cols + col, val)
 	}
 
 	asArray { ^array }
-	*fromArray { arg rows,cols, array;
-		^this.new(rows,cols).with(array);
+	*fromArray { |rows, cols, array|
+		^this.new(rows, cols).with(array)
 	}
-	with { arg aarray;	array = aarray; }
+	with { |aarray| array = aarray }
 
-	do { arg func;
+	do { |func|
 		array.do(func)
 	}
-	colsDo { arg func;
-		cols.do({ arg ci;
-			func.value( Array.fill(rows,{ arg ri; this.at(ri,ci) }), ci )
-		})
+	colsDo { |func|
+		cols.do { |ci|
+			func.value(Array.fill(rows, { |ri| this.at(ri, ci) }), ci)
+		}
 	}
-	rowsDo { arg func;
-		rows.do({ arg ri;
-			func.value( Array.fill(cols,{ arg ci; this.at(ri,ci) }), ri )
-		})
+	rowsDo { |func|
+		rows.do { |ri|
+			func.value(Array.fill(cols, { |ci| this.at(ri, ci) }), ri)
+		}
 	}
 
-	colAt { arg ci;
-		^Array.fill(rows,{ arg ri; this.at(ri,ci) })
+	colAt { |ci|
+		^Array.fill(rows, { |ri| this.at(ri, ci) })
 	}
-	rowAt { arg ri;
+	rowAt { |ri|
 		^array.copyRange(ri * cols, ri * cols + cols - 1)
 	}
 
-	add { ^this.shouldNotImplement(thisMethod)  }
+	add { ^this.shouldNotImplement(thisMethod) }
 	remove { ^this.shouldNotImplement(thisMethod) }
 
-	printOn { arg stream;
+	printOn { |stream|
 		// not a compileable string
-		stream << this.class.name << "[" ;
-		this.rowsDo({ arg r;
-			r.printOn(stream);
+		stream << this.class.name << "[";
+		this.rowsDo({ |r|
+			r.printOn(stream)
 		});
-		stream << "]" ;
+		stream << "]"
 	}
-	storeOn { arg stream;
+	storeOn { |stream|
 		var title;
 		stream << this.class.name << ".fromArray("
-			<<<* [rows,cols,this.asArray] << ")";
-		this.storeModifiersOn(stream);
+			<<<* [rows, cols, this.asArray] << ")";
+		this.storeModifiersOn(stream)
 	}
 }

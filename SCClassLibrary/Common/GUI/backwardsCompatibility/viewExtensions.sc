@@ -2,21 +2,21 @@
 + FlowView {
 
 	// place a FlowView on this FlowView
-	flow { arg func,bounds;
-		var f,consumed,b;
-		if(bounds.notNil,{
-			f = FlowView(this,bounds);
+	flow { |func, bounds|
+		var f, consumed, b;
+		if(bounds.notNil) {
+			f = FlowView(this, bounds);
 			func.value(f);
 			^f
-		});
-		f = FlowView(this,this.allocateRemaining);
+		};
+		f = FlowView(this, this.allocateRemaining);
 		func.value(f);
 		consumed = f.resizeToFit;
 		// did we exceed ?
-		if(this.decorator.bounds.containsRect(consumed).not,{
+		if(this.decorator.bounds.containsRect(consumed).not) {
 			// yes
 			// pretend I just consumed nothing
-			this.didUseAllocated(consumed.resizeTo(0,0));
+			this.didUseAllocated(consumed.resizeTo(0, 0));
 
 			// goto the next line
 			this.decorator.nextLine; // don't put a StartRow in there, the decorator should auto-flow on resize
@@ -28,45 +28,45 @@
 			f.bounds = b;
 			// reflow the sub view
 			f.reflowAll.resizeToFit;
-			this.didUseAllocated(f.bounds);
-		},{
-			this.didUseAllocated(consumed);
-		});
+			this.didUseAllocated(f.bounds)
+		} {
+			this.didUseAllocated(consumed)
+		};
 		^f
 	}
 
-	horz { arg func,bounds,spacing;
+	horz { |func, bounds, spacing|
 		var comp;
-		comp = HLayoutView.new(this,bounds ?? { this.indentedRemaining });
+		comp = HLayoutView.new(this, bounds ?? { this.indentedRemaining });
 		try { // not on Qt
-			comp.spacing = spacing ? GUI.skin.gap.x;
+			comp.spacing = spacing ? GUI.skin.gap.x
 		};
 		func.value(comp);
 		^comp
 	}
-	vert { arg func,bounds,spacing;
+	vert { |func, bounds, spacing|
 		var comp;
-		comp = VLayoutView.new(this,bounds ?? { this.indentedRemaining });
+		comp = VLayoutView.new(this, bounds ?? { this.indentedRemaining });
 		try { // not on Qt
-			comp.spacing = spacing ? GUI.skin.gap.y;
+			comp.spacing = spacing ? GUI.skin.gap.y
 		};
 		func.value(comp);
 		^comp
 	}
-	comp { arg func,bounds;
+	comp { |func, bounds|
 		var comp;
-		comp = CompositeView.new(this,bounds ?? { this.indentedRemaining });
+		comp = CompositeView.new(this, bounds ?? { this.indentedRemaining });
 		func.value(comp);
 		^comp
 	}
-	scroll { arg func,bounds,
-				autohidesScrollers=true,autoScrolls=true,
-				hasHorizontalScroller=true,hasVerticalScroller=true;
+	scroll { |func, bounds,
+			autohidesScrollers = true, autoScrolls = true,
+			hasHorizontalScroller = true, hasVerticalScroller = true|
 		var comp;
-		comp = ScrollView.new(this,bounds ?? { this.bounds });
+		comp = ScrollView.new(this, bounds ?? { this.bounds });
 		comp.autohidesScrollers = autohidesScrollers;
 		try { // not on Qt
-			comp.autoScrolls = autoScrolls;
+			comp.autoScrolls = autoScrolls
 		};
 		comp.hasHorizontalScroller = hasHorizontalScroller;
 		comp.hasVerticalScroller = hasVerticalScroller;

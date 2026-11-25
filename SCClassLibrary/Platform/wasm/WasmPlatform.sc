@@ -3,14 +3,14 @@ WasmPlatform : UnixPlatform {
 		Class.initClassTree(Server);
 		// SC 3.15 bumped default mem size to 256 mb which is too heavy for wasm
 		// reduce it to 8192 kb
-		Server.default.options.memSize = 8192;
+		Server.default.options.memSize = 8192
 	}
 
-	name { ^"wasm".asSymbol; }
+	name { ^"wasm".asSymbol }
 	version { ^"wasm" }
 
 	startup {
-		helpDir = this.systemAppSupportDir++"/Help";
+		helpDir = this.systemAppSupportDir ++ "/Help";
 
 		// Server setup. first looks for scsynth in the dir containing the sclang executable;
 		// if nothing is found, falls back to PATH
@@ -20,30 +20,30 @@ WasmPlatform : UnixPlatform {
 		Score.program = Server.program;
 
 		// load user startup file
-		this.loadStartupFiles;
+		this.loadStartupFiles
 	}
 
 	initPlatform {
-		super.initPlatform;
+		super.initPlatform
 	}
 
 	killProcessByID { |pid, force = true, subprocesses = true|
-		"killProcessById is not implemented".warn;
+		"killProcessById is not implemented".warn
 	}
 }
 
 JS {
-	*runCode {|code|
-		^this.prRunCode(code);
+	*runCode { |code|
+		^this.prRunCode(code)
 	}
 
-	*prRunCode {|code|
+	*prRunCode { |code|
 		_Wasm_runCode
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*ideSend {|payload|
+	*ideSend { |payload|
 		_Wasm_ideSend
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 }

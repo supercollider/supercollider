@@ -11,8 +11,8 @@
 }
 
 + Point {
-	*big { arg x, y;
-		^this.new(2*x, 10*y)
+	*big { |x, y|
+		^this.new(2 * x, 10 * y)
 	}
 	swap {
 		^this.class.new(y, x)

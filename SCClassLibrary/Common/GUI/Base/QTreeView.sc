@@ -4,69 +4,69 @@ TreeView : View {
 
 	*qtClass { ^'QcTreeWidget' }
 
-	columns_ { arg labels; this.setProperty( \columns, labels ); }
-	columns { ^this.getProperty( \columns ); }
-	numColumns { ^this.getProperty( \columnCount ); }
+	columns_ { |labels| this.setProperty(\columns, labels) }
+	columns { ^this.getProperty(\columns) }
+	numColumns { ^this.getProperty(\columnCount) }
 
-	addItem { arg strings;
-		^this.invokeMethod( \addItem, [TreeViewItem(),strings] ).prValidItem(this);
+	addItem { |strings|
+		^this.invokeMethod(\addItem, [TreeViewItem(), strings]).prValidItem(this)
 	}
 
-	insertItem { arg index, strings;
-		^this.invokeMethod( \insertItem, [TreeViewItem(),index, strings] ).prValidItem(this);
+	insertItem { |index, strings|
+		^this.invokeMethod(\insertItem, [TreeViewItem(), index, strings]).prValidItem(this)
 	}
 
-	removeItem { arg item; this.invokeMethod( \removeItem, item ); }
+	removeItem { |item| this.invokeMethod(\removeItem, item) }
 
-	numItems { ^this.getProperty( \topLevelItemCount ); }
+	numItems { ^this.getProperty(\topLevelItemCount) }
 
-	clear { this.invokeMethod(\clear); }
+	clear { this.invokeMethod(\clear) }
 
 	currentItem {
-		^this.getProperty( \currentItem ).prValidItem(this);
+		^this.getProperty(\currentItem).prValidItem(this)
 	}
 
-	currentItem_ { arg item;
-		this.setProperty( \currentItem, item ? TreeViewItem() );
+	currentItem_ { |item|
+		this.setProperty(\currentItem, item ? TreeViewItem())
 	}
 
-	itemAt { arg index;
-		^this.invokeMethod( \item, [TreeViewItem(), index] ).prValidItem(this);
+	itemAt { |index|
+		^this.invokeMethod(\item, [TreeViewItem(), index]).prValidItem(this)
 	}
 
-	canSort { ^this.getProperty( \sortingEnabled ) }
-	canSort_ { arg bool; this.setProperty( \sortingEnabled, bool ) }
+	canSort { ^this.getProperty(\sortingEnabled) }
+	canSort_ { |bool| this.setProperty(\sortingEnabled, bool) }
 
-	sort { arg column, descending = false;
-		this.invokeMethod( \sort, [column, descending] )
+	sort { |column, descending = false|
+		this.invokeMethod(\sort, [column, descending])
 	}
 
-	columnWidth { arg column;
-		^this.invokeMethod( \columnWidth, [column] )
+	columnWidth { |column|
+		^this.invokeMethod(\columnWidth, [column])
 	}
 
-	setColumnWidth { arg column, width;
-		this.invokeMethod( \setColumnWidth, [column, width] )
+	setColumnWidth { |column, width|
+		this.invokeMethod(\setColumnWidth, [column, width])
 	}
 
-	itemPressedAction_ { arg action;
+	itemPressedAction_ { |action|
 		if(itemPressedAction.notNil) {
-			this.disconnectFunction( 'itemPressedAction()', itemPressedAction );
+			this.disconnectFunction('itemPressedAction()', itemPressedAction)
 		};
 		if(action.notNil) {
-			this.connectFunction( 'itemPressedAction()', action );
+			this.connectFunction('itemPressedAction()', action)
 		};
-		itemPressedAction = action;
+		itemPressedAction = action
 	}
 
-	onItemChanged_ { arg hook;
+	onItemChanged_ { |hook|
 		if(onItemChanged.notNil) {
-			this.disconnectFunction( 'currentItemChanged()', onItemChanged );
+			this.disconnectFunction('currentItemChanged()', onItemChanged)
 		};
 		if(hook.notNil) {
-			this.connectFunction( 'currentItemChanged()', hook );
+			this.connectFunction('currentItemChanged()', hook)
 		};
-		onItemChanged = hook;
+		onItemChanged = hook
 	}
 
 	/*
@@ -89,43 +89,43 @@ TreeView : View {
 	}
 	*/
 
-	background { ^this.palette.base; }
-	background_ { arg color; this.palette = this.palette.base_(color) }
+	background { ^this.palette.base }
+	background_ { |color| this.palette = this.palette.base_(color) }
 
 	// For compatibility with methods from TreeViewItem
 
-	addChild { arg strings;
-		^this.addItem(strings);
+	addChild { |strings|
+		^this.addItem(strings)
 	}
 
-	insertChild { arg index, strings;
-		^this.insertItem(index, strings);
+	insertChild { |index, strings|
+		^this.insertItem(index, strings)
 	}
 
-	childAt { arg index;
-		^this.itemAt(index);
+	childAt { |index|
+		^this.itemAt(index)
 	}
 
 	/////////// PRIVATE:
 
-	prForEachColumnDataPair { arg data, func;
+	prForEachColumnDataPair { |data, func|
 		var n = this.numColumns;
 		var i = 0;
 		var d = [] ++ data;
 		var nd = d.size - 1;
 		var id;
-		if( nd >= 0 ) {
+		if(nd >= 0) {
 			while { i < n } {
-				id = i.wrap(0,nd);
-				func.value( i, d[id] );
-				i = i + 1;
-			};
-		};
+				id = i.wrap(0, nd);
+				func.value(i, d[id]);
+				i = i + 1
+			}
+		}
 	}
 
 	// dummy for convenience in case tree view is invalid
 	prValidItem {
-		^nil;
+		^nil
 	}
 }
 
@@ -135,89 +135,89 @@ TreeViewItem {
 	var finalizer;
 	var <treeView;
 
-	== { arg other;
-		^ other.class == TreeViewItem and: {id == other.id}
+	== { |other|
+		^ other.class == TreeViewItem and: { id == other.id }
 	}
 
 	isNull { ^ id.isNil }
 
 	parent {
-		^treeView.invokeMethod( \parentItem, this ).prValidItem(treeView);
+		^treeView.invokeMethod(\parentItem, this).prValidItem(treeView)
 	}
 
 	index {
-		var i = treeView.invokeMethod( \indexOfItem, this );
-		if(i.isInteger) {^i} {^-1};
+		var i = treeView.invokeMethod(\indexOfItem, this);
+		if(i.isInteger) { ^i } { ^-1 }
 	}
 
-	childAt { arg index;
-		^treeView.invokeMethod( \item, [this, index] ).prValidItem(treeView);
+	childAt { |index|
+		^treeView.invokeMethod(\item, [this, index]).prValidItem(treeView)
 	}
 
-	addChild { arg strings;
-		^treeView.invokeMethod( \addItem, [this,strings] ).prValidItem(treeView);
+	addChild { |strings|
+		^treeView.invokeMethod(\addItem, [this, strings]).prValidItem(treeView)
 	}
 
-	insertChild { arg index, strings;
-		^treeView.invokeMethod( \insertItem, [this,index,strings] ).prValidItem(treeView);
+	insertChild { |index, strings|
+		^treeView.invokeMethod(\insertItem, [this, index, strings]).prValidItem(treeView)
 	}
 
 	strings {
-		^treeView.invokeMethod( \strings, this );
+		^treeView.invokeMethod(\strings, this)
 	}
 
-	strings_ { arg strings;
-		strings.do { |string, column| this.setString(column,string) };
+	strings_ { |strings|
+		strings.do { |string, column| this.setString(column, string) }
 	}
 
-	setString { arg column, string;
-		treeView.invokeMethod( \setText, [this,column,string] );
+	setString { |column, string|
+		treeView.invokeMethod(\setText, [this, column, string])
 	}
 
-	colors_ { arg colors;
-		treeView.prForEachColumnDataPair( colors, {
-			|column,color| this.setColor(column,color);
-		} );
+	colors_ { |colors|
+		treeView.prForEachColumnDataPair(colors, { |column, color|
+			this.setColor(column, color)
+		})
 	}
 
-	setColor { arg column, color;
-		treeView.invokeMethod( \setColor, [this,column,color] );
+	setColor { |column, color|
+		treeView.invokeMethod(\setColor, [this, column, color])
 	}
 
-	textColors_ { arg textColors;
-		treeView.prForEachColumnDataPair( textColors, {
-			|column,color| this.setTextColor(column,color);
-		} );
+	textColors_ { |textColors|
+		treeView.prForEachColumnDataPair(textColors, { |column, color|
+			this.setTextColor(column, color)
+		})
 	}
 
-	setTextColor { arg column, color;
-		treeView.invokeMethod( \setTextColor, [this,column,color] );
+	setTextColor { |column, color|
+		treeView.invokeMethod(\setTextColor, [this, column, color])
 	}
 
-	setView { arg column, view;
-		if( view.notNil ) {
-			treeView.invokeMethod( \setItemWidget, [this, column, view] );
+	setView { |column, view|
+		if(view.notNil) {
+			treeView.invokeMethod(\setItemWidget, [this, column, view])
 		} {
-			this.removeView( column );
-		};
+			this.removeView(column)
+		}
 	}
 
-	removeView { arg column;
-		treeView.invokeMethod( \removeItemWidget, [this, column] );
+	removeView { |column|
+		treeView.invokeMethod(\removeItemWidget, [this, column])
 	}
 
-	view { arg column;
-		^treeView.invokeMethod( \itemWidget, [this,column] );
+	view { |column|
+		^treeView.invokeMethod(\itemWidget, [this, column])
 	}
 
 	/////// PRIVATE:
 
-	prValidItem { arg treeView_;
-		if( qtObject.notNil ) {
+	prValidItem { |treeView_|
+		if(qtObject.notNil) {
 			treeView = treeView_;
-			^this;
+			^this
 		} {
 			^nil
-		};
+		}
 	}
 }

@@ -5,6 +5,6 @@ TestView : UnitTest {
 		var font = Font.default.pixelSize_(48);
 		view.font = font;
 		this.assertEquals(view.font, font, "aView.font should answer with the last set font");
-		view.close;
+		view.close
 	}
 }

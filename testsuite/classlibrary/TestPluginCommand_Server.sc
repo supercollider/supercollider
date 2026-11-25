@@ -1,7 +1,7 @@
 //# VERSION 3.16
 TestPluginCommand_Server : UnitTest {
 
-	asyncPluginCommand { arg serverName;
+	asyncPluginCommand { |serverName|
 		var cond = CondVar();
 		var done = false;
 		var value = 1.0, busValue = 0.0, nodeID = 900;
@@ -12,7 +12,7 @@ TestPluginCommand_Server : UnitTest {
 		var bus = Bus.control(server, 1);
 
 		SynthDef(\number, { |bus|
-			Out.kr(bus, value);
+			Out.kr(bus, value)
 		}).add;
 
 		server.sync;
@@ -21,8 +21,8 @@ TestPluginCommand_Server : UnitTest {
 		OSCdef(\cmd_test, {
 			"pluginCmdDemo done!".postln;
 			done = true;
-			cond.signalOne;
-		}, '/done', nil, nil, [ \pluginCmdDemo ]);
+			cond.signalOne
+		}, '/done', nil, nil, [\pluginCmdDemo]);
 
 		// 1. test plugin command success
 
@@ -34,7 +34,7 @@ TestPluginCommand_Server : UnitTest {
 		this.assert(done, "%: async plugin command finished and sent /done message".format(serverName));
 
 		bus.get { |f|
-			busValue = f;
+			busValue = f
 		};
 
 		server.sync;
@@ -57,27 +57,27 @@ TestPluginCommand_Server : UnitTest {
 		this.assert(done.not, "%: failed async plugin command did not send /done message".format(serverName));
 
 		bus.get { |f|
-			busValue = f;
+			busValue = f
 		};
 
 		server.sync;
 
 		this.assert(busValue == 0.0, "%: failed async plugin command did not perform completion message".format(serverName));
 
-		if (server.serverRunning) {
-			server.quitSync;
-		};
+		if(server.serverRunning) {
+			server.quitSync
+		}
 	}
 
 	test_asyncPluginCommandInScsynth {
-		this.asyncPluginCommand("scsynth");
+		this.asyncPluginCommand("scsynth")
 	}
 
 	test_asyncPluginCommandInSupernova{
 		Server.supernova;
 		this.asyncPluginCommand("supernova");
 		// restore scsynth
-		Server.scsynth;
+		Server.scsynth
 	}
 
 }

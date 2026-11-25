@@ -5,11 +5,11 @@ TestUGen_Duty_Server : UnitTest {
 
 	setUp {
 		server = Server(this.class.name);
-		this.bootServer(server);
+		this.bootServer(server)
 	}
 
 	tearDown {
-		server.quitSync.remove;
+		server.quitSync.remove
 	}
 
 	/*
@@ -29,11 +29,11 @@ TestUGen_Duty_Server : UnitTest {
 				values.dupEach(numFrames),
 				"Duty should output exact values at audio rate. Tested with % frames per value".format(numFrames)
 			);
-			cond.test_(true).signal;
+			cond.test_(true).signal
 		};
 		{ func.value(dt, values) }.loadToFloatArray(dur, server, action);
 
-		cond.wait;
+		cond.wait
 	}
 
 	test_ar_1_frame {

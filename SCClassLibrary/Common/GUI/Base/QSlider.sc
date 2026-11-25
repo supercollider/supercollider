@@ -4,79 +4,78 @@ Slider : QAbstractStepValue {
 
 	*qtClass { ^'QcSlider' }
 
-	*new { arg parent, bounds;
-		^super.new( parent, bounds ).initSlider( bounds );
+	*new { |parent, bounds|
+		^super.new(parent, bounds).initSlider(bounds)
 	}
 
 	value {
-		^this.getProperty( \value );
+		^this.getProperty(\value)
 	}
 
-	value_ { arg argVal;
-		this.setProperty( \value, argVal );
+	value_ { |argVal|
+		this.setProperty(\value, argVal)
 	}
 
-	valueAction_ { arg val;
+	valueAction_ { |val|
 		this.value_(val);
-		action.value(this);
+		action.value(this)
 	}
 
 	step { ^this.getProperty(\step) }
 
 	thumbSize { ^this.getProperty(\handleLength) }
-	thumbSize_ { arg pixels; this.setProperty(\handleLength, pixels) }
+	thumbSize_ { |pixels| this.setProperty(\handleLength, pixels) }
 
 	knobColor { ^this.getProperty(\knobColor) }
-	knobColor_ { arg color; this.setProperty(\knobColor, color) }
+	knobColor_ { |color| this.setProperty(\knobColor, color) }
 
 	background { ^this.getProperty(\grooveColor) }
-	background_ { arg color; this.setProperty(\grooveColor, color) }
+	background_ { |color| this.setProperty(\grooveColor, color) }
 
-	initSlider { arg bounds;
+	initSlider { |bounds|
 		var r;
-		if( bounds.notNil ) {
+		if(bounds.notNil) {
 			r = bounds.asRect;
-			if( r.width > r.height ) {
-				this.orientation_( \horizontal );
+			if(r.width > r.height) {
+				this.orientation_(\horizontal)
 			} {
-				this.orientation_( \vertical );
+				this.orientation_(\vertical)
 			}
 		}
 	}
 
 	pixelStep { ^this.getProperty(\pixelStep) }
 
-	orientation_ { arg aSymbol;
+	orientation_ { |aSymbol|
 		orientation = aSymbol;
-		this.setProperty( \orientation, QOrientation(aSymbol) );
+		this.setProperty(\orientation, QOrientation(aSymbol))
 	}
 
-	defaultKeyDownAction {  arg char, modifiers, unicode, keycode, key;
-		var scale = this.getScale( modifiers );
-		switch( char,
-			$r, { this.valueAction = 1.0.rand },
-			$n, { this.valueAction = 0.0 },
-			$x, { this.valueAction = 1.0 },
-			$c, { this.valueAction = 0.5 },
+	defaultKeyDownAction { |char, modifiers, unicode, keycode, key|
+		var scale = this.getScale(modifiers);
+		switch(char)
+			{ $r } { this.valueAction = 1.0.rand }
+			{ $n } { this.valueAction = 0.0 }
+			{ $x } { this.valueAction = 1.0 }
+			{ $c } { this.valueAction = 0.5 }
 			{
-				switch( key,
+				switch(key,
 					16r5d, { this.increment(scale) },
 					16r1000013, { this.increment(scale) },
 					16r1000014, { this.increment(scale) },
 					16r5b, { this.decrement(scale) },
 					16r1000015, { this.decrement(scale) },
 					16r1000012, { this.decrement(scale) },
-					{ ^this; } // if unhandled, let Qt process the event
+					{ ^this } // if unhandled, let Qt process the event
 				);
-				this.doAction;
-			}
-		);
-		^true; // accept the event and stop its processing
+				this.doAction
+			};
+		^true // accept the event and stop its processing
 	}
 
-	defaultGetDrag { ^this.value; }
-	defaultCanReceiveDrag { ^View.currentDrag.isNumber; }
+	defaultGetDrag { ^this.value }
+	defaultCanReceiveDrag { ^View.currentDrag.isNumber }
 	defaultReceiveDrag {
-		this.valueAction = View.currentDrag;
+		this.valueAction = View.currentDrag
 	}
 }

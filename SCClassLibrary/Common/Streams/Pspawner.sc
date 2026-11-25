@@ -4,64 +4,64 @@ Spawner : Pattern {
 	var now;
 	var event;
 
-	*new { | func, stackSize=64 |
-		^super.new.init( func, stackSize)
+	*new { |func, stackSize = 64|
+		^super.new.init(func, stackSize)
 	}
 
-	suspend { | stream |
-		priorityQ.removeValue(stream);
+	suspend { |stream|
+		priorityQ.removeValue(stream)
 	}
 
 	suspendAll {
 		priorityQ.clear
 	}
 
-	init { | func, stackSize |
+	init { |func, stackSize|
 		priorityQ = PriorityQueue.new;
-		genStream = Routine({func.value(this) }, stackSize);
+		genStream = Routine({ func.value(this) }, stackSize);
 		now = 0;
-		priorityQ.put(now, genStream);
+		priorityQ.put(now, genStream)
 	}
 
-	par { | pattern, delta = 0 |
+	par { |pattern, delta = 0|
 		var stream = pattern.asStream;
 		priorityQ.put(now + delta, stream);
-		^stream;
+		^stream
 	}
 
-	seq { | pattern |
+	seq { |pattern|
 		pattern.embedInStream(event)
 	}
 
-	wait { | dur |
+	wait { |dur|
 		Event.silent(dur, event).yield
 	}
 
-	embedInStream { | inevent|
+	embedInStream { |inevent|
 
 		var outevent, stream, nexttime, cleanup;
 		event = inevent;					// gives genStream access to the event
 		cleanup = EventStreamCleanup.new;
 
-		while({
+		while {
 			priorityQ.notEmpty
-		},{
+		} {
 			stream = priorityQ.pop;
 			outevent = stream.next(event).asEvent;
 
-			if (outevent.isNil, {
+			if(outevent.isNil) {
 				nexttime = priorityQ.topPriority;
-				if (nexttime.notNil, {
+				if(nexttime.notNil) {
 					// that child stream ended, so rest until next one
 					outevent = Event.silent(nexttime - now, event);
 					cleanup.update(outevent);
 					event = outevent.yield;
-					now = nexttime;
-				},{
+					now = nexttime
+				} {
 					priorityQ.clear;
-					^cleanup.exit(event);
-				});
-			},{
+					^cleanup.exit(event)
+				}
+			} {
 				cleanup.update(outevent);
 				// requeue stream
 				priorityQ.put(now + outevent.delta, stream);
@@ -69,22 +69,22 @@ Spawner : Pattern {
 				outevent.put(\delta, nexttime - now);
 
 				event = outevent.yield;
-				now = nexttime;
-			});
-		});
-		^event;
+				now = nexttime
+			}
+		};
+		^event
 	}
 }
 
 Pspawner : Prout {
 
 	asStream {
-		^Routine({ | inval |
+		^Routine({ |inval|
 			this.embedInStream(inval)
 		})
 	}
 
-	embedInStream { | inevent |
+	embedInStream { |inevent|
 		^Spawner(routineFunc).embedInStream(inevent)
 	}
 
@@ -95,7 +95,7 @@ Pspawn : FilterPattern {
 
 	*new { |pattern, spawnProtoEvent|
 		^super.new(pattern)
-		.spawnProtoEvent_(spawnProtoEvent ?? { Event.default });
+		.spawnProtoEvent_(spawnProtoEvent ?? { Event.default })
 	}
 
 	embedInStream { |inevent|
@@ -104,28 +104,28 @@ Pspawn : FilterPattern {
 			while { (event = stream.next(spawnProtoEvent.copy.put(\spawner, sp))).notNil } {
 				method = event[\method];
 				case
-				{ method == \wait } {
-					event[\spawner].wait(event.delta)
-				}
-				{ #[seq, par].includes(method) } {
-					child = event[\pattern];
-					if(child.isKindOf(Symbol)) {
-						child = (event[\dict] ? Pdef).at(child);
-					};
-					event[\spawner].perform(event.method, child.value(event));
-					if(event.delta > 0) {
+					{ method == \wait } {
 						event[\spawner].wait(event.delta)
 					}
-				}
-				// suspend requires access to the specific stream
-				// don't know how to get it... maybe implement later
-				{ method == \suspendAll } {
-					event[\spawner].suspendAll
-				}
-				{ "Unrecognized method % in spawner event."
-					.format(method.asCompileString).warn;
-				}
-			};
+					{ #[seq, par].includes(method) } {
+						child = event[\pattern];
+						if(child.isKindOf(Symbol)) {
+							child = (event[\dict] ? Pdef).at(child)
+						};
+						event[\spawner].perform(event.method, child.value(event));
+						if(event.delta > 0) {
+							event[\spawner].wait(event.delta)
+						}
+					}
+					// suspend requires access to the specific stream
+					// don't know how to get it... maybe implement later
+					{ method == \suspendAll } {
+						event[\spawner].suspendAll
+					} {
+						"Unrecognized method % in spawner event."
+							.format(method.asCompileString).warn
+					}
+			}
 		}).embedInStream(inevent)
 	}
 }
