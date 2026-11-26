@@ -118,9 +118,11 @@ try {
 		var str = action.(CollStream()).collection;
 		str = str.split($\n).collect{ |line|
 			line
-				.replaceRegexp("(\\s*)[0-9]+ │", "\t\t│")
-				.replaceRegexp("(\\s*)┆", "\t\t┆")
-				.replaceRegexp("(\\s*)file:/.*$", "\t\tfile:/")
+				.replaceRegexp("^\\s*[0-9]+ │", "\t\t │")
+				.replaceRegexp("^\\s*[0-9]+\\*│", "\t\t*│")
+				.replaceRegexp("^\\s*>│", "\t\t>│")
+				.replaceRegexp("^\\s*┆", "\t\t ┆")
+				.replaceRegexp("^\\s*file:/.*$", "\t\tfile:/")
 		}.join($\n);
 
 		File.use(thisProcess.argv[0], "w", {|f|
