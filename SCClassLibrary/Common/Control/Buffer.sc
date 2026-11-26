@@ -31,8 +31,8 @@ Buffer {
 		^super.newCopyArgs(
 			server,
 			bufnum,
-			numFrames,
-			numChannels,
+			numFrames.asInteger,
+			numChannels.asInteger,
 			sampleRate
 		).alloc(completionMessage).cache
 	}
