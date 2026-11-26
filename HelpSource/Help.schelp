@@ -87,6 +87,7 @@ list::
 ## link::Classes/Node::
 ## link::Classes/Group::
 ## link::Classes/Bus::
+## link::Guides/Buffer_PlayBuf_BufRd_SoundFile::
 ::
 
 subsubsection:: Live Coding Essentials
