@@ -195,7 +195,7 @@ inline void dumpOSC(int mode, const char* inData, int32 size) {
 }
 
 inline void dumpReplyAddress(const ReplyAddress& addr) {
-#ifndef __EMSCRIPTEN__
+#ifndef NO_NETWORKING
     scprintf("mAddress %s\n", addr.mAddress.to_string().c_str());
 #endif
     if (addr.mProtocol == kUDP)

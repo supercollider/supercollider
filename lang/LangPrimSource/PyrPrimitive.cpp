@@ -4382,12 +4382,9 @@ void initPrimitives() {
     initLIDPrimitives();
 #endif
 
+#ifndef NO_NETWORKING
     void initSerialPrimitives();
     initSerialPrimitives();
-
-#ifdef SCOGL_COMPILE
-    void initOpenGLPrimitives();
-    initOpenGLPrimitives();
 #endif
 
 #ifdef SC_QT

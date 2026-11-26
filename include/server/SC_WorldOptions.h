@@ -112,7 +112,7 @@ SCSYNTH_DLLEXPORT_C void SetPrintFunc(PrintFunc func);
 SCSYNTH_DLLEXPORT_C World* World_New(WorldOptions* inOptions);
 SCSYNTH_DLLEXPORT_C void World_Cleanup(World* inWorld, bool unloadPlugins = false);
 SCSYNTH_DLLEXPORT_C void World_NonRealTimeSynthesis(World* inWorld, struct WorldOptions* inOptions);
-#ifndef __EMSCRIPTEN__
+#ifndef NO_NETWORKING
 SCSYNTH_DLLEXPORT_C bool World_OpenUDP(World* inWorld, const char* bindTo, int inPort);
 SCSYNTH_DLLEXPORT_C bool World_OpenTCP(World* inWorld, const char* bindTo, int inPort, int inMaxConnections,
                                        int inBacklog);

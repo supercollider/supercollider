@@ -116,7 +116,7 @@ SCSYNTH_DLLEXPORT_C bool World_SendPacketWithContext(World* inWorld, int inSize,
             dumpOSC(inWorld->mDumpOSC, inData, inSize);
 
         auto packet = std::make_unique<OSC_Packet>();
-#ifndef __EMSCRIPTEN__
+#ifndef NO_NETWORKING
         packet->mReplyAddr.mAddress = boost::asio::ip::address();
 #endif
         packet->mReplyAddr.mProtocol = kUDP;

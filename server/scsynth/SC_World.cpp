@@ -31,7 +31,6 @@
 #include "SC_UnitDef.h"
 #include "SC_BufGen.h"
 #include "SC_Node.h"
-#include "SC_ComPort.h"
 #include "SC_CoreAudio.h"
 #include "SC_Group.h"
 #include "SC_Errors.h"
@@ -43,6 +42,10 @@
 #include "../../common/Samp.hpp"
 #include "SC_StringParser.h"
 #include "SC_fftlib.hpp"
+
+#ifndef NO_NETWORKING
+#    include "SC_ComPort.h"
+#endif
 
 #include <cstdio>
 #include <vector>
@@ -285,7 +288,7 @@ void World_LoadGraphDefs(World* world) {
     }
 }
 
-#ifndef __EMSCRIPTEN__
+#ifndef NO_NETWORKING
 namespace scsynth {
 void startAsioThread();
 void stopAsioThread();
@@ -474,7 +477,7 @@ World* World_New(WorldOptions* inOptions) {
             hw->mAudioDriver = nullptr;
         }
 
-#ifndef __EMSCRIPTEN__
+#ifndef NO_NETWORKING
         if (!scsynth::asioThreadStarted()) {
             scsynth::startAsioThread();
         }
@@ -995,7 +998,7 @@ void World_Cleanup(World* world, bool unloadPlugins) {
 
     hw->mTerminating = true;
 
-#ifndef __EMSCRIPTEN__
+#ifndef NO_NETWORKING
     if (scsynth::asioThreadStarted()) {
         if (world->mRealTime) {
             // We close all open UDP and TCP ports on the ASIO thread and let any pending tasks
@@ -1076,8 +1079,10 @@ void World_Cleanup(World* world, bool unloadPlugins) {
         if (hw->mNRTCmdFile)
             fclose(hw->mNRTCmdFile);
 #endif
+#ifndef NO_NETWORKING
         delete hw->mUdpInPort;
         delete hw->mTcpInPort;
+#endif
         delete hw->mUsers;
         delete hw->mAvailableClientIDs;
         delete hw->mClientIDdict;

@@ -25,8 +25,6 @@
 #include "SC_Msg.h"
 #include "SC_ReplyImpl.hpp"
 
-#include <boost/asio.hpp>
-
 #include <stdexcept>
 #include <thread>
 
@@ -292,9 +290,9 @@ UDPCustom::UDPCustom(int inPortNum, HandlerType handlerType): UDP(inPortNum, han
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 TCP::TCP(int inPortNum, int inMaxConnections, int inBacklog, HandlerType handlerType):
-    mAcceptor(ioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), inPortNum)),
+    mHandlerType(handlerType),
     mPortNum(inPortNum),
-    mHandlerType(handlerType) {
+    mAcceptor(ioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), inPortNum)) {
     // FIXME: handle max connections
     // FIXME: backlog???
 
@@ -304,7 +302,7 @@ TCP::TCP(int inPortNum, int inMaxConnections, int inBacklog, HandlerType handler
 void TCP::startAccept() {
     const auto newConnection = std::make_shared<Detail::TCPConnection>(ioContext, mPortNum, mHandlerType);
 
-    mAcceptor.async_accept(newConnection->getSocket(),
+    mAcceptor.async_accept(newConnection->socket(),
                            [this, newConnection](auto error) { handleAccept(newConnection, error); });
 }
 
@@ -339,8 +337,7 @@ TCP::TCP(std::uint64_t inAddress, int inPort, HandlerType handlerType, ClientNot
 }
 
 void TCP::initHandler(HandlerType handlerType) {
-    switch (handlerType) {
-    case HandlerType::OSC:
+    if (handlerType == HandlerType::OSC) {
         using Handler = MessageHandler<HandlerType::OSC>;
         mHandleFunc = [this](auto data, auto dataSize) {
             Handler::handleMessage(kTCP, mSocket.native_handle(), mSocket.remote_endpoint().address(),
@@ -375,7 +372,6 @@ void TCP::handleLengthReceived(const boost::system::error_code& error, size_t by
 }
 
 void TCP::handleMsgReceived(const boost::system::error_code& error, size_t bytes_transferred) {
-    double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
     if (error == boost::asio::error::connection_aborted) {
         if (mClientNotifyFunc)
             (*mClientNotifyFunc)(mClientData);
@@ -394,7 +390,7 @@ void TCP::handleMsgReceived(const boost::system::error_code& error, size_t bytes
     startReceive();
 }
 
-int TCP::Close() {
+int TCP::close() {
     boost::system::error_code error;
 
     mSocket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, error);

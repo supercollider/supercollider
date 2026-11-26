@@ -328,22 +328,6 @@ static void passOscMessageToSclangThread(const emscripten::val& data) {
     emscripten_dispatch_to_thread_async(gSclangWasmWorkerThread, EM_FUNC_SIG_VI, runOscMessage, nullptr, packet);
 }
 
-// patches
-void startAsioThread() {}
-void stopAsioThread() {}
-void initSerialPrimitives() {}
-
-InPort::UDP::UDP(int inPortNum, HandlerType, int portsToCheck) {}
-InPort::UDPCustom::UDPCustom(int inPortNum, HandlerType handlerType): UDP(inPortNum, handlerType, 1) {}
-OutPort::TCP::TCP(std::uint64_t inAddress, int inPort, HandlerType, ClientNotifyFunc notifyFunc, void* clientData) {}
-int OutPort::TCP::Close() { return errNone; }
-
-SCSYNTH_DLLEXPORT_C bool World_SendPacket(World* inWorld, int inSize, char* inData, ReplyFunc inFunc) { return true; }
-SCSYNTH_DLLEXPORT_C bool World_SendPacketWithContext(World* inWorld, int inSize, char* inData, ReplyFunc inFunc,
-                                                     void* inContext) {
-    return true;
-}
-
 // OSCData.cpp / network patches
 
 /** @brief Module.onOsc needs to be called on the main JS thread.

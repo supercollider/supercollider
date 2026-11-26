@@ -99,7 +99,7 @@ set(scsynth_sources
         ${CMAKE_SOURCE_DIR}/common/SC_Codecvt.cpp
 )
 
-if(NOT EMSCRIPTEN)
+if(NOT NO_NETWORKING)
     list(APPEND scsynth_sources SC_ComPort.cpp)
 endif()
 
@@ -228,13 +228,13 @@ if(UNIX AND NOT APPLE)
 endif()
 
 if(STATIC_PLUGINS)
-    target_compile_definitions(libscsynth PRIVATE "-DSTATIC_PLUGINS")
+    target_compile_definitions(libscsynth PRIVATE STATIC_PLUGINS)
     # add plugin archives
     target_link_libraries(libscsynth PRIVATE ${static_plugins})
 endif()
 
 if(NO_X11)
-    target_compile_definitions(libscsynth PRIVATE "-DNO_X11")
+    target_compile_definitions(libscsynth PRIVATE NO_X11)
 endif()
 
 if(NOT NO_AVAHI)
@@ -250,6 +250,9 @@ if(NOT NO_AVAHI)
     endif()
 endif()
 
+if(NO_NETWORKING)
+    target_compile_definitions(libscsynth PUBLIC NO_NETWORKING)
+endif()
 
 if (AUDIOAPI STREQUAL jack)
     target_link_libraries(libscsynth PRIVATE ${JACK_LINK_LIBRARIES})

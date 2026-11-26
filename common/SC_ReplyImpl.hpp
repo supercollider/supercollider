@@ -23,14 +23,14 @@
 
 #include "SC_Reply.h"
 
-#ifndef __EMSCRIPTEN__
+#ifndef NO_NETWORKING
 #    include <boost/asio.hpp>
 #endif
 
 enum Protocol { kUDP, kTCP };
 
 struct ReplyAddress {
-#ifndef __EMSCRIPTEN__
+#ifndef NO_NETWORKING
     boost::asio::ip::address mAddress;
 #endif
     enum Protocol mProtocol;
@@ -44,7 +44,7 @@ struct ReplyAddress {
 inline void null_reply_func(const ReplyAddress* addr, const char* msg, int size) {}
 
 inline bool operator==(const ReplyAddress& a, const ReplyAddress& b) {
-#ifdef __EMSCRIPTEN__
+#ifdef NO_NETWORKING
     return a.mProtocol == b.mProtocol && a.mPort == b.mPort && a.mSocket == b.mSocket;
 #else
     return a.mAddress == b.mAddress && a.mProtocol == b.mProtocol && a.mPort == b.mPort && a.mSocket == b.mSocket;
@@ -52,7 +52,7 @@ inline bool operator==(const ReplyAddress& a, const ReplyAddress& b) {
 }
 
 inline bool operator<(const ReplyAddress& a, const ReplyAddress& b) {
-#ifndef __EMSCRIPTEN__
+#ifndef NO_NETWORKING
     if (a.mAddress != b.mAddress) {
         return a.mAddress < b.mAddress;
     }

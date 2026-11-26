@@ -91,7 +91,7 @@ int scsynth_main(int argc, char** argv) {
 #endif
     }
 
-#ifndef __EMSCRIPTEN__
+#ifndef NO_NETWORKING
     if (options.mUdpPort.has_value()) {
         if (!World_OpenUDP(world, options.mBindAddressString.c_str(), *options.mUdpPort)) {
             World_Cleanup(world, true);

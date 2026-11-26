@@ -1581,7 +1581,9 @@ static void runShutdown(bool wasCompiledPreviously) {
 
 void closeAllGUIScreens();
 void TempoClock_stopAll();
+#ifndef NO_NETWORKING
 void closeAllCustomPorts();
+#endif
 
 void shutdownLibrary(bool wasCompiledPreviously) {
     gClassLibraryInfo.markShuttingDown();
@@ -1595,7 +1597,9 @@ void shutdownLibrary(bool wasCompiledPreviously) {
 
     {
         auto lock = std::lock_guard<std::timed_mutex> { gLangMutex };
+#ifndef NO_NETWORKING
         closeAllCustomPorts();
+#endif
 
         if (wasCompiledPreviously) {
             VMGlobals* g = gMainVMGlobals;

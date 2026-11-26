@@ -84,20 +84,21 @@ set(sclang_sources
     ${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
 )
 
-# emscripten (wasm compiler) does not have network capabilities
-# and does not use the CLI, but uses its own JS bindings for interactions
-if(NOT EMSCRIPTEN)
+if(NOT NO_NETWORKING)
     LIST(APPEND sclang_sources
         LangPrimSource/SC_ComPort.cpp
-        LangPrimSource/PyrSerialPrim.cpp
+        LangPrimSource/PyrSerialPrim.cpp # depends on boost::asio
+    )
+endif()
+
+# emscripten (wasm compiler) does not use the CLI, but uses its own JS bindings for interactions
+if(NOT EMSCRIPTEN)
+    LIST(APPEND sclang_sources
         LangSource/SC_TerminalClient.cpp
         LangSource/SC_CLIOptions.cpp
-        LangSource/cmdLineFuncs.cpp
     )
 else()
-    list(APPEND sclang_sources
-        LangSource/SC_WasmClient.cpp
-    )
+    list(APPEND sclang_sources LangSource/SC_WasmClient.cpp)
 endif()
 
 if(APPLE)
@@ -213,6 +214,10 @@ target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC)
 target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
 
 target_link_libraries(libsclang sc_lexer)
+
+if(NO_NETWORKING)
+    target_compile_definitions(libsclang PUBLIC NO_NETWORKING)
+endif()
 
 if(SC_QT OR SC_IDE)
     get_target_property(QtCore_location Qt${QT_VERSION_MAJOR}::Core LOCATION)
@@ -360,7 +365,7 @@ endif()
 
 target_link_libraries(libsclang yaml-cpp)
 
-add_executable(sclang LangSource/cmdLineFuncs.cpp ${RES_FILES})
+add_executable(sclang LangSource/sclang_main.cpp ${RES_FILES})
 target_link_libraries(sclang libsclang)
 target_link_libraries(sclang ${ICU_LIBRARIES})
 
