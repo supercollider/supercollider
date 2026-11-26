@@ -68,17 +68,17 @@ ServerOptions {
 	}
 
 	device_ { |dev|
-		if (dev.isKindOf(Array)) {
+		if(dev.isKindOf(Array)) {
 			// elements are either String-like or nil
 			inDevice = dev.wrapAt(0) !? _.asString;
-			outDevice = dev.wrapAt(1) !? _.asString;
+			outDevice = dev.wrapAt(1) !? _.asString
 		} {
 			// 'dev' is either String-like or nil
-			inDevice = outDevice = dev !? _.asString;
+			inDevice = outDevice = dev !? _.asString
 		}
 	}
 
-	asOptionsString { | port = 57110 |
+	asOptionsString { |port = 57110|
 		var o = if(protocol == \tcp) { " -t " } { " -u " } ++ port;
 
 		o = o ++ " -a " ++ (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels).asInteger;
@@ -90,7 +90,7 @@ ServerOptions {
 		o = o ++ " -n " ++ maxNodes.asInteger;
 		o = o ++ " -d " ++ maxSynthDefs.asInteger;
 		o = o ++ " -z " ++ blockSize.asInteger;
-		if (hardwareBufferSize.notNil) {
+		if(hardwareBufferSize.notNil) {
 			o = o ++ " -Z " ++ hardwareBufferSize.asInteger
 		};
 		o = o ++ " -m " ++ memSize.asInteger;
@@ -99,19 +99,19 @@ ServerOptions {
 		o = o ++ " -S " ++ sampleRate.asInteger;
 		o = o ++ " -V " ++ verbosity.asInteger;
 		o = o ++ " -l " ++ maxLogins.asInteger;
-		o = o ++ if (loadDefs) { " -D 1" } { " -D 0" };
-		o = o ++ if (zeroConf) { " -R 1" } { " -R 0" };
+		o = o ++ if(loadDefs) { " -D 1" } { " -D 0" };
+		o = o ++ if(zeroConf) { " -R 1" } { " -R 0" };
 
 		// No way to explicitly specify false.
-		if (memoryLocking) { o = o ++ " -L" };
+		if(memoryLocking) { o = o ++ " -L" };
 
 		// Server defaults to a nullptr for some string values and doesn't let you state a 'default' value, so nil check is required.
-		if (inputStreamsEnabled.notNil) { o = o ++ " -I " ++ inputStreamsEnabled };
-		if (outputStreamsEnabled.notNil) { o = o ++ " -O " ++ outputStreamsEnabled };
-		if (restrictedPath.notNil) { o = o ++ " -P " ++ restrictedPath };
+		if(inputStreamsEnabled.notNil) { o = o ++ " -I " ++ inputStreamsEnabled };
+		if(outputStreamsEnabled.notNil) { o = o ++ " -O " ++ outputStreamsEnabled };
+		if(restrictedPath.notNil) { o = o ++ " -P " ++ restrictedPath };
 
-		if (inDevice == outDevice) {
-			if (inDevice.notNil) {
+		if(inDevice == outDevice) {
+			if(inDevice.notNil) {
 				// same device for input and output
 				o = o ++ " -H %".format(inDevice.quote)
 			} {
@@ -119,26 +119,26 @@ ServerOptions {
 			}
 		} {
 			// different input and output devices
-			if (inDevice.notNil) { o = o ++ " --indevice " ++ inDevice.quote };
-			if (outDevice.notNil) { o = o ++ " --outdevice " ++ outDevice.quote };
+			if(inDevice.notNil) { o = o ++ " --indevice " ++ inDevice.quote };
+			if(outDevice.notNil) { o = o ++ " --outdevice " ++ outDevice.quote }
 		};
 
-		if (ugenPluginsPath.notNil) {
+		if(ugenPluginsPath.notNil) {
 			if(ugenPluginsPath.isString) {
 				ugenPluginsPath = ugenPluginsPath.bubble
 			};
 			o = o ++ " -U " ++ ugenPluginsPath.collect { |p|
 				thisProcess.platform.formatPathForCmdLine(p)
-			}.join(Platform.pathDelimiter);
+			}.join(Platform.pathDelimiter)
 		};
 
-		if (Server.program.asString.contains("supernova")) {
-			o = o ++ if (useSystemClock) { " -C 1" } { " -C 0" };
-			if (threads.notNil) { o = o ++ " -T " ++ threads.asInteger };
-			if (threadPinning.notNil) { o = o ++ " -y " ++ threadPinning.asBoolean.asInteger };
+		if(Server.program.asString.contains("supernova")) {
+			o = o ++ if(useSystemClock) { " -C 1" } { " -C 0" };
+			if(threads.notNil) { o = o ++ " -T " ++ threads.asInteger };
+			if(threadPinning.notNil) { o = o ++ " -y " ++ threadPinning.asBoolean.asInteger }
 		};
 
-		if (thisProcess.platform.name === \osx && safetyClipThreshold.notNil) {
+		if(thisProcess.platform.name === \osx && safetyClipThreshold.notNil) {
 			o = o ++ " -s " ++ safetyClipThreshold
 		};
 
@@ -156,51 +156,50 @@ ServerOptions {
 
 	numPrivateAudioBusChannels_ { |numChannels = 1020| // arg default value should match defaultValues above
 		numPrivateAudioBusChannels = numChannels;
-		this.recalcChannels;
+		this.recalcChannels
 	}
 
 	numAudioBusChannels_ { |numChannels = 1024| // arg default value should match defaultValues above
 		numAudioBusChannels = numChannels;
-		numPrivateAudioBusChannels = numAudioBusChannels - numInputBusChannels - numOutputBusChannels;
+		numPrivateAudioBusChannels = numAudioBusChannels - numInputBusChannels - numOutputBusChannels
 	}
 
 	numInputBusChannels_ { |numChannels = 2| // arg default value should match defaultValues above
 		numInputBusChannels = numChannels;
-		this.recalcChannels;
+		this.recalcChannels
 	}
 
 	numOutputBusChannels_ { |numChannels = 2| // arg default value should match defaultValues above
 		numOutputBusChannels = numChannels;
-		this.recalcChannels;
+		this.recalcChannels
 	}
 
 	recalcChannels {
-		numAudioBusChannels = numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels;
+		numAudioBusChannels = numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels
 	}
 
 	maxLogins_ { |logins|
 		if(logins > 32) {
-			Error("maxLogins should be <= 32, tried to set to " ++ logins).throw;
+			Error("maxLogins should be <= 32, tried to set to " ++ logins).throw
 		};
-		maxLogins = logins;
+		maxLogins = logins
 	}
 
-	*prListDevices {
-		arg in, out;
+	*prListDevices { |in, out|
 		_ListAudioDevices
 		^this.primitiveFailed
 	}
 
 	*devices {
-		^this.prListDevices(1, 1);
+		^this.prListDevices(1, 1)
 	}
 
 	*inDevices {
-		^this.prListDevices(1, 0);
+		^this.prListDevices(1, 0)
 	}
 
 	*outDevices {
-		^this.prListDevices(0, 1);
+		^this.prListDevices(0, 1)
 	}
 }
 
@@ -209,7 +208,7 @@ ServerShmInterface {
 	// order matters!
 	var ptr, finalizer;
 
-	*new {|port|
+	*new { |port|
 		^super.new.connect(port)
 	}
 
@@ -288,7 +287,7 @@ Server {
 		defaultOptionsClass = if(Platform.hasBelaSupport, BelaServerOptions, ServerOptions);
 
 		default = local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
-		internal = Server.new(\internal, NetAddr.new);
+		internal = Server.new(\internal, NetAddr.new)
 	}
 
 	*fromName { |name|
@@ -300,7 +299,7 @@ Server {
 	*default_ { |server|
 		default = server;
 		if(sync_s) { thisProcess.interpreter.s = server };  // sync with s?
-		this.all.do { |each| each.changed(\default, server) };
+		this.all.do { |each| each.changed(\default, server) }
 	}
 
 	*new { |name, addr, options, clientID|
@@ -334,7 +333,7 @@ Server {
 
 		pidReleaseCondition = Condition({ this.pid == nil });
 
-		Server.changed(\serverAdded, this);
+		Server.changed(\serverAdded, this)
 
 	}
 
@@ -342,22 +341,22 @@ Server {
 
 	remove {
 		all.remove(this);
-		named.removeAt(this.name);
+		named.removeAt(this.name)
 	}
 
 	addr_ { |netAddr|
 		addr = netAddr ?? { NetAddr("127.0.0.1", 57110) };
 		inProcess = addr.addr == 0;
 		isLocal = inProcess || { addr.isLocal };
-		remoteControlled = isLocal.not;
+		remoteControlled = isLocal.not
 	}
 
 	name_ { |argName|
 		name = argName.asSymbol;
 		if(named.at(argName).notNil) {
-			"Server name already exists: '%'. Please use a unique name".format(name, argName).warn;
+			"Server name already exists: '%'. Please use a unique name".format(name, argName).warn
 		} {
-			named.put(name, this);
+			named.put(name, this)
 		}
 	}
 
@@ -367,8 +366,8 @@ Server {
 			tree.value(this);
 			this.sync;
 			ServerTree.run(this);
-			this.sync;
-		}, AppClock);
+			this.sync
+		}, AppClock)
 	}
 
 	/* clientID */
@@ -377,7 +376,7 @@ Server {
 	// called from prHandleClientLoginInfoFromServer once after booting.
 	clientID_ { |val|
 		var failstr = "Server % couldn't set clientID to % - %. clientID is still %.";
-		if (this.serverRunning) {
+		if(this.serverRunning) {
 			failstr.format(name, val.cs, "server is running", clientID).warn;
 			^this
 		};
@@ -386,7 +385,7 @@ Server {
 			failstr.format(name, val.cs, "not an Integer", clientID).warn;
 			^this
 		};
-		if (val < 0 or: { val >= this.maxNumClients }) {
+		if(val < 0 or: { val >= this.maxNumClients }) {
 			failstr.format(name,
 				val.cs,
 				"outside of allowed server.maxNumClients range of 0 - %".format(this.maxNumClients - 1),
@@ -395,11 +394,11 @@ Server {
 			^this
 		};
 
-		if (clientID != val) {
-			"% : setting clientID to %.\n".postf(this, val);
+		if(clientID != val) {
+			"% : setting clientID to %.\n".postf(this, val)
 		};
 		clientID = val;
-		this.newAllocators;
+		this.newAllocators
 	}
 
 	/* clientID-based id allocators */
@@ -409,7 +408,7 @@ Server {
 		this.newBusAllocators;
 		this.newBufferAllocators;
 		this.newScopeBufferAllocators;
-		NotificationCenter.notify(this, \newAllocators);
+		NotificationCenter.notify(this, \newAllocators)
 	}
 
 	newNodeAllocators {
@@ -420,7 +419,7 @@ Server {
 		);
 		// defaultGroup and defaultGroups depend on allocator,
 		// so always make them here:
-		this.makeDefaultGroups;
+		this.makeDefaultGroups
 	}
 
 	newBusAllocators {
@@ -448,7 +447,7 @@ Server {
 			numAudioPerClient,
 			audioReservedOffset,
 			audioBusClientOffset + audioBusIOOffset
-		);
+		)
 	}
 
 	newBufferAllocators {
@@ -460,7 +459,7 @@ Server {
 			numBuffersPerClient,
 			numReservedBuffers,
 			bufferClientOffset
-		);
+		)
 	}
 
 	newScopeBufferAllocators {
@@ -483,13 +482,13 @@ Server {
 
 	freeAllBuffers {
 		var bundle;
-		bufferAllocator.blocks.do { arg block;
+		bufferAllocator.blocks.do { |block|
 			(block.address .. block.address + block.size - 1).do { |i|
-				bundle = bundle.add( ["/b_free", i] );
+				bundle = bundle.add(["/b_free", i])
 			};
-			bufferAllocator.free(block.address);
+			bufferAllocator.free(block.address)
 		};
-		this.sendBundle(nil, *bundle);
+		this.sendBundle(nil, *bundle)
 	}
 
 	nextNodeID {
@@ -507,56 +506,56 @@ Server {
 	prHandleClientLoginInfoFromServer { |newClientID, newMaxLogins|
 
 		// only set maxLogins if not internal server
-		if (inProcess.not) {
-			if (newMaxLogins.notNil) {
-				if (newMaxLogins != options.maxLogins) {
+		if(inProcess.not) {
+			if(newMaxLogins.notNil) {
+				if(newMaxLogins != options.maxLogins) {
 					"%: server process has maxLogins % - adjusting my options accordingly.\n"
-					.postf(this, newMaxLogins);
+					.postf(this, newMaxLogins)
 				} {
 					"%: server process's maxLogins (%) matches with my options.\n"
-					.postf(this, newMaxLogins);
+					.postf(this, newMaxLogins)
 				};
-				options.maxLogins = maxNumClients = newMaxLogins;
+				options.maxLogins = maxNumClients = newMaxLogins
 			} {
 				"%: no maxLogins info from server process.\n"
-				.postf(this, newMaxLogins);
-			};
+				.postf(this, newMaxLogins)
+			}
 		};
-		if (newClientID.notNil) {
-			if (newClientID == clientID) {
+		if(newClientID.notNil) {
+			if(newClientID == clientID) {
 				"%: keeping clientID (%) as confirmed by server process.\n"
-				.postf(this, newClientID);
+				.postf(this, newClientID)
 			} {
 				"%: setting clientID to %, as obtained from server process.\n"
-				.postf(this, newClientID);
+				.postf(this, newClientID)
 			};
-			this.clientID = newClientID;
-		};
+			this.clientID = newClientID
+		}
 	}
 
-	prHandleNotifyFailString {|failString, msg|
+	prHandleNotifyFailString { |failString, msg|
 
 		// post info on some known error cases
 		case
-		{ failString.asString.contains("already registered") } {
-			// when already registered, msg[3] is the clientID by which
-			// the requesting client was registered previously
-			"% - already registered with clientID %.\n".postf(this, msg[3]);
-			statusWatcher.prHandleLoginWhenAlreadyRegistered(msg[3]);
+			{ failString.asString.contains("already registered") } {
+				// when already registered, msg[3] is the clientID by which
+				// the requesting client was registered previously
+				"% - already registered with clientID %.\n".postf(this, msg[3]);
+				statusWatcher.prHandleLoginWhenAlreadyRegistered(msg[3])
 
-		} { failString.asString.contains("not registered") } {
-			// unregister when already not registered:
-			"% - not registered.\n".postf(this);
-			statusWatcher.notified = false;
-		} { failString.asString.contains("too many users") } {
-			"% - could not register, too many users.\n".postf(this);
-			statusWatcher.notified = false;
-		} {
-			// throw error if unknown failure
-			Error(
-				"Failed to register with server '%' for notifications: %\n"
-				"To recover, please reboot the server.".format(this, msg)).throw;
-		};
+			} { failString.asString.contains("not registered") } {
+				// unregister when already not registered:
+				"% - not registered.\n".postf(this);
+				statusWatcher.notified = false
+			} { failString.asString.contains("too many users") } {
+				"% - could not register, too many users.\n".postf(this);
+				statusWatcher.notified = false
+			} {
+				// throw error if unknown failure
+				Error(
+					"Failed to register with server '%' for notifications: %\n"
+					"To recover, please reboot the server.".format(this, msg)).throw
+			}
 	}
 
 	/* network messages */
@@ -578,16 +577,16 @@ Server {
 		if(condition.isNil) { condition = Condition.new };
 		cmdName = args[0].asString;
 		if(cmdName[0] != $/) { cmdName = cmdName.insert(0, $/) };
-		resp = OSCFunc({|msg|
+		resp = OSCFunc({ |msg|
 			if(msg[1].asString == cmdName) {
 				resp.free;
 				condition.test = true;
-				condition.signal;
-			};
+				condition.signal
+			}
 		}, '/done', addr);
 		condition.test = false;
 		addr.sendBundle(nil, args);
-		condition.wait;
+		condition.wait
 	}
 
 	sync { |condition, bundles, latency| // array of bundles that cause async action
@@ -600,7 +599,7 @@ Server {
 			syncThread = Routine.run {
 				var c = Condition.new;
 				while { syncTasks.notEmpty } { syncTasks.removeAt(0).value(c) };
-				syncThread = nil;
+				syncThread = nil
 			}
 		}
 	}
@@ -613,7 +612,7 @@ Server {
 		addr.sendBundle(time, *(msgs.asArray))
 	}
 
-	reorder { |nodeList, target, addAction=\addToHead|
+	reorder { |nodeList, target, addAction = \addToHead|
 		target = target.asTarget;
 		this.sendMsg(62, Node.actionNumberFor(addAction), target.nodeID, *(nodeList.collect(_.nodeID))) //"/n_order"
 	}
@@ -622,22 +621,22 @@ Server {
 	sendSynthDef { |name, dir|
 		var file, buffer;
 		dir = dir ? SynthDef.synthDefDir;
-		file = File(dir ++ name ++ ".scsyndef","r");
+		file = File(dir ++ name ++ ".scsyndef", "r");
 		if(file.isOpen.not) { ^nil };
 		protect {
 			buffer = Int8Array.newClear(file.length);
-			file.read(buffer);
+			file.read(buffer)
 		} {
-			file.close;
+			file.close
 		};
-		this.sendMsg("/d_recv", buffer);
+		this.sendMsg("/d_recv", buffer)
 	}
 
 	// tell server to load from disk
 	loadSynthDef { |name, completionMsg, dir|
 		dir = dir ? SynthDef.synthDefDir;
 		this.listSendMsg(
-			["/d_load", dir ++ name ++ ".scsyndef", completionMsg ]
+			["/d_load", dir ++ name ++ ".scsyndef", completionMsg]
 		)
 	}
 
@@ -653,28 +652,28 @@ Server {
 		// continue adding to, or nil for a new bundle.
 		if(addr.hasBundle) {
 			bundle = addr.bundle.addAll(bundle);
-			addr.bundle = []; // debatable
+			addr.bundle = [] // debatable
 		};
-		addr = BundleNetAddr.copyFrom(addr, bundle);
+		addr = BundleNetAddr.copyFrom(addr, bundle)
 	}
 
 	closeBundle { |time| // set time to false if you don't want to send.
 		var bundle;
 		if(addr.hasBundle) {
 			bundle = addr.closeBundle(time);
-			addr = addr.saveAddr;
+			addr = addr.saveAddr
 		} {
 			"there is no open bundle.".warn
 		};
-		^bundle;
+		^bundle
 	}
 
 	makeBundle { |time, func, bundle|
 		this.openBundle(bundle);
 		try {
 			func.value(this);
-			bundle = this.closeBundle(time);
-		} {|error|
+			bundle = this.closeBundle(time)
+		} { |error|
 			addr = addr.saveAddr; // on error restore the normal NetAddr
 			error.throw
 		}
@@ -705,10 +704,10 @@ Server {
 		// if the server fails to boot, the failure error gets posted TWICE.
 		// So, we suppress one of them.
 		if(this.serverRunning.not) { this.boot(onFailure: true) };
-		this.doWhenBooted(onComplete, limit, onFailure, clock);
+		this.doWhenBooted(onComplete, limit, onFailure, clock)
 	}
 
-	doWhenBooted { |onComplete, limit=100, onFailure, clock|
+	doWhenBooted { |onComplete, limit = 100, onFailure, clock|
 		statusWatcher.doWhenBooted(onComplete, limit, onFailure, clock)
 	}
 
@@ -735,7 +734,7 @@ Server {
 			condition.test = true;
 			condition.signal
 		};
-		condition.wait;
+		condition.wait
 	}
 
 
@@ -759,9 +758,9 @@ Server {
 					("maximum determined latency of" + name + ":" + result + "s").postln;
 					func.value(result)
 				}
-			};
+			}
 		};
-		pingFunc.value;
+		pingFunc.value
 	}
 
 	cachedBuffersDo { |func|
@@ -775,22 +774,22 @@ Server {
 	// keep defaultGroups for all clients on this server:
 	makeDefaultGroups {
 		defaultGroups = this.maxNumClients.collect { |clientID|
-			Group.basicNew(this, nodeAllocator.numIDs * clientID + 1);
+			Group.basicNew(this, nodeAllocator.numIDs * clientID + 1)
 		};
-		defaultGroup = defaultGroups[clientID];
+		defaultGroup = defaultGroups[clientID]
 	}
 
 	defaultGroupID { ^defaultGroup.nodeID }
 
 	sendDefaultGroups {
 		defaultGroups.do { |group|
-			this.sendMsg("/g_new", group.nodeID, 0, 0);
-		};
+			this.sendMsg("/g_new", group.nodeID, 0, 0)
+		}
 	}
 
 	sendDefaultGroupsForClientIDs { |clientIDs|
 		defaultGroups[clientIDs].do { |group|
-			this.sendMsg("/g_new", group.nodeID, 0, 0);
+			this.sendMsg("/g_new", group.nodeID, 0, 0)
 		}
 	}
 
@@ -827,7 +826,7 @@ Server {
 	serverRunning { ^statusWatcher.serverRunning }
 	serverBooting { ^statusWatcher.serverBooting }
 	unresponsive { ^statusWatcher.unresponsive }
-	startAliveThread { | delay=0.0 | statusWatcher.startAliveThread(delay) }
+	startAliveThread { |delay = 0.0| statusWatcher.startAliveThread(delay) }
 	stopAliveThread { statusWatcher.stopAliveThread }
 	aliveThreadIsRunning { ^statusWatcher.aliveThread.isPlaying }
 	aliveThreadPeriod_ { |val| statusWatcher.aliveThreadPeriod_(val) }
@@ -837,7 +836,7 @@ Server {
 		if(this.hasShmInterface) {
 			"server '%' disconnected shared memory interface\n".postf(name);
 			serverInterface.disconnect;
-			serverInterface = nil;
+			serverInterface = nil
 		}
 	}
 
@@ -846,7 +845,7 @@ Server {
 		if(this.isLocal) {
 			this.disconnectSharedMemory;
 			id = if(this.inProcess) { thisProcess.pid } { addr.port };
-			serverInterface = ServerShmInterface(id);
+			serverInterface = ServerShmInterface(id)
 		}
 	}
 
@@ -856,7 +855,7 @@ Server {
 		all.do { |server| server.statusWatcher.resumeThread }
 	}
 
-	boot { | startAliveThread = true, recover = false, onFailure |
+	boot { |startAliveThread = true, recover = false, onFailure|
 
 		if(statusWatcher.unresponsive) {
 			"server '%' unresponsive, rebooting ...".format(this.name).postln;
@@ -871,29 +870,29 @@ Server {
 		statusWatcher.doWhenBooted({
 			statusWatcher.serverBooting = false;
 			this.bootInit(recover);
-			"".postln;
+			"".postln
 		}, onFailure: onFailure ? false);
 
 		if(remoteControlled) {
 			"*** %: can't boot a remote server - "
-			"You will have to boot it on its machine.".postf(this);
+			"You will have to boot it on its machine.".postf(this)
 		} {
 			this.prPingApp({
 				this.quit;
-				this.boot;
+				this.boot
 			}, {
 				this.prWaitForPidRelease {
 					this.bootServerApp({
 						if(startAliveThread) { statusWatcher.startAliveThread }
 					})
-				};
-			}, 0.25);
+				}
+			}, 0.25)
 		}
 	}
 
 	prWaitForPidRelease { |onComplete, onFailure, timeout = 1|
 		var waiting = true;
-		if (this.inProcess or: { this.isLocal.not or: { this.pid.isNil } }) {
+		if(this.inProcess or: { this.isLocal.not or: { this.pid.isNil } }) {
 			onComplete.value;
 			^this
 		};
@@ -902,16 +901,16 @@ Server {
 		// if we have just quit before running server.boot,
 		// we wait until server process really ends and sets its pid to nil
 		SystemClock.sched(timeout, {
-			if (waiting) {
+			if(waiting) {
 				pidReleaseCondition.unhang
 			}
 		});
 
 		forkIfNeeded {
 			pidReleaseCondition.hang;
-			if (pidReleaseCondition.test.value) {
+			if(pidReleaseCondition.test.value) {
 				waiting = false;
-				onComplete.value;
+				onComplete.value
 			} {
 				onFailure.value
 			}
@@ -921,15 +920,15 @@ Server {
 	// FIXME: recover should happen later, after we have a valid clientID!
 	// would then need check whether maxLogins and clientID have changed or not,
 	// and recover would only be possible if no changes.
-	bootInit { | recover = false |
+	bootInit { |recover = false|
 		// if(recover) { this.newNodeAllocators } {
 		// 	"% calls newAllocators\n".postf(thisMethod);
 		// this.newAllocators };
 		if(dumpMode != 0) { this.sendMsg(\dumpOSC, dumpMode) };
 		if(sendQuit.isNil) {
-			sendQuit = this.inProcess or: { this.isLocal };
+			sendQuit = this.inProcess or: { this.isLocal }
 		};
-		this.connectSharedMemory;
+		this.connectSharedMemory
 	}
 
 	prOnServerProcessExit { |exitCode|
@@ -939,7 +938,7 @@ Server {
 		"Server '%' exited with exit code %."
 			.format(this.name, exitCode)
 			.postln;
-		statusWatcher.quit(watchShutDown: false);
+		statusWatcher.quit(watchShutDown: false)
 	}
 
 	bootServerApp { |onComplete|
@@ -947,17 +946,17 @@ Server {
 			"Booting internal server.".postln;
 			this.bootInProcess;
 			pid = thisProcess.pid;
-			onComplete.value;
+			onComplete.value
 		} {
 			this.disconnectSharedMemory;
 			pid = unixCmd(program ++ options.asOptionsString(addr.port), { |exitCode|
-				this.prOnServerProcessExit(exitCode);
+				this.prOnServerProcessExit(exitCode)
 			});
 			("Booting server '%' on address %:%.").format(this.name, addr.hostname, addr.port.asString).postln;
 			// in case the server takes more time to boot
 			// we increase the number of attempts for tcp connection
 			// in order to minimize the chance of timing out
-			this.connectToServerAddr(onComplete, maxAttempts: 20);
+			this.connectToServerAddr(onComplete, maxAttempts: 20)
 		}
 	}
 
@@ -973,10 +972,10 @@ Server {
 			this.quit({
 				func.value;
 				defer { this.boot }
-			}, onFailure);
+			}, onFailure)
 		} {
 			func.value;
-			this.boot(onFailure: onFailure);
+			this.boot(onFailure: onFailure)
 		}
 	}
 
@@ -1013,13 +1012,13 @@ Server {
 		*/
 		dumpMode = code;
 		this.sendMsg(\dumpOSC, code);
-		this.changed(\dumpOSC, code);
+		this.changed(\dumpOSC, code)
 	}
 
 	quit { |onComplete, onFailure, watchShutDown = true|
 		var func;
 
-		if (remoteControlled) {
+		if(remoteControlled) {
 			"*** %: can't quit a remote server.\n\n".postf(this);
 			^this
 		};
@@ -1028,26 +1027,26 @@ Server {
 		if(this.unresponsive) {
 			if(pid.notNil) {
 				"Server '%' is currently unresponsive. Forcing process to stop via system command.".format(name).postln;
-				thisProcess.platform.killProcessByID(pid);
+				thisProcess.platform.killProcessByID(pid)
 			} {
 				if(watchShutDown) {
-					"Server '%' was unresponsive. Quitting anyway.".format(name).postln;
-				};
+					"Server '%' was unresponsive. Quitting anyway.".format(name).postln
+				}
 			};
-			watchShutDown = false;
+			watchShutDown = false
 		};
 
 		if(options.protocol == \tcp) {
-			statusWatcher.quit({ addr.tryDisconnectTCP(onComplete, onFailure) }, nil, watchShutDown);
+			statusWatcher.quit({ addr.tryDisconnectTCP(onComplete, onFailure) }, nil, watchShutDown)
 		} {
-			statusWatcher.quit(onComplete, onFailure, watchShutDown);
+			statusWatcher.quit(onComplete, onFailure, watchShutDown)
 		};
 
 		if(inProcess) {
 			this.quitInProcess;
-			"Internal server has quit.".postln;
+			"Internal server has quit.".postln
 		} {
-			"'/quit' message sent to server '%'.".format(name).postln;
+			"'/quit' message sent to server '%'.".format(name).postln
 		};
 
 		sendQuit = nil;
@@ -1056,7 +1055,7 @@ Server {
 		if(scopeWindow.notNil) { scopeWindow.quit };
 		volume.freeSynth;
 		RootNode(this).freeAll;
-		this.newAllocators;
+		this.newAllocators
 	}
 
 	quitSync { |condition|
@@ -1088,10 +1087,10 @@ Server {
 					"The process did not stop after a timeout, which may result in dangling network resources.".warn;
 					condition.test = true;
 					condition.signal
-				});
-			});
+				})
+			})
 		}, this.statusWatcher.timeoutBeforeConsideredDeadOnExit * 1.5); // timeout is longer than ServerStatusWatcher waiting to declare the server unresponsive
-		condition.wait;
+		condition.wait
 	}
 
 	*quitAll { |watchShutDown = true|
@@ -1109,42 +1108,41 @@ Server {
 		// you can't cause them to quit via OSC (the boot button)
 
 		// this brutally kills them all off
-		thisProcess.platform.name.switch(
-			\windows, {
+		switch(thisProcess.platform.name)
+			{ \windows } {
 				thisProcess.platform.killAll("scsynth.exe");
-				thisProcess.platform.killAll("supernova.exe");
-			}, {
+				thisProcess.platform.killAll("supernova.exe")
+			} {
 				thisProcess.platform.killAll("scsynth");
-				thisProcess.platform.killAll("supernova");
-			}
-		);
-		this.quitAll(watchShutDown: false);
+				thisProcess.platform.killAll("supernova")
+			};
+		this.quitAll(watchShutDown: false)
 	}
 
 	freeAll {
 		this.sendMsg("/g_freeAll", 0);
 		this.sendMsg("/clearSched");
-		this.initTree;
+		this.initTree
 	}
 
 	freeMyDefaultGroup {
-		this.sendMsg("/g_freeAll", defaultGroup.nodeID);
+		this.sendMsg("/g_freeAll", defaultGroup.nodeID)
 	}
 
 	freeDefaultGroups {
 		defaultGroups.do { |group|
-			this.sendMsg("/g_freeAll", group.nodeID);
-		};
+			this.sendMsg("/g_freeAll", group.nodeID)
+		}
 	}
 
 	*freeAll { |evenRemote = false|
 		if(evenRemote) {
 			all.do { |server|
-				if( server.serverRunning ) { server.freeAll }
+				if(server.serverRunning) { server.freeAll }
 			}
 		} {
 			all.do { |server|
-				if(server.isLocal and:{ server.serverRunning }) { server.freeAll }
+				if(server.isLocal and: { server.serverRunning }) { server.freeAll }
 			}
 		}
 	}
@@ -1171,7 +1169,7 @@ Server {
 
 	/* volume control */
 
-	volume_ { | newVolume |
+	volume_ { |newVolume|
 		volume.volume_(newVolume)
 	}
 
@@ -1194,13 +1192,13 @@ Server {
 	/* internal server commands */
 
 	bootInProcess {
-		^options.bootInProcess;
+		^options.bootInProcess
 	}
 	quitInProcess {
 		_QuitInProcessServer
 		^this.primitiveFailed
 	}
-	allocSharedControls { |numControls=1024|
+	allocSharedControls { |numControls = 1024|
 		_AllocSharedControls
 		^this.primitiveFailed
 	}
@@ -1215,9 +1213,9 @@ Server {
 
 	prPingApp { |func, onFailure, timeout = 3|
 		var id = func.hash;
-		var resp = OSCFunc({ |msg| if(msg[1] == id, { func.value; task.stop }) }, "/synced", addr);
+		var resp = OSCFunc({ |msg| if(msg[1] == id) { func.value; task.stop } }, "/synced", addr);
 		var task = timeout !? { fork { timeout.wait; resp.free;  onFailure.value } };
-		addr.sendMsg("/sync", id);
+		addr.sendMsg("/sync", id)
 	}
 
 	/* CmdPeriod support for Server-scope and Server-record and Server-volume */
@@ -1227,7 +1225,7 @@ Server {
 		this.changed(\cmdPeriod)
 	}
 
-	queryAllNodes { | queryControls = false |
+	queryAllNodes { |queryControls = false|
 		var resp, done = false;
 		if(isLocal) {
 			this.sendMsg("/g_dumpTree", 0, queryControls.binaryValue)
@@ -1237,51 +1235,51 @@ Server {
 				if(msg[1] != 0) { printControls = true };
 				("NODE TREE Group" + msg[2]).postln;
 				if(msg[3] > 0) {
-					dumpFunc = {|numChildren|
+					dumpFunc = { |numChildren|
 						var j;
 						tabs = tabs + 1;
 						numChildren.do {
 							if(msg[i + 1] >= 0) { i = i + 2 } {
-								i = i + 3 + if(printControls) { msg[i + 3] * 2 + 1 } { 0 };
+								i = i + 3 + if(printControls) { msg[i + 3] * 2 + 1 } { 0 }
 							};
 							tabs.do { "   ".post };
 							msg[i].post; // nodeID
 							if(msg[i + 1] >= 0) {
 								" group".postln;
-								if(msg[i + 1] > 0) { dumpFunc.value(msg[i + 1]) };
+								if(msg[i + 1] > 0) { dumpFunc.value(msg[i + 1]) }
 							} {
 								(" " ++ msg[i + 2]).postln; // defname
 								if(printControls) {
 									if(msg[i + 3] > 0) {
 										" ".post;
-										tabs.do { "   ".post };
+										tabs.do { "   ".post }
 									};
 									j = 0;
 									msg[i + 3].do {
 										" ".post;
 										if(msg[i + 4 + j].isMemberOf(Symbol)) {
-											(msg[i + 4 + j] ++ ": ").post;
+											(msg[i + 4 + j] ++ ": ").post
 										};
 										msg[i + 5 + j].post;
-										j = j + 2;
+										j = j + 2
 									};
-									"\n".post;
+									"\n".post
 								}
 							}
 						};
-						tabs = tabs - 1;
+						tabs = tabs - 1
 					};
-					dumpFunc.value(msg[3]);
+					dumpFunc.value(msg[3])
 				};
-				done = true;
+				done = true
 			}, '/g_queryTree.reply', addr).oneShot;
 
 			this.sendMsg("/g_queryTree", 0, queryControls.binaryValue);
 			SystemClock.sched(3, {
 				if(done.not) {
 					resp.free;
-					"Remote server failed to respond to queryAllNodes!".warn;
-				};
+					"Remote server failed to respond to queryAllNodes!".warn
+				}
 			})
 		}
 	}
@@ -1293,66 +1291,66 @@ Server {
 
 		resp = OSCFunc({ |msg|
 			done = true;
-			if (action.notNil) { action.value(*msg.drop(1)) } {
+			if(action.notNil) { action.value(*msg.drop(1)) } {
 				freeKb = msg[1] / 1024;
 				"Used RT memory: % kb".format(options.memSize - freeKb).postln;
 				"Free RT memory: % kb".format(freeKb).postln;
-				"Largest free chunk: % kb".format(msg[2] / 1024).postln;
+				"Largest free chunk: % kb".format(msg[2] / 1024).postln
 			}
-		} , "/rtMemoryStatus.reply", addr).oneShot;
+		}, "/rtMemoryStatus.reply", addr).oneShot;
 		addr.sendMsg("/rtMemoryStatus");
 		SystemClock.sched(3, {
 			if(done.not) {
 				resp.free;
-				"Remote server failed to respond to rtMemoryStatus!".warn;
-			};
+				"Remote server failed to respond to rtMemoryStatus!".warn
+			}
 		})
 	}
 
 	printOn { |stream|
-		stream << name;
+		stream << name
 	}
 
 	storeOn { |stream|
 		var codeStr = switch(this,
 			Server.default, { if(sync_s) { "s" } { "Server.default" } },
-			Server.local,	{ "Server.local" },
+			Server.local, { "Server.local" },
 			Server.internal, { "Server.internal" },
 			{ "Server.fromName(" ++ name.asCompileString ++ ")" }
 		);
-		stream << codeStr;
+		stream << codeStr
 	}
 
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
 
-	getControlBusValue {|busIndex|
+	getControlBusValue { |busIndex|
 		if(serverInterface.isNil) {
-			Error("Server-getControlBusValue only supports local servers").throw;
+			Error("Server-getControlBusValue only supports local servers").throw
 		} {
 			^serverInterface.getControlBusValue(busIndex)
 		}
 	}
 
-	getControlBusValues {|busIndex, busChannels|
+	getControlBusValues { |busIndex, busChannels|
 		if(serverInterface.isNil) {
-			Error("Server-getControlBusValues only supports local servers").throw;
+			Error("Server-getControlBusValues only supports local servers").throw
 		} {
 			^serverInterface.getControlBusValues(busIndex, busChannels)
 		}
 	}
 
-	setControlBusValue {|busIndex, value|
+	setControlBusValue { |busIndex, value|
 		if(serverInterface.isNil) {
-			Error("Server-getControlBusValue only supports local servers").throw;
+			Error("Server-getControlBusValue only supports local servers").throw
 		} {
 			^serverInterface.setControlBusValue(busIndex, value)
 		}
 	}
 
-	setControlBusValues {|busIndex, valueArray|
+	setControlBusValues { |busIndex, valueArray|
 		if(serverInterface.isNil) {
-			Error("Server-getControlBusValues only supports local servers").throw;
+			Error("Server-getControlBusValues only supports local servers").throw
 		} {
 			^serverInterface.setControlBusValues(busIndex, valueArray)
 		}
@@ -1367,11 +1365,11 @@ Server {
 	}
 
 	warnIfNotRunning { |method|
-		if (this.serverRunning.not) {
+		if(this.serverRunning.not) {
 			"Server '%' not running.\nThe method '%' requires a running server.".format(this.name, method.name).warn;
 			^true
-  		} {
-        	^false
-    	}
-    }
+		} {
+			^false
+		}
+	}
 }

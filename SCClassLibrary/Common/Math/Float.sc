@@ -2,15 +2,15 @@ Float : SimpleNumber {
 	isFloat { ^true }
 	asFloat { ^this }
 
-	+ { arg aNumber, adverb; _AddFloat; ^aNumber.performBinaryOpOnSimpleNumber('+', this, adverb) }
-	- { arg aNumber, adverb; _SubFloat; ^aNumber.performBinaryOpOnSimpleNumber('-', this, adverb) }
-	* { arg aNumber, adverb; _MulFloat; ^aNumber.performBinaryOpOnSimpleNumber('*', this, adverb) }
+	+ { |aNumber, adverb| _AddFloat; ^aNumber.performBinaryOpOnSimpleNumber('+', this, adverb) }
+	- { |aNumber, adverb| _SubFloat; ^aNumber.performBinaryOpOnSimpleNumber('-', this, adverb) }
+	* { |aNumber, adverb| _MulFloat; ^aNumber.performBinaryOpOnSimpleNumber('*', this, adverb) }
 
-	modSeaside { arg aNumber, adverb; _Mod; ^aNumber.performBinaryOpOnSimpleNumber('mod', this, adverb) }
+	modSeaside { |aNumber, adverb| _Mod; ^aNumber.performBinaryOpOnSimpleNumber('mod', this, adverb) }
 
-	clip { arg lo, hi; _ClipFloat; ^this.primitiveFailed }
-	wrap { arg lo, hi; _WrapFloat; ^this.primitiveFailed }
-	fold { arg lo, hi; _FoldFloat; ^this.primitiveFailed }
+	clip { |lo, hi| _ClipFloat; ^this.primitiveFailed }
+	wrap { |lo, hi| _WrapFloat; ^this.primitiveFailed }
+	fold { |lo, hi| _FoldFloat; ^this.primitiveFailed }
 
 	coin { ^1.0.rand < this }
 	xrand2 { ^this.rand2 }
@@ -34,39 +34,39 @@ Float : SimpleNumber {
 		^this.primitiveFailed
 	}
 
-	*from32Bits { arg word;
+	*from32Bits { |word|
 		_From32Bits
 		^this.primitiveFailed
 	}
-	*from64Bits { arg hiWord, loWord;
+	*from64Bits { |hiWord, loWord|
 		_From64Bits
 		^this.primitiveFailed
 	}
 
 	// iteration
-	do { arg function;
+	do { |function|
 		// iterates function from 0 to this-1
 		// special byte codes inserted by compiler for this method
 		var i = 0.0;
-		while ({ (i + 0.5) < this }, { function.value(i, i); i = i + 1.0; });
+		while { (i + 0.5) < this } { function.value(i, i); i = i + 1.0 }
 	}
 
-	reverseDo { arg function;
+	reverseDo { |function|
 		// iterates function from this-1 to 0
 		// special byte codes inserted by compiler for this method
-		var i, j=0.0;
+		var i, j = 0.0;
 		i = this - 1.0;
-		while ({ (i + 0.5) >= 0.0 }, { function.value(i, j); i = i - 1.0; j = j + 1.0; });
+		while { (i + 0.5) >= 0.0 } { function.value(i, j); i = i - 1.0; j = j + 1.0 }
 	}
 
-	asStringPrec { arg precision;
+	asStringPrec { |precision|
 		_Float_AsStringPrec
 		^this.primitiveFailed
 	}
 
 	archiveAsCompileString { ^true }
 
-	// the correct place to implement compileString for Float is in DumpParseNode.cpp
+	// the correct place to implement compileString for Float is in PyrSlot.cpp
 	// int asCompileString(PyrSlot *slot, char *str)
 	// for now, solve it here.
 
@@ -78,7 +78,7 @@ Float : SimpleNumber {
 		stream << str;
 		// if it doesn't already have a . or is 1e-05 then add a .0 to force it to Float
 		if(str.find(".").isNil and: { str.find("e").isNil }) {
-			stream << ".0";
+			stream << ".0"
 		}
 	}
 
@@ -87,8 +87,8 @@ Float : SimpleNumber {
 		^String.streamContents { |stream| this.storeOn(stream) }
 	}
 
-	switch { | ... cases|
+	switch { |... cases|
 		"Float:switch is unsafe, rounding via Float:asInteger:switch".warn;
-		^this.asInteger.switch(*cases)
+		^switch(this.asInteger, *cases)
 	}
 }

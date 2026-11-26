@@ -1,10 +1,11 @@
+//# VERSION 3.16
 // Formatting is on purpose here to catch edge cases.
 // Don't change it.
 TestSourceCode : UnitTest {
+	// sc-format off
 	test_fn {
-		var f;
 
-		f = { 1 + 1 };
+		var f = { 1 + 1 };
 		this.assertEquals(f.def.sourceCode.quote, "{ 1 + 1 }".quote);
 
 		f = {1+1};
@@ -28,18 +29,17 @@ TestSourceCode : UnitTest {
 	}
 
 	test_partial {
- 		var f;
 
- 		f = _    + 1;
+ 		var f = _    + 1;
  		this.assertEquals(f.def.sourceCode.quote, "_    + 1".quote);
 
  		f = (_ + 1)
  		// dont' remove this comment or new line
  		;
- 		this.assertEquals(f.def.sourceCode.quote, "(_ + 1)".quote);
+ 		this.assertEquals(f.def.sourceCode.quote, "_ + 1".quote);
 
  		f = (_ + 1);
- 		this.assertEquals(f.def.sourceCode.quote, "(_ + 1)".quote);
+ 		this.assertEquals(f.def.sourceCode.quote, "_ + 1".quote);
 
 
 
@@ -48,11 +48,12 @@ TestSourceCode : UnitTest {
  		this.assertEquals(f.def.sourceCode.quote, "_ + _ + _ + _".quote);
 
  		f = (_ + (_ + (_)) + _);
- 		this.assertEquals(f.def.sourceCode.quote, "(_ + (_ + (_)) + _)".quote);
+ 		this.assertEquals(f.def.sourceCode.quote, "_ + (_ + (_)) + _".quote);
 	}
+	// sc-format on
 
 	test_compileString {
 		var func = { 1 + 1 };
-		this.assertEquals(func.asCompileString, "{ 1 + 1 }");
+		this.assertEquals(func.asCompileString, "{ 1 + 1 }")
 	}
 }

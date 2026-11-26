@@ -1,20 +1,20 @@
 Pfx : FilterPattern {
 	var <>fxname, <>pairs;
-	*new { arg pattern, fxname ... pairs;
-		if (pairs.size.odd, { Error("Pfx should have even number of args.\n").throw });
+	*new { |pattern, fxname ... pairs|
+		if(pairs.size.odd) { Error("Pfx should have even number of args.\n").throw };
 		^super.new(pattern).fxname_(fxname).pairs_(pairs)
 	}
 	storeArgs { ^[pattern, fxname] ++ pairs }
 
-	embedInStream { arg inevent;
+	embedInStream { |inevent|
 		var stream, cleanup = EventStreamCleanup.new;
 		var server = inevent[\server] ?? { Server.default };
 		var id = server.nextNodeID;
 		var event = inevent.copy;
 		var cleanupEvent;
 
-		pairs.pairsDo {|name, value|
-			event[name] = value;
+		pairs.pairsDo { |name, value|
+			event[name] = value
 		};
 		event[\addAction] = 0; // \addToHead
 		event[\instrument] = fxname;
@@ -24,7 +24,7 @@ Pfx : FilterPattern {
 
 		cleanupEvent = (type: \off, parent: event);
 		cleanup.addFunction(event, { |flag|
-			if (flag) { cleanupEvent.play }
+			if(flag) { cleanupEvent.play }
 		});
 
 		inevent = event.yield;
@@ -32,12 +32,12 @@ Pfx : FilterPattern {
 
 		loop {
 			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };
-			inevent = event.yield;
-		};
+			inevent = event.yield
+		}
 	}
 
 	isolate {
-		^Prout { arg inevent;
+		^Prout { |inevent|
 			var outputData, synthDesc;
 
 			synthDesc = (inevent[\synthLib] ?? { SynthDescLib.global }).at(fxname);
@@ -67,15 +67,15 @@ Pfx : FilterPattern {
 }
 
 Pfxb : Pfx {
-	*new { arg pattern, fxname ... pairs;
-		if (pairs.size.odd, { Error("Pfx should have even number of args.\n").throw });
+	*new { |pattern, fxname ... pairs|
+		if(pairs.size.odd) { Error("Pfx should have even number of args.\n").throw };
 		^super.new(pattern, fxname, *pairs).isolate
 	}
 }
 
 
 PAbstractGroup : FilterPattern {
-	embedInStream { arg inevent;
+	embedInStream { |inevent|
 		var	server, groupID, event, cleanup;
 		var	stream, lag = 0, clock = thisThread.clock,
 			groupReleaseTime = inevent[\groupReleaseTime] ? 0.1, cleanupEvent;
@@ -93,30 +93,31 @@ PAbstractGroup : FilterPattern {
 
 		cleanupEvent = (type: \kill, parent: event);
 
-		cleanup.addFunction(event, { | flag |
-			if (flag) { cleanupEvent.lag_(lag - clock.beats + groupReleaseTime).play }
+		cleanup.addFunction(event, { |flag|
+			if(flag) { cleanupEvent.lag_(lag - clock.beats + groupReleaseTime).play }
 		});
 		inevent = event.yield;
 
-		inevent !? { inevent = inevent.copy;
-			inevent[\group] = groupID;
+		inevent !? {
+			inevent = inevent.copy;
+			inevent[\group] = groupID
 		};
 		stream = pattern.asStream;
 		loop {
 			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };
 			lag = max(lag, clock.beats + event.use { ~sustain.value });
 			inevent = event.yield;
-			inevent.put(\group, groupID);
+			inevent.put(\group, groupID)
 		}
 	}
 
-	*embedLoop { arg inevent, stream, groupID, ingroup, cleanup;
+	*embedLoop { |inevent, stream, groupID, ingroup, cleanup|
 		var event, lag;
 		loop {
 			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };
 			lag = event[\dur];
 			inevent = event.yield;
-			inevent.put(\group, groupID);
+			inevent.put(\group, groupID)
 		}
 	}
 }
@@ -136,13 +137,13 @@ PparGroup : PAbstractGroup {
 Pbus : FilterPattern {
 	var <>numChannels, <>rate, <>dur, <>fadeTime;
 
-	*new { arg pattern, dur=2.0, fadeTime=0.02, numChannels=2, rate=\audio;
+	*new { |pattern, dur = 2.0, fadeTime = 0.02, numChannels = 2, rate = \audio|
 		^super.new(pattern).dur_(dur).numChannels_(numChannels).rate_(rate).fadeTime_(fadeTime)
 	}
 
-	storeArgs { ^[ pattern, dur, fadeTime, numChannels, rate ] }
+	storeArgs { ^[pattern, dur, fadeTime, numChannels, rate] }
 
-	embedInStream { arg inevent;
+	embedInStream { |inevent|
 		var server, groupID, linkID, bus, ingroup, cleanup;
 		var patterns, event, freeBus, stream, cleanupEvent;
 
@@ -157,10 +158,10 @@ Pbus : FilterPattern {
 		// could use a special event type for this:
 		if(rate == \audio) {
 			bus = server.audioBusAllocator.alloc(numChannels);
-			freeBus = { server.audioBusAllocator.free(bus) };
+			freeBus = { server.audioBusAllocator.free(bus) }
 		} {
 			bus = server.controlBusAllocator.alloc(numChannels);
-			freeBus = { server.controlBusAllocator.free(bus) };
+			freeBus = { server.controlBusAllocator.free(bus) }
 		};
 
 		CmdPeriod.doOnce(freeBus); // also free the bus when cmd-period is run
@@ -191,14 +192,14 @@ Pbus : FilterPattern {
 		event[\in] = bus;
 		// doneAction = 3; remove and deallocate both this synth and the preceeding node
 		// (which is the group).
-		event[\msgFunc] = #{ |out, in, fadeTime, gate=1|
+		event[\msgFunc] = #{ |out, in, fadeTime, gate = 1|
 			[\out, out, \in, in, \fadeTime, fadeTime, \gate, gate, \doneAction, 3]
 		};
 
 		// when stream ends, the synth has to fade out.
 		// so add a type-off event to the cleanup
 		cleanupEvent = (type: \off, parent: event, fadeTime: fadeTime.abs, hasGate: true, gate: 0);
-		cleanup.addFunction(event, { | flag | if(flag) { defer({ cleanupEvent.play }, dur) } });
+		cleanup.addFunction(event, { |flag| if(flag) { defer({ cleanupEvent.play }, dur) } });
 
 		// return the link synth event
 		inevent = event.yield;
@@ -208,7 +209,7 @@ Pbus : FilterPattern {
 		loop {
 			// if stream ends, run cleanup
 			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };
-			inevent = event.yield;
+			inevent = event.yield
 		}
 	}
 }

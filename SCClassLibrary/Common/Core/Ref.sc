@@ -52,7 +52,7 @@ Ref : AbstractFunction {
 	// Some UGens take Buffer data which
 	// the user might want to specify simply as `[0.9, 0.1, 0.3]
 	asBufWithValues {
-		^LocalBuf.newFrom(value);
+		^LocalBuf.newFrom(value)
 	}
 
 	// Allow to multichannel expand ugen specs, like those of Klank,
@@ -66,11 +66,11 @@ Ref : AbstractFunction {
 	}
 
 	printOn { |stream|
-		stream << "`(" << value << ")";
+		stream << "`(" << value << ")"
 	}
 
 	storeOn { |stream|
-		stream << "`(" <<< value << ")";
+		stream << "`(" <<< value << ")"
 	}
 
 }

@@ -1,25 +1,25 @@
 EZScroller {
-	var <maxItems=1, <numItems=1, <>action, <spec;
+	var <maxItems = 1, <numItems = 1, <>action, <spec;
 	var <value, <slider;
 
-	*new { |w, bounds, maxItems, numItems, action, initVal=0|
+	*new { |w, bounds, maxItems, numItems, action, initVal = 0|
 		^super.newCopyArgs(maxItems, numItems, action)
-			.init(w, bounds, initVal);
+			.init(w, bounds, initVal)
 	}
 	init { |w, bounds, initVal|
 		slider = Slider.new(w, bounds);
 		slider.action = { |sl|
-			this.valueAction_(spec.map(sl.value));
+			this.valueAction_(spec.map(sl.value))
 		};
-		slider.keyDownAction { arg char, modifiers, unicode,keycode;
-			if (unicode == 16rF700, { this.increment; ^this });
-			if (unicode == 16rF703, { this.increment; ^this });
-			if (unicode == 16rF701, { this.decrement; ^this });
-			if (unicode == 16rF702, { this.decrement; ^this });
+		slider.keyDownAction { |char, modifiers, unicode, keycode|
+			if(unicode == 16rF700) { this.increment; ^this };
+			if(unicode == 16rF703) { this.increment; ^this };
+			if(unicode == 16rF701) { this.decrement; ^this };
+			if(unicode == 16rF702) { this.decrement; ^this }
 		};
 		spec = [0, 0, \lin, 1].asSpec;
 		this.adjust;
-		this.value_(initVal);
+		this.value_(initVal)
 	}
 	increment { this.valueAction = this.value + this.spec.step }
 	decrement { this.valueAction = this.value + this.spec.step }
@@ -31,20 +31,20 @@ EZScroller {
 		var fractionToShow = (maxItems / numItems).min(1);
 
 		slider.thumbSize = fractionToShow * maxLength; // CHECK: does this work with qt?
-	//	slider.step_(1 / numTooMany.max(1));		// this does the action - it should not.
+		//	slider.step_(1 / numTooMany.max(1));		// this does the action - it should not.
 		slider.setProperty(\step, 1 / numTooMany.max(1));
-		spec.minval_(numTooMany);	// minval to invert spec
+		spec.minval_(numTooMany)	// minval to invert spec
 	}
 
 	value_ { |val|
 		value = spec.constrain(val);
-		slider.value_(spec.unmap(value));
+		slider.value_(spec.unmap(value))
 	}
 
 	maxItems_ { |val| maxItems = val.max(1); this.adjust }
 	numItems_ { |val| numItems = val.max(1); this.adjust }
 
-	valueAction_ { |val| this.value_(val).doAction; }
+	valueAction_ { |val| this.value_(val).doAction }
 	doAction { action.value(this) }
 
 	enabled { ^slider.enabled }

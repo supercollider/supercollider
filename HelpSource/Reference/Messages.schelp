@@ -13,7 +13,7 @@ Messages may be written using binary operators, functional notation or receiver 
 section:: Binary operator messages
 
 A binary operator selector is any string of characters from the list of legal binary operator characters:
-code::
+teletype::
 ! @ % & * - + = | < > ? /
 ::
 

@@ -6,13 +6,13 @@ TaskProxyGui : JITGui {
 	*observedClass { ^TaskProxy }
 
 	getObjectKey {
-		^if (object.respondsTo(\key)) { object.key } { 'anon' };
+		^if(object.respondsTo(\key)) { object.key } { 'anon' }
 	}
 
 	setDefaults { |options|
-		defPos = 10@260;
+		defPos = 10 @ 260;
 		minSize = 260 @ (skin.buttonHeight * (numItems + 1) + (numItems.sign * 4));
-		if (parent.notNil) { skin = skin.copy.put(\margin, 0@0) };
+		if(parent.notNil) { skin = skin.copy.put(\margin, 0 @ 0) }
 		//	"% - minSize: %\n".postf(this.class, minSize);
 	}
 
@@ -21,11 +21,11 @@ TaskProxyGui : JITGui {
 		var lineWidth = zone.bounds.width - (skin.margin.y * 3);
 		var width = lineWidth * 0.62 / 4;
 		var nameWidth = lineWidth * 0.38;
-		var zoneMargin = if ( (numItems > 0) or: { parent.isKindOf(Window) }) { skin.margin } { 0@0 };
+		var zoneMargin = if((numItems > 0) or: { parent.isKindOf(Window) }) { skin.margin } { 0 @ 0 };
 
 		zone.decorator = FlowLayout(zone.bounds, zoneMargin, skin.gap);
 
-		nameBut = Button(zone, Rect(0,0, nameWidth, height))
+		nameBut = Button(zone, Rect(0, 0, nameWidth, height))
 		.font_(font)
 		.resize_(2)
 		.states_([
@@ -33,59 +33,61 @@ TaskProxyGui : JITGui {
 		])
 		.keyDownAction_({ |btn, char|
 			char.postcs;
-			if (char.ascii == 127) {
+			if(char.ascii == 127) {
 				object.clear;
 				object.class.all.removeAt(btn.states.first.first.asSymbol);
-				object = nil;
-			};
+				object = nil
+			}
 		});
 
-		playBut = Button(zone, Rect(0,0, width, height))
+		playBut = Button(zone, Rect(0, 0, width, height))
 		.font_(font)
 		.resize_(3)
 		.states_([
 			[" >", skin.fontColor, skin.offColor],
-			[" _", skin.fontColor, skin.onColor ],
-			[" |", skin.fontColor, skin.offColor ]
+			[" _", skin.fontColor, skin.onColor],
+			[" |", skin.fontColor, skin.offColor]
 		])
-		.action_({ |but| var string;
-			if (object.notNil) {
-				if (History.started) {
+		.action_({ |but|
+			var string;
+			if(object.notNil) {
+				if(History.started) {
 					// historical action, sets cmdLine and gets recorded.
 					string = object.asCompileString
-					++ [".play;", ".play;", ".stop;" ][but.value];
+						++ [".play;", ".play;", ".stop;"][but.value];
 					thisProcess.interpreter.cmdLine_(string)
-					.interpretPrintCmdLine;
+					.interpretPrintCmdLine
 				} {
 					// a-historical, but faster
-					[ { object.play }, { object.play }, { object.stop } ][but.value].value
+					[{ object.play }, { object.play }, { object.stop }][but.value].value
 				};
-				this.checkUpdate;
-			};
+				this.checkUpdate
+			}
 		});
 
-		pauseBut = Button(zone, Rect(0,0, width, height))
+		pauseBut = Button(zone, Rect(0, 0, width, height))
 		.font_(font)
 		.resize_(3)
 		.states_([
 			["paus", skin.fontColor, skin.onColor],
 			["rsum", skin.fontColor, skin.offColor]
 		])
-		.action_({ |but| var string;
-			if (object.notNil) {
-				if (History.started) { 		//	"// historical".postln;
+		.action_({ |but|
+			var string;
+			if(object.notNil) {
+				if(History.started) { 		//	"// historical".postln;
 					string = object.asCompileString
-					++ [".resume;", ".pause;" ][but.value];
+						++ [".resume;", ".pause;"][but.value];
 
-					thisProcess.interpret(string);
+					thisProcess.interpret(string)
 				} { 						//	"// faster".postln;
-					[ { object.resume },{ object.pause } ][but.value].value
+					[{ object.resume }, { object.pause }][but.value].value
 				};
-				this.checkUpdate;
-			};
+				this.checkUpdate
+			}
 		});
 
-		srcBut = Button(zone, Rect(0,0, width, height))
+		srcBut = Button(zone, Rect(0, 0, width, height))
 		.font_(font)
 		.resize_(3)
 		.states_([
@@ -97,7 +99,7 @@ TaskProxyGui : JITGui {
 			but.value_(object.hasSource.binaryValue)
 		});
 
-		envBut = Button(zone, Rect(0,0, width, height))
+		envBut = Button(zone, Rect(0, 0, width, height))
 		.font_(font)
 		.resize_(3)
 		.states_([
@@ -105,10 +107,10 @@ TaskProxyGui : JITGui {
 			["env", skin.fontColor, skin.onColor]
 		])
 		.action_({ |but, mod|
-			if (mod.isAlt) {
-				this.class.new(object, max(object.envir.size, 8), nil, 400@20);
+			if(mod.isAlt) {
+				this.class.new(object, max(object.envir.size, 8), nil, 400 @ 20)
 			} {
-				if (object.envir.isNil) {
+				if(object.envir.isNil) {
 					this.openDoc(this.editString)
 				} {
 					this.openDoc(this.editStrings)
@@ -117,8 +119,8 @@ TaskProxyGui : JITGui {
 			but.value_(object.hasEnvir.binaryValue)
 		});
 
-		if (numItems > 0) { this.makeEnvirGui(lineWidth, height) };
-		this.checkUpdate;
+		if(numItems > 0) { this.makeEnvirGui(lineWidth, height) };
+		this.checkUpdate
 	}
 
 	makeEnvirGui { |lineWidth, height|
@@ -130,18 +132,18 @@ TaskProxyGui : JITGui {
 			zone,
 			Rect(0, 20, lineWidth, numItems * height),
 			false
-		);
+		)
 	}
 
 	accepts { |obj| ^obj.isNil or: { obj.isKindOf(PatternProxy) } }
 
 	name_ { |name|
 		super.name_(name);
-		nameBut.states_(nameBut.states.collect(_.put(0, name.asString))).refresh;
+		nameBut.states_(nameBut.states.collect(_.put(0, name.asString))).refresh
 	}
 
 	getState {
-		if (object.isNil) {
+		if(object.isNil) {
 			^(playState: 0, hasSource: 0, hasEnvir: 0, canPause: 0, isPaused: 0)
 		};
 
@@ -154,7 +156,7 @@ TaskProxyGui : JITGui {
 			isPaused: object.isPaused
 		).collect(_.binaryValue)
 		.put(\name, this.getObjectKey)
-		.put(\object, object);
+		.put(\object, object)
 	}
 
 	checkUpdate {
@@ -162,47 +164,47 @@ TaskProxyGui : JITGui {
 		var playState;
 
 		// compare newState and prevState, update gui items as needed
-		if (newState == prevState) { ^this };
+		if(newState == prevState) { ^this };
 
-		if (newState[\object].isNil) {
+		if(newState[\object].isNil) {
 			prevState = newState;
 			zone.visible_(false);
-			^this;
+			^this
 		};
 
 		zone.visible_(true);
 
-		if (newState[\name] != prevState[\name]) {  // name
-			this.name_(newState[\name]);
+		if(newState[\name] != prevState[\name]) {  // name
+			this.name_(newState[\name])
 		};
 
 		playState = newState[\isPlaying] * 2 - newState[\isActive];
 		newState.put(\playState, playState);
 
-		if (playState != prevState[\playState]) {
+		if(playState != prevState[\playState]) {
 			// stopped/playing/ended
 			// 0 is stopped, 1 is active, 2 is playing but waiting:
-			playBut.value_(playState).refresh;
+			playBut.value_(playState).refresh
 		};
-		if (newState[\hasSource] != prevState[\hasSource]) {
-			srcBut.value_(newState[\hasSource]).refresh;
+		if(newState[\hasSource] != prevState[\hasSource]) {
+			srcBut.value_(newState[\hasSource]).refresh
 		};
-		if (newState[\hasEnvir] != prevState[\hasEnvir]) {  // has envir
-			envBut.value_(newState[\hasEnvir]).refresh;
+		if(newState[\hasEnvir] != prevState[\hasEnvir]) {  // has envir
+			envBut.value_(newState[\hasEnvir]).refresh
 		};
-		if (newState[\canPause] != prevState[\canPause]) {
-			pauseBut.visible_(newState[\canPause] > 0).refresh;
-		};
-
-		if (newState[\isPaused] != prevState[\isPaused]) {
-			pauseBut.value_(newState[\isPaused]).refresh;
+		if(newState[\canPause] != prevState[\canPause]) {
+			pauseBut.visible_(newState[\canPause] > 0).refresh
 		};
 
-		if (envirGui.notNil) {
-			if (envirGui.object != object.envir) {
-				envirGui.object_(object.envir);
+		if(newState[\isPaused] != prevState[\isPaused]) {
+			pauseBut.value_(newState[\isPaused]).refresh
+		};
+
+		if(envirGui.notNil) {
+			if(envirGui.object != object.envir) {
+				envirGui.object_(object.envir)
 			};
-			envirGui.checkUpdate;
+			envirGui.checkUpdate
 		};
 		prevState = newState
 	}
@@ -211,21 +213,21 @@ TaskProxyGui : JITGui {
 
 	srcString {
 		^this.class.observedClass.asString
-		++ "(" + this.getObjectKey.asCompileString + ","
-		+ object.source.asCompileString + ");\n"
+			++ "(" + this.getObjectKey.asCompileString + ","
+			+ object.source.asCompileString + ");\n"
 	}
 
 	editString { |edKey|
-		var keyText = if (edKey.isNil) {
+		var keyText = if(edKey.isNil) {
 			"\\anyKey, nil"
 		} {
 			edKey.asCompileString + ","
-			+ object.envir[edKey].asCompileString
+				+ object.envir[edKey].asCompileString
 		};
 
 		^(this.class.observedClass.asString
-			++ "(" + this.getObjectKey.asCompileString
-			+ ").set(" + keyText + ");\n"
+				++ "(" + this.getObjectKey.asCompileString
+				+ ").set(" + keyText + ");\n"
 		)
 	}
 
@@ -235,8 +237,8 @@ TaskProxyGui : JITGui {
 	}
 
 	getUsedKeys {
-		if (object.envir.isNil) { ^[] };
-		^usedKeys = object.envir.keys.rejectAs(_ == \self, Array).sort;
+		if(object.envir.isNil) { ^[] };
+		^usedKeys = object.envir.keys.rejectAs(_ == \self, Array).sort
 	}
 
 	openDoc { |strings, bounds|
@@ -245,7 +247,7 @@ TaskProxyGui : JITGui {
 			doc.front;
 			doc.promptToSave = false;
 			doc.bounds_(bounds ?? { Rect(0, 400, 400, 200) })
-		};
+		}
 	}
 
 }
@@ -262,46 +264,47 @@ TaskProxyAllGui :JITGui {
 
 	var <filtBut, <filTextV, <edits, <tpGui;
 	var <>prefix = "", <>filtering = false;
-	var <names, <keysRotation=0;
+	var <names, <keysRotation = 0;
 	var <editZone;
 
 	*observedClass { ^TaskProxy }
 	*tpGuiClass { ^TaskProxyGui }
 
 	*observedAll {
-		^if (this.observedClass.respondsTo(\all)) {
+		^if(this.observedClass.respondsTo(\all)) {
 			this.observedClass.all
-		} { nil };
+		} { nil }
 	}
 
 	*new { |numItems = 16, parent, bounds, makeSkip = true, options = #[]|
-		^super.new(this.observedAll, numItems, parent, bounds, makeSkip, options );
+		^super.new(this.observedAll, numItems, parent, bounds, makeSkip, options)
 	}
 
 	// options could include a TdefGui with EnvirGui ...
 	makeViews { |options|
 
-		if (parent.isKindOf(Window)) {
-			parent.name = this.class.observedClass.name ++ ".all";
+		if(parent.isKindOf(Window)) {
+			parent.name = this.class.observedClass.name ++ ".all"
 		};
 
-		filtBut = Button(zone, Rect(0,0, 80, skin.headHeight))
+		filtBut = Button(zone, Rect(0, 0, 80, skin.headHeight))
 		.canFocus_(false)
 		.states_([
 			["all", skin.fontColor, skin.foreground],
-			["filt", skin.fontColor, skin.onColor]])
+			["filt", skin.fontColor, skin.onColor]
+		])
 		.action_({ |btn|
-			this.filtering_(btn.value > 0);
+			this.filtering_(btn.value > 0)
 		});
 
-		filTextV = TextView(zone, Rect(60,0, 80, skin.headHeight))
+		filTextV = TextView(zone, Rect(60, 0, 80, skin.headHeight))
 		.string_("")
 		.enterInterpretsSelection_(false)
 		.resize_(2)
 		.keyDownAction_({ |txvw, char, mod, uni, keycode|
 			var str = txvw.string;
-			if (str == "") { str = nil };
-			this.prefix_(txvw.string);
+			if(str == "") { str = nil };
+			this.prefix_(txvw.string)
 		});
 		filTextV
 			.background_(skin.background)
@@ -311,7 +314,7 @@ TaskProxyAllGui :JITGui {
 			this.class.tpGuiClass.new(
 				numItems: 0,
 				parent: zone,
-				bounds: Rect(0,0, zone.bounds.width - 16, skin.buttonHeight),
+				bounds: Rect(0, 0, zone.bounds.width - 16, skin.buttonHeight),
 				makeSkip: false
 			)
 		});
@@ -325,7 +328,7 @@ TaskProxyAllGui :JITGui {
 			{ |sc| keysRotation = sc.value.asInteger.max(0) }
 		).visible_(false);
 
-		scroller.slider.resize_(3);
+		scroller.slider.resize_(3)
 
 		//		if (options.includes(\edit)) {
 		//			editZone = CompositeView.new(parent,)
@@ -334,47 +337,47 @@ TaskProxyAllGui :JITGui {
 	}
 
 	getState {
-		^(object: object);
+		^(object: object)
 	}
 
 	checkUpdate {
 		var newState = this.getState;
 		var overflow, tooMany;
 
-		if (newState[\object] != prevState[\object]) {
-			zone.visible_(newState[\object].notNil);
+		if(newState[\object] != prevState[\object]) {
+			zone.visible_(newState[\object].notNil)
 		};
 
-		if (newState[\object].isNil) {
+		if(newState[\object].isNil) {
 			prevState = newState;
 			^this
 		};
 
-		if (object.notNil) {
+		if(object.notNil) {
 			names = object.keys.as(Array);
 			try { names.sort };
 
-			if (filtering) {
-				if (prefix == "") {
-					names = names.reject { |name| name.asString.includes($_) };
+			if(filtering) {
+				if(prefix == "") {
+					names = names.reject { |name| name.asString.includes($_) }
 				} {
-					names = names.select { |name| name.asString.contains(prefix) };
-				};
+					names = names.select { |name| name.asString.contains(prefix) }
+				}
 			};
 			overflow = (names.size - numItems).max(0);
-			if (overflow > 0) {
+			if(overflow > 0) {
 				scroller.visible_(true);
 				scroller.numItems_(names.size);
 				scroller.value_(keysRotation ? overflow);
-				names = names.drop(keysRotation).keep(numItems);
+				names = names.drop(keysRotation).keep(numItems)
 			} {
-				scroller.visible_(false);
+				scroller.visible_(false)
 			};
 			edits.do { |edit, i| edit.object_(object[names[i]]) };
-			if (tpGui.notNil) { tpGui.checkUpdate };
+			if(tpGui.notNil) { tpGui.checkUpdate }
 		};
 
-		prevState = newState;
+		prevState = newState
 	}
 }
 
@@ -396,19 +399,19 @@ PdefnGui : JITGui {
 
 		var show = newState[\object].notNil;
 		zone.visible_(show);
-		if (show.not) {
+		if(show.not) {
 			prevState = newState;
 			^this
 		};
 
-		if (newState[\object] != prevState[\object]) {
-			this.name_(this.getName);
+		if(newState[\object] != prevState[\object]) {
+			this.name_(this.getName)
 		};
 		// works with a little delay, but works
-		if (newState[\source] != prevState[\source]) {
-			defer { csView.textField.string_(object.asCode); };
+		if(newState[\source] != prevState[\source]) {
+			defer { csView.textField.string_(object.asCode) }
 		};
-		prevState = newState;
+		prevState = newState
 	}
 }
 
@@ -417,8 +420,8 @@ TdefAllGui : TaskProxyAllGui {
 	*tpGuiClass { ^TdefGui }
 
 	setDefaults {
-		defPos = 10@660;
-		minSize = 260 @ (numItems + 1 * 20);
+		defPos = 10 @ 660;
+		minSize = 260 @ (numItems + 1 * 20)
 	}
 }
 
@@ -427,8 +430,8 @@ PdefAllGui : TaskProxyAllGui {
 	*tpGuiClass { ^PdefGui }
 
 	setDefaults {
-		defPos = 270@660;
-		minSize = 260 @ (numItems + 1 * 20);
+		defPos = 270 @ 660;
+		minSize = 260 @ (numItems + 1 * 20)
 	}
 }
 
@@ -437,7 +440,7 @@ PdefnAllGui : TaskProxyAllGui {
 	*tpGuiClass { ^PdefnGui }
 
 	setDefaults {
-		defPos = 540@660;
-		minSize = 260 @ (numItems + 1 * 20);
+		defPos = 540 @ 660;
+		minSize = 260 @ (numItems + 1 * 20)
 	}
 }

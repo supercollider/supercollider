@@ -10,11 +10,11 @@
 MultiplexAnalogIn : UGen {
 	signalRange { ^\unipolar }
 
-	*ar { arg analogPin = 0, muxChannel = 0, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', analogPin, muxChannel).madd(mul,add)
+	*ar { |analogPin = 0, muxChannel = 0, mul = 1.0, add = 0.0|
+		^this.multiNew('audio', analogPin, muxChannel).madd(mul, add)
 	}
-	*kr { arg analogPin = 0, muxChannel = 0, mul = 1.0, add = 0.0;
-		^this.multiNew('control', analogPin, muxChannel).madd(mul,add)
+	*kr { |analogPin = 0, muxChannel = 0, mul = 1.0, add = 0.0|
+		^this.multiNew('control', analogPin, muxChannel).madd(mul, add)
 	}
 }
 
@@ -25,11 +25,11 @@ MultiplexAnalogIn : UGen {
 AnalogIn : UGen {
 	signalRange { ^\unipolar }
 
-	*ar { arg analogPin = 0, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', analogPin).madd(mul,add)
+	*ar { |analogPin = 0, mul = 1.0, add = 0.0|
+		^this.multiNew('audio', analogPin).madd(mul, add)
 	}
-	*kr { arg analogPin = 0, mul = 1.0, add = 0.0;
-		^this.multiNew('control', analogPin).madd(mul,add)
+	*kr { |analogPin = 0, mul = 1.0, add = 0.0|
+		^this.multiNew('control', analogPin).madd(mul, add)
 	}
 }
 
@@ -38,13 +38,13 @@ AnalogIn : UGen {
  * output: none
  */
 AnalogOut : UGen {
-	*ar { arg analogPin = 0, output = 0, mul = 1.0, add = 0.0;
-		this.multiNew('audio', analogPin, output).madd(mul,add);
-		^0.0;
+	*ar { |analogPin = 0, output = 0, mul = 1.0, add = 0.0|
+		this.multiNew('audio', analogPin, output).madd(mul, add);
+		^0.0
 	}
-	*kr { arg analogPin = 0, output = 0, mul = 1.0, add = 0.0;
-		this.multiNew('control', analogPin, output).madd(mul,add);
-		^0.0;
+	*kr { |analogPin = 0, output = 0, mul = 1.0, add = 0.0|
+		this.multiNew('control', analogPin, output).madd(mul, add);
+		^0.0
 	}
 	numOutputs { ^0 }
 	writeOutputSpecs {}
@@ -56,11 +56,11 @@ AnalogOut : UGen {
 DigitalIn : UGen {
 	signalRange { ^\unipolar }
 
-	*ar { arg digitalPin = 0, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', digitalPin).madd(mul,add)
+	*ar { |digitalPin = 0, mul = 1.0, add = 0.0|
+		^this.multiNew('audio', digitalPin).madd(mul, add)
 	}
-	*kr { arg digitalPin = 0, mul = 1.0, add = 0.0;
-		^this.multiNew('control', digitalPin).madd(mul,add)
+	*kr { |digitalPin = 0, mul = 1.0, add = 0.0|
+		^this.multiNew('control', digitalPin).madd(mul, add)
 	}
 }
 
@@ -69,13 +69,13 @@ DigitalIn : UGen {
  * output: none
  */
 DigitalOut : UGen {
-	*ar { arg digitalPin = 0, output = 0, mul = 1.0, add = 0.0;
-		this.multiNew('audio', digitalPin, output).madd(mul,add);
-		^0.0;
+	*ar { |digitalPin = 0, output = 0, mul = 1.0, add = 0.0|
+		this.multiNew('audio', digitalPin, output).madd(mul, add);
+		^0.0
 	}
-	*kr { arg digitalPin = 0, output = 0, mul = 1.0, add = 0.0;
-		this.multiNew('control', digitalPin, output).madd(mul,add);
-		^0.0;
+	*kr { |digitalPin = 0, output = 0, mul = 1.0, add = 0.0|
+		this.multiNew('control', digitalPin, output).madd(mul, add);
+		^0.0
 	}
 	numOutputs { ^0 }
 	writeOutputSpecs {}
@@ -89,11 +89,11 @@ DigitalOut : UGen {
 DigitalIO : UGen {
 	signalRange { ^\unipolar }
 
-	*ar { arg digitalPin = 0, output = 0, pinMode = 0, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', digitalPin, output, pinMode).madd(mul,add)
+	*ar { |digitalPin = 0, output = 0, pinMode = 0, mul = 1.0, add = 0.0|
+		^this.multiNew('audio', digitalPin, output, pinMode).madd(mul, add)
 	}
-	*kr { arg digitalPin = 0, output = 0, pinMode = 0, mul = 1.0, add = 0.0;
-		^this.multiNew('control', digitalPin, output, pinMode).madd(mul,add)
+	*kr { |digitalPin = 0, output = 0, pinMode = 0, mul = 1.0, add = 0.0|
+		^this.multiNew('control', digitalPin, output, pinMode).madd(mul, add)
 	}
 }
 
@@ -101,8 +101,7 @@ DigitalIO : UGen {
  * input 2: array of signals to scope
  */
 BelaScopeOut : AbstractOut {
-	*ar {
-		arg offset = 0, channelsArray;
+	*ar { |offset = 0, channelsArray|
 		channelsArray = this.replaceZeroesWithSilence(channelsArray.asUGenInput(this).asArray);
 		this.multiNewList(['audio', offset] ++ channelsArray)
 		^0.0
@@ -116,8 +115,8 @@ BelaScopeOut : AbstractOut {
 		valid !? { ^valid };
 
 		if(channelOffset.isNumber and: { channelOffset >= 0 }) {
-			^nil;
+			^nil
 		};
-		^"arg: channelOffset must be a positive number, but % is provided.".format(channelOffset);
+		^"arg: channelOffset must be a positive number, but % is provided.".format(channelOffset)
 	}
 }

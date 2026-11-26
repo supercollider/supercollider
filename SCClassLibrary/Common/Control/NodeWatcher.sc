@@ -3,50 +3,50 @@
 AbstractNodeWatcher {
 
 	var <server, <responders;
-	var <isWatching=false;
+	var <isWatching = false;
 
-	*new { arg server;
+	*new { |server|
 		^super.new.ninit(server)
 	}
 
-	ninit { arg argServer;
+	ninit { |argServer|
 		var cmds;
 		server = argServer;
 		this.clear;
 		responders = [];
-		server.addr.asArray.do({ arg addrItem; //support for multiple addresses
-			this.cmds.do({ arg cmd;
+		server.addr.asArray.do { |addrItem| //support for multiple addresses
+			this.cmds.do { |cmd|
 				var method;
 				method = cmd.copyToEnd(1).asSymbol;
 				responders = responders.add(
-					OSCFunc({ arg msg; this.respond(method, msg) }, cmd, addrItem)
+					OSCFunc({ |msg| this.respond(method, msg) }, cmd, addrItem)
 						.permanent_(true)
 						.disable
 				)
-			});
-		});
+			}
+		}
 	}
 
 	clear {}
 
 	cmds { ^nil }
 
-	respond { arg method, msg;
+	respond { |method, msg|
 		this.performList(method, msg.drop(1))
 	}
 
 	start {
-		if(isWatching.not, {
-			responders.do({ arg item; item.enable });
-			isWatching = true;
-		})
+		if(isWatching.not) {
+			responders.do { |item| item.enable };
+			isWatching = true
+		}
 	}
 	stop {
-		if(isWatching, {
-			responders.do({ arg item; item.free });
+		if(isWatching) {
+			responders.do { |item| item.free };
 			isWatching = false;
-			this.free;
-		})
+			this.free
+		}
 	}
 
 }
@@ -56,25 +56,25 @@ AbstractNodeWatcher {
 BasicNodeWatcher : AbstractNodeWatcher {
 	var <nodes;
 
-	nodeIsPlaying { arg nodeID;
-		^nodes.includes(nodeID);
+	nodeIsPlaying { |nodeID|
+		^nodes.includes(nodeID)
 	}
-	nodeIsPlaying_ { arg nodeID;
+	nodeIsPlaying_ { |nodeID|
 		//sometimes it is needed to set this before the server reply
-		^nodes.add(nodeID);
+		^nodes.add(nodeID)
 	}
 
 	clear {
-		nodes = IdentitySet.new;
+		nodes = IdentitySet.new
 	}
 
-	cmds {  ^#["/n_go", "/n_end"] }
+	cmds { ^#["/n_go", "/n_end"] }
 
-	n_end { arg nodeID;
-		nodes.remove(nodeID);
+	n_end { |nodeID|
+		nodes.remove(nodeID)
 	}
-	n_go { arg nodeID;
-		nodes.add(nodeID);
+	n_go { |nodeID|
+		nodes.add(nodeID)
 	}
 }
 
@@ -93,55 +93,55 @@ NodeWatcher : BasicNodeWatcher {
 		all = IdentityDictionary.new;
 		CmdPeriod.add(this);
 		ServerBoot.add(this);
-		ServerQuit.add(this);
+		ServerQuit.add(this)
 	}
 
-	*cmdPeriod { all.do { arg item; item.clear } }
+	*cmdPeriod { all.do { |item| item.clear } }
 
-	*doOnServerQuit {|aServer|
+	*doOnServerQuit { |aServer|
 		this.doOnServerBoot(aServer)
 	}
 
-	*doOnServerBoot {|aServer|
+	*doOnServerBoot { |aServer|
 		var serverName = aServer.name;
 		var serverNodeWatchers = all.removeAt(serverName);
 
-		if (serverNodeWatchers.notNil) {
+		if(serverNodeWatchers.notNil) {
 			serverNodeWatchers.clear
 		}
 	}
 
-	*newFrom { arg server;
+	*newFrom { |server|
 		var res;
 		res = all.at(server.name);
-		if(res.isNil, {
+		if(res.isNil) {
 			res = this.new(server);
 			res.start;
 			all.put(server.name, res)
-		});
+		};
 		^res
 	}
 
-	*register { arg node, assumePlaying=false;
+	*register { |node, assumePlaying = false|
 		var watcher;
 		watcher = this.newFrom(node.server);
-		watcher.register(node, assumePlaying);
+		watcher.register(node, assumePlaying)
 	}
 
-	*unregister { arg node;
+	*unregister { |node|
 		var watcher;
 		watcher = this.newFrom(node.server);
-		watcher.unregister(node);
+		watcher.unregister(node)
 	}
 
 	cmds { ^#["/n_go", "/n_end", "/n_off", "/n_on"] }
-	respond { arg method, msg;
+	respond { |method, msg|
 		var node, group;
 		node = nodes.at(msg.at(1));
-		if(node.notNil, {
-				group = nodes.at(msg.at(2));
-				this.performList(method, node, group)
-		})
+		if(node.notNil) {
+			group = nodes.at(msg.at(2));
+			this.performList(method, node, group)
+		}
 	}
 
 	clear {
@@ -149,50 +149,50 @@ NodeWatcher : BasicNodeWatcher {
 		// b/c a /n_end dependant might add or remove nodes
 		// from the collection
 		// NEVER iterate over a collection that might change
-		nodes.copy.do({ arg node;
+		nodes.copy.do { |node|
 			node.isPlaying = false;
 			node.isRunning = false;
-			node.changed(\n_end);
-		});
+			node.changed(\n_end)
+		};
 		nodes = IdentityDictionary.new
 	}
 
-	register { arg node, assumePlaying=false;
+	register { |node, assumePlaying = false|
 		if(server.serverRunning.not) { nodes.removeAll; ^this };
 		if(isWatching) {
 			if(assumePlaying and: { nodes.at(node.nodeID).isNil }) { node.isPlaying = true };
-			nodes.put(node.nodeID, node);
-		};
+			nodes.put(node.nodeID, node)
+		}
 	}
 
-	unregister { arg node;
-		nodes.removeAt(node.nodeID);
+	unregister { |node|
+		nodes.removeAt(node.nodeID)
 	}
 
 
 	//////////////private implementation//////////////
 
-	n_go { arg node;
+	n_go { |node|
 		node.isPlaying = true;
 		node.isRunning = true;
-		node.changed(\n_go);  // notify all the node's dependents of the change
+		node.changed(\n_go)  // notify all the node's dependents of the change
 	}
 
-	n_end { arg node;
+	n_end { |node|
 		this.unregister(node);
 		node.isPlaying = false;
 		node.isRunning = false;
-		node.changed(\n_end);
+		node.changed(\n_end)
 	}
 
-	n_off { arg node;
+	n_off { |node|
 		node.isRunning = false;
-		node.changed(\n_off);
+		node.changed(\n_off)
 	}
 
-	n_on { arg node;
+	n_on { |node|
 		node.isRunning = true;
-		node.changed(\n_on);
+		node.changed(\n_on)
 	}
 
 }
@@ -204,28 +204,28 @@ DebugNodeWatcher : BasicNodeWatcher {
 
 	//////////////private implementation//////////////
 
-	doPost { arg action, nodeID, groupID, prevID, nextID;
+	doPost { |action, nodeID, groupID, prevID, nextID|
 		Post << ("[ server: " + server.name + "]" +
-		action + nodeID + "in group" + groupID + "between nodes" + prevID + "and" + nextID
+				action + nodeID + "in group" + groupID + "between nodes" + prevID + "and" + nextID
 		) << Char.nl
 	}
 
-	n_go { arg nodeID, groupID, prevID, nextID;
+	n_go { |nodeID, groupID, prevID, nextID|
 		this.doPost("started", nodeID, groupID, prevID, nextID);
-		nodes.add(nodeID);
+		nodes.add(nodeID)
 	}
 
-	n_end { arg nodeID, groupID, prevID, nextID;
+	n_end { |nodeID, groupID, prevID, nextID|
 		nodes.remove(nodeID);
-		this.doPost("ended", nodeID, groupID, prevID, nextID);
+		this.doPost("ended", nodeID, groupID, prevID, nextID)
 	}
 
-	n_off { arg nodeID, groupID, prevID, nextID;
-		this.doPost("turned off", nodeID, groupID, prevID, nextID);
+	n_off { |nodeID, groupID, prevID, nextID|
+		this.doPost("turned off", nodeID, groupID, prevID, nextID)
 	}
 
-	n_on { arg nodeID, groupID, prevID, nextID;
-		this.doPost("turned on", nodeID, prevID, nextID);
+	n_on { |nodeID, groupID, prevID, nextID|
+		this.doPost("turned on", nodeID, prevID, nextID)
 	}
 
 }

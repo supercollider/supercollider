@@ -1,3 +1,4 @@
+//# VERSION 3.16
 
 TestThrow : UnitTest {
 
@@ -10,7 +11,7 @@ TestThrow : UnitTest {
 			var r = Routine {
 				var r = Routine {
 					var r = Routine {
-						Error("test").throw;
+						Error("test").throw
 					};
 					var next = thisThread;
 					r.exceptionHandler = {
@@ -19,10 +20,10 @@ TestThrow : UnitTest {
 						next.handleError
 					};
 					r.next;
-					condition.hang;
+					condition.hang
 				};
 				var next = thisThread;
-				r.next;
+				r.next
 			};
 			var next = thisThread;
 			r.exceptionHandler = {
@@ -30,12 +31,12 @@ TestThrow : UnitTest {
 				condition.unhang;
 				next.handleError
 			};
-			r.next;
+			r.next
 		};
 
 		condition.hang;
 		this.assert(call1, "When throwing an error in a thread, handleError should call parent thread in inner thread");
-		this.assert(call2, "When throwing an error in a thread, handleError should call parent thread");
+		this.assert(call2, "When throwing an error in a thread, handleError should call parent thread")
 	}
 
 }

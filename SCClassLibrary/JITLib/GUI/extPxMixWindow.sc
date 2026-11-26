@@ -25,22 +25,22 @@ n.shiftArBorder(-10);
 	enableNameResize { |flag = true|
 		var canDrag = false;
 
-		if (flag) {
+		if(flag) {
 			arZone.mouseDownAction = { |arZone, x, y|
 				// if between slider and nameView, startDrag
 				var nameLeft = this.getNameLeftBorder;
-				canDrag = x.absdif(nameLeft) < 15;
+				canDrag = x.absdif(nameLeft) < 15
 			};
 
 			arZone.mouseMoveAction = { |arZone, x, y|
-				if (canDrag) { this.setNameLeftBorder(x.postln) };
+				if(canDrag) { this.setNameLeftBorder(x.postln) }
 			};
 
-			arZone.mouseUpAction = { canDrag = false };
+			arZone.mouseUpAction = { canDrag = false }
 		} {
 			arZone.mouseDownAction = nil;
 			arZone.mouseMoveAction = nil;
-			arZone.mouseUpAction = nil;
+			arZone.mouseUpAction = nil
 		}
 	}
 
@@ -50,16 +50,16 @@ n.shiftArBorder(-10);
 			resizable: false
 		).front;
 		parent.addFlowLayout;
-		hasWindow = true;
+		hasWindow = true
 	}
 
 	getNameLeftBorder {
-		^arGuis[0].nameView.bounds.left;
+		^arGuis[0].nameView.bounds.left
 	}
 
 	setNameLeftBorder { |xpos = 250|
 		arGuis.do { |ag|
-			var moniZone =  ag.monitorGui.zone;
+			var moniZone = ag.monitorGui.zone;
 			var nvbnds = ag.nameView.bounds;
 			var nvbndsRight = nvbnds.right;
 
@@ -67,11 +67,11 @@ n.shiftArBorder(-10);
 
 			nvbnds = nvbnds.left_(xpos);
 			nvbnds = nvbnds.width_(nvbndsRight - xpos);
-			ag.nameView.bounds_(nvbnds);
+			ag.nameView.bounds_(nvbnds)
 		}
 	}
 
 	shiftNameLeftBorder { |x = 0|
-		this.setNameLeftBorder(this.getNameLeftBorder + x);
+		this.setNameLeftBorder(this.getNameLeftBorder + x)
 	}
 }

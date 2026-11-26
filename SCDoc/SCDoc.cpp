@@ -67,6 +67,7 @@ DocNode* doc_node_create(const char* id) {
     n->text = NULL;
     n->n_childs = 0;
     n->children = NULL;
+    n->line = 0;
     return n;
 }
 

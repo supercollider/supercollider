@@ -52,47 +52,47 @@ Here is a simple example of its use:
 */
 
 +Event {
-	*checkIDs { | id, server |
-		if (id.isNil) {^nil};
-		if (id.asArray.first < (if(server.notNil) { server.options.initialNodeID } { 1000 })) { ^id};
+	*checkIDs { |id, server|
+		if(id.isNil) { ^nil };
+		if(id.asArray.first < (if(server.notNil) { server.options.initialNodeID } { 1000 })) { ^id };
 		^nil
 	}
 
 	asEventStreamPlayer {}
 
-	sendOSC { | msg |
-		if (this[\isPlaying]) {
-			this[\server].sendBundle(this[\latency],  *(msg.flop) )
+	sendOSC { |msg|
+		if(this[\isPlaying]) {
+			this[\server].sendBundle(this[\latency], *(msg.flop))
 		}
 	}
-	set { | ... args |
-//		this.sendOSC([15, this[\id]] ++ (args.asOSCArgArray));
+	set { |... args|
+		//		this.sendOSC([15, this[\id]] ++ (args.asOSCArgArray));
 		args = ([15, this[\id]] ++ args).flop.asOSCArgBundle;
-		if (this[\isPlaying]) {
-			this[\server].sendBundle( this[\latency],  *args )
+		if(this[\isPlaying]) {
+			this[\server].sendBundle(this[\latency], *args)
 		}
 	}
 
-	stop { this.use { ~stopServerNode.value }  }
-	pause { this.use { ~pauseServerNode.value }  }
-	resume { this.use { ~resumeServerNode.value }  }
-	release { |releaseTime| this.use { ~releaseServerNode.value(releaseTime) }  }
-	free { this.use { ~freeServerNode.value }  }
+	stop { this.use { ~stopServerNode.value } }
+	pause { this.use { ~pauseServerNode.value } }
+	resume { this.use { ~resumeServerNode.value } }
+	release { |releaseTime| this.use { ~releaseServerNode.value(releaseTime) } }
+	free { this.use { ~freeServerNode.value } }
 
 	synth {
-		this.parent = Event.parentEvents[\synthEvent];
+		this.parent = Event.parentEvents[\synthEvent]
 	}
 	group {
-		this.parent = Event.parentEvents[\groupEvent];
+		this.parent = Event.parentEvents[\groupEvent]
 	}
 
-	split { | key = \id |
+	split { |key = \id|
 		var event;
-		if (this[\isPlaying] == true) {
+		if(this[\isPlaying] == true) {
 			^this[key].asArray.collect { |keyVal|
 				event = this.copy.put(key, keyVal);
 				NodeWatcher.register(event);
-				event;
+				event
 			}
 		} {
 			^this[key].asArray.collect { |keyVal|

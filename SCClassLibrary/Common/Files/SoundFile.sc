@@ -30,25 +30,25 @@ SoundFile {
 
 
 	*closeAll {
-		if (openFiles.notNil, {
-			openFiles.copy.do({ arg file; file.close; });
-		});
+		if(openFiles.notNil) {
+			openFiles.copy.do { |file| file.close }
+		}
 	}
 	isOpen {
 		^fileptr.notNil
 	}
 
-	*new { arg pathName;
-		^super.new.path_(pathName);
+	*new { |pathName|
+		^super.new.path_(pathName)
 	}
 
-	*openRead { arg pathName;
+	*openRead { |pathName|
 		var file;
 		file = this.new(pathName);
 		if(file.openRead(pathName)) { ^file } { ^nil }
 	}
 
-	*openWrite { arg pathName, headerFormat, sampleFormat, numChannels, sampleRate;
+	*openWrite { |pathName, headerFormat, sampleFormat, numChannels, sampleRate|
 		var file;
 		file = this.new(pathName);
 		// if nil, use corresponding default value from instance vars above
@@ -59,143 +59,143 @@ SoundFile {
 		if(file.openWrite(pathName)) { ^file } { ^nil }
 	}
 
-	*use { arg path, function;
+	*use { |path, function|
 		var file = this.new, res;
 		protect {
 			file.openRead(path);
-			res = function.value(file);
+			res = function.value(file)
 		} {
-			file.close;
+			file.close
 		}
 		^res
 	}
 
-    *writeArray {|array, pathName, headerFormat, sampleFormat, sampleRate|
-        var file = SoundFile.new;
+	*writeArray { |array, pathName, headerFormat, sampleFormat, sampleRate|
+		var file = SoundFile.new;
 
-        if (array.rank > 2) {
-            Error(
-                "Cannot write an array with nested channels."
-                "The array should be formatted as: "
-                "[  [channel 1 samples...], [channel 2 samples...], ...]"
-            ).throw
-        };
+		if(array.rank > 2) {
+			Error(
+				"Cannot write an array with nested channels."
+				"The array should be formatted as: "
+				"[  [channel 1 samples...], [channel 2 samples...], ...]"
+			).throw
+		};
 
-        // Assign if not nil.
-        headerFormat !? file.headerFormat_(_);
-        sampleFormat !? file.sampleFormat_(_);
-        sampleRate !? file.sampleRate_(_);
+		// Assign if not nil.
+		headerFormat !? file.headerFormat_(_);
+		sampleFormat !? file.sampleFormat_(_);
+		sampleRate !? file.sampleRate_(_);
 
-        file.numChannels_(if(array.rank <= 1, { 1 }, { array.shape[0] }));
+		file.numChannels_(if(array.rank <= 1) { 1 } { array.shape[0] });
 
-        if(file.openWrite(pathName).not) {
-            Error("Could not open file at path:" + pathName).throw
-        };
+		if(file.openWrite(pathName).not) {
+			Error("Could not open file at path:" + pathName).throw
+		};
 
-        // Interlace the samples and write, always close the file.
-        // Format will be: L1, R1, C1, L2, R2, C2 ...
-        protect {
-            var size = array.shape.product;
-            var flattenedArray = array.lace(size); // lace is faster than .flop.flat.
-            var data = FloatArray.newFrom(flattenedArray.asFloat);
-            file.writeData(data)
-        } { file.close };
-        ^pathName
-    }
-
-	openRead{ arg pathName;
-		path = pathName ? path;
-		^this.prOpenRead(path);
+		// Interlace the samples and write, always close the file.
+		// Format will be: L1, R1, C1, L2, R2, C2 ...
+		protect {
+			var size = array.shape.product;
+			var flattenedArray = array.lace(size); // lace is faster than .flop.flat.
+			var data = FloatArray.newFrom(flattenedArray.asFloat);
+			file.writeData(data)
+		} { file.close };
+		^pathName
 	}
 
-	prOpenRead { arg pathName;
+	openRead{ |pathName|
+		path = pathName ? path;
+		^this.prOpenRead(path)
+	}
+
+	prOpenRead { |pathName|
 		// returns true if success, false if file not found or error reading.
 		_SFOpenRead
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	readData { arg rawArray;
+	readData { |rawArray|
 		// must have called openRead first!
 		// returns true if success, false if file not found or error reading.
 		_SFRead
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
 	readHeaderAsString {
 		// must have called openRead first!
 		//returns the whole header as String
 		_SFHeaderInfoString
-		^this.primitiveFailed;
+		^this.primitiveFailed
 
 	}
 
-	openWrite{ arg pathName;
+	openWrite{ |pathName|
 		path = pathName ? path;
 		^this.prOpenWrite(path)
 	}
 
-	prOpenWrite { arg pathName;
+	prOpenWrite { |pathName|
 		// write the header
 		// format written is that indicated in headerFormat and sampleFormat.
 		// return true if successful, false if not found or error writing.
 		_SFOpenWrite
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
-	writeData { arg rawArray;
+	writeData { |rawArray|
 		// must have called openWrite first!
 		// format written is that indicated in sampleFormat.
 		// return true if successful, false if not found or error writing.
 		_SFWrite
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 	close {
 		_SFClose
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	seek { arg offset = 0, origin = 0;
+	seek { |offset = 0, origin = 0|
 		// offset is in frames
 		// origin is an integer, one of:
 		// 0 - from beginning of file
 		// 1 - from current position
 		// 2 - from end of file
 		_SFSeek
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	duration { ^numFrames/sampleRate }
+	duration { ^numFrames / sampleRate }
 
 
 
-		// normalizer utility
+	// normalizer utility
 
 	*normalize { |path, outPath, newHeaderFormat, newSampleFormat,
-		startFrame = 0, numFrames, maxAmp = 1.0, linkChannels = true, chunkSize = 4194304,
-		threaded = false|
+			startFrame = 0, numFrames, maxAmp = 1.0, linkChannels = true, chunkSize = 4194304,
+			threaded = false|
 
 		var	file, outFile,
 			action = {
 				protect {
 					outFile = file.normalize(outPath, newHeaderFormat, newSampleFormat,
-						startFrame, numFrames, maxAmp, linkChannels, chunkSize, threaded);
+						startFrame, numFrames, maxAmp, linkChannels, chunkSize, threaded)
 				} { file.close };
-				file.close;
+				file.close
 			};
 
-		(file = this.openRead(path.standardizePath)).notNil.if({
-				// need to clean up in case of error
+		if((file = this.openRead(path.standardizePath)).notNil) {
+			// need to clean up in case of error
 			if(threaded, {
 				Routine(action).play(AppClock)
 			}, action);
 			^outFile
-		}, {
-			MethodError("Unable to read soundfile at: " ++ path, this).throw;
-		});
+		} {
+			MethodError("Unable to read soundfile at: " ++ path, this).throw
+		}
 	}
 
 	normalize { |outPath, newHeaderFormat, newSampleFormat,
-		startFrame = 0, numFrames, maxAmp = 1.0, linkChannels = true, chunkSize = 4194304,
-		threaded = false|
+			startFrame = 0, numFrames, maxAmp = 1.0, linkChannels = true, chunkSize = 4194304,
+			threaded = false|
 
 		var	peak, outFile;
 
@@ -204,35 +204,35 @@ SoundFile {
 			.numChannels_(this.numChannels)
 			.sampleRate_(this.sampleRate);
 
-			// can we open soundfile for writing?
-		outFile.openWrite(outPath.standardizePath).if({
+		// can we open soundfile for writing?
+		if(outFile.openWrite(outPath.standardizePath)) {
 			protect {
 				"Calculating maximum levels...".postln;
 				peak = this.channelPeaks(startFrame, numFrames, chunkSize, threaded);
 				Post << "Peak values per channel are: " << peak << "\n";
-				peak.includes(0.0).if({
+				if(peak.includes(0.0)) {
 					MethodError("At least one of the soundfile channels is zero. Aborting.",
-						this).throw;
-				});
-					// if all channels should be scaled by the same amount,
-					// choose the highest peak among all channels
-					// otherwise, retain the array of peaks
-				linkChannels.if({ peak = peak.maxItem });
+						this).throw
+				};
+				// if all channels should be scaled by the same amount,
+				// choose the highest peak among all channels
+				// otherwise, retain the array of peaks
+				if(linkChannels) { peak = peak.maxItem };
 				"Writing normalized file...".postln;
 				this.scaleAndWrite(outFile, maxAmp / peak, startFrame, numFrames, chunkSize,
 					threaded);
-				"Done.".postln;
+				"Done.".postln
 			} { outFile.close };
 			outFile.close;
 			^outFile
-		}, {
-			MethodError("Unable to write soundfile at: " ++ outPath, this).throw;
-		});
+		} {
+			MethodError("Unable to write soundfile at: " ++ outPath, this).throw
+		}
 	}
 
 	*groupNormalize { |paths, outDir, newHeaderFormat, newSampleFormat,
-		maxAmp = 1.0, chunkSize = 4194304,
-		threaded = true|
+			maxAmp = 1.0, chunkSize = 4194304,
+			threaded = true|
 
 		var action;
 
@@ -240,31 +240,31 @@ SoundFile {
 			var groupPeak = 0.0, files, outFiles;
 
 			"Calculating maximum levels...".postln;
-			paths.do({|path|
+			paths.do { |path|
 				var	file, peak;
 
-				(file = this.openRead(path.standardizePath)).notNil.if({
+				if((file = this.openRead(path.standardizePath)).notNil) {
 					"Checking levels for file %\n".postf(path.standardizePath);
 					files = files.add(file);
 
-						peak = file.channelPeaks(0, nil, chunkSize, threaded);
-						Post << "Peak values per channel are: " << peak << "\n";
-						peak.includes(0.0).if({
-							MethodError("At least one of the soundfile channels is zero. Aborting.",
-								this).throw;
-						});
+					peak = file.channelPeaks(0, nil, chunkSize, threaded);
+					Post << "Peak values per channel are: " << peak << "\n";
+					if(peak.includes(0.0)) {
+						MethodError("At least one of the soundfile channels is zero. Aborting.",
+							this).throw
+					};
 
-					groupPeak = max(groupPeak, peak.maxItem);
+					groupPeak = max(groupPeak, peak.maxItem)
 
-				}, {
-					MethodError("Unable to read soundfile at: " ++ path, this).throw;
-				});
-			});
+				} {
+					MethodError("Unable to read soundfile at: " ++ path, this).throw
+				}
+			};
 
 			"Overall peak level: %\n".postf(groupPeak);
 			outDir = outDir.standardizePath.withTrailingSlash;
 
-			files.do({|file|
+			files.do { |file|
 
 				var outPath, outFile;
 
@@ -275,26 +275,26 @@ SoundFile {
 					.numChannels_(file.numChannels)
 					.sampleRate_(file.sampleRate);
 
-				outFile.openWrite(outPath).if({
+				if(outFile.openWrite(outPath)) {
 					protect {
 						"Writing normalized file %\n".postf(outPath);
 						file.scaleAndWrite(outFile, maxAmp / groupPeak, 0, nil, chunkSize,
-							threaded);
+							threaded)
 					} { outFile.close };
-					outFile.close;
-				}, {
-					MethodError("Unable to write soundfile at: " ++ outPath, this).throw;
-				});
+					outFile.close
+				} {
+					MethodError("Unable to write soundfile at: " ++ outPath, this).throw
+				}
 
-			});
+			};
 
-			"////// Group Normalize complete //////".postln;
+			"////// Group Normalize complete //////".postln
 
 		};
 
 		if(threaded, {
 			Routine(action).play(AppClock)
-		}, action);
+		}, action)
 
 	}
 
@@ -302,40 +302,41 @@ SoundFile {
 		var rawData, peak, numChunks, chunksDone, test;
 
 		peak = 0 ! numChannels;
-		numFrames.isNil.if({ numFrames = this.numFrames });
+		if(numFrames.isNil) { numFrames = this.numFrames };
 		numFrames = numFrames * numChannels;
 
-			// chunkSize must be a multiple of numChannels
-		chunkSize = (chunkSize/numChannels).floor * numChannels;
+		// chunkSize must be a multiple of numChannels
+		chunkSize = (chunkSize / numChannels).floor * numChannels;
 
 		if(threaded) {
 			numChunks = (numFrames / chunkSize).roundUp(1);
-			chunksDone = 0;
+			chunksDone = 0
 		};
 
 		this.seek(startFrame, 0);
 
-		{	(numFrames > 0) and: {
+		while {
+			(numFrames > 0) and: {
 				rawData = FloatArray.newClear(min(numFrames, chunkSize));
 				this.readData(rawData);
 				rawData.size > 0
 			}
-		}.while({
-			rawData.do({ |samp, i|
-				(samp.abs > peak[i % numChannels]).if({
+		} {
+			rawData.do { |samp, i|
+				if(samp.abs > peak[i % numChannels]) {
 					peak[i % numChannels] = samp.abs
-				});
-			});
+				}
+			};
 			numFrames = numFrames - chunkSize;
 			if(threaded) {
 				chunksDone = chunksDone + 1;
 				test = chunksDone / numChunks;
-				(((chunksDone-1) / numChunks) < test.round(0.02) and: { test >= test.round(0.02) }).if({
-					$..post;
-				});
-				0.0001.wait;
-			};
-		});
+				if(((chunksDone - 1) / numChunks) < test.round(0.02) and: { test >= test.round(0.02) }) {
+					$..post
+				};
+				0.0001.wait
+			}
+		};
 		if(threaded) { $\n.postln };
 		^peak
 	}
@@ -343,65 +344,66 @@ SoundFile {
 	scaleAndWrite { |outFile, scale, startFrame, numFrames, chunkSize, threaded = false|
 		var	rawData, numChunks, chunksDone, test;
 
-		numFrames.isNil.if({ numFrames = this.numFrames });
+		if(numFrames.isNil) { numFrames = this.numFrames };
 		numFrames = numFrames * numChannels;
 		scale = scale.asArray;
-//		(scale.size == 0).if({ scale = [scale] });
+		//		(scale.size == 0).if({ scale = [scale] });
 
-			// chunkSize must be a multiple of numChannels
-		chunkSize = (chunkSize/numChannels).floor * numChannels;
+		// chunkSize must be a multiple of numChannels
+		chunkSize = (chunkSize / numChannels).floor * numChannels;
 
 		if(threaded) {
 			numChunks = (numFrames / chunkSize).roundUp(1);
-			chunksDone = 0;
+			chunksDone = 0
 		};
 
 		this.seek(startFrame, 0);
 
-		{	(numFrames > 0) and: {
+		while {
+			(numFrames > 0) and: {
 				rawData = FloatArray.newClear(min(numFrames, chunkSize));
 				this.readData(rawData);
 				rawData.size > 0
 			}
-		}.while({
-			rawData.do({ |samp, i|
+		} {
+			rawData.do { |samp, i|
 				rawData[i] = rawData[i] * scale.wrapAt(i)
-			});
-				// write, and check whether successful
-				// throwing the error invokes error handling that closes the files
-			(outFile.writeData(rawData) == false).if({
+			};
+			// write, and check whether successful
+			// throwing the error invokes error handling that closes the files
+			if(outFile.writeData(rawData) == false) {
 				MethodError("SoundFile writeData failed.", this).throw
-			});
+			};
 
 			numFrames = numFrames - chunkSize;
 			if(threaded) {
 				chunksDone = chunksDone + 1;
 				test = chunksDone / numChunks;
-				(((chunksDone-1) / numChunks) < test.round(0.02) and: { test >= test.round(0.02) }).if({
-					$..post;
-				});
-				0.0001.wait;
-			};
-		});
+				if(((chunksDone - 1) / numChunks) < test.round(0.02) and: { test >= test.round(0.02) }) {
+					$..post
+				};
+				0.0001.wait
+			}
+		};
 		if(threaded) { $\n.postln };
 		^outFile
 	}
 
-	info { | path |
+	info { |path|
 		var flag = this.openRead;
-		if (flag) {
-			this.close;
+		if(flag) {
+			this.close
 		} {
 			^nil
 		}
 	}
 
-	*collect { | path = "sounds/*" |
+	*collect { |path = "sounds/*"|
 		var paths, files;
 		paths = path.pathMatch;
-		files = paths.collect { | p | this.new(p).info };
+		files = paths.collect { |p| this.new(p).info };
 		files = files.select(_.notNil);
-		^files;
+		^files
 	}
 
 	*collectIntoBuffers { |path = "sounds/*", server|
@@ -412,7 +414,7 @@ SoundFile {
 		.collect { |sf|
 			Buffer(server, sf.numFrames, sf.numChannels)
 			.allocRead(sf.path)
-			.sampleRate_(sf.sampleRate);
+			.sampleRate_(sf.sampleRate)
 		}
 	}
 
@@ -432,118 +434,122 @@ SoundFile {
 				rawData = FloatArray.newClear(numFrames * numChannels);
 				this.readData(rawData);
 				server.sync;
-				buffer.sendCollection(rawData, wait: -1);
+				buffer.sendCollection(rawData, wait: -1)
 			}
 		};
 		^buffer
 	}
 
-	cue { | ev, playNow = false, closeWhenDone = false |
+	cue { |ev, playNow = false, closeWhenDone = false|
 		var server, packet, defname = "diskIn" ++ numChannels;
 		ev = ev ? ();
-		if (this.numFrames == 0) { this.info };
+		if(this.numFrames == 0) { this.info };
 		fork {
 			ev.use {
-				server = ~server ?? { Server.default};
+				server = ~server ?? { Server.default };
 				if(~instrument.isNil) {
-					SynthDef(defname, { |out, amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1|
+					SynthDef(defname, { |out, amp = 1, bufnum, sustainTime, atk = 0, rel = 0, gate = 1|
 						var sig = VDiskIn.ar(numChannels, bufnum, BufRateScale.kr(bufnum));
-						var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
+						var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime - rel, 0]));
 						var env = EnvGen.kr(Env.asr(atk, 1, rel), gate * gateEnv, doneAction: Done.freeSelf);
 						Out.ar(out, sig * env * amp)
 					}).add;
 					~instrument = defname;
-					server.sync;
+					server.sync
 				};
 				ev.synth;	// set up as a synth event (see Event)
-				~bufnum =  server.bufferAllocator.alloc(1);
+				~bufnum = server.bufferAllocator.alloc(1);
 				~bufferSize = ~bufferSize ? 0x10000;
 				~firstFrame = ~firstFrame ? 0;
 				~lastFrame = ~lastFrame ? numFrames;
 				~sustainTime = (~lastFrame - ~firstFrame) / (sampleRate ?? { server.sampleRate ? 44100 });
-				~close = { | ev |
-						server.bufferAllocator.free(ev[\bufnum]);
-						server.sendBundle(server.latency, ["/b_close", ev[\bufnum]],
-							["/b_free", ev[\bufnum] ]  )
+				~close = { |ev|
+					server.bufferAllocator.free(ev[\bufnum]);
+					server.sendBundle(server.latency, ["/b_close", ev[\bufnum]],
+						["/b_free", ev[\bufnum]])
 				};
-				if (closeWhenDone) {
+				if(closeWhenDone) {
 					OSCFunc({
-						ev[\close].value(ev);
-					}, "/n_end", server.addr, nil, ev[\id]).oneShot;
+						ev[\close].value(ev)
+					}, "/n_end", server.addr, nil, ev[\id]).oneShot
 				};
-				if (playNow) {
-					packet = server.makeBundle(false, {ev.play})[0];
-						// makeBundle creates an array of messages
-						// need one message, take the first
+				if(playNow) {
+					packet = server.makeBundle(false, { ev.play })[0]
+					// makeBundle creates an array of messages
+					// need one message, take the first
 				} {
-					packet = [];
+					packet = []
 				};
-				server.sendBundle(server.latency,["/b_alloc", ~bufnum, ~bufferSize, numChannels,
-							["/b_read", ~bufnum, path, ~firstFrame, ~bufferSize, 0, 1, packet]
-						]);
-			};
+				server.sendBundle(server.latency, [
+					"/b_alloc",
+					~bufnum,
+					~bufferSize,
+					numChannels,
+					["/b_read", ~bufnum, path, ~firstFrame, ~bufferSize, 0, 1, packet]
+				])
+			}
 		};
-		^ev;
+		^ev
 	}
 
-	play { | ev, playNow = true |
+	play { |ev, playNow = true|
 		^this.cue(ev, playNow)
 	}
 
-	asEvent { | type = \allocRead |
-		if (type == \cue) {
-			^(	type: 			type,
-				path: 			path,
-				numFrames: 		numFrames,
-				sampleRate: 		sampleRate,
-				numChannels: 		numChannels,
-				bufferSize:		0x10000,
-				firstFileFrame:	0,
-				firstBufferFrame: 	0,
-				leaveOpen:		1
+	asEvent { |type = \allocRead|
+		if(type == \cue) {
+			^(type: type,
+				path: path,
+				numFrames: numFrames,
+				sampleRate: sampleRate,
+				numChannels: numChannels,
+				bufferSize: 0x10000,
+				firstFileFrame: 0,
+				firstBufferFrame: 0,
+				leaveOpen: 1
 			)
 		} {
-			^(	type: 			type,
-				path: 			path,
-				numFrames: 		numFrames,
-				sampleRate: 		sampleRate,
-				numChannels: 		numChannels,
-				firstFileFrame:	0
+			^(type: type,
+				path: path,
+				numFrames: numFrames,
+				sampleRate: sampleRate,
+				numChannels: numChannels,
+				firstFileFrame: 0
 			)
 		}
 
 	}
 
-	toCSV { |outpath, headers, delim=",", append=false, func, action|
+	toCSV { |outpath, headers, delim = ",", append = false, func, action|
 
 		var outfile, dataChunk;
 
 		// Prepare input
-		if(this.openRead(this.path).not){
+		if(this.openRead(this.path).not) {
 			^"SoundFile:toCSV could not open the sound file".error
 		};
 		dataChunk = FloatArray.newClear(this.numChannels * min(this.numFrames, 1024));
 
 		// Prepare output
-		if(outpath.isNil){	outpath = path.splitext.at(0) ++ ".csv" };
+		if(outpath.isNil) { outpath = path.splitext.at(0) ++ ".csv" };
 		outfile = File(outpath, if(append, "a", "w"));
-		if(headers.notNil){
-			if(headers.isString){
-				outfile.write(headers ++ Char.nl);
-			}{
-				outfile.write(headers.join(delim) ++ Char.nl);
+		if(headers.notNil) {
+			if(headers.isString) {
+				outfile.write(headers ++ Char.nl)
+			} {
+				outfile.write(headers.join(delim) ++ Char.nl)
 			}
 		};
 
 		// Now do it
-		while{this.readData(dataChunk); dataChunk.size > 0}{
-			dataChunk.clump(this.numChannels).do{|row|
-				outfile.write(if(func.isNil, {row}, {func.value(row)}).join(delim) ++ Char.nl)
-			};
+		while { this.readData(dataChunk); dataChunk.size > 0 } {
+			dataChunk.clump(this.numChannels).do { |row|
+				outfile.write(if(func.isNil) { row } { func.value(row) }.join(delim) ++ Char.nl)
+			}
 		};
 		outfile.close;
 		this.close;
 
-		action.value(outpath);
+		action.value(outpath)
 	}
 }

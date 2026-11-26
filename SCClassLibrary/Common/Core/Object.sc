@@ -9,9 +9,9 @@ Object : AbstractObjectExperimental {
 		^this.primitiveFailed
 	}
 	post { this.asString.post }
-	postln { this.asString.postln; }
+	postln { this.asString.postln }
 	postc { this.asString.postc }
-	postcln { this.asString.postcln; }
+	postcln { this.asString.postcln }
 	postcs { this.asCompileString.postln }
 	totalFree {
 		_TotalFree
@@ -25,8 +25,7 @@ Object : AbstractObjectExperimental {
 		_GCDumpGrey
 		^this.primitiveFailed
 	}
-	gcDumpSet {
-		arg set;
+	gcDumpSet { |set|
 		_GCDumpSet
 		^this.primitiveFailed
 	}
@@ -46,19 +45,19 @@ Object : AbstractObjectExperimental {
 	//accessing
 	size { ^0 }
 	indexedSize { ^0 }
-	flatSize { ^1	}
+	flatSize { ^1 }
 
-	do { arg function; function.value(this, 0) }
-	generate { arg function, state; this.do(function); ^state }
+	do { |function| function.value(this, 0) }
+	generate { |function, state| this.do(function); ^state }
 	//reverseDo { arg function; function.value(this, 0) }
 
 	// class membership
 	class { _ObjectClass; ^this.primitiveFailed }
-	isKindOf { arg aClass; _ObjectIsKindOf; ^this.primitiveFailed }
-	isMemberOf { arg aClass; _ObjectIsMemberOf; ^this.primitiveFailed }
-	respondsTo { arg aSymbol; _ObjectRespondsTo; ^this.primitiveFailed }
+	isKindOf { |aClass| _ObjectIsKindOf; ^this.primitiveFailed }
+	isMemberOf { |aClass| _ObjectIsMemberOf; ^this.primitiveFailed }
+	respondsTo { |aSymbol| _ObjectRespondsTo; ^this.primitiveFailed }
 
-    // args and kwargs should be arrays here, not variable arguments!
+	// args and kwargs should be arrays here, not variable arguments!
 	performArgs { |selector, args, kwargs|
 		_ObjectPerformArgs;
 		^this.primitiveFailed
@@ -75,15 +74,15 @@ Object : AbstractObjectExperimental {
 		_ObjectPerform;
 		^this.primitiveFailed
 	}
-	performList { | ...args, kwargs|
+	performList { |...args, kwargs|
 		_ObjectPerformList;
 		^this.primitiveFailed
 	}
-	functionPerformList { | ...args, kwargs|
+	functionPerformList { |...args, kwargs|
 		// perform only if Function. see Function-functionPerformList
 		^this
 	}
-	valueArgs { | args, kwargs|
+	valueArgs { |args, kwargs|
 		^this.performArgs(\value, args, kwargs)
 	}
 
@@ -91,19 +90,19 @@ Object : AbstractObjectExperimental {
 	// \perform would be looked up in the superclass, not the selector you are interested in.
 	// Hence these methods, which look up the selector in the superclass.
 	// These methods must be called with this as the receiver.
-	superPerform { | ...args, kwargs|
+	superPerform { |...args, kwargs|
 		_SuperPerform;
 		^this.primitiveFailed
 	}
-	superPerformList { | ...args, kwargs|
+	superPerformList { |...args, kwargs|
 		_SuperPerformList;
 		^this.primitiveFailed
 	}
 
-	tryPerform { | ...args, kwargs|
-		^if(this.respondsTo(args[0]), {
+	tryPerform { |...args, kwargs|
+		^if(this.respondsTo(args[0])) {
 			this.performArgs(args[0], args[1..], kwargs)
-		})
+		}
 	}
 
 	multiChannelPerform { |selector ... args|
@@ -122,10 +121,10 @@ Object : AbstractObjectExperimental {
 		args = method.prototypeFrame.drop(1);
 		argNames.do { |name, i|
 			var val = envir[name];
-			val !? { args[i] = val };
+			val !? { args[i] = val }
 		};
 
-		^this.performArgs(selector, args);
+		^this.performArgs(selector, args)
 	}
 
 	performKeyValuePairs { |selector, pairs|
@@ -146,14 +145,14 @@ Object : AbstractObjectExperimental {
 		_ObjectDeepCopy
 		^this.primitiveFailed
 	}
-	dup { arg n = 2;
+	dup { |n = 2|
 		var array;
 		if(n.isSequenceableCollection) { ^Array.fillND(n, { this.copy }) };
 		array = Array(n);
-		n.do {|i| array.add(this.copy) };
+		n.do { |i| array.add(this.copy) };
 		^array
 	}
-	! { arg n;
+	! { |n|
 		^this.dup(n)
 	}
 
@@ -165,31 +164,31 @@ Object : AbstractObjectExperimental {
 	valueArrayEnvir { ^this }
 
 	// equality, identity
-	== { arg obj; ^this === obj }
-	!= { arg obj; ^not(this == obj) }
-	equals { arg that, properties;
+	== { |obj| ^this === obj }
+	!= { |obj| ^not(this == obj) }
+	equals { |that, properties|
 		^that.respondsTo(properties) and: {
 			properties.every { |selector| this.perform(selector) == that.perform(selector) }
 		}
 	}
-	compareObject { arg that, instVarNames;
-		if(this === that,{ ^true });
+	compareObject { |that, instVarNames|
+		if(this === that) { ^true };
 		// possibly ok if one of us isKindOf the other
-		if(this.class !== that.class,{ ^false });
-		if(instVarNames.notNil,{
-			instVarNames.do({ |varname|
-				if(this.instVarAt(varname) != that.instVarAt(varname),{
+		if(this.class !== that.class) { ^false };
+		if(instVarNames.notNil) {
+			instVarNames.do { |varname|
+				if(this.instVarAt(varname) != that.instVarAt(varname)) {
 					^false
-				})
-			});
-		},{
-			this.instVarSize.do({ arg i;
-				if(this.instVarAt(i) != that.instVarAt(i),{ ^false });
-			});
-		});
+				}
+			}
+		} {
+			this.instVarSize.do { |i|
+				if(this.instVarAt(i) != that.instVarAt(i)) { ^false }
+			}
+		};
 		^true
 	}
-	instVarHash { arg instVarNames;
+	instVarHash { |instVarNames|
 		var indices, res = this.class.hash;
 		if(this.instVarSize == 0) {
 			^res
@@ -197,11 +196,11 @@ Object : AbstractObjectExperimental {
 		indices = if(instVarNames.notNil) {
 			instVarNames.collect(this.slotIndex(_))
 		} {
-			(0..this.instVarSize-1)
+			(0..this.instVarSize - 1)
 		};
 		indices.do { |i|
 			var obj = this.instVarAt(i);
-			res = res << 1 bitXor: obj.hash;  // encode slot order by left shifting
+			res = res << 1 bitXor: obj.hash  // encode slot order by left shifting
 		};
 		^res
 	}
@@ -224,55 +223,55 @@ Object : AbstractObjectExperimental {
 	}
 
 	// create an association
-	-> { arg obj; ^Association.new(this, obj) }
+	-> { |obj| ^Association.new(this, obj) }
 
 	// stream
 	next { ^this }
 	reset { ^this }
-	first { arg inval; this.reset; ^this.next(inval) }
+	first { |inval| this.reset; ^this.next(inval) }
 	iter { ^OneShotStream(this) }
 	stop { ^this }
 	free { ^this }
 	clear { ^this }
 	removedFromScheduler { ^this }
 	isPlaying { ^false }
-	embedInStream { ^this.yield; }
-	cyc { arg n = inf;
-		^r {|inval|
+	embedInStream { ^this.yield }
+	cyc { |n = inf|
+		^r { |inval|
 			n.do {
 				inval = this.embedInStream(inval);
-				this.reset;
+				this.reset
 			}
 		}
 	}
-	fin { arg n = 1;
-		^r {|inval|
+	fin { |n = 1|
+		^r { |inval|
 			var item;
 			n.do {
 				item = this.next(inval);
-				if (item.isNil) { nil.alwaysYield };
+				if(item.isNil) { nil.alwaysYield };
 				inval = item.yield
 			}
 		}
 	}
 
-	repeat { arg repeats = inf; ^Pn(this, repeats).asStream }
+	repeat { |repeats = inf| ^Pn(this, repeats).asStream }
 	loop { ^this.repeat(inf) }
-	nextN { arg n, inval;
-		^Array.fill(n, { this.next(inval) });
+	nextN { |n, inval|
+		^Array.fill(n, { this.next(inval) })
 	}
 
 	asStream { ^this }
-	streamArg { arg embed = false;
+	streamArg { |embed = false|
 		^if(embed) {
-			Routine { arg inval; this.embedInStream(inval) }
+			Routine { |inval| this.embedInStream(inval) }
 		} {
-			Routine { arg inval; loop { inval = this.next(inval).yield } }
+			Routine { |inval| loop { inval = this.next(inval).yield } }
 		}
 	}
 
 	eventAt { ^nil }
-	composeEvents { arg event; ^event.copy }
+	composeEvents { |event| ^event.copy }
 
 	finishEvent {}
 	atLimit { ^false }
@@ -294,11 +293,11 @@ Object : AbstractObjectExperimental {
 	isException { ^false }
 	isFunction { ^false }
 
-	matchItem {|item| ^this === item }
+	matchItem { |item| ^this === item }
 	trueAt { ^false }
 	falseAt { ^true }
 
-	pointsTo { arg obj; _ObjectPointsTo; ^this.primitiveFailed }
+	pointsTo { |obj| _ObjectPointsTo; ^this.primitiveFailed }
 	mutable { _ObjectIsMutable; ^this.primitiveFailed }
 	frozen { _ObjectIsPermanent; ^this.primitiveFailed }
 
@@ -315,37 +314,37 @@ Object : AbstractObjectExperimental {
 		^this.primitiveFailed
 	}
 	primitiveFailed {
-		PrimitiveFailedError(this).throw;
+		PrimitiveFailedError(this).throw
 	}
 	reportError {
 		error(this.asString);
-		this.dumpBackTrace;
+		this.dumpBackTrace
 	}
 
-	subclassResponsibility { arg method;
-		SubclassResponsibilityError(this, method, this.class).throw;
+	subclassResponsibility { |method|
+		SubclassResponsibilityError(this, method, this.class).throw
 	}
 	// Overloaded from abstract object as 'this' is now safe.
 	doesNotUnderstand { |selector ...args, kwargs|
-		DoesNotUnderstandError(this, selector, args, kwargs).throw;
+		DoesNotUnderstandError(this, selector, args, kwargs).throw
 	}
-	shouldNotImplement { arg method;
-		ShouldNotImplementError(this, method, this.class).throw;
+	shouldNotImplement { |method|
+		ShouldNotImplementError(this, method, this.class).throw
 	}
-	outOfContextReturn { arg method, result;
-		OutOfContextReturnError(this, method, result).throw;
+	outOfContextReturn { |method, result|
+		OutOfContextReturnError(this, method, result).throw
 	}
-	immutableError { arg value;
-		ImmutableError(this, value).throw;
+	immutableError { |value|
+		ImmutableError(this, value).throw
 	}
 
-	deprecated { arg method, alternateMethod;
-		DeprecatedError(this, method, alternateMethod, this.class).throw;
+	deprecated { |method, alternateMethod|
+		DeprecatedError(this, method, alternateMethod, this.class).throw
 	}
 
 	// Overloaded from abstract object as 'this' is now safe.
-	mustBeBoolean { MustBeBooleanError(nil, this).throw; }
-	notYetImplemented { NotYetImplementedError(nil, this).throw; }
+	mustBeBoolean { MustBeBooleanError(nil, this).throw }
+	notYetImplemented { NotYetImplementedError(nil, this).throw }
 
 	dumpBackTrace {
 		_DumpBackTrace
@@ -356,13 +355,13 @@ Object : AbstractObjectExperimental {
 		^this.primitiveFailed
 	}
 	throw {
-		if (Error.handling) {
+		if(Error.handling) {
 			error("throw during error handling!\n");
 			this.dump;
 			// Don't call OnError.run. if it throws... then we get stuck in a cycle.
-			this.prHalt;
+			this.prHalt
 		};
-		thisThread.handleError(this);
+		thisThread.handleError(this)
 	}
 
 
@@ -370,42 +369,44 @@ Object : AbstractObjectExperimental {
 	species { ^this.class }
 	asCollection { ^[this] }
 	asSymbol { ^this.asString.asSymbol }
-	asString { arg limit = 512;
-		var string;
-		_ObjectString
-		string = String.streamContentsLimit({ arg stream; this.printOn(stream); }, limit);
-		if (string.size >= limit, { ^(string ++ "...etc..."); });
+	asString { |limit = 512|
+		_ObjectString;
+		^this.prAsStringFallback(limit)
+	}
+	prAsStringFallback { |limit|
+		var string = String.streamContentsLimit({ |stream| this.printOn(stream) }, limit);
+		if(string.size >= limit) { ^(string ++ "...etc...") };
 		^string
 	}
 	asCompileString {
 		_ObjectCompileString
-		^String.streamContents({ arg stream; this.storeOn(stream); });
+		^String.streamContents({ |stream| this.storeOn(stream) })
 	}
 
 	cs { ^this.asCompileString }
 
-	printClassNameOn { arg stream;
+	printClassNameOn { |stream|
 		var title;
 		title = this.class.name.asString;
-		stream << if((title @ 0).isVowel, { "an " }, { "a " }) << title;
+		stream << if((title @ 0).isVowel) { "an " } { "a " } << title
 	}
-	printOn { arg stream;
-		this.printClassNameOn(stream);
+	printOn { |stream|
+		this.printClassNameOn(stream)
 	}
-	storeOn { arg stream;
+	storeOn { |stream|
 		stream << this.class.name;
 		this.storeParamsOn(stream);
-		this.storeModifiersOn(stream);
+		this.storeModifiersOn(stream)
 	}
-	storeParamsOn { arg stream;
+	storeParamsOn { |stream|
 		var args = this.storeArgs;
 		if(args.notEmpty) {
-			stream << "(" <<<* this.simplifyStoreArgs(args) << ")";
+			stream << "(" <<<* this.simplifyStoreArgs(args) << ")"
 		} {
 			stream << ".new"
 		}
 	}
-	simplifyStoreArgs { arg args;
+	simplifyStoreArgs { |args|
 		var res = Array.new, newMethod, methodArgs;
 		newMethod = this.class.class.findRespondingMethodFor(\new);
 		methodArgs = newMethod.prototypeFrame.drop(1);
@@ -417,10 +418,10 @@ Object : AbstractObjectExperimental {
 		^[]
 	}
 	storeArgs { ^#[] }
-	storeModifiersOn { arg stream;}
+	storeModifiersOn { |stream| }
 
 
-	as { arg aSimilarClass; ^aSimilarClass.newFrom(this) }
+	as { |aSimilarClass| ^aSimilarClass.newFrom(this) }
 	dereference { ^this } // see Ref::dereference
 	reference { ^Ref.new(this) }
 	asRef { ^Ref.new(this) }
@@ -431,52 +432,52 @@ Object : AbstractObjectExperimental {
 
 	// arrays
 	rank { ^0 }
-	deepCollect { arg depth, function, index = 0, rank = 0; ^function.value(this, index, rank) }
-	deepDo { arg depth, function, index = 0, rank = 0; function.value(this, index, rank) }
+	deepCollect { |depth, function, index = 0, rank = 0| ^function.value(this, index, rank) }
+	deepDo { |depth, function, index = 0, rank = 0| function.value(this, index, rank) }
 	slice { ^this }
 	shape { ^nil }
 	unbubble { ^this }
-	bubble { arg depth=0, levels=1;
-		if (levels <= 1) { ^[this] };
-		^[this.bubble(depth,levels-1)]
+	bubble { |depth = 0, levels = 1|
+		if(levels <= 1) { ^[this] };
+		^[this.bubble(depth, levels - 1)]
 	}
 
 	// compatibility with sequenceable collection
 
-	obtain { arg index, default;  ^if(index == 0) { this } { default } }
+	obtain { |index, default| ^if(index == 0) { this } { default } }
 
-	instill { arg index, item, default;
+	instill { |index, item, default|
 		^if(index == 0) { item } {
 			this.asArray.instill(index, item, default)
 		}
 	}
 
 	// FunctionList support
-	addFunc { arg ... functions;
+	addFunc { |... functions|
 		^FunctionList([this] ++ functions)
 	}
-	removeFunc { arg function; if(this === function) { ^nil } }
-	replaceFunc { arg find, replace; if(this === find) { ^replace } }
-	addFuncTo { arg variableName ... functions;
+	removeFunc { |function| if(this === function) { ^nil } }
+	replaceFunc { |find, replace| if(this === find) { ^replace } }
+	addFuncTo { |variableName ... functions|
 		this.perform(variableName.asSetter, this.perform(variableName).addFunc(*functions))
 	}
-	removeFuncFrom { arg variableName, function;
+	removeFuncFrom { |variableName, function|
 		this.perform(variableName).removeFunc(function)
 	}
 
 	// looping
-	while { arg body;
+	while { |body|
 		// compiler magic: the compiler inlines the following loop
 		// thus an uninlinable while can be implemented using while itself
-		while({ this.value }, {
+		while { this.value } {
 			body.value
-		});
+		}
 	}
-	switch { arg ... cases;
-		cases.pairsDo { | test, trueFunc |
-			if (this == test.value) { ^trueFunc.value };
+	switch { |... cases|
+		cases.pairsDo { |test, trueFunc|
+			if(this == test.value) { ^trueFunc.value }
 		};
-		if (cases.size.odd) { ^cases.last.value };
+		if(cases.size.odd) { ^cases.last.value };
 		^nil
 	}
 
@@ -489,85 +490,85 @@ Object : AbstractObjectExperimental {
 		_RoutineAlwaysYield
 		^this.primitiveFailed
 	}
-	yieldAndReset { arg reset = true;
+	yieldAndReset { |reset = true|
 		_RoutineYieldAndReset
 		^this.primitiveFailed
 	}
-	idle { arg val;
+	idle { |val|
 		var time = thisThread.beats;
 		while { thisThread.beats - time < val } { this.value.yield }
 	}
 
 	// dependancy support
-	*initClass { dependantsDictionary = IdentityDictionary.new(4); }
+	*initClass { dependantsDictionary = IdentityDictionary.new(4) }
 	dependants {
-		^dependantsDictionary.at(this) ?? { IdentitySet.new };
+		^dependantsDictionary.at(this) ?? { IdentitySet.new }
 	}
-	changed { arg what ... moreArgs;
-		dependantsDictionary.at(this).copy.do({ arg item;
-			item.update(this, what, *moreArgs);
-		});
+	changed { |what ... moreArgs|
+		dependantsDictionary.at(this).copy.do { |item|
+			item.update(this, what, *moreArgs)
+		}
 	}
-	addDependant { arg dependant;
+	addDependant { |dependant|
 		var theDependants;
 		theDependants = dependantsDictionary.at(this);
-		if(theDependants.isNil,{
+		if(theDependants.isNil) {
 			theDependants = IdentitySet.new.add(dependant);
-			dependantsDictionary.put(this, theDependants);
-		},{
-			theDependants.add(dependant);
-		});
+			dependantsDictionary.put(this, theDependants)
+		} {
+			theDependants.add(dependant)
+		}
 	}
-	removeDependant { arg dependant;
+	removeDependant { |dependant|
 		var theDependants;
 		theDependants = dependantsDictionary.at(this);
-		if (theDependants.notNil, {
+		if(theDependants.notNil) {
 			theDependants.remove(dependant);
-			if (theDependants.size == 0, {
-				dependantsDictionary.removeAt(this);
-			});
-		});
+			if(theDependants.size == 0) {
+				dependantsDictionary.removeAt(this)
+			}
+		}
 	}
 	release {
-		this.releaseDependants;
+		this.releaseDependants
 	}
 	releaseDependants {
-		dependantsDictionary.removeAt(this);
+		dependantsDictionary.removeAt(this)
 	}
-	update { arg theChanged, theChanger;	// respond to a change in a model
+	update { |theChanged, theChanger|	// respond to a change in a model
 	}
 
 
 	// instance specific method support
-	addUniqueMethod { arg selector, function;
+	addUniqueMethod { |selector, function|
 		var methodDict;
 		if(function.isKindOf(Function).not) {
 			Error("A method must be defined using a function").throw
 		};
-		if(uniqueMethods.isNil, { uniqueMethods = IdentityDictionary.new });
+		if(uniqueMethods.isNil) { uniqueMethods = IdentityDictionary.new };
 		methodDict = uniqueMethods.at(this);
-		if (methodDict.isNil, {
+		if(methodDict.isNil) {
 			methodDict = IdentityDictionary.new;
-			uniqueMethods.put(this, methodDict);
-		});
-		methodDict.put(selector, function);
+			uniqueMethods.put(this, methodDict)
+		};
+		methodDict.put(selector, function)
 	}
 	removeUniqueMethods {
-		if (uniqueMethods.notNil, {
-			uniqueMethods.removeAt(this);
-		});
+		if(uniqueMethods.notNil) {
+			uniqueMethods.removeAt(this)
+		}
 	}
-	removeUniqueMethod { arg selector;
+	removeUniqueMethod { |selector|
 		var methodDict;
-		if (uniqueMethods.notNil, {
+		if(uniqueMethods.notNil) {
 			methodDict = uniqueMethods.at(this);
-			if (methodDict.notNil, {
+			if(methodDict.notNil) {
 				methodDict.removeAt(selector);
-				if (methodDict.size < 1, {
-					uniqueMethods.removeAt(this);
-				});
-			});
-		});
+				if(methodDict.size < 1) {
+					uniqueMethods.removeAt(this)
+				}
+			}
+		}
 	}
 
 	inspect { ^this.inspectorClass.new(this) }
@@ -604,53 +605,53 @@ Object : AbstractObjectExperimental {
 
 	// Math protocol support
 	// translate these operators to names the code generator can safely generate in C++
-	& { arg that; ^bitAnd(this, that) }
-	| { arg that; ^bitOr(this, that) }
-	% { arg that; ^mod(this, that) }
-	** { arg that; ^pow(this, that) }
-	<< { arg that; ^leftShift(this, that) }
-	>> { arg that; ^rightShift(this, that) }
-	+>> { arg that; ^unsignedRightShift(this, that) }
-	<! { arg that; ^firstArg(this, that) }
+	& { |that| ^bitAnd(this, that) }
+	| { |that| ^bitOr(this, that) }
+	% { |that| ^mod(this, that) }
+	** { |that| ^pow(this, that) }
+	<< { |that| ^leftShift(this, that) }
+	>> { |that| ^rightShift(this, that) }
+	+>> { |that| ^unsignedRightShift(this, that) }
+	<! { |that| ^firstArg(this, that) }
 
-	blend { arg that, blendFrac = 0.5;
+	blend { |that, blendFrac = 0.5|
 		// blendFrac should be from zero to one
-		^this + (blendFrac * (that - this));
+		^this + (blendFrac * (that - this))
 	}
 
-	blendAt { arg index, method='clipAt';
+	blendAt { |index, method = 'clipAt'|
 		var iMin = index.roundUp.asInteger - 1;
-		^blend(this.perform(method, iMin), this.perform(method, iMin+1), absdif(index, iMin));
+		^blend(this.perform(method, iMin), this.perform(method, iMin + 1), absdif(index, iMin))
 	}
 
-	blendPut { arg index, val, method='wrapPut';
+	blendPut { |index, val, method = 'wrapPut'|
 		var iMin = index.floor.asInteger;
 		var ratio = absdif(index, iMin);
-		this.perform(method, iMin, val * (1-ratio));
-		this.perform(method, iMin + 1, val * ratio);
+		this.perform(method, iMin, val * (1 - ratio));
+		this.perform(method, iMin + 1, val * ratio)
 	}
 
 
-	fuzzyEqual { arg that, precision=1.0; ^max(0.0, 1.0 - (abs(this - that)/precision)) }
+	fuzzyEqual { |that, precision = 1.0| ^max(0.0, 1.0 - (abs(this - that) / precision)) }
 
 	isUGen { ^false }
 	numChannels { ^1 }
 
-	pair { arg that; ^[this, that] }
-	pairs { arg that;
+	pair { |that| ^[this, that] }
+	pairs { |that|
 		var list;
 		list = [];
-		this.asArray.do {|a|
-			that.asArray.do {|b|
+		this.asArray.do { |a|
+			that.asArray.do { |b|
 				list = list.add(a.asArray ++ b)
-			};
+			}
 		};
-		^list;
+		^list
 	}
 
 
 	// scheduling
-	awake { arg beats, seconds, clock;
+	awake { |beats, seconds, clock|
 		var time;
 		time = seconds; // prevent optimization
 		^this.next(beats)
@@ -659,47 +660,46 @@ Object : AbstractObjectExperimental {
 	clock_ {  } // for Clock
 
 	// catch binary operators failure
-	performBinaryOpOnSomething { arg aSelector, thing, adverb;
-		if (aSelector === '==', {
+	performBinaryOpOnSomething { |aSelector, thing, adverb|
+		if(aSelector === '==') {
 			^false
-		},{
-		if (aSelector === '!=', {
-			^true
-		},{
-			BinaryOpFailureError(this, aSelector, [thing, adverb]).throw;
-		})});
+		} {
+			if(aSelector === '!=') {
+				^true
+			} {
+				BinaryOpFailureError(this, aSelector, [thing, adverb]).throw
+		} }
 	}
-	performBinaryOpOnSimpleNumber { arg aSelector, thing, adverb;
+	performBinaryOpOnSimpleNumber { |aSelector, thing, adverb|
 		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
 	}
-	performBinaryOpOnSignal { arg aSelector, thing, adverb;
+	performBinaryOpOnSignal { |aSelector, thing, adverb|
 		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
 	}
-	performBinaryOpOnComplex { arg aSelector, thing, adverb;
+	performBinaryOpOnComplex { |aSelector, thing, adverb|
 		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
 	}
-	performBinaryOpOnSeqColl { arg aSelector, thing, adverb;
+	performBinaryOpOnSeqColl { |aSelector, thing, adverb|
 		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
 	}
-	performBinaryOpOnUGen { arg aSelector, thing, adverb;
+	performBinaryOpOnUGen { |aSelector, thing, adverb|
 		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
 	}
 
-	writeDefFile { arg name, dir, overwrite = (true);
+	writeDefFile { |name, dir, overwrite = (true)|
 
 		StartUp.defer { // make sure the synth defs are written to the right path
 			var file;
 			dir = dir ? SynthDef.synthDefDir;
-			if (name.isNil or: { name.asString.isEmpty }) { Error("missing SynthDef file name").throw } {
+			if(name.isNil or: { name.asString.isEmpty }) { Error("missing SynthDef file name").throw } {
 				name = dir +/+ name ++ ".scsyndef";
-				if(overwrite or: { pathMatch(name).isEmpty })
-					{
+				if(overwrite or: { pathMatch(name).isEmpty }) {
 					file = File(name, "w");
 					protect {
 						AbstractMDPlugin.clearMetadata(name);
-						this.asArray.writeDef(file);
-					}{
-						file.close;
+						this.asArray.writeDef(file)
+					} {
+						file.close
 					}
 				}
 			}
@@ -717,7 +717,7 @@ Object : AbstractObjectExperimental {
 
 
 	// these are the same as new and newCopyArgs, but should not be overridden by any class.
-	*prNew { arg maxSize = 0;
+	*prNew { |maxSize = 0|
 		_BasicNew
 		^this.primitiveFailed
 		// creates a new instance that can hold up to maxSize
@@ -725,7 +725,7 @@ Object : AbstractObjectExperimental {
 		// to actually put things in the object you need to
 		// add them.
 	}
-	*prNewCopyArgs { | ...args, kwargs|
+	*prNewCopyArgs { |...args, kwargs|
 		_BasicNewCopyArgsToInstVars
 		^this.primitiveFailed
 		// creates a new instance which holds the args as slots
@@ -738,33 +738,33 @@ Object : AbstractObjectExperimental {
 	// Use with caution.
 	// see counterparts to these in ArrayedCollection
 	slotSize {
-		^this.instVarSize;
+		^this.instVarSize
 	}
-	slotAt { arg index;
+	slotAt { |index|
 		// index can be an integer or symbol.
-		^this.instVarAt(index);
+		^this.instVarAt(index)
 	}
-	slotPut { arg index, value;
+	slotPut { |index, value|
 		// index can be an integer or symbol.
-		^this.instVarPut(index, value);
+		^this.instVarPut(index, value)
 	}
-	slotKey { arg index;
+	slotKey { |index|
 		// index must be an integer.
 		^this.class.instVarNames.at(index)
 	}
-	slotIndex { arg key;
+	slotIndex { |key|
 		// key must be a symbol.
 		^this.class.instVarNames.indexOf(key)
 	}
-	slotsDo { arg function;
-		this.slotSize.do {|i|
-			function.value(this.slotKey(i), this.slotAt(i), i);
-		};
+	slotsDo { |function|
+		this.slotSize.do { |i|
+			function.value(this.slotKey(i), this.slotAt(i), i)
+		}
 	}
-	slotValuesDo { arg function;
-		this.slotSize.do {|i|
-			function.value(this.slotAt(i), i);
-		};
+	slotValuesDo { |function|
+		this.slotSize.do { |i|
+			function.value(this.slotAt(i), i)
+		}
 	}
 
 	// getSlots and setSlots will be used for a new implementation of asCompileString.
@@ -773,40 +773,40 @@ Object : AbstractObjectExperimental {
 	getSlots {
 		var array;
 		array = Array.new(this.slotSize * 2);
-		this.slotSize.do {|i|
+		this.slotSize.do { |i|
 			array.add(this.slotKey(i));
-			array.add(this.slotAt(i));
+			array.add(this.slotAt(i))
 		};
-		^array;
+		^array
 	}
-	setSlots { arg array;
-		array.pairsDo {|key, value|
-			this.slotPut(key, value);
+	setSlots { |array|
+		array.pairsDo { |key, value|
+			this.slotPut(key, value)
 		}
 	}
 
 	instVarSize { _InstVarSize; ^this.primitiveFailed }
-	instVarAt { arg index;
+	instVarAt { |index|
 		// index can be an integer or symbol.
 		_InstVarAt;
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
-	instVarPut { arg index, item;
+	instVarPut { |index, item|
 		// index can be an integer or symbol.
 		_InstVarPut;
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
 	//////////// ARCHIVING ////////////
 
-	writeArchive { arg pathname;
+	writeArchive { |pathname|
 		^this.writeTextArchive(pathname)
 	}
-	*readArchive { arg pathname;
+	*readArchive { |pathname|
 		^this.readTextArchive(pathname)
 	}
 	asArchive {
-		^this.asTextArchive;
+		^this.asTextArchive
 	}
 
 	initFromArchive {}
@@ -816,24 +816,24 @@ Object : AbstractObjectExperimental {
 	checkCanArchive {}
 
 	// archiving
-	writeTextArchive { arg pathname;
+	writeTextArchive { |pathname|
 		var text = this.asTextArchive;
 		var file = File(pathname, "w");
 		if(file.isOpen) {
 			protect {
-				file.write(text);
-			} { file.close };
+				file.write(text)
+			} { file.close }
 		} {
-			MethodError("Could not open file % for writing".format(pathname.asCompileString), this).throw;
+			MethodError("Could not open file % for writing".format(pathname.asCompileString), this).throw
 		}
 	}
-	*readTextArchive { arg pathname;
+	*readTextArchive { |pathname|
 		^pathname.load
 	}
 	asTextArchive {
 		var objects, list, stream, firsttime = true;
 
-		if (this.archiveAsCompileString) {
+		if(this.archiveAsCompileString) {
 			this.checkCanArchive;
 			^this.asCompileString ++ "\n"
 		};
@@ -846,99 +846,99 @@ Object : AbstractObjectExperimental {
 		stream << "var o, p;\n";
 
 		list = List.newClear(objects.size);
-		objects.keysValuesDo {|obj, index| list[index] = obj };
+		objects.keysValuesDo { |obj, index| list[index] = obj };
 
 		stream << "o = [";
-		list.do {|obj, i|
+		list.do { |obj, i|
 			var size;
-			if (i != 0) { stream << ",  "; };
-			if ((i & 3) == 0) { stream << "\n\t" };
+			if(i != 0) { stream << ",  " };
+			if((i & 3) == 0) { stream << "\n\t" };
 			obj.checkCanArchive;
-			if (obj.archiveAsCompileString) {
-				stream << obj.asCompileString;
-			}{
+			if(obj.archiveAsCompileString) {
+				stream << obj.asCompileString
+			} {
 				size = obj.indexedSize;
 				stream << obj.class.name << ".prNew";
-				if (size > 0) {
+				if(size > 0) {
 					stream << "(" << size << ")"
-				};
-			};
+				}
+			}
 		};
 		stream << "\n];\np = [";
 		// put in slots
 		firsttime = true;
-		list.do {|obj, i|
+		list.do { |obj, i|
 			var slots;
-			if (obj.archiveAsCompileString.not) {
+			if(obj.archiveAsCompileString.not) {
 				slots = obj.getSlots;
-				if (slots.size > 0) {
-					if (firsttime.not) { stream << ",  "; };
+				if(slots.size > 0) {
+					if(firsttime.not) { stream << ",  " };
 					firsttime = false;
 					stream << "\n\t// " << obj.class.name;
 					stream << "\n\t";
 					stream << i << ", [ ";
-					if (obj.isKindOf(ArrayedCollection)) {
-						slots.do {|slot, j|
+					if(obj.isKindOf(ArrayedCollection)) {
+						slots.do { |slot, j|
 							var index;
-							if (j != 0) { stream << ",  "; };
-							if ((j != 0) && ((j & 3) == 0)) { stream << "\n\t\t" };
+							if(j != 0) { stream << ",  " };
+							if((j != 0) && ((j & 3) == 0)) { stream << "\n\t\t" };
 							index = objects[slot];
-							if (index.isNil) {
-								stream << slot.asCompileString;
-							}{
-								stream << "o[" << index << "]";
-							};
-						};
-					}{
-						slots.pairsDo {|key, slot, j|
+							if(index.isNil) {
+								stream << slot.asCompileString
+							} {
+								stream << "o[" << index << "]"
+							}
+						}
+					} {
+						slots.pairsDo { |key, slot, j|
 							var index;
-							if (j != 0) { stream << ",  "; };
-							if ((j != 0) && ((j & 3) == 0)) { stream << "\n\t\t" };
+							if(j != 0) { stream << ",  " };
+							if((j != 0) && ((j & 3) == 0)) { stream << "\n\t\t" };
 							stream << key << ": ";
 							index = objects[slot];
-							if (index.isNil) {
-								stream << slot.asCompileString;
-							}{
-								stream << "o[" << index << "]";
-							};
-						};
+							if(index.isNil) {
+								stream << slot.asCompileString
+							} {
+								stream << "o[" << index << "]"
+							}
+						}
 					};
-					stream << " ]";
-				};
-			};
+					stream << " ]"
+				}
+			}
 		};
 		stream << "\n];\n";
 
 		stream << "prUnarchive(o,p);\n";
 		^stream.contents
 	}
-	getContainedObjects { arg objects;
-		if (objects[this].notNil) {^this};
+	getContainedObjects { |objects|
+		if(objects[this].notNil) { ^this };
 		objects[this] = objects.size;
 
-		if (this.archiveAsCompileString.not) {
-			this.slotsDo {|key, slot|
-				if (slot.archiveAsObject) {
-					slot.getContainedObjects(objects);
-				};
-			};
-		};
+		if(this.archiveAsCompileString.not) {
+			this.slotsDo { |key, slot|
+				if(slot.archiveAsObject) {
+					slot.getContainedObjects(objects)
+				}
+			}
+		}
 
 	}
 	// old binary archiving
 	// this will break if the instance vars change !
 	// not recommended
-	writeBinaryArchive { arg pathname;
+	writeBinaryArchive { |pathname|
 		_WriteArchive
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
-	*readBinaryArchive { arg pathname;
+	*readBinaryArchive { |pathname|
 		_ReadArchive
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 	asBinaryArchive {
 		_AsArchive
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
 	help {

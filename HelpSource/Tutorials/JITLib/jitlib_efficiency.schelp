@@ -9,20 +9,20 @@ To prepare such an object for playing, different objects require different thing
 
 This is also important if you want to automate certain processes (e.g. for control by an external interface or a task) - some things (a) are not meant to be used in certain ways and better solutions should be used instead then, others are much more efficient (b, c).
 
-code::
+code#fragment::
 a = NodeProxy.audio;
 ProxySpace.push;
 
-a.source = ... is equivalent to ~a = ...
-a.add(...) a.put(0,...) a[0] = ... ~a[0] = ... are equivalent in cpu load.
+a.source = something; // is equivalent to ~a = something
+// a.add(something), a.put(0, something), a[0] = something and ~a[0] = something are equivalent in cpu load.
 ::
 
 section::a) rebuild and send: manual rate
 
 the following code requires a rebuild and send of a link::Classes/SynthDef:: and is thus most cpu-expensive. though fine for slower use (esp.hand-use) for automatisation it is better to build a synthdef and assign it.
 
-code::
-~a = { someUGenFunction };
+code#fragment::
+~a = { ~someUGenFunction };
 ~a = Patch(instrname, args);
 ~a = SynthDef(\name, { someUGenFunction });
 
@@ -31,7 +31,7 @@ code::
 ~a.rebuild
 
 // this rebuild is also used when setting one of the following properties:
-server, bus, setRates
+// server, bus, setRates
 ::
 
 section::b) starting synths and tasks
@@ -40,24 +40,24 @@ the following code sends commands to the server to start synths, which is load m
 
 code::
 ~a = \synthDefName; // the synthdef is already on the server
-~a = Pbind(\instrument, name, \freq, ...);
-~a = Routine({ loop({ s.sendMsg("/s_new", name, ...)}) });
+~a = Pbind(\instrument, name, \freq, /* ... */);
+~a = Routine({ loop({ s.sendMsg("/s_new", name, /* ... */)}) });
 
 ~a.refresh; ~a.wakeUp; // waking up a stopped proxy does not require a resend
 ::
 
 these resend the synth with new properties
 
-code::
-~a.send(...)	// directly sends a message. the mapping bundle of the proxy is cached
-~a.sendAll(...)
+teletype::
+~a.send(/* ... */)	// directly sends a message. the mapping bundle of the proxy is cached
+~a.sendAll(/* ... */)
 
 		// for the following the bundle is recalculated if a new key is assigned.
 		// if you use the same key with a different value, the bundle is modified
 
-~a.xset(...) ~a.xmap(...)
-~a.nodeMap_(a map)
-~a.fadeToMap(a map)
+~a.xset(/* ... */); ~a.xmap(/* ... */);
+~a.nodeMap_(/* a map */)
+~a.fadeToMap(/* a map */)
 
 // synthdefs for these things are on the server already.
 
@@ -73,7 +73,7 @@ section::c) sending messages to running synths
 
 for these the least calculation has to be done
 
-code::
+code#fragment::
 ~a.set(\freq, 400, \dt, 0.2); ~a.unset(\freq); // if running the bundle will be recalculated
 ~a.map(\freq, ~lfo); ~a.unmap(\freq);
 ~a.fadeTime = 2;

@@ -1,20 +1,20 @@
 + AbstractFunction {
 	asInt {
 		this.deprecated(thisMethod, this.class.findMethod(\asInteger));
-		^this.composeUnaryOp('asInteger');
+		^this.composeUnaryOp('asInteger')
 	}
 }
 
 + Object {
 	asInt {
 		this.deprecated(thisMethod, this.class.findMethod(\asInteger));
-		^this.asInteger;
+		^this.asInteger
 	}
 }
 
 + String {
-    *scDir {
-        this.deprecated(thisMethod, Platform.class.findMethod(\resourceDir));
-        ^Platform.resourceDir
-    }
+	*scDir {
+		this.deprecated(thisMethod, Platform.class.findMethod(\resourceDir));
+		^Platform.resourceDir
+	}
 }

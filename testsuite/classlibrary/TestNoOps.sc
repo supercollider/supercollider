@@ -1,3 +1,4 @@
+//# VERSION 3.16
 /*
 
 TestNoOps.run
@@ -9,27 +10,26 @@ UnitTest.gui
 TestNoOps : UnitTest {
 
 	test_array {
-		var ops, check, n = 300;
-		var a, b, r1, r2;
+		var n = 300;
 
 
-		check = { |func, inval|
+		var check = { |func, inval|
 			func.value(func.value(inval)) == inval
 		};
 
-		a = Array.series(300, 0, 1);
-		b = a.clump(10);
+		var a = Array.series(300, 0, 1);
+		var b = a.clump(10);
 
-		r1 = 7;
-		r2 = 9;
+		var r1 = 7;
+		var r2 = 9;
 
 		this.assert(n.even, "for this test, array must have even number of elements");
 
-		ops = (
+		var ops = (
 			\reverse: { |x| x.reverse },
 			\rotate: { |x| x.rotate(x.size div: 2) },
-			\swap: {|x| x.swap(r1, r2) },
-			\flop: {|x| x.flop }
+			\swap: { |x| x.swap(r1, r2) },
+			\flop: { |x| x.flop }
 		);
 
 		ops.keysValuesDo { |name, func|
@@ -41,7 +41,7 @@ TestNoOps : UnitTest {
 		this.assert(b.flatten(1) == a, "flatten should return a flat array of the same order");
 		this.assert(b.sum.sum == a.sum, "summing should be invariant with sub arrays");
 		this.assert({ |...args| args }.flop.value(*b) == b.flop,
-			"function flop should behave in analogy to array.flop");
+			"function flop should behave in analogy to array.flop")
 
 
 
@@ -67,16 +67,16 @@ TestNoOps : UnitTest {
 			var y = h.(f.(a), f.(b));
 			this.assert(this.deepEval(x) == this.deepEval(y),
 				name + "should be a homomorphism for % \n"
-				"returned:\n%\nand:\n%\n"
+					"returned:\n%\nand:\n%\n"
 				.format([a, b], x, y)
-			);
+			)
 		};
 		var c = 0.5;
 
 		numbers.pairsDo { |n1, n2|
 			test.value("add-mul", c * _, _ + _, n1, n2);
 			test.value("add-div", _ / c, _ + _, n1, n2);
-			test.value("bubble-mul", _.bubble, _ * _, n1, n2);
+			test.value("bubble-mul", _.bubble, _ * _, n1, n2)
 		}
 
 	}
@@ -115,13 +115,19 @@ TestNoOps : UnitTest {
 		];
 		var numbers = n.dup(3).allTuples;
 		var farmulae = [
-				"{|a,b,c| (a ** b) * (a ** c) }", "{|a,b,c| a ** (b + c) }",
+			"{|a,b,c| (a ** b) * (a ** c) }",
+			"{|a,b,c| a ** (b + c) }",
 			//	"{|a,b,c| (a ** b ** c) }", "{|a,b,c| a ** (b * c) }",
-				"{|a,b,c| (a ** c) * (b ** c) }", "{|a,b,c| (a * b) ** c }",
-				"{|a,b,c| (a ** c) / (b ** c) }", "{|a,b,c| (a / b) ** c }",
-				"{|a,b,c| (a ** c.neg) }", "{|a,b,c| 1 / (a ** c) }",
-				"{|a,b,c| log(a * b) }", "{|a,b,c| log(a) + log(b) }",
-				"{|a,b,c| log(a ** c) }", "{|a,b,c| c * log(a) }"
+			"{|a,b,c| (a ** c) * (b ** c) }",
+			"{|a,b,c| (a * b) ** c }",
+			"{|a,b,c| (a ** c) / (b ** c) }",
+			"{|a,b,c| (a / b) ** c }",
+			"{|a,b,c| (a ** c.neg) }",
+			"{|a,b,c| 1 / (a ** c) }",
+			"{|a,b,c| log(a * b) }",
+			"{|a,b,c| log(a) + log(b) }",
+			"{|a,b,c| log(a ** c) }",
+			"{|a,b,c| c * log(a) }"
 		];
 
 		numbers.do { |triple|
@@ -133,8 +139,8 @@ TestNoOps : UnitTest {
 					onFailure:
 						postf("%\nshould equal close enough\n%\n"
 							"For the values: %\n. Difference: %\n", a, b, triple, _)
-				);
-			};
+				)
+			}
 		}
 	}
 

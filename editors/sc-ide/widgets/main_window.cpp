@@ -576,6 +576,7 @@ void MainWindow::createMenus() {
     menu->addSeparator();
     menu->addAction(mEditors->action(MultiEditor::IndentWithSpaces));
     menu->addAction(mEditors->action(MultiEditor::IndentLineOrRegion));
+    menu->addAction(mEditors->action(MultiEditor::EditFormatOptions));
     menu->addAction(mEditors->action(MultiEditor::ToggleComment));
     menu->addAction(mEditors->action(MultiEditor::ToggleOverwriteMode));
     menu->addAction(mEditors->action(MultiEditor::SelectRegion));

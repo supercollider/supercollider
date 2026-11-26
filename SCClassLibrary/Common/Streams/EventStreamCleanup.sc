@@ -2,7 +2,7 @@
 
 CallOnce : Thunk {
 
-	value { |... args, kwargs|  ^this.prEvaluate(\value, args, kwargs) }
+	value { |... args, kwargs| ^this.prEvaluate(\value, args, kwargs) }
 	valueArray { |... args| ^this.prEvaluate(\valueArray, args) }
 	valueEnvir { |... args| ^this.prEvaluate(\valueArrayEnvir, args) }
 	valueArrayEnvir { |... args| ^this.prEvaluate(\valueArrayEnvir, args) }
@@ -31,47 +31,47 @@ EventStreamCleanup {
 	}
 
 	clear {
-		functions = IdentitySet.new;
+		functions = IdentitySet.new
 	}
 
-	addFunction { |event, function |
+	addFunction { |event, function|
 		if(event.isKindOf(Dictionary)) {
 			function = CallOnce(function);
 			functions.add(function);
-			event[\addToCleanup] = event[\addToCleanup].add(function);
+			event[\addToCleanup] = event[\addToCleanup].add(function)
 		};
 		^function
 	}
 
-	addNodeCleanup { |event, function |
+	addNodeCleanup { |event, function|
 		if(event.isKindOf(Dictionary)) {
 			function = CallOnce(function);
 			functions.add(function);
-			event[\addToNodeCleanup] = event[\addToNodeCleanup].add(function);
+			event[\addToNodeCleanup] = event[\addToNodeCleanup].add(function)
 		};
 		^function
 	}
 
-	update { | event |
+	update { |event|
 		if(event.isKindOf(Dictionary)) {
 			functions.addAll(event[\addToNodeCleanup]);
 			functions.addAll(event[\addToCleanup]);
 			functions.removeAll(event[\removeFromCleanup]); // backwards compat.
-			functions = functions.reject(_.didEvaluate);
+			functions = functions.reject(_.didEvaluate)
 		};
 		^event
 	}
 
-	exit { | event, freeNodes = true |
+	exit { |event, freeNodes = true|
 		if(event.isKindOf(Dictionary)) {
 			this.update(event);
 			functions.do(_.value(freeNodes));
-			this.clear;
+			this.clear
 		};
 		^event
 	}
 
-	terminate { | freeNodes = true |
+	terminate { |freeNodes = true|
 		functions.do(_.value(freeNodes));
 		this.clear
 	}

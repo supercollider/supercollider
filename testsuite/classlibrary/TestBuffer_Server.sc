@@ -1,16 +1,17 @@
+//# VERSION 3.16
 TestBuffer_Server : UnitTest {
 
 	var server;
 
 	setUp {
 		server = Server(this.class.name);
-		server.bootSync;
+		server.bootSync
 	}
 
 	tearDown {
 		Buffer.freeAll(server);
 		server.quitSync;
-		server.remove;
+		server.remove
 	}
 
 	test_freeAll {
@@ -23,22 +24,21 @@ TestBuffer_Server : UnitTest {
 
 		Buffer.freeAll(server);
 		server.sync;
-		this.assertEquals(allocator.blocks.size, 0, "There should no longer be any buffers allocated after Buffer.freeAll");
+		this.assertEquals(allocator.blocks.size, 0, "There should no longer be any buffers allocated after Buffer.freeAll")
 	}
 
 	test_serverlang_dataexchange {
 		var condition = CondVar.new;
 		var data = Array.fill(512, { 1.0.rand }), data2;
-		var buffer;
 
 		// send then load
-		buffer = Buffer.sendCollection(server, data);
+		var buffer = Buffer.sendCollection(server, data);
 		server.sync;
 		fork {
 			buffer.loadToFloatArray(action: { |array|
 				data2 = array;
-				condition.signalOne;
-			});
+				condition.signalOne
+			})
 		};
 		condition.waitFor(3);
 		buffer.free;
@@ -50,8 +50,8 @@ TestBuffer_Server : UnitTest {
 		fork {
 			buffer.loadToFloatArray(action: { |array|
 				data2 = array;
-				condition.signalOne;
-			});
+				condition.signalOne
+			})
 		};
 		condition.waitFor(3);
 
@@ -63,8 +63,8 @@ TestBuffer_Server : UnitTest {
 		fork {
 			buffer.loadToFloatArray(action: { |array|
 				data2 = array;
-				condition.signalOne;
-			});
+				condition.signalOne
+			})
 		};
 		condition.waitFor(3);
 
@@ -101,69 +101,68 @@ TestBuffer_Server : UnitTest {
 		server.sendMsg('/b_get', buffer_number, (num_frames / 2));
 		condition.waitFor(3);
 
-		this.assertEquals(get, get_reply, "/b_set data returned from a /b_get message should be as expected");
+		this.assertEquals(get, get_reply, "/b_set data returned from a /b_get message should be as expected")
 	}
 
 	test_cheby {
 		var condition = CondVar.new;
-		var buffer, size = 512;
+		var size = 512;
 		var fromBuffer;
-		var calcVal;
 
-		calcVal = cos(2 * acos((size - 1) / (size >> 1) - 1)) + 1;
-		buffer = Buffer.alloc(server, size, completionMessage: { |buf| buf.chebyMsg([0, 1], normalize: false, asWavetable: false) });
+		var calcVal = cos(2 * acos((size - 1) / (size >> 1) - 1)) + 1;
+		var buffer = Buffer.alloc(server, size, completionMessage: { |buf| buf.chebyMsg([0, 1], normalize: false, asWavetable: false) });
 		server.sync;
 
 		fork {
 			buffer.loadToFloatArray(action: { |array|
 				fromBuffer = array;
-				condition.signalOne;
-			});
+				condition.signalOne
+			})
 		};
 		condition.waitFor(3);
 
 		this.assert(
 			fromBuffer.first.equalWithPrecision(2) &&
-			this.getSignalMidValue(fromBuffer).equalWithPrecision(0) &&
-			fromBuffer.last.equalWithPrecision(calcVal),
+				this.getSignalMidValue(fromBuffer).equalWithPrecision(0) &&
+				fromBuffer.last.equalWithPrecision(calcVal),
 			"Order 2 Cheby Buffer (zero-offset) should be a parabola between 0 and 2"
 		);
 
-		calcVal = [size >> 1, size-1].linlin(0, size, -1, 1);
+		calcVal = [size >> 1, size - 1].linlin(0, size, -1, 1);
 		buffer.cheby([1], asWavetable: false);
 		server.sync;
 
 		fork {
 			buffer.loadToFloatArray(action: { |array|
 				fromBuffer = array;
-				condition.signalOne;
-			});
+				condition.signalOne
+			})
 		};
 		condition.waitFor(3);
 
 		this.assert(
 			fromBuffer.first.equalWithPrecision(-1) &&
-			this.getSignalMidValue(fromBuffer).equalWithPrecision(calcVal.first) &&
-			fromBuffer.last.equalWithPrecision(calcVal.last),
+				this.getSignalMidValue(fromBuffer).equalWithPrecision(calcVal.first) &&
+				fromBuffer.last.equalWithPrecision(calcVal.last),
 			"Order 1 Cheby Buffer should go from -1 to % by default".format(calcVal.last)
 		);
 
-		calcVal = cos(2 * acos((size - 1)/(size >> 1) - 1)) + 1 / 2;
+		calcVal = cos(2 * acos((size - 1) / (size >> 1) - 1)) + 1 / 2;
 		buffer.cheby([0, 1], normalize: true, asWavetable: false);
 		server.sync;
 
 		fork {
 			buffer.loadToFloatArray(action: { |array|
 				fromBuffer = array;
-				condition.signalOne;
-			});
+				condition.signalOne
+			})
 		};
 		condition.waitFor(3);
 
 		this.assert(
 			fromBuffer.first.equalWithPrecision(1) &&
-			this.getSignalMidValue(fromBuffer).equalWithPrecision(0) &&
-			fromBuffer.last.equalWithPrecision(calcVal),
+				this.getSignalMidValue(fromBuffer).equalWithPrecision(0) &&
+				fromBuffer.last.equalWithPrecision(calcVal),
 			"Order 2 Cheby Buffer should be a parabola between from 0 to 1 by default (normalized, zero-offset)"
 		);
 
@@ -173,15 +172,15 @@ TestBuffer_Server : UnitTest {
 		fork {
 			buffer.loadToFloatArray(action: { |array|
 				fromBuffer = array;
-				condition.signalOne;
-			});
+				condition.signalOne
+			})
 		};
 		condition.waitFor(3);
 
 		this.assert(
 			this.getSignalMidValue(fromBuffer).equalWithPrecision(0),
 			"A zeroOffset Cheby Buffer should have value 0 for its middle value"
-		);
+		)
 	}
 
 	// This is just a helper method
@@ -191,75 +190,71 @@ TestBuffer_Server : UnitTest {
 
 	test_get {
 		var condition = CondVar.new;
-		var buffer, collection;
 		var get_value;
 
-		collection = [88.88, 8, 888.8, 8.88];
-		buffer = Buffer.sendCollection(server, collection);
+		var collection = [88.88, 8, 888.8, 8.88];
+		var buffer = Buffer.sendCollection(server, collection);
 		server.sync;
 
 		buffer.get(2, { |value|
 			get_value = value;
-			condition.signalOne;
+			condition.signalOne
 		});
 		condition.waitFor(3);
 
-		this.assertFloatEquals(get_value, collection[2], "Buffer:get should get the requested value from the buffer");
+		this.assertFloatEquals(get_value, collection[2], "Buffer:get should get the requested value from the buffer")
 	}
 
 	test_getn {
 		var condition = CondVar.new;
-		var buffer, collection;
 		var getn_values;
 
-		collection = [88.88, 8, 888.8, 8.88];
-		buffer = Buffer.sendCollection(server, collection);
+		var collection = [88.88, 8, 888.8, 8.88];
+		var buffer = Buffer.sendCollection(server, collection);
 		server.sync;
 
 		buffer.getn(2, 2, { |values|
 			getn_values = values;
-			condition.signalOne;
+			condition.signalOne
 		});
 		condition.waitFor(3);
 
-		this.assertArrayFloatEquals(getn_values, collection[2..3], "Buffer:getn should get the requested values from the buffer");
+		this.assertArrayFloatEquals(getn_values, collection[2..3], "Buffer:getn should get the requested values from the buffer")
 	}
 
 	test_regression_getn_float {
 		var condition = CondVar.new;
-		var buffer, collection;
 		var getn_values;
 
-		collection = [88.88, 8, 888.8, 8.88];
-		buffer = Buffer.sendCollection(server, collection);
+		var collection = [88.88, 8, 888.8, 8.88];
+		var buffer = Buffer.sendCollection(server, collection);
 		server.sync;
 
 		// Using a float as the index should still work
 		buffer.getn(2.0, 2, { |values|
 			getn_values = values;
-			condition.signalOne;
+			condition.signalOne
 		});
 		condition.waitFor(3);
 
-		this.assertArrayFloatEquals(getn_values, collection[2..3], "Buffer:getn should get the requested values from the buffer");
+		this.assertArrayFloatEquals(getn_values, collection[2..3], "Buffer:getn should get the requested values from the buffer")
 	}
 
 	test_getToFloatArray {
 		var condition = CondVar.new;
-		var buffer, collection;
 		var floats;
 
-		collection = [88.88, 8, 888.8, 8.88];
-		buffer = Buffer.sendCollection(server, collection);
+		var collection = [88.88, 8, 888.8, 8.88];
+		var buffer = Buffer.sendCollection(server, collection);
 		server.sync;
 
 		buffer.getToFloatArray(action: { |array|
 			floats = array;
-			condition.signalOne;
+			condition.signalOne
 		});
 		condition.waitFor(3);
 
-		this.assertArrayFloatEquals(floats, collection, "Buffer:getToFloatArray should get the buffer's values");
+		this.assertArrayFloatEquals(floats, collection, "Buffer:getToFloatArray should get the buffer's values")
 	}
 
 	test_getToFloatArray_index_count {
@@ -276,9 +271,9 @@ TestBuffer_Server : UnitTest {
 		ranges.do { |range|
 			var floats;
 			var slice = if(range[1] == -1 || range[1].isNil) {
-				collection.copyToEnd(range[0]);
+				collection.copyToEnd(range[0])
 			} {
-				collection.copyRange(range[0], (range[0] + range[1]) - 1);
+				collection.copyRange(range[0], (range[0] + range[1]) - 1)
 			};
 
 			buffer.getToFloatArray(
@@ -292,11 +287,11 @@ TestBuffer_Server : UnitTest {
 				floats,
 				slice,
 				"getToFloatArray should get count number of values starting at index"
-			);
-		};
+			)
+		}
 	}
 
-	assertBufSampleRate { |buf, expectedSampleRate, msg, path(PathName.tmp +/+ "test_setSampleRate.aiff") |
+	assertBufSampleRate { |buf, expectedSampleRate, msg, path = (PathName.tmp +/+ "test_setSampleRate.aiff")|
 		var fileSampleRate = nil;
 		server.sync; // this sync is for alloc
 		buf.query({});
@@ -310,7 +305,7 @@ TestBuffer_Server : UnitTest {
 		fileSampleRate = SoundFile.use(path, _.sampleRate);
 		File.delete(path);
 		this.assertFloatEquals(fileSampleRate, expectedSampleRate,
-			"server should write a file with the requested sample rate %".format(msg));
+			"server should write a file with the requested sample rate %".format(msg))
 
 	}
 
@@ -321,7 +316,7 @@ TestBuffer_Server : UnitTest {
 		buf = Buffer.alloc(server, 1, sampleRate: 1234);
 		this.assertBufSampleRate(buf, 1234, "(custom, set on alloc by keyword arg)");
 
-		buf = Buffer.alloc(server, 1, 1, {|x| x.setMsg(0,1) }, nil, 1234);
+		buf = Buffer.alloc(server, 1, 1, { |x| x.setMsg(0, 1) }, nil, 1234);
 		this.assertBufSampleRate(buf, 1234, "(custom, set by positional arg)");
 
 		buf = Buffer.alloc(server, 1);
@@ -337,7 +332,7 @@ TestBuffer_Server : UnitTest {
 		buf = Buffer.alloc(server, 1, sampleRate: 1234);
 		server.sync;
 		buf.setSampleRate();
-		this.assertBufSampleRate(buf, server.sampleRate, "(default to server sampleRate, after setSampleRate())");
+		this.assertBufSampleRate(buf, server.sampleRate, "(default to server sampleRate, after setSampleRate())")
 	}
 
 }

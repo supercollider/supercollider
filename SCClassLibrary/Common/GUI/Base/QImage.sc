@@ -8,7 +8,7 @@ TODO:
 Image {
 	classvar <compositingOperations, <allPlotWindows, <resizeModes;
 	var dataptr, finalizer;
-	var <>name, <url, <>scalesWhenResized=false;
+	var <>name, <url, <>scalesWhenResized = false;
 
 	*initClass {
 		compositingOperations = [
@@ -49,222 +49,216 @@ Image {
 			'ignoreAspectRatio',
 			'keepAspectRatio',
 			'keepAspectRatioByExpanding'
-		];
+		]
 	}
 
-	*new { arg multiple, height = nil;
+	*new { |multiple, height = nil|
 		var ret;
 
 		case
-		{ multiple.isKindOf(Point) } {
-			ret = this.newEmpty(multiple.x, multiple.y);
-		}
+			{ multiple.isKindOf(Point) } {
+				ret = this.newEmpty(multiple.x, multiple.y)
+			}
 
-		{ multiple.isKindOf(Number) } {
-			ret = this.newEmpty(multiple, height ? multiple);
-		}
+			{ multiple.isKindOf(Number) } {
+				ret = this.newEmpty(multiple, height ? multiple)
+			}
 
-		{ multiple.isKindOf(String) } {
-			if (multiple.beginsWith("http://").not
-				and:{ multiple.beginsWith("file://").not }
-				and:{ multiple.beginsWith("ftp://").not  }, {
-					ret = this.open(multiple);
-				}, {
-					ret = this.openURL(multiple);
-			});
-		}
+			{ multiple.isKindOf(String) } {
+				if(multiple.beginsWith("http://").not
+						and: { multiple.beginsWith("file://").not }
+						and: { multiple.beginsWith("ftp://").not }) {
+							ret = this.open(multiple)
+						} {
+							ret = this.openURL(multiple)
+						}
+			} {
+				Error("Image: wrong arguments to constructor").throw
+			};
 
-		{
-			Error("Image: wrong arguments to constructor").throw
-		};
-
-		^ret;
+		^ret
 	}
 
-	*openSVG {
-		|path, size|
-		^super.new.prNewSVG(path, size);
+	*openSVG { |path, size|
+		^super.new.prNewSVG(path, size)
 	}
 
-	*newEmpty { arg width, height;
-		^super.new.prNewEmpty(width, height);
+	*newEmpty { |width, height|
+		^super.new.prNewEmpty(width, height)
 	}
 
-	*color { arg ...args;
+	*color { |...args|
 		var ret, color;
 		ret = this.new(*args);
 		color = args.last;
-		if(color.isKindOf(Color).not, {
-			color = Color.black;
-		});
+		if(color.isKindOf(Color).not) {
+			color = Color.black
+		};
 		ret.fill(color);
-		^ret;
+		^ret
 	}
 
-	*open { arg path;
+	*open { |path|
 		path = path.standardizePath;
-		if (PathName(path).extension == "svg") {
-			^super.openSVG(path);
+		if(PathName(path).extension == "svg") {
+			^super.openSVG(path)
 		} {
-			^super.new.prNewPath(path);
+			^super.new.prNewPath(path)
 		}
 	}
 
-	*openURL { arg url, timeout = 60;
-		^super.new.prNewURL(url, timeout).url_(url);
+	*openURL { |url, timeout = 60|
+		^super.new.prNewURL(url, timeout).url_(url)
 	}
 
-	*fromImage { arg image;
-		if(image.isKindOf(this), {
-			^image.copy;
-		});
+	*fromImage { |image|
+		if(image.isKindOf(this)) {
+			^image.copy
+		};
 		"Image: invalid instance to copy from.".error;
 		^nil
 	}
 
-	*fromWindow { arg window, rect;
+	*fromWindow { |window, rect|
 		^super.new.prNewFromWindow(
 			window.asView,
 			rect ?? { window.asView.bounds }
-		);
+		)
 	}
 
 	// Class variables attributes
-	*formats { arg rw = "r";
-		case(
-			{ rw.asSymbol == \r }, { rw = 0 },
-			{ rw.asSymbol == \w }, { rw = 1 },
-			{ true },
-			{ Error("Image.formats(rw) must be either 'r' or 'w'").throw }
-		);
-		^this.prFormats(rw);
+	*formats { |rw = "r"|
+		case
+			{ rw.asSymbol == \r } { rw = 0 }
+			{ rw.asSymbol == \w } { rw = 1 }
+			{ true }
+			{ Error("Image.formats(rw) must be either 'r' or 'w'").throw };
+		^this.prFormats(rw)
 	}
 
 	*interpolations {
-		^[\fast, \smooth]; // TODO
+		^[\fast, \smooth] // TODO
 	}
 
-	*colorToPixel { arg color;
+	*colorToPixel { |color|
 		_QImage_ColorToPixel;
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*pixelToColor { arg pixel;
+	*pixelToColor { |pixel|
 		_QImage_PixelToColor;
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
 	// Instance methods
 
 	isValid {
-		^dataptr.notNil;
+		^dataptr.notNil
 	}
 
 	interpolation {
-		^if(this.smooth, \smooth, \fast);
+		^if(this.smooth, \smooth, \fast)
 	}
-	interpolation_ { arg mode;
-		switch (mode,
-			\smooth, { this.smooth = true },
-			\fast, { this.smooth = false },
+	interpolation_ { |mode|
+		switch(mode)
+			{ \smooth } { this.smooth = true }
+			{ \fast } { this.smooth = false }
 			{ Error("Image: Interpolation mode invalid").throw }
-		);
 	}
 
 	smooth { _QImage_HasSmoothTransformation; ^this.primitiveFailed }
-	smooth_ { arg smooth; _QImage_SetSmoothTransformation; ^this.primitiveFailed }
+	smooth_ { |smooth| _QImage_SetSmoothTransformation; ^this.primitiveFailed }
 
-	url_ { arg newURL;
-		if(newURL.isKindOf(String), {
-			url = newURL.standardizePath.replace(" ", "%20");
-		}, {
-			url = "";
-		});
+	url_ { |newURL|
+		if(newURL.isKindOf(String)) {
+			url = newURL.standardizePath.replace(" ", "%20")
+		} {
+			url = ""
+		}
 	}
 
 	bounds {
-		^Rect(0, 0, this.width, this.height);
+		^Rect(0, 0, this.width, this.height)
 	}
 
 	width {
 		_QImage_Width
 		^this.primitiveFailed
 	}
-	width_ { arg w;
-		this.setSize(w, this.height);
+	width_ { |w|
+		this.setSize(w, this.height)
 	}
 
 	height {
 		_QImage_Height
 		^this.primitiveFailed
 	}
-	height_ { arg h;
-		this.setSize(this.width, h);
+	height_ { |h|
+		this.setSize(this.width, h)
 	}
 
 	pixelRatio {
 		_QImage_GetDevicePixelRatio
 	}
 
-	pixelRatio_{
-		|ratio|
+	pixelRatio_{ |ratio|
 		_QImage_SetDevicePixelRatio
 	}
 
-	setSize { arg width, height, resizeMode;
-		if (resizeMode.isNil) {
-			resizeMode = if (scalesWhenResized, \ignoreAspectRatio, \doNotScale);
+	setSize { |width, height, resizeMode|
+		if(resizeMode.isNil) {
+			resizeMode = if(scalesWhenResized, \ignoreAspectRatio, \doNotScale)
 		};
 		resizeMode = resizeModes.indexOf(resizeMode);
-		if (resizeMode.isNil) {
-			Error("Image: invalid resize mode.").throw;
+		if(resizeMode.isNil) {
+			Error("Image: invalid resize mode.").throw
 		};
-		this.prSetSize(width, height, resizeMode);
+		this.prSetSize(width, height, resizeMode)
 	}
 
 	// pixel manipulation
-	setPixel { arg rgbaInteger, x, y;
+	setPixel { |rgbaInteger, x, y|
 		_QImage_SetPixel
 		^this.primitiveFailed
 	}
 
-	getPixel { arg x, y;
+	getPixel { |x, y|
 		_QImage_GetPixel
 		^this.primitiveFailed
 	}
 
-	setColor { arg color, x, y;
+	setColor { |color, x, y|
 		_QImage_SetColor
 		^this.primitiveFailed
 	}
 
-	getColor { arg x, y;
+	getColor { |x, y|
 		_QImage_GetColor
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
 	pixels {
 		var pixelArray;
-		if(this.width == 0 or: { this.height == 0 }, { ^nil });
+		if(this.width == 0 or: { this.height == 0 }) { ^nil };
 		pixelArray = Int32Array.newClear(this.width * this.height);
 		this.loadPixels(pixelArray);
-		^pixelArray;
+		^pixelArray
 	}
 
-	loadPixels {arg array, region = nil, start = 0;
+	loadPixels { |array, region = nil, start = 0|
 		this.prTransferPixels(array, region, start, false);
-		^this;
+		^this
 	}
 
-	pixels_ {arg array;
-		this.setPixels(array);
+	pixels_ { |array|
+		this.setPixels(array)
 	}
 
-	setPixels { arg array, region = nil, start = 0;
-		this.prTransferPixels(array, region, start, true);
+	setPixels { |array, region = nil, start = 0|
+		this.prTransferPixels(array, region, start, true)
 	}
 
-	fill { arg color;
+	fill { |color|
 		_QImage_Fill
 		^this.primitiveFailed
 	}
@@ -282,40 +276,40 @@ Image {
 		new.name_(this.name);
 		new.url_(this.url);
 		new.draw({
-			Pen.drawImage(rect, this, rect);
+			Pen.drawImage(rect, this, rect)
 		});
 		^new
 	}
 
-	draw { arg aFunction;
+	draw { |aFunction|
 		this.prSetPainter;
 		protect({
-			aFunction.value(this);
+			aFunction.value(this)
 		}, {
-			this.prUnsetPainter;
-		});
+			this.prUnsetPainter
+		})
 	}
 
-	drawAtPoint { arg point, fromRect, operation = 'sourceOver', fraction = 1.0;
-		Pen.drawImage( point, this, fromRect, operation, fraction );
+	drawAtPoint { |point, fromRect, operation = 'sourceOver', fraction = 1.0|
+		Pen.drawImage(point, this, fromRect, operation, fraction)
 	}
 
-	drawInRect { arg rect, fromRect, operation = 'sourceOver', fraction = 1.0;
+	drawInRect { |rect, fromRect, operation = 'sourceOver', fraction = 1.0|
 		// TODO: check stretch behavior
-		Pen.drawImage(rect, this, fromRect, operation, fraction);
+		Pen.drawImage(rect, this, fromRect, operation, fraction)
 	}
 
-	tileInRect { arg rect, fromRect, operation = 'sourceOver', opacity = 1.0;
-		Pen.tileImage(rect, this, fromRect, operation, opacity);
+	tileInRect { |rect, fromRect, operation = 'sourceOver', opacity = 1.0|
+		Pen.tileImage(rect, this, fromRect, operation, opacity)
 	}
 
-	drawStringAtPoint { arg string, point, font, color;
+	drawStringAtPoint { |string, point, font, color|
 		this.draw({
-			Pen.stringAtPoint(string, point, font, color);
-		});
+			Pen.stringAtPoint(string, point, font, color)
+		})
 	}
 
-	plot { arg name, bounds, freeOnClose = false, background = nil, showInfo = true;
+	plot { |name, bounds, freeOnClose = false, background = nil, showInfo = true|
 		var uview, window, nw, nh, ratio = this.width / this.height, info = "";
 
 		nw = this.width.min(600).max(200);
@@ -323,9 +317,9 @@ Image {
 		window = Window.new(name ? "plot", bounds ? Rect(400, 400, nw, nh));
 		allPlotWindows = allPlotWindows.add(window);
 
-		if(background.notNil, {
-			window.view.background_(background);
-		});
+		if(background.notNil) {
+			window.view.background_(background)
+		};
 		window.acceptsMouseOver = true;
 
 		uview = UserView(window, window.view.bounds)
@@ -334,54 +328,54 @@ Image {
 
 		window.onClose_({
 			allPlotWindows.remove(window);
-			if(freeOnClose, {
+			if(freeOnClose) {
 				this.free
-			});
+			}
 		});
 
 		uview.drawFunc_({
 			Pen.drawImage(window.view.bounds, this, this.bounds);
 
-			if(showInfo, {
+			if(showInfo) {
 				Pen.use {
 					Pen.width_(0.5);
 					Color.black.alpha_(0.4).setFill;
 					Color.white.setStroke;
 					Pen.fillRect(Rect(5.5, 5.5, 100, 20));
 					Pen.strokeRect(Rect(5.5, 5.5, 100, 20));
-					info.drawAtPoint(10@10, Font.default, Color.white);
+					info.drawAtPoint(10 @ 10, Font.default, Color.white)
 				}
-			});
+			}
 		});
 
-		uview.mouseOverAction_({ arg v, x, y;
-			if(showInfo, {
-				if(this.isValid, {
+		uview.mouseOverAction_({ |v, x, y|
+			if(showInfo) {
+				if(this.isValid) {
 					info = format("X: %, Y: %",
-						((x / window.view.bounds.width) * this.width).floor.min(this.width-1),
-						((y / window.view.bounds.height) * this.height).floor.min(this.height-1) );
-				}, {
-					info = "invalid image";
-				});
+						((x / window.view.bounds.width) * this.width).floor.min(this.width - 1),
+						((y / window.view.bounds.height) * this.height).floor.min(this.height - 1))
+				} {
+					info = "invalid image"
+				};
 				//window.view.refreshInRect(Rect(5.5,5.5,100,20));
-				window.view.refresh;
-			});
+				window.view.refresh
+			}
 		});
-		^window.front;
+		^window.front
 	}
 
 	*closeAllPlotWindows {
-		allPlotWindows.do(_.close);
+		allPlotWindows.do(_.close)
 	}
 
-	storeOn { arg stream;
-		stream << this.class.name << ".openURL(" << url.asCompileString << ")";
+	storeOn { |stream|
+		stream << this.class.name << ".openURL(" << url.asCompileString << ")"
 	}
 
 	archiveAsCompileString { ^true }
 
 	// saving and archiving
-	write { arg path, format, quality = -1;
+	write { |path, format, quality = -1|
 		_QImage_Write
 		^this.primitiveFailed
 	}
@@ -389,7 +383,7 @@ Image {
 
 
 	// private primitives
-	prNewPath { arg path;
+	prNewPath { |path|
 		_QImage_NewPath
 		^this.primitiveFailed
 	}
@@ -399,17 +393,17 @@ Image {
 		^this.primitiveFailed
 	}
 
-	prNewURL { arg path, timeout;
+	prNewURL { |path, timeout|
 		_QImage_NewURL
 		^this.primitiveFailed
 	}
 
-	prNewFromWindow { arg window, rect;
+	prNewFromWindow { |window, rect|
 		_QImage_NewFromWindow
 		^this.primitiveFailed
 	}
 
-	prNewEmpty { arg width, height;
+	prNewEmpty { |width, height|
 		_QImage_NewEmpty
 		^this.primitiveFailed
 	}
@@ -424,17 +418,17 @@ Image {
 		^this.primitiveFailed
 	}
 
-	*prFormats { arg rw;
+	*prFormats { |rw|
 		_QImage_Formats
 		^this.primitiveFailed
 	}
 
-	prSetSize { arg width, height, resizeMode;
+	prSetSize { |width, height, resizeMode|
 		_QImage_SetSize
 		^this.primitiveFailed
 	}
 
-	prTransferPixels { arg array, region, start, store = false;
+	prTransferPixels { |array, region, start, store = false|
 		_QImage_TransferPixels
 		^this.primitiveFailed
 	}

@@ -1,0 +1,1 @@
+(trailing_whitespace: \remove)

@@ -1,30 +1,31 @@
+//# VERSION 3.16
 TestEnvGen_server : UnitTest {
 
 	var server;
 
 	setUp {
-		server = Server(this.class.name);
+		server = Server(this.class.name)
 	}
 
 	tearDown {
 		if(server.serverRunning) { server.quitSync };
-		server.remove;
+		server.remove
 	}
 
 	test_zero_gate_n_off_not_sent {
-		var synth, n_off_resp, n_end_resp, passed;
+		var n_off_resp, n_end_resp, passed;
 		var cond = Condition.new;
 		var cleanup = {
 			n_off_resp.free;
-			n_end_resp.free;
+			n_end_resp.free
 		};
 
 		server.bootSync;
-		synth = {
+		var synth = {
 			// doneAction: 1 should reach end *after* doneAction: 2 envelope ends
 			// correct behavior is that '/n_off' is never sent
 			EnvGen.kr(Env([0, 1], [0.2]), gate: 0, doneAction: 1);
-			EnvGen.kr(Env([0, 1], [0.1]), doneAction: 2);
+			EnvGen.kr(Env([0, 1], [0.1]), doneAction: 2)
 		}.play(server);
 
 		// EnvGen is initialized by setting the state to the end of the Env,
@@ -35,7 +36,7 @@ TestEnvGen_server : UnitTest {
 		n_off_resp = OSCFunc({
 			cleanup.value;
 			passed = false;
-			cond.unhang;
+			cond.unhang
 		}, '/n_off', server.addr, argTemplate: [synth.nodeID]);
 
 		// responsible for cleaning up this test
@@ -43,11 +44,11 @@ TestEnvGen_server : UnitTest {
 		n_end_resp = OSCFunc({
 			cleanup.value;
 			passed = true;
-			cond.unhang;
+			cond.unhang
 		}, '/n_end', server.addr, argTemplate: [synth.nodeID]);
 
 		cond.hang;
-		this.assert(passed, "Initial gate == 0 with doneAction == 1 should not send /n_off");
+		this.assert(passed, "Initial gate == 0 with doneAction == 1 should not send /n_off")
 	}
 
 	// has failed in supernova
@@ -62,7 +63,7 @@ TestEnvGen_server : UnitTest {
 			tr_resp.free;
 			n_end_resp.free;
 			server.quitSync;
-			Server.scsynth;
+			Server.scsynth
 		};
 
 		// we need to test supernova.
@@ -70,9 +71,9 @@ TestEnvGen_server : UnitTest {
 		// Windows, I don't know
 		if(
 			thisProcess.platform.name != "windows"
-			and: { "which supernova".unixCmdGetStdOut.size > 0 }
+				and: { "which supernova".unixCmdGetStdOut.size > 0 }
 		) {
-			program = program ++ [\supernova];
+			program = program ++ [\supernova]
 		};
 
 		program.do { |p|
@@ -84,23 +85,23 @@ TestEnvGen_server : UnitTest {
 			synth = {
 				var gate = Impulse.kr(0);
 				SendTrig.kr(TDelay.kr(gate, 0.09), 0, 1);
-				EnvGen.kr(Env([0, 1], [0.1]), gate, doneAction: 2);
+				EnvGen.kr(Env([0, 1], [0.1]), gate, doneAction: 2)
 			}.play(server);
 
 			tr_resp = OSCFunc({ |msg|
-				gotTrigger = true;
+				gotTrigger = true
 			}, '/tr', server.addr, argTemplate: [synth.nodeID]);
 
 			n_end_resp = OSCFunc({ |msg|
-				fork{ // we need to for to wait for the server to quit with quitSync inside the cleanup function
+				fork { // we need to for to wait for the server to quit with quitSync inside the cleanup function
 					cleanup.value;
-					cond.unhang;
+					cond.unhang
 				}
 			}, '/n_end', server.addr, argTemplate: [synth.nodeID]);
 
 			cond.hang;
-			this.assert(gotTrigger, "Closing gate should not affect non-sustaining envelopes when using %".format(p));
-		};
+			this.assert(gotTrigger, "Closing gate should not affect non-sustaining envelopes when using %".format(p))
+		}
 	}
 
 	// forced release tests
@@ -109,19 +110,19 @@ TestEnvGen_server : UnitTest {
 		var cond = Condition.new;
 		var cleanup = {
 			n_failed_resp.free;
-			n_end_resp.free;
+			n_end_resp.free
 		};
 
 		server.bootSync;
-		synth = {|gate=1|
-			var env = EnvGen.kr(Env([0,0.1,1,0], [0.1], releaseNode:1), gate, doneAction: 2);
-			SendReply.kr(env>0.1, '/failed')
+		synth = { |gate = 1|
+			var env = EnvGen.kr(Env([0, 0.1, 1, 0], [0.1], releaseNode: 1), gate, doneAction: 2);
+			SendReply.kr(env > 0.1, '/failed')
 		}.play(server);
 
 		n_failed_resp = OSCFunc({
 			cleanup.value;
 			passed = false;
-			cond.unhang;
+			cond.unhang
 		}, '/failed', server.addr, argTemplate: [synth.nodeID]);
 
 		// responsible for cleaning up this test
@@ -129,14 +130,14 @@ TestEnvGen_server : UnitTest {
 		n_end_resp = OSCFunc({
 			cleanup.value;
 			passed = true;
-			cond.unhang;
+			cond.unhang
 		}, '/n_end', server.addr, argTemplate: [synth.nodeID]);
 
 		server.sync;
 		synth.release(0.1);
 
 		cond.hang;
-		this.assert(passed, "gate < 0 should ignore multi-node release");
+		this.assert(passed, "gate < 0 should ignore multi-node release")
 	}
 
 	test_forced_release_respects_env_curve {
@@ -144,19 +145,19 @@ TestEnvGen_server : UnitTest {
 		var cond = Condition.new;
 		var cleanup = {
 			n_failed_resp.free;
-			n_end_resp.free;
+			n_end_resp.free
 		};
 
 		server.bootSync;
-		synth = {|gate=1|
-			var env = EnvGen.kr(Env([0,1,0], [0.1], \step, releaseNode: 1), gate, doneAction: 2);
+		synth = { |gate = 1|
+			var env = EnvGen.kr(Env([0, 1, 0], [0.1], \step, releaseNode: 1), gate, doneAction: 2);
 			SendReply.kr((env > 0.1) * (env < 0.9), '/failed')
 		}.play(server);
 
 		n_failed_resp = OSCFunc({
 			cleanup.value;
 			passed = false;
-			cond.unhang;
+			cond.unhang
 		}, '/failed', server.addr, argTemplate: [synth.nodeID]);
 
 		// responsible for cleaning up this test
@@ -164,14 +165,14 @@ TestEnvGen_server : UnitTest {
 		n_end_resp = OSCFunc({
 			cleanup.value;
 			passed = true;
-			cond.unhang;
+			cond.unhang
 		}, '/n_end', server.addr, argTemplate: [synth.nodeID]);
 
 		server.sync;
 		synth.release(0.1);
 
 		cond.hang;
-		this.assert(passed, "gate < 0 should respect env's last node curve");
+		this.assert(passed, "gate < 0 should respect env's last node curve")
 	}
 
 	// issue #5104
@@ -183,14 +184,14 @@ TestEnvGen_server : UnitTest {
 
 		server.bootSync;
 
-		{ EnvGen.kr(env, timeScale: timeScale, doneAction:2) }.loadToFloatArray(env.duration * timeScale, server){ |values|
+		{ EnvGen.kr(env, timeScale: timeScale, doneAction: 2) }.loadToFloatArray(env.duration * timeScale, server) { |values|
 			result = values;
-			condvar.signalOne;
+			condvar.signalOne
 		};
 
 		condvar.waitFor(5);
 
-		this.assert(result.any { |v| v > 0 }, "Env(curves: [\hold, \lin]) should not be rendered as silent");
+		this.assert(result.any { |v| v > 0 }, "Env(curves: [\hold, \lin]) should not be rendered as silent")
 	}
 
 }

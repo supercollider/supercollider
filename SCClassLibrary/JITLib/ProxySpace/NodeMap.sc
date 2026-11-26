@@ -5,12 +5,12 @@ NodeMap : IdentityDictionary {
 	clear {
 		super.clear;
 		upToDate = false;
-		this.changed(\clear);
+		this.changed(\clear)
 	}
 
 	updateArgs {
 		setArgs = this.asKeyValuePairs.asOSCArgArray;
-		upToDate = true;
+		upToDate = true
 	}
 
 	get { |key|
@@ -20,23 +20,23 @@ NodeMap : IdentityDictionary {
 	set { |...args|
 		this.putPairs(args);
 		upToDate = false;
-		this.changed(\set, args);
+		this.changed(\set, args)
 	}
 
 	unset { |... keys|
 		keys.do { |x| this.put(x, nil) };
-		this.changed(\unset, keys);
+		this.changed(\unset, keys)
 	}
 
 	map { |...args|
 		this.putPairs(args);
 		upToDate = false;
-		this.changed(\map, args);
+		this.changed(\map, args)
 	}
 
 	unmap { |... keys|
 		keys.do { |x| this.put(x, nil) };
-		this.changed(\unmap, keys);
+		this.changed(\unmap, keys)
 	}
 
 	asOSCArgArray {
@@ -47,7 +47,7 @@ NodeMap : IdentityDictionary {
 	send { |server, nodeID, latency|
 		var bundle = List.new;
 		this.addToBundle(bundle, nodeID);
-		server.listSendBundle(latency, bundle);
+		server.listSendBundle(latency, bundle)
 	}
 
 	sendToNode { |node, latency|
@@ -82,7 +82,7 @@ NodeMap : IdentityDictionary {
 				args = args ++ [key, -1, val.numChannels]
 			}
 		};
-		if(args.notNil) { bundle.add([48, target.asNodeID] ++ args) };
+		if(args.notNil) { bundle.add([48, target.asNodeID] ++ args) }
 	}
 }
 
@@ -94,28 +94,28 @@ ProxyNodeMap : NodeMap {
 			this.set(key, nil)
 		};
 		upToDate = false;
-		this.changed(\clear);
+		this.changed(\clear)
 	}
 
 	put { |key, item|
 		if(proxy.notNil) {
 			if(this.at(key).isKindOf(NodeProxy)) {
-				this.at(key).removeChild(proxy);
+				this.at(key).removeChild(proxy)
 			};
 			if(item.isKindOf(NodeProxy)) {
-				item.addChild(proxy);
+				item.addChild(proxy)
 			}
 		};
 		super.put(key, item)
 	}
 
-	wakeUpParentsToBundle { | bundle, checkedAlready |
-		this.pairsDo({ |key, item| item.wakeUpToBundle(bundle, checkedAlready) });
+	wakeUpParentsToBundle { |bundle, checkedAlready|
+		this.pairsDo({ |key, item| item.wakeUpToBundle(bundle, checkedAlready) })
 	}
 
 	mapEnvir { |... keys|
 		if(keys.isEmpty) { keys = this.keys };
-		this.map(currentEnvironment.getPairs(keys));
+		this.map(currentEnvironment.getPairs(keys))
 	}
 
 	// unoptimized
@@ -130,7 +130,7 @@ ProxyNodeMap : NodeMap {
 	controlNames {
 		var res = Array.new;
 		this.keysValuesDo { |key, value|
-			var rate = if(value.respondsTo(\rate) and:{
+			var rate = if(value.respondsTo(\rate) and: {
 				value.rate == \audio
 			}) { \audio } { \control };
 			res = res.add(ControlName(key, nil, rate, value))
@@ -164,9 +164,9 @@ ProxyNodeMap : NodeMap {
 	setRates { |args|
 		//this.deprecated(thisMethod); // maybe deprecate later
 		rates = rates ?? { IdentityDictionary.new };
-		rates.putPairs(args);
+		rates.putPairs(args)
 	}
-	ratesFor { arg keys;
+	ratesFor { |keys|
 		^rates !? { rates.atAll(keys) }
 	}
 }

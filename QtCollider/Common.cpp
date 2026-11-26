@@ -24,7 +24,6 @@
 
 #include <PyrKernel.h>
 #include <VMGlobals.h>
-#include <PyrLexer.h>
 
 // WARNING: QtCollider::lockLang() must be called before
 void QtCollider::runLang(PyrObjectHdr* receiver, PyrSymbol* method, const QList<QVariant>& args, PyrSlot* result) {

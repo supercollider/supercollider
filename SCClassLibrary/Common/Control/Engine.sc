@@ -4,8 +4,8 @@ NodeIDAllocator {
 	var <numIDs = 0x04000000; // 2 ** 26
 	// support 32 users
 
-	*new { arg user=0, initTemp = 1000;
-		if (user > 31) { "NodeIDAllocator user id > 31".error; ^nil };
+	*new { |user = 0, initTemp = 1000|
+		if(user > 31) { "NodeIDAllocator user id > 31".error; ^nil };
 		^super.newCopyArgs(user, initTemp).reset
 	}
 
@@ -15,7 +15,7 @@ NodeIDAllocator {
 		mask = user << 26;
 		temp = initTemp;
 		perm = 4;
-		permFreed = IdentitySet.new;
+		permFreed = IdentitySet.new
 	}
 	alloc {
 		var x;
@@ -27,15 +27,15 @@ NodeIDAllocator {
 		var x;
 		if(permFreed.size > 0) {
 			x = permFreed.minItem;
-			permFreed.remove(x);
+			permFreed.remove(x)
 		} {
 			x = perm;
-			perm = (x + 1).min(initTemp - 1);
+			perm = (x + 1).min(initTemp - 1)
 		}
 		^x | mask
 	}
 	freePerm { |id|
-			// should not add a temp node id to the freed-permanent collection
+		// should not add a temp node id to the freed-permanent collection
 		id = id bitAnd: 0x03FFFFFF;
 		if(id < initTemp) { permFreed.add(id) }
 	}
@@ -44,49 +44,49 @@ NodeIDAllocator {
 
 PowerOfTwoBlock {
 	var <address, <size, <>next;
-	*new { arg address, size;
+	*new { |address, size|
 		^super.newCopyArgs(address, size)
 	}
 }
 
 PowerOfTwoAllocator {
-	var size, array, freeLists, pos=0;
+	var size, array, freeLists, pos = 0;
 
-	*new { arg size, pos=0;
+	*new { |size, pos = 0|
 		^super.newCopyArgs(size, Array.newClear(size), Array.newClear(32), pos)
 	}
-	alloc { arg n;
+	alloc { |n|
 		var sizeClass, node, address;
 		n = n.nextPowerOfTwo;
 		sizeClass = n.log2Ceil;
 
 		node = freeLists.at(sizeClass);
-		if (node.notNil, {
+		if(node.notNil) {
 			freeLists.put(sizeClass, node.next);
 			^node.address
-		});
-		if (pos + n <= size, {
+		};
+		if(pos + n <= size) {
 			array.put(pos, PowerOfTwoBlock(pos, n));
 			address = pos;
 			pos = pos + n;
 			^address
-		});
+		};
 		^nil
 	}
-	free { arg address;
-		var node, sizeClass,next;
+	free { |address|
+		var node, sizeClass, next;
 
-		if((node = array.at(address)).notNil,{
+		if((node = array.at(address)).notNil) {
 
 			sizeClass = node.size.log2Ceil;
 			node.next = freeLists.at(sizeClass);
 			freeLists.put(sizeClass, node);
-			array.put(address, nil);
+			array.put(address, nil)
 
-		});
+		}
 	}
 	blocks {
-		^array.select({ arg b; b.notNil })
+		^array.select({ |b| b.notNil })
 	}
 }
 
@@ -94,30 +94,30 @@ LRUNumberAllocator {
 	// implements a least recently used ID allocator.
 
 	var lo, hi;
-	var array, size, head=0, tail=0;
+	var array, size, head = 0, tail = 0;
 
-	*new { arg lo, hi;
+	*new { |lo, hi|
 		^super.newCopyArgs(lo, hi).init
 	}
 	init {
-		size = hi-lo+1;
+		size = hi - lo + 1;
 		array = Array.newClear(size);
-		for(lo, hi-1, { arg i, j; array.put(j, i) });
-		head = size-1;
-		tail=0;
+		for(lo, hi - 1) { |i, j| array.put(j, i) };
+		head = size - 1;
+		tail = 0
 	}
-	free { arg id;
+	free { |id|
 		var nextIndex;
-		nextIndex = (head+1) % size;
-		if ( nextIndex == tail, { ^nil }); // full
+		nextIndex = (head + 1) % size;
+		if(nextIndex == tail) { ^nil }; // full
 		array.put(head, id);
-		head = nextIndex;
+		head = nextIndex
 	}
 	alloc {
 		var id;
-		if (head == tail, { ^nil }); // empty
+		if(head == tail) { ^nil }; // empty
 		id = array.at(tail);
-		tail = (tail+1) % size;
+		tail = (tail + 1) % size;
 		^id
 	}
 }
@@ -125,33 +125,33 @@ LRUNumberAllocator {
 StackNumberAllocator {
 	var lo, hi, freeList, next;
 
-	*new { arg lo, hi;
+	*new { |lo, hi|
 		^super.newCopyArgs(lo, hi).init
 	}
 	init {
-		next = lo - 1;
+		next = lo - 1
 	}
 	alloc {
-		if (freeList.size > 0, { ^freeList.pop });
-		if (next < hi, { ^next = next + 1; });
+		if(freeList.size > 0) { ^freeList.pop };
+		if(next < hi) { ^next = next + 1 };
 		^nil
 	}
-	free { arg inIndex;
-		freeList = freeList.add(inIndex);
+	free { |inIndex|
+		freeList = freeList.add(inIndex)
 	}
 }
 
 RingNumberAllocator {
 	var lo, hi, next;
 
-	*new { arg lo, hi;
+	*new { |lo, hi|
 		^super.newCopyArgs(lo, hi).init
 	}
 	init {
-		next = hi;
+		next = hi
 	}
 	alloc {
-		^next = (next + 1).wrap(lo,hi)
+		^next = (next + 1).wrap(lo, hi)
 	}
 }
 
@@ -180,18 +180,20 @@ ContiguousBlock {
 				max(start + size, block.nextAddress) - newstart)
 		} {
 			^nil
-		};
+		}
 	}
 
 	split { |span|
 		if(span < size) {
-			^[this.class.new(start, span),
-				this.class.new(start + span, size - span)]
+			^[
+				this.class.new(start, span),
+				this.class.new(start + span, size - span)
+			]
 		} {
 			if(span == size) {
 				^[this, nil]
 			} { ^nil }
-		};
+		}
 	}
 
 	storeArgs { ^[start, size, used] }
@@ -229,16 +231,16 @@ ContiguousBlockAllocator {
 	*new { |size, pos = 0, addrOffset = 0|
 		var shiftedPos = pos + addrOffset;
 		^super.newCopyArgs(size,
-			Array.newClear(size).put(pos, ContiguousBlock(shiftedPos, size-pos)),
+			Array.newClear(size).put(pos, ContiguousBlock(shiftedPos, size - pos)),
 			IdentityDictionary.new,
-			shiftedPos, shiftedPos, addrOffset);
+			shiftedPos, shiftedPos, addrOffset)
 	}
 
 	alloc { |n = 1|
 		var block = this.findAvailable(n);
 		if(block.notNil) {
 			^this.prReserve(block.start, n, block).start
-		} { ^nil };
+		} { ^nil }
 	}
 
 	reserve { |address, size = 1, warn = true|
@@ -249,11 +251,11 @@ ContiguousBlockAllocator {
 			if(block.used or: { block.size < size }) {
 				if(warn) {
 					"The block at (%, %) is already in use and cannot be reserved."
-					.format(address, size).warn;
+					.format(address, size).warn
 				};
 				^nil
 			} {
-				^this.prReserve(address, size, block);
+				^this.prReserve(address, size, block)
 			}
 		} {
 			// block didn't exist:
@@ -261,12 +263,12 @@ ContiguousBlockAllocator {
 			block = this.prFindPrevious(address);
 			if(block.isNil) {
 				if(warn) {
-					"Address % should be at least %".format(address, addrOffset).warn;
+					"Address % should be at least %".format(address, addrOffset).warn
 				};
 				^nil
 			};
 			if(block.nextAddress < address) {
-				Error("ContiguousBlockAllocator:reserve previous block doesn't span requested address (should never happen)").throw;
+				Error("ContiguousBlockAllocator:reserve previous block doesn't span requested address (should never happen)").throw
 			};
 			// is it used, or too small?
 			if(block.used or: {
@@ -274,12 +276,12 @@ ContiguousBlockAllocator {
 			}) {
 				if(warn) {
 					"The block at (%, %) is already in use and cannot be reserved."
-					.format(address, size).warn;
+					.format(address, size).warn
 				};
 				^nil
 			} {
-				^this.prReserve(address, size, nil, block);
-			};
+				^this.prReserve(address, size, nil, block)
+			}
 		};
 		^nil
 	}
@@ -307,8 +309,8 @@ ContiguousBlockAllocator {
 					array[block.start - addrOffset] = nil;
 					this.removeFromFreed(prev).removeFromFreed(block);
 					if(top > temp.start) { this.addToFreed(temp) };
-					block = temp;
-				};
+					block = temp
+				}
 			};
 			// and if this also touches the next block, join them
 			next = this.prFindNext(block.start);
@@ -320,14 +322,14 @@ ContiguousBlockAllocator {
 					array[temp.start - addrOffset] = temp;
 					array[next.start - addrOffset] = nil;
 					this.removeFromFreed(next).removeFromFreed(block);
-					if(top > temp.start) { this.addToFreed(temp) };
-				};
-			};
-		};
+					if(top > temp.start) { this.addToFreed(temp) }
+				}
+			}
+		}
 	}
 
 	blocks {
-		^array.select({ arg b; b.notNil and: { b.used } })
+		^array.select({ |b| b.notNil and: { b.used } })
 	}
 
 	// Returns an available index for the given number of channels
@@ -336,9 +338,9 @@ ContiguousBlockAllocator {
 		if(freed[n].size > 0) { ^freed[n].choose };
 
 		freed.keysValuesDo({ |size, set|
-			(size >= n and: { set.size > 0 }).if({
+			if(size >= n and: { set.size > 0 }) {
 				^set.choose
-			});
+			}
 		});
 
 		if(top + n - addrOffset > size or: { array[top - addrOffset].used }) { ^nil };
@@ -347,21 +349,21 @@ ContiguousBlockAllocator {
 
 	addToFreed { |block|
 		if(freed[block.size].isNil) { freed[block.size] = IdentitySet.new };
-		freed[block.size].add(block);
+		freed[block.size].add(block)
 	}
 
 	removeFromFreed { |block|
 		freed[block.size].tryPerform(\remove, block);
 		// I tested without gc; performance is about half as efficient without it
-		if(freed[block.size].size == 0) { freed.removeAt(block.size) };
+		if(freed[block.size].size == 0) { freed.removeAt(block.size) }
 	}
 
 	// At any address, look backward for the immediately preceding block.
 	// If `address` is the first block, this will correctly be nil.
 	prFindPrevious { |address|
-		forBy(address-1, pos, -1, { |i|
-			if(array[i - addrOffset].notNil) { ^array[i - addrOffset] };
-		});
+		forBy(address - 1, pos, -1) { |i|
+			if(array[i - addrOffset].notNil) { ^array[i - addrOffset] }
+		};
 		^nil
 	}
 
@@ -376,7 +378,7 @@ ContiguousBlockAllocator {
 			// In that case (see comments at the top of the class),
 			// the next block is expected to be at temp.nextAddress.
 			// So the 'else' block's search is redundant.
-			indexOfNextBlock = temp.nextAddress;
+			indexOfNextBlock = temp.nextAddress
 		} {
 			// No.
 			// We know there is no block at 'address',
@@ -385,8 +387,8 @@ ContiguousBlockAllocator {
 			// 'top' points to the last ContiguousBlock.
 			// Indices > top must be nil. So, no need to search them.
 			while { indexOfNextBlock <= top and: { array[indexOfNextBlock - addrOffset].isNil } } {
-				indexOfNextBlock = indexOfNextBlock + 1;
-			};
+				indexOfNextBlock = indexOfNextBlock + 1
+			}
 		};
 		// At this point, indexOfNextBlock points either to the next block, or to nil.
 		// It may be past the array's upper bound. THIS IS OK.
@@ -398,14 +400,14 @@ ContiguousBlockAllocator {
 	prReserve { |address, size, availBlock, prevBlock|
 		var new, leftover;
 		if(availBlock.isNil and: { prevBlock.isNil }) {
-			prevBlock = this.prFindPrevious(address);
+			prevBlock = this.prFindPrevious(address)
 		};
 		availBlock = availBlock ? prevBlock;
 		if(availBlock.start < address) {
 			#leftover, availBlock = this.prSplit(availBlock,
-				address - availBlock.start, false);
+				address - availBlock.start, false)
 		};
-		^this.prSplit(availBlock, size, true)[0];
+		^this.prSplit(availBlock, size, true)[0]
 	}
 
 	prSplit { |availBlock, n, used = true|
@@ -418,19 +420,19 @@ ContiguousBlockAllocator {
 		if(leftover.notNil) {
 			array[leftover.start - addrOffset] = leftover;
 			top = max(top, leftover.start);
-			if(top > leftover.start) { this.addToFreed(leftover) };
+			if(top > leftover.start) { this.addToFreed(leftover) }
 		};
 		^[new, leftover]
 	}
 
 	debug { |text|
 		Post << text << ":\n\nArray:\n";
-		array.do({ |item, i|
-			item.notNil.if({ Post << i << ": " << item << "\n"; });
-		});
+		array.do { |item, i|
+			if(item.notNil) { Post << i << ": " << item << "\n" }
+		};
 		Post << "\nFree sets:\n";
 		freed.keysValuesDo({ |size, set|
-			Post << size << ": " <<< set << "\n";
-		});
+			Post << size << ": " <<< set << "\n"
+		})
 	}
 }

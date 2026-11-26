@@ -3,12 +3,12 @@
 
 PMOsc  {
 
-	*ar { arg carfreq,modfreq,pmindex=0.0,modphase=0.0,mul=1.0,add=0.0;
-		^SinOsc.ar(carfreq, SinOsc.ar(modfreq, modphase, pmindex),mul,add)
+	*ar { |carfreq, modfreq, pmindex = 0.0, modphase = 0.0, mul = 1.0, add = 0.0|
+		^SinOsc.ar(carfreq, SinOsc.ar(modfreq, modphase, pmindex), mul, add)
 	}
 
-	*kr { arg carfreq,modfreq,pmindex=0.0,modphase=0.0,mul=1.0,add=0.0;
-		^SinOsc.kr(carfreq, SinOsc.kr(modfreq, modphase, pmindex),mul,add)
+	*kr { |carfreq, modfreq, pmindex = 0.0, modphase = 0.0, mul = 1.0, add = 0.0|
+		^SinOsc.kr(carfreq, SinOsc.kr(modfreq, modphase, pmindex), mul, add)
 	}
 
 }
@@ -16,21 +16,21 @@ PMOsc  {
 
 MultiTap  {
 
-	*ar { arg timesArray, levelsArray, in = 0.0, mul = 1.0, add = 0.0,bufnum;
+	*ar { |timesArray, levelsArray, in = 0.0, mul = 1.0, add = 0.0, bufnum|
 
 		var sampleRate;
 		timesArray = timesArray.dereference;
 		levelsArray = levelsArray.dereference;
-		RecordBuf.ar(in,bufnum,0.0, run: -1.0);
+		RecordBuf.ar(in, bufnum, 0.0, run: -1.0);
 		sampleRate = BufSampleRate.kr(bufnum);
 
-		^Mix.fill(timesArray.size,{ arg i;
+		^Mix.fill(timesArray.size, { |i|
 			PlayBuf.ar(in.numChannels,
-					bufnum, -1.0,1.0,
-					timesArray.at(i) * sampleRate,
-					loop: 1)
+				bufnum, -1.0, 1.0,
+				timesArray.at(i) * sampleRate,
+				loop: 1)
 				.madd(levelsArray.at(i) ? 1.0)
-		}).madd(mul,add);
+		}).madd(mul, add)
 	}
 }
 

@@ -24,10 +24,10 @@ section:: Argument conventions
 
 The convention as stated in crucial library states that the .gui method should accept parent and bounds as its arguments in the same manner as a View does.
 
-code::
+code#fragment::
 thing.gui(parent,bounds);
 // or with optional additional arguments:
-things.gui(parent,bounds,arg1,arg2,...argN)
+things.gui(parent,bounds,arg1,arg2, /* ... */ argN)
 ::
 
 This convention hasn't been followed by many who have written their own .gui methods (perhaps calling it that rather than .makeView or .makeWindow because they liked that .gui was nice and short to type)
@@ -72,7 +72,7 @@ Writing useful subclasses is the purpose of the ObjectGui system and many can be
 
 Examples specifying guiClass:
 
-code::
+teletype::
 	Object-guiClass { ^ObjectGui }
 	Server-guiClass { ^ServerGui }
 	AbstractPlayer-guiClass { ^AbstractPlayerGui }

@@ -1,3 +1,4 @@
+//# VERSION 3.16
 // Custom test class for checking exceptions thrown in predicates
 TestCondVarError : Error {}
 
@@ -20,15 +21,15 @@ TestCondVar : UnitTest {
 	// wait - without predicate
 	test_wait_withoutPredicate_oneThread_signalOne {
 		var c = CondVar();
-		var waitResult, signalOneResult;
+		var signalOneResult;
 		fork {
-			signalOneResult = c.signalOne;
+			signalOneResult = c.signalOne
 		};
 
 		// will timeout if signalOne does not wake us
-		waitResult = c.wait;
+		var waitResult = c.wait;
 		this.assertEquals(waitResult, c, "wait should return CondVar");
-		this.assertEquals(signalOneResult, c, "signalOne should return CondVar");
+		this.assertEquals(signalOneResult, c, "signalOne should return CondVar")
 	}
 
 	test_wait_withoutPredicate_twoThreads_signalOne {
@@ -37,14 +38,14 @@ TestCondVar : UnitTest {
 
 		fork {
 			c.wait;
-			secondFired = true;
+			secondFired = true
 		};
 
 		fork { c.signalOne };
 		c.wait;
 		this.assert(secondFired.not, "Before second signalOne");
 		c.signalOne; // schedule remaining waiting thread
-		this.momentarilyYieldUntil { secondFired };
+		this.momentarilyYieldUntil { secondFired }
 	}
 
 	test_wait_withoutPredicate_twoThreads_signalAll {
@@ -53,13 +54,13 @@ TestCondVar : UnitTest {
 
 		fork {
 			c.wait;
-			secondFired = true;
+			secondFired = true
 		};
 
 		fork { c.signalAll };
 
 		c.wait;
-		this.assert(secondFired);
+		this.assert(secondFired)
 	}
 
 	// wait - with predicate
@@ -68,7 +69,7 @@ TestCondVar : UnitTest {
 		// both of these should be supported
 		// test will timeout in failing case
 		this.assertEquals(c.wait(true), c);
-		this.assertEquals(c.wait { true }, c);
+		this.assertEquals(c.wait { true }, c)
 	}
 
 	test_wait_withPredicate_checkEvaluatedOnThisThread {
@@ -77,7 +78,7 @@ TestCondVar : UnitTest {
 		var evalThreads = [];
 
 		fork {
-			c.signalOne;
+			c.signalOne
 		};
 
 		c.wait {
@@ -87,13 +88,13 @@ TestCondVar : UnitTest {
 
 		this.assertEquals(evalThreads.size, 2);
 		this.assertEquals(evalThreads[0], thisThread);
-		this.assertEquals(evalThreads[1], thisThread);
+		this.assertEquals(evalThreads[1], thisThread)
 	}
 
 	test_wait_withPredicate_throwInPredicate {
 		var c = CondVar();
 		var f = { c.wait { TestCondVarError().throw } };
-		this.assertException(f, TestCondVarError);
+		this.assertException(f, TestCondVarError)
 	}
 
 	test_wait_withPredicate_threeThreads_signalAll_allStayBlockedWithOrderingPreserved {
@@ -101,7 +102,7 @@ TestCondVar : UnitTest {
 		// In this test we intentionally create functions that will cause threads to block infinitely, so we have to do
 		// some tricky manual cleanup.
 		var c = CondVar();
-		var wakeTimes = 0!3;
+		var wakeTimes = 0 ! 3;
 		var allowCleanupFlag = false;
 		var orderingCheck = { |first, second, firstName, secondName, note|
 			this.assert(first < second, "%: % < % (% < %)".format(note, firstName, secondName, first, second))
@@ -111,7 +112,7 @@ TestCondVar : UnitTest {
 			orderingCheck.(pre, wakeTimes[0], "pre", "wakeTimes[0]", note);
 			orderingCheck.(wakeTimes[0], wakeTimes[1], "wakeTimes[0]", "wakeTimes[1]", note);
 			orderingCheck.(wakeTimes[1], wakeTimes[2], "wakeTimes[1]", "wakeTimes[2]", note);
-			orderingCheck.(wakeTimes[2], post, "wakeTimes[2]", "post", note);
+			orderingCheck.(wakeTimes[2], post, "wakeTimes[2]", "post", note)
 		};
 
 		3.do { |i|
@@ -125,21 +126,21 @@ TestCondVar : UnitTest {
 		block {
 			var preWaitTime = Process.monotonicClockTime;
 			this.momentarilyYieldUntil { wakeTimes[2] != 0 };
-			orderingChecks.(preWaitTime, Process.monotonicClockTime, "initial scheduling");
+			orderingChecks.(preWaitTime, Process.monotonicClockTime, "initial scheduling")
 		};
 
 		// Now we signalAll and see if the wait times have kept the same ordering.
 		block {
 			var preWaitTime = Process.monotonicClockTime;
-			wakeTimes = 0!3;
+			wakeTimes = 0 ! 3;
 			c.signalAll;
 			this.momentarilyYieldUntil { wakeTimes[2] != 0 };
-			orderingChecks.(preWaitTime, Process.monotonicClockTime, "after signalAll");
+			orderingChecks.(preWaitTime, Process.monotonicClockTime, "after signalAll")
 		};
 
 		// cleanup
 		allowCleanupFlag = true;
-		c.signalAll;
+		c.signalAll
 	}
 
 	test_wait_withPredicate_oneThread_signalOne {
@@ -154,7 +155,7 @@ TestCondVar : UnitTest {
 				counter = counter + 1;
 				predFlag
 			};
-			doneFlag = true;
+			doneFlag = true
 		};
 
 		this.momentarilyYieldUntil { counter == 1 };
@@ -167,15 +168,15 @@ TestCondVar : UnitTest {
 		predFlag = true;
 		c.signalOne;
 		this.momentarilyYieldUntil { counter == 3 };
-		this.assert(doneFlag, "doneFlag after predFlag set");
+		this.assert(doneFlag, "doneFlag after predFlag set")
 	}
 
 	test_wait_withPredicate_twoThreads_signalOne {
 		// Test two threads blocking, the first staying blocked, second unblocking, and first finally unblocking
 		var c = CondVar();
-		var predFlags = false!2;
-		var doneFlags = false!2;
-		var counters = 0!2;
+		var predFlags = false ! 2;
+		var doneFlags = false ! 2;
+		var counters = 0 ! 2;
 
 		2.do { |i|
 			fork {
@@ -202,14 +203,14 @@ TestCondVar : UnitTest {
 		predFlags[0] = true;
 		c.signalOne;
 		this.momentarilyYieldUntil { counters == [3, 2] };
-		this.assertEquals(doneFlags, [true, true], "doneFlags after predFlags[0] set");
+		this.assertEquals(doneFlags, [true, true], "doneFlags after predFlags[0] set")
 	}
 
 	test_wait_withPredicate_twoThreads_signalAll {
 		var c = CondVar();
-		var counters = 0!2;
-		var doneFlags = false!2;
-		var flags = false!2;
+		var counters = 0 ! 2;
+		var doneFlags = false ! 2;
+		var flags = false ! 2;
 
 		2.do { |i|
 			fork {
@@ -217,7 +218,7 @@ TestCondVar : UnitTest {
 					counters[i] = counters[i] + 1;
 					flags[i]
 				};
-				doneFlags[i] = true;
+				doneFlags[i] = true
 			}
 		};
 
@@ -236,7 +237,7 @@ TestCondVar : UnitTest {
 		flags[1] = true;
 		c.signalAll;
 		this.momentarilyYieldUntil { counters == [3, 4] }; // thread 1 already exited
-		this.assertEquals(doneFlags, [true, true], "Done flags after flags[1] set");
+		this.assertEquals(doneFlags, [true, true], "Done flags after flags[1] set")
 	}
 
 	// waitFor - preconditions for timeoutBeats
@@ -247,7 +248,7 @@ TestCondVar : UnitTest {
 		this.assertException({ c.waitFor(TestCondVarBadIntConversion()) }, Error, "Bad int conversion");
 		this.assertException({ c.waitFor(TestCondVarBadFloatConversion()) }, Error, "Bad float conversion");
 		this.assertException({ c.waitFor(inf) }, Error, "inf");
-		this.assertException({ c.waitFor(0/0) }, Error, "NaN");
+		this.assertException({ c.waitFor(0 / 0) }, Error, "NaN")
 	}
 
 	test_waitFor_timeoutBeats_immediateTimeout {
@@ -257,7 +258,7 @@ TestCondVar : UnitTest {
 			var counter = 0;
 			var result = c.waitFor(val) { counter = counter + 1; false };
 			this.assertEquals(counter, 1, "waitFor(%): predicate only evaluated once".format(val));
-			this.assert(result.not, "waitFor(%): result".format(val));
+			this.assert(result.not, "waitFor(%): result".format(val))
 		};
 
 		checkValue.(0);
@@ -267,7 +268,7 @@ TestCondVar : UnitTest {
 
 		// Check good conversions too, these convert to 0 and 0.0 respectively
 		checkValue.(TestCondVarGoodIntConversion());
-		checkValue.(TestCondVarGoodFloatConversion());
+		checkValue.(TestCondVarGoodFloatConversion())
 	}
 
 	// waitFor - without predicate
@@ -275,19 +276,19 @@ TestCondVar : UnitTest {
 		var c = CondVar();
 		fork { c.signalOne };
 		// use assertEquals in case waitFor returns a non-boolean
-		this.assertEquals(c.waitFor(1), true);
+		this.assertEquals(c.waitFor(1), true)
 	}
 
 	test_waitFor_withoutPredicate_timedOut {
 		var c = CondVar();
 		// use assertEquals in case waitFor returns a non-boolean
-		this.assertEquals(c.waitFor(this.smallTimeSlice), false);
+		this.assertEquals(c.waitFor(this.smallTimeSlice), false)
 	}
 
 	// waitFor - with predicate
 	test_waitFor_withPredicate_immediatelyTrue {
 		var c = CondVar();
-		this.assertEquals(c.waitFor(this.smallTimeSlice) { true }, true);
+		this.assertEquals(c.waitFor(this.smallTimeSlice) { true }, true)
 	}
 
 	test_waitFor_withPredicate_signaledButFalseSoTimedOut {
@@ -304,7 +305,7 @@ TestCondVar : UnitTest {
 		};
 		this.assertEquals(waitResult, false, "waitResult");
 		// Evaluated 3 times -- when blocked, when signalled, when timed out
-		this.assertEquals(counter, 3, "counter");
+		this.assertEquals(counter, 3, "counter")
 	}
 
 	test_waitFor_withPredicate_signaledAndTrue {
@@ -318,12 +319,12 @@ TestCondVar : UnitTest {
 			counter == 2
 		};
 		this.assertEquals(waitResult, true, "waitResult");
-		this.assertEquals(counter, 2, "counter");
+		this.assertEquals(counter, 2, "counter")
 	}
 
 	test_waitFor_withPredicate_timedOutFalse {
 		var c = CondVar();
-		this.assertEquals(c.waitFor(this.smallTimeSlice) { false }, false);
+		this.assertEquals(c.waitFor(this.smallTimeSlice) { false }, false)
 	}
 
 	test_waitFor_withPredicate_timedOutTrue {
@@ -337,13 +338,13 @@ TestCondVar : UnitTest {
 		};
 
 		this.assertEquals(waitResult, true);
-		this.assertEquals(counter, 2);
+		this.assertEquals(counter, 2)
 	}
 
 	test_waitFor_withPredicate_throwInPredicate {
 		var c = CondVar();
 		var f = { c.waitFor(0) { TestCondVarError().throw } };
-		this.assertException(f, TestCondVarError);
+		this.assertException(f, TestCondVarError)
 	}
 
 	test_waitFor_withPredicate_checkEvaluatedOnThisThread {
@@ -352,7 +353,7 @@ TestCondVar : UnitTest {
 		var evalThreads = [];
 
 		fork {
-			c.signalOne;
+			c.signalOne
 		};
 
 		c.waitFor(1) {
@@ -362,25 +363,25 @@ TestCondVar : UnitTest {
 
 		this.assertEquals(evalThreads.size, 2, "evalThreads.size");
 		this.assertEquals(evalThreads[0], thisThread, "first eval");
-		this.assertEquals(evalThreads[1], thisThread, "second eval");
+		this.assertEquals(evalThreads[1], thisThread, "second eval")
 	}
 
 	// signalOne
 	test_signalOne_noWaits_doesNothingAndReturnsCondVar {
 		var c = CondVar();
-		this.assertEquals(c, c.signalOne);
+		this.assertEquals(c, c.signalOne)
 	}
 
 	// signalAll
 	test_signalAll_noWaits_doesNothingAndReturnsCondVar {
 		var c = CondVar();
-		this.assertEquals(c, c.signalAll);
+		this.assertEquals(c, c.signalAll)
 	}
 
 	// copies disallowed
 	test_noCopiesAllowed {
 		this.assertException({ CondVar().copy }, ShouldNotImplementError, "copy throws");
 		this.assertException({ CondVar().deepCopy }, ShouldNotImplementError, "deepCopy throws");
-		this.assertException({ CondVar().shallowCopy }, ShouldNotImplementError, "shallowCopy throws");
+		this.assertException({ CondVar().shallowCopy }, ShouldNotImplementError, "shallowCopy throws")
 	}
 }

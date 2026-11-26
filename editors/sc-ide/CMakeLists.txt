@@ -124,6 +124,7 @@ set ( ide_src
     core/sc_server.cpp
     core/sc_introspection.cpp
     core/sc_lexer.cpp
+    core/code_formatter.cpp
     core/settings/serialization.cpp
     core/settings/manager.cpp
     core/settings/theme.cpp
@@ -336,6 +337,7 @@ target_link_libraries( libscide PUBLIC
     yaml-cpp
     oscpack
 )
+target_link_libraries( libscide PRIVATE sc_format )
 
 target_link_libraries( SuperCollider libscide)
 

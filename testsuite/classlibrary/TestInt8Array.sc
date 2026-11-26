@@ -1,11 +1,12 @@
+//# VERSION 3.16
 TestInt8Array : UnitTest {
 	test_parseOSC_convertMsg {
-		var msg = [ '/foo', 1, 1.5, 2, 'bar' ];
+		var msg = ['/foo', 1, 1.5, 2, 'bar'];
 		var raw = msg.asRawOSC;
 
 		var msg2 = raw.parseOSC;
 
-		this.assertEquals(msg2, msg);
+		this.assertEquals(msg2, msg)
 	}
 
 
@@ -15,7 +16,7 @@ TestInt8Array : UnitTest {
 
 		var msg2 = raw.parseOSC;
 
-		this.assertEquals(msg2, msg);
+		this.assertEquals(msg2, msg)
 	}
 
 	test_parseOSC_convertMsgWithSpecialArguments {
@@ -25,7 +26,7 @@ TestInt8Array : UnitTest {
 
 		var msg2 = raw.parseOSC;
 
-		this.assertEquals(msg2, msg);
+		this.assertEquals(msg2, msg)
 	}
 
 	test_parseOSC_convertMsgWithEmbeddedArray {
@@ -34,12 +35,12 @@ TestInt8Array : UnitTest {
 
 		var msg2 = raw.parseOSC;
 
-		this.assertEquals(msg2, msg);
+		this.assertEquals(msg2, msg)
 	}
 
 	test_parseOSC_convertEmptyMsg {
 		// strip typetags
-		var msg = [ '/foo' ];
+		var msg = ['/foo'];
 
 		var raw1 = msg.asRawOSC;
 		var raw2 = raw1[0..(raw1.size - 5)]; // without typetags
@@ -51,16 +52,16 @@ TestInt8Array : UnitTest {
 
 		this.assertEquals(msg1, msg);
 		this.assertEquals(msg2, msg);
-		this.assertEquals(msg3, msg);
+		this.assertEquals(msg3, msg)
 	}
 
 	test_parseOSC_convertImmediateBundle {
-		var bundle = [ nil, [ '/foo', 1, 1.5, 2, 'bar' ] ];
+		var bundle = [nil, ['/foo', 1, 1.5, 2, 'bar']];
 		var raw = bundle.asRawOSC;
 
 		var bundle2 = raw.parseOSC;
 
-		this.assertEquals(bundle2, bundle);
+		this.assertEquals(bundle2, bundle)
 	}
 
 	test_parseOSC_convertEmptyImmediateBundle {
@@ -69,13 +70,13 @@ TestInt8Array : UnitTest {
 
 		var bundle2 = raw.parseOSC;
 
-		this.assertEquals(bundle2, bundle);
+		this.assertEquals(bundle2, bundle)
 	}
 
 	test_parseOSC_convertBundleWithTimetag {
 		var timeTags = #[0.0, 10.5];
 		timeTags.do { |t|
-			var bundle = [ t, [ '/foo', 1, 1.5, 2 ] ];
+			var bundle = [t, ['/foo', 1, 1.5, 2]];
 			var raw = bundle.asRawOSC;
 
 			var bundle2 = raw.parseOSC;
@@ -85,7 +86,7 @@ TestInt8Array : UnitTest {
 			// bundle2 is equivalent to bundle.
 			this.assertEquals(bundle2.size, bundle.size); // same size
 			this.assertFloatEquals(bundle2[0], bundle[0]); // same timetag
-			this.assertEquals(bundle2[1], bundle[1]); // same message
+			this.assertEquals(bundle2[1], bundle[1]) // same message
 		}
 	}
 
@@ -97,16 +98,16 @@ TestInt8Array : UnitTest {
 
 		// see test_parseOSC_convertBundleWithTimetag
 		this.assertEquals(bundle2.size, bundle.size);
-		this.assertFloatEquals(bundle2[0], bundle[0]);
+		this.assertFloatEquals(bundle2[0], bundle[0])
 	}
 
 	test_parseOSC_convertBundleWithMultipleElements {
-		var bundle = [ nil, [ '/foo', 1, 1.5, 2 ], [ '/bar', '/baz' ] ];
+		var bundle = [nil, ['/foo', 1, 1.5, 2], ['/bar', '/baz']];
 		var raw = bundle.asRawOSC;
 
 		var bundle2 = raw.parseOSC;
 
-		this.assertEquals(bundle2, bundle);
+		this.assertEquals(bundle2, bundle)
 	}
 
 	test_parseOSC_throwOnBadMsg {
@@ -117,27 +118,27 @@ TestInt8Array : UnitTest {
 
 		this.assertException({
 			// not an OSC message or bundle
-			Int8Array[ 98, 111, 103, 117, 115 ].parseOSC
-		}, PrimitiveFailedError);
+			Int8Array[98, 111, 103, 117, 115].parseOSC
+		}, PrimitiveFailedError)
 	}
 
 	test_parseOSC_throwOnBadMsgSize {
 		this.assertException({
 			// message size is not a multiple of 4
-			Int8Array[47, 102, 111, 111, 0, 0, 0, 0, 44].parseOSC;
-		}, PrimitiveFailedError);
+			Int8Array[47, 102, 111, 111, 0, 0, 0, 0, 44].parseOSC
+		}, PrimitiveFailedError)
 	}
 
 	test_parseOSC_throwOnBadBundleSize {
 		this.assertException({
 			// bundle size is not a multiple of 4
-			Int8Array[35, 98, 117, 110, 100, 108, 101, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0].parseOSC;
+			Int8Array[35, 98, 117, 110, 100, 108, 101, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0].parseOSC
 		}, PrimitiveFailedError);
 
 		this.assertException({
 			// bundle size must be at least 16 bytes (#bundle + timetag)
 			Int8Array[35, 98, 117, 110, 100, 108, 101, 0].parseOSC
-		}, PrimitiveFailedError);
+		}, PrimitiveFailedError)
 
 
 	}
@@ -145,12 +146,12 @@ TestInt8Array : UnitTest {
 	test_parseOSC_throwOnBadBundleElemSize {
 		this.assertException({
 			// bundle element size is zero
-			Int8Array[35, 98, 117, 110, 100, 108, 101, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0].parseOSC;
+			Int8Array[35, 98, 117, 110, 100, 108, 101, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0].parseOSC
 		}, PrimitiveFailedError);
 
 		this.assertException({
 			// bundle element size is not a multiple of 4
-			Int8Array[35, 98, 117, 110, 100, 108, 101, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 27].parseOSC;
-		}, PrimitiveFailedError);
+			Int8Array[35, 98, 117, 110, 100, 108, 101, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 27].parseOSC
+		}, PrimitiveFailedError)
 	}
 }

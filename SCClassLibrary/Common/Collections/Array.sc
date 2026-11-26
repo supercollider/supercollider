@@ -1,6 +1,6 @@
 Array[slot] : ArrayedCollection {
 
-	*with { arg ... args;
+	*with { |... args|
 		// return an array of the arguments given
 		// cool! the interpreter does it for me..
 		^args
@@ -25,108 +25,108 @@ Array[slot] : ArrayedCollection {
 		_ArrayMirror2
 		^this.primitiveFailed
 	}
-	stutter { |n=2|
-		^this.dupEach(n);
+	stutter { |n = 2|
+		^this.dupEach(n)
 	}
-	dupEach { | n=2 |
+	dupEach { |n = 2|
 		_ArrayDupEach
 		^this.primitiveFailed
 	}
-	rotate { arg n=1;
+	rotate { |n = 1|
 		_ArrayRotate
 		^this.primitiveFailed
 	}
-	pyramid { arg patternType=1; // an integer from 1-10
+	pyramid { |patternType = 1| // an integer from 1-10
 		_ArrayPyramid
 		^this.primitiveFailed
 	}
-	pyramidg { arg patternType=1;
+	pyramidg { |patternType = 1|
 		var list = [];
 		var lastIndex = this.lastIndex;
-		if (patternType == 1) {
-			for (0,lastIndex) {|i| list = list.add(this[0..i]) };
+		if(patternType == 1) {
+			for(0, lastIndex) { |i| list = list.add(this[0..i]) };
 			^list
 		};
-		if (patternType == 2) {
-			for (0,lastIndex) {|i| list = list.add(this[lastIndex-i..lastIndex]) };
+		if(patternType == 2) {
+			for(0, lastIndex) { |i| list = list.add(this[lastIndex - i..lastIndex]) };
 			^list
 		};
-		if (patternType == 3) {
-			for (lastIndex,0) {|i| list = list.add(this[0..i]) };
+		if(patternType == 3) {
+			for(lastIndex, 0) { |i| list = list.add(this[0..i]) };
 			^list
 		};
-		if (patternType == 4) {
-			for (0,lastIndex) {|i| list = list.add(this[i..lastIndex]) };
+		if(patternType == 4) {
+			for(0, lastIndex) { |i| list = list.add(this[i..lastIndex]) };
 			^list
 		};
-		if (patternType == 5) {
-			for (0,lastIndex)   {|i| list = list.add(this[0..i]) };
-			for (lastIndex-1,0) {|i| list = list.add(this[0..i]) };
+		if(patternType == 5) {
+			for(0, lastIndex) { |i| list = list.add(this[0..i]) };
+			for(lastIndex - 1, 0) { |i| list = list.add(this[0..i]) };
 			^list
 		};
-		if (patternType == 6) {
-			for (0,lastIndex)   {|i| list = list.add(this[lastIndex-i..lastIndex]) };
-			for (lastIndex-1,0) {|i| list = list.add(this[lastIndex-i..lastIndex]) };
+		if(patternType == 6) {
+			for(0, lastIndex) { |i| list = list.add(this[lastIndex - i..lastIndex]) };
+			for(lastIndex - 1, 0) { |i| list = list.add(this[lastIndex - i..lastIndex]) };
 			^list
 		};
-		if (patternType == 7) {
-			for (lastIndex,0) {|i| list = list.add(this[0..i]) };
-			for (1,lastIndex) {|i| list = list.add(this[0..i]) };
+		if(patternType == 7) {
+			for(lastIndex, 0) { |i| list = list.add(this[0..i]) };
+			for(1, lastIndex) { |i| list = list.add(this[0..i]) };
 			^list
 		};
-		if (patternType == 8) {
-			for (0,lastIndex)   {|i| list = list.add(this[i..lastIndex]) };
-			for (lastIndex-1,0) {|i| list = list.add(this[i..lastIndex]) };
+		if(patternType == 8) {
+			for(0, lastIndex) { |i| list = list.add(this[i..lastIndex]) };
+			for(lastIndex - 1, 0) { |i| list = list.add(this[i..lastIndex]) };
 			^list
 		};
-		if (patternType == 9) {
-			for (0,lastIndex) {|i| list = list.add(this[0..i]) };
-			for (1,lastIndex) {|i| list = list.add(this[i..lastIndex]) };
+		if(patternType == 9) {
+			for(0, lastIndex) { |i| list = list.add(this[0..i]) };
+			for(1, lastIndex) { |i| list = list.add(this[i..lastIndex]) };
 			^list
 		};
-		if (patternType == 10) {
-			for (0,lastIndex)   {|i| list = list.add(this[lastIndex-i..lastIndex]) };
-			for (lastIndex-1,0) {|i| list = list.add(this[0..i]) };
+		if(patternType == 10) {
+			for(0, lastIndex) { |i| list = list.add(this[lastIndex - i..lastIndex]) };
+			for(lastIndex - 1, 0) { |i| list = list.add(this[0..i]) };
 			^list
-		};
+		}
 	}
-	sputter { arg probability=0.25, maxlen = 100;
-		var i=0;
+	sputter { |probability = 0.25, maxlen = 100|
+		var i = 0;
 		var list = Array.new;
 		var size = this.size;
 		probability = 1.0 - probability;
-		while { (i < size) and: { list.size < maxlen }}{
+		while { (i < size) and: { list.size < maxlen } } {
 			list = list.add(this[i]);
-			if (probability.coin) { i = i + 1; }
+			if(probability.coin) { i = i + 1 }
 		};
 		^list
 	}
 
-	lace { arg length;
+	lace { |length|
 		_ArrayLace
 		^this.primitiveFailed
 	}
-	permute { arg nthPermutation;
+	permute { |nthPermutation|
 		_ArrayPermute
 		^this.primitiveFailed
 	}
-	allTuples { arg maxTuples = 16384;
+	allTuples { |maxTuples = 16384|
 		_ArrayAllTuples
 		^this.primitiveFailed
 	}
-	wrapExtend { arg length;
+	wrapExtend { |length|
 		_ArrayExtendWrap
 		^this.primitiveFailed
 	}
-	foldExtend { arg length;
+	foldExtend { |length|
 		_ArrayExtendFold
 		^this.primitiveFailed
 	}
-	clipExtend { arg length;
+	clipExtend { |length|
 		_ArrayExtendLast
 		^this.primitiveFailed
 	}
-	slide { arg windowLength=3, stepSize=1;
+	slide { |windowLength = 3, stepSize = 1|
 		_ArraySlide
 		^this.primitiveFailed
 	}
@@ -140,23 +140,23 @@ Array[slot] : ArrayedCollection {
 	}
 
 	//************** inconsistent argnames, see SequenceableColllection unlace!
-	unlace { arg clumpSize=2, numChan=1, clip=false;
+	unlace { |clumpSize = 2, numChan = 1, clip = false|
 		^if(clip) {
 			super.unlace(clumpSize, numChan, true)
 		} {
 			this.prUnlace(clumpSize, numChan) // clip not yet implemented in primitive
 		}
 	}
-	prUnlace { arg clumpSize=2, numChan=1;
+	prUnlace { |clumpSize = 2, numChan = 1|
 		_ArrayUnlace
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
-	interlace { arg clumpSize=1;
+	interlace { |clumpSize = 1|
 		//_ArrayInterlace
 		//^this.primitiveFailed;
 		Error("interlace was replaced by lace\n").throw
 	}
-	deinterlace { arg clumpSize=2, numChan=1;
+	deinterlace { |clumpSize = 2, numChan = 1|
 		//_ArrayUnlace
 		//^this.primitiveFailed;
 		Error("deinterlace was replaced by unlace\n").throw
@@ -175,17 +175,17 @@ Array[slot] : ArrayedCollection {
 		// given an array of symbols, this returns an array of pairs of symbol, value
 		// from the current environment
 		var result;
-		this.do {|name|
+		this.do { |name|
 			var value = name.envirGet;
-			value !? { result = result.add(name).add(value); };
+			value !? { result = result.add(name).add(value) }
 		};
 		^result
 	}
 
-	shift { arg n, filler = 0.0;
+	shift { |n, filler = 0.0|
 		var fill = Array.fill(n.abs, filler);
 		var remain = this.drop(n.neg);
-		^if (n<0) { remain ++ fill } { fill ++ remain }
+		^if(n < 0) { remain ++ fill } { fill ++ remain }
 	}
 
 	powerset {
@@ -196,117 +196,117 @@ Array[slot] : ArrayedCollection {
 		^Array.fill(powersize, { |i|
 			var elemArr = Array.new;
 			powersOf2.do { |mod, j|
-				if (i div: mod % 2 != 0) {
+				if(i div: mod % 2 != 0) {
 					elemArr = elemArr.add(this[j])
-				};
+				}
 			};
-			elemArr;
-		});
+			elemArr
+		})
 	}
 
 	// UGen support:
 	source {
 		// returns the source UGen from an Array of OutputProxy(s)
 		var elem = this.at(0);
-		if (elem.isKindOf(OutputProxy), {
+		if(elem.isKindOf(OutputProxy)) {
 			^elem.source
-		},{
-			Error("source: Not an Array of OutputProxy(s)\n").throw;
-		});
+		} {
+			Error("source: Not an Array of OutputProxy(s)\n").throw
+		}
 	}
-	asUGenInput { arg for; ^this.collect(_.asUGenInput(for)) }
-	asAudioRateInput { arg for; ^this.collect(_.asAudioRateInput(for)) }
+	asUGenInput { |for| ^this.collect(_.asUGenInput(for)) }
+	asAudioRateInput { |for| ^this.collect(_.asAudioRateInput(for)) }
 	asControlInput { ^this.collect(_.asControlInput) }
 
 	isValidUGenInput { ^true }
 	numChannels { ^this.size }
 
 	// multichannel UGen-poll
-	poll { arg trig = 10, label, trigid = -1;
-		if(label.isNil){ label = this.size.collect{|index| "UGen Array [%]".format(index) } };
+	poll { |trig = 10, label, trigid = -1|
+		if(label.isNil) { label = this.size.collect { |index| "UGen Array [%]".format(index) } };
 		^Poll(trig, this, label, trigid)
 	}
-	dpoll { arg label, run = 1, trigid = -1;
-		if(label.isNil){ label = this.size.collect{|index| "UGen Array [%]".format(index) } };
+	dpoll { |label, run = 1, trigid = -1|
+		if(label.isNil) { label = this.size.collect { |index| "UGen Array [%]".format(index) } };
 		^Dpoll(this, label, run, trigid)
 	}
 
-	envAt { arg time;
+	envAt { |time|
 		_ArrayEnvAt
 		^this.primitiveFailed
 	}
 
-//	// 2D array support
-//	*newClear2D { arg rows=1, cols=1;
-//		^super.fill(rows, { Array.newClear(cols) });
-//	}
-//	*new2D { arg rows=1, cols=1;
-//		^this.newClear2D(rows, cols);
-//	}
-//	at2D { arg row, col; ^this.at(row).at(col) }
-//	put2D { arg row, col, val; ^this.at(row).put(col, val) }
-//	fill2D { arg val;
-//		this.do({ arg row;
-//			row.size.do({ arg i;
-//				row.put(i, val)
-//			})
-//		})
-//	}
+	//	// 2D array support
+	//	*newClear2D { arg rows=1, cols=1;
+	//		^super.fill(rows, { Array.newClear(cols) });
+	//	}
+	//	*new2D { arg rows=1, cols=1;
+	//		^this.newClear2D(rows, cols);
+	//	}
+	//	at2D { arg row, col; ^this.at(row).at(col) }
+	//	put2D { arg row, col, val; ^this.at(row).put(col, val) }
+	//	fill2D { arg val;
+	//		this.do({ arg row;
+	//			row.size.do({ arg i;
+	//				row.put(i, val)
+	//			})
+	//		})
+	//	}
 
 
 	// IdentitySet support
-	atIdentityHash { arg argKey;
+	atIdentityHash { |argKey|
 		_Array_AtIdentityHash
 		^this.primitiveFailed
 	}
 	// IdentityDictionary support
-	atIdentityHashInPairs { arg argKey;
+	atIdentityHashInPairs { |argKey|
 		_Array_AtIdentityHashInPairs
 		^this.primitiveFailed
 	}
 
-	asSpec { ^ControlSpec( *this ) }
+	asSpec { ^ControlSpec(*this) }
 
 	// threads
-	fork { arg join (this.size), clock, quant=0.0, stackSize=64;
+	fork { |join = (this.size), clock, quant = 0.0, stackSize = 64|
 		var count = 0;
 		var cond = Condition({ count >= join });
-		this.do({ arg func;
-			Routine({ arg time;
+		this.do { |func|
+			Routine({ |time|
 				func.value(time);
 				count = count + 1;
-				cond.signal;
-			}).play(clock, quant);
-		});
-		cond.wait;
+				cond.signal
+			}).play(clock, quant)
+		};
+		cond.wait
 	}
 
 	// UGen support
-	madd { arg mul = 1.0, add = 0.0;
-		^MulAdd(this, mul, add);
+	madd { |mul = 1.0, add = 0.0|
+		^MulAdd(this, mul, add)
 	}
 
 	// OSC
 	asRawOSC {
 		_Array_OSCBytes
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	printOn { arg stream;
-		if (stream.atLimit, { ^this });
-		stream << "[" ;
+	printOn { |stream|
+		if(stream.atLimit) { ^this };
+		stream << "[";
 		this.printItemsOn(stream);
-		stream << "]" ;
+		stream << "]"
 	}
-	storeOn { arg stream;
-		if (stream.atLimit, { ^this });
-		stream << "[" ;
+	storeOn { |stream|
+		if(stream.atLimit) { ^this };
+		stream << "[";
 		this.storeItemsOn(stream);
-		stream << "]" ;
+		stream << "]"
 	}
-	prUnarchive { arg slotArray;
-		slotArray.pairsDo {|index, slots| this[index].setSlots(slots) };
-		this.do {|obj| obj.initFromArchive };
+	prUnarchive { |slotArray|
+		slotArray.pairsDo { |index, slots| this[index].setSlots(slots) };
+		this.do { |obj| obj.initFromArchive };
 		^this.first
 	}
 }

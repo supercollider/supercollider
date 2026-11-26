@@ -1,80 +1,80 @@
 Complex : Number {
 	var <>real, <>imag;
 
-	*new { arg real, imag;
-		^super.newCopyArgs(real, imag);
+	*new { |real, imag|
+		^super.newCopyArgs(real, imag)
 	}
 
-	+ { arg aNumber, adverb;
-		if ( aNumber.isNumber, {
+	+ { |aNumber, adverb|
+		if(aNumber.isNumber) {
 			^Complex.new(real + aNumber.real, imag + aNumber.imag)
-		},{
+		} {
 			^aNumber.performBinaryOpOnComplex('+', this, adverb)
-		});
+		}
 	}
-	- { arg aNumber, adverb;
-		if ( aNumber.isNumber, {
+	- { |aNumber, adverb|
+		if(aNumber.isNumber) {
 			^Complex.new(real - aNumber.real, imag - aNumber.imag)
-		},{
+		} {
 			^aNumber.performBinaryOpOnComplex('-', this, adverb)
-		});
+		}
 	}
-	* { arg aNumber, adverb;
-		if ( aNumber.isNumber, {
+	* { |aNumber, adverb|
+		if(aNumber.isNumber) {
 			^Complex.new(
 				// these are implemented as additional message sends so that UGens can
 				// optimize the 6 operations down to 2 UGen instances.
 				(real * aNumber.real) - (imag * aNumber.imag),
 				(real * aNumber.imag) + (imag * aNumber.real)
 			)
-		},{
+		} {
 			^aNumber.performBinaryOpOnComplex('*', this, adverb)
-		});
+		}
 	}
-	/ { arg aNumber, adverb;
+	/ { |aNumber, adverb|
 		var denom, yr, yi;
-		if ( aNumber.isNumber, {
+		if(aNumber.isNumber) {
 			yr = aNumber.real;
 			yi = aNumber.imag;
 			denom = 1.0 / (yr * yr + (yi * yi));
 			^Complex.new(
 				((real * yr) + (imag * yi)) * denom,
 				((imag * yr) - (real * yi)) * denom)
-		},{
+		} {
 			^aNumber.performBinaryOpOnComplex('/', this, adverb)
-		});
+		}
 	}
 
-	< { arg aNumber, adverb;
-		if ( aNumber.isNumber, {
+	< { |aNumber, adverb|
+		if(aNumber.isNumber) {
 			^real < aNumber.real
-		},{
+		} {
 			^aNumber.performBinaryOpOnComplex('<', this, adverb)
-		});
+		}
 	}
 
-	== { arg aNumber, adverb;
-		if ( aNumber.isNumber, {
+	== { |aNumber, adverb|
+		if(aNumber.isNumber) {
 			^real == aNumber.real and: { imag == aNumber.imag }
-		},{
+		} {
 			^aNumber.performBinaryOpOnComplex('==', this, adverb)
-		});
+		}
 	}
 	hash {
 		^real.hash << 1 bitXor: imag.hash
 	}
 
 	// double dispatch
-	performBinaryOpOnSimpleNumber { arg aSelector, aNumber, adverb;
+	performBinaryOpOnSimpleNumber { |aSelector, aNumber, adverb|
 		^aNumber.asComplex.perform(aSelector, this, adverb)
 	}
-	performBinaryOpOnSignal { arg aSelector, aSignal, adverb;
+	performBinaryOpOnSignal { |aSelector, aSignal, adverb|
 		^aSignal.asComplex.perform(aSelector, this)
 	}
-	performBinaryOpOnComplex { arg aSelector, aNumber, adverb;
-		BinaryOpFailureError(this, aSelector, [aNumber, adverb]).throw;
+	performBinaryOpOnComplex { |aSelector, aNumber, adverb|
+		BinaryOpFailureError(this, aSelector, [aNumber, adverb]).throw
 	}
-	performBinaryOpOnUGen { arg aSelector, aUGen, adverb;
+	performBinaryOpOnUGen { |aSelector, aUGen, adverb|
 		^aUGen.asComplex.perform(aSelector, this, adverb)
 	}
 
@@ -88,7 +88,7 @@ Complex : Number {
 		var denom;
 		// undefined cases (no extended exponential numbers defined yet)
 		if(real == inf or: { imag == inf } or: { real == -inf } or: { imag == -inf }) {
-			^Complex(0/0, 0/0)
+			^Complex(0 / 0, 0 / 0)
 		};
 		// otherwise use the standard definition
 		denom = reciprocal(real.squared + imag.squared);
@@ -109,7 +109,7 @@ Complex : Number {
 		)
 	}
 
-	pow { arg aNumber; // return(this ** aNumber)
+	pow { |aNumber| // return(this ** aNumber)
 
 		// Notation below:
 		// t=this, p=power, i=sqrt(-1)
@@ -149,8 +149,8 @@ Complex : Number {
 	phase { ^atan2(imag, real) }
 	theta { ^atan2(imag, real) }
 
-	coerce { arg aNumber; ^aNumber.asComplex }
-	round { arg aNumber = 1.0;
+	coerce { |aNumber| ^aNumber.asComplex }
+	round { |aNumber = 1.0|
 		^Complex(real.round(aNumber), imag.round(aNumber))
 	}
 
@@ -161,7 +161,7 @@ Complex : Number {
 	asPolar { ^Polar.new(this.rho, this.theta) }
 	asPoint { ^Point.new(this.real, this.imag) }
 
-	printOn { arg stream;
-		stream << "Complex(" << real << ", " << imag << ")";
+	printOn { |stream|
+		stream << "Complex(" << real << ", " << imag << ")"
 	}
 }

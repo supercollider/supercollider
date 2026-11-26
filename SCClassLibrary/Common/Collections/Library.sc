@@ -6,350 +6,335 @@ MultiLevelIdentityDictionary : Collection {
 		^super.new.init
 	}
 	init {
-		dictionary = this.newInternalNode;
+		dictionary = this.newInternalNode
 	}
 
 	newInternalNode { ^this.nodeType.new }
 
 	nodeType {
-		^IdentityDictionary;
+		^IdentityDictionary
 	}
 
-	at { arg ... path;
+	at { |... path|
 		^this.atPath(path)
 	}
-	atPathFail { arg path, function;
+	atPathFail { |path, function|
 		var item;
 		item = dictionary;
-		path.do({ arg name;
+		path.do { |name|
 			item = item.at(name);
-			if (item.isNil, { ^function.value });
-		});
+			if(item.isNil) { ^function.value }
+		};
 		^item
 	}
-	atPath { arg path;
+	atPath { |path|
 		^this.atPathFail(path)
 	}
 
-	put { arg ... path;
+	put { |... path|
 		var item;
 		item = path.pop;
-		^this.putAtPath(path, item);
+		^this.putAtPath(path, item)
 	}
-	putAtPath { arg path, val;
+	putAtPath { |path, val|
 		var item, lastName;
 		path = path.copy;
 		lastName = path.pop;
 		item = dictionary;
-		path.do({ arg name;
+		path.do { |name|
 			item = item.atFail(name, {
 				var newitem;
 				newitem = this.newInternalNode;
 				item.put(name, newitem);
 				newitem
-			});
-		});
-		item.put(lastName, val);
+			})
+		};
+		item.put(lastName, val)
 	}
 
-	create { arg ... args;
+	create { |... args|
 		var item;
 		item = dictionary;
-		args.do({ arg name;
+		args.do { |name|
 			item = item.atFail(name, {
 				var newitem;
 				newitem = this.newInternalNode;
 				item.put(name, newitem);
 				newitem
-			});
-		});
+			})
+		}
 	}
 
-	choose { arg ... start;
+	choose { |... start|
 		var item;
-		if(start.isEmpty,{
-			item = dictionary;
-		},{
+		if(start.isEmpty) {
+			item = dictionary
+		} {
 			item = this.at(*start);
-			if(item.isNil,{
-				Error("Library-choose start address not found: " ++ start).throw;
-			});
-		});
-		^this.prChooseFrom(item);
+			if(item.isNil) {
+				Error("Library-choose start address not found: " ++ start).throw
+			}
+		};
+		^this.prChooseFrom(item)
 	}
-	putTree { arg ... items;
-		this.prPutTree([],items)
+	putTree { |... items|
+		this.prPutTree([], items)
 	}
-	postTree { arg obj,tabs=0;
-		if(obj.isNil,{ obj = dictionary });
-		if(obj.isKindOf(this.nodeType),{
+	postTree { |obj, tabs = 0|
+		if(obj.isNil) { obj = dictionary };
+		if(obj.isKindOf(this.nodeType)) {
 			"".postln;
-			obj.keysValuesDo({ arg k,v;
-				tabs.do({ Char.tab.post });
+			obj.keysValuesDo({ |k, v|
+				tabs.do { Char.tab.post };
 				k.post;
 				": ".post;
-				this.postTree(v,tabs + 1)
-			});
-		},{
+				this.postTree(v, tabs + 1)
+			})
+		} {
 			Char.tab.post;
-			obj.asString.postln;
-		})
+			obj.asString.postln
+		}
 	}
-	do { arg function;
-		dictionary.do(function);
+	do { |function|
+		dictionary.do(function)
 	}
-		// remove only the leaf node indicated by path
-		// parent nodes remain in the MLID even if they are empty
-	removeAt {
-		arg ... path;
+	// remove only the leaf node indicated by path
+	// parent nodes remain in the MLID even if they are empty
+	removeAt { |... path|
 		^this.removeAtPath(path)
 	}
-	removeAtPath { arg path;
+	removeAtPath { |path|
 		var item, lastName;
 		path = path.copy;
 		lastName = path.pop;
 		item = dictionary;
-		path.do({ arg name;
+		path.do { |name|
 			item = item.at(name);
-			if (item.isNil, { ^nil });
-		});
-		^item.removeAt(lastName);
+			if(item.isNil) { ^nil }
+		};
+		^item.removeAt(lastName)
 	}
-		// remove the leaf node
-		// as well as parent nodes that become empty after removing the child
-		// slower but leaves less cruft in the tree
+	// remove the leaf node
+	// as well as parent nodes that become empty after removing the child
+	// slower but leaves less cruft in the tree
 	prRemoveAtPathRecursive { |path, i = 0, item|
 		var name = path[i], result;
 		if(item[name].isNil) { ^nil };
-		if(i < (path.size-1)) {
-			result = this.prRemoveAtPathRecursive(path, i+1, item[name]);
-			(item[name].isEmpty).if({ item.removeAt(name) });
+		if(i < (path.size - 1)) {
+			result = this.prRemoveAtPathRecursive(path, i + 1, item[name]);
+			if(item[name].isEmpty) { item.removeAt(name) };
 			^result
 		} {
 			^item.removeAt(name)
-		};
+		}
 	}
-	removeEmptyAtPath { arg path;
+	removeEmptyAtPath { |path|
 		^this.prRemoveAtPathRecursive(path, 0, dictionary)
 	}
-	removeEmptyAt { arg ...path;
-		^this.prRemoveAtPathRecursive(path, 0, dictionary);
+	removeEmptyAt { |...path|
+		^this.prRemoveAtPathRecursive(path, 0, dictionary)
 	}
 
 	//private
-	add { arg assn;
-		this.put(assn.key, assn.value);
+	add { |assn|
+		this.put(assn.key, assn.value)
 	}
 	remove { ^this.shouldNotImplement(thisMethod) }
 	removeFail { ^this.shouldNotImplement(thisMethod) }
 
-	prChooseFrom { arg dict;
+	prChooseFrom { |dict|
 		var item;
 		item = dict.choose;
-		if(item.isKindOf(this.nodeType),{
-			^this.prChooseFrom(item);
-		},{
+		if(item.isKindOf(this.nodeType)) {
+			^this.prChooseFrom(item)
+		} {
 			^item
-		})
+		}
 	}
-	prPutTree { arg keys,items;
-		forBy(0,items.size - 1,2,{ arg i;
-			var key,item;
+	prPutTree { |keys, items|
+		forBy(0, items.size - 1, 2) { |i|
+			var key, item;
 			key = items.at(i);
 			item = items.at(i + 1);
-			if(item.isArray.not,{
-				this.put(* keys ++ [key,item]);
-			},{
+			if(item.isArray.not) {
+				this.put(* keys ++ [key, item])
+			} {
 				//array
-				this.prPutTree(keys ++ [key],item);
-			})
-		});
+				this.prPutTree(keys ++ [key], item)
+			}
+		}
 	}
-	leaves { arg startAt;
-		if(startAt.isNil,{
-			startAt = dictionary;
-		},{
-			startAt = this.at(*startAt);
-		});
-		^this.prNestedValuesFromDict(startAt);
+	leaves { |startAt|
+		if(startAt.isNil) {
+			startAt = dictionary
+		} {
+			startAt = this.at(*startAt)
+		};
+		^this.prNestedValuesFromDict(startAt)
 	}
-	prNestedValuesFromDict { arg dict;
-		^dict.values.collect({ arg thing;
-			if(thing.isKindOf(this.nodeType),{
+	prNestedValuesFromDict { |dict|
+		^dict.values.collect { |thing|
+			if(thing.isKindOf(this.nodeType)) {
 				this.prNestedValuesFromDict(thing)
-			},{
+			} {
 				thing
-			})
-		})
+			}
+		}
 	}
 
 	// Tree-like do methods
-	leafDo {
-		arg func;
+	leafDo { |func|
 
-		this.doLeafDo([], this.dictionary, func);
+		this.doLeafDo([], this.dictionary, func)
 	}
-	leafDoFrom {
-		arg folderpath, func;
+	leafDoFrom { |folderpath, func|
 		var folder;
 
 		folderpath = folderpath.asArray;
 
 		folder = this.atPath(folderpath);
-		if (folder.notNil && folder.isKindOf(this.nodeType), {
-			this.doLeafDo(folderpath, folder, func);
-		});
+		if(folder.notNil && folder.isKindOf(this.nodeType)) {
+			this.doLeafDo(folderpath, folder, func)
+		}
 	}
 
-	doLeafDo {
-		arg path, object, func;
+	doLeafDo { |path, object, func|
 
-		if (object.isKindOf(this.nodeType), {
-			object.keysValuesDo({
-				arg name, subobject;
+		if(object.isKindOf(this.nodeType)) {
+			object.keysValuesDo({ |name, subobject|
 				this.doLeafDo(path ++ [name], subobject, func)
-			});
-		}, {
-			func.value(path, object);
-		})
+			})
+		} {
+			func.value(path, object)
+		}
 	}
 
-	treeDo {
-		arg branchFunc, leafFunc, argument0, postBranchFunc;
+	treeDo { |branchFunc, leafFunc, argument0, postBranchFunc|
 		var result;
 
 		result = this.doTreeDo([], this.dictionary, branchFunc, leafFunc, argument0, postBranchFunc);
-		^result;
+		^result
 	}
-	treeDoFrom {
-		arg folderpath, branchFunc, leafFunc, argument0, postBranchFunc;
+	treeDoFrom { |folderpath, branchFunc, leafFunc, argument0, postBranchFunc|
 		var folder, result;
 
 		folderpath = folderpath.asArray;
 
 		folder = this.atPath(folderpath);
-		if (folder.isKindOf(this.nodeType), {
-			result = this.doTreeDo(folderpath, folder, branchFunc, leafFunc, argument0, postBranchFunc);
-		}, {
-			result = nil;
-		});
+		if(folder.isKindOf(this.nodeType)) {
+			result = this.doTreeDo(folderpath, folder, branchFunc, leafFunc, argument0, postBranchFunc)
+		} {
+			result = nil
+		};
 
-		^result;
+		^result
 
 	}
-	doTreeDo {
-		arg path, object, branchFunc, leafFunc, argument, postBranchFunc;
+	doTreeDo { |path, object, branchFunc, leafFunc, argument, postBranchFunc|
 		var result;
 
-		if (object.isKindOf(this.nodeType), {
-			if (branchFunc.notNil, {
-				result = branchFunc.value(path, object, argument);
-			}, {
-				result = argument;
-			});
-			object.keysValuesDo({
-				arg name, subobject;
+		if(object.isKindOf(this.nodeType)) {
+			if(branchFunc.notNil) {
+				result = branchFunc.value(path, object, argument)
+			} {
+				result = argument
+			};
+			object.keysValuesDo({ |name, subobject|
 				this.doTreeDo(path ++ [name], subobject, branchFunc, leafFunc, result, postBranchFunc)
 			});
-			if (postBranchFunc.notNil, {
-				result = postBranchFunc.value(path, object, result);
-			});
+			if(postBranchFunc.notNil) {
+				result = postBranchFunc.value(path, object, result)
+			};
 			^result
-		}, {
-			leafFunc.value(path, object, argument);
-		})
+		} {
+			leafFunc.value(path, object, argument)
+		}
 	}
 
-	treeCollect { arg branchFunc, leafFunc, postBranchFunc;
+	treeCollect { |branchFunc, leafFunc, postBranchFunc|
 		var result;
 		result = this.doTreeCollect([], this.dictionary, branchFunc, leafFunc, postBranchFunc);
-		^result;
+		^result
 	}
-	doTreeCollect { arg path, object, branchFunc, leafFunc, postBranchFunc;
+	doTreeCollect { |path, object, branchFunc, leafFunc, postBranchFunc|
 		var confirm, collection, result;
 
-		if (object.isKindOf(this.nodeType), {
-			if (branchFunc.notNil, {
-				#confirm, result = branchFunc.value(path, object);
-			}, {
+		if(object.isKindOf(this.nodeType)) {
+			if(branchFunc.notNil) {
+				#confirm, result = branchFunc.value(path, object)
+			} {
 				#confirm, result = [true, nil]
-			});
-			if (confirm, {
+			};
+			if(confirm) {
 				collection = [];
-				object.keysValuesDo({
-					arg name, subobject;
+				object.keysValuesDo({ |name, subobject|
 					collection = collection.add(this.doTreeCollect(path ++ [name], subobject,
-						branchFunc, leafFunc, postBranchFunc));
+						branchFunc, leafFunc, postBranchFunc))
 				});
-				collection.removeAllSuchThat({arg item; item.isNil});
-				if (postBranchFunc.notNil, {
-					result = postBranchFunc.value(path, object, collection);
-				}, {
-					result = nil;
-				});
+				collection.removeAllSuchThat({ |item| item.isNil });
+				if(postBranchFunc.notNil) {
+					result = postBranchFunc.value(path, object, collection)
+				} {
+					result = nil
+				};
 				^result
-			}, {
+			} {
 				^nil
-			});
-		}, {
+			}
+		} {
 			^leafFunc.value(path, object)
-		});
+		}
 	}
 
-	sortedTreeDo {
-		arg branchFunc, leafFunc, argument0, postBranchFunc, sortFunc;
+	sortedTreeDo { |branchFunc, leafFunc, argument0, postBranchFunc, sortFunc|
 		var result;
 
 		result = this.doSortedTreeDo([], this.dictionary, branchFunc, leafFunc, argument0, postBranchFunc, sortFunc);
-		^result;
+		^result
 	}
-	doSortedTreeDo {
-		arg path, object, branchFunc, leafFunc, argument, postBranchFunc, sortFunc;
+	doSortedTreeDo { |path, object, branchFunc, leafFunc, argument, postBranchFunc, sortFunc|
 		var result;
 
-		sortFunc = sortFunc ? {arg a, b; a < b};
+		sortFunc = sortFunc ? { |a, b| a < b };
 
-		if (object.isKindOf(this.nodeType), {
-			if (branchFunc.notNil, {
-				result = branchFunc.value(path, object, argument);
-			}, {
-				result = argument;
-			});
-			object.sortedKeysValuesDo({
-				arg name, subobject;
+		if(object.isKindOf(this.nodeType)) {
+			if(branchFunc.notNil) {
+				result = branchFunc.value(path, object, argument)
+			} {
+				result = argument
+			};
+			object.sortedKeysValuesDo({ |name, subobject|
 				this.doSortedTreeDo(path ++ [name], subobject, branchFunc, leafFunc, result, postBranchFunc, sortFunc)
 			});
-			if (postBranchFunc.notNil, {
-				postBranchFunc.value(path, object, result);
-			});
+			if(postBranchFunc.notNil) {
+				postBranchFunc.value(path, object, result)
+			};
 			^result
-		}, {
-			leafFunc.value(path, object, argument);
-		})
+		} {
+			leafFunc.value(path, object, argument)
+		}
 	}
 
-	leafDoInBranch {
-		arg folderpath, function;
+	leafDoInBranch { |folderpath, function|
 		var path, folder;
 
 		folderpath = folderpath.asArray;
 
 		folder = this.atPath(folderpath);
-		if (folder.notNil && folder.isKindOf(this.nodeType), {
-			folder.keysValuesDo({
-				arg name, object;
-				if (object.isKindOf(this.nodeType).not, {
-					function.value(folderpath ++ [name], object);
-				});
-			});
-		});
+		if(folder.notNil && folder.isKindOf(this.nodeType)) {
+			folder.keysValuesDo({ |name, object|
+				if(object.isKindOf(this.nodeType).not) {
+					function.value(folderpath ++ [name], object)
+				}
+			})
+		}
 	}
 
-	storeOn { arg stream;
+	storeOn { |stream|
 		stream << this.class.name << "[" <<<* dictionary << "]"
 	}
 
-	printOn { arg stream;
+	printOn { |stream|
 		stream << this.class.name << "[" <<* dictionary << "]"
 	}
 }
@@ -358,31 +343,31 @@ MultiLevelIdentityDictionary : Collection {
 
 LibraryBase : MultiLevelIdentityDictionary {
 	*global {
-		^this.subclassResponsibility(thisMethod);
+		^this.subclassResponsibility(thisMethod)
 	}
-	*global_ { arg obj;
-		^this.subclassResponsibility(thisMethod);
+	*global_ { |obj|
+		^this.subclassResponsibility(thisMethod)
 	}
 
 
 	*clear {
-		this.global = this.new;
+		this.global = this.new
 	}
-	*at { arg ... args;
-		^this.global.at(*args);
-	}
-
-	*atList { arg args;
+	*at { |... args|
 		^this.global.at(*args)
 	}
-	*putList { arg args;
+
+	*atList { |args|
+		^this.global.at(*args)
+	}
+	*putList { |args|
 		^this.global.put(*args)
 	}
 
-	*put { arg ... args;
+	*put { |... args|
 		^this.global.put(*args)
 	}
-	*create { arg ... args;
+	*create { |... args|
 		^this.global.create(*args)
 	}
 
@@ -396,10 +381,10 @@ Library : LibraryBase {
 	classvar global;
 
 	*global { ^global }
-	*global_ { arg obj; global = obj; }
+	*global_ { |obj| global = obj }
 
 	*initClass {
-		global = this.new;
+		global = this.new
 	}
 }
 
@@ -408,30 +393,30 @@ Archive : LibraryBase {
 	classvar <>archiveDir;
 
 	*global { ^global }
-	*global_ { arg obj; global = obj; }
+	*global_ { |obj| global = obj }
 
 	*initClass {
 		global = this.new;
-		archiveDir = Platform.userAppSupportDir;
+		archiveDir = Platform.userAppSupportDir
 	}
 
-	*read { arg filename;
+	*read { |filename|
 		var expandedFileName;
 		expandedFileName = filename ?? (archiveDir ++ "/archive.sctxar");
-		if (File.exists(expandedFileName)) {
-			if (expandedFileName.endsWith(".scar")) {
-				global = this.readBinaryArchive(expandedFileName);
-			}{
-				global = this.readArchive(expandedFileName);
+		if(File.exists(expandedFileName)) {
+			if(expandedFileName.endsWith(".scar")) {
+				global = this.readBinaryArchive(expandedFileName)
+			} {
+				global = this.readArchive(expandedFileName)
 			};
-			if (global.isNil) {
-				global = this.new;
-			};
+			if(global.isNil) {
+				global = this.new
+			}
 		}
 	}
-	*write { arg filename;
+	*write { |filename|
 		var expandedFileName;
 		expandedFileName = filename ?? (archiveDir ++ "/archive.sctxar");
-		global.writeArchive(expandedFileName);
+		global.writeArchive(expandedFileName)
 	}
 }

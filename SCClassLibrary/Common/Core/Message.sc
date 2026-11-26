@@ -1,11 +1,11 @@
 Message {
 	var <>receiver, <>selector, <>args;
 
-	*new { arg receiver, selector, args;
-		^super.newCopyArgs(receiver, selector, args);
+	*new { |receiver, selector, args|
+		^super.newCopyArgs(receiver, selector, args)
 	}
-	value { arg ... moreArgs;
-		^receiver.performList(selector, args ++ moreArgs);
+	value { |... moreArgs|
+		^receiver.performList(selector, args ++ moreArgs)
 	}
 	storeArgs { ^[receiver, selector, args] }
 }
@@ -13,11 +13,11 @@ Message {
 MethodQuote {
 	var <>selector;
 
-	*new { arg selector;
-		^super.newCopyArgs(selector);
+	*new { |selector|
+		^super.newCopyArgs(selector)
 	}
-	value { arg receiver ... args;
-		^receiver.performList(selector, args);
+	value { |receiver ... args|
+		^receiver.performList(selector, args)
 	}
 	storeArgs { ^[selector] }
 }

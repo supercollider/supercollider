@@ -1,72 +1,72 @@
 TopScrollWidget : ScrollCanvas {
 	var <>win;
-	doDrawFunc { win.drawFunc.value(win); }
+	doDrawFunc { win.drawFunc.value(win) }
 }
 
 ScrollTopView : ScrollView {
 	var >window;
 
-	*qtClass {^'QcScrollWindow'}
+	*qtClass { ^'QcScrollWindow' }
 
-	*new { arg win, name, bounds, resizable, border;
+	*new { |win, name, bounds, resizable, border|
 		^super.newCustom([name, bounds, resizable, border])
-		.initScrollTopView(win);
+		.initScrollTopView(win)
 	}
 
-	initScrollTopView { arg win;
+	initScrollTopView { |win|
 		var cnv;
 		window = win;
 		// NOTE: The canvas widget must not be a View, so that asking its
 		// children for parent will skip it and hit this view instead.
 		cnv = TopScrollWidget.new;
 		cnv.win = win;
-		this.canvas = cnv;
+		this.canvas = cnv
 	}
 
 	bounds {
 		var r;
-		r = this.getProperty( \geometry );
-		^r.moveTo(0,0);
+		r = this.getProperty(\geometry);
+		^r.moveTo(0, 0)
 	}
 
-	bounds_ { arg rect;
+	bounds_ { |rect|
 		var rNew = rect.asRect;
-		var rOld = this.getProperty( \geometry );
-		this.setProperty( \geometry, rOld.resizeTo( rNew.width, rNew.height ) );
+		var rOld = this.getProperty(\geometry);
+		this.setProperty(\geometry, rOld.resizeTo(rNew.width, rNew.height))
 	}
 
-	drawingEnabled_ { arg bool; canvas.setProperty( \drawingEnabled, bool ); }
+	drawingEnabled_ { |bool| canvas.setProperty(\drawingEnabled, bool) }
 
-	findWindow { ^window; }
+	findWindow { ^window }
 }
 
 TopView : View {
 	var >window;
 
-	*qtClass {^'QcWindow'}
+	*qtClass { ^'QcWindow' }
 
-	*new { arg win, name, bounds, resizable, border;
+	*new { |win, name, bounds, resizable, border|
 		^super.newCustom([name, bounds, resizable, border])
-		.initTopView(win);
+		.initTopView(win)
 	}
 
-	initTopView { arg win; window = win; }
+	initTopView { |win| window = win }
 
 	bounds {
 		var r;
-		r = this.getProperty( \geometry );
-		^r.moveTo(0,0);
+		r = this.getProperty(\geometry);
+		^r.moveTo(0, 0)
 	}
 
-	bounds_ { arg rect;
+	bounds_ { |rect|
 		var rNew = rect.asRect;
-		var rOld = this.getProperty( \geometry );
-		this.setProperty( \geometry, rOld.resizeTo( rNew.width, rNew.height ) );
+		var rOld = this.getProperty(\geometry);
+		this.setProperty(\geometry, rOld.resizeTo(rNew.width, rNew.height))
 	}
 
-	drawingEnabled_ { arg bool; this.setProperty( \drawingEnabled, bool ); }
+	drawingEnabled_ { |bool| this.setProperty(\drawingEnabled, bool) }
 
-	findWindow { ^window; }
+	findWindow { ^window }
 
 	doDrawFunc { window.drawFunc.value(window) }
 }
@@ -78,21 +78,21 @@ Window {
 	var <view;
 
 	//TODO
-	var <>acceptsClickThrough=false;
+	var <>acceptsClickThrough = false;
 	var <currentSheet;
 
 	*screenBounds {
 		_QWindow_ScreenBounds
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
 	*availableBounds {
 		_QWindow_AvailableGeometry
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
 	*closeAll {
-		allWindows.copy.do { |win| win.close };
+		allWindows.copy.do { |win| win.close }
 	}
 
 	*lowestPosition {
@@ -102,79 +102,79 @@ Window {
 	/* NOTE:
 	- all args have to be of correct type for Widget constructor to match!
 	*/
-	*new { arg name="",
-		bounds,
-		resizable = true,
-		border = true,
-		deprecatedServerArgument,
-		scroll = false;
+	*new { |name = "",
+			bounds,
+			resizable = true,
+			border = true,
+			deprecatedServerArgument,
+			scroll = false|
 
 		if(deprecatedServerArgument.notNil) {
 			// see https://github.com/supercollider/supercollider/pull/5312#discussion_r553546303
-			"this argument is deprecated, it was kept for SwingOSC compatibility, but will be removed".warn;
+			"this argument is deprecated, it was kept for SwingOSC compatibility, but will be removed".warn
 		};
 
-		if( bounds.isNil ) {
-			bounds = Rect(0,0,400,400).center_( Window.availableBounds.center );
-		}{
-			bounds = Window.flipY( bounds.asRect );
+		if(bounds.isNil) {
+			bounds = Rect(0, 0, 400, 400).center_(Window.availableBounds.center)
+		} {
+			bounds = Window.flipY(bounds.asRect)
 		};
-		^super.new.initWindow( name, bounds, resizable, border, scroll );
+		^super.new.initWindow(name, bounds, resizable, border, scroll)
 	}
 
 	//------------------------ Window specific  -----------------------//
 
-	initWindow { arg name, bounds, resize, border, scroll;
-		if( scroll )
-		{ view = ScrollTopView.new(this,name,bounds,resize,border); }
-		{ view = TopView.new(this,name,bounds,resize,border); };
+	initWindow { |name, bounds, resize, border, scroll|
+		if(scroll)
+			{ view = ScrollTopView.new(this, name, bounds, resize, border) }
+			{ view = TopView.new(this, name, bounds, resize, border) };
 
 		// set some necessary object vars
 		resizable = resize == true;
 
 		// allWindows array management
-		Window.addWindow( this );
-		view.connectFunction( 'destroyed()', { Window.removeWindow(this); }, false );
+		Window.addWindow(this);
+		view.connectFunction('destroyed()', { Window.removeWindow(this) }, false);
 
 		// action to call whenever a window is created
-		Window.initAction.value( this );
+		Window.initAction.value(this)
 	}
 
 	asView {
-		^view;
+		^view
 	}
 
-	bounds_ { arg aRect;
-		var r = Window.flipY( aRect.asRect );
-		view.setProperty( \geometry, r );
-		if( resizable.not ) { view.fixedSize = r.size }
+	bounds_ { |aRect|
+		var r = Window.flipY(aRect.asRect);
+		view.setProperty(\geometry, r);
+		if(resizable.not) { view.fixedSize = r.size }
 	}
 
 	bounds {
-		^Window.flipY( view.getProperty( \geometry ) );
+		^Window.flipY(view.getProperty(\geometry))
 	}
 
-	setInnerExtent { arg w, h;
+	setInnerExtent { |w, h|
 		// bypass this.bounds, to avoid Window flipping the y coordinate
-		var r = view.getProperty(\geometry );
-		view.setProperty(\geometry, r.resizeTo( w, h ); )
+		var r = view.getProperty(\geometry);
+		view.setProperty(\geometry, r.resizeTo(w, h);)
 	}
 
-	background { ^view.background; }
+	background { ^view.background }
 
-	background_ { arg aColor; view.background = aColor; }
+	background_ { |aColor| view.background = aColor }
 
-	drawFunc_ { arg aFunction;
+	drawFunc_ { |aFunction|
 		view.drawingEnabled = aFunction.notNil;
-		drawFunc = aFunction;
+		drawFunc = aFunction
 	}
 
-	setTopLeftBounds{ arg rect, menuSpacer=45;
-		view.setProperty( \geometry, rect.moveBy( 0, menuSpacer ) );
+	setTopLeftBounds{ |rect, menuSpacer = 45|
+		view.setProperty(\geometry, rect.moveBy(0, menuSpacer))
 	}
 
 	onClose { ^view.onClose }
-	onClose_ { arg func; view.onClose_(func) }
+	onClose_ { |func| view.onClose_(func) }
 
 	moveToBottom { |margin = 0|
 		this.bounds = this.bounds.moveTo(
@@ -184,53 +184,53 @@ Window {
 	}
 
 	// TODO
-	addToOnClose{ arg function; }
-	removeFromOnClose{ arg function; }
+	addToOnClose{ |function| }
+	removeFromOnClose{ |function| }
 
 	//------------------- simply redirected to View ---------------------//
 
 	sizeHint { ^view.sizeHint }
 	minSizeHint { ^view.minSizeHint }
 	resizeToHint { ^view.resizeToHint }
-	alpha_ { arg value; view.alpha_(value); }
-	addFlowLayout { arg margin, gap; ^view.addFlowLayout( margin, gap ); }
-	close { view.close; }
-	isClosed { ^view.isClosed; }
-	visible { ^view.visible; }
-	visible_ { arg boolean; view.visible_(boolean); }
-	front { view.front; }
-	fullScreen { view.fullScreen; }
-	endFullScreen { view.endFullScreen; }
-	minimize { view.minimize; }
-	unminimize { view.unminimize; }
-	name { ^view.name; }
-	name_ { arg string; view.name_(string); }
-	refresh { view.refresh; }
-	userCanClose { ^view.userCanClose; }
-	userCanClose_ { arg boolean; view.userCanClose_( boolean ); }
-	alwaysOnTop { ^view.alwaysOnTop; }
-	alwaysOnTop_ { arg boolean; view.alwaysOnTop_(boolean); }
-	layout { ^view.layout; }
-	layout_ { arg layout; view.layout_(layout); }
-	toFrontAction_ { arg action; view.toFrontAction_(action) }
+	alpha_ { |value| view.alpha_(value) }
+	addFlowLayout { |margin, gap| ^view.addFlowLayout(margin, gap) }
+	close { view.close }
+	isClosed { ^view.isClosed }
+	visible { ^view.visible }
+	visible_ { |boolean| view.visible_(boolean) }
+	front { view.front }
+	fullScreen { view.fullScreen }
+	endFullScreen { view.endFullScreen }
+	minimize { view.minimize }
+	unminimize { view.unminimize }
+	name { ^view.name }
+	name_ { |string| view.name_(string) }
+	refresh { view.refresh }
+	userCanClose { ^view.userCanClose }
+	userCanClose_ { |boolean| view.userCanClose_(boolean) }
+	alwaysOnTop { ^view.alwaysOnTop }
+	alwaysOnTop_ { |boolean| view.alwaysOnTop_(boolean) }
+	layout { ^view.layout }
+	layout_ { |layout| view.layout_(layout) }
+	toFrontAction_ { |action| view.toFrontAction_(action) }
 	toFrontAction { ^view.toFrontAction }
-	endFrontAction_ { arg action; view.endFrontAction_(action) }
+	endFrontAction_ { |action| view.endFrontAction_(action) }
 	endFrontAction { ^view.endFrontAction }
 	acceptsMouseOver { ^view.acceptsMouseOver }
-	acceptsMouseOver_ { arg flag; view.acceptsMouseOver_(flag) }
+	acceptsMouseOver_ { |flag| view.acceptsMouseOver_(flag) }
 
 	// ---------------------- private ------------------------------------
 
-	*flipY { arg aRect;
+	*flipY { |aRect|
 		var flippedTop = Window.screenBounds.height - aRect.top - aRect.height;
-		^Rect( aRect.left, flippedTop, aRect.width, aRect.height );
+		^Rect(aRect.left, flippedTop, aRect.width, aRect.height)
 	}
 
-	*addWindow { arg window;
-		allWindows = allWindows.add( window );
+	*addWindow { |window|
+		allWindows = allWindows.add(window)
 	}
 
-	*removeWindow { arg window;
-		allWindows.remove( window );
+	*removeWindow { |window|
+		allWindows.remove(window)
 	}
 }

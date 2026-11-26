@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestLinkClock : UnitTest {
 
 	classvar precision = 1e-04;
@@ -8,12 +9,11 @@ TestLinkClock : UnitTest {
 	// Test Plan - TEMPO-1
 	// Tempo changes should be transmitted between connected apps.
 	test_settingTempo_transmitsToLinkPeers {
-		var clock1, clock2;
 		var semaphore = Semaphore(0),
-		controller;
+			controller;
 
-		clock1 = LinkClock.new;
-		clock2 = LinkClock.new;
+		var clock1 = LinkClock.new;
+		var clock2 = LinkClock.new;
 		controller = SimpleController(clock2).put(\tempo, {
 			controller.remove;
 			semaphore.signal
@@ -27,34 +27,33 @@ TestLinkClock : UnitTest {
 		clock2.sched(2, { semaphore.signal });
 
 		semaphore.wait;
-		this.assertFloatEquals( clock2.tempo, clock1.tempo,
+		this.assertFloatEquals(clock2.tempo, clock1.tempo,
 			"tempo change should affect all link apps",
 			precision
 		);
 
 		clock1.stop;
-		clock2.stop;
+		clock2.stop
 	}
 
 	// Test Plan - TEMPO-2
 	// Opening an app with Link enabled should not change the tempo of an existing Link session.
 	test_newLinkClock_shouldNotChangeLinkTempo {
-		var clock1, clock2, sessionTempo;
 
-		clock1 = LinkClock(2.5);
+		var clock1 = LinkClock(2.5);
 		0.5.wait;
-		sessionTempo = clock1.tempo;
+		var sessionTempo = clock1.tempo;
 
-		clock2 = LinkClock(1);
+		var clock2 = LinkClock(1);
 		0.5.wait;
 
-		this.assertFloatEquals( clock2.tempo, sessionTempo,
+		this.assertFloatEquals(clock2.tempo, sessionTempo,
 			"creating a new clock should not affect existing link session",
 			precision
 		);
 
 		clock1.stop;
-		clock2.stop;
+		clock2.stop
 	}
 
 	// Test Plan - TEMPO-3
@@ -64,20 +63,19 @@ TestLinkClock : UnitTest {
 	// Test Plan - TEMPO-4
 	// Tempo range handling.
 	test_settingTempo_maintainsSyncOver20To999BPM {
-		var clock1, clock2;
-		var semaphore = Semaphore(0), controller;
+		var semaphore = Semaphore(0);
 		var phase1 = Array.newClear(2),
 			phase2 = Array.newClear(2);
 
 		// initially, phase should disagree -- Link should bring into phase
-		clock1 = LinkClock(1).beats_(20);
-		clock2 = LinkClock(1).beats_(21);
-		controller = SimpleController(clock2).put(\tempo, {
+		var clock1 = LinkClock(1).beats_(20);
+		var clock2 = LinkClock(1).beats_(21);
+		var controller = SimpleController(clock2).put(\tempo, {
 			semaphore.signal
 		});
 
 		// test sync at 20 bpm
-		clock1.tempo = 20/60;
+		clock1.tempo = 20 / 60;
 		clock2.sched(2, { semaphore.signal });
 		semaphore.wait;
 
@@ -85,41 +83,40 @@ TestLinkClock : UnitTest {
 		phase2[0] = clock2.beatInBar;
 
 		// test sync at 999 bpm
-		clock1.tempo = 999/60;
+		clock1.tempo = 999 / 60;
 		clock2.sched(2, { semaphore.signal });
 		semaphore.wait;
 
 		phase1[1] = clock1.beatInBar;
 		phase2[1] = clock2.beatInBar;
 
-		this.assertArrayFloatEquals( phase1, phase2,
+		this.assertArrayFloatEquals(phase1, phase2,
 			"link clock should stay in sync with its tempo within the range 20-999 bpm",
 			precision
 		);
 
 		clock1.stop;
 		clock2.stop;
-		controller.remove;
+		controller.remove
 	}
 
 	// Test Plan - TEMPO-5
 	// Enabling Link does not change app's tempo if there is no Link session to join.
 	test_newLinkClock_usesOwnTempoIfNoSession {
-		var clock, tempo;
 
-		tempo = 5;
-		clock = LinkClock(tempo);
+		var tempo = 5;
+		var clock = LinkClock(tempo);
 		0.5.wait;
 
-		this.ifAsserts( clock.numPeers == 0,
+		this.ifAsserts(clock.numPeers == 0,
 			"no existing session",
 			{
-				this.assertEquals( clock.tempo, tempo,
+				this.assertEquals(clock.tempo, tempo,
 					"tempo shouldn't change if there is no session to join"
 				)
 			},
 			{
-				this.assert(false, "a link session already exists, stop every link application and run the test again");
+				this.assert(false, "a link session already exists, stop every link application and run the test again")
 			}
 		);
 
@@ -129,47 +126,45 @@ TestLinkClock : UnitTest {
 	// Test Plan - BEATTIME-1
 	// Enabling Link does not change app's beat time if there is no Link session to join.
 	test_newLinkClock_usesOwnBeatsIfNoSession {
-		var clock, beats, secs;
 
-		clock = LinkClock(1).beats_(10);
-		secs = thisThread.clock.seconds;
-		beats = clock.secs2beats(secs);
+		var clock = LinkClock(1).beats_(10);
+		var secs = thisThread.clock.seconds;
+		var beats = clock.secs2beats(secs);
 		0.4.wait;
 
-		this.ifAsserts( clock.numPeers == 0,
+		this.ifAsserts(clock.numPeers == 0,
 			"no existing session",
 			{
-				this.assertFloatEquals( clock.secs2beats(secs), beats,
+				this.assertFloatEquals(clock.secs2beats(secs), beats,
 					"no beat jump should occcur if there is no session to join",
 					precision
 				)
 			},
 			{
-				this.assert(false, "a link session already exists, stop every link application and run the test again");
+				this.assert(false, "a link session already exists, stop every link application and run the test again")
 			}
 		);
 
-		clock.stop;
+		clock.stop
 	}
 
 	// Test Plan - BEATTIME-2
 	// App's beat time does not change if another participant joins its session.
 	test_newLinkClock_syncsBeatsToExistingLinkClock {
-		var clock1, clock2;
 		var beats;
 
-		clock1 = LinkClock(1);
+		var clock1 = LinkClock(1);
 		0.2.wait;
 
 		beats = clock1.beats;
-		clock2 = LinkClock(1);
+		var clock2 = LinkClock(1);
 
-		this.assertEquals( clock1.beats, beats,
+		this.assertEquals(clock1.beats, beats,
 			"first clock's beats should not change when a participant joins its session"
 		);
 
 		clock1.stop;
-		clock2.stop;
+		clock2.stop
 	}
 
 	// test starting a LinkClock from a TempoClock and rescheduling all its tasks
@@ -181,20 +176,20 @@ TestLinkClock : UnitTest {
 		var semaphore = Semaphore(0);
 
 		tempoClock.sched(0.2, {
-			this.assertEquals( thisThread.clock, linkClock,
+			this.assertEquals(thisThread.clock, linkClock,
 				"starting a LinkClock with newFromTempoClock should reschedule functions"
 			);
-			this.assertEquals( routine.clock, linkClock,
+			this.assertEquals(routine.clock, linkClock,
 				"starting a LinkClock with newFromTempoClock should reschedule routines"
 			);
-			this.assertEquals( streamplayer.clock, linkClock,
+			this.assertEquals(streamplayer.clock, linkClock,
 				"starting a LinkClock with newFromTempoClock should reschedule stream players"
 			);
 
 			thisThread.clock.stop;
-			semaphore.signal;
+			semaphore.signal
 		});
-		routine = { loop{ 0.01.wait } }.fork(tempoClock);
+		routine = { loop { 0.01.wait } }.fork(tempoClock);
 		// the test here is about function/routine/pattern scheduling
 		// event activity shouldn't be a factor, so, \rest
 		streamplayer = Pbind(\type, \rest, \dur, 0.02).play(tempoClock);
@@ -206,13 +201,9 @@ TestLinkClock : UnitTest {
 	}
 
 	test_LinkClock_meter_change_beats_keep_continuity {
-		var clock1, clock2,
-		tempo = 12, beatDurThresh = 0.4 / tempo,
-		secList1 = List.new, secList2 = List.new,
-		trials = 20,
-		cond = Condition({ secList1.size == trials and: { secList2.size == trials } });
+		var clock2, tempo = 12, beatDurThresh = 0.4 / tempo, secList1 = List.new, secList2 = List.new, trials = 20, cond = Condition({ secList1.size == trials and: { secList2.size == trials } });
 
-		clock1 = LinkClock(tempo);
+		var clock1 = LinkClock(tempo);
 		{
 			// offset clock starts
 			// this is necessary because the issue manifests
@@ -224,16 +215,16 @@ TestLinkClock : UnitTest {
 			{
 				trials.do {
 					secList2.add(clock2.seconds);
-					1.0.wait;
+					1.0.wait
 				};
-				cond.signal;
+				cond.signal
 			}.fork(clock2);
 			trials.do {
 				secList1.add(clock1.seconds);
 				clock1.setMeterAtBeat(rrand(2, 4), clock1.beats);
-				1.0.wait;
+				1.0.wait
 			};
-			cond.signal;
+			cond.signal
 		}.fork(clock1);
 		cond.wait;
 		this.ifAsserts(
@@ -247,26 +238,24 @@ TestLinkClock : UnitTest {
 				)
 			},
 			{
-				this.assert(false, "Make sure no other LinkClocks are running while testing");
+				this.assert(false, "Make sure no other LinkClocks are running while testing")
 			}
 		);
 		clock1.stop;
-		clock2.stop;
+		clock2.stop
 	}
 
 	// this test uses "magic number" wait statements
 	// because it takes a little time for a new LinkClock to stabilize
 	// and we have no signal to know when it's ready
 	test_LinkClock_sync_meter_aligns_barlines {
-		var numTrials = 5,
-		refClock, testClock, successCount = 0, resp,
-		cond = Condition.new, outerCond = Condition.new;
+		var numTrials = 5, testClock, successCount = 0, resp, cond = Condition.new, outerCond = Condition.new;
 		// empirically, this tempo hits a number of different offset points
 		// also for this test to be meaningful, the clocks' quantum values must differ
-		refClock = LinkClock(3).quantum_(5);
+		var refClock = LinkClock(3).quantum_(5);
 		refClock.schedAbs(1, Routine {
 			if(refClock.numPeers > 0) {
-				this.assert(false, "Make sure no other LinkClocks are running while testing");
+				this.assert(false, "Make sure no other LinkClocks are running while testing")
 			} {
 				// reset baseBarBeat, but keep same meter
 				// (so that testClock's sync attempts will not post)
@@ -275,7 +264,7 @@ TestLinkClock : UnitTest {
 				// unavoidable delay
 				resp = SimpleController(refClock).put(\resynced, {
 					resp.remove;
-					cond.unhang;
+					cond.unhang
 				});
 				refClock.enableMeterSync;
 				cond.hang;
@@ -283,37 +272,37 @@ TestLinkClock : UnitTest {
 					testClock = LinkClock.new.enableMeterSync;
 					resp = SimpleController(testClock).put(\meter, {
 						resp.remove;
-						cond.unhang;
+						cond.unhang
 					});
 					cond.hang;
 					testClock.getMeterSync.queryMeter { |replies|
 						if(replies.every { |reply|
 							(reply[\queriedAtBeat] - testClock.baseBarBeat) % testClock.beatsPerBar
-							absdif: reply[\beatInBar] < 0.05
+								absdif: reply[\beatInBar] < 0.05
 						}) {
-							successCount = successCount + 1;
+							successCount = successCount + 1
 						};
-						cond.unhang;
+						cond.unhang
 					};
 					cond.hang;
-					testClock.stop;
+					testClock.stop
 				};
-				this.assertEquals(successCount, numTrials, "Count of successful trials should = number of trials");
+				this.assertEquals(successCount, numTrials, "Count of successful trials should = number of trials")
 			};
-			outerCond.unhang;
+			outerCond.unhang
 		});
 		outerCond.hang;
-		refClock.stop;
+		refClock.stop
 	}
 
 	test_LinkClock_sync_meter_propagates_meter_changes {
 		var clock1 = LinkClock.new,
-		clock2, resp, cond = Condition.new;
+			clock2, resp, cond = Condition.new;
 		// we must wait until clock1 finishes its initial sync attempt
 		// unavoidable delay
 		resp = SimpleController(clock1).put(\resynced, {
 			resp.remove;
-			cond.unhang;
+			cond.unhang
 		});
 		clock1.enableMeterSync;
 		cond.hang;
@@ -322,24 +311,24 @@ TestLinkClock : UnitTest {
 			// wait for clock2 to finish initial sync
 			resp = SimpleController(clock2).put(\resynced, {
 				resp.remove;
-				cond.unhang;
+				cond.unhang
 			});
 			cond.hang;
 			clock1.setMeterAtBeat(3, clock1.nextBar);
 			// wait for clock2 to sync meter again
 			resp = SimpleController(clock2).put(\meter, {
 				resp.remove;
-				cond.unhang;
+				cond.unhang
 			});
 			cond.hang;
 			this.assertEquals(clock2.beatsPerBar, clock1.beatsPerBar,
 				"clock1 and clock2 should have the same beatsPerBar after one changes"
-			);
+			)
 		} {
-			this.assert(false, "Make sure no other LinkClocks are running while testing");
+			this.assert(false, "Make sure no other LinkClocks are running while testing")
 		};
 		clock1.stop;
-		clock2.stop;
+		clock2.stop
 	}
 
 	test_beats2secs_handlesInf {
@@ -348,7 +337,7 @@ TestLinkClock : UnitTest {
 			clock.beats2secs(inf), inf,
 			"LinkClock:beats2secs should return inf for 'inf' beats"
 		);
-		clock.stop;
+		clock.stop
 	}
 
 	test_secs2beats_handlesInf {
@@ -357,7 +346,7 @@ TestLinkClock : UnitTest {
 			clock.secs2beats(inf), inf,
 			"LinkClock:secs2beats should return inf for 'inf' beats"
 		);
-		clock.stop;
+		clock.stop
 	}
 
 

@@ -1,27 +1,28 @@
+//# VERSION 3.16
 TestNRTSynthesis : UnitTest {
 	setUp {}
 
 	tearDown {
 		// reset to scsynth
 		Server.scsynth;
-		Score.program = Server.program;
+		Score.program = Server.program
 	}
 
 	// helper method
 	performInputTest { |serverType|
 		var server, score, condVar = CondVar(), exitCode;
-		var inputFile, inputData, outputFile, outputData, sampleRate, sizeDiff;
+		var sampleRate;
 		var outputFilePath = Platform.defaultTempDir +/+ "nrt_test_%.wav".format(serverType);
 
-		inputFile = SoundFile.openRead(ExampleFiles.child);
-		if (inputFile.numChannels != 1) {
-			Error("input file is supposed to be a mono file").throw;
+		var inputFile = SoundFile.openRead(ExampleFiles.child);
+		if(inputFile.numChannels != 1) {
+			Error("input file is supposed to be a mono file").throw
 		};
 		sampleRate = inputFile.sampleRate;
-		inputData = FloatArray.newClear(inputFile.numFrames);
+		var inputData = FloatArray.newClear(inputFile.numFrames);
 		inputFile.readData(inputData);
-		if (inputData.size != inputFile.numFrames) {
-			Error("could not read input file data").throw;
+		if(inputData.size != inputFile.numFrames) {
+			Error("could not read input file data").throw
 		};
 		// we can already close the file here
 		inputFile.close;
@@ -36,9 +37,10 @@ TestNRTSynthesis : UnitTest {
 		);
 
 		score = Score([
-			[0.0, ['/d_recv',
+			[0.0, [
+				'/d_recv',
 				SynthDef(\pass, {
-					Out.ar(0, SoundIn.ar(0));
+					Out.ar(0, SoundIn.ar(0))
 				}).asBytes
 			], Synth.basicNew(\pass, server).newMsg]
 		]);
@@ -54,21 +56,21 @@ TestNRTSynthesis : UnitTest {
 			duration: inputFile.duration,
 			action: { |e|
 				exitCode = e;
-				condVar.signalAll;
+				condVar.signalAll
 			}
 		);
 
-		if (condVar.waitFor(5, { exitCode.notNil }).not) {
-			Error(serverType ++ ": NRT synthesis did not complete").throw;
+		if(condVar.waitFor(5, { exitCode.notNil }).not) {
+			Error(serverType ++ ": NRT synthesis did not complete").throw
 		};
 		this.assertEquals(exitCode, 0, serverType ++ ": NRT synthesis completes without errors");
 
-		outputFile = SoundFile.openRead(outputFilePath);
-		if (outputFile.isNil) {
-			Error("no output file").throw;
+		var outputFile = SoundFile.openRead(outputFilePath);
+		if(outputFile.isNil) {
+			Error("no output file").throw
 		};
-		if (outputFile.numFrames == 0) {
-			Error("output file is empty").throw;
+		if(outputFile.numFrames == 0) {
+			Error("output file is empty").throw
 		};
 
 		/*
@@ -85,7 +87,7 @@ TestNRTSynthesis : UnitTest {
 		this.assertEquals(1, outputFile.numChannels,
 			serverType ++ ": the output file has the correct number of channels");
 
-		sizeDiff = outputFile.numFrames - inputFile.numFrames;
+		var sizeDiff = outputFile.numFrames - inputFile.numFrames;
 
 		this.assert(sizeDiff >= 0,
 			serverType ++ ": the output file must not be shorter than the input file.");
@@ -93,10 +95,10 @@ TestNRTSynthesis : UnitTest {
 		this.assert(sizeDiff < server.options.blockSize,
 			serverType ++ ": the size difference between input and output file must be smaller than the Server block size.");
 
-		outputData = FloatArray.newClear(outputFile.numFrames);
+		var outputData = FloatArray.newClear(outputFile.numFrames);
 		outputFile.readData(outputData);
-		if (outputData.size != outputFile.numFrames) {
-			Error(serverType ++ ": could not read output file data").throw;
+		if(outputData.size != outputFile.numFrames) {
+			Error(serverType ++ ": could not read output file data").throw
 		};
 
 		this.assertArrayFloatEquals(inputData, outputData[0..(inputData.size - 1)],
@@ -111,39 +113,38 @@ TestNRTSynthesis : UnitTest {
 
 		server.remove;
 
-		^outputFile;
+		^outputFile
 	}
 
 	test_nrtSynthesisInputWorks {
 		var scsynthResult = this.performInputTest(\scsynth);
 		var supernovaResult = this.performInputTest(\supernova);
 		this.assertEquals(scsynthResult.numFrames, supernovaResult.numFrames,
-			"The output file size must be the same for both Servers.");
+			"The output file size must be the same for both Servers.")
 	}
 
 	// helper method
 	performInputChannelMismatchTest { |serverType|
 		var server, score, condVar = CondVar(), exitCode;
-		var inputFile, inputData, outputFile, outputData;
 		var outputFilePath = Platform.defaultTempDir +/+ "nrt_test_%.wav".format(serverType);
-		var sampleRate, audioBus;
+		var sampleRate;
 		var getChannel = { |data, channel, numChannels|
 			var result = [];
 			forBy(channel, data.size - 1, numChannels) { |i|
-				result = result.add(data[i]);
+				result = result.add(data[i])
 			};
-			result;
+			result
 		};
 
-		inputFile = SoundFile.openRead(ExampleFiles.child);
-		if (inputFile.numChannels != 1) {
-			Error("input file is supposed to be a mono file").throw;
+		var inputFile = SoundFile.openRead(ExampleFiles.child);
+		if(inputFile.numChannels != 1) {
+			Error("input file is supposed to be a mono file").throw
 		};
 		sampleRate = inputFile.sampleRate;
-		inputData = FloatArray.newClear(inputFile.numFrames);
+		var inputData = FloatArray.newClear(inputFile.numFrames);
 		inputFile.readData(inputData);
-		if (inputData.size != inputFile.numFrames) {
-			Error("could not read input file data").throw;
+		if(inputData.size != inputFile.numFrames) {
+			Error("could not read input file data").throw
 		};
 		// we can already close the file here
 		inputFile.close;
@@ -158,13 +159,14 @@ TestNRTSynthesis : UnitTest {
 		);
 
 		// the bus should start after the last input channel
-		audioBus = Bus.audio(server);
-		if (audioBus.index != server.options.firstPrivateBus) {
-			Error("audio bus should be the first private bus").throw;
+		var audioBus = Bus.audio(server);
+		if(audioBus.index != server.options.firstPrivateBus) {
+			Error("audio bus should be the first private bus").throw
 		};
 
 		score = Score([
-			[0.0, ['/d_recv',
+			[0.0, [
+				'/d_recv',
 				SynthDef(\mismatch_test, {
 					// scale down to keep the numbers between -1 and 1
 					var numIn = K2A.ar(NumInputBuses.ir);
@@ -174,7 +176,7 @@ TestNRTSynthesis : UnitTest {
 					// write to audio bus to make sure we're not accidentally overwriting input channels
 					Out.ar(audioBus, SinOsc.ar(440));
 					// write to input buses to test if inputs are properly zeroed before every control period.
-					Out.ar(NumOutputBuses.ir, SinOsc.ar([100, 200]));
+					Out.ar(NumOutputBuses.ir, SinOsc.ar([100, 200]))
 				}).asBytes
 			], Synth.basicNew(\mismatch_test, server).newMsg]
 		]);
@@ -189,33 +191,33 @@ TestNRTSynthesis : UnitTest {
 			duration: 0.1,
 			action: { |e|
 				exitCode = e;
-				condVar.signalAll;
+				condVar.signalAll
 			}
 		);
 
-		if (condVar.waitFor(5, { exitCode.notNil }).not) {
-			Error(serverType ++ ": NRT synthesis did not complete").throw;
+		if(condVar.waitFor(5, { exitCode.notNil }).not) {
+			Error(serverType ++ ": NRT synthesis did not complete").throw
 		};
 		this.assertEquals(exitCode, 0, serverType ++ ": NRT synthesis completes without errors");
 
-		outputFile = SoundFile.openRead(outputFilePath);
-		if (outputFile.isNil) {
-			Error("no output file").throw;
+		var outputFile = SoundFile.openRead(outputFilePath);
+		if(outputFile.isNil) {
+			Error("no output file").throw
 		};
-		if (outputFile.numFrames == 0) {
-			Error("output file is empty").throw;
+		if(outputFile.numFrames == 0) {
+			Error("output file is empty").throw
 		};
-		outputData = FloatArray.newClear(outputFile.numFrames * outputFile.numChannels);
+		var outputData = FloatArray.newClear(outputFile.numFrames * outputFile.numChannels);
 		outputFile.readData(outputData);
-		if (outputData.size != (outputFile.numFrames * outputFile.numChannels)) {
-			Error(serverType ++ ": could not read output file data").throw;
+		if(outputData.size != (outputFile.numFrames * outputFile.numChannels)) {
+			Error(serverType ++ ": could not read output file data").throw
 		};
 
 		this.assertEquals(outputFile.numChannels, server.options.numOutputBusChannels,
 			serverType ++ ": output file has the correct number of channels");
 
 		// the first channel should match the input file
-		this.assertArrayFloatEquals(inputData[0..(outputFile.numFrames-1)], getChannel.(outputData, 0, outputFile.numChannels),
+		this.assertArrayFloatEquals(inputData[0..(outputFile.numFrames - 1)], getChannel.(outputData, 0, outputFile.numChannels),
 			serverType ++ ": first output channel matches input file");
 
 		// the second channel should be silent
@@ -234,12 +236,12 @@ TestNRTSynthesis : UnitTest {
 
 		File.delete(outputFilePath);
 
-		server.remove;
+		server.remove
 	}
 
 	test_nrtSynthesisInputChannelMismatch {
 		this.performInputChannelMismatchTest(\scsynth);
-		this.performInputChannelMismatchTest(\supernova);
+		this.performInputChannelMismatchTest(\supernova)
 	}
 
 	// helper method
@@ -248,11 +250,11 @@ TestNRTSynthesis : UnitTest {
 		// At 48 kHz, a 1 second sound file should produce exactly 48000 samples.
 		// (48000 is a multiple of the Server block size.)
 		var sampleRate = 48000, duration = 1.0, numFrames = (sampleRate * duration).asInteger;
-		var inputFile, inputFilePath = Platform.defaultTempDir +/+ "nrt_test_in_%.wav".format(serverType);
-		var outputFile, outputFilePath = Platform.defaultTempDir +/+ "nrt_test_out_%.wav".format(serverType);
+		var inputFilePath = Platform.defaultTempDir +/+ "nrt_test_in_%.wav".format(serverType);
+		var outputFilePath = Platform.defaultTempDir +/+ "nrt_test_out_%.wav".format(serverType);
 
 		// create an input file with the appropriate sample rate.
-		inputFile = SoundFile.openWrite(inputFilePath, "wav", "int16", 1, sampleRate);
+		var inputFile = SoundFile.openWrite(inputFilePath, "wav", "int16", 1, sampleRate);
 		// the input file is supposed to be longer than the given duration, so we can
 		// test that NRT synthesis honors the score duration and not the input file length.
 		inputFile.writeData(FloatArray.newClear((duration * 1.5 * sampleRate).asInteger));
@@ -260,8 +262,8 @@ TestNRTSynthesis : UnitTest {
 		inputFile.close;
 		// verify the file length
 		inputFile = SoundFile.openRead(inputFilePath);
-		if (inputFile.numFrames < (duration * sampleRate)) {
-			Error("input file too short").throw;
+		if(inputFile.numFrames < (duration * sampleRate)) {
+			Error("input file too short").throw
 		};
 		inputFile.close;
 
@@ -275,9 +277,10 @@ TestNRTSynthesis : UnitTest {
 		);
 
 		score = Score([
-			[0.0, ['/d_recv',
+			[0.0, [
+				'/d_recv',
 				SynthDef(\test, {
-					Out.ar(0, [ SoundIn.ar(0), SinOsc.ar(440) ]);
+					Out.ar(0, [SoundIn.ar(0), SinOsc.ar(440)])
 				}).asBytes
 			], Synth.basicNew(\test, server).newMsg]
 		]);
@@ -293,21 +296,21 @@ TestNRTSynthesis : UnitTest {
 			duration: duration,
 			action: { |e|
 				exitCode = e;
-				condVar.signalAll;
+				condVar.signalAll
 			}
 		);
 
-		if (condVar.waitFor(5, { exitCode.notNil }).not) {
-			Error(serverType ++ ": NRT synthesis did not complete").throw;
+		if(condVar.waitFor(5, { exitCode.notNil }).not) {
+			Error(serverType ++ ": NRT synthesis did not complete").throw
 		};
 		this.assertEquals(exitCode, 0, serverType ++ ": NRT synthesis completes without errors");
 
-		outputFile = SoundFile.openRead(outputFilePath);
-		if (outputFile.isNil) {
-			Error("no output file").throw;
+		var outputFile = SoundFile.openRead(outputFilePath);
+		if(outputFile.isNil) {
+			Error("no output file").throw
 		};
-		if (outputFile.numFrames == 0) {
-			Error("output file is empty").throw;
+		if(outputFile.numFrames == 0) {
+			Error("output file is empty").throw
 		};
 
 		this.assertEquals(outputFile.numFrames, numFrames,
@@ -317,11 +320,11 @@ TestNRTSynthesis : UnitTest {
 
 		File.delete(outputFilePath);
 
-		server.remove;
+		server.remove
 	}
 
 	test_nrtSynthesisProducesExactOutputSize {
 		this.performOutputSizeTest(\scsynth);
-		this.performOutputSizeTest(\supernova);
+		this.performOutputSizeTest(\supernova)
 	}
 }

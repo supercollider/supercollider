@@ -1,3 +1,4 @@
+//# VERSION 3.16
 /*
 TestArray.run
 UnitTest.gui
@@ -6,8 +7,7 @@ UnitTest.gui
 TestArray : UnitTest {
 
 	test_array_nonmutating {
-		var ops, classes, apply;
-		classes = [
+		var classes = [
 			Array,
 			List,
 			Set,
@@ -20,7 +20,7 @@ TestArray : UnitTest {
 
 		// only ops are applied where they are implemented
 
-		ops = [
+		var ops = [
 			\copy,
 			\collect,
 			\do,
@@ -52,7 +52,7 @@ TestArray : UnitTest {
 			[\copyFromStart, 3],
 			[\slide, 3],
 		];
-		apply = {:[class, op], class<-classes, op<-ops };
+		var apply = {:[class, op], class<-classes, op<-ops };
 		apply.do { |pair|
 			var val1, val2, class, op;
 			try {	// only apply where it works
@@ -68,7 +68,7 @@ TestArray : UnitTest {
 			var coll = class.fill(10, { 1.0.rand });
 			coll = coll.add(pi);
 			this.assert(coll.includes(pi), "adding something to an array it should include it afterwards")
-		};
+		}
 
 	}
 
@@ -77,7 +77,7 @@ TestArray : UnitTest {
 		var deepArray = { |depth|
 			if(depth == 0) {
 				1000.rand
-		} {
+			} {
 				{ deepArray.value(depth - 1) } ! rrand(1, maxLength) }
 		};
 		20.do {
@@ -93,62 +93,62 @@ TestArray : UnitTest {
 
 		#[
 			// arsize, clumpsize -- different sizes to test:
-			[100,     10],
-			[121,     11]
-		].do{ |settings|
+			[100, 10],
+			[121, 11]
+		].do { |settings|
 
-			arsize    = settings[0];
+			arsize = settings[0];
 			clumpsize = settings[1];
 
 			// Create uniform distrib
-			a = {1.0.rand}.dup(arsize);
+			a = { 1.0.rand }.dup(arsize);
 
 			// sanity of mean, median, stdDev calculations on uniform distribution
 			mean = a.mean;
-			this.assert((0.2<mean) && (mean<0.8), "mean of uniform expected to be around 0.5");
+			this.assert((0.2 < mean) && (mean < 0.8), "mean of uniform expected to be around 0.5");
 			median = a.median;
-			this.assert((0.2<median) && (median<0.8), "median of uniform expected to be around 0.5");
-			if(Collection.findMethod(\stdDev).notNil){
+			this.assert((0.2 < median) && (median < 0.8), "median of uniform expected to be around 0.5");
+			if(Collection.findMethod(\stdDev).notNil) {
 				// stdDev NOT IN CORE!
 				// TODO: probably better to move to a dedicated TestMathLib quark
 				sd = a.stdDev(mean);
-				this.assert((0<sd) && (sd<(2*sqrt(1/12))), "stdDev of uniform expected to be around sqrt(1/12)");
+				this.assert((0 < sd) && (sd < (2 * sqrt(1 / 12))), "stdDev of uniform expected to be around sqrt(1/12)")
 			};
 
 			// sort-based median should be same as hoare-based median
 			this.assertEquals(a.median, a.sort.sortedMedian, ".median (Hoare method) should be same as .sort.sortedMedian");
 
 			// check that scrambling doesn't knacker the median (which uses partial sorting)
-			10.do{
-				this.assertEquals(a.scramble.median, a.scramble.median, "median should be invariant to scrambling");
+			10.do {
+				this.assertEquals(a.scramble.median, a.scramble.median, "median should be invariant to scrambling")
 			};
 
 			// reversing the array shouldn't affect the stats!
 			arev = a.reverse;
-			this.assertEquals(a.mean,   arev.mean,        "mean   should be invariant to reversing");
-			this.assertEquals(a.median, arev.median,      "median should be invariant to reversing");
-			if(Collection.findMethod(\stdDev).notNil){
+			this.assertEquals(a.mean, arev.mean, "mean   should be invariant to reversing");
+			this.assertEquals(a.median, arev.median, "median should be invariant to reversing");
+			if(Collection.findMethod(\stdDev).notNil) {
 				// stdDev NOT IN CORE!
-				this.assertFloatEquals(a.stdDev, arev.stdDev, "stdDev should be invariant to reversing");
+				this.assertFloatEquals(a.stdDev, arev.stdDev, "stdDev should be invariant to reversing")
 			};
 
 			// scale array up by 2^16 - power-of-two scaling should preserve precision
 			ascaled = a * 65536.0;
 
 			// these stats should simply scale linearly
-			this.assertEquals(ascaled.mean   / 65536.0, mean,    "mean   should be invariant to linear scaling");
-			this.assertEquals(ascaled.median / 65536.0, median,  "median should be invariant to linear scaling");
+			this.assertEquals(ascaled.mean / 65536.0, mean, "mean   should be invariant to linear scaling");
+			this.assertEquals(ascaled.median / 65536.0, median, "median should be invariant to linear scaling");
 			// stdDev NOT IN CORE! this.assertFloatEquals(ascaled.stdDev / 65536.0, sd, "stdDev should be invariant to linear scaling");
 
 			// Clump into array-of-arrays
 			aclumped = a.clump(clumpsize);
 
 			// mean-of-mean on clumped should be same as mean of array
-			this.assertFloatEquals(aclumped.mean.mean, mean,     "mean should be invariant to clumping");
+			this.assertFloatEquals(aclumped.mean.mean, mean, "mean should be invariant to clumping");
 
 			// Insert 0 and 1 into distrib, to guarantee normalization should return same values
-			a[(a.size/2).rand] = 0;
-			a[(a.size/2).rand + (a.size/2)] = 1;
+			a[(a.size / 2).rand] = 0;
+			a[(a.size / 2).rand + (a.size / 2)] = 1;
 
 			// check sanity of maxItem and minItem
 			this.assertEquals(a.minItem, 0, "minItem in our array is definitely 0");
@@ -158,72 +158,72 @@ TestArray : UnitTest {
 			this.assertEquals(a.normalize, a, "normalising an array that's already 0--1 should be no-op");
 			this.assertEquals(a.normalize(-128, 128).normalize(), a, "normalising an array that's already 0--1 should be no-op");
 			this.assertEquals(a.integrate.differentiate, a, "integrate should be the inverse of differentiate");
-			this.assertEquals(a.differentiate.integrate, a, "differentiate should be the inverse of integrate");
+			this.assertEquals(a.differentiate.integrate, a, "differentiate should be the inverse of integrate")
 		}
 
 	} // End test_arraystats
 
 	// FIXME/TODO Consider whether this test should be moved into a separate file of GC tests (or superceded by one)
 	test_flop_noGC_regression {
-		var a, b, arraySize;
-		arraySize = 32; // this causes flop to fail
+		var a, b;
+		var arraySize = 32; // this causes flop to fail
 
 		1000.do { |i|
 			var indices;
 			indices = (0..arraySize);
 
 			// run identical processing on idx:
-			a = [indices].flop.collect {|lm| lm[0] }; // << .lm called in the loop
-			b = [indices].flop.collect {|lm| lm[0] }; // << .lm called in the loop
+			a = [indices].flop.collect { |lm| lm[0] }; // << .lm called in the loop
+			b = [indices].flop.collect { |lm| lm[0] }; // << .lm called in the loop
 
 			// are results equal? >> NO
-			if(a!=b, {
+			if(a != b) {
 				this.assertEquals(a, b, "flop: identical flops should match", onFailure: {
 					format("\nWARNING: mismatch on iter: %", i).postln;
 					a.join(" ").postln;
-					b.join(" ").postln;
-				});
-			});
+					b.join(" ").postln
+				})
+			}
 		}
 	}
 
 	test_sort {
 		// sort is supposed to be stable, i.e. it should not change the relative order of elements that compare equal
-		var test = { |n, reverse=false|
+		var test = { |n, reverse = false|
 			// [ a, 0 ], [ a, 1 ], ... [ a, x-1 ], [ b, 0 ], [ b, 1 ], ... [ b, y-1 ], [ c, 0 ], [ c, 1 ], ... [ c, z-1 ], etc.
 			// where a, b, c, etc. are unique random numbers and x, y, z, etc. are random numbers between 2 and limit-1.
 			var i, k, limit = min(n.div(2), 16);
 			var usedIndexes = Set();
 			var array = [];
 			while { array.size < n } {
-				k = rrand(2, limit-1);
+				k = rrand(2, limit - 1);
 				// rand(n) because sure we always have spare indexes
 				while { i = rand(n); usedIndexes.includes(i) };
 				usedIndexes.add(i);
-				array = array.addAll((0..k).collect { |j| [ i, j ] });
+				array = array.addAll((0..k).collect { |j| [i, j] })
 			};
 			// clamp to n
 			array = array.keep(n);
 			// sort by the first element
-			if (reverse) {
-				array.sort { |a, b| a[0] >= b[0] };
+			if(reverse) {
+				array.sort { |a, b| a[0] >= b[0] }
 			} {
-				array.sort { |a, b| a[0] <= b[0] };
+				array.sort { |a, b| a[0] <= b[0] }
 			};
 			// check if the relative order of elements that compare equal has been preserved
 			array.separate({ |a, b| a[0] != b[0] }).every { |elem, i|
 				elem.every { |x, j| x[1] == j }
-			};
+			}
 		};
 
 		// seed the thread's rgen to get deterministic results
 		thisThread.randSeed_(2517);
 
 		// test with different sizes
-		[ 5, 7, 16, 50, 113, 247, 1001 ].do { |n|
+		[5, 7, 16, 50, 113, 247, 1001].do { |n|
 			4.do {
 				this.assert(test.value(n), false);
-				this.assert(test.value(n), true);
+				this.assert(test.value(n), true)
 			}
 		}
 	}
@@ -231,177 +231,177 @@ TestArray : UnitTest {
 	// ----- editDistance and similarity --------------------------------------------
 
 	test_editDistance_emptyThis_isSizeThat {
-		var result = [].editDistance([0,1,2,3]);
-		this.assertEquals(result, 4);
+		var result = [].editDistance([0, 1, 2, 3]);
+		this.assertEquals(result, 4)
 	}
 
 	test_editDistance_emptyThat_isSizeThis {
-		var result = [0,1,2,3].editDistance([]);
-		this.assertEquals(result, 4);
+		var result = [0, 1, 2, 3].editDistance([]);
+		this.assertEquals(result, 4)
 	}
 
 	test_editDistance_emptyThis_emptyThat_isZero {
 		var result = [].editDistance([]);
-		this.assertEquals(result, 0);
+		this.assertEquals(result, 0)
 	}
 
 	test_editDistance_differentTypes_isOk {
-		var result = [0,1,2,3].editDistance([\a,\b,\c,\d]);
-		this.assertEquals(result, 4);
+		var result = [0, 1, 2, 3].editDistance([\a, \b, \c, \d]);
+		this.assertEquals(result, 4)
 	}
 
 	test_editDistance_mixedTypes_isOk {
-		var result = [0,1,2,3].editDistance([0,"hello",2,3]);
-		this.assertEquals(result, 1);
+		var result = [0, 1, 2, 3].editDistance([0, "hello", 2, 3]);
+		this.assertEquals(result, 1)
 	}
 
 	test_editDistance_countsSubstitution {
-		var result = [0,1,2,3].editDistance([0,1,0,3]);
-		this.assertEquals(result, 1);
+		var result = [0, 1, 2, 3].editDistance([0, 1, 0, 3]);
+		this.assertEquals(result, 1)
 	}
 
 	test_editDistance_countsAddition {
-		var result = [0,1,2,3].editDistance([0,1,2,3,4]);
-		this.assertEquals(result, 1);
+		var result = [0, 1, 2, 3].editDistance([0, 1, 2, 3, 4]);
+		this.assertEquals(result, 1)
 	}
 
 	test_editDistance_countsRemoval {
-		var result = [0,1,2,3].editDistance([0,1,2]);
-		this.assertEquals(result, 1);
+		var result = [0, 1, 2, 3].editDistance([0, 1, 2]);
+		this.assertEquals(result, 1)
 	}
 
 	test_editDistance_countsChanges {
-		var result = [0,1,2,3].editDistance([4,5,6,7,8]);
+		var result = [0, 1, 2, 3].editDistance([4, 5, 6, 7, 8]);
 		var expected = 5; // 0:4, 1:5, 2:6, 3:8, addition:8
 
-		this.assertEquals(result, expected);
+		this.assertEquals(result, expected)
 	}
 
 	test_editDistance_rawIntArraysSameType {
 		var result = Int8Array[0, 1].editDistance(Int8Array[0, 1]);
-		this.assertEquals(result, 0);
+		this.assertEquals(result, 0)
 	}
 
 	test_editDistance_rawIntArraysDifferentTypes {
 		var result = Int8Array[0, 1].editDistance(Int16Array[0, 1]);
-		this.assertEquals(result, 0);
+		this.assertEquals(result, 0)
 	}
 
 	test_editDistance_rawIntArrayAndArray {
 		var result = Int8Array[0, 1].editDistance(Array[0, 1]);
-		this.assertEquals(result, 0);
+		this.assertEquals(result, 0)
 	}
 
 	test_editDistance_arrayAndLinkedList {
 		var result = Array[0, 1].editDistance(LinkedList[0, 1]);
-		this.assertEquals(result, 0);
+		this.assertEquals(result, 0)
 	}
 
 	test_editDistance_listAndLinkedList {
 		var result = List[0, 1].editDistance(LinkedList[0, 1]);
-		this.assertEquals(result, 0);
+		this.assertEquals(result, 0)
 	}
 
 	test_editDistance_rawArrayAndPolymorphicArray {
 		var result = Int8Array[0, 1].editDistance(Array[0, \x]);
-		this.assertEquals(result, 1);
+		this.assertEquals(result, 1)
 	}
 
 	test_editDistance_nilCompareFunc_testsIdentityForRawArrays {
 		this.assertEquals(Array["a", "b"].editDistance(Array["a", "b"]), 2);
-		this.assertEquals(Array[\a, \b].editDistance(Array[\a, \b]), 0);
+		this.assertEquals(Array[\a, \b].editDistance(Array[\a, \b]), 0)
 	}
 
 	test_editDistance_nilCompareFunc_testsIdentityForLists {
 		// we also want to check that non-raw arrays use identity comparison by default
 		this.assertEquals(List["a", "b"].editDistance(List["a", "b"]), 2);
-		this.assertEquals(List[\a, \b].editDistance(List[\a, \b]), 0);
+		this.assertEquals(List[\a, \b].editDistance(List[\a, \b]), 0)
 	}
 
 	test_editDistance_usesCompareFuncForRawArrays {
 		var result = Array["a", "b"].editDistance(Array["a", "c"], _ == _);
-		this.assertEquals(result, 1);
+		this.assertEquals(result, 1)
 	}
 
 	test_editDistance_usesCompareFuncForLists {
 		var result = List["a", "b"].editDistance(List["a", "c"], _ == _);
-		this.assertEquals(result, 1);
+		this.assertEquals(result, 1)
 	}
 
 	test_similarity_emptyThis_emptyThat_isOne {
 		var result = [].similarity([]);
 		var expected = 1; // they're the same, even though they're empty
 
-		this.assertEquals(result, expected);
+		this.assertEquals(result, expected)
 	}
 
 	test_similarity_same_isOne {
-		var result = [0,1,2,3].similarity([0,1,2,3]);
-		this.assertEquals(result, 1);
+		var result = [0, 1, 2, 3].similarity([0, 1, 2, 3]);
+		this.assertEquals(result, 1)
 	}
 
 	test_similarity_different_isZero {
-		var result = [0,1,2,3].similarity([4,5,6,7]);
-		this.assertEquals(result, 0);
+		var result = [0, 1, 2, 3].similarity([4, 5, 6, 7]);
+		this.assertEquals(result, 0)
 	}
 
 	// ----- mirror, mirror1, mirror2 --------------------------------------------
 
-	test_mirror_onEmptyArray_sizeIsZero { this.assertEquals([].mirror.size, 0); }
-	test_mirror1_onEmptyArray_sizeIsZero { this.assertEquals([].mirror1.size, 0); }
-	test_mirror2_onEmptyArray_sizeIsZero { this.assertEquals([].mirror2.size, 0); }
+	test_mirror_onEmptyArray_sizeIsZero { this.assertEquals([].mirror.size, 0) }
+	test_mirror1_onEmptyArray_sizeIsZero { this.assertEquals([].mirror1.size, 0) }
+	test_mirror2_onEmptyArray_sizeIsZero { this.assertEquals([].mirror2.size, 0) }
 
 	test_mirror_onEmptyArray_newArray {
 		var input = [];
-		this.assert(input.mirror !== input);
+		this.assert(input.mirror !== input)
 	}
 
 	test_mirror1_onEmptyArray_newArray {
 		var input = [];
-		this.assert(input.mirror1 !== input);
+		this.assert(input.mirror1 !== input)
 	}
 
 	test_mirror2_onEmptyArray_newArray {
 		var input = [];
-		this.assert(input.mirror2 !== input);
+		this.assert(input.mirror2 !== input)
 	}
 
-	test_mirror_oneElementArray_result { this.assertEquals([1].mirror, [1]); }
-	test_mirror1_oneElementArray_result { this.assertEquals([1].mirror1, [1]); }
-	test_mirror2_oneElementArray_result { this.assertEquals([1].mirror2, [1, 1]); }
+	test_mirror_oneElementArray_result { this.assertEquals([1].mirror, [1]) }
+	test_mirror1_oneElementArray_result { this.assertEquals([1].mirror1, [1]) }
+	test_mirror2_oneElementArray_result { this.assertEquals([1].mirror2, [1, 1]) }
 
-	test_mirror_oneElementArray_size { this.assertEquals([1].mirror.size, 1); }
-	test_mirror1_oneElementArray_size { this.assertEquals([1].mirror1.size, 1); }
-	test_mirror2_oneElementArray_size { this.assertEquals([1].mirror2.size, 2); }
+	test_mirror_oneElementArray_size { this.assertEquals([1].mirror.size, 1) }
+	test_mirror1_oneElementArray_size { this.assertEquals([1].mirror1.size, 1) }
+	test_mirror2_oneElementArray_size { this.assertEquals([1].mirror2.size, 2) }
 
-	test_mirror_twoElementArray_result { this.assertEquals([1, 2].mirror, [1, 2, 1]); }
-	test_mirror1_twoElementArray_result { this.assertEquals([1, 2].mirror1, [1, 2]); }
-	test_mirror2_twoElementArray_result { this.assertEquals([1, 2].mirror2, [1, 2, 2, 1]); }
+	test_mirror_twoElementArray_result { this.assertEquals([1, 2].mirror, [1, 2, 1]) }
+	test_mirror1_twoElementArray_result { this.assertEquals([1, 2].mirror1, [1, 2]) }
+	test_mirror2_twoElementArray_result { this.assertEquals([1, 2].mirror2, [1, 2, 2, 1]) }
 
-	test_mirror_twoElementArray_size { this.assertEquals([1, 2].mirror.size, 3); }
-	test_mirror1_twoElementArray_size { this.assertEquals([1, 2].mirror1.size, 2); }
-	test_mirror2_twoElementArray_size { this.assertEquals([1, 2].mirror2.size, 4); }
+	test_mirror_twoElementArray_size { this.assertEquals([1, 2].mirror.size, 3) }
+	test_mirror1_twoElementArray_size { this.assertEquals([1, 2].mirror1.size, 2) }
+	test_mirror2_twoElementArray_size { this.assertEquals([1, 2].mirror2.size, 4) }
 
 	test_is_rectangular_flat {
-	    this.assert([1, 2, 3, 4].isRectangular, "isRectangular: flat arrays, [n1, n2,...], should always be rectangular");
-    }
+		this.assert([1, 2, 3, 4].isRectangular, "isRectangular: flat arrays, [n1, n2,...], should always be rectangular")
+	}
 	test_is_rectangular_nested_flat {
-	    this.assert([[1, 2, 3, 4]].isRectangular, "isRectangular: single nested flat array, [[n1, n2 ...]] should be rectangular");
-    }
+		this.assert([[1, 2, 3, 4]].isRectangular, "isRectangular: single nested flat array, [[n1, n2 ...]] should be rectangular")
+	}
 	test_is_rectangular_square {
-	    this.assert([[1, 2], [3, 4]].isRectangular, "isRectangular: square matrix is rectangular");
-    }
+		this.assert([[1, 2], [3, 4]].isRectangular, "isRectangular: square matrix is rectangular")
+	}
 	test_is_rectangular_deep {
-	    this.assert([[[[[1], [2]], [[3], [4]]]]].isRectangular, "isRectangular: should work at any depth");
-    }
+		this.assert([[[[[1], [2]], [[3], [4]]]]].isRectangular, "isRectangular: should work at any depth")
+	}
 	test_is_rectangular_false_case {
-	    this.assert([1, [2, 3]].isRectangular.not, "isRectangular: should reject different dimension sizes");
-    }
+		this.assert([1, [2, 3]].isRectangular.not, "isRectangular: should reject different dimension sizes")
+	}
 	test_is_rectangular_with_raw_array {
-	    this.assert([FloatArray[1,2], Signal[3,4]].isRectangular, "isRectangular: should work on RawArrays (true case)");
-    }
+		this.assert([FloatArray[1, 2], Signal[3, 4]].isRectangular, "isRectangular: should work on RawArrays (true case)")
+	}
 	test_is_rectangular_with_raw_array_false_case {
-	    this.assert([FloatArray[1,2], Signal[3,4,5]].isRectangular.not, "isRectangular: should work on RawArrays (false case)");
+		this.assert([FloatArray[1, 2], Signal[3, 4, 5]].isRectangular.not, "isRectangular: should work on RawArrays (false case)")
 	}
 
 	// ----- hungarianSolve --------------------------------------------
@@ -414,31 +414,31 @@ TestArray : UnitTest {
 			[9, 4, 8]
 		];
 		var expected = [15.0, [0, 2, 1]];
-		this.assertEquals(costMatrix.hungarianSolve, expected);
+		this.assertEquals(costMatrix.hungarianSolve, expected)
 	}
 	test_hungarianSolve_rectangular {
 		var costMatrix = [
-			[ 90,  76,  75,  70 ],
-			[ 35,  85,  55,  65 ],
-			[125,  95,  90, 105 ]
+			[90, 76, 75, 70],
+			[35, 85, 55, 65],
+			[125, 95, 90, 105]
 		];
 		var expected = [195.0, [3, 0, 2]];
-		this.assertEquals(costMatrix.hungarianSolve, expected);
+		this.assertEquals(costMatrix.hungarianSolve, expected)
 	}
 	test_hungarianSolve_negative_float {
 		var costMatrixSolved = [
-			[ -1.34,  2.46772,  3.2361,  4.87654 ],
-			[  5.345987, -6.12567,  7,  8.346 ],
-			[  -3.5679, 346.239,  -1.233,  0.34646 ],
+			[-1.34, 2.46772, 3.2361, 4.87654],
+			[5.345987, -6.12567, 7, 8.346],
+			[-3.5679, 346.239, -1.233, 0.34646],
 		].hungarianSolve;
 		var expected = [-8.69867, [0, 1, 2]];
-		this.assert(costMatrixSolved[0].equalWithPrecision(expected[0]) && costMatrixSolved[1] == expected[1]);
+		this.assert(costMatrixSolved[0].equalWithPrecision(expected[0]) && costMatrixSolved[1] == expected[1])
 	}
 	test_hungarianSolve_empty {
 		var costMatrix = [
 		];
 		var expected = [0.0, []];
-		this.assertEquals(costMatrix.hungarianSolve, expected);
+		this.assertEquals(costMatrix.hungarianSolve, expected)
 	}
 	test_hungarianSolve_inf {
 		var costMatrix = [
@@ -447,7 +447,7 @@ TestArray : UnitTest {
 			[9, 4, 8]
 		];
 		var expected = [16.0, [1, 2, 0]];
-		this.assertEquals(costMatrix.hungarianSolve, expected);
+		this.assertEquals(costMatrix.hungarianSolve, expected)
 	}
 	test_hungarianSolve_zero {
 		var costMatrix = [
@@ -456,184 +456,163 @@ TestArray : UnitTest {
 			[9, 4, 0]
 		];
 		var expected = [9.0, [1, 0, 2]];
-		this.assertEquals(costMatrix.hungarianSolve, expected);
+		this.assertEquals(costMatrix.hungarianSolve, expected)
 	}
 	test_hungarianSolve_notANumber {
-		try {[
-			["hey", 4, 7],
-			[5, 2, 3],
-			[9, 4, \there]
-		].hungarianSolve}
-		{|error| this.assert(error.isKindOf(PrimitiveFailedError)) }
+		try {
+			[
+				["hey", 4, 7],
+				[5, 2, 3],
+				[9, 4, \there]
+			].hungarianSolve } { |error| this.assert(error.isKindOf(PrimitiveFailedError)) }
 	}
 
 } // End class
 
 TestArrayLace : UnitTest {
 	test_empty_returns_empty {
-		var array, result;
-		array = [];
-		result = array.lace;
-		this.assertEquals(result, [], "lace: empty array with no length argument should return empty array");
+		var array = [];
+		var result = array.lace;
+		this.assertEquals(result, [], "lace: empty array with no length argument should return empty array")
 	}
 
 	test_empty_with_length_argument_returns_empty {
-		var array, result;
-		array = [];
-		result = array.lace(8);
-		this.assertEquals(result, [], "lace: empty array with length argument should return empty array");
+		var array = [];
+		var result = array.lace(8);
+		this.assertEquals(result, [], "lace: empty array with length argument should return empty array")
 	}
 
 	test_empty_subarray_returns_nil {
-		var array, result;
-		array = [[]];
-		result = array.lace;
-		this.assertEquals(result, [ nil ], "lace: empty subarray should return empty array");
+		var array = [[]];
+		var result = array.lace;
+		this.assertEquals(result, [nil], "lace: empty subarray should return empty array")
 	}
 
 	test_flat_without_length_arg {
-		var array, result;
-		array = [1, 2, 3, 4, 5];
-		result = array.lace;
-		this.assertEquals(result, array, "lace: flat array should return a copy of itself");
+		var array = [1, 2, 3, 4, 5];
+		var result = array.lace;
+		this.assertEquals(result, array, "lace: flat array should return a copy of itself")
 	}
 
 	test_flat_with_empty_subarray_substitutes_nil {
-		var array, result;
-		array = ["one", "two", [], "four", "five"];
-		result = array.lace;
-		this.assertEquals(result, ["one", "two", nil, "four", "five"], "lace: empty subarrays should be substituted for nil");
+		var array = ["one", "two", [], "four", "five"];
+		var result = array.lace;
+		this.assertEquals(result, ["one", "two", nil, "four", "five"], "lace: empty subarrays should be substituted for nil")
 	}
 
 	test_flat_with_length_arg_small {
-		var array, result, n;
-		n = 3;
-		array = [1, 2, 3, 4, 5];
-		result = array.lace(n);
+		var n = 3;
+		var array = [1, 2, 3, 4, 5];
+		var result = array.lace(n);
 		this.assertEquals(result, array.keep(n),
-			"lace: flat array should return a copy of itself shortened to the length given in the argument");
+			"lace: flat array should return a copy of itself shortened to the length given in the argument")
 	}
 
 	test_flat_with_length_arg_large {
-		var array, result, n;
-		n = 18;
-		array = [1, 2, 3, 4, 5];
-		result = array.lace(n);
+		var n = 18;
+		var array = [1, 2, 3, 4, 5];
+		var result = array.lace(n);
 		this.assertEquals(result, array.wrapExtend(n),
-			"lace: flat array should return itself extended to the length given in the argument");
+			"lace: flat array should return itself extended to the length given in the argument")
 	}
 
 	test_subarrays_of_equal_length_without_length_arg {
-		var array, result;
-		array = [[1, 4, 7], [2, 5, 8], [3, 6, 9]];
-		result = array.lace;
+		var array = [[1, 4, 7], [2, 5, 8], [3, 6, 9]];
+		var result = array.lace;
 		this.assertEquals(result, [1, 2, 3, 4, 5, 6, 7, 8, 9],
-			"lace: subarrays of equal length should lace correctly without length arugment");
+			"lace: subarrays of equal length should lace correctly without length arugment")
 	}
 
 	test_subarrays_of_unequal_length_without_length_arg {
-		var array, result;
-		array = [[1, 4], [2, 5, 7], [3, 6, 8, 9]];
-		result = array.lace;
+		var array = [[1, 4], [2, 5, 7], [3, 6, 8, 9]];
+		var result = array.lace;
 		this.assertEquals(result, [1, 2, 3, 4, 5, 6],
-			"lace: if not supplied, length should be computed using the minimum length subarray");
+			"lace: if not supplied, length should be computed using the minimum length subarray")
 	}
 
 	test_mixture_of_flat_and_arrays_without_length_arg {
-		var array, result;
-		array = [[10, 9], 8, [7, 6, 5], [4], [3, 2, 1, 0]];
-		result = array.lace;
+		var array = [[10, 9], 8, [7, 6, 5], [4], [3, 2, 1, 0]];
+		var result = array.lace;
 		this.assertEquals(result, [10, 8, 7, 4, 3],
-			"lace: single-length items with no length argument should only be copied once");
+			"lace: single-length items with no length argument should only be copied once")
 	}
 
 	test_list_with_sublists_without_length_arg {
-		var list, result;
-		list = List[List[1, 2, 3], List[4, 5, 6], List[7, 8]];
-		result = list.lace;
+		var list = List[List[1, 2, 3], List[4, 5, 6], List[7, 8]];
+		var result = list.lace;
 		this.assertEquals(result, List[1, 4, 7, 2, 5, 8],
-			"lace: lists with sublists and no length argument should compute length using minimum length sublist");
+			"lace: lists with sublists and no length argument should compute length using minimum length sublist")
 	}
 
 	test_subarray_and_sublist_mixture_without_length_arg {
-		var array, result;
-		array = [["z", "y"], List[9, 8, 7], [\a, \b, \c]];
-		result = array.lace;
+		var array = [["z", "y"], List[9, 8, 7], [\a, \b, \c]];
+		var result = array.lace;
 		this.assertEquals(result, ["z", 9, \a, "y", 8, \b],
-			"lace: arrays with mixture of sublists and subarrays should compute length using minimum length element");
+			"lace: arrays with mixture of sublists and subarrays should compute length using minimum length element")
 	}
 
 	test_subarrays_with_complete_length_arg {
-		var array, result;
-		array = [[1, 2, 3, 4], [5, 6, 7, 8], [-1, -2, -3, -4]];
-		result = array.lace(12);
+		var array = [[1, 2, 3, 4], [5, 6, 7, 8], [-1, -2, -3, -4]];
+		var result = array.lace(12);
 		this.assertEquals(result, [1, 5, -1, 2, 6, -2, 3, 7, -3, 4, 8, -4],
-			"lace: complete length argument should return completely laced array");
+			"lace: complete length argument should return completely laced array")
 	}
 
 	test_subarrays_with_length_arg_shorter_than_number_of_subarrays {
-		var array, result;
-		array = [["a", "b"], ["c", "d"], ["e", "f"], ["g", "h"]];
-		result = array.lace(3);
+		var array = [["a", "b"], ["c", "d"], ["e", "f"], ["g", "h"]];
+		var result = array.lace(3);
 		this.assertEquals(result, ["a", "c", "e"],
-			"lace: short length argument should return first members of first subarrays");
+			"lace: short length argument should return first members of first subarrays")
 	}
 
 	test_subarrays_with_length_arg_equal_to_number_of_subarrays {
-		var array, result;
-		array = [[\tok1, \tok2, \tok3], [\tok4], [\tok5, \tok6], [\tok7, \tok8, \tok9, \tok10]];
-		result = array.lace(4);
+		var array = [[\tok1, \tok2, \tok3], [\tok4], [\tok5, \tok6], [\tok7, \tok8, \tok9, \tok10]];
+		var result = array.lace(4);
 		this.assertEquals(result, [\tok1, \tok4, \tok5, \tok7],
-			"lace: equal length argument should return first members of all subarrays");
+			"lace: equal length argument should return first members of all subarrays")
 	}
 
 	test_subarrays_with_length_arg_greater_than_number_of_subarrays {
-		var array, result;
-		array = [[1.0, -1.0, 2.0, -2.0, 3.0, -3.0], [4.0, -4.0, 5.0, -5.0]];
-		result = array.lace(5);
+		var array = [[1.0, -1.0, 2.0, -2.0, 3.0, -3.0], [4.0, -4.0, 5.0, -5.0]];
+		var result = array.lace(5);
 		this.assertEquals(result, [1.0, 4.0, -1.0, -4.0, 2.0],
-			"lace: should iterate through each subarray until length argument elements copied");
+			"lace: should iterate through each subarray until length argument elements copied")
 	}
 
 	test_subarrays_with_length_arg_equal_to_total_number_of_elements {
-		var array, result;
-		array = [[1], [2, 3], [4, 5, 6], [7, 8, 9, 10], [11, 12, 13, 14, 15]];
-		result = array.lace(15);
+		var array = [[1], [2, 3], [4, 5, 6], [7, 8, 9, 10], [11, 12, 13, 14, 15]];
+		var result = array.lace(15);
 		this.assertEquals(result, [1, 2, 4, 7, 11, 1, 3, 5, 8, 12, 1, 2, 6, 9, 13],
-			"lace: should advance through each array independently");
+			"lace: should advance through each array independently")
 	}
 
 	test_subarrays_with_length_arg_greater_than_total_number_of_elements {
-		var array, result;
-		array = [["one", "two", "three"], ["four", "five"], ["six"], "seven"];
-		result = array.lace(12);
+		var array = [["one", "two", "three"], ["four", "five"], ["six"], "seven"];
+		var result = array.lace(12);
 		this.assertEquals(result,
 			["one", "four", "six", "seven", "two", "five", "six", "seven", "three", "four", "six", "seven"],
-			"lace: should continue to fill from each array until reaching length argument");
+			"lace: should continue to fill from each array until reaching length argument")
 	}
 
 	test_subarrays_with_length_arg_equal_to_complete_lace {
-		var array, result;
-		array = [[3, 2, 1], 0, [5, 6], [10, 9, 8, 7], [12]];
-		result = array.lace(20);
+		var array = [[3, 2, 1], 0, [5, 6], [10, 9, 8, 7], [12]];
+		var result = array.lace(20);
 		this.assertEquals(result,
 			[3, 0, 5, 10, 12, 2, 0, 6, 9, 12, 1, 0, 5, 8, 12, 3, 0, 6, 7, 12],
-			"lace: should fill array with all interleaved values");
+			"lace: should fill array with all interleaved values")
 	}
 
 	test_subarrays_with_length_arg_greater_than_complete_lace {
-		var array, result;
-		array = [[\a, \b], [\c, \d, \e], [\f]];
-		result = array.lace(12);
+		var array = [[\a, \b], [\c, \d, \e], [\f]];
+		var result = array.lace(12);
 		this.assertEquals(result, [\a, \c, \f, \b, \d, \f, \a, \e, \f, \b, \c, \f],
-			"lace: should start over once array is completely laced");
+			"lace: should start over once array is completely laced")
 	}
 
 	test_sublists_work_like_arrays {
-		var array, result;
-		array = [List[1, 2, 3], List[4, 5, 6], List[7, 8, 9]];
-		result = array.lace(9);
+		var array = [List[1, 2, 3], List[4, 5, 6], List[7, 8, 9]];
+		var result = array.lace(9);
 		this.assertEquals(result, [1, 4, 7, 2, 5, 8, 3, 6, 9],
-			"lace: sublists should lace just like arrays do");
+			"lace: sublists should lace just like arrays do")
 	}
 } // End class

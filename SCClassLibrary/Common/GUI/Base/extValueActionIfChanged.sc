@@ -15,17 +15,17 @@ g = EZText(label:" test ", action: { |ez| "new value: %\n".postf(ez.value); });
 */
 
 + View {
-	valueActionIfChanged_ { arg val;
+	valueActionIfChanged_ { |val|
 		var hasChanged = this.value != val;
 		this.value_(val);
-		if (hasChanged) { this.doAction }
+		if(hasChanged) { this.doAction }
 	}
 }
 
 + EZGui {
-	valueActionIfChanged_ { arg val;
+	valueActionIfChanged_ { |val|
 		var hasChanged = value != val;
 		this.value_(val);
-		if (hasChanged) { this.doAction }
+		if(hasChanged) { this.doAction }
 	}
 }

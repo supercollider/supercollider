@@ -19,3 +19,5 @@ d769495d25008dfd30b07a4128aa922d5e46dff6
 94229d30d2879b2c6b96c9e555246da2c0a72a8c
 # trim trailing whitespaces in sc and schelp files via editorconfig
 cce089f7ef51cdd7139ab2102a59a8319bdb60a6
+# format the class library and tests with sc_format
+7103843ffbd39118f1a6dd7b78542ecd4a2bb11b

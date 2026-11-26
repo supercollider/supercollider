@@ -1,23 +1,23 @@
 Point {
 	var <>x = 0, <>y = 0;
 
-	*new { arg x=0, y=0;
-		^super.newCopyArgs(x, y);
+	*new { |x = 0, y = 0|
+		^super.newCopyArgs(x, y)
 	}
-	@ { arg aPoint;
+	@ { |aPoint|
 		^Rect.fromPoints(this, aPoint)
 	}
 
-	set { arg argX=0, argY=0; x = argX; y = argY; }
+	set { |argX = 0, argY = 0| x = argX; y = argY }
 
 	asPoint { ^this }
-	asComplex { ^Complex.new(x,y) }
+	asComplex { ^Complex.new(x, y) }
 	asPolar { ^Polar.new(this.rho, this.theta) }
-	asSize { ^Size(x,y) }
-	asRect { ^Rect.new(0,0,x,y) }
+	asSize { ^Size(x, y) }
+	asRect { ^Rect.new(0, 0, x, y) }
 	asArray { ^[this.x, this.y] }
 
-	== { arg aPoint;
+	== { |aPoint|
 		^this.compareObject(aPoint, #[\x, \y])
 	}
 	hash {
@@ -26,39 +26,39 @@ Point {
 	performBinaryOpOnSomething { |aSelector, thing, adverb|
 		^thing.asPoint.perform(aSelector, this, adverb)
 	}
-	+ { arg delta;
+	+ { |delta|
 		var deltaPoint;
 		deltaPoint = delta.asPoint;
 		^Point(this.x + deltaPoint.x, this.y + deltaPoint.y)
 	}
-	- { arg delta;
+	- { |delta|
 		var deltaPoint;
 		deltaPoint = delta.asPoint;
 		^Point(this.x - deltaPoint.x, this.y - deltaPoint.y)
 	}
 
-	* { arg scale;
+	* { |scale|
 		var scalePoint;
 		scalePoint = scale.asPoint;
 		^Point(this.x * scalePoint.x, this.y * scalePoint.y)
 	}
-	/ { arg scale;
+	/ { |scale|
 		var scalePoint;
 		scalePoint = scale.asPoint;
 		^Point(this.x / scalePoint.x, this.y / scalePoint.y)
 	}
-	div { arg scale;
+	div { |scale|
 		var scalePoint;
 		scalePoint = scale.asPoint;
 		^Point(this.x div: scalePoint.x, this.y div: scalePoint.y)
 	}
-	translate { arg delta;
+	translate { |delta|
 		^Point(this.x + delta.x, this.y + delta.y)
 	}
-	scale { arg scale;
+	scale { |scale|
 		^Point(this.x * scale.x, this.y * scale.y)
 	}
-	rotate { arg angle; // in radians
+	rotate { |angle| // in radians
 		var sinr, cosr;
 		sinr = angle.sin;
 		cosr = angle.cos;
@@ -70,17 +70,17 @@ Point {
 	rho { ^hypot(x, y) }
 	theta { ^atan2(y, x) }
 
-	dist { arg aPoint;
+	dist { |aPoint|
 		aPoint = aPoint.asPoint;
 		^hypot(x - aPoint.x, y - aPoint.y)
 	}
 	transpose { ^Point(y, x) }
 
-	round { arg quant;
+	round { |quant|
 		quant = quant.asPoint;
 		^Point(x.round(quant.x), y.round(quant.y))
 	}
-	trunc { arg quant;
+	trunc { |quant|
 		quant = quant.asPoint;
 		^Point(x.trunc(quant.x), y.trunc(quant.y))
 	}
@@ -97,20 +97,20 @@ Point {
 		^Point(this.x modSeaside: thatPoint.x, this.y modSeaside: thatPoint.y)
 	}
 
-	printOn { arg stream;
-		stream << this.class.name << "(" << x << ", " << y << ")";
+	printOn { |stream|
+		stream << this.class.name << "(" << x << ", " << y << ")"
 	}
-	storeArgs { ^[x,y] }
+	storeArgs { ^[x, y] }
 }
 
 
 PointArray : Point {
-	*new { arg n;
+	*new { |n|
 		^super.new(Signal.new(n), Signal.new(n))
 	}
-	add { arg point;
+	add { |point|
 		x = x.add(point.x);
-		y = y.add(point.y);
+		y = y.add(point.y)
 	}
 }
 

@@ -179,7 +179,7 @@ This is usually the results of performing a GUI operation within a routine or sc
 AppClock is the only clock that can execute GUI manipulation because it is a lower priority thread. If the CPU is busy with audio synthesis or maintaining accurate scheduling for musical events, AppClock events will be delayed until the CPU is free enough.
 
 Solution: write your GUI updates as follows. defer schedules the function on AppClock.
-code::
+code#fragment::
 { myGUIObject.value_(newValue) }.defer;
 ::
 
@@ -251,7 +251,7 @@ a.put(3, 1);
 ::
 
 section:: A common warning
-code::
+teletype::
 WARNING: FunctionDef contains variable declarations and so will not be inlined.
 ::
 This warning can be safely ignored. Your code will still run, even if you get this warning.
@@ -299,7 +299,7 @@ code::
 // inlined, optimized, but you'll get stuck notes
 Routine({
   var synth;
-  { synth = Synth("someSynth", [...args...]);
+  { synth = Synth("someSynth", [/* args */]);
     thisThread.clock.sched(10, {
       synth.free;
     });
@@ -310,7 +310,7 @@ Routine({
 // not inlined, but no stuck notes
 Routine({
   { var synth;
-    synth = Synth("someSynth", [...args...]);
+    synth = Synth("someSynth", [/* args */]);
     thisThread.clock.sched(10, {
       synth.free;
     });

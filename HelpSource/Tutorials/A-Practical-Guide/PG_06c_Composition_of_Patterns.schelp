@@ -11,7 +11,7 @@ This is related to the computer science concept of "function composition," in wh
 
 In mathematics, the code::·:: operator represents function composition.
 
-code::
+teletype::
 f(x) = x + 1
 g(x) = x * 2
 
@@ -25,17 +25,17 @@ f = { |x| x + 1 };
 g = { |x| x * 2 };
 
 h = (g <> f);
---> a Function
+// --> a Function
 
 h.value(1);
---> 4	// == (1+1) * 2
+// --> 4	// == (1+1) * 2
 
 (f <> g).value(1)
---> 3	// == (1*2) + 1
+// --> 3	// == (1*2) + 1
 
 // g · f == g(f(x)) — f is evaluated first, and its result is passed to g
 g.value(f.value(1));
---> 4
+// --> 4
 ::
 
 Event patterns can be similarly composed.

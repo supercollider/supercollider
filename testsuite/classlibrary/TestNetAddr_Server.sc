@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestNetAddr_Server : UnitTest {
 
 	var server, big, addr;
@@ -6,7 +7,7 @@ TestNetAddr_Server : UnitTest {
 	sendBundle { |size|
 		var f, condition, bundleSize;
 
-		f = big.copyRange(0, (size ? big.size)-1);
+		f = big.copyRange(0, (size ? big.size) - 1);
 		bundleSize = f.bundleSize;
 
 		this.bootServer(server);
@@ -14,23 +15,23 @@ TestNetAddr_Server : UnitTest {
 		("Sending bundle with " + f.size + "messages " + "bundleSize: " + bundleSize).debug;
 
 		addr.sendBundle(server.latency, f);
-		this.assert(true, "NetAddr sent Bundle with " + f.size + "messages " + "bundleSize: " + bundleSize);
+		this.assert(true, "NetAddr sent Bundle with " + f.size + "messages " + "bundleSize: " + bundleSize)
 	}
 
 	test_sendBundle5 {
-		this.sendBundle(5);
+		this.sendBundle(5)
 	}
 
 	test_sendBundle10 {
-		this.sendBundle(10);
+		this.sendBundle(10)
 	}
 
 	test_sendBundle30 {
-		this.sendBundle(30);
+		this.sendBundle(30)
 	}
 
 	test_sendBundle50 {
-		this.sendBundle(50);
+		this.sendBundle(50)
 	}
 
 
@@ -42,7 +43,7 @@ TestNetAddr_Server : UnitTest {
 
 	tearDown {
 		server.quitSync;
-		server.remove;
+		server.remove
 	}
 
 	setUp {
@@ -53,6 +54,7 @@ TestNetAddr_Server : UnitTest {
 		// bundleSize 28000
 		// 76 messages
 		//big.size.debug("big size");
+		// sc-format off
 		big = [
 			[
 				"/d_recv",
@@ -1326,6 +1328,7 @@ TestNetAddr_Server : UnitTest {
 			[ "/b_allocRead", 13, "sounds/a11wlk01.wav", 0, -1, nil ],
 			[ "/b_allocRead", 14, "sounds/a11wlk01.wav", 0, -1, nil ]
 		];
+		// sc-format on
 	}
 
 }

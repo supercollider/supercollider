@@ -1,12 +1,12 @@
 NodeProxy : BusPlug {
 
 	var <group, <objects, <nodeMap, <children;
-	var <loaded=false, <>awake=true, <paused=false;
+	var <loaded = false, <>awake = true, <paused = false;
 	var <>clock, <>quant;
-	classvar <>buildProxyControl, <>buildProxy, <defaultFadeTime=0.02;
+	classvar <>buildProxyControl, <>buildProxy, <defaultFadeTime = 0.02;
 
 
-	*new { | server, rate, numChannels, inputs |
+	*new { |server, rate, numChannels, inputs|
 		var res = super.new(server).init;
 		if(rate.notNil or: { numChannels.notNil }) { res.initBus(rate, numChannels) };
 		inputs.do { |o| res.add(o) };
@@ -20,10 +20,10 @@ NodeProxy : BusPlug {
 		objects = Order.new;
 		loaded = false;
 		reshaping = defaultReshaping;
-		this.linkNodeMap;
+		this.linkNodeMap
 	}
 
-	clear { | fadeTime = 0 |
+	clear { |fadeTime = 0|
 		this.free(fadeTime, true); 	// free group and objects
 		this.removeAll; 			// take out all objects
 		children = nil;             // for now: also remove children
@@ -32,22 +32,22 @@ NodeProxy : BusPlug {
 		this.fadeTime = fadeTime; // set the fadeTime one last time for freeBus
 		this.freeBus;	 // free the bus from the server allocator
 		this.init;	// reset the environment
-		this.changed(\clear, [fadeTime]);
+		this.changed(\clear, [fadeTime])
 	}
 
-	end { | fadeTime, reset = false |
+	end { |fadeTime, reset = false|
 		var dt = fadeTime ? this.fadeTime;
 		fork {
 			this.free(dt, true);
 			(dt + (server.latency ? 0)).wait;
-			this.stop(0, reset);
+			this.stop(0, reset)
 		};
-		this.changed(\end, [fadeTime, reset]);
+		this.changed(\end, [fadeTime, reset])
 	}
 
 	isPlaying { ^group.isPlaying }
 
-	free { | fadeTime, freeGroup = true |
+	free { |fadeTime, freeGroup = true|
 		var bundle, freetime;
 		var oldGroup = group;
 		if(this.isPlaying) {
@@ -60,30 +60,30 @@ NodeProxy : BusPlug {
 				oldGroup = group;
 				group = nil;
 				freetime = (fadeTime ? this.fadeTime) + (server.latency ? 0) + 1e-9; // delay a tiny little
-				server.sendBundle(freetime, [11, oldGroup.nodeID]); // n_free
+				server.sendBundle(freetime, [11, oldGroup.nodeID]) // n_free
 			};
 			bundle.send(server);
-			this.changed(\free, [fadeTime, freeGroup]);
+			this.changed(\free, [fadeTime, freeGroup])
 		}
 	}
 
-	release { | fadeTime |
+	release { |fadeTime|
 		this.free(fadeTime, false)
 	}
 
 	pause {
 		if(this.isPlaying) { objects.do { |item| item.pause(clock, quant) } };
 		paused = true;
-		this.changed(\pause);
+		this.changed(\pause)
 	}
 
 	resume {
 		paused = false;
 		if(this.isPlaying) { objects.do { |item| item.resume(clock, quant) } };
-		this.changed(\resume);
+		this.changed(\resume)
 	}
 
-	fadeTime_ { | dur |
+	fadeTime_ { |dur|
 		this.set(\fadeTime, dur ? defaultFadeTime) // Use default if fadeTime set to nil
 	}
 
@@ -96,42 +96,42 @@ NodeProxy : BusPlug {
 	asNodeID { ^group.asNodeID }
 	nodeID { ^group.nodeID }
 
- 	parentGroup_ { | node |
+	parentGroup_ { |node|
 		if(node.isPlaying.not) {
 			"% : cannot make non-playing node parentGroup: % \n"
 			.postf(thisMethod, node);
 			^this
 		};
- 		parentGroup = node;
- 		if(group.isPlaying) { group.moveToHead(parentGroup) };
- 	}
+		parentGroup = node;
+		if(group.isPlaying) { group.moveToHead(parentGroup) }
+	}
 
 	// setting the source
 
-	source_ { | obj |
+	source_ { |obj|
 		this.put(nil, obj, 0)
 	}
 
-	prime { | obj |
-		this.put(nil, obj, 0, nil, false);
+	prime { |obj|
+		this.put(nil, obj, 0, nil, false)
 	}
 
-	sources_ { | list |
-		this[0..] = list;
+	sources_ { |list|
+		this[0..] = list
 	}
 
 	source { ^objects.at(0).source }
 	sources { ^objects.array.collect(_.source) }
 
-	add { | obj, channelOffset = 0, extraArgs, now = true |
+	add { |obj, channelOffset = 0, extraArgs, now = true|
 		this.put(objects.pos, obj, channelOffset, extraArgs, now)
 	}
 
-	at { | index |
+	at { |index|
 		^objects.at(index).source
 	}
 
-	put { | index, obj, channelOffset = 0, extraArgs, now = true |
+	put { |index, obj, channelOffset = 0, extraArgs, now = true|
 		var container, bundle, oldBus = bus;
 
 		if(obj.isNil) { this.removeAt(index); ^this };
@@ -146,30 +146,30 @@ NodeProxy : BusPlug {
 
 		if(this.shouldAddObject(container, index)) {
 			// server sync happens here if necessary
-			if(server.serverRunning) { container.loadToBundle(bundle, server) } { loaded = false; };
-			this.prepareOtherObjects(bundle, index, oldBus.notNil and: { oldBus !== bus });
+			if(server.serverRunning) { container.loadToBundle(bundle, server) } { loaded = false };
+			this.prepareOtherObjects(bundle, index, oldBus.notNil and: { oldBus !== bus })
 		} {
 			format("failed to add % to node proxy: %", obj, this).postln;
 			^this
 		};
 
 		this.putNewObject(bundle, index, container, extraArgs, now);
-		this.changed(\source, [obj, index, channelOffset, extraArgs, now]);
+		this.changed(\source, [obj, index, channelOffset, extraArgs, now])
 
 	}
 
 	prepareOtherObjects { |bundle, index, busChanged|
 		var tempReshaping;
 		if(index.isNil) {
-			this.removeAllToBundle(bundle);
+			this.removeAllToBundle(bundle)
 		} {
-			this.removeToBundle(bundle, index);
+			this.removeToBundle(bundle, index)
 		};
 		if(busChanged) {
 			tempReshaping = reshaping; reshaping = nil;
 			this.rebuildDeepToBundle(bundle, true, nil, [this.fadeTime, quant, clock]);
-			reshaping = tempReshaping;
-		};
+			reshaping = tempReshaping
+		}
 	}
 
 	putNewObject { |bundle, index, container, extraArgs, now|
@@ -181,47 +181,47 @@ NodeProxy : BusPlug {
 				nodeMap.wakeUpParentsToBundle(bundle);
 				this.sendObjectToBundle(bundle, container, extraArgs, index)
 			};
-			bundle.schedSend(server, clock ? TempoClock.default, quant);
+			bundle.schedSend(server, clock ? TempoClock.default, quant)
 		}
 	}
 
 
 
-	putAll { | list, index = (0), channelOffset = 0 |
+	putAll { |list, index = (0), channelOffset = 0|
 		channelOffset = channelOffset.asArray;
 		if(index.isSequenceableCollection) {
 			max(list.size, index.size).do { |i|
 				this.put(index.wrapAt(i), list.wrapAt(i), channelOffset.wrapAt(i))
 			}
-		}{
-			list.do { |item, i| this.put(i + index, item, channelOffset.wrapAt(i)) }		}
+		} {
+			list.do { |item, i| this.put(i + index, item, channelOffset.wrapAt(i)) } }
 	}
 
-	putSeries { | first, second, last, value |
+	putSeries { |first, second, last, value|
 		last = last ?? { max(1, max(objects.size, value.size)) - 1 };
 		this.putAll(value.asArray, (first, second..last))
 	}
 
-	filter { | i, func |
+	filter { |i, func|
 		this.put(i, \filter -> func)
 	}
 
-	removeFirst { | fadeTime | this.removeAt(objects.indices.first, fadeTime) }
-	removeLast { | fadeTime | this.removeAt(objects.indices.last, fadeTime) }
-	removeAll { | fadeTime | this.removeAt(nil, fadeTime) }
-	removeAt { | index, fadeTime |
+	removeFirst { |fadeTime| this.removeAt(objects.indices.first, fadeTime) }
+	removeLast { |fadeTime| this.removeAt(objects.indices.last, fadeTime) }
+	removeAll { |fadeTime| this.removeAt(nil, fadeTime) }
+	removeAt { |index, fadeTime|
 		var bundle = MixedBundle.new;
 		if(index.isNil)
-		{ this.removeAllToBundle(bundle, fadeTime) }
-		{ this.removeToBundle(bundle, index, fadeTime) };
+			{ this.removeAllToBundle(bundle, fadeTime) }
+			{ this.removeToBundle(bundle, index, fadeTime) };
 		this.changed(\source, [nil, index, fadeTime]);
-		if(server.serverRunning) { bundle.schedSend(server) };
+		if(server.serverRunning) { bundle.schedSend(server) }
 	}
 
 	rebuild {
 		var bundle = MixedBundle.new;
 		this.rebuildDeepToBundle(bundle, false, nil, [this.fadeTime, quant, clock]);
-		bundle.schedSend(server, clock ? TempoClock.default, quant);
+		bundle.schedSend(server, clock ? TempoClock.default, quant)
 	}
 
 	mold { |numChannels, rate, argReshaping, fadeTime|
@@ -244,70 +244,70 @@ NodeProxy : BusPlug {
 			}
 		};
 		reshaping = tempReshaping;
-		if(server.serverRunning) { bundle.schedSend(server, clock ? TempoClock.default, quant) };
+		if(server.serverRunning) { bundle.schedSend(server, clock ? TempoClock.default, quant) }
 	}
 
-	lag { | ... args |
+	lag { |... args|
 		nodeMap.setRates(args);
-		this.rebuild;
+		this.rebuild
 	}
 
-	setRates { | ... args |
+	setRates { |... args|
 		nodeMap.setRates(args);
-		this.rebuild;
+		this.rebuild
 	}
 
-	setBus { | argBus |
+	setBus { |argBus|
 		super.setBus(argBus);
-		this.linkNodeMap;
+		this.linkNodeMap
 	}
 
-	group_ { | inGroup |
+	group_ { |inGroup|
 		var bundle;
 		if(inGroup.server !== server) { Error("cannot move to another server").throw };
 		NodeWatcher.register(inGroup.isPlaying_(true)); // assume it is playing
-		if(this.isPlaying)
-		{ 	bundle = MixedBundle.new;
+		if(this.isPlaying) {
+			bundle = MixedBundle.new;
 			this.stopAllToBundle(bundle);
 			group = inGroup;
 			this.sendAllToBundle(bundle);
-			bundle.schedSend(server, clock ? TempoClock.default, 0.0);
-		} { group = inGroup };
+			bundle.schedSend(server, clock ? TempoClock.default, 0.0)
+		} { group = inGroup }
 	}
 
-	read { | proxies |
+	read { |proxies|
 		this.putAll(proxies)
 	}
 
-	readFromBus { | busses |
+	readFromBus { |busses|
 		var n, x;
 		busses = busses.asCollection;
 		n = this.numChannels;
-		busses.do { arg item, i;
+		busses.do { |item, i|
 			x = min(item.numChannels ? n, n);
 			this.put(i,
 				SynthControl.new("system_link_" ++ this.rate ++ "_" ++ x),
 				0,
 				["in", item.index, "out", this.index]
 			)
-		};
+		}
 	}
 
 
 	// modifying context, setting controls
 
-	set { | ... args | // pairs of keys or indices and value
+	set { |... args| // pairs of keys or indices and value
 		nodeMap.set(*args);
 		if(this.isPlaying) {
-			server.sendBundle(server.latency, [15, group.nodeID] ++ args.asOSCArgArray);
+			server.sendBundle(server.latency, [15, group.nodeID] ++ args.asOSCArgArray)
 		}
 	}
 
-	setn { | ... args |
+	setn { |... args|
 		this.set(*args)
 	}
 
-	seti { arg ... args; // pairs of key, index/indices (array) and value/values (array)
+	seti { |... args| // pairs of key, index/indices (array) and value/values (array)
 		var msg = Array.new(args.size div: 3 * 2);
 		var key, offset, value, controlKeys, hasControlKey;
 		var controlKeysValues, controlSize, controlIndex, controlValues;
@@ -315,10 +315,10 @@ NodeProxy : BusPlug {
 		controlKeys = this.controlKeys;
 		controlKeysValues = this.controlKeysValues;
 
-		forBy(0, args.size-1, 3, { |i|
+		forBy(0, args.size - 1, 3) { |i|
 			key = args[i];
-			offset = args[i+1].asArray;
-			value = args[i+2].asArray;
+			offset = args[i + 1].asArray;
+			value = args[i + 2].asArray;
 			hasControlKey = controlKeys.includes(key);
 
 			if(hasControlKey) {
@@ -326,44 +326,44 @@ NodeProxy : BusPlug {
 				controlValues = controlKeysValues[controlIndex + 1];
 				controlSize = controlValues.size;
 				offset.do { |o, j|
-					controlValues[o % controlSize] = value.wrapAt(j);
+					controlValues[o % controlSize] = value.wrapAt(j)
 				};
 				nodeMap.set(*[key, controlValues]);
-				msg.add(key).add(controlValues);
-			};
-		});
+				msg.add(key).add(controlValues)
+			}
+		};
 
 		if(this.isPlaying) {
-			server.sendBundle(server.latency, [15, group.nodeID] ++ msg.asOSCArgArray);
+			server.sendBundle(server.latency, [15, group.nodeID] ++ msg.asOSCArgArray)
 		}
 	}
 
-	setGroup { | args, useLatency = false |
+	setGroup { |args, useLatency = false|
 		if(this.isPlaying) {
 			server.sendBundle(if(useLatency) { server.latency },
 				[15, group.nodeID] ++ args.asOSCArgArray
-			);
+			)
 		}
 	}
 
-	map { | ... args | // key(s), proxy, key(s), proxy ...
+	map { |... args| // key(s), proxy, key(s), proxy ...
 		this.set(*args)
 	}
 
-	xset { | ... args |
+	xset { |... args|
 		this.xFadePerform(\set, args)
 	}
-	xmap { | ... args |
+	xmap { |... args|
 		this.xFadePerform(\map, args)
 	}
-	xsetn { | ... args |
+	xsetn { |... args|
 		this.xFadePerform(\set, args)
 	}
-	xunset { | ... args |
+	xunset { |... args|
 		this.xFadePerform(\unset, args)
 	}
 
-	xFadePerform { | selector, args |
+	xFadePerform { |selector, args|
 		var bundle;
 		if(this.isPlaying) {
 			nodeMap.performList(selector, args);
@@ -373,54 +373,53 @@ NodeProxy : BusPlug {
 		}
 	}
 
-	mapEnvir { | ... keys | // map to current environment
+	mapEnvir { |... keys| // map to current environment
 		nodeMap.mapEnvir(*keys);
 		if(this.isPlaying) {
-			nodeMap.sendToNode(group);
-		};
+			nodeMap.sendToNode(group)
+		}
 	}
 
-	unset { | ... keys |
+	unset { |... keys|
 		var bundle = List.new;
 		this.unsetToBundle(bundle, keys);
 		if(bundle.notEmpty) {
 			server.listSendBundle(server.latency, bundle)
-		};
+		}
 	}
 
-	unmap { | ... keys |
+	unmap { |... keys|
 		var bundle;
 		if(keys.isEmpty) { keys = nodeMap.mappingKeys; if(keys.isEmpty) { ^this } };
 		if(this.isPlaying) {
 			bundle = List.new;
 			nodeMap.unmapArgsToBundle(bundle, group.nodeID, keys);
-			if(bundle.notEmpty) { server.listSendBundle(server.latency, bundle) };
+			if(bundle.notEmpty) { server.listSendBundle(server.latency, bundle) }
 		};
-		nodeMap.unmap(*keys);
+		nodeMap.unmap(*keys)
 	}
 
-	nodeMap_ { | map |
+	nodeMap_ { |map|
 		this.setNodeMap(map, false)
 	}
 
-	setNodeMap { | map, xfade = true |
+	setNodeMap { |map, xfade = true|
 		var bundle;
 		if(map.isNil) { ^this.unmap };
 		map.set(\fadeTime, this.fadeTime); // keep old fadeTime
 		nodeMap.clear; nodeMap = map; this.linkNodeMap;
 		if(this.isPlaying) {
 			bundle = MixedBundle.new;
-			if(xfade) { this.sendEach(nil,true) }
-			{
+			if(xfade) { this.sendEach(nil, true) } {
 				this.unsetToBundle(bundle); // unmap old
 				nodeMap.addToBundle(bundle, group); // map new
-				bundle.schedSend(server, clock ? TempoClock.default, quant);
+				bundle.schedSend(server, clock ? TempoClock.default, quant)
 			}
-		};
+		}
 	}
 
 	// play proxy as source of receiver
-	<-- { | proxy |
+	<-- { |proxy|
 		var bundle = MixedBundle.new, fadeTime = this.fadeTime;
 		this.source = proxy;
 
@@ -431,19 +430,19 @@ NodeProxy : BusPlug {
 			}
 		};
 		bundle.add(proxy.moveBeforeMsg(this));
-		bundle.schedSend(server);
+		bundle.schedSend(server)
 	}
 
 	// map receiver to proxy input
 	// second argument is an adverb
-	<>> { | proxy, key = \in |
+	<>> { |proxy, key = \in|
 		proxy.perform('<<>', this, key);
 		^proxy
 	}
 
 	// map proxy to receiver input
 	// second argument is an adverb
-	<<> { | proxy, key = \in |
+	<<> { |proxy, key = \in|
 		var ctl, rate, numChannels, canBeMapped;
 		if(proxy.isNil) { ^this.unmap(key) };
 		ctl = this.findControlName(key);
@@ -467,7 +466,7 @@ NodeProxy : BusPlug {
 
 	// starting processes
 
-	spawn { | extraArgs, index = 0 |
+	spawn { |extraArgs, index = 0|
 		var bundle, obj, i;
 
 		if(server.warnIfNotRunning(thisMethod)) { ^this };
@@ -478,12 +477,12 @@ NodeProxy : BusPlug {
 			bundle = this.getBundle;
 			if(loaded.not) { this.loadToBundle(bundle) };
 			obj.spawnToBundle(bundle, { nodeMap.asOSCArgArray ++ extraArgs.value.asOSCArgArray }, this);
-			bundle.schedSend(server);
+			bundle.schedSend(server)
 		}
 	}
 
 
-	send { | extraArgs, index, freeLast = true |
+	send { |extraArgs, index, freeLast = true|
 		var bundle, obj, fadeTime = this.fadeTime;
 
 		if(objects.isEmpty) { ^this };
@@ -495,7 +494,7 @@ NodeProxy : BusPlug {
 			if(freeLast) { this.stopAllToBundle(bundle, fadeTime) };
 			if(loaded.not) { this.loadToBundle(bundle) };
 			this.sendAllToBundle(bundle, extraArgs);
-			bundle.schedSend(server);
+			bundle.schedSend(server)
 
 		} {
 			obj = objects.at(index);
@@ -504,22 +503,22 @@ NodeProxy : BusPlug {
 				if(freeLast) { obj.stopToBundle(bundle, fadeTime) };
 				if(loaded.not) { this.loadToBundle(bundle) };
 				this.sendObjectToBundle(bundle, obj, extraArgs, index);
-				bundle.schedSend(server);
+				bundle.schedSend(server)
 			}
 		}
 	}
 
-	sendAll { | extraArgs, freeLast = true |
-		this.send(extraArgs, nil, freeLast);
+	sendAll { |extraArgs, freeLast = true|
+		this.send(extraArgs, nil, freeLast)
 	}
 
-	sendEach { | extraArgs, freeLast = true |
+	sendEach { |extraArgs, freeLast = true|
 		var bundle;
 
 		if(server.warnIfNotRunning(thisMethod)) { ^this };
 
 		bundle = this.getBundle;
-		if(freeLast, { this.stopAllToBundle(bundle) });
+		if(freeLast) { this.stopAllToBundle(bundle) };
 		if(loaded.not) { this.loadToBundle(bundle) };
 		this.sendEachToBundle(bundle, extraArgs);
 		bundle.schedSend(server)
@@ -527,11 +526,11 @@ NodeProxy : BusPlug {
 
 	}
 
-	quantize { | ... proxies |
+	quantize { |... proxies|
 		var quant = this.quant ? 1.0;
-		([this]++proxies).do { |x|
+		([this] ++ proxies).do { |x|
 			x.quant = quant;
-			x.send;
+			x.send
 		}
 	}
 
@@ -565,7 +564,7 @@ NodeProxy : BusPlug {
 		loaded = false;
 		awake = proxy.awake; paused = proxy.paused;
 		clock = proxy.clock; quant = proxy.quant;
-		this.fadeTime = proxy.fadeTime;
+		this.fadeTime = proxy.fadeTime
 
 	}
 
@@ -574,66 +573,66 @@ NodeProxy : BusPlug {
 	typeStr {
 		if(this.rate === 'audio') { ^"ar" + this.numChannels };
 		if(this.rate === 'control') { ^"kr" + this.numChannels };
-		^"ir";
+		^"ir"
 	}
 
-	edit { | nSliders, parent, bounds |
-		^NdefGui(this, nSliders ? this.getKeysValues.size.max(5), parent, bounds);
+	edit { |nSliders, parent, bounds|
+		^NdefGui(this, nSliders ? this.getKeysValues.size.max(5), parent, bounds)
 	}
 
 	trace { |index = 0|
 		var obj = objects[index];
 		if(obj.nodeID.notNil) {
-			server.sendMsg(\n_trace, obj.nodeID);
+			server.sendMsg(\n_trace, obj.nodeID)
 		} {
 			"Cannot trace a% %".format(
 				if(obj.class.name.asString.first.isVowel) { "n" } { "" },
 				obj.class.name
-			).warn;
-		};
+			).warn
+		}
 	}
 
 
 
 	// interproxy structure and reading other busses
 
-	orderNodes { | ... proxies |
+	orderNodes { |... proxies|
 		var msg = this.moveBeforeMsg(*proxies);
 		msg !? {
 			server.sendBundle(nil, msg)
 		}
 	}
 
-	getFamily { | set, alreadyAsked |
+	getFamily { |set, alreadyAsked|
 		var parents;
 		parents = IdentitySet.new;
 		alreadyAsked = alreadyAsked ?? { IdentitySet.new };
 		if(alreadyAsked.includes(this).not) {
 			alreadyAsked.add(this);
-			objects.do { arg obj; parents.addAll(obj.parents) };
+			objects.do { |obj| parents.addAll(obj.parents) };
 			parents.addAll(nodeMap.parents);
-			parents.do { arg proxy; proxy.getFamily(parents, alreadyAsked) };
+			parents.do { |proxy| proxy.getFamily(parents, alreadyAsked) };
 			set.add(this);
-			set.addAll(parents);
+			set.addAll(parents)
 		};
 		^set
 	}
 
-	getStructure { | alreadyAsked |
+	getStructure { |alreadyAsked|
 		var parents, substructure;
 		parents = List.new;
 		alreadyAsked = alreadyAsked ?? { IdentitySet.new };
 		if(alreadyAsked.includes(this).not) {
 			alreadyAsked.add(this);
-			objects.do { arg obj; parents.addAll(obj.parents) };
+			objects.do { |obj| parents.addAll(obj.parents) };
 			parents.addAll(nodeMap.parents);
-			substructure = parents.collect { arg proxy; proxy.getStructure(alreadyAsked) };
-			^[this, substructure.flatten(1)];
+			substructure = parents.collect { |proxy| proxy.getStructure(alreadyAsked) };
+			^[this, substructure.flatten(1)]
 		};
 		^nil
 	}
 
-	moveBeforeMsg { | ... proxies |
+	moveBeforeMsg { |... proxies|
 		var list;
 		([this] ++ proxies).do { |el|
 			if(el.isPlaying) {
@@ -652,11 +651,11 @@ NodeProxy : BusPlug {
 	// node map settings
 
 	internalKeys {
-		^#[\out, \i_out, \gate, \fadeTime];
+		^#[\out, \i_out, \gate, \fadeTime]
 	}
 
 	// return names in the order they have in .objects
-	controlNames { | except, addNodeMap = true |
+	controlNames { |except, addNodeMap = true|
 		var all = Array.new; // Set doesn't work, because equality undefined for ControlName
 		except = except ? this.internalKeys;
 		objects.do { |el|
@@ -664,13 +663,13 @@ NodeProxy : BusPlug {
 				if(except.includes(item.name).not and: {
 					all.every { |cn| cn.name !== item.name }
 				}) {
-					all = all.add(item);
+					all = all.add(item)
 				}
-			};
+			}
 		};
-		^if (addNodeMap.not or: nodeMap.isNil) { all } {
+		^if(addNodeMap.not or: nodeMap.isNil) { all } {
 			this.addNodeMapControlNames(all, except)
-		};
+		}
 	}
 
 	// if a name is set in nodemap, overwrite the values in objCtlNames;
@@ -680,7 +679,7 @@ NodeProxy : BusPlug {
 		.reject { |ctlname| except.includes(ctlname.name) }
 		.do { |mapCtl|
 			var index = objCtlNames.detectIndex { |objCtl| objCtl.name == mapCtl.name };
-			if (index.notNil) {
+			if(index.notNil) {
 				objCtlNames.put(index, mapCtl)
 			} {
 				objCtlNames = objCtlNames.add(mapCtl)
@@ -690,23 +689,23 @@ NodeProxy : BusPlug {
 	}
 
 
-	findControlName { | key |
+	findControlName { |key|
 		objects.do { |el|
 			el.controlNames.do { |item|
 				if(key == item.name) { ^item }
-			};
+			}
 		};
 		^nil
 	}
 
 	resetNodeMap {
 		this.nodeMap = ProxyNodeMap.new;
-		this.linkNodeMap;
+		this.linkNodeMap
 	}
 
 	cleanNodeMap {
 		var nodeMapSettingKeys, nodeMapMappingKeys, keysToUnset, keysToUnmap, currentKeys;
-		if (nodeMap.isNil) { ^this };
+		if(nodeMap.isNil) { ^this };
 
 		nodeMapSettingKeys = difference(nodeMap.settingKeys ? [], this.internalKeys);
 		nodeMapMappingKeys = difference(nodeMap.mappingKeys ? [], this.internalKeys);
@@ -715,22 +714,22 @@ NodeProxy : BusPlug {
 		keysToUnmap = difference(nodeMapMappingKeys, currentKeys);
 
 		keysToUnset.do(this.unset(_));
-		keysToUnmap.do(this.unmap(_));
+		keysToUnmap.do(this.unmap(_))
 	}
 
-	controlKeys { | except, noInternalKeys = true |
+	controlKeys { |except, noInternalKeys = true|
 		var list = Array.new;
-		if (noInternalKeys) { except = except ++ this.internalKeys; };
+		if(noInternalKeys) { except = except ++ this.internalKeys };
 		this.controlNames.do { |el, i|
 			if(except.includes(el.name).not)
-			{ list = list.add(el.name) }
+				{ list = list.add(el.name) }
 		}
 		^list
 	}
 
-	getKeysValues { | keys, except, withDefaults = true, noInternalKeys = true |
+	getKeysValues { |keys, except, withDefaults = true, noInternalKeys = true|
 		var pairs, result = [], myKeys, defaults;
-		if (noInternalKeys) { except = except ++ this.internalKeys; };
+		if(noInternalKeys) { except = except ++ this.internalKeys };
 
 		pairs = this.controlKeysValues(keys, except).clump(2);
 		#myKeys, defaults = pairs.flop;
@@ -739,15 +738,15 @@ NodeProxy : BusPlug {
 			var val, doAdd;
 			val = nodeMap[key];
 			doAdd = withDefaults or: val.notNil;
-			if (doAdd) {
-				result = result.add([ key, (val ? defaults[i]).value ]);
-			};
+			if(doAdd) {
+				result = result.add([key, (val ? defaults[i]).value])
+			}
 		}
 		^result
 	}
 
 	// controlPairs, gets default values
-	controlKeysValues { | keys, except |
+	controlKeysValues { |keys, except|
 		var list, fullList;
 		except = except ? this.internalKeys;
 		fullList = this.controlNames(except);
@@ -762,16 +761,16 @@ NodeProxy : BusPlug {
 				list.add(key).add(val)
 			}
 		}
-		^list;
+		^list
 	}
 
 	// derive names and default args from synthDefs
-	supplementNodeMap { | keys, replaceOldKeys=false |
+	supplementNodeMap { |keys, replaceOldKeys = false|
 		this.controlNames.do { |el|
 			var key = el.name;
-			if (
-				( replaceOldKeys or: { nodeMap.at(key).isNil } )
-				and:
+			if(
+				(replaceOldKeys or: { nodeMap.at(key).isNil })
+					and:
 				{ keys.isNil or: { keys.includes(key) } }
 			) { nodeMap.set(key, el.defaultValue) }
 		}
@@ -789,51 +788,51 @@ NodeProxy : BusPlug {
 	}
 
 	// start group if necessary
-	prepareToBundle { | argGroup, bundle, addAction = \addToTail |
+	prepareToBundle { |argGroup, bundle, addAction = \addToTail|
 		if(this.isPlaying.not) {
 			group = Group.basicNew(server, this.defaultGroupID);
 			NodeWatcher.register(group);
 			group.isPlaying = server.serverRunning;
 			if(argGroup.isNil and: { parentGroup.isPlaying }) { argGroup = parentGroup };
-			bundle.addPrepare(group.newMsg(argGroup ?? { server.asGroup }, addAction));
+			bundle.addPrepare(group.newMsg(argGroup ?? { server.asGroup }, addAction))
 		}
 	}
 
 	// bundle: apply the node map settings to the entire group
-	sendAllToBundle { | bundle, extraArgs |
+	sendAllToBundle { |bundle, extraArgs|
 		var args = Thunk({ nodeMap.asOSCArgArray ++ extraArgs.value.asOSCArgArray });
-		objects.do { arg item;
-			item.playToBundle(bundle, args, this);
+		objects.do { |item|
+			item.playToBundle(bundle, args, this)
 		}
 	}
 
 	// bundle: apply the node map settings to each synth separately
-	sendEachToBundle { | bundle, extraArgs |
-		objects.do { arg item;
+	sendEachToBundle { |bundle, extraArgs|
+		objects.do { |item|
 			this.sendObjectToBundle(bundle, item, extraArgs)
 		}
 	}
 
 	// bundle: send single object
-	sendObjectToBundle { | bundle, object, extraArgs, index |
+	sendObjectToBundle { |bundle, object, extraArgs, index|
 		var target, nodes;
 		var synthID = object.playToBundle(bundle, { nodeMap.asOSCArgArray ++ extraArgs.value.asOSCArgArray }, this);
 		if(synthID.notNil) {
 			if(index.notNil and: { objects.size > 1 }) { // if nil, all are sent anyway
 				// make list of nodeIDs following the index
 				nodes = Array(4);
-				objects.doRange({ arg obj;
+				objects.doRange({ |obj|
 					var id = obj.nodeID;
 					if(id.notNil and: { id != synthID })
-					{ nodes = nodes ++ id ++ synthID };
+						{ nodes = nodes ++ id ++ synthID }
 				}, index + 1);
-				if(nodes.size > 0) { bundle.add(["/n_before"] ++ nodes.reverse) };
-			};
+				if(nodes.size > 0) { bundle.add(["/n_before"] ++ nodes.reverse) }
+			}
 		}
 	}
 
 	// bundle: remove single object
-	removeToBundle { | bundle, index, fadeTime |
+	removeToBundle { |bundle, index, fadeTime|
 		var obj, dt, playing;
 		playing = this.isPlaying;
 		obj = objects.removeAt(index);
@@ -841,24 +840,24 @@ NodeProxy : BusPlug {
 		if(obj.notNil) {
 			dt = fadeTime ? this.fadeTime;
 			if(playing) { obj.stopToBundle(bundle, dt) };
-			obj.freeToBundle(bundle, this);
+			obj.freeToBundle(bundle, this)
 		}
 	}
 
 	// bundle: remove all objects
-	removeAllToBundle { | bundle, fadeTime |
+	removeAllToBundle { |bundle, fadeTime|
 		var dt, playing;
 		dt = fadeTime ? this.fadeTime;
 		playing = this.isPlaying;
-		objects.do { arg obj;
+		objects.do { |obj|
 			if(playing) { obj.stopToBundle(bundle, dt) };
-			obj.freeToBundle(bundle, this);
+			obj.freeToBundle(bundle, this)
 		};
-		objects.makeEmpty;
+		objects.makeEmpty
 	}
 
 	// bundle: stop single process
-	stopAllToBundle { | bundle, fadeTime |
+	stopAllToBundle { |bundle, fadeTime|
 		var obj, dt;
 		dt = fadeTime ? this.fadeTime;
 		if(this.isPlaying) {
@@ -866,25 +865,25 @@ NodeProxy : BusPlug {
 		}
 	}
 
-	loadToBundle { | bundle |
+	loadToBundle { |bundle|
 		this.reallocBusIfNeeded;
-		objects.do { arg item, i;
-			item.loadToBundle(bundle, server);
+		objects.do { |item, i|
+			item.loadToBundle(bundle, server)
 		};
-		loaded = true;
+		loaded = true
 	}
 
-	unsetToBundle { | bundle, keys |
+	unsetToBundle { |bundle, keys|
 		var pairs = this.controlKeysValues(keys);
 		if(this.isPlaying) {
 			if(pairs.notEmpty) {
 				bundle.add([15, group.nodeID] ++ pairs)
 			}
 		};
-		nodeMap.unset(*pairs[0,2..])
+		nodeMap.unset(*pairs[0, 2..])
 	}
 
-	wakeUpToBundle { | bundle, checkedAlready |
+	wakeUpToBundle { |bundle, checkedAlready|
 		if(checkedAlready.isNil) { checkedAlready = IdentitySet.new };
 		if(checkedAlready.includes(this).not) {
 			checkedAlready.add(this);
@@ -892,15 +891,15 @@ NodeProxy : BusPlug {
 			if(loaded.not) { this.loadToBundle(bundle) };
 			if(awake and: { this.isPlaying.not }) {
 				this.prepareToBundle(nil, bundle);
-				this.sendAllToBundle(bundle);
-			};
-		};
+				this.sendAllToBundle(bundle)
+			}
+		}
 
 	}
 
-	wakeUpParentsToBundle { | bundle, checkedAlready |
+	wakeUpParentsToBundle { |bundle, checkedAlready|
 		nodeMap.wakeUpParentsToBundle(bundle, checkedAlready);
-		objects.do { arg item; item.wakeUpParentsToBundle(bundle, checkedAlready) };
+		objects.do { |item| item.wakeUpParentsToBundle(bundle, checkedAlready) }
 	}
 
 	rebuildDeepToBundle { |bundle, busWasChangedExternally = true, checkedAlready, timeArgs|
@@ -916,7 +915,7 @@ NodeProxy : BusPlug {
 				};
 				if(monitor.isPlaying) {
 					//postf("in % restarting monitor\n", this);
-					monitor.playNBusToBundle(bundle, bus: bus, fadeTime: timeArgs[0]);
+					monitor.playNBusToBundle(bundle, bus: bus, fadeTime: timeArgs[0])
 				}
 			}
 		}
@@ -935,13 +934,13 @@ NodeProxy : BusPlug {
 			objects.do { |item| item.freeToBundle(bundle, this) };
 			objects.do { |item, i| item.build(this, i) };
 			this.loadToBundle(bundle);
-			this.sendAllToBundle(bundle);
+			this.sendAllToBundle(bundle)
 		} {
 			objects.do { |item| item.freeToBundle(bundle, this) };
-			objects.do { |item, i| item.build(this, i) };
+			objects.do { |item, i| item.build(this, i) }
 		};
 		timeArgs !? { this.fadeTime = prevTimeArgs[0]; quant = prevTimeArgs[1]; clock = prevTimeArgs[2] };
-		this.changed(\rebuild);
+		this.changed(\rebuild)
 	}
 
 
@@ -954,7 +953,7 @@ NodeProxy : BusPlug {
 			if(oldBus.index.notNil) { oldBus.free(true) }
 		});
 		busArg = bus = nil;
-		busLoaded = false;
+		busLoaded = false
 	}
 
 	schedAfterFade { |func|
@@ -963,7 +962,7 @@ NodeProxy : BusPlug {
 			usedClock = clock ? TempoClock.default;
 			time = this.fadeTime + (server.latency ? 0.01) + (quant ? 0).nextTimeOnGrid(usedClock);
 			usedClock.schedAbs(time, { func.value; func = nil });
-			CmdPeriod.doOnce { func.value; func = nil };
+			CmdPeriod.doOnce { func.value; func = nil }
 		}, func)
 	}
 
@@ -976,13 +975,13 @@ NodeProxy : BusPlug {
 
 	serverQuit {
 		busLoaded = false;
-		loaded = false;
+		loaded = false
 	}
 
 
 	// network support
 
-	shouldAddObject { | obj | ^obj.readyForPlay } // shared node proxy overrides this
+	shouldAddObject { |obj| ^obj.readyForPlay } // shared node proxy overrides this
 
 	defaultGroupID { ^server.nextNodeID }
 
@@ -994,40 +993,40 @@ NodeProxy : BusPlug {
 	linkNodeMap {
 		var index = this.index;
 		if(index.notNil) { nodeMap.set(\out, index, \i_out, index) };
-		nodeMap.proxy = this;
+		nodeMap.proxy = this
 	}
 
 	generateUniqueName {
 		var uniqueName = this.identityHash;
 		// if named, add the name so we see it
 		// in synthdef names of the server's nodes.
-		if(this.key.notNil, {
-			uniqueName = this.key ++ uniqueName;
-		});
-		^server.clientID.asString ++ uniqueName ++ "_";
+		if(this.key.notNil) {
+			uniqueName = this.key ++ uniqueName
+		};
+		^server.clientID.asString ++ uniqueName ++ "_"
 	}
 
 	prepareOutput {
 		var parentPlaying;
 		parentPlaying = this.addToChild;
-		if(parentPlaying) { this.deepWakeUp };
+		if(parentPlaying) { this.deepWakeUp }
 	}
 
 	addToChild {
 		var childProxyControl = buildProxyControl;
 		if(childProxyControl.notNil) {
-			childProxyControl.addParent(this);
+			childProxyControl.addParent(this)
 		};
-		^childProxyControl.isPlaying;
+		^childProxyControl.isPlaying
 	}
 
 	addChild { |proxy|
-		children = children.add(proxy);
+		children = children.add(proxy)
 		//"%: added child: % in %\n".postf(this, proxy, children);
 	}
 
 	removeChild { |proxy|
-		children.remove(proxy);
+		children.remove(proxy)
 		//"%: removed child: % in %\n".postf(this, proxy, children);
 	}
 
@@ -1036,9 +1035,9 @@ NodeProxy : BusPlug {
 		var func = objects[index].synthDef.func;
 		name = name ?? {
 			"New SynthDef name: ".post;
-			(this.key ++ "_" ++ index).asSymbol.postcs;
+			(this.key ++ "_" ++ index).asSymbol.postcs
 		};
-		^SynthDef(name, func);
+		^SynthDef(name, func)
 	}
 
 	// for lookup speed, always return first spec found in objects,
@@ -1046,9 +1045,9 @@ NodeProxy : BusPlug {
 	findFirstSpecFor { |controlName|
 		var spec;
 		this.objects.do { |obj|
-			if (obj.respondsTo(\findSpecFor)) {
+			if(obj.respondsTo(\findSpecFor)) {
 				spec = obj.findSpecFor(controlName);
-				if (spec.notNil) {
+				if(spec.notNil) {
 					^spec
 				}
 			}
@@ -1058,14 +1057,12 @@ NodeProxy : BusPlug {
 
 	specs {
 		var specs = ();
-		this.objects.do {
-			|obj|
-			if (obj.respondsTo(\specs)) {
-				specs = specs.merge(obj.specs, {
-					|a, b, key|
+		this.objects.do { |obj|
+			if(obj.respondsTo(\specs)) {
+				specs = specs.merge(obj.specs, { |a, b, key|
 					"Duplicate specs for key: % - only one will be used.".format(key).warn;
-					a;
-				});
+					a
+				})
 			}
 		};
 		^specs
@@ -1081,7 +1078,7 @@ Ndef : NodeProxy {
 
 	*initClass { all = () }
 
-	*new { | key, object |
+	*new { |key, object|
 		// key may be simply a symbol, or an association of a symbol and a server name
 		var res, server, dict;
 
@@ -1090,9 +1087,9 @@ Ndef : NodeProxy {
 			if(server.isNil) {
 				Error("Ndef(%): no server found with this name.".format(key)).throw
 			};
-			key = key.key;
+			key = key.key
 		} {
-			server = defaultServer ? Server.default;
+			server = defaultServer ? Server.default
 		};
 
 		dict = this.dictFor(server);
@@ -1100,7 +1097,7 @@ Ndef : NodeProxy {
 		if(res.isNil) {
 			res = super.new(server).key_(key);
 			dict.initProxy(res);
-			dict.envir.put(key, res);
+			dict.envir.put(key, res)
 		};
 		object !? {
 			res.source = object;
@@ -1110,29 +1107,29 @@ Ndef : NodeProxy {
 		^res
 	}
 
-	*ar { | key, numChannels, offset = 0 |
+	*ar { |key, numChannels, offset = 0|
 		^this.new(key).ar(numChannels, offset)
 	}
 
-	*kr { | key, numChannels, offset = 0 |
+	*kr { |key, numChannels, offset = 0|
 		^this.new(key).kr(numChannels, offset)
 	}
 
-	*clear { | fadeTime |
+	*clear { |fadeTime|
 		all.do(_.clear(fadeTime))
 	}
 
-	*clearDict { | fadeTime |
+	*clearDict { |fadeTime|
 		all.do(_.clear(fadeTime));
-		all.clear;
+		all.clear
 	}
 
-	*dictFor { | server |
+	*dictFor { |server|
 		var dict = all.at(server.name);
 		if(dict.isNil) {
 			dict = ProxySpace.new(server); // use a proxyspace for ease of access.
 			all.put(server.name, dict);
-			dict.registerServer;
+			dict.registerServer
 		};
 		^dict
 	}
@@ -1148,12 +1145,12 @@ Ndef : NodeProxy {
 		^this.class.dictFor(this.server)
 	}
 
-	storeOn { | stream |
-		this.printOn(stream);
+	storeOn { |stream|
+		this.printOn(stream)
 	}
-	printOn { | stream |
-		var serverString = if (server == Server.default) { "" } {
-			" ->" + server.name.asCompileString;
+	printOn { |stream|
+		var serverString = if(server == Server.default) { "" } {
+			" ->" + server.name.asCompileString
 		};
 		stream << this.class.name << "(" <<< this.key << serverString << ")"
 	}

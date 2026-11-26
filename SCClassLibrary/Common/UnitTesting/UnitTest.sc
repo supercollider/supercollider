@@ -6,30 +6,30 @@ UnitTest {
 	classvar <allTestClasses;
 
 	*initClass {
-		passVerbosity = full;
+		passVerbosity = full
 	}
 
 	*findTestClasses {
 		allTestClasses = UnitTest.allSubclasses.collectAs({ |class|
 			var classkey = class.asString[4..]; // drop Meta_
-			var methtests = class.findTestMethods.collectAs({ | method |
+			var methtests = class.findTestMethods.collectAs({ |method|
 				method.name.asString -> {
 					class.prRunWithinSetUpClass {
-						class.new.runTestMethod(method);
+						class.new.runTestMethod(method)
 					}
 				}
 			}, Dictionary);
 			methtests.add(" run all in this class" -> { class.run });
-			classkey -> methtests;
+			classkey -> methtests
 		}, Dictionary);
 		// err there may be some empty classes hanging around
-		allTestClasses = allTestClasses.reject { | class | class.size == 1 };
-		allTestClasses.add("...All..." -> Dictionary["Run all" -> { UnitTest.runAll }]);
+		allTestClasses = allTestClasses.reject { |class| class.size == 1 };
+		allTestClasses.add("...All..." -> Dictionary["Run all" -> { UnitTest.runAll }])
 
 	}
 
 	// run a single test in the name format "TestPolyPlayerPool:test_prepareChildrenToBundle"
-	*runTest { | methodName |
+	*runTest { |methodName|
 		var class, method, unitTest;
 		# class, method = methodName.split($:);
 		class = class.asSymbol.asClass;
@@ -38,7 +38,7 @@ UnitTest {
 			Error("Test method not found " + methodName).throw
 		};
 		class.prRunWithinSetUpClass {
-			class.new.runTestMethod(method);
+			class.new.runTestMethod(method)
 		}
 	}
 
@@ -55,7 +55,7 @@ UnitTest {
 	tearDown {}
 
 	// run all tests of this UnitTest
-	*run { | reset = true, report = true |
+	*run { |reset = true, report = true|
 		if(reset) { this.reset };
 		this.prRunAllTestMethods(report)
 	}
@@ -63,30 +63,30 @@ UnitTest {
 
 	// run all tests of all subclasses of this UnitTest
 	*runAll {
-		if(this === UnitTest, {
+		if(this === UnitTest) {
 			^this.forkIfNeeded {
 				this.reset;
 				this.allSubclasses.do { |testClass|
 					testClass.run(false, false);
-					0.1.wait;
+					0.1.wait
 				};
 				this.report
 			}
-		}, {
+		} {
 			^this.shouldNotImplement(thisMethod)
-		});
+		}
 	}
 
 	// run a single test method of this class
 	// this assumes that setUpClass has been called
 	// and that tearDownClass is called afterwards
-	runTestMethod { | method, report = true |
+	runTestMethod { |method, report = true|
 		this.class.forkIfNeeded {
 			this.setUp;
 			currentMethod = method;
 			this.perform(method.name);
 			this.tearDown;
-			if(report) { this.class.report };
+			if(report) { this.class.report }
 		}
 	}
 
@@ -98,7 +98,7 @@ UnitTest {
 				this.findTestMethods.do { |method|
 					this.new.runTestMethod(method, false)
 				};
-				if(report) { this.report };
+				if(report) { this.report }
 			}
 		}
 	}
@@ -108,7 +108,7 @@ UnitTest {
 		this.forkIfNeeded {
 			this.setUpClass;
 			func.value(this);
-			this.tearDownClass;
+			this.tearDownClass
 		}
 	}
 
@@ -120,27 +120,27 @@ UnitTest {
 	///////////////////////////////////////////////////////////////////////
 	// call these in your test_ methods to check conditions and pass or fail
 
-	assert { | boolean, message, report = true, onFailure, details |
+	assert { |boolean, message, report = true, onFailure, details|
 		if(boolean.not) {
 			this.failed(currentMethod, message, report, details);
 			if(onFailure.notNil) {
 				{ onFailure.value }.defer;
-				Error("UnitTest halted with onFailure handler.").throw;
-			};
+				Error("UnitTest halted with onFailure handler.").throw
+			}
 		} {
 			this.passed(currentMethod, message, report, details)
 		};
 		^boolean
 	}
 
-	assertEquals { |a, b, message = "", report = true, onFailure |
+	assertEquals { |a, b, message = "", report = true, onFailure|
 		var details = "Is:\n\t % \nShould be:\n\t %".format(a, b);
-		this.assert(a == b, message, report, onFailure, details);
+		this.assert(a == b, message, report, onFailure, details)
 	}
 
 	assertFloatEquals { |a, b, message = "", within = 0.0001, report = true, onFailure|
 		var details = ("Is:\n\t % \nShould equal (within range %):\n\t %").format(a, within, b);
-		this.assert((a - b).abs <= within, message, report, onFailure, details);
+		this.assert((a - b).abs <= within, message, report, onFailure, details)
 	}
 
 	assertArrayFloatEquals { |a, b, message = "", within = 0.0001, report = true, onFailure|
@@ -155,79 +155,79 @@ UnitTest {
 			startFrom = results.indexOf(false);
 			// Add failure details:
 			message = message ++
-			"\n% of % items in array failed to match."
-			" Displaying arrays from index of first failure"
-			" (%) onwards:\n%\n! = \n%\n"
-			.format(
-				results.count(_ == false),
-				results.size,
-				startFrom,
-				a[startFrom..],
-				if(b.isArray) { b[startFrom..] } { b }
-			);
+				"\n% of % items in array failed to match."
+				" Displaying arrays from index of first failure"
+				" (%) onwards:\n%\n! = \n%\n"
+				.format(
+					results.count(_ == false),
+					results.size,
+					startFrom,
+					a[startFrom..],
+					if(b.isArray) { b[startFrom..] } { b }
+				);
 			this.failed(currentMethod, message, report);
 
 			if(onFailure.notNil) {
 				{ onFailure.value }.defer;
-				Error("UnitTest halted with onFailure handler.").throw;
-			};
+				Error("UnitTest halted with onFailure handler.").throw
+			}
 		} {
 			this.passed(currentMethod, message, report)
 		}
 		^someHaveFailed.not
 	}
 
-	assertException { | func, errorClass, message, report = true, onFailure, details |
+	assertException { |func, errorClass, message, report = true, onFailure, details|
 		var moreDetails = nil;
 		var passed = false;
 		errorClass = errorClass.asClass;
 
-		func.try { |error|
+		try(func) { |error|
 			if(error.isKindOf(errorClass)) {
 				// Add extra info in case the class was an unexpected child type.
 				moreDetails = "Received exception of class '%', with message: '%'".format(
 					error.class.name,
 					error.errorString
 				);
-				passed = true;
+				passed = true
 			} {
 				moreDetails = "Received exception of class '%', with message: '%'\nExpected class '%'".format(
 					error.class.name,
 					error.errorString,
 					errorClass.name
-				);
+				)
 			}
 		};
 
 		moreDetails = moreDetails ?? { "Function did not throw an exception" };
 		if(details.isNil) { details = moreDetails } { details = details ++ "\n" ++ moreDetails };
-		^this.assert(passed, message, report, onFailure, details);
+		^this.assert(passed, message, report, onFailure, details)
 	}
 
-	assertNoException { | func, message, report = true, onFailure, details |
+	assertNoException { |func, message, report = true, onFailure, details|
 		var moreDetails;
 		var passed = true;
 
-		func.try { |error|
+		try(func) { |error|
 			moreDetails = "Function threw an exception of class '%', with message: '%'".format(
 				error.class.name,
 				error.errorString
 			);
 			if(details.isNil) { details = moreDetails } { details = details ++ "\n" ++ moreDetails };
-			passed = false;
+			passed = false
 		};
 		^this.assert(passed, message, report, onFailure, details)
 	}
 
 
 	// make a further assertion only if it passed, or only if it failed
-	ifAsserts { | boolean, message, ifPassedFunc, ifFailedFunc, report = true|
+	ifAsserts { |boolean, message, ifPassedFunc, ifFailedFunc, report = true|
 		if(boolean.not) {
 			this.failed(currentMethod, message, report);
-			ifFailedFunc.value;
+			ifFailedFunc.value
 		} {
-			this.passed(currentMethod,message, report);
-			ifPassedFunc.value;
+			this.passed(currentMethod, message, report);
+			ifPassedFunc.value
 		};
 		^boolean
 	}
@@ -242,7 +242,7 @@ UnitTest {
 		while {
 			(limit >= 0) and: { condvar.waitFor(waitDur, predicate).not }
 		} {
-			limit = limit - 1;
+			limit = limit - 1
 		};
 
 		// consider test failed if limit is surpassed
@@ -259,54 +259,54 @@ UnitTest {
 			waitConditionBlock.value.not and:
 			{ (limit = limit - 1) > 0 }
 		} {
-			0.1.wait;
+			0.1.wait
 		};
 
 		if(limit == 0) {
-			this.failed(currentMethod,"Timeout:" + timeoutMessage)
+			this.failed(currentMethod, "Timeout:" + timeoutMessage)
 		} {
 			testBlock.value
-		};
+		}
 	}
 
 	// if already booted, then freeAll and create new allocators
 	// if this is called inside a routine, the routine waits until server is booted
 
-	bootServer { | server |
+	bootServer { |server|
 		server = server ? Server.default;
 		if(server.serverRunning.not) {
 			server.bootSync
 		} {
-			server.freeAll;
+			server.freeAll
 		};
-		server.newAllocators; // new nodes, busses regardless
+		server.newAllocators // new nodes, busses regardless
 	}
 
 	debug { |text|
-		debug = debug ++ text;
+		debug = debug ++ text
 	}
 
 	// call failure directly
-	failed { | method, message, report = true, details |
+	failed { |method, message, report = true, details|
 		var r = UnitTestResult(this, method, message, details, debug);
 		failures = failures.add(r);
 
 		if(report) {
 			Post << Char.nl << "FAIL: ";
 			r.report;
-			Post << Char.nl;
-		};
+			Post << Char.nl
+		}
 	}
 
 	// call pass directly
-	passed { | method, message, report = true, details |
+	passed { |method, message, report = true, details|
 		var r = UnitTestResult(this, method, message, details, debug);
 		passes = passes.add(r);
 
 		if(report and: { reportPasses }) {
 			Post << "PASS: ";
-			r.report(passVerbosity == brief);
-		};
+			r.report(passVerbosity == brief)
+		}
 	}
 
 	// PRIVATE IMPLEMENTATION
@@ -314,10 +314,10 @@ UnitTest {
 	// don't use this directly,
 	// use TestClass.run
 
-	*runTestClassForClass { | class, reset = true, report = true |
+	*runTestClassForClass { |class, reset = true, report = true|
 		var testClass;
 		if(class.isNil) {
-			"No class supplied for testing".die;
+			"No class supplied for testing".die
 		};
 		testClass = ("Test" ++ class.name.asString).asSymbol.asClass;
 		if(testClass.isNil) {
@@ -326,13 +326,13 @@ UnitTest {
 		};
 		if(testClass.respondsTo(\run).not) {
 			("Attempting to run UnitTests on class that is not a subclass of UnitTest"
-				+ testClass).error;
+					+ testClass).error;
 			^this
 		};
-		testClass.run(reset,report)
+		testClass.run(reset, report)
 	}
 
-	*findTestClass { | forClass |
+	*findTestClass { |forClass|
 		^("Test" ++ forClass.name.asString).asSymbol.asClass
 	}
 
@@ -341,11 +341,11 @@ UnitTest {
 		"UNIT TESTS FOR '%' COMPLETED".format(this.name).inform;
 		if(failures.size > 0) {
 			"There were failures:".inform;
-			failures.do { arg results;
-				results.report(true);
-			};
+			failures.do { |results|
+				results.report(true)
+			}
 		} {
-			"There were no failures".inform;
+			"There were no failures".inform
 		}
 	}
 
@@ -366,7 +366,7 @@ UnitTest {
 		}
 	}
 
-	*classesWithTests { | package = 'Common'|
+	*classesWithTests { |package = 'Common'|
 		^Quarks.classesInPackage(package).select { |c|
 			UnitTest.findTestClass(c).notNil
 		}
@@ -377,14 +377,16 @@ UnitTest {
 	}
 
 	// whom I am testing
-	// removing "Test" by copyToEnd(4)
+	// removing "Test" by copyToEnd(4), and the "_Server" suffix of tests that need a server
 	*findTestedClass {
-		^this.name.asString.copyToEnd(4).asSymbol.asClass
+		var name = this.name.asString.copyToEnd(4);
+		if(name.endsWith("_Server")) { name = name.drop(-7) };
+		^name.asSymbol.asClass
 	}
 
 	// methods in the tested class that do not have test_ methods written
 	*untestedMethods {
-		var testedClass,testMethods,testedMethods,untestedMethods;
+		var testedClass, testMethods, testedMethods, untestedMethods;
 		testedClass = this.findTestedClass;
 		// what methods in the target class do not have tests written for them ?
 		testMethods = this.findTestMethods;
@@ -405,19 +407,19 @@ UnitTest {
 		^untestedMethods
 	}
 
-	*listUntestedMethods { | forClass |
-		this.findTestClass(forClass).untestedMethods.do {|m| m.name.postln }
+	*listUntestedMethods { |forClass|
+		this.findTestClass(forClass).untestedMethods.do { |m| m.name.postln }
 	}
 
 	// private
 	*reset {
 		failures = [];
 		passes = [];
-		routine.stop;
+		routine.stop
 	}
 
 	s {
-		^Server.default; // for convenient translation to/from example code
+		^Server.default // for convenient translation to/from example code
 	}
 
 }
@@ -427,25 +429,25 @@ UnitTestResult {
 
 	var <testClass, <testMethod, <message, <details, <debug;
 
-	*new { |testClass, testMethod, message(""), details, debug|
+	*new { |testClass, testMethod, message = (""), details, debug|
 		^super.newCopyArgs(testClass ? this, testMethod ? thisMethod, message, details, debug)
 	}
 
-	report { |brief=false|
+	report { |brief = false|
 		var name = if(testMethod.notNil) { testMethod.name } { "unit test result" };
 		Post << testClass.asString << ": " << name;
-		if (message.size > 0) {
-			Post << " - " << message;
+		if(message.size > 0) {
+			Post << " - " << message
 		};
-		if (brief.not) {
-			if (debug.size > 0) {
-				Post << Char.nl << debug;
+		if(brief.not) {
+			if(debug.size > 0) {
+				Post << Char.nl << debug
 			};
-			if (details.notNil) {
-				Post << Char.nl << details;
-			};
+			if(details.notNil) {
+				Post << Char.nl << details
+			}
 		};
-		Post << Char.nl;
+		Post << Char.nl
 	}
 }
 
@@ -470,18 +472,18 @@ UnitTestScript : UnitTest {
 
 	init { |argName, argPath|
 		name = argName;
-		path = argPath;
+		path = argPath
 	}
 
 	*initClass {
-		scriptDict = ();
+		scriptDict = ()
 	}
 
-	*runTest { | scriptName |
+	*runTest { |scriptName|
 		var script;
 		allScripts ?? { this.findTestScripts };
 		script = allScripts[scriptName.asSymbol];
-		if(script.isNil) { ("UnitTestScript: script not found: "+ scriptName ).warn } {
+		if(script.isNil) { ("UnitTestScript: script not found: " + scriptName).warn } {
 			script.runScript
 		}
 	}
@@ -489,9 +491,9 @@ UnitTestScript : UnitTest {
 	*findTestScripts {
 		var classPaths;
 		var func = { |path|
-			var scriptPaths,fileNames, scriptNames;
-			scriptPaths = pathMatch(path ++"/*" ++ fileEnd);
-			scriptPaths = scriptPaths ++ pathMatch(path ++"/*/*" ++ fileEnd);
+			var scriptPaths, fileNames, scriptNames;
+			scriptPaths = pathMatch(path ++ "/*" ++ fileEnd);
+			scriptPaths = scriptPaths ++ pathMatch(path ++ "/*/*" ++ fileEnd);
 			scriptPaths = scriptPaths.as(Set).as(Array); // remove duplicates
 			fileNames = scriptPaths.collect(_.basename);
 			scriptNames = fileNames.collect { |x| x.replace(fileEnd, "").asSymbol };
@@ -501,16 +503,16 @@ UnitTestScript : UnitTest {
 					Error(
 						"duplicate script name:\n%\n%\n\npath:%\n\n"
 						.format(scriptPaths[i], scriptDict[name], path)
-					);
+					)
 				};
 				scriptDict.put(name, scriptPaths[i]);
-				if(oldPath.notNil) { allScripts.add(this.new(name, scriptPaths[i])) };
-			};
+				if(oldPath.notNil) { allScripts.add(this.new(name, scriptPaths[i])) }
+			}
 		};
 
 		classPaths = Class.allClasses.collectAs({ |class| class.filenameSymbol.asString.dirname }, Set);
 		allScripts = List.new;
-		classPaths.do(func);
+		classPaths.do(func)
 
 	}
 
@@ -521,7 +523,7 @@ UnitTestScript : UnitTest {
 
 	runTestMethod { |testScript|
 
-		testScript.runScript;
+		testScript.runScript
 
 	}
 
@@ -530,7 +532,7 @@ UnitTestScript : UnitTest {
 		this.class.forkIfNeeded {
 			currentMethod = this;
 			path.load.value(this);
-			this.class.report;
+			this.class.report
 		}
 	}
 
@@ -540,7 +542,7 @@ UnitTestScript : UnitTest {
 			allScripts.do { |testScript|
 				this.runTestMethod(testScript)
 			}
-		}.play(AppClock);
+		}.play(AppClock)
 	}
 
 }

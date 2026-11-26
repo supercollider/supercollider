@@ -3,17 +3,17 @@ AbstractOpPlug : AbstractFunction {
 	composeUnaryOp { |aSelector|
 		^UnaryOpPlug.new(aSelector, this)
 	}
-	composeBinaryOp { | aSelector, something |
+	composeBinaryOp { |aSelector, something|
 		^BinaryOpPlug.new(aSelector, this, something)
 	}
-	reverseComposeBinaryOp { | aSelector, something |
+	reverseComposeBinaryOp { |aSelector, something|
 		^BinaryOpPlug.new(aSelector, something, this)
 	}
-	composeNAryOp { | aSelector, anArgList |
+	composeNAryOp { |aSelector, anArgList|
 		^{ this.value(anArgList).performList(aSelector, anArgList) }
 	}
 	writeInputSpec {
-		Error("use .ar or .kr to use within a synth.").throw;
+		Error("use .ar or .kr to use within a synth.").throw
 	}
 	asUGenInput {
 		^this.value(nil)
@@ -25,7 +25,7 @@ AbstractOpPlug : AbstractFunction {
 UnaryOpPlug : AbstractOpPlug {
 	var >operator, >a;
 
-	*new { | operator, a |
+	*new { |operator, a|
 		^super.newCopyArgs(operator, a)
 	}
 
@@ -66,7 +66,7 @@ UnaryOpPlug : AbstractOpPlug {
 BinaryOpPlug : AbstractOpPlug  {
 	var >operator, <>a, <>b;
 
-	*new { | operator, a, b |
+	*new { |operator, a, b|
 		^super.newCopyArgs(operator, a, b)
 	}
 
@@ -74,8 +74,8 @@ BinaryOpPlug : AbstractOpPlug  {
 		^a.value(proxy).perform(operator, b.value(proxy))
 	}
 
-	initBus { | rate, numChannels |
-		^a.initBus(rate, numChannels) and: { b.initBus(rate, numChannels) };
+	initBus { |rate, numChannels|
+		^a.initBus(rate, numChannels) and: { b.initBus(rate, numChannels) }
 	}
 
 	isNeutral { ^a.isNeutral and: { b.isNeutral } }
@@ -100,7 +100,7 @@ BinaryOpPlug : AbstractOpPlug  {
 	}
 	wakeUp  {
 		a.wakeUp;
-		b.wakeUp;
+		b.wakeUp
 	}
 	asControlInput {
 		"BinaryOpPlug: Cannot calculate this value. Use direct mapping only.".warn;

@@ -10,7 +10,7 @@ The backquote code:: ` :: is a unary operator that is equivalent to calling code
 Refs are most commonly used to prevent multi-channel expansion in link::Classes/SynthDef::s and link::Classes/Pattern::s (see link::Classes/Klank:: for an example).
 Refs can also be used to simplify the coding of co-routines used in EventStreams (see link::Classes/Prout:: for an example).
 
-code::
+code#fragment::
 
 x = Ref(nil);
 z = obj.method(x);		// method puts something in reference
@@ -66,7 +66,7 @@ method::seq
 this method is used to return values from within a Routine definition
 
 discussion::
-code::
+code#fragment::
 { this.value = output.embedInStream(this.value) }
 ::
 

@@ -40,7 +40,7 @@ CondVar {
 				if(thisThread.beats >= endingBeats) { ^false };
 				// If the timeout expires, return the value of the predicate; otherwise,
 				// we were signalled, so go back through the loop.
-				if(this.prWaitFor(endingBeats - thisThread.beats).not) { ^predicate.value };
+				if(this.prWaitFor(endingBeats - thisThread.beats).not) { ^predicate.value }
 			};
 
 			^true
@@ -48,14 +48,14 @@ CondVar {
 	}
 
 	signalOne {
-		if (waitingThreads.isEmpty.not) {
-			this.prWakeThread(waitingThreads.removeAt(0));
+		if(waitingThreads.isEmpty.not) {
+			this.prWakeThread(waitingThreads.removeAt(0))
 		}
 	}
 
 	signalAll {
 		waitingThreads.do(this.prWakeThread(_));
-		waitingThreads = Array.new;
+		waitingThreads = Array.new
 	}
 
 	// Also disables `copy`, since it redirects to `shallowCopy` on Object
@@ -86,7 +86,7 @@ CondVar {
 			// if wokenThread is nil, we asssume a signal happened
 			// immediately prior to timeout and the thread is already awake
 			// no call to prWakeThread happens in this case
-			if(wokenThread.notNil) { this.prWakeThread(wokenThread) };
+			if(wokenThread.notNil) { this.prWakeThread(wokenThread) }
 		};
 
 		timeoutThread.play(thisThread.clock);

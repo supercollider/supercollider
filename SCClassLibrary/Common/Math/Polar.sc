@@ -1,7 +1,7 @@
 Polar : Number {
 	var <>rho, <>theta;
 
-	*new { arg rho, theta;
+	*new { |rho, theta|
 		^super.newCopyArgs(rho, theta)
 	}
 
@@ -17,20 +17,20 @@ Polar : Number {
 	asComplex { ^Complex.new(this.real, this.imag) }
 	asPoint { ^Point.new(this.real, this.imag) }
 
-	scale { arg scale;
+	scale { |scale|
 		^Polar.new(rho * scale, theta)
 	}
-	rotate { arg angle; // in radians
+	rotate { |angle| // in radians
 		^Polar.new(rho, theta + angle)
 	}
 
 	// do math as Complex
-	+ { arg aNumber;  ^this.asComplex + aNumber  }
-	- { arg aNumber;  ^this.asComplex - aNumber  }
-	* { arg aNumber;  ^this.asComplex * aNumber  }
-	/ { arg aNumber;  ^this.asComplex / aNumber  }
+	+ { |aNumber| ^this.asComplex + aNumber }
+	- { |aNumber| ^this.asComplex - aNumber }
+	* { |aNumber| ^this.asComplex * aNumber }
+	/ { |aNumber| ^this.asComplex / aNumber }
 
-	== { arg aPolar;
+	== { |aPolar|
 		^aPolar respondsTo: #[\rho, \theta] and: {
 			rho == aPolar.rho and: { theta == aPolar.theta }
 		}
@@ -46,15 +46,15 @@ Polar : Number {
 		^thing.asComplex.perform(aSelector, this, adverb)
 	}
 
-	performBinaryOpOnUGen { arg aSelector, aUGen;
+	performBinaryOpOnUGen { |aSelector, aUGen|
 		^Complex.new(
 			BinaryOpUGen.new(aSelector, aUGen, this.real),
 			BinaryOpUGen.new(aSelector, aUGen, this.imag)
-		);
+		)
 	}
 
-	printOn { arg stream;
-		stream << "Polar(" << rho << ", " << theta << ")";
+	printOn { |stream|
+		stream << "Polar(" << rho << ", " << theta << ")"
 	}
-	storeArgs { ^[rho,theta] }
+	storeArgs { ^[rho, theta] }
 }

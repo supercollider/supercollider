@@ -1,3 +1,4 @@
+//# VERSION 3.16
 /*
 TestServer_clientID.run;
 UnitTest.gui;
@@ -21,15 +22,15 @@ TestServer_clientID : UnitTest {
 	var server;
 
 	setUp {
-		server = Server(this.class.name);
+		server = Server(this.class.name)
 	}
 
 	tearDown {
-		server.remove;
+		server.remove
 	}
 
 	test_default {
-		this.assertEquals(server.clientID, 0, "s.clientID should be 0 by default.");
+		this.assertEquals(server.clientID, 0, "s.clientID should be 0 by default.")
 	}
 
 	test_badInputTypes {
@@ -38,19 +39,19 @@ TestServer_clientID : UnitTest {
 		server.clientID = -123;
 		this.assertEquals(server.clientID, 0, "s.clientID should block negative numbers.");
 		server.clientID = 0.57;
-		this.assertEquals(server.clientID, 0, "s.clientID should block floating point numbers.");
+		this.assertEquals(server.clientID, 0, "s.clientID should block floating point numbers.")
 	}
 
 	test_tooHigh {
 		server.options.maxLogins = 32;
 		server.clientID = server.options.maxLogins;
-		this.assertEquals(server.clientID, 0, "s.clientID should block number >= maxLogins.");
+		this.assertEquals(server.clientID, 0, "s.clientID should block number >= maxLogins.")
 	}
 
 	test_validRange {
 		server.options.maxLogins = 32;
 		server.clientID = server.options.maxLogins - 1;
-		this.assertEquals(server.clientID, 31, "s.clientID should be settable if valid.");
+		this.assertEquals(server.clientID, 31, "s.clientID should be settable if valid.")
 	}
 
 	test_userSpecifiedClientID_invalid {
@@ -64,7 +65,7 @@ TestServer_clientID : UnitTest {
 		var options = ServerOptions().maxLogins_(8);
 		var s = Server(thisMethod.name, nil, options, 7);
 		this.assertEquals(s.clientID, 7, "Making a server with valid nonzero clientID should work.");
-		s.remove;
+		s.remove
 	}
 
 	test_allocatorRanges_singleClient {
@@ -94,7 +95,7 @@ TestServer_clientID : UnitTest {
 		);
 
 		// reset pre-test allocator
-		Server.nodeAllocClass = prevClass;
+		Server.nodeAllocClass = prevClass
 	}
 
 	test_allocatorRanges_multiClient {
@@ -124,6 +125,6 @@ TestServer_clientID : UnitTest {
 			"for 16 clients, bufferAllocator should divide range evenly."
 		);
 
-		Server.nodeAllocClass = prevClass;
+		Server.nodeAllocClass = prevClass
 	}
 }

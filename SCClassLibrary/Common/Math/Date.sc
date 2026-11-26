@@ -5,12 +5,12 @@ Date : Magnitude {
 	*getDate { ^this.localtime }
 	*localtime { ^this.new.localtime }
 	*gmtime { ^this.new.gmtime }
-	*new { arg year, month, day, hour, minute, second, dayOfWeek, rawSeconds;
+	*new { |year, month, day, hour, minute, second, dayOfWeek, rawSeconds|
 		var instance = super.newCopyArgs(year, month, day, hour, minute, second, dayOfWeek,
 			rawSeconds);
-		^instance.prInitialize;
+		^instance.prInitialize
 	}
-	*fromString { arg string, format;
+	*fromString { |string, format|
 		^this.new.prFromString(string, format)
 	}
 	storeArgs {
@@ -48,21 +48,21 @@ Date : Magnitude {
 		^this.dayStamp ++ "_" ++ this.secStamp
 	}
 	hourStamp {
-		^hour.asString ++ ":" ++ minute ++ ":"  ++ (rawSeconds % 60).round(0.0001)
+		^hour.asString ++ ":" ++ minute ++ ":" ++ (rawSeconds % 60).round(0.0001)
 	}
 	asSortableString {  // standard database format, alphabetically sortable
-		^String.streamContents({ arg s;
+		^String.streamContents({ |s|
 			s << year;
-			if(month < 10,{ s <<  0 });
-			s <<  month;
-			if(day < 10,{ s <<  0 });
-			s <<  day;
-			if(hour < 10,{ s <<  0 });
-			s <<  hour;
-			if(minute < 10, { s <<  0 });
-			s <<  minute;
-			if(second < 10, { s <<  0 });
-			s <<  second;
+			if(month < 10) { s << 0 };
+			s << month;
+			if(day < 10) { s << 0 };
+			s << day;
+			if(hour < 10) { s << 0 };
+			s << hour;
+			if(minute < 10) { s << 0 };
+			s << minute;
+			if(second < 10) { s << 0 };
+			s << second
 		})
 	}
 
@@ -70,26 +70,25 @@ Date : Magnitude {
 		_Date_Resolve
 		^this.primitiveFailed
 	}
-	prFromString { arg string, format;
+	prFromString { |string, format|
 		_Date_FromString
 		^this.primitiveFailed
 	}
 	prInitialize {
 		case
-		{ rawSeconds.notNil } {
-			// 1. rawSeconds was specified: use it to calculate all other variables
-			this.prResolveFromRawSeconds
-		}
-		{ [\year, \month, \day, \hour, \minute, \second].collect{ |v| this.instVarAt(v) }.every(_.isNil) } {
-			// 2. All (YMD, HMS) variables are nil: return current (local) time
-			this.localtime
-		}
-		{
-			// 3. In all other cases, resolve dayOfWeek and rawSeconds from the other
-			// variables (YMD, HMS).  If no year is provided, will throw an error.
-			this.resolve
-		};
-		^this;
+			{ rawSeconds.notNil } {
+				// 1. rawSeconds was specified: use it to calculate all other variables
+				this.prResolveFromRawSeconds
+			}
+			{ [\year, \month, \day, \hour, \minute, \second].collect { |v| this.instVarAt(v) }.every(_.isNil) } {
+				// 2. All (YMD, HMS) variables are nil: return current (local) time
+				this.localtime
+			} {
+				// 3. In all other cases, resolve dayOfWeek and rawSeconds from the other
+				// variables (YMD, HMS).  If no year is provided, will throw an error.
+				this.resolve
+			};
+		^this
 	}
 	prResolveFromRawSeconds {
 		_Date_ResolveFromRawSeconds
@@ -102,30 +101,29 @@ Date : Magnitude {
 	asString {
 		^this.asctime
 	}
-	format {
-		arg format;
+	format { |format|
 		_prStrFTime;
 		^this.primitiveFailed
 	}
-	< { arg other;
+	< { |other|
 		^this.rawSeconds < other.rawSeconds
 	}
-	<= { arg other;
+	<= { |other|
 		^this.rawSeconds <= other.rawSeconds
 	}
-	> { arg other;
+	> { |other|
 		^this.rawSeconds > other.rawSeconds
 	}
-	>= { arg other;
+	>= { |other|
 		^this.rawSeconds >= other.rawSeconds
 	}
-	== { arg other;
+	== { |other|
 		^this.rawSeconds == other.rawSeconds
 	}
 	hash {
 		^this.instVarHash(#[\rawSeconds])
 	}
-	!= { arg other;
+	!= { |other|
 		^this.rawSeconds != other.rawSeconds
 	}
 }

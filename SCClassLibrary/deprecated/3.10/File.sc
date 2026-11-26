@@ -1,6 +1,6 @@
 + File {
 	*openDialogs {
 		this.deprecated(thisMethod);
-		^nil;
+		^nil
 	}
 }

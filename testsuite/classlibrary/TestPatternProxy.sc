@@ -1,22 +1,22 @@
+//# VERSION 3.16
 TestPatternProxy : UnitTest {
 
 	test_transparency {
 
 		var runTest = { |f, source, firstSource|
 			var n = 16;
-			var a, b, proxy, pattern, errorString;
-			var resultA, resultB;
-			proxy = PatternProxy.new;
-			a = f.(proxy).asStream;
+			var pattern;
+			var proxy = PatternProxy.new;
+			var a = f.(proxy).asStream;
 			if(firstSource.notNil) {
 				proxy.source = firstSource;
 				n.do { a.next }
 			};
 			proxy.source = source;
-			b = f.(source).asStream;
-			resultA = Array.fill(n, { a.next });
-			resultB = Array.fill(n, { b.next });
-			errorString = "The function % should behave the same for a PatternProxy and its source:\n%\n".format(f.cs, source.cs);
+			var b = f.(source).asStream;
+			var resultA = Array.fill(n, { a.next });
+			var resultB = Array.fill(n, { b.next });
+			var errorString = "The function % should behave the same for a PatternProxy and its source:\n%\n".format(f.cs, source.cs);
 			if(firstSource.notNil) { errorString = errorString ++ "firstSource: " ++ firstSource.cs };
 			errorString = errorString ++ "\ncompare results:\n%\n%\n\n".format(resultA, resultB);
 
@@ -60,17 +60,16 @@ TestPatternProxy : UnitTest {
 
 		var runTest = { |f, source|
 			var n = 16;
-			var a, b, proxy, pattern, errorString;
-			var resultA, resultB;
+			var pattern;
 			var removeCleanup = { |event| event !? { event.removeAt(\addToCleanup) }; event };
 
-			proxy = EventPatternProxy.new;
+			var proxy = EventPatternProxy.new;
 			proxy.source = source;
-			a = Pevent(f.(proxy), Event.default).asStream;
-			b = Pevent(f.(proxy.source), Event.default).asStream;
-			resultA = Array.fill(n, { a.next }).collect(removeCleanup);
-			resultB = Array.fill(n, { b.next }).collect(removeCleanup);
-			errorString = "The function % should behave the same for a PatternProxy and its source:\n%\n".format(f.cs, source.cs);
+			var a = Pevent(f.(proxy), Event.default).asStream;
+			var b = Pevent(f.(proxy.source), Event.default).asStream;
+			var resultA = Array.fill(n, { a.next }).collect(removeCleanup);
+			var resultB = Array.fill(n, { b.next }).collect(removeCleanup);
+			var errorString = "The function % should behave the same for a PatternProxy and its source:\n%\n".format(f.cs, source.cs);
 			errorString = errorString ++ "\ncompare results:\n%\n%\n\n".format(resultA, resultB);
 
 			this.assert(resultA == resultB, errorString, false)
@@ -88,7 +87,7 @@ TestPatternProxy : UnitTest {
 			{ |x| Pseq([x, (y: 10)]) },
 			//{ |x| Pselect({ |event| event[\zz].notNil }, x) },
 			{ |x| Pcollect({ |event| event[\zz] = 100 }, x) },
-			{ |x| Pfset({ ~gg = 8; ~zz = 9; }, x) },
+			{ |x| Pfset({ ~gg = 8; ~zz = 9 }, x) },
 			{ |x| Psetpre(\gg, 8, x) },
 			{ |x| Ppar([x, x]) },
 			{ |x| Pfin(3, x) },
@@ -112,7 +111,7 @@ TestPatternProxy : UnitTest {
 		var sources = [
 			(x: 9),
 			Pbind.new,
-			Pbind(\x, Pseq([1, 2, 3]), \dur,  Pseq([1, 0.5, 0.5], inf)),
+			Pbind(\x, Pseq([1, 2, 3]), \dur, Pseq([1, 0.5, 0.5], inf)),
 			Pseq([(), Event.default, (zz: 300), (zz: 500)], 2),
 			Pseq([(zz: 300), (zz: 500, yy: 9, dur: 0.5)], 1),
 			Plazy({ Plazy({ (zz: 99) }, 4) })
@@ -180,12 +179,12 @@ TestPatternProxy : UnitTest {
 		Pdefn(\x, { |envir| Pseq([envir[\first], 2, 3]) }); // functions expand and take envir as arg
 		assert.(Pdefn(\x).asStream.nextN(4) == [7, 2, 3, nil], 3.3);
 
-		Pdefn.clear;
+		Pdefn.clear
 	}
 
 	test_update_withEvents {
 
-		var x, a;
+		var a;
 		var removeCleanup = { |event| event !? { event.removeAt(\addToCleanup) }; event };
 		var assert = { |a, b, which|
 			//a = a.collect(removeCleanup);
@@ -201,14 +200,14 @@ TestPatternProxy : UnitTest {
 
 		assert.(
 			Pdef(\x).asStream.nextN(2, ()),
-			[ ( 'freq': 700 ), ( 'freq': 700 ) ],
+			[('freq': 700), ('freq': 700)],
 			1.1
 		);
 
 
 		assert.(
 			Pdef(\x).asStream.nextN(2, ()),
-			[ ( 'freq': 700 ), ( 'freq': 700 ) ],
+			[('freq': 700), ('freq': 700)],
 			1.2
 		);
 
@@ -216,7 +215,7 @@ TestPatternProxy : UnitTest {
 
 		assert.(
 			Pdef(\x).asStream.nextN(2, ()),
-			[ ( 'freq': 800 ), ( 'freq': 800 ) ],
+			[('freq': 800), ('freq': 800)],
 			2.1
 		);
 
@@ -226,19 +225,19 @@ TestPatternProxy : UnitTest {
 
 		assert.(
 			Psym(Pseq([\x, \y])).asStream.nextN(3, ()),
-			[ ( 'freq': 800 ), ( 'freq': 100 ), nil ],
+			[('freq': 800), ('freq': 100), nil],
 			2.2
 		);
 		assert.(
 			Psym(Pseq([\x, \y])).asStream.nextN(3, ()),
-			[ ( 'freq': 800 ), ( 'freq': 100 ), nil ],
+			[('freq': 800), ('freq': 100), nil],
 			2.3
 		);
 
 		Pdef(\y, (freq: 200));
 		assert.(
 			Psym(Pseq([\x, \y])).asStream.nextN(3, ()),
-			[ ( 'freq': 800 ), ( 'freq': 200 ), nil ],
+			[('freq': 800), ('freq': 200), nil],
 			3.1
 		);
 
@@ -247,14 +246,14 @@ TestPatternProxy : UnitTest {
 
 		assert.(
 			Psym(Pseq([\x, \y])).asStream.nextN(3, ()),
-			[ ( 'freq': 800 ), ( 'freq': 200 ),  ( 'freq': 200 ) ],
+			[('freq': 800), ('freq': 200), ('freq': 200)],
 			3.2
 		);
 
 		Pdef(\y, (freq: 200));
 		assert.(
 			Psym(Pseq([\x, \y])).asStream.nextN(3, ()),
-			[ ( 'freq': 800 ), ( 'freq': 200 ), nil ],
+			[('freq': 800), ('freq': 200), nil],
 			3.3
 		);
 
@@ -266,13 +265,13 @@ TestPatternProxy : UnitTest {
 			"Pdef default value should be Event.silent", false);
 		Pdef(\x, (freq: 800));
 
-		x = Pdef(\x).endless.asStream;
+		var x = Pdef(\x).endless.asStream;
 		a = Pdef.defaultValue;
 
 		assert.(x.nextN(3, ()), [(freq: 800), a, a], 4.1);
 
 		Pdef(\x, (freq: 900).loop);
-		assert.(x.nextN(3, ()), [ (freq: 900), (freq: 900), (freq: 900) ], 4.2);
+		assert.(x.nextN(3, ()), [(freq: 900), (freq: 900), (freq: 900)], 4.2);
 
 		Pdefn.clear;
 		this.assert(Pdefn.defaultValue == 1, "Pdefn default value should be 1", false);
@@ -290,20 +289,20 @@ TestPatternProxy : UnitTest {
 		Pbindef(\p, \z, 7);
 		assert.(
 			Pbindef(\p).asStream.nextN(3, ()),
-			[ ( 'z': 7 ), ( 'z': 7 ), ( 'z': 7 ) ],
+			[('z': 7), ('z': 7), ('z': 7)],
 			5.1
 		);
 		Pbindef(\p, \z, Pn(7, 2));
 		assert.(
 			Pbindef(\p).asStream.nextN(3, ()),
-			[ ( 'z': 7 ), ( 'z': 7 ), nil ],
+			[('z': 7), ('z': 7), nil],
 			5.2
 		);
 		Pbindef(\p, \z, 7);
 
 		assert.(
 			Pbindef(\p).asStream.nextN(3, ()),
-			[ ( 'z': 7 ), ( 'z': 7 ), ( 'z': 7 ) ],
+			[('z': 7), ('z': 7), ('z': 7)],
 			5.3
 		);
 		Pbindef(\p, \z, nil);
@@ -321,7 +320,7 @@ TestPatternProxy : UnitTest {
 		Pbindef(\p, \b, Pkey(\a));
 		assert.(
 			Pbindef(\p).asStream.nextN(1, ()),
-			[(a:4, b: 4)],
+			[(a: 4, b: 4)],
 			5.5
 		);
 
@@ -330,7 +329,7 @@ TestPatternProxy : UnitTest {
 		Pbindef(\p, \b, Pkey(\a));
 		assert.(
 			Pbindef(\p).asStream.nextN(1, ()),
-			[(a:4, b: 4)],
+			[(a: 4, b: 4)],
 			5.6
 		);
 
@@ -340,14 +339,14 @@ TestPatternProxy : UnitTest {
 		Pdefn(\z, Pdefn(\x) + Pdefn(\y));
 		assert.(
 			Pdefn(\z).asStream.nextN(4, ()),
-			[ 10, 11, 12, nil ],
+			[10, 11, 12, nil],
 			6.1
 		);
 
 		Pdefn(\x, -1);
 		assert.(
 			Pdefn(\z).asStream.nextN(4, ()),
-			[ 0, 1, 2, nil ],
+			[0, 1, 2, nil],
 			6.2
 		);
 
@@ -357,30 +356,30 @@ TestPatternProxy : UnitTest {
 		Pdef.clear;
 		Pdefn(\m, 12);
 		Pdefn(\m).quant = 2;
-		Pbindef(\x,\midinote, Pseq([60,62,64,65,67,65,64,62], inf) + Pdefn(\m));
+		Pbindef(\x, \midinote, Pseq([60, 62, 64, 65, 67, 65, 64, 62], inf) + Pdefn(\m));
 
 		assert.(
 			Pbindef(\x).asStream.nextN(3, ()),
-			[ ( 'midinote': 72 ), ( 'midinote': 74 ), ( 'midinote': 76 ) ],
+			[('midinote': 72), ('midinote': 74), ('midinote': 76)],
 			7.1
 		);
 
-		Pbindef(\x,\dur, 0.5);
+		Pbindef(\x, \dur, 0.5);
 		assert.(
 			Pbindef(\x).asStream.nextN(3, ()),
-			[ ( 'dur': 0.5, 'midinote': 72 ), ( 'dur': 0.5, 'midinote': 74 ), ( 'dur': 0.5, 'midinote': 76 ) ],
+			[('dur': 0.5, 'midinote': 72), ('dur': 0.5, 'midinote': 74), ('dur': 0.5, 'midinote': 76)],
 			7.2
 		);
 
 		Pdefn(\m, 11);
 		assert.(
 			Pbindef(\x).asStream.nextN(3, ()),
-			[ ( 'dur': 0.5, 'midinote': 71 ), ( 'dur': 0.5, 'midinote': 73 ), ( 'dur': 0.5, 'midinote': 75 ) ],
+			[('dur': 0.5, 'midinote': 71), ('dur': 0.5, 'midinote': 73), ('dur': 0.5, 'midinote': 75)],
 			7.3
 		);
 
 		Pdefn.clear;
-		Pdef.clear;
+		Pdef.clear
 
 
 
@@ -396,16 +395,16 @@ TestPatternProxy : UnitTest {
 
 		{
 			// Test for note duplication when redefining the source of a playing Pdef (PR #5891)
-			var finish = Pfunc{ |ev| ev.use{ degrees = degrees ++ ~degree }; 1 };
+			var finish = Pfunc { |ev| ev.use { degrees = degrees ++ ~degree }; 1 };
 			Pdef(\a).clock_(clock).quant_(1).play(clock);
-			controller = SimpleController(Pdef(\a).player).put(\stopped, { cond.unhang; });
-			Pdef(\a).source = Pbind(\degree, Pseq((1..14), inf), \dur, 1/7, \finish, finish);
+			controller = SimpleController(Pdef(\a).player).put(\stopped, { cond.unhang });
+			Pdef(\a).source = Pbind(\degree, Pseq((1..14), inf), \dur, 1 / 7, \finish, finish);
 			(clock.timeToNextBeat + 0.86).wait;
-			Pdef(\a).source = Pbind(\degree, Pseq((1..15), inf), \dur, 1/5, \finish, finish);
+			Pdef(\a).source = Pbind(\degree, Pseq((1..15), inf), \dur, 1 / 5, \finish, finish);
 			(clock.timeToNextBeat + 0.82).wait;
-			Pdef(\a).source = Pbind(\degree, Pseq((1..21), inf), \dur, 1/7, \finish, finish);
+			Pdef(\a).source = Pbind(\degree, Pseq((1..21), inf), \dur, 1 / 7, \finish, finish);
 			(clock.timeToNextBeat + 1.86).wait;
-			Pdef(\a).source = Pbind(\degree, Pseq((1..3), 1), \dur, 1/3, \finish, finish);
+			Pdef(\a).source = Pbind(\degree, Pseq((1..3), 1), \dur, 1 / 3, \finish, finish)
 		}.fork(clock, quant: 1);
 		cond.hang;
 		this.assert(degrees == ((1..7) ++ (1..5) ++ (1..14) ++ (1..3)), "1.1", false);
@@ -413,19 +412,19 @@ TestPatternProxy : UnitTest {
 		{
 			// Test for time imprecision issues (when playing "triplets" should end exactly on a beat)
 			Pdef(\t, Pbind(
-				\t, Pfunc{ beats = beats ++ thisThread.clock.beatInBar },
+				\t, Pfunc { beats = beats ++ thisThread.clock.beatInBar },
 				\dur, Pseq([
 					Pseq([1], 4),
-					Pseq([4/3], 3)
+					Pseq([4 / 3], 3)
 				])
 			)).play(clock, quant: -1);
-			controller = SimpleController(Pdef(\t).player).put(\stopped, { cond.unhang; });
+			controller = SimpleController(Pdef(\t).player).put(\stopped, { cond.unhang })
 		}.fork(clock, quant: 1);
 		cond.hang;
-		this.assert(beats.collect{ |beat, i| [0, 1, 2, 3, 0, 4/3, 8/3, 0][i].equalWithPrecision(beat, 1e-12) }.reduce('and'),
+		this.assert(beats.collect { |beat, i| [0, 1, 2, 3, 0, 4 / 3, 8 / 3, 0][i].equalWithPrecision(beat, 1e-12) }.reduce('and'),
 			"1.2", false);
 		this.assert(beats.last === 0.0, "1.3", false);
 
-		Pdef.clear;
+		Pdef.clear
 	}
 }

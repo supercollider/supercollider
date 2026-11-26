@@ -34,13 +34,13 @@ ScoreStreamPlayer : Server {
 
 	initScoreStreamPlayer {
 		this.latency_(0);
-		Server.all.remove(this); // we do not want to be part of the server list
+		Server.all.remove(this) // we do not want to be part of the server list
 	}
 
-	beats2secs { | beats | ^beats }
-	secs2beats { | beats | ^beats }
+	beats2secs { |beats| ^beats }
+	secs2beats { |beats| ^beats }
 
-	add { | beats, args |
+	add { |beats, args|
 		beats = beats min: maxTime;
 		if(beats.isArray) {
 			beats.do { |each, i|
@@ -54,28 +54,28 @@ ScoreStreamPlayer : Server {
 		}
 	}
 
-	prepareEvent { | event |
+	prepareEvent { |event|
 		event = event.copy;
 		event.use({
-			~schedBundle = { | lag, offset, server ... bundle |
+			~schedBundle = { |lag, offset, server ... bundle|
 				this.add(offset * tempo + lag + beats, bundle)
 			};
-			~schedBundleArray = { | lag, offset, server, bundle |
+			~schedBundleArray = { |lag, offset, server, bundle|
 				this.add(offset * tempo + lag + beats, bundle)
-			};
+			}
 		});
 		^event
 	}
 
-	makeScore { | stream, duration = 1, event, timeOffset = 0 |
+	makeScore { |stream, duration = 1, event, timeOffset = 0|
 		var ev, startTime, proto;
 		proto = (
 			server: this,
 
-			schedBundle: { | lag, offset, server ... bundle |
+			schedBundle: { |lag, offset, server ... bundle|
 				this.add(offset * tempo + lag + beats, bundle)
 			},
-			schedBundleArray: { | lag, offset, server, bundle |
+			schedBundleArray: { |lag, offset, server, bundle|
 				this.add(offset * tempo + lag + beats, bundle)
 			}
 		);
@@ -101,13 +101,13 @@ ScoreStreamPlayer : Server {
 			}
 		}.next;
 
-		bundleList = bundleList.sort { | a, b | b[0] >= a[0] };
+		bundleList = bundleList.sort { |a, b| b[0] >= a[0] };
 
 		if((startTime = bundleList[0][0]) < 0) {
-			timeOffset = timeOffset - startTime;
+			timeOffset = timeOffset - startTime
 		};
 
-//		bundleList.do { | b | b[0] = b[0] + timeOffset }
+		//		bundleList.do { | b | b[0] = b[0] + timeOffset }
 
 		^Score(bundleList.add([duration + timeOffset, [\c_set, 0, 0]]))
 	}

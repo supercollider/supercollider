@@ -4,55 +4,55 @@ QPenPrinter : QObject {
 	*qtClass { ^'QcPenPrinter' }
 
 	*new {
-		^super.new.init;
+		^super.new.init
 	}
 
 	*print { |printFunc, cancelFunc|
-		this.new.showDialog( { |p| p.print(printFunc) }, cancelFunc);
+		this.new.showDialog({ |p| p.print(printFunc) }, cancelFunc)
 	}
 
 	init {
 		heap.remove(this);
-		this.connectFunction('printFunc()', synchronous:true) {
+		this.connectFunction('printFunc()', synchronous: true) {
 			printFunc.value(this);
 			printFunc = nil;
-			heap.remove(this);
+			heap.remove(this)
 		};
-		this.connectFunction('dialogDone(int)', synchronous:false) { |me, ok|
-			if( ok == 1 ) {
-				okFunc.value(this);
+		this.connectFunction('dialogDone(int)', synchronous: false) { |me, ok|
+			if(ok == 1) {
+				okFunc.value(this)
 			} {
-				cancelFunc.value(this);
+				cancelFunc.value(this)
 			};
 			okFunc = nil;
 			cancelFunc = nil;
-			heap.remove(this);
-		};
+			heap.remove(this)
+		}
 	}
 
 	showDialog { |aOkFunc, aCancelFunc|
 		if(okFunc.notNil or: cancelFunc.notNil) {
 			"QPenPrinter: dialog already open".warn;
-			^this;
+			^this
 		};
 		okFunc = aOkFunc;
 		cancelFunc = aCancelFunc;
 		heap = heap.add(this);
-		this.invokeMethod(\show, synchronous:false);
+		this.invokeMethod(\show, synchronous: false)
 	}
 
 	print { |aPrintFunc|
 		if(printFunc.notNil) {
 			"QPenPrinter: printing already in progress".warn;
-			^this;
+			^this
 		};
 		printFunc = aPrintFunc;
 		heap = heap.add(this);
-		this.invokeMethod(\print, synchronous:false);
+		this.invokeMethod(\print, synchronous: false)
 	}
 
 	newPage {
-		this.invokeMethod(\newPage, synchronous:true);
+		this.invokeMethod(\newPage, synchronous: true)
 	}
 
 	pageRect { ^this.getProperty(\pageRect) }

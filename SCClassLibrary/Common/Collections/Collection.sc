@@ -1,10 +1,10 @@
 Collection {
-	*newFrom { | aCollection |
+	*newFrom { |aCollection|
 		var newCollection = this.new(aCollection.size);
-		aCollection.do {| item | newCollection.add(item) };
+		aCollection.do { |item| newCollection.add(item) };
 		^newCollection
 	}
-	*with { | ... args |
+	*with { |... args|
 		var newColl;
 		// answer a collection of my class of the given arguments
 		// the class Array has a simpler implementation
@@ -12,27 +12,27 @@ Collection {
 		newColl.addAll(args);
 		^newColl
 	}
-	*fill { | size, function |
+	*fill { |size, function|
 		var obj;
 		if(size.isSequenceableCollection) { ^this.fillND(size, function) };
 		obj = this.new(size);
-		size.do { | i |
-			obj.add(function.value(i));
+		size.do { |i|
+			obj.add(function.value(i))
 		};
 		^obj
 	}
-	*fill2D { | rows, cols, function |
+	*fill2D { |rows, cols, function|
 		var obj = this.new(rows);
 		rows.do { |row|
 			var obj2 = this.new(cols);
 			cols.do { |col|
 				obj2 = obj2.add(function.value(row, col))
 			};
-			obj = obj.add(obj2);
+			obj = obj.add(obj2)
 		};
 		^obj
 	}
-	*fill3D { | planes, rows, cols, function |
+	*fill3D { |planes, rows, cols, function|
 		var obj = this.new(planes);
 		planes.do { |plane|
 			var obj2 = this.new(rows);
@@ -41,13 +41,13 @@ Collection {
 				cols.do { |col|
 					obj3 = obj3.add(function.value(plane, row, col))
 				};
-				obj2 = obj2.add(obj3);
+				obj2 = obj2.add(obj3)
 			};
-			obj = obj.add(obj2);
+			obj = obj.add(obj2)
 		};
 		^obj
 	}
-	*fillND { | dimensions, function, args = #[] | // args are private
+	*fillND { |dimensions, function, args = #[]| // args are private
 		var n = dimensions.first;
 		var obj = this.new(n);
 		var argIndex = args.size;
@@ -63,26 +63,26 @@ Collection {
 		^obj
 	}
 
-	++ { | collection|
+	++ { |collection|
 		^this.copy.addAll(collection)
 	}
 
-	@ { | index | ^this[index] }
+	@ { |index| ^this[index] }
 
-	== { | aCollection |
-		if (this === aCollection) { ^true };
-		if (aCollection.class != this.class) { ^false };
-		if (this.size != aCollection.size) { ^false };
-		this.do { | item, i |
+	== { |aCollection|
+		if(this === aCollection) { ^true };
+		if(aCollection.class != this.class) { ^false };
+		if(this.size != aCollection.size) { ^false };
+		this.do { |item, i|
 			// this is enough since both collections are finite
-			if ((aCollection.includes(item)).not) { ^false };
+			if((aCollection.includes(item)).not) { ^false }
 		};
 		^true
 	}
 	hash {
 		var hash = this.class.hash;
-		this.do { | item |
-			hash = hash bitXor: item.hash;
+		this.do { |item|
+			hash = hash bitXor: item.hash
 		};
 		^hash
 	}
@@ -90,7 +90,7 @@ Collection {
 	species { ^Array }
 	do { ^this.subclassResponsibility(thisMethod) }
 	iter {
-		^r { this.do {|item| item.yield } }
+		^r { this.do { |item| item.yield } }
 	}
 	size {
 		// this is the slow way. Most collections have a faster way.
@@ -109,368 +109,371 @@ Collection {
 	isAssociationArray { ^this.subclassResponsibility(thisMethod) }
 
 	add { ^this.subclassResponsibility(thisMethod) }
-	addAll { | aCollection | aCollection.asCollection.do { | item | this.add(item) } }
+	addAll { |aCollection| aCollection.asCollection.do { |item| this.add(item) } }
 	remove { ^this.subclassResponsibility(thisMethod) }
-	removeAll { | list | list.do { | item | this.remove(item) } }
-	removeEvery { | list | this.removeAllSuchThat(list.includes(_)) }
-	removeAllSuchThat { | function |
+	removeAll { |list| list.do { |item| this.remove(item) } }
+	removeEvery { |list| this.removeAllSuchThat(list.includes(_)) }
+	removeAllSuchThat { |function|
 		var removedItems = this.class.new;
 		var copy = this.copy;
-		copy.do { | item, i |
-			if ( function.value(item, i) )
-			{
+		copy.do { |item, i|
+			if(function.value(item, i)) {
 				this.remove(item);
-				removedItems = removedItems.add(item);
+				removedItems = removedItems.add(item)
 			}
 		};
 		^removedItems
 	}
 
-	atAll { arg keys;
-		^keys.collect {|index| this[index] }
+	atAll { |keys|
+		^keys.collect { |index| this[index] }
 	}
-	putEach { arg keys, values;
+	putEach { |keys, values|
 		// works for ArrayedCollections and Dictionaries
 		keys = keys.asArray;
 		values = values.asArray;
-		keys.do { |key, i| this[key] = values.wrapAt(i) } ;
+		keys.do { |key, i| this[key] = values.wrapAt(i) }
 	}
 
-	includes { | item1 |
-		this.do {|item2| if (item1 === item2) {^true} };
+	includes { |item1|
+		this.do { |item2| if(item1 === item2) { ^true } };
 		^false
 	}
-	includesEqual { | item1 |
-		this.do {|item2| if (item1 == item2) {^true} };
+	includesEqual { |item1|
+		this.do { |item2| if(item1 == item2) { ^true } };
 		^false
 	}
-	includesAny { | aCollection |
-		aCollection.do { | item | if (this.includes(item)) {^true} };
+	includesAny { |aCollection|
+		aCollection.do { |item| if(this.includes(item)) { ^true } };
 		^false
 	}
-	includesAll { | aCollection |
-		aCollection.do { | item | if (this.includes(item).not) {^false} };
+	includesAll { |aCollection|
+		aCollection.do { |item| if(this.includes(item).not) { ^false } };
 		^true
 	}
-	matchItem { | item |
+	matchItem { |item|
 		^this.includes(item)
 	}
 
-	collect { | function |
-		^this.collectAs(function, this.species);
+	collect { |function|
+		^this.collectAs(function, this.species)
 	}
-	select { | function |
-		^this.selectAs(function, this.species);
+	select { |function|
+		^this.selectAs(function, this.species)
 	}
-	reject { | function |
-		^this.rejectAs(function, this.species);
+	reject { |function|
+		^this.rejectAs(function, this.species)
 	}
-	collectAs { | function, class |
+	collectAs { |function, class|
 		var res = class.new(this.size);
-		this.do {|elem, i| res.add(function.value(elem, i)) }
-		^res;
+		this.do { |elem, i| res.add(function.value(elem, i)) }
+		^res
 	}
-	selectAs { | function, class |
+	selectAs { |function, class|
 		var res = class.new(this.size);
-		this.do {|elem, i| if (function.value(elem, i)) { res = res.add(elem) } }
-		^res;
+		this.do { |elem, i| if(function.value(elem, i)) { res = res.add(elem) } }
+		^res
 	}
-	rejectAs { | function, class |
+	rejectAs { |function, class|
 		var res = class.new(this.size);
-		this.do {|elem, i|
-			if (function.value(elem, i).not) {res.add(elem)}
+		this.do { |elem, i|
+			if(function.value(elem, i).not) { res.add(elem) }
 		}
-		^res;
+		^res
 	}
-	collectInPlace { |function |
+	collectInPlace { |function|
 		this.do { |item, i| this.put(i, function.value(item, i)) }
 	}
 	collectCopy { |func|
 		^this.copy.collectInPlace(func)
 	}
 
-	detect { | function |
-		this.do {|elem, i| if (function.value(elem, i)) { ^elem } }
-		^nil;
+	detect { |function|
+		this.do { |elem, i| if(function.value(elem, i)) { ^elem } }
+		^nil
 	}
-	detectLast { | function |
+	detectLast { |function|
 		^this.lastForWhich(function)
 	}
-	detectIndex { | function |
-		this.do {|elem, i| if (function.value(elem, i)) { ^i } }
-		^nil;
+	detectIndex { |function|
+		this.do { |elem, i| if(function.value(elem, i)) { ^i } }
+		^nil
 	}
-	detectLastIndex { | function |
+	detectLastIndex { |function|
 		^this.lastIndexForWhich(function)
 	}
-	doMsg { | selector ... args |
-		this.do {| item | item.performList(selector, args) }
+	doMsg { |selector ... args|
+		this.do { |item| item.performList(selector, args) }
 	}
-	collectMsg { | selector ... args |
-		^this.collect {| item | item.performList(selector, args) }
+	collectMsg { |selector ... args|
+		^this.collect { |item| item.performList(selector, args) }
 	}
-	selectMsg { | selector ... args |
-		^this.select {| item | item.performList(selector, args) }
+	selectMsg { |selector ... args|
+		^this.select { |item| item.performList(selector, args) }
 	}
-	rejectMsg { | selector ... args |
-		^this.reject {| item | item.performList(selector, args) }
+	rejectMsg { |selector ... args|
+		^this.reject { |item| item.performList(selector, args) }
 	}
-	detectMsg { | selector ... args |
-		^this.detect {| item | item.performList(selector, args) }
+	detectMsg { |selector ... args|
+		^this.detect { |item| item.performList(selector, args) }
 	}
-	detectIndexMsg { | selector ... args |
-		^this.detectIndex {| item | item.performList(selector, args) }
+	detectIndexMsg { |selector ... args|
+		^this.detectIndex { |item| item.performList(selector, args) }
 	}
-	lastForWhich { | function |
-		this.reverseDo {|elem, i|
-			if (function.value(elem, i)) {
+	lastForWhich { |function|
+		this.reverseDo { |elem, i|
+			if(function.value(elem, i)) {
 				^elem
 			}
 		};
 		^nil
 	}
-	lastIndexForWhich { | function |
-		this.reverseDo {|elem, i|
-			if (function.value(elem, i)) {
+	lastIndexForWhich { |function|
+		this.reverseDo { |elem, i|
+			if(function.value(elem, i)) {
 				^this.size - i - 1
 			}
 		};
 		^nil
 	}
-	inject { | thisValue, function |
+	inject { |thisValue, function|
 		var nextValue = thisValue;
-		this.do { | item, i |
-			nextValue = function.value(nextValue, item, i);
+		this.do { |item, i|
+			nextValue = function.value(nextValue, item, i)
 		};
 		^nextValue
 	}
-	injectr { | thisValue, function |
+	injectr { |thisValue, function|
 		var size = this.size;
 		var nextValue = thisValue;
-		this.do { | item, i |
-			nextValue = function.value(nextValue, this.at(size-1-i), i);
+		this.do { |item, i|
+			nextValue = function.value(nextValue, this.at(size - 1 - i), i)
 		};
 		^nextValue
 	}
-	count { | function |
+	count { |function|
 		var sum = 0;
-		this.do {|elem, i| if (function.value(elem, i)) { sum=sum+1 } }
-		^sum;
+		this.do { |elem, i| if(function.value(elem, i)) { sum = sum + 1 } }
+		^sum
 	}
-	occurrencesOf { | obj |
+	occurrencesOf { |obj|
 		var sum = 0;
-		this.do { | elem | if (elem == obj) { sum=sum+1 } }
-		^sum;
+		this.do { |elem| if(elem == obj) { sum = sum + 1 } }
+		^sum
 	}
-	any { | function |
-		this.do {|elem, i| if (function.value(elem, i)) { ^true } }
-		^false;
+	any { |function|
+		this.do { |elem, i| if(function.value(elem, i)) { ^true } }
+		^false
 	}
-	every { | function |
-		this.do {|elem, i| if (function.value(elem, i).not) { ^false } }
-		^true;
+	every { |function|
+		this.do { |elem, i| if(function.value(elem, i).not) { ^false } }
+		^true
 	}
-	sum { | function |
+	sum { |function|
 		var sum = 0;
-		if (function.isNil) { // optimized version if no function
-			this.do { | elem | sum = sum + elem; }
-		}{
-			this.do {|elem, i| sum = sum + function.value(elem, i); }
+		if(function.isNil) { // optimized version if no function
+			this.do { |elem| sum = sum + elem }
+		} {
+			this.do { |elem, i| sum = sum + function.value(elem, i) }
 		}
-		^sum;
+		^sum
 	}
-	mean { | function |
-		^this.sum(function) / this.size;
+	mean { |function|
+		^this.sum(function) / this.size
 	}
-	product { | function |
+	product { |function|
 		var product = 1;
-		if (function.isNil) { // optimized version if no function
-			this.do { | elem | product = product * elem; }
-		}{
-			this.do {|elem, i| product = product * function.value(elem, i); }
+		if(function.isNil) { // optimized version if no function
+			this.do { |elem| product = product * elem }
+		} {
+			this.do { |elem, i| product = product * function.value(elem, i) }
 		}
-		^product;
+		^product
 	}
 	sumabs {  // sum of the absolute values - used to convert Mikael Laursen's rhythm lists.
 		var sum = 0;
-		this.do { | elem |
-			if (elem.isSequenceableCollection) { elem = elem[0] };
-			sum = sum + elem.abs;
+		this.do { |elem|
+			if(elem.isSequenceableCollection) { elem = elem[0] };
+			sum = sum + elem.abs
 		}
-		^sum;
+		^sum
 	}
 
-	maxItem { | function |
+	maxItem { |function|
 		var maxValue, maxElement;
-		if (function.isNil) { // optimized version if no function
-			this.do { | elem |
-				if (maxElement.isNil) {
-					maxElement = elem;
-				}{
-					if (elem > maxElement) {
-						maxElement = elem;
+		if(function.isNil) { // optimized version if no function
+			this.do { |elem|
+				if(maxElement.isNil) {
+					maxElement = elem
+				} {
+					if(elem > maxElement) {
+						maxElement = elem
 					}
 				}
 			}
-			^maxElement;
-		}{
-			this.do {|elem, i| var val;
-				if (maxValue.isNil) {
+			^maxElement
+		} {
+			this.do { |elem, i|
+				var val;
+				if(maxValue.isNil) {
 					maxValue = function.value(elem, i);
-					maxElement = elem;
-				}{
+					maxElement = elem
+				} {
 					val = function.value(elem, i);
-					if (val > maxValue) {
+					if(val > maxValue) {
 						maxValue = val;
-						maxElement = elem;
+						maxElement = elem
 					}
 				}
 			}
-			^maxElement;
+			^maxElement
 		}
 	}
-	minItem { | function |
+	minItem { |function|
 		var minValue, minElement;
-		if (function.isNil) { // optimized version if no function
-			this.do {|elem, i|
-				if (minElement.isNil) {
-					minElement = elem;
-				}{
-					if (elem < minElement) {
-						minElement = elem;
+		if(function.isNil) { // optimized version if no function
+			this.do { |elem, i|
+				if(minElement.isNil) {
+					minElement = elem
+				} {
+					if(elem < minElement) {
+						minElement = elem
 					}
 				}
 			};
-			^minElement;
-		}{
-			this.do {|elem, i| var val;
-				if (minValue.isNil) {
+			^minElement
+		} {
+			this.do { |elem, i|
+				var val;
+				if(minValue.isNil) {
 					minValue = function.value(elem, i);
-					minElement = elem;
-				}{
+					minElement = elem
+				} {
 					val = function.value(elem, i);
-					if (val < minValue) {
+					if(val < minValue) {
 						minValue = val;
-						minElement = elem;
+						minElement = elem
 					}
 				}
 			}
-			^minElement;
+			^minElement
 		}
 	}
 
-	maxIndex { | function |
+	maxIndex { |function|
 		var maxValue, maxIndex;
-		if (function.isNil) { // optimized version if no function
-			this.do { | elem, index |
-				if (maxValue.isNil) {
+		if(function.isNil) { // optimized version if no function
+			this.do { |elem, index|
+				if(maxValue.isNil) {
 					maxValue = elem;
-					maxIndex = index;
-				}{
-					if (elem > maxValue) {
+					maxIndex = index
+				} {
+					if(elem > maxValue) {
 						maxValue = elem;
-						maxIndex = index;
+						maxIndex = index
 					}
 				}
 			}
-			^maxIndex;
-		}{
-			this.do {|elem, i| var val;
-				if (maxValue.isNil) {
+			^maxIndex
+		} {
+			this.do { |elem, i|
+				var val;
+				if(maxValue.isNil) {
 					maxValue = function.value(elem, i);
-					maxIndex = i;
-				}{
+					maxIndex = i
+				} {
 					val = function.value(elem, i);
-					if (val > maxValue) {
+					if(val > maxValue) {
 						maxValue = val;
-						maxIndex = i;
+						maxIndex = i
 					}
 				}
 			}
-			^maxIndex;
+			^maxIndex
 		}
 	}
 
-	minIndex { | function |
+	minIndex { |function|
 		var minValue, minIndex;
-		if (function.isNil) { // optimized version if no function
-			this.do {|elem, i|
-				if (minValue.isNil) {
+		if(function.isNil) { // optimized version if no function
+			this.do { |elem, i|
+				if(minValue.isNil) {
 					minValue = elem;
-					minIndex = i;
-				}{
-					if (elem < minValue) {
+					minIndex = i
+				} {
+					if(elem < minValue) {
 						minValue = elem;
-						minIndex = i;
+						minIndex = i
 					}
 				}
 			};
-			^minIndex;
-		}{
-			this.do {|elem, i| var val;
-				if (minValue.isNil) {
+			^minIndex
+		} {
+			this.do { |elem, i|
+				var val;
+				if(minValue.isNil) {
 					minValue = function.value(elem, i);
-					minIndex = i;
-				}{
+					minIndex = i
+				} {
 					val = function.value(elem, i);
-					if (val < minValue) {
+					if(val < minValue) {
 						minValue = val;
-						minIndex = i;
+						minIndex = i
 					}
 				}
 			}
-			^minIndex;
+			^minIndex
 		}
 	}
 
 
-	maxValue { | function |			// must supply a function
+	maxValue { |function|			// must supply a function
 		var maxValue, maxElement;
-		this.do {|elem, i|
-				var val;
-				if (maxValue.isNil) {
-					maxValue = function.value(elem, i);
-					maxElement = elem;
-				}{
-					val = function.value(elem, i);
-					if (val > maxValue) {
-						maxValue = val;
-						maxElement = elem;
-					}
+		this.do { |elem, i|
+			var val;
+			if(maxValue.isNil) {
+				maxValue = function.value(elem, i);
+				maxElement = elem
+			} {
+				val = function.value(elem, i);
+				if(val > maxValue) {
+					maxValue = val;
+					maxElement = elem
 				}
+			}
 		};
-		^maxValue;
+		^maxValue
 	}
-	minValue { | function |
+	minValue { |function|
 		var minValue, minElement;
-		this.do {|elem, i|
-				var val;
-				if (minValue.isNil) {
-					minValue = function.value(elem, i);
-					minElement = elem;
-				}{
-					val = function.value(elem, i);
-					if (val < minValue) {
-						minValue = val;
-						minElement = elem;
-					}
+		this.do { |elem, i|
+			var val;
+			if(minValue.isNil) {
+				minValue = function.value(elem, i);
+				minElement = elem
+			} {
+				val = function.value(elem, i);
+				if(val < minValue) {
+					minValue = val;
+					minElement = elem
 				}
+			}
 		};
-		^minValue;
+		^minValue
 	}
 
-	maxSizeAtDepth { arg rank;
+	maxSizeAtDepth { |rank|
 		var maxsize = 0;
 		if(rank == 0) { ^this.size };
 		this.do { |sublist|
 			var sz = if(sublist.isCollection)
-					{ sublist.maxSizeAtDepth(rank - 1) } { 1 };
-			if (sz > maxsize) { maxsize = sz };
+				{ sublist.maxSizeAtDepth(rank - 1) } { 1 };
+			if(sz > maxsize) { maxsize = sz }
 		};
 		^maxsize
 	}
 
-	maxDepth { arg max = 1;
+	maxDepth { |max = 1|
 		var res = max;
 		this.do { |elem|
 			if(elem.isCollection) { res = max(res, elem.maxDepth(max + 1)) }
@@ -478,12 +481,12 @@ Collection {
 		^res
 	}
 
-	deepCollect { | depth = 1, function, index = 0, rank = 0 |
+	deepCollect { |depth = 1, function, index = 0, rank = 0|
 		if(depth.isNil) {
 			rank = rank + 1;
 			^this.collect { |item, i| item.deepCollect(depth, function, i, rank) }
 		};
-		if (depth <= 0) {
+		if(depth <= 0) {
 			^function.value(this, index, rank)
 		};
 		depth = depth - 1;
@@ -491,12 +494,12 @@ Collection {
 		^this.collect { |item, i| item.deepCollect(depth, function, i, rank) }
 	}
 
-	deepDo { | depth = 1, function, index = 0, rank = 0 |
+	deepDo { |depth = 1, function, index = 0, rank = 0|
 		if(depth.isNil) {
 			rank = rank + 1;
 			^this.do { |item, i| item.deepDo(depth, function, i, rank) }
 		};
-		if (depth <= 0) {
+		if(depth <= 0) {
 			function.value(this, index, rank);
 			^this
 		};
@@ -505,7 +508,7 @@ Collection {
 		^this.do { |item, i| item.deepDo(depth, function, i, rank) }
 	}
 
-	invert { | axis |
+	invert { |axis|
 		var index;
 		// can be used to invert a pitch list about a given axis
 		// [3, 2, 9, 7].invert(11) becomes [ 19, 20, 13, 15 ]
@@ -513,51 +516,51 @@ Collection {
 		// [3, 2, 9, 7].invert becomes [ 8, 9, 2, 4 ]
 		if(this.isEmpty) { ^this.species.new };
 		if(axis.notNil) { index = axis * 2 } { index = this.minItem + this.maxItem };
-		^index - this;
+		^index - this
 	}
 
-	sect { | that |
+	sect { |that|
 		var result = this.species.new;
-		this.do { | item |
-			if (that.includes(item)) {
-				result = result.add(item);
+		this.do { |item|
+			if(that.includes(item)) {
+				result = result.add(item)
 			}
 		};
 		^result
 	}
-	union { | that |
+	union { |that|
 		var result = this.copy;
-		that.do { | item |
-			if (result.includes(item).not) {
-				result = result.add(item);
+		that.do { |item|
+			if(result.includes(item).not) {
+				result = result.add(item)
 			}
 		};
 		^result
 	}
-	difference { | that |
-		^this.copy.removeAll(that);
+	difference { |that|
+		^this.copy.removeAll(that)
 	}
-	symmetricDifference { | that |
+	symmetricDifference { |that|
 		var result = this.species.new;
-		this.do { | item |
-			if (that.includes(item).not) {
-				result = result.add(item);
+		this.do { |item|
+			if(that.includes(item).not) {
+				result = result.add(item)
 			}
 		};
-		that.do { | item |
-			if (this.includes(item).not) {
-				result = result.add(item);
+		that.do { |item|
+			if(this.includes(item).not) {
+				result = result.add(item)
 			}
 		};
-		^result;
+		^result
 	}
-	isSubsetOf { | that | ^that.includesAll(this) }
+	isSubsetOf { |that| ^that.includesAll(this) }
 
 	asArray { ^Array.new(this.size).addAll(this) }
 	asBag { ^Bag.new(this.size).addAll(this) }
 	asList { ^List.new(this.size).addAll(this) }
 	asSet { ^Set.new(this.size).addAll(this) }
-	asSortedList { | function | ^SortedList.new(this.size, function).addAll(this) }
+	asSortedList { |function| ^SortedList.new(this.size, function).addAll(this) }
 
 	asAssociations { |class|
 		var res;
@@ -617,15 +620,15 @@ Collection {
 		var species = this.species;
 		var result = this.asArray.powerset;
 		^if(species == Array) { result } {
-			result.collectAs({ | item | item.as(species) }, species)
+			result.collectAs({ |item| item.as(species) }, species)
 		}
 	}
 
-	flopDict { | unbubble=true |
+	flopDict { |unbubble = true|
 		var res, first = true;
-		this.do { | dict |
+		this.do { |dict|
 			if(first) { res = dict.class.new; first = false };
-			dict.keysValuesDo { | key, val |
+			dict.keysValuesDo { |key, val|
 				res[key] = res[key].add(val)
 			}
 		};
@@ -633,7 +636,7 @@ Collection {
 		^res
 	}
 
-	histo { arg steps = 100, min, max;
+	histo { |steps = 100, min, max|
 		var freqs, freqIndex, lastIndex, stepSize, outliers = 0;
 		if(this.isEmpty) { ^this.species.new };
 		min = min ?? { this.minItem };
@@ -643,77 +646,77 @@ Collection {
 		lastIndex = steps - 1;
 		stepSize = steps / (max - min);
 
-		this.do { arg el;
+		this.do { |el|
 			freqIndex = ((el - min) * stepSize).asInteger;
 
-			if (freqIndex.inclusivelyBetween(0, lastIndex)) {
-				freqs[freqIndex] = freqs[freqIndex] + 1;
+			if(freqIndex.inclusivelyBetween(0, lastIndex)) {
+				freqs[freqIndex] = freqs[freqIndex] + 1
 			} {
-						// if max is derived from maxItem, count it in:
-				if (el == max) {
-					freqs[steps-1] = freqs[steps-1] + 1;
+				// if max is derived from maxItem, count it in:
+				if(el == max) {
+					freqs[steps - 1] = freqs[steps - 1] + 1
 				} { 		// else it is an outlier.
-					outliers =  outliers + 1;
-				};
-			};
+					outliers = outliers + 1
+				}
+			}
 		};
 
-        if (outliers > 0) {
-            postf(
-                "Histogram : % of % values in the collection are out of the histogram range [%, %].\n",
-                outliers, this.size, min, max
-            )
-        };
+		if(outliers > 0) {
+			postf(
+				"Histogram : % of % values in the collection are out of the histogram range [%, %].\n",
+				outliers, this.size, min, max
+			)
+		};
 
-		^freqs;
+		^freqs
 	}
 
-//	printAll { this.do { | item | item.postln; }; } // convenience method
+	//	printAll { this.do { | item | item.postln; }; } // convenience method
 	printAll { |before, after|
-		if (before.isNil and: after.isNil) {
-			this.do { | item | item.postln; };
+		if(before.isNil and: after.isNil) {
+			this.do { |item| item.postln }
 		} {
 			before = before ? ""; after = after ? "";
-			this.do { | item | before.post; item.post; after.postln; };
-		};
+			this.do { |item| before.post; item.post; after.postln }
+		}
 	}
 
-	printcsAll { this.do { | item | item.postcs; }; } // convenience method
-	dumpAll { this.do { | item | item.dump; }; } // convenience method
+	printcsAll { this.do { |item| item.postcs } } // convenience method
+	dumpAll { this.do { |item| item.dump } } // convenience method
 
-	printOn { | stream |
-		if (stream.atLimit) { ^this };
-		stream << this.class.name << "[" ;
+	printOn { |stream|
+		if(stream.atLimit) { ^this };
+		stream << this.class.name << "[";
 		this.printItemsOn(stream);
-		stream << "]" ;
+		stream << "]"
 	}
-	storeOn { | stream |
-		if (stream.atLimit) { ^this };
-		stream << this.class.name << "[" ;
+	storeOn { |stream|
+		if(stream.atLimit) { ^this };
+		stream << this.class.name << "[";
 		this.storeItemsOn(stream);
-		stream << "]" ;
+		stream << "]"
 	}
-	storeItemsOn { | stream |
+	storeItemsOn { |stream|
 		var addComma = false;
-		this.do { | item |
-			if (stream.atLimit) { ^this };
-			if (addComma) { stream.comma.space; } { addComma = true };
-			item.storeOn(stream);
-		};
+		this.do { |item|
+			if(stream.atLimit) { ^this };
+			if(addComma) { stream.comma.space } { addComma = true };
+			item.storeOn(stream)
+		}
 	}
-	printItemsOn { | stream |
+	printItemsOn { |stream|
 		var addComma = false;
-		this.do { | item |
-			if (stream.atLimit) { ^this };
-			if (addComma) { stream.comma.space; } { addComma = true };
-			item.printOn(stream);
-		};
+		this.do { |item|
+			if(stream.atLimit) { ^this };
+			if(addComma) { stream.comma.space } { addComma = true };
+			item.printOn(stream)
+		}
 	}
 
 	// Synth support
 
-	writeDef { | file, version=3 |
-		if (version < 2 or: { version > 3 }) {
+	writeDef { |file, version = 3|
+		if(version < 2 or: { version > 3 }) {
 			Error("version number" + version + "out of range").throw
 		};
 
@@ -721,20 +724,20 @@ Collection {
 		file.putInt32(version); // file version
 		file.putInt16(this.size); // number of defs in file.
 
-		this.do { | item | item.writeDef(file, version); }
+		this.do { |item| item.writeDef(file, version) }
 	}
 
-	writeInputSpec { | file, synthDef |
-		this.do { | item | item.writeInputSpec(file, synthDef) };
+	writeInputSpec { |file, synthDef|
+		this.do { |item| item.writeInputSpec(file, synthDef) }
 	}
 
 	// Flow control
-	case { | default |
-		var out = this.detect {|it| it.key.value;};
-		if (out.notNil) {
+	case { |default|
+		var out = this.detect { |it| it.key.value };
+		if(out.notNil) {
 			^out.value.value
-		}{
-			^default.value;
+		} {
+			^default.value
 		}
 	}
 
@@ -743,7 +746,7 @@ Collection {
 		var res = Array.new(this.size * 2);
 		this.do { |item|
 			res.add(item);
-			res.add(currentEnvironment[item]);
+			res.add(currentEnvironment[item])
 		};
 		^res
 	}

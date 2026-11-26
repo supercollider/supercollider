@@ -1,8 +1,8 @@
 Size {
 	var <>width = 0, <>height = 0;
 
-	*new { arg width=0, height=0;
-		^super.newCopyArgs(width, height);
+	*new { |width = 0, height = 0|
+		^super.newCopyArgs(width, height)
 	}
 
 	asSize { ^this }
@@ -11,7 +11,7 @@ Size {
 
 	asPoint { ^Point(width, height) }
 
-	== { arg size;
+	== { |size|
 		^this.compareObject(size, #[\width, \height])
 	}
 

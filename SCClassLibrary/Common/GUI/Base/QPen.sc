@@ -4,118 +4,118 @@ Pen {
 
 	*push {
 		_QPen_Save
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
 	*pop {
 		_QPen_Restore
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*use { arg aFunction;
+	*use { |aFunction|
 		this.push;
 		aFunction.value;
-		this.pop;
+		this.pop
 	}
 
 	//-------------------------- Drawing state -------------------------------------
 
-	*fillColor_ { arg aColor;
+	*fillColor_ { |aColor|
 		_QPen_FillColor
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*strokeColor_ { arg aColor;
+	*strokeColor_ { |aColor|
 		_QPen_StrokeColor
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*color_ { arg aColor;
-		this.fillColor_( aColor );
-		this.strokeColor_( aColor );
+	*color_ { |aColor|
+		this.fillColor_(aColor);
+		this.strokeColor_(aColor)
 	}
 
-	*width_ { arg width;
+	*width_ { |width|
 		_QPen_Width
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*joinStyle_ { arg style;
+	*joinStyle_ { |style|
 		_QPen_SetJoinStyle
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*capStyle_ { arg style;
+	*capStyle_ { |style|
 		_QPen_SetCapStyle
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*lineDash_ { arg pattern;
+	*lineDash_ { |pattern|
 		_QPen_SetDashPattern
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*alpha_ { arg value;
+	*alpha_ { |value|
 		_QPen_SetOpacity
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*blendMode_ { arg mode;
-		this.nonimpl("blendMode_");
+	*blendMode_ { |mode|
+		this.nonimpl("blendMode_")
 	}
 
 	*beginTransparencyLayer {
-		this.nonimpl("beginTransparencyLayer");
+		this.nonimpl("beginTransparencyLayer")
 	}
 
 	*endTransparencyLayer {
-		this.nonimpl("endTransparencyLayer");
+		this.nonimpl("endTransparencyLayer")
 	}
 
 	*clip {
 		_QPen_Clip
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*smoothing_ { arg flag;
+	*smoothing_ { |flag|
 		_QPen_AntiAliasing
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*font_ { arg aFont;
+	*font_ { |aFont|
 		font = aFont;
-		this.prSetFont( aFont );
+		this.prSetFont(aFont)
 	}
 
-	*prSetFont { arg aFont;
+	*prSetFont { |aFont|
 		_QPen_SetFont
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
 	//--------------------- Coordinate System Transform ----------------------------
 
-	*translate { arg x=0, y=0;
+	*translate { |x = 0, y = 0|
 		_QPen_Translate
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*scale { arg x=0, y=0;
+	*scale { |x = 0, y = 0|
 		_QPen_Scale
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*skew { arg x=0, y=0;
+	*skew { |x = 0, y = 0|
 		_QPen_Shear
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*rotate { arg angle=0, x=0, y=0;
-		this.rotateDeg( angle.raddeg, x, y );
+	*rotate { |angle = 0, x = 0, y = 0|
+		this.rotateDeg(angle.raddeg, x, y)
 	}
 
-	*rotateDeg { arg angle=0, x=0, y=0;
+	*rotateDeg { |angle = 0, x = 0, y = 0|
 		_QPen_Rotate
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
 	*matrix {
@@ -123,194 +123,194 @@ Pen {
 		^this.primitiveFailed
 	}
 
-	*matrix_ { arg matrixArray;
+	*matrix_ { |matrixArray|
 		_QPen_SetTransform
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
 	//-------------------------- Drawing Actions -----------------------------------
 
 	*beginPath {
 		_QPen_Clear;
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
 	*path {
-		this.nonimpl("path");
+		this.nonimpl("path")
 	}
 
-	*moveTo { arg point;
+	*moveTo { |point|
 		_QPen_MoveTo
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*lineTo { arg point;
+	*lineTo { |point|
 		_QPen_LineTo
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*line { arg p1, p2;
+	*line { |p1, p2|
 		this.moveTo(p1);
-		this.lineTo(p2);
+		this.lineTo(p2)
 	}
 
-	*curveTo { arg endPoint, cPoint1, cPoint2;
+	*curveTo { |endPoint, cPoint1, cPoint2|
 		_QPen_CubicTo
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*quadCurveTo { arg endPoint, cPoint;
+	*quadCurveTo { |endPoint, cPoint|
 		_QPen_QuadTo
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*arcTo { arg point1, point2, radius;
+	*arcTo { |point1, point2, radius|
 		_QPen_ArcTo
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*addRect { arg aRect;
+	*addRect { |aRect|
 		_QPen_AddRect
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*addRoundedRect { arg aRect, radiusX, radiusY;
+	*addRoundedRect { |aRect, radiusX, radiusY|
 		_QPen_AddRoundedRect
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*addOval { arg rect;
+	*addOval { |rect|
 		_QPen_AddEllipse
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*addArc { arg center, radius, startAngle, arcAngle;
-		this.prAddArc( center, radius, startAngle.neg, arcAngle.neg );
+	*addArc { |center, radius, startAngle, arcAngle|
+		this.prAddArc(center, radius, startAngle.neg, arcAngle.neg)
 	}
 
-	*prAddArc { arg center, radius, startAngle, arcAngle;
+	*prAddArc { |center, radius, startAngle, arcAngle|
 		_QPen_AddArc
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*addWedge { arg center, radius, startAngle, sweepLength;
-		this.addWedge_Deg( center, radius, (startAngle.neg).raddeg, (sweepLength.neg).raddeg );
+	*addWedge { |center, radius, startAngle, sweepLength|
+		this.addWedge_Deg(center, radius, (startAngle.neg).raddeg, (sweepLength.neg).raddeg)
 	}
 
-	*addWedge_Deg { arg center, radius, startAngle, sweepLength;
+	*addWedge_Deg { |center, radius, startAngle, sweepLength|
 		_QPen_AddWedge
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*addAnnularWedge{ arg center, innerRadius, outerRadius, startAngle, sweepLength;
-		this.prAddAnnularWedge( center, innerRadius, outerRadius, startAngle.neg, sweepLength.neg );
+	*addAnnularWedge{ |center, innerRadius, outerRadius, startAngle, sweepLength|
+		this.prAddAnnularWedge(center, innerRadius, outerRadius, startAngle.neg, sweepLength.neg)
 	}
 
-	*prAddAnnularWedge { arg center, innerRadius, outerRadius, startAngle, sweepLength;
+	*prAddAnnularWedge { |center, innerRadius, outerRadius, startAngle, sweepLength|
 		_QPen_AddAnnularWedge
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
 	*fill {
-		this.draw( 0 );
+		this.draw(0)
 	}
 
 	*stroke {
-		this.draw( 2 );
+		this.draw(2)
 	}
 
-	*draw { arg style;
+	*draw { |style|
 		_QPen_Draw
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
 	*fillStroke {
-		this.draw(3);
+		this.draw(3)
 	}
 
-	*strokeRect { arg rect;
-		this.addRect( rect );
-		this.stroke;
+	*strokeRect { |rect|
+		this.addRect(rect);
+		this.stroke
 	}
 
-	*fillRect { arg rect;
-		this.addRect( rect );
-		this.fill;
+	*fillRect { |rect|
+		this.addRect(rect);
+		this.fill
 	}
 
-	*strokeOval { arg rect;
+	*strokeOval { |rect|
 		this.addOval(rect);
-		this.stroke;
+		this.stroke
 	}
 
-	*fillOval { arg rect;
+	*fillOval { |rect|
 		this.addOval(rect);
-		this.fill;
+		this.fill
 	}
 
-	*fillAxialGradient { arg startPoint, endPoint, startColor, endColor;
+	*fillAxialGradient { |startPoint, endPoint, startColor, endColor|
 		_QPen_FillAxialGradient;
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*fillRadialGradient { arg innerCircleCenter, outerCircleCenter, startRadius, endRadius, startColor, endColor;
+	*fillRadialGradient { |innerCircleCenter, outerCircleCenter, startRadius, endRadius, startColor, endColor|
 		_QPen_FillRadialGradient;
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*setShadow { arg offsetPoint, blur, color;
-		this.nonimpl("setShadow");
+	*setShadow { |offsetPoint, blur, color|
+		this.nonimpl("setShadow")
 	}
 
-	*string { arg aString;
-		this.stringAtPoint( aString, Point(0,0) );
+	*string { |aString|
+		this.stringAtPoint(aString, Point(0, 0))
 	}
 
-	*stringAtPoint { arg string, point, font, color;
+	*stringAtPoint { |string, point, font, color|
 		_QPen_StringAtPoint
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*stringInRect { arg string, rect, font, color, alignment;
+	*stringInRect { |string, rect, font, color, alignment|
 		_QPen_StringInRect
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*stringCenteredIn { arg string, rect, font, color;
-		this.stringInRect( string, rect, font, color, QAlignment(\center) );
+	*stringCenteredIn { |string, rect, font, color|
+		this.stringInRect(string, rect, font, color, QAlignment(\center))
 	}
 
-	*stringLeftJustIn { arg string, rect, font, color;
-		this.stringInRect( string, rect, font, color, QAlignment(\left) );
+	*stringLeftJustIn { |string, rect, font, color|
+		this.stringInRect(string, rect, font, color, QAlignment(\left))
 	}
 
-	*stringRightJustIn { arg string, rect, font, color;
-		this.stringInRect( string, rect, font, color, QAlignment(\right) );
+	*stringRightJustIn { |string, rect, font, color|
+		this.stringInRect(string, rect, font, color, QAlignment(\right))
 	}
 
-	*drawImage { arg target, image, source, operation = 'sourceOver', opacity = 1.0;
+	*drawImage { |target, image, source, operation = 'sourceOver', opacity = 1.0|
 		operation = Image.compositingOperations.indexOf(operation) ? 0;
-		this.prDrawImage(target, image, source, operation, opacity);
+		this.prDrawImage(target, image, source, operation, opacity)
 	}
 
-	*tileImage { arg target, image, source, operation = 'sourceOver', opacity = 1.0;
+	*tileImage { |target, image, source, operation = 'sourceOver', opacity = 1.0|
 		operation = Image.compositingOperations.indexOf(operation) ? 0;
-		this.prTileImage(target, image, source, operation, opacity);
+		this.prTileImage(target, image, source, operation, opacity)
 	}
 
 	//---------------------- PRIVATE! -- Painter on/off-----------------------------
 
-	*prDrawImage { arg target, image, source, operation, opacity;
+	*prDrawImage { |target, image, source, operation, opacity|
 		_QPen_DrawImage
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*prTileImage { arg target, image, source, operation, opacity;
+	*prTileImage { |target, image, source, operation, opacity|
 		_QPen_TileImage
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*nonimpl { arg methodName;
-		(this.asString ++ ": " ++ methodName.asString ++ " is not implemented yet").postln;
+	*nonimpl { |methodName|
+		(this.asString ++ ": " ++ methodName.asString ++ " is not implemented yet").postln
 	}
 }

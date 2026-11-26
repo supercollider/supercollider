@@ -11,7 +11,7 @@ QuarksGui {
 		btnRecompile,
 		detailView,
 		<colors,
-		initialized=false;
+		initialized = false;
 
 	*new { ^super.new.init }
 
@@ -50,12 +50,12 @@ QuarksGui {
 					treeView.enabled = true;
 					btnUpdateDirectory.value = 0;
 					this.update;
-					this.setMsg("Directory has been updated.", \success);
+					this.setMsg("Directory has been updated.", \success)
 				}, {
 					treeView.enabled = true;
 					btnUpdateDirectory.value = 0;
 					this.update;
-					this.setMsg("An error occured while updating the directory.", \warn);
+					this.setMsg("An error occured while updating the directory.", \warn)
 				});
 				nil
 			});
@@ -74,7 +74,7 @@ QuarksGui {
 
 		btnClear = Button().states_([["Uninstall all"]])
 			.toolTip_("Uninstall all")
-			.action_({ model.clear; this.update; });
+			.action_({ model.clear; this.update });
 
 		btnSave = Button().states_([["Save Quarks set"]])
 			.toolTip_("Save currently installed quarks to a file")
@@ -82,7 +82,7 @@ QuarksGui {
 				Dialog.savePanel({ |path|
 					this.setMsg("Saving quarks to file:" + path);
 					model.save(path);
-					this.setMsg();
+					this.setMsg()
 				})
 			});
 
@@ -96,44 +96,44 @@ QuarksGui {
 						model.load(path, {
 							this.setMsg();
 							0.1.wait;
-							this.update;
-						});
-					});
-				});
+							this.update
+						})
+					})
+				})
 			});
 
 		btnRecompile = Button().states_([
-				["Recompile class library"],
-				["Recompile class library", colors.primary.text, colors.primary.bg]
-			])
+			["Recompile class library"],
+			["Recompile class library", colors.primary.text, colors.primary.bg]
+		])
 			.toolTip_("You will need to recompile the class library after making any changes")
 			.action_({ thisProcess.platform.recompile })
 			.enabled_(false);
 
 		lblMsg = StaticText()
-			.font_(GUI.font.new(size:13, usePointSize:true))
+			.font_(GUI.font.new(size: 13, usePointSize: true))
 			.align_(\center);
 
 		treeView = TreeView()
 			.setProperty(\rootIsDecorated, false)
 			.columns_(["", "", "Name", "Version", "Summary"])
 			.itemPressedAction_({ |v|
-				detailView.visible = true;
+				detailView.visible = true
 			})
 			// open detail view
 			.onItemChanged_({ |v|
 				var curItem, curView;
 				curItem = v.currentItem;
-				if(curItem.notNil, {
+				if(curItem.notNil) {
 					curView = quarkRows.values().detect({ |view| view.treeItem == curItem });
-					if(curView.notNil, {
-						detailView.model = curView.quark;
-					}, {
-						detailView.model = nil;
-					})
-				}, {
+					if(curView.notNil) {
+						detailView.model = curView.quark
+					} {
+						detailView.model = nil
+					}
+				} {
 					detailView.model = nil
-				})
+				}
 			});
 
 		detailView = QuarkDetailView.new;
@@ -155,39 +155,39 @@ QuarksGui {
 
 		quarkRows = Dictionary.new;
 		this.update;
-		window.front;
+		window.front
 	}
 	update {
 		var recompile = false;
 		treeView.canSort = false;
-		model.all.do({ |quark|
+		model.all.do { |quark|
 			var qrv, lp = quark.localPath;
 			qrv = quarkRows.at(lp);
-			if(qrv.isNil, {
-				quarkRows[lp] = QuarkRowView(treeView, quark, this);
-			}, {
+			if(qrv.isNil) {
+				quarkRows[lp] = QuarkRowView(treeView, quark, this)
+			} {
 				qrv.update;
-				if(qrv.quark.changed, { recompile = true });
-			});
-		});
+				if(qrv.quark.changed) { recompile = true }
+			}
+		};
 		treeView.canSort = true;
-		if(initialized.not, {
+		if(initialized.not) {
 			treeView.sort(0, true);
-			initialized = true;
-		});
+			initialized = true
+		};
 		treeView.invokeMethod(\resizeColumnToContents, 0);
 		treeView.invokeMethod(\resizeColumnToContents, 1);
 		treeView.invokeMethod(\resizeColumnToContents, 2);
 		treeView.invokeMethod(\resizeColumnToContents, 3);
 		btnRecompile.enabled = recompile;
-		btnRecompile.value = recompile.if(1, 0);
-		detailView.update();
+		btnRecompile.value = if(recompile, 1, 0);
+		detailView.update()
 	}
 
 	setMsg { |msg, style|
 		lblMsg.background = colors[style ? \default].bg;
 		lblMsg.stringColor = colors[style ? \default].text;
-		lblMsg.string = msg ? "";
+		lblMsg.string = msg ? ""
 	}
 	checkForUpdates { |onComplete, onCancel|
 		this.runCancellable({
@@ -197,19 +197,19 @@ QuarksGui {
 			this.setMsg("Checking for updates to Quarks...", \info);
 			0.1.wait;
 			model.checkForUpdates(nil, { |quark|
-				this.setMsg("Checking for updates to Quarks (%)...".format(quark.name), \info);
-			});
+				this.setMsg("Checking for updates to Quarks (%)...".format(quark.name), \info)
+			})
 		}, onComplete, onCancel)
 	}
 	installFolder {
 		FileDialog({ |path|
-				Quarks.install(path);
-				this.update;
-			},
+			Quarks.install(path);
+			this.update
+		},
 			nil, // cancel
 			2,  // QFileDialog::Directory
 			0,  // QFileDialog::AcceptOpen
-			true); // just first value in paths array
+			true) // just first value in paths array
 	}
 	runCancellable { |fn, onComplete, onCancel|
 		// call a function that can be cancelled by cmd-.
@@ -217,15 +217,15 @@ QuarksGui {
 		r = Routine.run({
 			fn.protect({
 				CmdPeriod.remove(cancel);
-				onComplete.value();
-			});
+				onComplete.value()
+			})
 		}, clock: AppClock);
 		cancel = {
 			r.stop();
 			CmdPeriod.remove(cancel);
-			onCancel.value;
+			onCancel.value
 		};
-		CmdPeriod.add(cancel);
+		CmdPeriod.add(cancel)
 	}
 }
 
@@ -241,7 +241,7 @@ QuarkDetailView {
 	makeView { |argQuarksGui|
 		quarksGui = argQuarksGui;
 
-		txtTitle = StaticText().font_(Font(size:16));
+		txtTitle = StaticText().font_(Font(size: 16));
 
 		details = TreeView()
 			.setProperty(\rootIsDecorated, false)
@@ -265,10 +265,10 @@ QuarkDetailView {
 				Button()
 					.fixedSize_(Size(600, 20))
 					.states_([[text]])
-					.action_(fn);
+					.action_(fn)
 			};
 
-		if(model.notNil, {
+		if(model.notNil) {
 			isInstalled = model.isInstalled;
 			isDownloaded = model.isDownloaded;
 			url = model.url;
@@ -279,132 +279,132 @@ QuarkDetailView {
 			details.clear();
 
 
-			if(model.summary.notNil, {
-				this.pushRow("Summary", model.summary);
-			});
+			if(model.summary.notNil) {
+				this.pushRow("Summary", model.summary)
+			};
 
 			// author
 
 			// version
-			if(model.data['version'].notNil, {
-				this.pushRow("Version", model.data['version'].asString);
-			});
+			if(model.data['version'].notNil) {
+				this.pushRow("Version", model.data['version'].asString)
+			};
 			// branch
-			if(model.branch.notNil, {
-				this.pushRow("Current branch", model.branch.asString);
-			});
+			if(model.branch.notNil) {
+				this.pushRow("Current branch", model.branch.asString)
+			};
 
-			if(webpage != url and: webpage.notNil, {
+			if(webpage != url and: webpage.notNil) {
 				this.pushRow("Webpage", makeBtn.value(webpage, {
-					this.openWebpage();
-				}));
-			});
+					this.openWebpage()
+				}))
+			};
 
-			if(url.notNil, {
+			if(url.notNil) {
 				this.pushRow("Repository", makeBtn.value(url, {
-					this.openGitRemote();
-				}));
-			});
+					this.openGitRemote()
+				}))
+			};
 
-			if(isDownloaded or: isInstalled, {
-				path =  model.localPath;
+			if(isDownloaded or: isInstalled) {
+				path = model.localPath;
 				if(path.size > 64) { path = "..." + path.keep(-64) };
 				this.pushRow("Local path", makeBtn.value("Open Folder:" + path, {
-					this.openLocalPath;
-				}));
-			});
-			if(isInstalled and: { File.exists(model.localPath).not }, {
-				this.pushRow("ERROR", model.localPath + "does not exist");
-			});
+					this.openLocalPath
+				}))
+			};
+			if(isInstalled and: { File.exists(model.localPath).not }) {
+				this.pushRow("ERROR", model.localPath + "does not exist")
+			};
 
 			dependencies = model.dependencies;
 			if(dependencies.notEmpty) {
-				this.pushRow("Dependencies", dependencies.collect(_.asString).join(Char.nl));
+				this.pushRow("Dependencies", dependencies.collect(_.asString).join(Char.nl))
 			};
 			if(isInstalled or: {
 				isDownloaded and: {
 					#['schelp', 'helpdoc'].any { |key| model.data[key].isString }
 				}
-			}, {
-				this.pushRow("Help", makeBtn.value("Open help", { model.help }));
-			});
+			}) {
+				this.pushRow("Help", makeBtn.value("Open help", { model.help }))
+			};
 
-			if(isDownloaded, {
-				if(isInstalled, {
+			if(isDownloaded) {
+				if(isInstalled) {
 					this.pushRow("Classes",
 						makeBtn.value("Show classes", { this.showClasses })
 					);
 					this.pushRow("Extensions",
 						makeBtn.value("Show extension methods",
 							{ this.showExtensionMethods })
-					);
-				});
-			}, {
-				if(model.url.notNil, {
+					)
+				}
+			} {
+				if(model.url.notNil) {
 					this.pushRow("", makeBtn.value("Fetch", {
 						model.checkout();
 						quarksGui.update();
-						this.update();
-					}));
-				});
-			});
+						this.update()
+					}))
+				}
+			};
 
 			model.data.keysValuesDo({ |k, v|
 				if(#[\name, \summary, \url, \path, \dependencies, \version].includes(k).not) {
-					this.pushRow(k.asString, v.value().asString);
+					this.pushRow(k.asString, v.value().asString)
 				}
 			});
 
 
 			// versions
-			if(isDownloaded and: {model.git.notNil}, {
-				this.pushRow("Versions", this.makeVersionTree());
-			});
+			if(isDownloaded and: { model.git.notNil }) {
+				this.pushRow("Versions", this.makeVersionTree())
+			};
 
-			view.visible = true;
-		}, {
-			view.visible = false;
-		});
+			view.visible = true
+		} {
+			view.visible = false
+		}
 	}
 	pushRow { |caption, obj|
-		if(obj.isString, {
-			details.addItem([caption, obj]);
-		}, {
-			details.addItem([caption, nil]).setView(1, obj);
-		});
+		if(obj.isString) {
+			details.addItem([caption, obj])
+		} {
+			details.addItem([caption, nil]).setView(1, obj)
+		}
 	}
 	model_ { |quark|
 		model = quark;
-		this.update;
+		this.update
 	}
 	visible_ { |bool|
-		view.visible = bool;
+		view.visible = bool
 	}
 	openWebpage {
 		var url = model.data['url'];
-		if(url.notNil, {
-			openOS(url);
-		});
+		if(url.notNil) {
+			openOS(url)
+		}
 	}
 	openGitRemote {
-		if (model.git.notNil, {
-			model.git.remoteAsHttpUrl.openOS;
-		}, { model.url.openOS });
+		if(model.git.notNil) {
+			model.git.remoteAsHttpUrl.openOS
+		} { model.url.openOS }
 	}
 	openLocalPath {
-		model.localPath.openOS;
+		model.localPath.openOS
 	}
 	showClasses {
 		var cls = model.definesClasses;
 		var tree, item, buts = [
 			Button().states_([["Browse"]]).action_({
-				cls[item.index].browse;
+				cls[item.index].browse
 			}),
 			Button().states_([["Help"]]).action_({
-				cls[item.index].help;
+				cls[item.index].help
 			}),
 			Button().states_([["Open File"]]).action_({
-				cls[item.index].openCodeFile;
+				cls[item.index].openCodeFile
 			})
 		];
 		buts.do(_.enabled_(false));
@@ -413,29 +413,29 @@ QuarkDetailView {
 				tree = TreeView()
 					.setProperty(\rootIsDecorated, false)
 					.columns_(["Classes"])
-					.onItemChanged_({|v| item = v.currentItem}),
+					.onItemChanged_({ |v| item = v.currentItem }),
 				HLayout(*buts)
 			)
 		).front;
 		if(cls.size > 0) {
-			cls.do {|c| tree.addItem([c.name.asString])};
+			cls.do { |c| tree.addItem([c.name.asString]) };
 			tree.itemPressedAction = { buts.do(_.enabled_(true)) }
 		} {
-			tree.addItem(["No classes"]);
+			tree.addItem(["No classes"])
 		};
-		tree.invokeMethod(\resizeColumnToContents, 0);
+		tree.invokeMethod(\resizeColumnToContents, 0)
 	}
 	showExtensionMethods {
 		var mets = model.definesExtensionMethods;
 		var tree, item, buts = [
 			Button().states_([["Browse"]]).action_({
-				mets[item.index].ownerClass.browse;
+				mets[item.index].ownerClass.browse
 			}),
 			Button().states_([["Help"]]).action_({
-				mets[item.index].help;
+				mets[item.index].help
 			}),
 			Button().states_([["Source"]]).action_({
-				mets[item.index].openCodeFile;
+				mets[item.index].openCodeFile
 			})
 		];
 		buts.do(_.enabled_(false));
@@ -444,98 +444,98 @@ QuarkDetailView {
 				tree = TreeView()
 					.setProperty(\rootIsDecorated, false)
 					.columns_(["Class", "Method"])
-					.onItemChanged_({|v| item = v.currentItem }),
+					.onItemChanged_({ |v| item = v.currentItem }),
 				HLayout(*buts)
 			)
 		).front;
 		if(mets.size > 0) {
 			mets.collect { |m|
 				var x = m.ownerClass.name,
-					it = if(x.isMetaClassName,
-						{[x.asString[5..], "*" ++ m.name]},
-						{[x.asString, "-" ++ m.name]});
-				tree.addItem(it);
+					it = if(x.isMetaClassName)
+						{ [x.asString[5..], "*" ++ m.name] }
+						{ [x.asString, "-" ++ m.name] };
+				tree.addItem(it)
 			};
 			tree.itemPressedAction = { buts.do(_.enabled_(true)) }
 		} {
-			tree.addItem([nil,"No extension methods"]);
+			tree.addItem([nil, "No extension methods"])
 		};
 		tree.invokeMethod(\resizeColumnToContents, 0);
-		tree.invokeMethod(\resizeColumnToContents, 1);
+		tree.invokeMethod(\resizeColumnToContents, 1)
 	}
 	makeVersionTree {
 		var versions, tags, remoteLatest, currentRefspec, currentSha, isDirty, tree;
 
 		versions = List.new;
 
-		tags =  model.tags;
+		tags = model.tags;
 
 		// add LATEST iff remoteLatest != sha of most recent tag
 		remoteLatest = model.git.remoteLatest;
 		if(tags.size == 0 or: {
-			remoteLatest != model.git.shaForTag(tags.first);
-		}, {
-			versions.add([remoteLatest, "Latest default"]);
-		});
+			remoteLatest != model.git.shaForTag(tags.first)
+		}) {
+			versions.add([remoteLatest, "Latest default"])
+		};
 
 		// working copy
 		currentRefspec = model.refspec;
-		if(currentRefspec.size != 40, {
-			if(currentRefspec.beginsWith("tags/"), {
-				currentSha = model.git.shaForTag(currentRefspec.copyToEnd(5));
-			}, {
-				currentSha = model.git.shaForTag(currentRefspec);
-			});
-		}, {
-			currentSha = currentRefspec;
-		});
+		if(currentRefspec.size != 40) {
+			if(currentRefspec.beginsWith("tags/")) {
+				currentSha = model.git.shaForTag(currentRefspec.copyToEnd(5))
+			} {
+				currentSha = model.git.shaForTag(currentRefspec)
+			}
+		} {
+			currentSha = currentRefspec
+		};
 
 		tags.do { |tag|
 			var refspec = "tags/" ++ tag;
-			versions.add([refspec, tag]);
+			versions.add([refspec, tag])
 		};
 
 		isDirty = model.git.isDirty;
-		if(isDirty, {
+		if(isDirty) {
 			currentRefspec = "DIRTY";
-			versions.insert(0, ["DIRTY", "DIRTY"]);
-		});
+			versions.insert(0, ["DIRTY", "DIRTY"])
+		};
 
 		tree = TreeView()
 			.setProperty(\rootIsDecorated, false)
 			.columns_(["Version", "Checkout"]);
 
-		versions.do({ |tagRefspec|
+		versions.do { |tagRefspec|
 			var tag, refspec, btn, row, isCurrent, btnText, enabled;
 			# refspec, tag = tagRefspec;
 			isCurrent = refspec == currentRefspec;
 			row = tree.addItem([tag, nil]);
 			// if installed then you can switch versions
 			// else you can install any including current
-			if(model.isInstalled, {
+			if(model.isInstalled) {
 				btnText = if(isCurrent, "INSTALLED", "Install");
-				enabled = isCurrent.not;
-			}, {
+				enabled = isCurrent.not
+			} {
 				btnText = "Install";
-				enabled = true;
-			});
-			if(isDirty, {
-				enabled = false;
-			});
+				enabled = true
+			};
+			if(isDirty) {
+				enabled = false
+			};
 			btn = Button()
 				.fixedSize_(Size(100, 20))
 				.states_([[btnText]]);
 			btn.enabled = enabled;
-			if(enabled, {
-				btn.action = { this.checkout(refspec) };
-			});
+			if(enabled) {
+				btn.action = { this.checkout(refspec) }
+			};
 			row.setView(1, btn);
 
-			if(refspec == currentRefspec, {
+			if(refspec == currentRefspec) {
 				row.colors = [quarksGui.colors.installed.bg, quarksGui.colors.installed.bg];
-				row.setTextColor(0, quarksGui.colors.installed.text);
-			});
-		});
+				row.setTextColor(0, quarksGui.colors.installed.text)
+			}
+		};
 
 		tree.invokeMethod(\resizeColumnToContents, 0);
 		^tree
@@ -543,20 +543,20 @@ QuarkDetailView {
 	checkout { |refspec|
 		{
 			quarksGui.setMsg("Installing" + model.name);
-			if(model.isInstalled, {
+			if(model.isInstalled) {
 				// reinstall possibly with different dependencies
-				model.uninstall;
-			});
-			model = Quarks.install(model.url, refspec);
+				model.uninstall
+			};
+			model = Quarks.install(model.url, refspec)
 		}.protect({ |err|
 			this.update;
 			quarksGui.update;
-			if(err.isNil, {
-				quarksGui.setMsg(model.name + "has checked out" + refspec, \success);
-			}, {
-				quarksGui.setMsg(model.name + "failed to checkout" + refspec, \error);
-			});
-		});
+			if(err.isNil) {
+				quarksGui.setMsg(model.name + "has checked out" + refspec, \success)
+			} {
+				quarksGui.setMsg(model.name + "failed to checkout" + refspec, \error)
+			}
+		})
 	}
 }
 
@@ -584,37 +584,37 @@ QuarkRowView {
 		treeItem.setTextColor(0, Color.clear);
 
 		btn.action = { |btn|
-			this.install(btn.value > 0);
+			this.install(btn.value > 0)
 		};
-		this.update;
+		this.update
 	}
 	install { |bool|
 		quarksGui.runCancellable({
 			var prev, ok;
-			if(bool, {
+			if(bool) {
 				// if any other is installed by same name
 				// then just uinstall that first
 				prev = Quarks.installed.detect({ |q| q.name == quark.name });
-				if(prev.notNil, {
+				if(prev.notNil) {
 					"Uninstalling other version % %".format(prev, prev.localPath).warn;
-					prev.uninstall;
-				});
+					prev.uninstall
+				};
 				ok = quark.install;
-				if(ok, {
-					quarksGui.setMsg("Installed" + quark, \success);
-				}, {
-					quarksGui.setMsg("Error while installing" + quark, \error);
-				});
-			}, {
+				if(ok) {
+					quarksGui.setMsg("Installed" + quark, \success)
+				} {
+					quarksGui.setMsg("Error while installing" + quark, \error)
+				}
+			} {
 				quark.uninstall;
-				quarksGui.setMsg("Uninstalled" + quark, \success);
-			});
+				quarksGui.setMsg("Uninstalled" + quark, \success)
+			}
 		}, {
-			quarksGui.update;
+			quarksGui.update
 		}, {
 			quarksGui.setMsg("Cancelled" + quark, \info);
-			quarksGui.update;
-		});
+			quarksGui.update
+		})
 	}
 
 	update {
@@ -630,10 +630,10 @@ QuarkRowView {
 
 		// this column has invisible text
 		// its used to sort the rows so that installed quarks are at the top
-		treeItem.setString(0, isInstalled.if("Y", { quark.isDownloaded.if("N", "") }));
+		treeItem.setString(0, if(isInstalled, "Y", { if(quark.isDownloaded, "N", "") }));
 		// 1 is the install button. its not possible to sort by this column
 		treeItem.setString(2, quark.name ? "");
 		treeItem.setString(3, (quark.version ? "").asString);
-		treeItem.setString(4, (quark.summary ? "").replace(Char.nl.asString," ").replace(Char.tab.asString, ""));
+		treeItem.setString(4, (quark.summary ? "").replace(Char.nl.asString, " ").replace(Char.tab.asString, ""))
 	}
 }

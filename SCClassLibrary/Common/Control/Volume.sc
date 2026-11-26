@@ -8,8 +8,8 @@ Volume {
 	var <>window;
 	var <group, <listener;
 
-	*new { | server, startBus = 0, numChannels, min = -90, max = 6, persist = false |
-		^super.newCopyArgs(server ?? { Server.default }, startBus, numChannels, min, max, persist).init;
+	*new { |server, startBus = 0, numChannels, min = -90, max = 6, persist = false|
+		^super.newCopyArgs(server ?? { Server.default }, startBus, numChannels, min, max, persist).init
 	}
 
 	init {
@@ -23,7 +23,7 @@ Volume {
 		// execute immediately if we're already past server tree functions
 		if(server.serverRunning) {
 			this.sendSynthDef;
-			this.updateSynth;
+			this.updateSynth
 		};
 
 		initFunc = {
@@ -32,10 +32,10 @@ Volume {
 			this.sendSynthDef;
 
 			// only create synth now if it won't be created by ServerTree
-			if (persist.not) { this.updateSynth };
+			if(persist.not) { this.updateSynth };
 
 			// only start listener to volume settings if multiple clients expected
-			if (server.options.maxLogins > 1) {
+			if(server.options.maxLogins > 1) {
 				this.startListener
 			}
 		};
@@ -45,7 +45,7 @@ Volume {
 			if(persist) { this.updateSynth }
 		};
 
-		ServerTree.add(updateFunc, server);
+		ServerTree.add(updateFunc, server)
 
 	}
 
@@ -56,38 +56,38 @@ Volume {
 				#invol, inlag, ingate, inbus = msg.drop(3);
 
 				invol = invol.ampdb;
-				if (invol.equalWithPrecision(volume).not) {
+				if(invol.equalWithPrecision(volume).not) {
 					volume = invol;
-					this.changed(\amp, volume);
+					this.changed(\amp, volume)
 				};
-				if (inlag.equalWithPrecision(lag).not) {
-					lag = inlag;
+				if(inlag.equalWithPrecision(lag).not) {
+					lag = inlag
 				};
 				// triggers when gate closed, so we know ampSynth ends
-				if (ingate <= 0.0) {
+				if(ingate <= 0.0) {
 					volume = invol;
-					this.changed(\amp, volume);
+					this.changed(\amp, volume)
 				} {
-					ampSynth.isPlaying = true;
+					ampSynth.isPlaying = true
 				};
-				if (inbus != startBus) {
-					startBus = inbus;
-				};
+				if(inbus != startBus) {
+					startBus = inbus
+				}
 
 			}, '/volumeUpdate', server.addr).permanent_(true)
 		};
-		listener.enable;
+		listener.enable
 	}
 
 	sendSynthDef {
-		if (server.hasBooted) {
+		if(server.hasBooted) {
 			fork {
 				numOutputChannels = this.numChannels;
 				// update defName in case numChannels has changed
 				defName = (\volumeAmpControl ++ numOutputChannels).asSymbol;
 				ampSynth.defName = defName;
 
-				SynthDef(defName, { | volumeAmp = 1, volumeLag = 0.1, gate=1, bus |
+				SynthDef(defName, { |volumeAmp = 1, volumeLag = 0.1, gate = 1, bus|
 
 					var controls = [volumeAmp, volumeLag, gate, bus];
 					var updateTrig = Impulse.kr(1) + HPZ1.kr(controls).abs.sum;
@@ -95,23 +95,23 @@ Volume {
 					SendReply.kr(updateTrig, '/volumeUpdate', controls);
 
 					XOut.ar(bus,
-						Linen.kr(gate, releaseTime: 0.05, doneAction:2),
+						Linen.kr(gate, releaseTime: 0.05, doneAction: 2),
 						In.ar(bus, numOutputChannels) * Lag.kr(volumeAmp, volumeLag)
-					);
+					)
 				}).send(server);
 
-				server.sync;
+				server.sync
 
 			}
-		};
+		}
 	}
 
 	numChannels { ^numChannels ? server.options.numOutputBusChannels }
 	numChannels_ { |num|
 		if(ampSynth.isPlaying and: { num != this.numChannels }) {
-			"Change in number of channels will not take effect until volume is reset to 0dB.".warn;
+			"Change in number of channels will not take effect until volume is reset to 0dB.".warn
 		};
-		numChannels = num;
+		numChannels = num
 	}
 
 	updateSynth {
@@ -134,16 +134,16 @@ Volume {
 
 					// also catches stray endings of ampSynth
 					ampSynth.onFree {
-						this.volume = 0;
+						this.volume = 0
 					};
-					ampSynth.isPlaying = true;
+					ampSynth.isPlaying = true
 				} {
-					ampSynth.set(\volumeAmp, amp);
+					ampSynth.set(\volumeAmp, amp)
 				}
 			}
 		} {
 			if(ampSynth.isPlaying) {
-				ampSynth.set(\volumeAmp, 1).release;
+				ampSynth.set(\volumeAmp, 1).release
 			}
 		}
 	}
@@ -152,7 +152,7 @@ Volume {
 		if(isMuted.not) {
 			isMuted = true;
 			this.changed(\mute, true);
-			this.updateSynth;
+			this.updateSynth
 		}
 	}
 
@@ -160,34 +160,34 @@ Volume {
 		if(isMuted) {
 			isMuted = false;
 			this.changed(\mute, false);
-			this.updateSynth;
+			this.updateSynth
 		}
 	}
 
 	freeSynth {
 		if(ampSynth.isPlaying) {
-			ampSynth.release;
+			ampSynth.release
 		}
 	}
 
 	// sets volume back to 1 - removes the synth
 	reset {
 		isMuted = false;
-		this.volume = 0.0;
+		this.volume = 0.0
 	}
 
-	volume_ { | aVolume |
+	volume_ { |aVolume|
 		volume = aVolume.clip(min, max);
 		this.changed(\amp, volume);
-		this.updateSynth;
+		this.updateSynth
 	}
 
-	lag_ { | aLagTime |
+	lag_ { |aLagTime|
 		lag = aLagTime;
 		if(ampSynth.notNil) { ampSynth.set(\volumeLag, lag) }
 	}
 
-	setVolumeRange { | argMin, argMax |
+	setVolumeRange { |argMin, argMax|
 		var clippedVolume;
 		argMin !? { min = argMin };
 		argMax !? { max = argMax };
@@ -196,12 +196,12 @@ Volume {
 		if(clippedVolume != volume) { this.volume_(clippedVolume) }
 	}
 
-	gui { | window, bounds |
+	gui { |window, bounds|
 		^VolumeGui(this, window, bounds)
 	}
 
 	close {
-		window.close;
+		window.close
 	}
 
 }
@@ -210,11 +210,11 @@ VolumeGui {
 
 	var <model, <window;
 
-	*new { | model, win, bounds |
+	*new { |model, win, bounds|
 		^super.newCopyArgs(model).init(win, bounds)
 	}
 
-	init { | win, bounds |
+	init { |win, bounds|
 		var slider, box, simpleController;
 		var spec = [model.min, model.max, \db].asSpec;
 		bounds = bounds ?? { Rect(100, 100, 80, 330) };
@@ -225,24 +225,24 @@ VolumeGui {
 		slider = Slider(window, Rect(10, 40, 60, 280))
 		.value_(spec.unmap(model.volume));
 
-		slider.action_({ | item |
-			model.volume_(spec.map(item.value));
+		slider.action_({ |item|
+			model.volume_(spec.map(item.value))
 		});
-		box.action_({ | item |
-			model.volume_(item.value);
+		box.action_({ |item|
+			model.volume_(item.value)
 		});
 		window.onClose_({
-			simpleController.remove;
+			simpleController.remove
 		});
 
 		simpleController = SimpleController(model)
-		.put(\amp, {|changer, what, volume|
+		.put(\amp, { |changer, what, volume|
 			box.value_(volume.round(0.01));
-			slider.value_(spec.unmap(volume));
+			slider.value_(spec.unmap(volume))
 		})
-		.put(\ampRange, {|changer, what, min, max|
+		.put(\ampRange, { |changer, what, min, max|
 			spec = [min, max, \db].asSpec.debug;
-			slider.value_(spec.unmap(model.volume));
+			slider.value_(spec.unmap(model.volume))
 		})
 	}
 }

@@ -1,16 +1,16 @@
+//# VERSION 3.16
 TestSynthDescMsgFunc : UnitTest {
 	test_SynthDesc_normal_SynthDef_event_args {
-		var event, args;
-		SynthDef(\normal_test_args, {
-			arg out = 0, gate = 1, freq = 440, ffreq = 2000, rq = 0.2, amp = 0.1, t_trig = 1;
+		var args;
+		SynthDef(\normal_test_args, { |out = 0, gate = 1, freq = 440, ffreq = 2000, rq = 0.2, amp = 0.1, t_trig = 1|
 			// note, we don't need actual DSP, only checking args
 			Out.ar(0, DC.ar(0))
 		}).add;
 
-		event = (out: 4, gate: 1, freq: 800, ffreq: 8234, amp: 0.2, trig: 1,
+		var event = (out: 4, gate: 1, freq: 800, ffreq: 8234, amp: 0.2, trig: 1,
 			t_trig: 2, undefined: 600);
 		event.use {
-			args = SynthDescLib.at(\normal_test_args).msgFunc.valueEnvir;
+			args = SynthDescLib.at(\normal_test_args).msgFunc.valueEnvir
 		};
 
 		this.assert(
@@ -23,24 +23,24 @@ TestSynthDescMsgFunc : UnitTest {
 	}
 
 	test_SynthDesc_300_args_from_event {
-		var event, indices, argsFromDesc, inputArgs;
+		var argsFromDesc;
 		SynthDef('300_controls', {
 			var ctl = Control.names(
 				Array.fill(300, { |i| ("ctl" ++ i).asSymbol })
-			).kr(Array.fill(300, { |i| i/300 }));
+			).kr(Array.fill(300, { |i| i / 300 }));
 			Out.ar(0, DC.ar(0))
 		}).add;
 
-		event = ();
-		indices = (0, 7 .. 299);
-		inputArgs = Array(indices.size * 2);
+		var event = ();
+		var indices = (0, 7 .. 299);
+		var inputArgs = Array(indices.size * 2);
 		indices.do { |i|
 			var x = 1.0.rand2;
 			event[("ctl" ++ i).asSymbol] = x;
-			inputArgs.add(("ctl" ++ i).asSymbol).add(x);
+			inputArgs.add(("ctl" ++ i).asSymbol).add(x)
 		};
 		event.use {
-			argsFromDesc = SynthDescLib.at('300_controls').msgFunc.valueEnvir;
+			argsFromDesc = SynthDescLib.at('300_controls').msgFunc.valueEnvir
 		};
 
 		this.assert(
@@ -53,7 +53,7 @@ TestSynthDescMsgFunc : UnitTest {
 	}
 
 	test_SynthDesc_large_control_count_with_arrayed_controls {
-		var event, indices, argsFromDesc, inputArgs;
+		var argsFromDesc;
 		var numPerCtl = Array.fill(300, { rrand(1, 3) });
 
 		SynthDef(\large_with_arrays, {
@@ -63,16 +63,16 @@ TestSynthDescMsgFunc : UnitTest {
 			Out.ar(0, DC.ar(0))
 		}).add;
 
-		event = ();
-		indices = (0, 7 .. 299);
-		inputArgs = Array(indices.size * 2);
+		var event = ();
+		var indices = (0, 7 .. 299);
+		var inputArgs = Array(indices.size * 2);
 		indices.do { |i|
 			var x = Array.fill(numPerCtl[i], { 1.0.rand2 });
 			event[("ctl" ++ i).asSymbol] = x;
-			inputArgs.add(("ctl" ++ i).asSymbol).add(x);
+			inputArgs.add(("ctl" ++ i).asSymbol).add(x)
 		};
 		event.use {
-			argsFromDesc = SynthDescLib.at(\large_with_arrays).msgFunc.valueEnvir;
+			argsFromDesc = SynthDescLib.at(\large_with_arrays).msgFunc.valueEnvir
 		};
 
 		this.assert(
@@ -96,7 +96,7 @@ TestSynthDescMsgFunc : UnitTest {
 			SynthDescLib.at(\testempty).msgFunc.value,
 			Array.new,
 			"The msgFunc for a SynthDef with no eligible controls should return an empty array"
-		);
+		)
 	}
 
 	unorderedPairsEqual { |a, b|

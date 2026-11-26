@@ -1,69 +1,69 @@
 LevelIndicator : View {
 
-	*qtClass {^'QcLevelIndicator'}
+	*qtClass { ^'QcLevelIndicator' }
 
 	value {
 		^this.getProperty(\value)
 	}
-	value_ { arg val;
+	value_ { |val|
+		this.setProperty(\value, val)
+	}
+	valueAction_ { |val|
 		this.setProperty(\value, val);
-	}
-	valueAction_ { arg val;
-		this.setProperty(\value, val);
-		this.doAction;
+		this.doAction
 	}
 
-	warning_ {arg val;
-		this.setProperty(\warning, val);
+	warning_ { |val|
+		this.setProperty(\warning, val)
 	}
 
-	critical_ {arg val;
-		this.setProperty(\critical, val);
+	critical_ { |val|
+		this.setProperty(\critical, val)
 	}
 
-	style_ {arg val;
-		this.setProperty(\style, QLevelIndicatorStyle(val));
+	style_ { |val|
+		this.setProperty(\style, QLevelIndicatorStyle(val))
 	}
 
-	stepWidth_{arg val;
-		this.setProperty(\stepWidth, val);
+	stepWidth_{ |val|
+		this.setProperty(\stepWidth, val)
 	}
 
 	background { ^this.getProperty(\grooveColor) }
-	background_ { arg color; this.setProperty(\grooveColor, color) }
+	background_ { |color| this.setProperty(\grooveColor, color) }
 
 	meterColor_{ |color| this.setProperty(\meterColor, color) }
 	warningColor_{ |color| this.setProperty(\warningColor, color) }
 	criticalColor_{ |color| this.setProperty(\criticalColor, color) }
 
-	numSteps_ {arg val;
+	numSteps_ { |val|
 		var stepWidth, length = max(this.bounds.width, this.bounds.height);
 		stepWidth = length / val;
-		stepWidth = stepWidth - (stepWidth < 3).if(1, 2);
-		this.stepWidth = stepWidth;
+		stepWidth = stepWidth - if(stepWidth < 3, 1, 2);
+		this.stepWidth = stepWidth
 	}
 
-	image_ {arg image;
-		this.nonimpl("image");
+	image_ { |image|
+		this.nonimpl("image")
 	}
 
-	numTicks_ {arg number;
-		this.setProperty(\ticks, number);
+	numTicks_ { |number|
+		this.setProperty(\ticks, number)
 	}
 
-	numMajorTicks_ {arg number;
-		this.setProperty(\majorTicks, number);
+	numMajorTicks_ { |number|
+		this.setProperty(\majorTicks, number)
 	}
 
-	drawsPeak_ {arg bool;
-		this.setProperty(\drawPeak, bool);
+	drawsPeak_ { |bool|
+		this.setProperty(\drawPeak, bool)
 	}
 
-	peakLevel_ { arg val;
-		this.setProperty(\peak, val);
+	peakLevel_ { |val|
+		this.setProperty(\peak, val)
 	}
 
-	*meterServer { arg server;
+	*meterServer { |server|
 		var window, inmeters, outmeters, inresp, outresp, insynth, outsynth, func;
 		var numIns, numOuts;
 		var view, viewWidth, meterWidth = 15, gapWidth = 4;
@@ -77,60 +77,60 @@ LevelIndicator : View {
 		window = Window.new(server.name ++ " levels (dBFS)", Rect(5, 305, viewWidth + 20, 230));
 		window.view.background = Color.grey(0.4);
 
-		view = CompositeView(window, Rect(10,25, viewWidth, 180) );
-		view.addFlowLayout(0@0, gapWidth@gapWidth);
+		view = CompositeView(window, Rect(10, 25, viewWidth, 180));
+		view.addFlowLayout(0 @ 0, gapWidth @ gapWidth);
 
 		// dB scale
-		UserView(view, Rect(0,0,meterWidth,195)).drawFunc_({
+		UserView(view, Rect(0, 0, meterWidth, 195)).drawFunc_({
 			Pen.color = Color.white;
 			Pen.font = Font("Helvetica", 10, true);
 			Pen.stringCenteredIn("0", Rect(0, 0, meterWidth, 12));
-			Pen.stringCenteredIn("-80", Rect(0, 170, meterWidth, 12));
+			Pen.stringCenteredIn("-80", Rect(0, 170, meterWidth, 12))
 		});
 
-		(numIns > 0).if({
+		if(numIns > 0) {
 			// ins
 			StaticText(window, Rect(10, 5, 100, 15))
 			.font_(Font("Helvetica", 10, true))
 			.stringColor_(Color.white)
 			.string_("Inputs");
-			inmeters = Array.fill( numIns, { arg i;
+			inmeters = Array.fill(numIns, { |i|
 				var comp;
-				comp = CompositeView(view, Rect(0,0,meterWidth,195)).resize_(5);
+				comp = CompositeView(view, Rect(0, 0, meterWidth, 195)).resize_(5);
 				StaticText(comp, Rect(0, 180, meterWidth, 15))
 				.font_(Font("Helvetica", 9, true))
 				.stringColor_(Color.white)
 				.string_(i.asString);
-				LevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
+				LevelIndicator(comp, Rect(0, 0, meterWidth, 180)).warning_(0.9).critical_(1.0)
 				.drawsPeak_(true)
 				.numTicks_(9)
-				.numMajorTicks_(3);
+				.numMajorTicks_(3)
 			});
 
 			// divider
-			UserView(view, Rect(0,0,meterWidth,180)).drawFunc_({
+			UserView(view, Rect(0, 0, meterWidth, 180)).drawFunc_({
 				Pen.color = Color.white;
-				Pen.line(((meterWidth + gapWidth) * 0.5)@0, ((meterWidth + gapWidth) * 0.5)@180);
-				Pen.stroke;
-			});
-		});
+				Pen.line(((meterWidth + gapWidth) * 0.5) @ 0, ((meterWidth + gapWidth) * 0.5) @ 180);
+				Pen.stroke
+			})
+		};
 
 		// outs
-		StaticText(window, Rect(10 + if(numIns > 0 , ((numIns + 2) * (meterWidth + gapWidth)), 0), 5, 100, 15))
+		StaticText(window, Rect(10 + if(numIns > 0, ((numIns + 2) * (meterWidth + gapWidth)), 0), 5, 100, 15))
 		.font_(Font("Helvetica", 10, true))
 		.stringColor_(Color.white)
 		.string_("Outputs");
-		outmeters = Array.fill( numOuts, { arg i;
+		outmeters = Array.fill(numOuts, { |i|
 			var comp;
-			comp = CompositeView(view, Rect(0,0,meterWidth,195));
+			comp = CompositeView(view, Rect(0, 0, meterWidth, 195));
 			StaticText(comp, Rect(0, 180, meterWidth, 15))
 			.font_(Font("Helvetica", 9, true))
 			.stringColor_(Color.white)
 			.string_(i.asString);
-			LevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
+			LevelIndicator(comp, Rect(0, 0, meterWidth, 180)).warning_(0.9).critical_(1.0)
 			.drawsPeak_(true)
 			.numTicks_(9)
-			.numMajorTicks_(3);
+			.numMajorTicks_(3)
 		});
 
 		window.front;
@@ -138,28 +138,32 @@ LevelIndicator : View {
 		func = {
 			numRMSSamps = server.sampleRate / updateFreq;
 			numRMSSampsRecip = 1 / numRMSSamps;
-			(numIns > 0).if({
-				inresp = OSCFunc({ |msg, t|      {try {
-					msg.copyToEnd(3).pairsDo({|val, peak, i|
-						var meter;
-						i = i * 0.5;
-						meter = inmeters[i];
-						meter.value = (val.max(0.0) * numRMSSampsRecip).sqrt.ampdb.linlin(dBLow, 0, 0, 1);
-						meter.peakLevel = peak.ampdb.linlin(dBLow, 0, 0, 1);
-				}) }}.defer;
-				}, ("/" ++ server.name ++ "InLevels").asSymbol, server.addr).fix;
-			});
-			outresp = OSCFunc({ |msg, t|      {try {
-				msg.copyToEnd(3).pairsDo({|val, peak, i|
-					var meter;
-					i = i * 0.5;
-					meter = outmeters[i];
-					meter.value = (val.max(0.0) * numRMSSampsRecip).sqrt.ampdb.linlin(dBLow, 0, 0, 1);
-					meter.peakLevel = peak.ampdb.linlin(dBLow, 0, 0, 1);
-			}) }}.defer;
+			if(numIns > 0) {
+				inresp = OSCFunc({ |msg, t|
+					{
+						try {
+							msg.copyToEnd(3).pairsDo({ |val, peak, i|
+								var meter;
+								i = i * 0.5;
+								meter = inmeters[i];
+								meter.value = (val.max(0.0) * numRMSSampsRecip).sqrt.ampdb.linlin(dBLow, 0, 0, 1);
+								meter.peakLevel = peak.ampdb.linlin(dBLow, 0, 0, 1)
+					}) } }.defer
+				}, ("/" ++ server.name ++ "InLevels").asSymbol, server.addr).fix
+			};
+			outresp = OSCFunc({ |msg, t|
+				{
+					try {
+						msg.copyToEnd(3).pairsDo({ |val, peak, i|
+							var meter;
+							i = i * 0.5;
+							meter = outmeters[i];
+							meter.value = (val.max(0.0) * numRMSSampsRecip).sqrt.ampdb.linlin(dBLow, 0, 0, 1);
+							meter.peakLevel = peak.ampdb.linlin(dBLow, 0, 0, 1)
+				}) } }.defer
 			}, ("/" ++ server.name ++ "OutLevels").asSymbol, server.addr).fix;
 			server.bind({
-				(numIns > 0).if({
+				if(numIns > 0) {
 					insynth = SynthDef(server.name ++ "InputLevels", {
 						var in, imp;
 						in = In.ar(NumOutputBuses.ir, numIns);
@@ -168,11 +172,12 @@ LevelIndicator : View {
 							// do the mean and sqrt clientside to save CPU
 							[
 								RunningSum.ar(in.squared, numRMSSamps),
-								Peak.ar(in, Delay1.ar(imp)).lag(0, 3)]
+								Peak.ar(in, Delay1.ar(imp)).lag(0, 3)
+							]
 							.flop.flat
-						);
-					}).play(RootNode(server), nil, \addToHead);
-				});
+						)
+					}).play(RootNode(server), nil, \addToHead)
+				};
 
 				outsynth = SynthDef(server.name ++ "OutputLevels", {
 					var in, imp;
@@ -184,20 +189,20 @@ LevelIndicator : View {
 							RunningSum.ar(in.squared, numRMSSamps),
 							Peak.ar(in, Delay1.ar(imp)).lag(0, 3)
 						].flop.flat
-					);
-				}).play(RootNode(server), nil, \addToTail);
-			});
+					)
+				}).play(RootNode(server), nil, \addToTail)
+			})
 		};
 
 		window.onClose_({
-			(server.options.numInputBusChannels > 0).if({ inresp.clear;});
+			if(server.options.numInputBusChannels > 0) { inresp.clear };
 			outresp.clear;
 			insynth.free;
 			outsynth.free;
-			ServerTree.remove(func);
+			ServerTree.remove(func)
 		});
 
 		ServerTree.add(func);
-		if(server.serverRunning, func); // otherwise starts when booted
+		if(server.serverRunning, func) // otherwise starts when booted
 	}
 }

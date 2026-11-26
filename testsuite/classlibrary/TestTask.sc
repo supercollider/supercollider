@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestTask : UnitTest {
 
 	test_stop_internally {
@@ -7,47 +8,48 @@ TestTask : UnitTest {
 			0.001.wait;
 			stopped = true;
 			task.stop;
-			stopped = false;
+			stopped = false
 		};
 		task.play;
 		0.002.wait;
-		this.assert(stopped, "Task should stop itself immediately from within using the stop message");
+		this.assert(stopped, "Task should stop itself immediately from within using the stop message")
 
 	}
 
 	test_stop_without_running {
-		var task = Task { 0.001.wait; task.stop; };
+		var task = Task { 0.001.wait; task.stop };
 		task.play;
 		0.002.wait;
 		task.stop;
-		this.assert(task.isPlaying.not, "Task be stoppable even if not running");
+		this.assert(task.isPlaying.not, "Task be stoppable even if not running")
 	}
 
 	test_play_with_SystemClock {
-		this.makePlayTestWithClock(SystemClock, "SystemClock");
+		this.makePlayTestWithClock(SystemClock, "SystemClock")
 	}
 
 	test_play_with_AppClock {
-		this.makePlayTestWithClock(AppClock, "AppClock");
+		this.makePlayTestWithClock(AppClock, "AppClock")
 	}
 
 	test_play_with_TempoClock {
-		this.makePlayTestWithClock(TempoClock.new, "TempoClock.new");
+		this.makePlayTestWithClock(TempoClock.new, "TempoClock.new")
 	}
 
 	test_play_with_LinkClock {
-		this.makePlayTestWithClock(LinkClock.new, "LinkClock.new");
+		this.makePlayTestWithClock(LinkClock.new, "LinkClock.new")
 	}
 
 	makePlayTestWithClock { |clock, nameString|
 		var ok = false;
-		var task = Task { 0.001.wait; ok = true; cond.signalAll };
+		// 3.16: a variable can't be used before it is declared, so cond is declared first.
 		var cond = CondVar.new;
+		var task = Task { 0.001.wait; ok = true; cond.signalAll };
 		task.play(clock);
 		cond.waitFor(1, { ok });
 		task.stop;
 		clock.stop;
-		this.assert(ok, "Task plays with " ++ nameString);
+		this.assert(ok, "Task plays with " ++ nameString)
 	}
 
 }

@@ -15,23 +15,23 @@ TestServerOptions : UnitTest {
 		this.assertEquals(o.inDevice, nil);
 		this.assertEquals(o.outDevice, nil);
 
-		o.device = [ "foo", "bar" ];
+		o.device = ["foo", "bar"];
 		this.assertEquals(o.inDevice, "foo");
 		this.assertEquals(o.outDevice, "bar");
 
 		// Symbols should be converted to Strings
-		o.device = [ \cat, \dog ];
+		o.device = [\cat, \dog];
 		this.assertEquals(o.inDevice, "cat");
 		this.assertEquals(o.outDevice, "dog");
 
 		// elements should wrap around
-		o.device = [ "baz" ];
+		o.device = ["baz"];
 		this.assertEquals(o.inDevice, "baz");
 		this.assertEquals(o.outDevice, "baz");
 
-		o.device = [ nil, nil ];
-		this.assertEquals(o.inDevice,nil);
-		this.assertEquals(o.outDevice, nil);
+		o.device = [nil, nil];
+		this.assertEquals(o.inDevice, nil);
+		this.assertEquals(o.outDevice, nil)
 	}
 
 	test_deviceGetter {
@@ -66,6 +66,6 @@ TestServerOptions : UnitTest {
 		dev = o.device;
 		this.assert(dev.isKindOf(Array));
 		this.assertEquals(dev[0], nil);
-		this.assertEquals(dev[1], "baz");
+		this.assertEquals(dev[1], "baz")
 	}
 }

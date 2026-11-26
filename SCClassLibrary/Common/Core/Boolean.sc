@@ -1,7 +1,7 @@
 Boolean {
 	*new { ^this.shouldNotImplement(thisMethod) }
 	*newCopyArgs { ^this.shouldNotImplement(thisMethod) }
-	xor { arg bool; ^(this === bool).not }
+	xor { |bool| ^(this === bool).not }
 	if { ^this.subclassResponsibility(thisMethod) }
 	not { ^this.subclassResponsibility(thisMethod) }
 	&& { ^this.subclassResponsibility(thisMethod) }
@@ -25,11 +25,11 @@ Boolean {
 		_Trace
 		^this.primitiveFailed
 	}
-	printOn { arg stream;
-		stream.putAll(this.asString);
+	printOn { |stream|
+		stream.putAll(this.asString)
 	}
-	storeOn { arg stream;
-		stream.putAll(this.asCompileString);
+	storeOn { |stream|
+		stream.putAll(this.asCompileString)
 	}
 	archiveAsCompileString { ^true }
 
@@ -39,25 +39,25 @@ Boolean {
 }
 
 True : Boolean {
-	if { arg trueFunc, falseFunc; ^trueFunc.value }
+	if { |trueFunc, falseFunc| ^trueFunc.value }
 	not { ^false }
-	&& { arg that; ^that.value }
-	|| { arg that; ^this }
-	and { arg that; ^that.value }
-	or { arg that; ^this }
-	nand { arg that; ^that.value.not }
+	&& { |that| ^that.value }
+	|| { |that| ^this }
+	and { |that| ^that.value }
+	or { |that| ^this }
+	nand { |that| ^that.value.not }
 	asInteger   { ^1 }
 	binaryValue { ^1 } // TODO in the long-run, deprecate for asInteger
 }
 
 False : Boolean  {
-	if { arg trueFunc, falseFunc; ^falseFunc.value }
+	if { |trueFunc, falseFunc| ^falseFunc.value }
 	not { ^true }
-	&& { arg that; ^this }
-	|| { arg that; ^that.value }
-	and { arg that; ^this }
-	or { arg that; ^that.value }
-	nand { arg that; ^true }
+	&& { |that| ^this }
+	|| { |that| ^that.value }
+	and { |that| ^this }
+	or { |that| ^that.value }
+	nand { |that| ^true }
 	asInteger   { ^0 }
 	binaryValue { ^0 } // TODO in the long-run, deprecate for asInteger
 }

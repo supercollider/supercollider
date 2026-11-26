@@ -13,7 +13,7 @@
 }
 
 + AbstractFunction {
-	reduceFuncProxy { | args, protect=true, kwargs |
+	reduceFuncProxy { |args, protect = true, kwargs|
 		^this.valueArgs(args, kwargs).valueFuncProxy(args, kwargs)
 	}
 

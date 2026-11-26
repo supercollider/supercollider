@@ -25,20 +25,20 @@ Pmeanrand : Pwhite {
 Pbeta : Pattern {
 	var <>lo, <>hi, <>prob1, <>prob2, <>length;
 
-	*new{ arg lo = 0.0, hi = 1.0, prob1 = 1, prob2 = 1, length = inf;
-		^super.newCopyArgs(lo, hi, prob1, prob2, length);
+	*new{ |lo = 0.0, hi = 1.0, prob1 = 1, prob2 = 1, length = inf|
+		^super.newCopyArgs(lo, hi, prob1, prob2, length)
 	}
 
 	storeArgs { ^[lo, hi, prob1, prob2, length] }
 
-	embedInStream { arg inval;
+	embedInStream { |inval|
 		var loStr = lo.asStream;
 		var hiStr = hi.asStream;
 		var prob1Str = prob1.asStream;
 		var prob2Str = prob2.asStream;
 		var loVal, hiVal;
 
-		length.value(inval).do({
+		length.value(inval).do {
 			var sum = 2, temp, rprob1, rprob2;
 			rprob1 = prob1Str.next(inval);
 			rprob2 = prob2Str.next(inval);
@@ -49,110 +49,110 @@ Pbeta : Pattern {
 			hiVal = hiStr.next(inval);
 			if(loVal.isNil or: { hiVal.isNil }) { ^inval };
 
-			while ({
+			while {
 				temp = 1.0.rand ** rprob1;
 				sum = temp + (1.0.rand ** rprob2);
-				sum > 1;
-			});
-			inval = (((temp/sum) * (hiVal - loVal)) + loVal).yield;
-		});
-		^inval;
+				sum > 1
+			};
+			inval = (((temp / sum) * (hiVal - loVal)) + loVal).yield
+		};
+		^inval
 	}
 }
 
 Pcauchy : Pattern {
 	var <>mean, <>spread, <>length;
 
-	*new{arg mean = 0.0, spread = 1.0, length = inf;
-		^super.newCopyArgs(mean, spread, length);
+	*new{ |mean = 0.0, spread = 1.0, length = inf|
+		^super.newCopyArgs(mean, spread, length)
 	}
 
 	storeArgs{ ^[mean, spread, length] }
 
-	embedInStream { arg inval;
+	embedInStream { |inval|
 		var meanStr = mean.asStream;
 		var spreadStr = spread.asStream;
 		var meanVal, spreadVal;
-		length.value(inval).do({
+		length.value(inval).do {
 			var ran = 0.5;
 			meanVal = meanStr.next(inval);
 			spreadVal = spreadStr.next(inval);
 			if(meanVal.isNil or: { spreadVal.isNil }) { ^inval };
-			while({
+			while {
 				ran = 1.0.rand;
 				ran == 0.5
-			});
-			inval = ((spreadVal * (ran * pi).tan) + meanVal).yield;
-		});
-		^inval;
+			};
+			inval = ((spreadVal * (ran * pi).tan) + meanVal).yield
+		};
+		^inval
 	}
 }
 
 Pgauss : Pattern {
 	var <>mean, <>dev, <>length;
 
-	*new{ arg mean = 0.0, dev = 1, length = inf;
-		^super.newCopyArgs(mean, dev, length);
+	*new{ |mean = 0.0, dev = 1, length = inf|
+		^super.newCopyArgs(mean, dev, length)
 	}
 
 	storeArgs{ ^[mean, dev, length] }
 
-	embedInStream{arg inval;
+	embedInStream{ |inval|
 		var meanStr = mean.asStream;
 		var devStr = dev.asStream;
 		var devVal, meanVal;
-		length.value(inval).do({
+		length.value(inval).do {
 			devVal = devStr.next(inval);
 			meanVal = meanStr.next(inval);
 			if(meanVal.isNil or: { devVal.isNil }) { ^inval };
-			inval = ((((-2*log(1.0.rand)).sqrt * sin(2pi.rand)) * devVal) + meanVal).yield;
-		});
-		^inval;
+			inval = ((((-2 * log(1.0.rand)).sqrt * sin(2pi.rand)) * devVal) + meanVal).yield
+		};
+		^inval
 	}
 }
 
 
 Ppoisson : Pattern {
 	var <>mean, <>length;
-	*new{arg mean = 1, length = inf;
-		^super.newCopyArgs(mean, length);
-		}
+	*new{ |mean = 1, length = inf|
+		^super.newCopyArgs(mean, length)
+	}
 	storeArgs{ ^[mean, length] }
-	embedInStream{ arg inval;
+	embedInStream{ |inval|
 		var meanStr = mean.asStream;
-		length.value(inval).do({
+		length.value(inval).do {
 			var inc, test, temp, meanVal = meanStr.next(inval);
 			if(meanVal.isNil) { ^inval };
 			inc = 0;
 			test = 1.0.rand;
 			temp = exp(meanVal.neg);
-			while({
-				test > temp;
-				}, {
+			while {
+				test > temp
+			} {
 				inc = inc + 1;
-				test = test * 1.0.rand;
-			});
-			inval = inc.yield;
-		});
-		^inval;
+				test = test * 1.0.rand
+			};
+			inval = inc.yield
+		};
+		^inval
 	}
 }
 
 Pexprand : Pwhite {
-	*new { arg lo=0.0001, hi=1.0, length=inf;
+	*new { |lo = 0.0001, hi = 1.0, length = inf|
 		^super.newCopyArgs(lo, hi, length)
 	}
-	storeArgs { ^[ lo, hi, length ] }
-	embedInStream { arg inval;
+	storeArgs { ^[lo, hi, length] }
+	embedInStream { |inval|
 		var loStr = lo.asStream;
 		var hiStr = hi.asStream;
 		var hiVal, loVal;
-		length.value(inval).do({
+		length.value(inval).do {
 			hiVal = hiStr.next(inval);
 			loVal = loStr.next(inval);
 			if(hiVal.isNil or: { loVal.isNil }) { ^inval };
-			inval = exprand(loVal, hiVal).yield;
-		});
-		^inval;
+			inval = exprand(loVal, hiVal).yield
+		};
+		^inval
 	}
 }

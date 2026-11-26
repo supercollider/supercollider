@@ -1,24 +1,24 @@
 Font {
 	classvar <defaultSansFace, <defaultSerifFace, <defaultMonoFace;
 
-	var <>name, <size, <>bold, <>italic, <hasPointSize=false;
+	var <>name, <size, <>bold, <>italic, <hasPointSize = false;
 	/* ----------------- class -------------------*/
 
 
 	*initClass {
-		if(Platform.hasQt.not) { ^nil; };	// skip init on Qt-less builds
+		if(Platform.hasQt.not) { ^nil };	// skip init on Qt-less builds
 
-		try{
+		try {
 			defaultSansFace = this.prDefaultFamilyForStyle(0);
 			defaultSerifFace = this.prDefaultFamilyForStyle(1);
-			defaultMonoFace = this.prDefaultFamilyForStyle(2);
-		}{
-			"WARNING: Qt font initialisation failed".postln;
+			defaultMonoFace = this.prDefaultFamilyForStyle(2)
+		} {
+			"WARNING: Qt font initialisation failed".postln
 		}
 	}
 
-	*new { arg name, size, bold = false, italic = false, usePointSize = false;
-		^super.newCopyArgs( name, size, bold, italic, usePointSize );
+	*new { |name, size, bold = false, italic = false, usePointSize = false|
+		^super.newCopyArgs(name, size, bold, italic, usePointSize)
 	}
 
 	*availableFonts {
@@ -26,76 +26,76 @@ Font {
 		^this.primitiveFailed
 	}
 
-	*antiAliasing_ { arg flag;
+	*antiAliasing_ { |flag|
 	}
 
-	*smoothing_ { arg flag;
+	*smoothing_ { |flag|
 	}
 
 	*default {
-		^Font();
+		^Font()
 	}
 
-	*default_ { arg font;
-		this.setDefault(font);
+	*default_ { |font|
+		this.setDefault(font)
 	}
 
-	*setDefault { arg font, class;
-		this.prSetDefault(font, class !? {class.qtClass});
+	*setDefault { |font, class|
+		this.prSetDefault(font, class !? { class.qtClass })
 	}
 
-	*monospace {|size, bold = false, italic = false, usePointSize = false|
+	*monospace { |size, bold = false, italic = false, usePointSize = false|
 		^this.new(this.defaultMonoFace, size, bold, italic, usePointSize)
 	}
 
-	*serif {|size, bold = false, italic = false, usePointSize = false|
+	*serif { |size, bold = false, italic = false, usePointSize = false|
 		^this.new(this.defaultSerifFace, size, bold, italic, usePointSize)
 	}
 
-	*sansSerif {|size, bold = false, italic = false, usePointSize = false|
+	*sansSerif { |size, bold = false, italic = false, usePointSize = false|
 		^this.new(this.defaultSansFace, size, bold, italic, usePointSize)
 	}
 
 	/* ------------------instance------------------*/
 
-	setDefault { arg class;
-		Font.setDefault(this, class);
+	setDefault { |class|
+		Font.setDefault(this, class)
 	}
 
 	boldVariant {
-		^this.class.new( name, size, true, italic );
+		^this.class.new(name, size, true, italic)
 	}
 
-	size_ { arg pixelSize; this.pixelSize_( pixelSize ); }
+	size_ { |pixelSize| this.pixelSize_(pixelSize) }
 
-	pixelSize_ { arg pixelSize;
+	pixelSize_ { |pixelSize|
 		size = pixelSize;
-		hasPointSize = false;
+		hasPointSize = false
 	}
 
-	pointSize_ { arg pointSize;
+	pointSize_ { |pointSize|
 		size = pointSize;
-		hasPointSize = true;
+		hasPointSize = true
 	}
 
-	pixelSize { ^( if(hasPointSize){nil}{size} ) }
+	pixelSize { ^(if(hasPointSize) { nil } { size }) }
 
-	pointSize { ^( if(hasPointSize){size}{nil} ) }
+	pointSize { ^(if(hasPointSize) { size } { nil }) }
 
 	/* ------------------ private -----------------*/
 
-	*prSetDefault { arg font, className;
+	*prSetDefault { |font, className|
 		_QFont_SetDefaultFont
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*prDefaultFamilyForStyle { arg style = -1;
+	*prDefaultFamilyForStyle { |style = -1|
 		_QFont_DefaultFamilyForStyle
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
 	printOn { |aStream|
-		this.storeOn(aStream);
+		this.storeOn(aStream)
 	}
 
 	storeArgs { ^[name, size] }

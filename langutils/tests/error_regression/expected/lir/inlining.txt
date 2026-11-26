@@ -1,0 +1,230 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (4:1): LirInlining : Object, version 3.16
+|  SCMemberList (4:1)
+|  SCMethodList (4:1)
+|  |  SCMethod (6:5): ifElse, version 3.16: ifElse { |a| ^if (a) { a.foo } { ^2 } }
+|  |  |  SCArgumentDeclareList (6:15)
+|  |  |  |  SCArgumentDeclare (6:15): a (captured)
+|  |  |  SCBody (6:18)
+|  |  |  |  SCExplicitReturn (6:18)
+|  |  |  |  |  SCMessage (6:19): if
+|  |  |  |  |  |  SCRead (6:23): local a, declared (6:15): a
+|  |  |  |  |  |  SCPositionalArgs (6:19)
+|  |  |  |  |  |  |  SCFunction (6:26)
+|  |  |  |  |  |  |  |  SCBody (6:26)
+|  |  |  |  |  |  |  |  |  SCMessage (6:28): foo
+|  |  |  |  |  |  |  |  |  |  SCRead (6:28): local a, declared (6:15): a
+|  |  |  |  |  |  |  SCFunction (6:36)
+|  |  |  |  |  |  |  |  SCBody (6:36)
+|  |  |  |  |  |  |  |  |  SCExplicitReturn (6:38)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (6:39) = 2
+|  |  SCMethod (8:5): isNil, version 3.16: isNil { |a| ^if (a.isNil) { 1 } }
+|  |  |  SCArgumentDeclareList (8:14)
+|  |  |  |  SCArgumentDeclare (8:14): a
+|  |  |  SCBody (8:17)
+|  |  |  |  SCExplicitReturn (8:17)
+|  |  |  |  |  SCMessage (8:18): if
+|  |  |  |  |  |  SCMessage (8:22): isNil
+|  |  |  |  |  |  |  SCRead (8:22): local a, declared (8:14): a
+|  |  |  |  |  |  SCPositionalArgs (8:18)
+|  |  |  |  |  |  |  SCFunction (8:31) -> 1
+|  |  |  |  |  |  |  |  SCBody (8:31)
+|  |  |  |  |  |  |  |  |  SCLiteral (8:33) = 1
+|  |  SCMethod (10:5): andOr, version 3.16: andOr { |a| ^(a and: { a.foo }) or: { a.bar } ?? { 1 } !? { 2 } }
+|  |  |  SCArgumentDeclareList (10:14)
+|  |  |  |  SCArgumentDeclare (10:14): a (captured)
+|  |  |  SCBody (10:17)
+|  |  |  |  SCExplicitReturn (10:17)
+|  |  |  |  |  SCMessage (10:18): !?
+|  |  |  |  |  |  SCMessage (10:18): ??
+|  |  |  |  |  |  |  SCMessage (10:18): or
+|  |  |  |  |  |  |  |  SCMessage (10:19): and
+|  |  |  |  |  |  |  |  |  SCRead (10:19): local a, declared (10:14): a
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (10:19)
+|  |  |  |  |  |  |  |  |  |  SCFunction (10:26)
+|  |  |  |  |  |  |  |  |  |  |  SCBody (10:26)
+|  |  |  |  |  |  |  |  |  |  |  |  SCMessage (10:28): foo
+|  |  |  |  |  |  |  |  |  |  |  |  |  SCRead (10:28): local a, declared (10:14): a
+|  |  |  |  |  |  |  |  SCPositionalArgs (10:18)
+|  |  |  |  |  |  |  |  |  SCFunction (10:41)
+|  |  |  |  |  |  |  |  |  |  SCBody (10:41)
+|  |  |  |  |  |  |  |  |  |  |  SCMessage (10:43): bar
+|  |  |  |  |  |  |  |  |  |  |  |  SCRead (10:43): local a, declared (10:14): a
+|  |  |  |  |  |  |  SCPositionalArgs (10:18)
+|  |  |  |  |  |  |  |  SCFunction (10:54) -> 1
+|  |  |  |  |  |  |  |  |  SCBody (10:54)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (10:56) = 1
+|  |  |  |  |  |  SCPositionalArgs (10:18)
+|  |  |  |  |  |  |  SCFunction (10:63) -> 2
+|  |  |  |  |  |  |  |  SCBody (10:63)
+|  |  |  |  |  |  |  |  |  SCLiteral (10:65) = 2
+|  |  SCMethod (12:5): loops, version 3.16: loops { |a| while { a.next } { a.foo }; loop { ^a } }
+|  |  |  SCArgumentDeclareList (12:14)
+|  |  |  |  SCArgumentDeclare (12:14): a (captured)
+|  |  |  SCBody (12:17)
+|  |  |  |  SCMessage (12:17): while
+|  |  |  |  |  SCFunction (12:23)
+|  |  |  |  |  |  SCBody (12:23)
+|  |  |  |  |  |  |  SCMessage (12:25): next
+|  |  |  |  |  |  |  |  SCRead (12:25): local a, declared (12:14): a
+|  |  |  |  |  SCPositionalArgs (12:17)
+|  |  |  |  |  |  SCFunction (12:34)
+|  |  |  |  |  |  |  SCBody (12:34)
+|  |  |  |  |  |  |  |  SCMessage (12:36): foo
+|  |  |  |  |  |  |  |  |  SCRead (12:36): local a, declared (12:14): a
+|  |  |  |  SCMessage (12:45): loop
+|  |  |  |  |  SCFunction (12:50)
+|  |  |  |  |  |  SCBody (12:50)
+|  |  |  |  |  |  |  SCExplicitReturn (12:52)
+|  |  |  |  |  |  |  |  SCRead (12:53): local a, declared (12:14): a
+|  |  SCMethod (14:5): case, version 3.16: case { |a| ^case { a == 1 } { 1 } { a.notNil } { 2 } { 3 } }
+|  |  |  SCArgumentDeclareList (14:13)
+|  |  |  |  SCArgumentDeclare (14:13): a (captured)
+|  |  |  SCBody (14:16)
+|  |  |  |  SCExplicitReturn (14:16)
+|  |  |  |  |  SCMessage (14:17): case
+|  |  |  |  |  |  SCFunction (14:22)
+|  |  |  |  |  |  |  SCBody (14:22)
+|  |  |  |  |  |  |  |  SCMessage (14:24): ==
+|  |  |  |  |  |  |  |  |  SCRead (14:24): local a, declared (14:13): a
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (14:24)
+|  |  |  |  |  |  |  |  |  |  SCLiteral (14:29) = 1
+|  |  |  |  |  |  SCPositionalArgs (14:17)
+|  |  |  |  |  |  |  SCFunction (14:33) -> 1
+|  |  |  |  |  |  |  |  SCBody (14:33)
+|  |  |  |  |  |  |  |  |  SCLiteral (14:35) = 1
+|  |  |  |  |  |  |  SCFunction (14:39)
+|  |  |  |  |  |  |  |  SCBody (14:39)
+|  |  |  |  |  |  |  |  |  SCMessage (14:41): notNil
+|  |  |  |  |  |  |  |  |  |  SCRead (14:41): local a, declared (14:13): a
+|  |  |  |  |  |  |  SCFunction (14:52) -> 2
+|  |  |  |  |  |  |  |  SCBody (14:52)
+|  |  |  |  |  |  |  |  |  SCLiteral (14:54) = 2
+|  |  |  |  |  |  |  SCFunction (14:58) -> 3
+|  |  |  |  |  |  |  |  SCBody (14:58)
+|  |  |  |  |  |  |  |  |  SCLiteral (14:60) = 3
+|  |  SCMethod (16:5): switch, version 3.16: switch { |a| ^switch (a, \x, { 1 }, { 2 }) }
+|  |  |  SCArgumentDeclareList (16:15)
+|  |  |  |  SCArgumentDeclare (16:15): a
+|  |  |  SCBody (16:18)
+|  |  |  |  SCExplicitReturn (16:18)
+|  |  |  |  |  SCMessage (16:19): switch
+|  |  |  |  |  |  SCRead (16:27): local a, declared (16:15): a
+|  |  |  |  |  |  SCPositionalArgs (16:19)
+|  |  |  |  |  |  |  SCLiteral (16:30) = \x
+|  |  |  |  |  |  |  SCFunction (16:34) -> 1
+|  |  |  |  |  |  |  |  SCBody (16:34)
+|  |  |  |  |  |  |  |  |  SCLiteral (16:36) = 1
+|  |  |  |  |  |  |  SCFunction (16:41) -> 2
+|  |  |  |  |  |  |  |  SCBody (16:41)
+|  |  |  |  |  |  |  |  |  SCLiteral (16:43) = 2
+|  |  SCMethod (18:5): questionMark, version 3.16: questionMark { |a| ^a ? { 1 } }
+|  |  |  SCArgumentDeclareList (18:21)
+|  |  |  |  SCArgumentDeclare (18:21): a
+|  |  |  SCBody (18:24)
+|  |  |  |  SCExplicitReturn (18:24)
+|  |  |  |  |  SCMessage (18:25): ?
+|  |  |  |  |  |  SCRead (18:25): local a, declared (18:21): a
+|  |  |  |  |  |  SCPositionalArgs (18:25)
+|  |  |  |  |  |  |  SCFunction (18:29) -> 1
+|  |  |  |  |  |  |  |  SCBody (18:29)
+|  |  |  |  |  |  |  |  |  SCLiteral (18:31) = 1
+
+
+
+LIR DUMP 
+
+
+LirInlining
+|  function 0 (6:5): method ifElse
+|  |  body 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  If then body 1, else body 2
+|  |  |  Return
+|  |  body 1
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send foo (positional 0, tail from method)
+|  |  body 2
+|  |  |  PushConstant 2
+|  |  |  Return
+|  function 1 (8:5): method isNil
+|  |  body 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  IfNil then body 1
+|  |  |  Return
+|  |  body 1
+|  |  |  PushConstant 1
+|  function 2 (10:5): method andOr
+|  |  body 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  And body 1
+|  |  |  Or body 2
+|  |  |  OrIfNil body 3
+|  |  |  AndIfNotNil body 4
+|  |  |  Return
+|  |  body 1
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send foo (positional 0)
+|  |  body 2
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send bar (positional 0)
+|  |  body 3
+|  |  |  PushConstant 1
+|  |  body 4
+|  |  |  PushConstant 2
+|  function 3 (12:5): method loops
+|  |  body 0
+|  |  |  While condition body 1, body 2
+|  |  |  Drop
+|  |  |  Loop body 3
+|  |  |  Drop
+|  |  |  ReturnSelf
+|  |  body 1
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send next (positional 0)
+|  |  body 2
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send foo (positional 0)
+|  |  body 3
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Return
+|  function 4 (14:5): method case
+|  |  body 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  PushConstant 1
+|  |  |  Send == (positional 1, binary)
+|  |  |  If then body 1, else body 4
+|  |  |  Return
+|  |  body 1
+|  |  |  PushConstant 1
+|  |  body 2
+|  |  |  PushConstant 2
+|  |  body 3
+|  |  |  PushConstant 3
+|  |  body 4
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  IfNotNil then body 2, else body 3
+|  function 5 (16:5): method switch
+|  |  body 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Switch \x: body 1, default: body 2
+|  |  |  Return
+|  |  body 1
+|  |  |  PushConstant 1
+|  |  body 2
+|  |  |  PushConstant 2
+|  function 6 (18:5): method questionMark
+|  |  body 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  PushFunction 7
+|  |  |  QuestionMark
+|  |  |  Return
+|  function 7 (18:29)
+|  |  body 0
+|  |  |  PushConstant 1
+Successfully compiled 16 classes.

@@ -29,7 +29,7 @@ Symbol {
 		^this.primitiveFailed
 	}
 	asSpec { ^Spec.specs.at(this) }
-	asWarp { arg spec; ^Warp.warps.at(this).new(spec) }
+	asWarp { |spec| ^Warp.warps.at(this).new(spec) }
 	asTuning { ^Tuning.at(this) }
 	asScale { ^Scale.at(this) }
 	// testing
@@ -40,17 +40,17 @@ Symbol {
 	}
 	isClassName {
 		_SymbolIsClassName
-		^this.primitiveFailed;
+		^this.primitiveFailed
 		// returns true if first character of symbol is a capital letter
 	}
 	isMetaClassName {
 		_SymbolIsMetaClassName
-		^this.primitiveFailed;
+		^this.primitiveFailed
 		// returns true if there is a meta class by this name
 	}
-	isPrefix { | other |
+	isPrefix { |other|
 		_SymbolIsPrefix
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 	isPrimitiveName {
 		// returns true if symbol is a valid primitive name
@@ -68,11 +68,11 @@ Symbol {
 	isRest { ^this.isMap.not }
 	isIdentifier {
 		_Symbol_IsIdentifier
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 	isBinaryOp {
 		_Symbol_IsBinaryOp
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
 	// Environment support
@@ -84,7 +84,7 @@ Symbol {
 		_Symbol_envirGet
 		^currentEnvironment.at(this)
 	}
-	envirPut { arg aValue;
+	envirPut { |aValue|
 		_Symbol_envirPut
 		currentEnvironment.put(this, aValue);
 		^aValue
@@ -94,7 +94,7 @@ Symbol {
 		^this
 	}
 
-	++ { arg aString; ^this.asString ++ aString }
+	++ { |aString| ^this.asString ++ aString }
 
 	asBinOpString {
 		var res;
@@ -102,7 +102,7 @@ Symbol {
 		^if(res[0].isAlphaNum) { res ++ ":" } { res }
 	}
 
-	applyTo { arg firstArg ... args;
+	applyTo { |firstArg ... args|
 		^firstArg.performList(this, args)
 	}
 
@@ -202,10 +202,10 @@ Symbol {
 	doNumberOp { ^this }
 	doComplexOp { ^this }
 	doSignalOp { ^this }
-	doListOp { arg aSelector, aList;
-		aList.collect({ arg item;
+	doListOp { |aSelector, aList|
+		aList.collect { |item|
 			item.perform(aSelector, this)
-		})
+		}
 	}
 
 	primitiveIndex {
@@ -218,37 +218,37 @@ Symbol {
 		^this.primitiveFailed
 	}
 
-	printOn { arg stream;
-		stream.putAll(this.asString);
+	printOn { |stream|
+		stream.putAll(this.asString)
 	}
-	storeOn { arg stream;
-		stream.putAll(this.asCompileString);
+	storeOn { |stream|
+		stream.putAll(this.asCompileString)
 	}
 
 	// code gen
-	codegen_UGenCtorArg { arg stream;
-		this.asString.codegen_UGenCtorArg(stream);
+	codegen_UGenCtorArg { |stream|
+		this.asString.codegen_UGenCtorArg(stream)
 	}
 
 	archiveAsCompileString { ^true }
 
-	kr { | val, lag, fixedLag = false, spec |
+	kr { |val, lag, fixedLag = false, spec|
 		^NamedControl.kr(this, val, lag, fixedLag, spec)
 	}
 
-	ir { | val, spec |
-		^NamedControl.ir(this, val, spec:spec)
+	ir { |val, spec|
+		^NamedControl.ir(this, val, spec: spec)
 	}
 
-	tr { | val, spec |
-		^NamedControl.tr(this, val, spec:spec)
+	tr { |val, spec|
+		^NamedControl.tr(this, val, spec: spec)
 	}
 
-	ar { | val, lag, spec |
+	ar { |val, lag, spec|
 		^NamedControl.ar(this, val, lag, spec)
 	}
 
-	matchOSCAddressPattern { arg addressPattern;
+	matchOSCAddressPattern { |addressPattern|
 		_Symbol_matchOSCPattern
 		^this.primitiveFailed
 	}

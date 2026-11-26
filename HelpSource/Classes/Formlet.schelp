@@ -11,7 +11,7 @@ wave with a  link::Classes/Decay2::  envelope over it. It is possible to
 control the attacktime and decaytime.
 
 Formlet is equivalent to:
-code::
+code#fragment::
 Ringz(in, freq, decaytime) - Ringz(in, freq, attacktime)
 ::
 

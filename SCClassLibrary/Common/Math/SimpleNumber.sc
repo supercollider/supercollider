@@ -74,23 +74,23 @@ SimpleNumber : Number {
 	div { |aNumber, adverb| _IDiv; ^aNumber.performBinaryOpOnSimpleNumber('div', this, adverb) }
 	pow { |aNumber, adverb| _Pow; ^aNumber.performBinaryOpOnSimpleNumber('pow', this, adverb) }
 	min { |aNumber, adverb| _Min; ^aNumber.performBinaryOpOnSimpleNumber('min', this, adverb) }
-	max { |aNumber=0.0, adverb| _Max; ^aNumber.performBinaryOpOnSimpleNumber('max', this, adverb) }
+	max { |aNumber = 0.0, adverb| _Max; ^aNumber.performBinaryOpOnSimpleNumber('max', this, adverb) }
 	bitAnd { |aNumber, adverb| _BitAnd; ^aNumber.performBinaryOpOnSimpleNumber('bitAnd', this, adverb) }
 	bitOr { |aNumber, adverb| _BitOr; ^aNumber.performBinaryOpOnSimpleNumber('bitOr', this, adverb) }
 	bitXor { |aNumber, adverb| _BitXor; ^aNumber.performBinaryOpOnSimpleNumber('bitXor', this, adverb) }
 	bitHammingDistance { |aNumber, adverb| _HammingDistance  ^aNumber.performBinaryOpOnSimpleNumber('hammingDistance', this, adverb) }
-	bitTest { arg bit; ^( (this.bitAnd(1.leftShift(bit))) != 0) }
+	bitTest { |bit| ^((this.bitAnd(1.leftShift(bit))) != 0) }
 	lcm { |aNumber, adverb| _LCM; ^aNumber.performBinaryOpOnSimpleNumber('lcm', this, adverb) }
 	gcd { |aNumber, adverb| _GCD; ^aNumber.performBinaryOpOnSimpleNumber('gcd', this, adverb) }
-	round { |aNumber=1.0, adverb| _Round; ^aNumber.performBinaryOpOnSimpleNumber('round', this, adverb) }
-	roundUp { |aNumber=1.0, adverb| _RoundUp; ^aNumber.performBinaryOpOnSimpleNumber('roundUp', this, adverb) }
-	smallButNotZero { |thresh=1e-12| ^this != 0 and: {  this.abs < thresh  } }
-	trunc { |aNumber=1.0, adverb| _Trunc; ^aNumber.performBinaryOpOnSimpleNumber('trunc', this, adverb) }
+	round { |aNumber = 1.0, adverb| _Round; ^aNumber.performBinaryOpOnSimpleNumber('round', this, adverb) }
+	roundUp { |aNumber = 1.0, adverb| _RoundUp; ^aNumber.performBinaryOpOnSimpleNumber('roundUp', this, adverb) }
+	smallButNotZero { |thresh = 1e-12| ^this != 0 and: { this.abs < thresh } }
+	trunc { |aNumber = 1.0, adverb| _Trunc; ^aNumber.performBinaryOpOnSimpleNumber('trunc', this, adverb) }
 	atan2 { |aNumber, adverb| _Atan2; ^aNumber.performBinaryOpOnSimpleNumber('atan2', this, adverb) }
 	hypot { |aNumber, adverb| _Hypot; ^aNumber.performBinaryOpOnSimpleNumber('hypot', this, adverb) }
 	hypotApx { |aNumber, adverb| _HypotApx; ^aNumber.performBinaryOpOnSimpleNumber('hypotApx', this, adverb) }
-	leftShift { |aNumber=1, adverb| _ShiftLeft; ^aNumber.performBinaryOpOnSimpleNumber('leftShift', this, adverb) }
-	rightShift { |aNumber=1, adverb| _ShiftRight; ^aNumber.performBinaryOpOnSimpleNumber('rightShift', this, adverb) }
+	leftShift { |aNumber = 1, adverb| _ShiftLeft; ^aNumber.performBinaryOpOnSimpleNumber('leftShift', this, adverb) }
+	rightShift { |aNumber = 1, adverb| _ShiftRight; ^aNumber.performBinaryOpOnSimpleNumber('rightShift', this, adverb) }
 	unsignedRightShift { |aNumber, adverb| _UnsignedShift; ^aNumber.performBinaryOpOnSimpleNumber('unsignedRightShift', this, adverb) }
 	ring1 { |aNumber, adverb| _Ring1; ^aNumber.performBinaryOpOnSimpleNumber('ring1', this, adverb) }
 	ring2 { |aNumber, adverb| _Ring2; ^aNumber.performBinaryOpOnSimpleNumber('ring2', this, adverb) }
@@ -104,11 +104,11 @@ SimpleNumber : Number {
 	thresh { |aNumber, adverb| _Thresh; ^aNumber.performBinaryOpOnSimpleNumber('thresh', this, adverb) }
 	amclip { |aNumber, adverb| _AMClip; ^aNumber.performBinaryOpOnSimpleNumber('amclip', this, adverb) }
 	scaleneg { |aNumber, adverb| _ScaleNeg; ^aNumber.performBinaryOpOnSimpleNumber('scaleneg', this, adverb) }
-	clip2 { |aNumber=1, adverb| _Clip2; ^aNumber.performBinaryOpOnSimpleNumber('clip2', this, adverb) }
-	fold2 { |aNumber=1, adverb| _Fold2; ^aNumber.performBinaryOpOnSimpleNumber('fold2', this, adverb) }
-	wrap2 { |aNumber=1, adverb| _Wrap2; ^aNumber.performBinaryOpOnSimpleNumber('wrap2', this, adverb) }
+	clip2 { |aNumber = 1, adverb| _Clip2; ^aNumber.performBinaryOpOnSimpleNumber('clip2', this, adverb) }
+	fold2 { |aNumber = 1, adverb| _Fold2; ^aNumber.performBinaryOpOnSimpleNumber('fold2', this, adverb) }
+	wrap2 { |aNumber = 1, adverb| _Wrap2; ^aNumber.performBinaryOpOnSimpleNumber('wrap2', this, adverb) }
 
-	excess { |aNumber=1, adverb| _Excess; ^aNumber.performBinaryOpOnSimpleNumber('excess', this, adverb) }
+	excess { |aNumber = 1, adverb| _Excess; ^aNumber.performBinaryOpOnSimpleNumber('excess', this, adverb) }
 	firstArg { |aNumber, adverb| _FirstArg; ^aNumber.performBinaryOpOnSimpleNumber('firstArg', this, adverb) }
 	rrand { |aNumber, adverb| _RandRange; ^aNumber.performBinaryOpOnSimpleNumber('rrand', this, adverb) }
 	exprand { |aNumber, adverb| _ExpRandRange; ^aNumber.performBinaryOpOnSimpleNumber('exprand', this, adverb) }
@@ -146,11 +146,11 @@ SimpleNumber : Number {
 	}
 
 	performBinaryOpOnSimpleNumber { |aSelector, aNumber, adverb|
-		BinaryOpFailureError(this, aSelector, [aNumber, adverb]).throw;
+		BinaryOpFailureError(this, aSelector, [aNumber, adverb]).throw
 	}
 	performBinaryOpOnComplex { |aSelector, aComplex, adverb| ^aComplex.perform(aSelector, this.asComplex, adverb) }
 	performBinaryOpOnSignal { |aSelector, aSignal, adverb|
-		BinaryOpFailureError(this, aSelector, [aSignal, adverb]).throw;
+		BinaryOpFailureError(this, aSelector, [aSignal, adverb]).throw
 	}
 
 	nextPowerOfTwo { ^this.nextPowerOf(2) }
@@ -312,7 +312,7 @@ SimpleNumber : Number {
 	ellint1C { _Ellint1C; ^this.primitiveFailed }
 	ellint2 { |phi| _Ellint2; ^this.primitiveFailed }
 	ellint2C { _Ellint2C; ^this.primitiveFailed }
-	ellint3 { |n, phi| _Ellint3; ^this.primitiveFailed	}
+	ellint3 { |n, phi| _Ellint3; ^this.primitiveFailed }
 	ellint3C { |n| _Ellint3C; ^this.primitiveFailed }
 	ellintD { |phi| _EllintD; ^this.primitiveFailed }
 	ellintDC { _EllintDC; ^this.primitiveFailed }
@@ -381,86 +381,81 @@ SimpleNumber : Number {
 
 	linlin { |inMin, inMax, outMin, outMax, clip = \minmax|
 		// linear to linear mapping
-		switch(clip,
-			\minmax, {
+		switch(clip)
+			{ \minmax } {
 				if(this <= inMin) { ^outMin };
-				if(this >= inMax) { ^outMax };
-			},
-			\min, {
-				if(this <= inMin) { ^outMin };
-			},
-			\max, {
-				if(this >= inMax) { ^outMax };
+				if(this >= inMax) { ^outMax }
 			}
-		);
+			{ \min } {
+				if(this <= inMin) { ^outMin }
+			}
+			{ \max } {
+				if(this >= inMax) { ^outMax }
+			};
 		^(this - inMin) / (inMax - inMin) * (outMax - outMin) + outMin
 	}
 
-	linexp { |inMin, inMax, outMin, outMax, clip=\minmax|
+	linexp { |inMin, inMax, outMin, outMax, clip = \minmax|
 		// linear to exponential mapping
-		switch(clip,
-			\minmax, {
+		switch(clip)
+			{ \minmax } {
 				if(this <= inMin) { ^outMin };
-				if(this >= inMax) { ^outMax };
-			},
-			\min, {
-				if(this <= inMin) { ^outMin };
-			},
-			\max, {
-				if(this >= inMax) { ^outMax };
+				if(this >= inMax) { ^outMax }
 			}
-		);
+			{ \min } {
+				if(this <= inMin) { ^outMin }
+			}
+			{ \max } {
+				if(this >= inMax) { ^outMax }
+			};
 		^pow(outMax / outMin, (this - inMin) / (inMax - inMin)) * outMin
 	}
 
-	explin { |inMin, inMax, outMin, outMax, clip=\minmax|
+	explin { |inMin, inMax, outMin, outMax, clip = \minmax|
 		// exponential to linear mapping
-		switch(clip,
-			\minmax, {
+		switch(clip)
+			{ \minmax } {
 				if(this <= inMin) { ^outMin };
-				if(this >= inMax) { ^outMax };
-			},
-			\min, {
-				if(this <= inMin) { ^outMin };
-			},
-			\max, {
-				if(this >= inMax) { ^outMax };
+				if(this >= inMax) { ^outMax }
 			}
-		);
+			{ \min } {
+				if(this <= inMin) { ^outMin }
+			}
+			{ \max } {
+				if(this >= inMax) { ^outMax }
+			};
 		^(log(this / inMin)) / (log(inMax / inMin)) * (outMax - outMin) + outMin
 	}
 
-	expexp { |inMin, inMax, outMin, outMax, clip=\minmax|
+	expexp { |inMin, inMax, outMin, outMax, clip = \minmax|
 		// exponential to exponential mapping
-		switch(clip,
-			\minmax, {
+		switch(clip)
+			{ \minmax } {
 				if(this <= inMin) { ^outMin };
-				if(this >= inMax) { ^outMax };
-			},
-			\min, {
-				if(this <= inMin) { ^outMin };
-			},
-			\max, {
-				if(this >= inMax) { ^outMax };
+				if(this >= inMax) { ^outMax }
 			}
-		);
+			{ \min } {
+				if(this <= inMin) { ^outMin }
+			}
+			{ \max } {
+				if(this >= inMax) { ^outMax }
+			};
 		^pow(outMax / outMin, log(this / inMin) / log(inMax / inMin)) * outMin
 	}
 
 	lincurve { |inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax|
 		var grow, a, b, scaled;
-		switch(clip,
-			\minmax, {
+		switch(clip)
+			{ \minmax } {
 				if(this <= inMin) { ^outMin };
-				if(this >= inMax) { ^outMax };
-			},
-			\min, {
-				if(this <= inMin) { ^outMin };
-			},
-			\max, {
-				if(this >= inMax) { ^outMax };
+				if(this >= inMax) { ^outMax }
 			}
-		);
+			{ \min } {
+				if(this <= inMin) { ^outMin }
+			}
+			{ \max } {
+				if(this >= inMax) { ^outMax }
+			};
 		if(abs(curve) < 0.001) {
 			// If the value should be clipped, it has already been clipped (above).
 			// If we got this far, then linlin does not need to do any clipping.
@@ -478,18 +473,17 @@ SimpleNumber : Number {
 
 	curvelin { |inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax|
 		var grow, a, b, scaled;
-		switch(clip,
-			\minmax, {
+		switch(clip)
+			{ \minmax } {
 				if(this <= inMin) { ^outMin };
-				if(this >= inMax) { ^outMax };
-			},
-			\min, {
-				if(this <= inMin) { ^outMin };
-			},
-			\max, {
-				if(this >= inMax) { ^outMax };
+				if(this >= inMax) { ^outMax }
 			}
-		);
+			{ \min } {
+				if(this <= inMin) { ^outMin }
+			}
+			{ \max } {
+				if(this >= inMax) { ^outMax }
+			};
 		if(abs(curve) < 0.001) {
 			// If the value should be clipped, it has already been clipped (above).
 			^(this - inMin) / (inMax - inMin) * (outMax - outMin) + outMin
@@ -502,20 +496,19 @@ SimpleNumber : Number {
 		^log((b - this) / a) * (outMax - outMin) / curve + outMin
 	}
 
-	bilin { |inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax|
+	bilin { |inCenter, inMin, inMax, outCenter, outMin, outMax, clip = \minmax|
 		// triangular linear mapping
-		switch(clip,
-			\minmax, {
+		switch(clip)
+			{ \minmax } {
 				if(this <= inMin) { ^outMin };
-				if(this >= inMax) { ^outMax };
-			},
-			\min, {
-				if(this <= inMin) { ^outMin };
-			},
-			\max, {
-				if(this >= inMax) { ^outMax };
+				if(this >= inMax) { ^outMax }
 			}
-		);
+			{ \min } {
+				if(this <= inMin) { ^outMin }
+			}
+			{ \max } {
+				if(this >= inMax) { ^outMax }
+			};
 		^if(this >= inCenter) {
 			this.linlin(inCenter, inMax, outCenter, outMax, \none)
 		} {
@@ -523,20 +516,19 @@ SimpleNumber : Number {
 		}
 	}
 
-	biexp { |inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax|
+	biexp { |inCenter, inMin, inMax, outCenter, outMin, outMax, clip = \minmax|
 		// triangular exponential mapping
-		switch(clip,
-			\minmax, {
+		switch(clip)
+			{ \minmax } {
 				if(this <= inMin) { ^outMin };
-				if(this >= inMax) { ^outMax };
-			},
-			\min, {
-				if(this <= inMin) { ^outMin };
-			},
-			\max, {
-				if(this >= inMax) { ^outMax };
+				if(this >= inMax) { ^outMax }
 			}
-		);
+			{ \min } {
+				if(this <= inMin) { ^outMin }
+			}
+			{ \max } {
+				if(this >= inMax) { ^outMax }
+			};
 		^if(this >= inCenter) {
 			this.explin(inCenter, inMax, outCenter, outMax, \none)
 		} {
@@ -580,14 +572,14 @@ SimpleNumber : Number {
 	sleep {
 		var thread = thisThread;
 		thread.clock.sched(this, { thread.next; nil });
-		nil.yield;
+		nil.yield
 	}
 
 	printOn { |stream|
-		stream.putAll(this.asString);
+		stream.putAll(this.asString)
 	}
 	storeOn { |stream|
-		stream.putAll(this.asString);
+		stream.putAll(this.asString)
 	}
 
 
@@ -615,10 +607,10 @@ SimpleNumber : Number {
 	writeInputSpec { |file, synth|
 		var constIndex = synth.constants.at(this.asFloat);
 		if(constIndex.isNil) {
-			Error("SimpleNumber-writeInputSpec constant not found: " ++ this.asFloat).throw;
+			Error("SimpleNumber-writeInputSpec constant not found: " ++ this.asFloat).throw
 		};
 		file.putInt32(-1);
-		file.putInt32(constIndex);
+		file.putInt32(constIndex)
 	}
 
 	series { |second, last|
@@ -636,30 +628,30 @@ SimpleNumber : Number {
 
 		if(second.isNil) {
 			last = last ? inf;
-			step = if(this < last, 1, -1);
-		}{
+			step = if(this < last, 1, -1)
+		} {
 			last ?? { last = if(second < this, -inf, inf) };
-			step = second - this;
+			step = second - this
 		};
 
 		^if(step < 0) {
 			r {
 				var val = this;
 				while {
-					val >= last;
+					val >= last
 				} {
 					val.yield;
-					val = val + step;
-				};
+					val = val + step
+				}
 			}
 		} {
 			r {
 				var val = this;
 				while {
-					val <= last;
+					val <= last
 				} {
 					val.yield;
-					val = val + step;
+					val = val + step
 				}
 			}
 		}
@@ -677,17 +669,17 @@ SimpleNumber : Number {
 	}
 
 	nearestInList { |list|  // collection is sorted
-		^list.performNearestInList(this);
+		^list.performNearestInList(this)
 	}
 
 	nearestInScale { |scale, stepsPerOctave = 12| // collection is sorted
-		^scale.performNearestInScale(this, stepsPerOctave);
+		^scale.performNearestInScale(this, stepsPerOctave)
 	}
 
 	partition { |parts = 2, min = 1|
 		// randomly partition a number into parts of at least min size :
 		var n = this - (min - 1 * parts);
-		^(1..n-1).scramble.keep(parts-1).sort.add(n).differentiate + (min - 1)
+		^(1..n - 1).scramble.keep(parts - 1).sort.add(n).differentiate + (min - 1)
 	}
 
 	nextTimeOnGrid { |clock|
@@ -710,7 +702,7 @@ SimpleNumber : Number {
 		precision = max(precision, 10.pow(decimalPlaces.neg));
 
 		number = this.round(precision);
-		if(number == inf) {number = this}; //revert rounding if it produces inf
+		if(number == inf) { number = this }; //revert rounding if it produces inf
 		isNegative = number < 0;
 		number = number.abs;
 		decimal = number.asInteger;
@@ -718,9 +710,9 @@ SimpleNumber : Number {
 		days = if(dropDaysIfPossible and: { days == 0 }) {
 			days = ""
 		} {
-			days.asString.padLeft(3, "0").add($:);
+			days.asString.padLeft(3, "0").add($:)
 		};
-		if(isNegative) {days = "-" ++ days};
+		if(isNegative) { days = "-" ++ days };
 		hours = (decimal.div(3600) % 24).asString.padLeft(2, "0").add($:);
 		minutes = (decimal.div(60) % 60).asString.padLeft(2, "0").add($:);
 		seconds = (decimal % 60).asString.padLeft(2, "0");
@@ -730,13 +722,13 @@ SimpleNumber : Number {
 			"." ++ if(msecstr.includes($e)) {
 				splitstr = msecstr.split($e);
 				if(msecstr.includes($.)) {
-					("".catArgs(*(splitstr.last.asInteger.neg - splitstr.first.split($.).first.size).collect({"0"})) ++ splitstr.first.replace(".", "")).padRight(decimalPlaces, "0")
+					("".catArgs(*(splitstr.last.asInteger.neg - splitstr.first.split($.).first.size).collect { "0" }) ++ splitstr.first.replace(".", "")).padRight(decimalPlaces, "0")
 				} {
-					("".catArgs(*(splitstr.last.asInteger.neg - 1).collect({"0"})) ++ splitstr.first).padRight(decimalPlaces, "0")
+					("".catArgs(*(splitstr.last.asInteger.neg - 1).collect { "0" }) ++ splitstr.first).padRight(decimalPlaces, "0")
 				}
 			} {
 				msecstr.split($.).last.padRight(decimalPlaces, "0")
-			};
+			}
 		} { "" };
 		^days ++ hours ++ minutes ++ seconds ++ mseconds
 	}
@@ -749,7 +741,7 @@ SimpleNumber : Number {
 		^this.primitiveFailed
 	}
 
-	prSimpleNumberSeries { | second, last |
+	prSimpleNumberSeries { |second, last|
 		_SimpleNumberSeries
 		^this.primitiveFailed
 	}
@@ -764,7 +756,7 @@ SimpleNumber : Number {
 		var sendBundle = { server.sendBundle(latency ? server.latency, *bundleArray) };
 		// "this" is the delta time for the clock (usually in beats)
 		// "lag" is a tempo independent absolute lag time (in seconds)
-		if (lag != 0) {
+		if(lag != 0) {
 			if(this != 0) {
 				// schedule on both clocks
 				clock.sched(this, { SystemClock.sched(lag, sendBundle) })

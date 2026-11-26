@@ -23,42 +23,42 @@ HelpBrowser {
 
 		// Skip the rest of the init on Qt-less builds; the WebView
 		// class has dependencies on Qt primitives.
-		if(Platform.hasQt.not) { ^nil; };
+		if(Platform.hasQt.not) { ^nil };
 		StartUp.add {
 			NotificationCenter.register(SCDoc, \didIndexAllDocs, this) { WebView.clearCache }
 		}
 	}
 
 	*instance {
-		if( singleton.isNil ) {
-			singleton = this.new;
+		if(singleton.isNil) {
+			singleton = this.new
 		};
-		^singleton;
+		^singleton
 	}
 
-	*new { arg aHomeUrl, newWin;
-		^super.new.init( aHomeUrl ? defaultHomeUrl, newWin ?? { openNewWindows } );
+	*new { |aHomeUrl, newWin|
+		^super.new.init(aHomeUrl ? defaultHomeUrl, newWin ?? { openNewWindows })
 	}
 
-	*prShouldRedirect {|url|
+	*prShouldRedirect { |url|
 		^(redirectEnabled and: { redirectPattern.matchRegexp(url) })
 	}
 
 	*prOpenRedirectMenu { |url, useSCIDE|
 		var info = MenuAction("Choose how to open external link:").enabled_(false);
-		var domain = MenuAction(if(url.size < 75) {url} {url.replaceRegexp("https?:\/\/|(/.*)", "")} ).enabled_(false);
+		var domain = MenuAction(if(url.size < 75) { url } { url.replaceRegexp("https?:\/\/|(/.*)", "") }).enabled_(false);
 		var separator = MenuAction().separator_(true);
 		var systemDefaultBrowser = MenuAction("Open in system default browser");
 		var helpBrowser = MenuAction("Open in SuperCollider's help browser (unsafe)");
 		var closeMenu = MenuAction("Cancel");
 		var menu = Menu(info, domain, separator, systemDefaultBrowser, helpBrowser, closeMenu);
-		var removeDependants = { [systemDefaultBrowser, helpBrowser, closeMenu].do(_.removeDependant)  };
-		systemDefaultBrowser.addDependant { |action, what| if (what == \triggered) { url.openOS; removeDependants.() } };
-		helpBrowser.addDependant { |action, what| if (what == \triggered) { this.prOpenInIDEorHelpBrowser(url, useSCIDE); removeDependants.() } };
-		^menu.front;
+		var removeDependants = { [systemDefaultBrowser, helpBrowser, closeMenu].do(_.removeDependant) };
+		systemDefaultBrowser.addDependant { |action, what| if(what == \triggered) { url.openOS; removeDependants.() } };
+		helpBrowser.addDependant { |action, what| if(what == \triggered) { this.prOpenInIDEorHelpBrowser(url, useSCIDE); removeDependants.() } };
+		^menu.front
 	}
 
-	*prOpenInIDEorHelpBrowser { | url, useSCIDE(true) |
+	*prOpenInIDEorHelpBrowser { |url, useSCIDE = (true)|
 		// when useSCIDE = false, will open in a HelpBrowser instance.
 		var ideClass = \ScIDE.asClass;
 		if(ideClass.notNil and: useSCIDE) {
@@ -68,7 +68,7 @@ HelpBrowser {
 		}
 	}
 
-	*goTo {|url|
+	*goTo { |url|
 		if(url.notNil and: { this.prShouldRedirect(url) }) {
 			this.prOpenRedirectMenu(url)
 		} {
@@ -77,52 +77,52 @@ HelpBrowser {
 	}
 
 	*front {
-		var w = if(openNewWindows,{this.new},{this.instance});
+		var w = if(openNewWindows) { this.new } { this.instance };
 		w.window.front;
-		^w;
+		^w
 	}
 
-	*goHome { this.goTo(defaultHomeUrl); }
+	*goHome { this.goTo(defaultHomeUrl) }
 
-	*openBrowsePage {|category|
-		category = if(category.notNil) {"#"++category} {""};
-		this.goTo(SCDoc.helpTargetUrl++"/Browse.html"++category);
+	*openBrowsePage { |category|
+		category = if(category.notNil) { "#" ++ category } { "" };
+		this.goTo(SCDoc.helpTargetUrl ++ "/Browse.html" ++ category)
 	}
-	*openSearchPage {|text|
-		text = if(text.notNil) {"#"++text} {""};
-		this.goTo(SCDoc.helpTargetUrl++"/Search.html"++text);
+	*openSearchPage { |text|
+		text = if(text.notNil) { "#" ++ text } { "" };
+		this.goTo(SCDoc.helpTargetUrl ++ "/Search.html" ++ text)
 	}
-	*openHelpFor {|text|
-		this.goTo(SCDoc.findHelpFile(text));
+	*openHelpFor { |text|
+		this.goTo(SCDoc.findHelpFile(text))
 		/* The following was replaced, for compatibility with SC IDE:
 		var w = this.front;
 		{ w.startAnim; w.goTo(SCDoc.findHelpFile(text)) }.fork(AppClock);
 		*/
 	}
-	*openHelpForMethod {|method|
+	*openHelpForMethod { |method|
 		var cls = method.ownerClass;
 		var met = method.name.asString;
 		if(cls.isMetaClass) {
 			cls = cls.name.asString.drop(5);
-			met = "*"++met;
+			met = "*" ++ met
 		} {
 			cls = cls.name.asString;
-			met = "-"++met;
+			met = "-" ++ met
 		};
-		this.goTo(SCDoc.helpTargetUrl++"/Classes/"++cls++".html#"++met);
+		this.goTo(SCDoc.helpTargetUrl ++ "/Classes/" ++ cls ++ ".html#" ++ met)
 	}
 
 	cmdPeriod { rout.play(AppClock) }
-	goTo {|urlString, brokenAction|
+	goTo { |urlString, brokenAction|
 		var url, newPath, oldPath;
 
 		window.front;
 		this.startAnim;
 
 		brokenAction = brokenAction ? { |fragment|
-			var brokenUrl = URI.fromLocalPath( SCDoc.helpTargetDir++"/BrokenLink.html" );
+			var brokenUrl = URI.fromLocalPath(SCDoc.helpTargetDir ++ "/BrokenLink.html");
 			brokenUrl.fragment = fragment;
-			brokenUrl;
+			brokenUrl
 		};
 
 		url = URI.tolerant(urlString);
@@ -134,31 +134,31 @@ HelpBrowser {
 				oldPath = URI(webView.url).path;
 				webView.url = url.asString;
 				// needed since onLoadFinished is not called if the path did not change:
-				if(newPath == oldPath) {webView.onLoadFinished.value};
-				webView.focus;
-			} {|err|
+				if(newPath == oldPath) { webView.onLoadFinished.value };
+				webView.focus
+			} { |err|
 				webView.setHtml(err.errorString);
-				err.throw;
+				err.throw
 			};
 			CmdPeriod.remove(this);
-			rout = nil;
+			rout = nil
 		}.play(AppClock);
-		CmdPeriod.add(this);
+		CmdPeriod.add(this)
 	}
 
-	goHome { this.goTo(homeUrl); }
+	goHome { this.goTo(homeUrl) }
 
-	goBack { webView.back; }
+	goBack { webView.back }
 
-	goForward { webView.forward; }
+	goForward { webView.forward }
 
-	goDown { webView.scrollDown(HelpBrowser.scrollStep); }
+	goDown { webView.scrollDown(HelpBrowser.scrollStep) }
 
-	goUp { webView.scrollUp(HelpBrowser.scrollStep); }
+	goUp { webView.scrollUp(HelpBrowser.scrollStep) }
 
-/* ------------------------------ private ------------------------------ */
+	/* ------------------------------ private ------------------------------ */
 
-	init { arg aHomeUrl, aNewWin;
+	init { |aHomeUrl, aNewWin|
 		var toolbar;
 		var lblFind, txtFind, findView, saveSize, toggleFind;
 		var strh = "Tj".bounds.height;
@@ -168,48 +168,48 @@ HelpBrowser {
 		var x, y, w, h;
 		var str;
 
-		if (not(openNewWindows)) { singleton = this };
+		if(not(openNewWindows)) { singleton = this };
 		homeUrl = aHomeUrl;
 
 		winRect = Rect(0, 0, 800, (Window.screenBounds.height * 0.8).floor);
 		winRect = winRect.moveToPoint(winRect.centerIn(Window.screenBounds));
 
-		window = Window.new( bounds: winRect ).name_("SuperCollider Help");
+		window = Window.new(bounds: winRect).name_("SuperCollider Help");
 
 		window.onClose = {
 			this.stopAnim;
 			if(singleton == this) {
-				singleton = nil;
-			};
+				singleton = nil
+			}
 		};
 
 		toolbar = ();
 
 		h = strh + vPad;
 		x = marg; y = marg;
-		[[\Back,"<"], [\Forward,">"], [\Reload, "Reload"]].do { |item|
+		[[\Back, "<"], [\Forward, ">"], [\Reload, "Reload"]].do { |item|
 			var str = item[1];
 			var w = str.bounds.width + hPad;
-			toolbar[item[0]] = Button( window, Rect(x,y,w,h) ).states_([[str]]);
-			x = x + w + 2;
+			toolbar[item[0]] = Button(window, Rect(x, y, w, h)).states_([[str]]);
+			x = x + w + 2
 		};
 
 		x = x + 10;
 		str = "Quick lookup:";
 		w = str.bounds.width + 5;
-		StaticText(window, Rect(x,y,w,h)).string_(str);
+		StaticText(window, Rect(x, y, w, h)).string_(str);
 		x = x + w;
 		w = 200;
-		srchBox = TextField.new( window, Rect(x,y,w,h) ).resize_(1);
+		srchBox = TextField.new(window, Rect(x, y, w, h)).resize_(1);
 		if(GUI.current.id == \qt) {
-			srchBox.toolTip = "Smart quick help lookup. Prefix with # to just search.";
+			srchBox.toolTip = "Smart quick help lookup. Prefix with # to just search."
 		};
-		srchBox.action = {|x|
+		srchBox.action = { |x|
 			if(x.string.notEmpty) {
-				this.goTo(if(x.string.first==$#)
-					{SCDoc.helpTargetUrl ++ "/Search.html" ++ x.string}
-					{SCDoc.findHelpFile(x.string)}
-				);
+				this.goTo(if(x.string.first == $#)
+					{ SCDoc.helpTargetUrl ++ "/Search.html" ++ x.string }
+					{ SCDoc.findHelpFile(x.string) }
+				)
 			}
 		};
 
@@ -218,33 +218,33 @@ HelpBrowser {
 		if(GUI.current.respondsTo(\checkBox)) {
 			str = "Open links in new window";
 			w = str.bounds.width + 50;
-			CheckBox.new (window, Rect(x, y, w, h) )
+			CheckBox.new (window, Rect(x, y, w, h))
 				.resize_(1)
 				.string_(str)
 				.value_(openNewWin)
-				.action_({ |b| openNewWin = b.value; });
+				.action_({ |b| openNewWin = b.value })
 		} {
 			str = "Open links in same window";
 			w = str.bounds.width + 5;
-			Button.new( window, Rect(x, y, w, h) )
+			Button.new(window, Rect(x, y, w, h))
 				.resize_(1)
-				.states_([[str],["Open links in new window"]])
+				.states_([[str], ["Open links in new window"]])
 				.value_(openNewWin.asInteger)
-				.action_({ |b| openNewWin = b.value.asBoolean; });
+				.action_({ |b| openNewWin = b.value.asBoolean })
 		};
 
 		x = 0;
 		y = marg + h + 5;
 		w = winRect.width;
-		findView = CompositeView(window, Rect(x,y,w,h+10)).visible_(false).resize_(2);
+		findView = CompositeView(window, Rect(x, y, w, h + 10)).visible_(false).resize_(2);
 		y = marg;
 		w = 200;
 		x = winRect.width - marg - w;
-		txtFind = TextField.new( findView, Rect(x,y,w,h) ).resize_(3);
+		txtFind = TextField.new(findView, Rect(x, y, w, h)).resize_(3);
 		str = "Find text in document:";
 		w = str.bounds.width + 5;
 		x = x - w - 5;
-		lblFind = StaticText.new( findView, Rect(x, y, w, h) )
+		lblFind = StaticText.new(findView, Rect(x, y, w, h))
 			.string_(str)
 			.resize_(3);
 
@@ -252,10 +252,10 @@ HelpBrowser {
 		y = marg + h + 5;
 		w = winRect.width - 10;
 		h = winRect.height - y - marg;
-		webView = WebView.new( window, Rect(x,y,w,h) ).resize_(5);
+		webView = WebView.new(window, Rect(x, y, w, h)).resize_(5);
 		webView.setHtml("Please wait while initializing Help... (This might take several seconds the first time)");
 
-		webView.setFontFamily(\fixed, Platform.case(
+		webView.setFontFamily(\fixed, case(Platform,
 			\osx, { "Monaco" },
 			\linux, { "Andale Mono" },
 			{ "Monospace" }
@@ -265,66 +265,66 @@ HelpBrowser {
 
 		webView.onLoadFinished = {
 			this.stopAnim;
-			window.name = "SuperCollider Help: %".format(webView.title);
+			window.name = "SuperCollider Help: %".format(webView.title)
 		};
 
 		webView.onLoadFailed = { this.stopAnim };
 
-		webView.onLinkActivated = {|wv, url|
+		webView.onLinkActivated = { |wv, url|
 			var newPath, oldPath;
-			if( not(this.redirectTextFile(url)) ) {
-				if( HelpBrowser.prShouldRedirect(url)) {
-					HelpBrowser.prOpenRedirectMenu(url, useSCIDE: false);
+			if(not(this.redirectTextFile(url))) {
+				if(HelpBrowser.prShouldRedirect(url)) {
+					HelpBrowser.prOpenRedirectMenu(url, useSCIDE: false)
 				} {
-					#newPath, oldPath = [url,webView.url].collect {|x|
-					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
+					#newPath, oldPath = [url, webView.url].collect { |x|
+						if(x.notEmpty) { x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1] }
 					};
 
 					if(newPath != oldPath && openNewWin) {
-							HelpBrowser.new(newWin:openNewWin).goTo(url);
+						HelpBrowser.new(newWin: openNewWin).goTo(url)
 					} {
-						this.goTo(url);
+						this.goTo(url)
 					}
 				}
 			}
 		};
 
-		webView.onReloadTriggered = {|wv, url|
+		webView.onReloadTriggered = { |wv, url|
 			WebView.clearCache;
-			this.goTo(url);
+			this.goTo(url)
 		};
 
-		webView.onJavaScriptMsg = {|wv, err, type|
-			"JavaScript %: %".format(if(type==0,"Error","Message"),err).postln;
+		webView.onJavaScriptMsg = { |wv, err, type|
+			"JavaScript %: %".format(if(type == 0, "Error", "Message"), err).postln
 		};
 
 		toggleFind = {
-				if(findView.visible.not) {
-					saveSize = webView.bounds;
-					h = findView.bounds.height + marg;
-					webView.bounds = Rect(saveSize.left,saveSize.top+h,saveSize.width,saveSize.height-h);
-					findView.visible = true;
-					txtFind.focus;
-				} {
-					webView.bounds = saveSize;
-					findView.visible = false;
-				};
+			if(findView.visible.not) {
+				saveSize = webView.bounds;
+				h = findView.bounds.height + marg;
+				webView.bounds = Rect(saveSize.left, saveSize.top + h, saveSize.width, saveSize.height - h);
+				findView.visible = true;
+				txtFind.focus
+			} {
+				webView.bounds = saveSize;
+				findView.visible = false
+			}
 		};
 
 		webView.enterInterpretsSelection = true;
 
 		webView.setAttribute(\javascriptCanAccessClipboard, true);
 
-		window.view.keyDownAction = { arg view, char, mods, uni, kcode, key;
+		window.view.keyDownAction = { |view, char, mods, uni, kcode, key|
 			var keyPlus, keyZero, keyMinus, keyEquals, keySlash;
 			var keyD, keyU, keyF, keyG, keyH, keyJ, keyK, keyL, keyT;
 			var keyF3, keyF5, keyLeftArrow, keyRightArrow;
 			var modifier, zoomIn;
 
-			modifier = Platform.case(\osx, {
-				mods.isCmd && mods.isCtrl.not && mods.isAlt.not;
+			modifier = case(Platform, \osx, {
+				mods.isCmd && mods.isCtrl.not && mods.isAlt.not
 			}, {
-				mods.isCtrl && mods.isCmd.not && mods.isAlt.not;
+				mods.isCtrl && mods.isCmd.not && mods.isAlt.not
 			});
 
 			#keyPlus, keyZero, keyMinus, keyEquals, keySlash = [43, 48, 45, 61, 47];
@@ -335,87 +335,86 @@ HelpBrowser {
 			// +/= has the same value on macOS when pressed with <Cmd>
 			zoomIn = ((key == keyEquals) && modifier) || ((key == keyK) && mods.isShift);
 
-			case(
-				{ zoomIn }, {
-					webView.zoom = min(webView.zoom + 0.1, 2.0);
-				},
-				{ (key == keyMinus) && modifier }, {
+			case
+				{ zoomIn } {
+					webView.zoom = min(webView.zoom + 0.1, 2.0)
+				}
+				{ (key == keyMinus) && modifier } {
 					webView.zoom = max(webView.zoom - 0.1, 0.1)
-				},
-				{ (key == keyZero) && modifier }, {
+				}
+				{ (key == keyZero) && modifier } {
 					webView.zoom = 1.0
-				},
-				{ (key == keyF && modifier) || (key == keySlash) }, {
-					toggleFind.value
-				},
-				{ key == keyG }, {
-					if (mods.isShift) {
-						webView.scrollPosition_(0@(webView.contentsSize.height - webView.bounds.height))
-					} {
-						webView.scrollPosition_(0@0)
-					}
-				},
-				{ key == keyD && mods.isCtrl }, {
-					webView.scrollDown(HelpBrowser.scrollPageStep)
-				},
-				{ key == keyU && mods.isCtrl }, {
-					webView.scrollUp(HelpBrowser.scrollPageStep)
-				},
-				{ key == keyJ }, {
-					if (mods.asBoolean.not) {
-						this.goDown
-					};
-					if (mods.isShift) {
-						webView.zoom = max(webView.zoom - 0.1, 0.1)
-					};
-				},
-				{ key == keyK }, {
-					if (mods.asBoolean.not) {
-						this.goUp
-					};
-				},
-				{ (key == keyH) || ((kcode == keyLeftArrow) && mods.isAlt) }, {
-					this.goBack
-				},
-				{ (key == keyL) || ((kcode == keyRightArrow) && mods.isAlt) }, {
-					this.goForward
-				},
-				{ key == keyT }, {
-					webView.runJavaScript("$(\"#toc\").toggle();$(\"#toc_search\").focus();");
-				},
-				{ kcode == keyF5 }, {
-					this.goTo(webView.url)
-				},
-				{ kcode == keyF3 }, {
-					this.goTo(SCDoc.helpTargetUrl++"/Search.html");
-				},
-				{ (char.ascii == 27) && findView.visible }, {
+				}
+				{ (key == keyF && modifier) || (key == keySlash) } {
 					toggleFind.value
 				}
-			);
+				{ key == keyG } {
+					if(mods.isShift) {
+						webView.scrollPosition_(0 @ (webView.contentsSize.height - webView.bounds.height))
+					} {
+						webView.scrollPosition_(0 @ 0)
+					}
+				}
+				{ key == keyD && mods.isCtrl } {
+					webView.scrollDown(HelpBrowser.scrollPageStep)
+				}
+				{ key == keyU && mods.isCtrl } {
+					webView.scrollUp(HelpBrowser.scrollPageStep)
+				}
+				{ key == keyJ } {
+					if(mods.asBoolean.not) {
+						this.goDown
+					};
+					if(mods.isShift) {
+						webView.zoom = max(webView.zoom - 0.1, 0.1)
+					}
+				}
+				{ key == keyK } {
+					if(mods.asBoolean.not) {
+						this.goUp
+					}
+				}
+				{ (key == keyH) || ((kcode == keyLeftArrow) && mods.isAlt) } {
+					this.goBack
+				}
+				{ (key == keyL) || ((kcode == keyRightArrow) && mods.isAlt) } {
+					this.goForward
+				}
+				{ key == keyT } {
+					webView.runJavaScript("$(\"#toc\").toggle();$(\"#toc_search\").focus();")
+				}
+				{ kcode == keyF5 } {
+					this.goTo(webView.url)
+				}
+				{ kcode == keyF3 } {
+					this.goTo(SCDoc.helpTargetUrl ++ "/Search.html")
+				}
+				{ (char.ascii == 27) && findView.visible } {
+					toggleFind.value
+				}
 		};
 
 		toolbar[\Back].action = { this.goBack };
 		toolbar[\Forward].action = { this.goForward };
-		toolbar[\Reload].action = { this.goTo( webView.url ) };
-		txtFind.action = { |x| webView.findText( x.string ) };
+		toolbar[\Reload].action = { this.goTo(webView.url) };
+		txtFind.action = { |x| webView.findText(x.string) };
 
-		{ this.goHome() }.defer;
+		{ this.goHome() }.defer
 	}
 
-	redirectTextFile {|url|
-		var plainTextExts = #[".sc",".scd",".txt",".schelp",".rtf"];
+	redirectTextFile { |url|
+		var plainTextExts = #[".sc", ".scd", ".txt", ".schelp", ".rtf"];
 
-		plainTextExts.do {|x|
+		plainTextExts.do { |x|
 			var path;
 			if(url.endsWith(x)) {
-				path = url.replace("%20"," ")
+				path = url.replace("%20", " ")
 					.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1];
 				if(File.exists(path)) {
-					path.openDocument;
+					path.openDocument
 				} {
-					webView.url = SCDoc.helpTargetUrl++"/BrokenLink.html#"++path;
-					window.front;
+					webView.url = SCDoc.helpTargetUrl ++ "/BrokenLink.html#" ++ path;
+					window.front
 				};
 				^true
 			}
@@ -425,25 +424,25 @@ HelpBrowser {
 	}
 
 	startAnim {
-		var progress = [">---","->--","-->-","--->"];
+		var progress = [">---", "->--", "-->-", "--->"];
 		if(loading.not) {
 			loading = true;
 			Routine {
-				block {|break|
+				block { |break|
 					loop {
-						progress.do {|p|
-							window.name = ("Loading"+p);
+						progress.do { |p|
+							window.name = ("Loading" + p);
 							0.3.wait;
-							if(loading.not) {break.value};
-						};
-					};
-				};
-//				lblStatus.string_("");
-			}.play(AppClock);
-		};
+							if(loading.not) { break.value }
+						}
+					}
+				}
+				//				lblStatus.string_("");
+			}.play(AppClock)
+		}
 	}
 	stopAnim {
-		loading = false;
+		loading = false
 	}
 
 }

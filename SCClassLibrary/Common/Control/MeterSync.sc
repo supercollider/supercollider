@@ -32,17 +32,17 @@ MeterSync {
 				this.prBroadcast(
 					'/SC_LinkClock/meterReply', id, msg[1], this.enabled.asInteger,
 					clock.beats, clock.beatsPerBar, clock.baseBarBeat, clock.beatInBar
-				);
-			};
+				)
+			}
 		}, '/SC_LinkClock/queryMeter');
 		clock.addDependant(this);
-		this.enabled = true;  // assume enabled when creating
+		this.enabled = true  // assume enabled when creating
 	}
 
 	free {
 		clock.removeDependant(this);
 		meterQueryResp.free;
-		meterChangeResp.free;
+		meterChangeResp.free
 	}
 
 	enabled { ^meterChangeResp.notNil }
@@ -64,11 +64,11 @@ MeterSync {
 						watcher.remove;
 						// some clocks other than Link might not broadcast numPeers
 						// but they might have peers anyway. If not, this is a no-op
-						this.resyncMeter(verbose: clock.numPeers > 0);
-					};
-				});
+						this.resyncMeter(verbose: clock.numPeers > 0)
+					}
+				})
 			} {
-				this.resyncMeter;
+				this.resyncMeter
 			};
 			meterChangeResp = OSCFunc({ |msg|
 				if(msg[1] != id and: { msg != lastReceived }) {  // ignore message that I sent
@@ -80,25 +80,25 @@ MeterSync {
 					// *and* use my utility method because we do not want to broadcast here
 					this.prSetMeterAtBeat(msg[2],
 						(clock.beats + msg[4] - msg[3]).round(msg[4].asFraction[1].reciprocal)
-					);
-				};
-			}, '/SC_LinkClock/changeMeter');
+					)
+				}
+			}, '/SC_LinkClock/changeMeter')
 		} {
 			meterChangeResp.free;
-			meterChangeResp = nil;
-		};
+			meterChangeResp = nil
+		}
 	}
 
 	repeats_ { |value|
 		if(value < 1) {
-			Error("Invalid number of repeats '%'".format(value)).throw;
+			Error("Invalid number of repeats '%'".format(value)).throw
 		};
 		repeats = value
 	}
 
 	delta_ { |value|
 		if(value <= 0) {
-			Error("Invalid messaging delta '%'".format(value)).throw;
+			Error("Invalid messaging delta '%'".format(value)).throw
 		};
 		delta = value
 	}
@@ -107,8 +107,8 @@ MeterSync {
 		var saveFlag = broadcastMeter;
 		protect {
 			broadcastMeter = false;
-			clock.setMeterAtBeat(newBeatsPerBar, beats);
-		} { broadcastMeter = saveFlag };
+			clock.setMeterAtBeat(newBeatsPerBar, beats)
+		} { broadcastMeter = saveFlag }
 	}
 
 	// must always call action after timeout!
@@ -116,7 +116,7 @@ MeterSync {
 	queryMeter { |action, timeout = 0.2|
 		var replies, resp;
 		if(timeout.isKindOf(SimpleNumber).not or: { timeout <= 0 }) {
-			Error("Invalid timeout '%' provided".format(timeout)).throw;
+			Error("Invalid timeout '%' provided".format(timeout)).throw
 		};
 		if(clock.numPeers > 0) {
 			replies = Dictionary.new;
@@ -132,21 +132,21 @@ MeterSync {
 						beatsPerBar: msg[5],
 						baseBarBeat: msg[6],
 						beatInBar: msg[7]
-					));
-				};
+					))
+				}
 			}, '/SC_LinkClock/meterReply');
 			{
 				protect {
 					this.prBroadcast('/SC_LinkClock/queryMeter', clock.beats);
-					(timeout + (repeats * delta)).wait;
+					(timeout + (repeats * delta)).wait
 				} { resp.free };
-				action.value(replies.values);
-			}.fork(SystemClock);
+				action.value(replies.values)
+			}.fork(SystemClock)
 		} {
 			// no peers, don't bother asking
 			// sched is needed to make sure Conditions waiting for this method still work
-			SystemClock.sched(0, { action.value(List.new) });
-		};
+			SystemClock.sched(0, { action.value(List.new) })
+		}
 	}
 
 	resyncMeter { |round, verbose = true|
@@ -155,7 +155,7 @@ MeterSync {
 			// queryMeter should never hang (based on default timeout)
 			this.queryMeter { |val|
 				replies = val;
-				cond.unhang;
+				cond.unhang
 			};
 			cond.hang;
 			replies = replies.select { |reply| reply[\syncMeter] };
@@ -165,12 +165,12 @@ MeterSync {
 					"syncing meter to %, base = %\n".postf(newBeatsPerBar, newBase)
 				};
 				this.prSetMeterAtBeat(newBeatsPerBar, newBase);  // local only
-				clock.changed(\resynced, true);
+				clock.changed(\resynced, true)
 			} {
 				if(verbose) {
-					"(%) Found no SC Link peers synchronizing meter; cannot resync".format(id).warn;
+					"(%) Found no SC Link peers synchronizing meter; cannot resync".format(id).warn
 				};
-				clock.changed(\resynced, false);  // esp. for unit test
+				clock.changed(\resynced, false)  // esp. for unit test
 			}
 		}
 	}
@@ -179,22 +179,22 @@ MeterSync {
 		// 'this.prSetMeterAtBeat' to avoid \meter notification
 		this.prSetMeterAtBeat(clock.beatsPerBar,
 			clock.baseBarBeat + ((localBeats - remoteBeats) % clock.beatsPerBar).round(round)
-		);
+		)
 	}
 
 	update { |obj, what|
 		switch(what)
-		{ \meter } {
-			if(broadcastMeter) {
-				this.prBroadcast(
-					'/SC_LinkClock/changeMeter',
-					id, clock.beatsPerBar, clock.beats, clock.baseBarBeat
-				);
-			};
-		}
-		// if the 'model' clock is stopped, no need to keep monitoring
-		{ \stop } { this.free }
-		{ \disableMeterSync } { this.free };
+			{ \meter } {
+				if(broadcastMeter) {
+					this.prBroadcast(
+						'/SC_LinkClock/changeMeter',
+						id, clock.beatsPerBar, clock.beats, clock.baseBarBeat
+					)
+				}
+			}
+			// if the 'model' clock is stopped, no need to keep monitoring
+			{ \stop } { this.free }
+			{ \disableMeterSync } { this.free }
 	}
 
 	prBroadcast { |... msg|
@@ -208,12 +208,12 @@ MeterSync {
 				protect {
 					NetAddr.broadcastFlag = true;
 					addrs.do { |addr|
-						addr.sendMsg(*msg);
-					};
+						addr.sendMsg(*msg)
+					}
 				} { NetAddr.broadcastFlag = saveFlag };
-				delta.wait;
-			};
-		}.fork(SystemClock);
+				delta.wait
+			}
+		}.fork(SystemClock)
 	}
 
 	prGetMeter { |replies, round|
@@ -224,7 +224,7 @@ MeterSync {
 		replies.do { |reply|
 			denom = lcm(denom, reply[\baseBarBeat].asFraction[1]);
 			bpbs.add(reply[\beatsPerBar]);
-			baseBeats.add(reply[\queriedAtBeat] - reply[\beatInBar]);
+			baseBeats.add(reply[\queriedAtBeat] - reply[\beatInBar])
 		};
 		if(round.isNil) { round = denom.reciprocal };
 		// All 'syncMeter' peers should have the same beatsPerBar (size == 1).
@@ -237,13 +237,13 @@ MeterSync {
 			if(baseBeats.size == 1) {
 				// 'baseBeats.add()' above has calculated baseBarBeat
 				// such that my local beatInBar will match theirs
-				newBase = baseBeats.pop;
+				newBase = baseBeats.pop
 			} {
 				// this should not happen
-				Error("LinkClock peers disagree on barline positions; cannot sync barlines").throw;
-			};
+				Error("LinkClock peers disagree on barline positions; cannot sync barlines").throw
+			}
 		} {
-			Error("LinkClock peers disagree on beatsPerBar; cannot sync barlines").throw;
+			Error("LinkClock peers disagree on beatsPerBar; cannot sync barlines").throw
 		};
 		^[newBeatsPerBar, newBase]
 	}

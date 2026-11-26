@@ -7,8 +7,8 @@ BelaScope {
 
 	*scope { |channelOffset, signals|
 		var ugens = this.prInputAsAudioRateUGens(signals);
-		ugens !? { BelaScopeOut.ar(channelOffset, ugens); };
-		^signals;
+		ugens !? { BelaScopeOut.ar(channelOffset, ugens) };
+		^signals
 	}
 
 	*monitorBus { |channelOffset, busindex, numChannels, target, rate = \audio|
@@ -41,11 +41,11 @@ BelaScope {
 		};
 
 		if(arUGens.every(_.isUGen)) {
-			^arUGens;
+			^arUGens
 		} {
 			"BelaScope: can't scope this signal, because not all of its elements are UGens.\nSignal: %"
 				.format(signals).warn;
-			^nil;
+			^nil
 		}
 	}
 
@@ -65,7 +65,7 @@ BelaScope {
 
 + Bus {
 	belaScope { |scopeChannel|
-		^BelaScope.monitorBus(scopeChannel, index, numChannels, rate: rate);
+		^BelaScope.monitorBus(scopeChannel, index, numChannels, rate: rate)
 	}
 }
 
@@ -77,13 +77,13 @@ BelaScope {
 		numChannels = numChannels ?? { if(outUGen.notNil) { (outUGen.inputs.size - 1) } { 1 } };
 
 		monitor = BelaScope.monitorBus(scopeChannel, outbus, numChannels, target);
-		^synth.onFree { if(monitor.notNil) { monitor.free } };
+		^synth.onFree { if(monitor.notNil) { monitor.free } }
 	}
 }
 
 + Server {
 	belaScope { |scopeChannel, index = 0, numChannels|
-		numChannels = numChannels ?? { if (index == 0) { options.numOutputBusChannels } { 2 } };
-		^Bus(\audio, index, numChannels, this).belaScope(scopeChannel);
+		numChannels = numChannels ?? { if(index == 0) { options.numOutputBusChannels } { 2 } };
+		^Bus(\audio, index, numChannels, this).belaScope(scopeChannel)
 	}
 }

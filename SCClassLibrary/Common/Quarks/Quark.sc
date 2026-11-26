@@ -5,9 +5,9 @@ Quark {
 
 	*new { |name, refspec, url, localPath|
 		var args = Quark.parseQuarkName(name, refspec, url, localPath);
-		if(args.isNil, {
-			Error("Quark '%' not found".format(name)).throw;
-		});
+		if(args.isNil) {
+			Error("Quark '%' not found".format(name)).throw
+		};
 		^super.new.init(*args)
 	}
 	*fromLocalPath { |path|
@@ -25,10 +25,10 @@ Quark {
 		name = argName;
 		url = argUrl;
 		refspec = argRefspec;
-		localPath = argLocalPath ?? {Quarks.folder +/+ name};
-		if(Git.isGit(localPath), {
-			git = Git(localPath);
-		});
+		localPath = argLocalPath ?? { Quarks.folder +/+ name };
+		if(Git.isGit(localPath)) {
+			git = Git(localPath)
+		}
 	}
 	data {
 		^data ?? {
@@ -68,27 +68,27 @@ Quark {
 	}
 	isCompatible {
 		var isCompatible = true;
-		if(this.data.includesKey('isCompatible'), {
-			{
+		if(this.data.includesKey('isCompatible')) {
+			try {
 				isCompatible = this.data['isCompatible'].value !== false
-			}.try({ |error|
+			} { |error|
 				("Failed to evalute quarkfile data field: isCompatible" + this).error;
-				error.reportError;
-			});
-		});
+				error.reportError
+			}
+		};
 		^isCompatible
 	}
 	runHook { |hook|
 		hook = hook.asSymbol;
-		if(this.data[hook].notNil, {
+		if(this.data[hook].notNil) {
 			"Run % hook".format(hook).postln;
 			try {
-				this.data[hook].(this.data);
+				this.data[hook].(this.data)
 			} { |e|
 				"Encountered error while running hook '%' for Quark('%'). Installation or update for this Quark may not have completed correctly.".warn;
-				e.throw();
+				e.throw()
 			}
-		});
+		}
 	}
 
 	install {
@@ -98,7 +98,7 @@ Quark {
 		^success
 	}
 	update {
-		if(Git.isGit(localPath), {
+		if(Git.isGit(localPath)) {
 			data = git = refspec = nil;
 			changed = true;
 			this.runHook(\preUpdate);
@@ -108,132 +108,131 @@ Quark {
 			// force reload of data by resetting it to nil
 			data = nil;
 			this.runHook(\postUpdate);
-			("Quark '%' updated to version: % tag: % refspec: %".format(name, this.version, this.git.tag, this.refspec)).postln;
-		}, {
-			("Quark" + name + "was not installed using git, cannot update.").warn;
-		});
+			("Quark '%' updated to version: % tag: % refspec: %".format(name, this.version, this.git.tag, this.refspec)).postln
+		} {
+			("Quark" + name + "was not installed using git, cannot update.").warn
+		}
 	}
 	uninstall {
 		this.runHook(\preUninstall);
 		Quarks.uninstallQuark(this);
 		this.runHook(\postUninstall);
-		changed = true;
+		changed = true
 	}
 
 	checkout {
 		var rs;
-		if(git.isNil, {
-			git = Git(localPath);
-		});
-		if(this.isDownloaded.not, {
-			if(this.url.isNil, {
-				Error("No git url, cannot checkout quark" + this).throw;
-			});
+		if(git.isNil) {
+			git = Git(localPath)
+		};
+		if(this.isDownloaded.not) {
+			if(this.url.isNil) {
+				Error("No git url, cannot checkout quark" + this).throw
+			};
 			git.clone(url);
 			// get tags etc
 			git.fetch();
 			changed = true;
-			data = nil;
-		});
-		if(refspec.notNil, {
+			data = nil
+		};
+		if(refspec.notNil) {
 			if(this.isDownloaded
-				and: {git.notNil}
-				and: {git.isDirty},
-			{
-				("% has uncommited changes, cannot checkout %".format(name, refspec ? "")).warn;
-			}, {
-				if(refspec == "HEAD", {
-					git.pull()
-				}, {
-					rs = this.validateRefspec(refspec);
-					if(rs.notNil, {
-						git.checkout(rs)
-					});
-				});
-			});
+					and: { git.notNil }
+					and: { git.isDirty }) {
+						("% has uncommited changes, cannot checkout %".format(name, refspec ? "")).warn
+					} {
+						if(refspec == "HEAD") {
+							git.pull()
+						} {
+							rs = this.validateRefspec(refspec);
+							if(rs.notNil) {
+								git.checkout(rs)
+							}
+						}
+					};
 			changed = true;
-			data = nil;
-		});
+			data = nil
+		}
 	}
 	validateRefspec { |refspec|
 		var tag;
 		if(refspec == "HEAD"
-			or: {refspec.findRegexp("^[a-zA-Z0-9]{40}$").size != 0}, {
-			^refspec
-		});
-		if(refspec.beginsWith("tags/").not, {
+				or: { refspec.findRegexp("^[a-zA-Z0-9]{40}$").size != 0 }) {
+					^refspec
+				};
+		if(refspec.beginsWith("tags/").not) {
 			tag = refspec;
-			refspec = "tags/" ++ tag;
-		}, {
-			tag = refspec.copyToEnd(5);
-		});
-		if(this.tags.includesEqual(tag).not, {
+			refspec = "tags/" ++ tag
+		} {
+			tag = refspec.copyToEnd(5)
+		};
+		if(this.tags.includesEqual(tag).not) {
 			("Tag not found:" + this + tag + Char.nl + "Possible tags:" + this.tags).warn;
 			^nil
-		});
+		};
 		^refspec
 	}
 	checkForUpdates {
 		var tags;
-		if(this.isGit, {
+		if(this.isGit) {
 			tags = git.tags().sort;
 			git.fetch();
 			// if not already marked as changed
-			if(changed.not, {
+			if(changed.not) {
 				// changed if there are new tags
-				changed = git.tags().sort != tags;
-			})
-		});
+				changed = git.tags().sort != tags
+			}
+		}
 	}
 
 	dependencies {
-		var deps = this.data['dependencies'] ?? {^[]};
-		if(deps.isSequenceableCollection.not, {
+		var deps = this.data['dependencies'] ?? { ^[] };
+		if(deps.isSequenceableCollection.not) {
 			("Invalid dependencies " + this + deps).warn;
 			^[]
-		});
-		^deps.collect({ |dep|
+		};
+		^deps.collect { |dep|
 			var q = Quark.parseDependency(dep, this);
-			if(q.isNil, {
-				"% not found".format(dep).warn;
-			});
+			if(q.isNil) {
+				"% not found".format(dep).warn
+			};
 			q
-		}).select({ |it| it.notNil });
+		}.select({ |it| it.notNil })
 	}
 	deepDependencies {
 		// warning: everything must be checked out just to get the dependency list
 		^this.prCollectDependencies(Dictionary.new).values
 	}
 	prCollectDependencies { |collector|
-		this.dependencies.do({ |q|
+		this.dependencies.do { |q|
 			var prev = collector[q.name];
-			if(prev.notNil, {
-				if(prev.refspec != q.refspec, {
-					("% requires % but % is already registered as a dependency".format(this, q, prev)).warn;
-				});
-			}, {
+			if(prev.notNil) {
+				if(prev.refspec != q.refspec) {
+					("% requires % but % is already registered as a dependency".format(this, q, prev)).warn
+				}
+			} {
 				q.checkout();
 				collector[q.name] = q;
-				q.prCollectDependencies(collector);
-			});
-		});
+				q.prCollectDependencies(collector)
+			}
+		};
 		^collector
 	}
 	*parseDependency { |dep, forQuark|
 		// parse a dependency specifier and return a Quark
 		// (1) string
-		if(dep.isString, {
+		if(dep.isString) {
 			^Quark.prMakeDep(*dep.split($@))
-		});
+		};
 		// (2) name -> version
-		if(dep.isKindOf(Association), {
+		if(dep.isKindOf(Association)) {
 			^Quark.prMakeDep(dep.key.asString)
-		});
+		};
 		// (3) [name, version, url]
 		// url is svn repo and should be ignored now
-		if(dep.isSequenceableCollection, {
+		if(dep.isSequenceableCollection) {
 			^Quark.prMakeDep(dep.first)
-		});
+		};
 		("Cannot parse dependency:" + dep + (forQuark ? "")).error;
 		^nil
 	}
@@ -241,9 +240,9 @@ Quark {
 		// protected make dependency
 		// if not found then posts error and returns nil
 		var args = Quark.parseQuarkName(name, refspec);
-		if(args.isNil, {
+		if(args.isNil) {
 			^nil
-		});
+		};
 		^super.new.init(*args)
 	}
 	*parseQuarkName { |name, refspec, url, localPath|
@@ -251,57 +250,57 @@ Quark {
 		// name is one of: quarkname, url, localPath
 		// returns: [name, url, refspec, localPath]
 		var directoryEntry;
-		if(name.contains("://"), {
+		if(name.contains("://")) {
 			^[PathName(name).fileNameWithoutExtension(), name, refspec, localPath]
-		});
-		if(Quarks.isPath(name), {
+		};
+		if(Quarks.isPath(name)) {
 			// if not provided then url can be determined later by the Quark
 			^[name.basename, url, refspec, name]
-		});
+		};
 		// search Quarks folders
-		(Quarks.additionalFolders ++ [Quarks.folder]).do({ |f|
-			var lp = localPath ?? {f +/+ name};
-			if(File.existsCaseSensitive(lp), {
+		(Quarks.additionalFolders ++ [Quarks.folder]).do { |f|
+			var lp = localPath ?? { f +/+ name };
+			if(File.existsCaseSensitive(lp)) {
 				^[name, url, refspec, lp]
-			});
-		});
+			}
+		};
 		// lookup url in directory
 		directoryEntry = Quarks.findQuarkURL(name);
-		if(directoryEntry.notNil, {
+		if(directoryEntry.notNil) {
 			directoryEntry = directoryEntry.split($@);
 			^[name, url ? directoryEntry[0], refspec ? directoryEntry[1], localPath]
-		});
+		};
 		// not found
 		^nil
 	}
 	parseQuarkFile {
 		var qfp = this.localPath +/+ name ++ ".quark",
 			result;
-		if(File.exists(qfp), {
+		if(File.exists(qfp)) {
 			result = thisProcess.interpreter.compileFile(qfp).value;
-			if(result.isNil, {
-				("Failed to parse %".format(qfp)).warn;
-			});
-		});
+			if(result.isNil) {
+				("Failed to parse %".format(qfp)).warn
+			}
+		};
 		^result
 	}
 
-	printOn { arg stream;
+	printOn { |stream|
 		var v = this.version ? this.refspec;
 		stream << "Quark: " << name;
-		if(v.notNil,{ stream << "[" << v << "]" });
+		if(v.notNil) { stream << "[" << v << "]" }
 	}
 	help {
 		var p = this.data['schelp'];
 		// explicit pointer to a help file in quark data
-		if(p.notNil, {
-			^HelpBrowser.openHelpFor(p);
-		});
+		if(p.notNil) {
+			^HelpBrowser.openHelpFor(p)
+		};
 		// old html help doc
 		p = this.data['helpdoc'];
-		if(p.notNil, {
-			^HelpBrowser.goTo(URI.fromLocalPath(this.localPath +/+ p).asString);
-		});
-		HelpBrowser.openBrowsePage("Quarks>" ++ name);
+		if(p.notNil) {
+			^HelpBrowser.goTo(URI.fromLocalPath(this.localPath +/+ p).asString)
+		};
+		HelpBrowser.openBrowsePage("Quarks>" ++ name)
 	}
 }

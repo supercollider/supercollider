@@ -9,19 +9,19 @@
 
 	asOSCArgBundle {
 		var array = Array(100);		// allocate a bunch of space
-		this.do { | msg | array = array.add(msg.asOSCArgArray) };
+		this.do { |msg| array = array.add(msg.asOSCArgArray) };
 		^array
 	}
 
 	asOSCArgArray {
 		var array = Array(100);		// allocate a bunch of space
-		this.do { | e | array = e.asOSCArgEmbeddedArray(array) };
+		this.do { |e| array = e.asOSCArgEmbeddedArray(array) };
 		^array
 	}
 
-	asOSCArgEmbeddedArray { | array|
+	asOSCArgEmbeddedArray { |array|
 		array = array.add($[);
-		this.do{ | e | array = e.asOSCArgEmbeddedArray(array) };
+		this.do { |e| array = e.asOSCArgEmbeddedArray(array) };
 		^array.add($])
 	}
 
@@ -29,7 +29,7 @@
 
 +String {
 
-	asOSCArgEmbeddedArray { | array| ^array.add(this) }
+	asOSCArgEmbeddedArray { |array| ^array.add(this) }
 
 	asOSCArgArray { ^this }
 }
@@ -37,21 +37,21 @@
 +Env {
 
 	asControlInput { ^this.asArray }
-	asOSCArgEmbeddedArray { | array| ^this.asArray.asOSCArgEmbeddedArray(array) }
+	asOSCArgEmbeddedArray { |array| ^this.asArray.asOSCArgEmbeddedArray(array) }
 }
 
 +Object {
-	asOSCArgEmbeddedArray { | array| ^array.add(this.asControlInput) }
+	asOSCArgEmbeddedArray { |array| ^array.add(this.asControlInput) }
 	asOSCArgArray { ^this.asControlInput }
 	asOSCArgBundle { ^this.asControlInput }
-	asStringff { | size = 8 |
+	asStringff { |size = 8|
 		var str = this.asString;
-		str = str[0..size-1];
+		str = str[0..size - 1];
 		str = str ++ String.fill(size - str.size, Char.space);
-		^str;
+		^str
 	}
 
-	postff { | size = 8 |
+	postff { |size = 8|
 		this.asStringff(size).post
 	}
 }
@@ -61,13 +61,13 @@
 }
 
 +Ref {
-	asOSCArgEmbeddedArray { | array| ^value.asOSCArgEmbeddedArray(array) }
+	asOSCArgEmbeddedArray { |array| ^value.asOSCArgEmbeddedArray(array) }
 }
 
 +AbstractFunction {
 
-	eq { arg function, adverb; ^this.composeBinaryOp('==', function, adverb) }
-//
-	ne { arg function, adverb; ^this.composeBinaryOp('!=', function, adverb) }
+	eq { |function, adverb| ^this.composeBinaryOp('==', function, adverb) }
+	//
+	ne { |function, adverb| ^this.composeBinaryOp('!=', function, adverb) }
 
 }

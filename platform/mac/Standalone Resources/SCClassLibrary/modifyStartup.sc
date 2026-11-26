@@ -1,23 +1,23 @@
 + OSXPlatform {
 
 	startupFiles {
-//		var filename = "startup.rtf";
-//		^[this.systemAppSupportDir +/+ filename, this.userAppSupportDir +/+ filename];
-			// look for startup files inside the app Contents directory
+		//		var filename = "startup.rtf";
+		//		^[this.systemAppSupportDir +/+ filename, this.userAppSupportDir +/+ filename];
+		// look for startup files inside the app Contents directory
 		var filename = "startup.*";
-		^(Platform.resourceDir +/+ filename).pathMatch;
+		^(Platform.resourceDir +/+ filename).pathMatch
 	}
 
 	startup {
 		openPorts = Set[NetAddr.langPort];
 		Document.implementationClass.startup;
 		// make a server window for the internal if you like
-		Server.internal.makeWindow;
-//		Server.local.makeWindow;
+		Server.internal.makeWindow
+		//		Server.local.makeWindow;
 		// uncomment if you use a startup file
-//		this.loadStartupFiles;
+		//		this.loadStartupFiles;
 		// uncomment if you have multiple help files
-//		Help.addToMenu;
+		//		Help.addToMenu;
 	}
 }
 
@@ -28,7 +28,7 @@
 
 		super.startup;
 
-		GUI.fromID( this.platform.defaultGUIScheme );
+		GUI.fromID(this.platform.defaultGUIScheme);
 
 		// Set Server.default and the 's' interpreter variable to the internal server.
 		// You should use the internal server for standalone applications --
@@ -38,7 +38,7 @@
 		Server.default = Server.internal;
 		interpreter.s = Server.default;
 
-			// some folder paths that should point inside the app's Contents folder
+		// some folder paths that should point inside the app's Contents folder
 		SynthDef.synthDefDir = Platform.resourceDir +/+ "synthdefs/";
 		Archive.archiveDir = Platform.resourceDir;
 
@@ -56,11 +56,11 @@
 		Server.default.boot;
 
 		Server.default.waitForBoot({
-			SCSA_Demo.new("The Cheese Stands Alone", Rect(400, 400, 300, 200), interpreter.s).front;
-//			(Platform.resourceDir.dirname ++ "/MFBSD.rtf").load;
-		});
+			SCSA_Demo.new("The Cheese Stands Alone", Rect(400, 400, 300, 200), interpreter.s).front
+			//			(Platform.resourceDir.dirname ++ "/MFBSD.rtf").load;
+		})
 		// close post window if user should not have it
-//		Document.listener.close
+		//		Document.listener.close
 	}
 
 }

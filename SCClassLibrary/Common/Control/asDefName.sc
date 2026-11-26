@@ -45,13 +45,13 @@
 		^def.name
 	}
 
-	asSynthDef { arg rates, prependArgs, outClass=\Out, fadeTime, name;
+	asSynthDef { |rates, prependArgs, outClass = \Out, fadeTime, name|
 		^GraphBuilder.wrapOut(name ?? { this.identityHash.abs.asSymbol },
 			this, rates, prependArgs, outClass, fadeTime
-		);
+		)
 	}
 
-	play { arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args;
+	play { |target, outbus = 0, fadeTime = 0.02, addAction = \addToHead, args|
 		var server, def, synth, bytes, synthMsg;
 		target = target.asTarget;
 		server = target.server;
@@ -59,16 +59,16 @@
 		if(server.warnIfNotRunning(thisMethod)) { ^this };
 
 		def = this.asSynthDef(
-			fadeTime:fadeTime,
+			fadeTime: fadeTime,
 			name: SystemSynthDefs.generateTempName
 		);
 		synth = Synth.basicNew(def.name, server);
-			// if notifications are enabled on the server,
-			// use the n_end signal to remove the temp synthdef
+		// if notifications are enabled on the server,
+		// use the n_end signal to remove the temp synthdef
 		if(server.notified) {
 			OSCFunc({
-				server.sendMsg(\d_free, def.name);
-			}, '/n_end', server.addr, argTemplate: [synth.nodeID]).oneShot;
+				server.sendMsg(\d_free, def.name)
+			}, '/n_end', server.addr, argTemplate: [synth.nodeID]).oneShot
 		};
 		synthMsg = synth.newMsg(target, [\i_out, outbus, \out, outbus] ++ args, addAction);
 		def.doSend(server, synthMsg);

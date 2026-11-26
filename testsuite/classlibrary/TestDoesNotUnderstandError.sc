@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestDoesNotUnderstandError : UnitTest {
 	test_construction {
 		var error;
@@ -5,6 +6,6 @@ TestDoesNotUnderstandError : UnitTest {
 
 		this.assertEquals(error.receiver, 3);
 		this.assertEquals(error.selector, 'bogusTestMethodNameXyz');
-		this.assertEquals(error.args, [4, 5]);
+		this.assertEquals(error.args, [4, 5])
 	}
 }

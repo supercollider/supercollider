@@ -6,9 +6,9 @@
 GUI {
 	classvar <scheme, <schemes, <skin, <skins;
 
-	*new { arg key; ^scheme.perform( key )}
+	*new { |key| ^scheme.perform(key) }
 
-	*makeGUI { arg key, args, properties;
+	*makeGUI { |key, args, properties|
 		var meth, class;
 		class = scheme.at(key);
 		if(properties.notNil) {
@@ -28,20 +28,20 @@ GUI {
 		Class.initClassTree(Point);
 		skins = (
 			default: (
-				fontSpecs: 	["Helvetica", 10],
-				fontColor: 	Color.black,
-				background: 	Color(0.8, 0.85, 0.7, 0.5),
-				foreground:	Color.grey(0.95),
-				onColor:		Color(0.5, 1, 0.5),
-				offColor:		Color.clear,
-				gap:			0 @ 0,
-				margin: 		2@2,
-				buttonHeight:	16
+				fontSpecs: ["Helvetica", 10],
+				fontColor: Color.black,
+				background: Color(0.8, 0.85, 0.7, 0.5),
+				foreground: Color.grey(0.95),
+				onColor: Color(0.5, 1, 0.5),
+				offColor: Color.clear,
+				gap: 0 @ 0,
+				margin: 2 @ 2,
+				buttonHeight: 16
 			)
 		);
 
-		skin		= skins.default;
-		schemes	= IdentityDictionary.new;
+		skin = skins.default;
+		schemes = IdentityDictionary.new
 	}
 
 	/**
@@ -52,7 +52,7 @@ GUI {
 	*  @return the current (qt) scheme
 	*/
 	*qt {
-		^this.fromID( \qt );
+		^this.fromID(\qt)
 	}
 
 	/**
@@ -63,16 +63,16 @@ GUI {
 	* 				aScheme.id
 	* @return	the new current scheme
 	*/
-	*fromID { arg id;
-		var newScheme = schemes[ id.asSymbol ];
+	*fromID { |id|
+		var newScheme = schemes[id.asSymbol];
 		"GUI schemes are not supported any more. You may continue to use GUI for skins though".warn;
-		if( newScheme.notNil, {
-			scheme = newScheme;
-		}, {
+		if(newScheme.notNil) {
+			scheme = newScheme
+		} {
 			("GUI.fromID : The GUI scheme '" ++ id ++ "' is not installed\n" ++
-			"The current scheme is still '" ++ if( scheme.notNil, { scheme.id }) ++ "'!").warn;
-		});
-		^scheme;
+					"The current scheme is still '" ++ if(scheme.notNil) { scheme.id } ++ "'!").warn
+		};
+		^scheme
 	}
 
 	/**
@@ -89,7 +89,7 @@ GUI {
 	* @return	the current scheme
 	*/
 	*current {
-		^scheme;
+		^scheme
 	}
 
 	/**
@@ -101,8 +101,8 @@ GUI {
 	* 				aScheme.id
 	* @return	the scheme for the given id or nil
 	*/
-	*get { arg id;
-		^schemes[ id.asSymbol ];
+	*get { |id|
+		^schemes[id.asSymbol]
 	}
 
 	/**
@@ -110,8 +110,8 @@ GUI {
 	*
 	* @param	aScheme	the scheme to use as current scheme
 	*/
-	*set { arg aScheme;
-		scheme = aScheme;
+	*set { |aScheme|
+		scheme = aScheme
 	}
 
 	/**
@@ -125,10 +125,10 @@ GUI {
 	* @param	func		(Function) a body to execute
 	* @return	the result of the function
 	*/
-	*use { arg aScheme, func;
-		var recent	= scheme;
-		scheme		= aScheme;
-		^func.protect({ scheme = recent });
+	*use { |aScheme, func|
+		var recent = scheme;
+		scheme = aScheme;
+		^func.protect({ scheme = recent })
 	}
 
 	/**
@@ -138,8 +138,8 @@ GUI {
 	* @param	func		(Function) a body to execute
 	* @return	the result of the function
 	*/
-	*useID { arg id, func;
-		^this.use( schemes[ id.asSymbol ], func );
+	*useID { |id, func|
+		^this.use(schemes[id.asSymbol], func)
 	}
 
 	/**
@@ -150,13 +150,13 @@ GUI {
 	*
 	* @param	aScheme	the scheme to add
 	*/
-	*add { arg aScheme;
-		schemes.put( aScheme.id, aScheme );
-		if( scheme.isNil, {				// first registration = first default kit
-			scheme = aScheme;
-		}, {
-			scheme = schemes[ scheme.id ];	// in case we are updating an existing scheme
-		});
+	*add { |aScheme|
+		schemes.put(aScheme.id, aScheme);
+		if(scheme.isNil) {				// first registration = first default kit
+			scheme = aScheme
+		} {
+			scheme = schemes[scheme.id]	// in case we are updating an existing scheme
+		}
 	}
 
 	/**
@@ -165,11 +165,11 @@ GUI {
 	* and is delegated to the button association of the
 	* current scheme.
 	*/
-	*doesNotUnderstand { arg selector ... args;
-		if ( scheme.notNil ){
-			^scheme.performList( selector, args );
-		}{
-			("No GUI scheme active: " + selector + args ).warn;
+	*doesNotUnderstand { |selector ... args|
+		if(scheme.notNil) {
+			^scheme.performList(selector, args)
+		} {
+			("No GUI scheme active: " + selector + args).warn
 		}
 	}
 
@@ -181,8 +181,8 @@ GUI {
 	* explicitly init that class by name since it varies across platforms.  so you can't really setSkin
 	* in an initClass. Your initClass method could do StartUp.add { GUI.setSkin(...) };
 	*/
-	*setSkin { arg skinName;
+	*setSkin { |skinName|
 		skin = skins[skinName];
-		scheme.font.new(*GUI.skin.fontSpecs).setDefault;
+		scheme.font.new(*GUI.skin.fontSpecs).setDefault
 	}
 }

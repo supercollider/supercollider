@@ -1,10 +1,9 @@
+//# VERSION 3.16
 TestParser : UnitTest {
 
 	// Regression tests for a specific bug in block comment parsing.
 	// See https://github.com/supercollider/supercollider/issues/2624
 	test_blockComments {
-		var openTests, closedTests, errorTests;
-		var testCs, testCsValue;
 
 		/* A test compile string, and its interpreted value.
 		 * Will be added to the end of a test comment to make sure it
@@ -12,11 +11,11 @@ TestParser : UnitTest {
 		 * added to the start of an error-causing string to make sure
 		 * it causes an error.
 		 */
-		testCs = " 3\n";
-		testCsValue = 3;
+		var testCs = " 3\n";
+		var testCsValue = 3;
 
 		// Tests open-ended block comments; these should return 'nil' if you add any text after them.
-		openTests = [
+		var openTests = [
 			"/*", // crazy strings first
 			"/*/",
 			"/*/*",
@@ -35,7 +34,7 @@ TestParser : UnitTest {
 		];
 
 		// Tests closed block comments; code after one of these strings will be executed.
-		closedTests = [
+		var closedTests = [
 			"/**/",
 			"/*/**/*/",
 			"/*/*/**/*/*/",
@@ -52,7 +51,7 @@ TestParser : UnitTest {
 		 * Since the errors from .interpret cannot be caught, this just tests
 		 * that it returns nil no matter where the test string is added.
 		 */
-		errorTests = [
+		var errorTests = [
 			"*/",
 			"*/*",
 			"*/*/",
@@ -68,24 +67,21 @@ TestParser : UnitTest {
 			"// /*\n*/"
 		];
 
-		openTests.do {
-			|commentString|
+		openTests.do { |commentString|
 			var message = "'%' should be an open-ended comment.".format(commentString);
 
 			this.assertEquals(commentString.interpret, nil, message);
-			this.assertEquals((commentString ++ testCs).interpret, nil, message);
+			this.assertEquals((commentString ++ testCs).interpret, nil, message)
 		};
 
-		closedTests.do {
-			|commentString|
+		closedTests.do { |commentString|
 			var message = "'%' should be a closed block comment.".format(commentString);
 
 			this.assertEquals(commentString.interpret, nil, message);
-			this.assertEquals((commentString ++ testCs).interpret, testCsValue, message);
+			this.assertEquals((commentString ++ testCs).interpret, testCsValue, message)
 		};
 
-		errorTests.do {
-			|commentString|
+		errorTests.do { |commentString|
 			var message = "'%' should throw a parsing error when interpreted.".format(commentString);
 			var courtesyMessage = "NOTE: The parsing errors thrown above are intentional — currently testing bizarre strings with .interpret";
 
@@ -93,7 +89,7 @@ TestParser : UnitTest {
 			this.assertEquals((commentString ++ testCs).interpret, nil, message);
 			this.assertEquals((testCs ++ commentString).interpret, nil, message);
 
-			courtesyMessage.postln;
+			courtesyMessage.postln
 		}
 	}
 }

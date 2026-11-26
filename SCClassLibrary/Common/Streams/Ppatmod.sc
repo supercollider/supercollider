@@ -1,21 +1,21 @@
 Plazy : Pattern {
 	var <>func;
-	*new { arg func;
+	*new { |func|
 		^super.new.func_(func)
 	}
 	//asStream { arg ... args;
-//		^func.valueArray(args).asStream
-//	}
-	embedInStream { arg inval;
+	//		^func.valueArray(args).asStream
+	//	}
+	embedInStream { |inval|
 		^func.value(inval).embedInStream(inval)
 	}
 	storeArgs { ^[func] }
 }
 
 PlazyEnvir : Plazy {
-	var <>passEvent=false;
+	var <>passEvent = false;
 
-	embedInStream { arg inval;
+	embedInStream { |inval|
 		^if(inval.isNil) { func.value.embedInStream(inval) } {
 			inval.use {
 				if(passEvent) { func.valueEnvir(inval) } { func.valueEnvir }.embedInStream(inval)
@@ -28,15 +28,15 @@ PlazyEnvir : Plazy {
 PlazyEnvirN : PlazyEnvir {
 	var genFunc;
 
-	*new { arg func; ^super.new(func).makeGenFunc }
+	*new { |func| ^super.new(func).makeGenFunc }
 
-	embedInStream { arg inval;
+	embedInStream { |inval|
 		var patterns;
 		^if(inval.isNil) {
 			func.value.embedInStream(inval)
 		} {
 			inval.use {
-				patterns = if(passEvent) { genFunc.valueEnvir(inval) } { genFunc.valueEnvir };
+				patterns = if(passEvent) { genFunc.valueEnvir(inval) } { genFunc.valueEnvir }
 			};
 			if(patterns.size > 1) {
 				Ppar(patterns).embedInStream(inval)
@@ -54,11 +54,11 @@ PlazyEnvirN : PlazyEnvir {
 
 Penvir : Pattern {
 	var <>envir, <>pattern, <>independent;
-	*new { arg envir, pattern, independent=true;
+	*new { |envir, pattern, independent = true|
 		^super.newCopyArgs(envir, pattern, independent)
 	}
-	storeArgs { ^[envir,pattern,independent] }
-	embedInStream { arg inval;
+	storeArgs { ^[envir, pattern, independent] }
+	embedInStream { |inval|
 		if(independent)
 			{ Event.new(8, nil, envir) }
 			{ envir }
@@ -69,18 +69,18 @@ Penvir : Pattern {
 
 
 Ppatmod : Pattern {
-	var <>pattern, <>func, <>repeats=1;
-	*new { arg pattern, func, repeats;
+	var <>pattern, <>func, <>repeats = 1;
+	*new { |pattern, func, repeats|
 		^super.newCopyArgs(pattern, func, repeats)
 	}
-	embedInStream { arg inval;
+	embedInStream { |inval|
 		var localPat;
 		localPat = pattern.value(inval).copy;
-		repeats.do({ arg i;
+		repeats.do { |i|
 			inval = localPat.embedInStream(inval);
-			localPat = func.value(localPat, i);
-		});
-		^inval;
+			localPat = func.value(localPat, i)
+		};
+		^inval
 	}
 	storeArgs { ^[pattern, func, repeats] }
 }
@@ -88,15 +88,15 @@ Ppatmod : Pattern {
 
 Peventmod : Pattern {
 	var <>func, <>event, <>repeats;
-	*new { arg func, event, repeats=inf;
+	*new { |func, event, repeats = inf|
 		^super.newCopyArgs(func, event, repeats)
 	}
-	embedInStream { arg inval;
+	embedInStream { |inval|
 		var localEvent = event.copy ?? { Event.default };
-		repeats.value(inval).do { arg i;
+		repeats.value(inval).do { |i|
 			if(inval.isNil) { ^nil.yield };
 			localEvent.use { func.valueEnvir(inval, i) };
-			inval = localEvent.yield;
+			inval = localEvent.yield
 		};
 		^inval
 	}

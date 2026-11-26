@@ -1,9 +1,9 @@
 +SynthDesc {
 	makeWindow{
-		if (Platform.makeSynthDescWindowAction.notNil) {
+		if(Platform.makeSynthDescWindowAction.notNil) {
 			^Platform.makeSynthDescWindowAction.value(this)
 		} {
-			^this.makeGui;
+			^this.makeGui
 		}
 	}
 
@@ -15,7 +15,7 @@
 
 		gui = GUI.current;
 
-		usefulControls = controls.select {|controlName, i|
+		usefulControls = controls.select { |controlName, i|
 			var ctlname;
 			ctlname = controlName.name.asString;
 			(ctlname != "?") && (msgFuncKeepGate or: { ctlname != "gate" })
@@ -41,28 +41,28 @@
 			var envir;
 
 			envir = ();
-			usefulControls.do {|controlName, i|
+			usefulControls.do { |controlName, i|
 				var ctlname = controlName.name.asString;
 				var sliderEntry = sliders[controlName.name];
 				if(ctlname[1] == $_ and: { "ti".includes(ctlname[0]) }) {
-					ctlname = ctlname[2..];
+					ctlname = ctlname[2..]
 				};
 
-				if (sliderEntry.isArray) {
-					envir.put(controlName.name, sliderEntry.collect(_.value));
+				if(sliderEntry.isArray) {
+					envir.put(controlName.name, sliderEntry.collect(_.value))
 				} {
-					envir.put(controlName.name, sliderEntry.value);
+					envir.put(controlName.name, sliderEntry.value)
 				}
 			};
 			envir.use {
 				msgFunc.valueEnvir
-			};
+			}
 		};
 
 
 		startButton.action = { |view|
 			var synthEndWatcher, localSynth;
-			if (view.value == 1) {
+			if(view.value == 1) {
 				synth = Synth(name, getSliderValues.value).register;
 				localSynth = synth;
 				synthEndWatcher = SimpleController(synth).put(\n_end, {
@@ -71,22 +71,22 @@
 					// clear 'synth' only if n_end is for the current synth
 					if(localSynth === synth) {
 						synth = nil;
-						defer { view.value = 0 };
-					};
-				});
+						defer { view.value = 0 }
+					}
+				})
 			} {
 				if(synth.isPlaying) {
-					if (this.hasGate) {
-						synth.release;
+					if(this.hasGate) {
+						synth.release
 					} {
 						synth.free
-					};
-				};
-			};
+					}
+				}
+			}
 		};
 
 		// create controls for all parameters
-		usefulControls.do {|controlName|
+		usefulControls.do { |controlName|
 			var ctlname, ctlname2, capname, spec, controlIndex, slider;
 			ctlname = controlName.name;
 			capname = ctlname.asString;
@@ -96,24 +96,24 @@
 			if((spec = metadata.tryPerform(\at, \specs).tryPerform(\at, ctlname)).notNil) {
 				spec = spec.asSpec
 			} {
-				spec = ctlname.asSpec;
+				spec = ctlname.asSpec
 			};
 
-			if (spec.isKindOf(ControlSpec)) {
+			if(spec.isKindOf(ControlSpec)) {
 				slider = EZSlider(w, 400 @ 24, capname, spec,
 					{ |ez|
 						if(synth.isPlaying) { synth.set(ctlname, ez.value) }
-					}, controlName.defaultValue);
+					}, controlName.defaultValue)
 			} {
 				spec = ControlSpec(-1e10, 1e10);
-				if (controlName.defaultValue.isNumber) {
+				if(controlName.defaultValue.isNumber) {
 					slider = EZNumber(w, 400 @ 24, capname, spec,
 						{ |ez|
 							if(synth.isPlaying) { synth.set(ctlname, ez.value) }
 						}, controlName.defaultValue)
 				} {
 					slider = Array(controlName.defaultValue.size);
-					controlName.defaultValue.do {|value, i|
+					controlName.defaultValue.do { |value, i|
 						slider.add(EZNumber(w, 96 @ 24, "%[%]".format(capname, i), spec,
 							{ |ez|
 								if(synth.isPlaying) { synth.set(controlName.index + i, ez.value) }
@@ -125,15 +125,15 @@
 		};
 
 		// set start button to zero upon a cmd-period
-		cmdPeriodFunc = { startButton.value = 0; };
+		cmdPeriodFunc = { startButton.value = 0 };
 		CmdPeriod.add(cmdPeriodFunc);
 
 		// stop the sound when window closes and remove cmdPeriodFunc.
 		w.onClose = {
 			synth.release;
-			CmdPeriod.remove(cmdPeriodFunc);
+			CmdPeriod.remove(cmdPeriodFunc)
 		};
 
-		^w.front; // make window visible and front window.
+		^w.front // make window visible and front window.
 	}
 }

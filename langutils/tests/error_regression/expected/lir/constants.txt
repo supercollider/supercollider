@@ -1,0 +1,109 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): LirConstants : Object, version 3.16
+|  SCMemberList (5:1)
+|  SCMethodList (5:1)
+|  |  SCMethod (7:5): literal_string, version 3.16: literal_string { ^"text" } -> "text"
+|  |  |  SCBody (7:22)
+|  |  |  |  SCExplicitReturn (7:22)
+|  |  |  |  |  SCLiteral (7:23) = "text"
+|  |  SCMethod (9:5): literal_array, version 3.16: literal_array { ^#[1, 2] } -> [1, 2]
+|  |  |  SCBody (9:21)
+|  |  |  |  SCExplicitReturn (9:21)
+|  |  |  |  |  SCCollection (9:22): Array, literal = [1, 2]
+|  |  |  |  |  |  SCLiteral (9:24) = 1
+|  |  |  |  |  |  SCLiteral (9:27) = 2
+|  |  SCMethod (11:5): flat, version 3.16: flat { ^[1, 2] } -> [1, 2]
+|  |  |  SCBody (11:12)
+|  |  |  |  SCExplicitReturn (11:12)
+|  |  |  |  |  SCCollection (11:13): Array = [1, 2]
+|  |  |  |  |  |  SCLiteral (11:14) = 1
+|  |  |  |  |  |  SCLiteral (11:17) = 2
+|  |  SCMethod (13:5): nested, version 3.16: nested { ^[1, [2, 3], "four"] } -> [1, [2, 3], "four"]
+|  |  |  SCBody (13:14)
+|  |  |  |  SCExplicitReturn (13:14)
+|  |  |  |  |  SCCollection (13:15): Array = [1, [2, 3], "four"]
+|  |  |  |  |  |  SCLiteral (13:16) = 1
+|  |  |  |  |  |  SCCollection (13:19): Array = [2, 3]
+|  |  |  |  |  |  |  SCLiteral (13:20) = 2
+|  |  |  |  |  |  |  SCLiteral (13:23) = 3
+|  |  |  |  |  |  SCLiteral (13:27) = "four"
+|  |  SCMethod (15:5): expression_list, version 3.16: expression_list { ^("text") } -> "text"
+|  |  |  SCBody (15:23)
+|  |  |  |  SCExplicitReturn (15:23)
+|  |  |  |  |  SCLiteral (15:25) = "text"
+|  |  SCMethod (17:5): event, version 3.16: event { ^(a: [1]) } -> (a: [1])
+|  |  |  SCBody (17:13)
+|  |  |  |  SCExplicitReturn (17:13)
+|  |  |  |  |  SCCollection (17:14): Event = (a: [1])
+|  |  |  |  |  |  SCLiteral (17:15) = \a
+|  |  |  |  |  |  SCCollection (17:18): Array = [1]
+|  |  |  |  |  |  |  SCLiteral (17:19) = 1
+|  |  SCMethod (19:5): immutable, version 3.16: immutable { ^1 + 2 } -> 3
+|  |  |  SCBody (19:17)
+|  |  |  |  SCExplicitReturn (19:17)
+|  |  |  |  |  SCMessage (19:18): + = 3
+|  |  |  |  |  |  SCLiteral (19:18) = 1
+|  |  |  |  |  |  SCPositionalArgs (19:18)
+|  |  |  |  |  |  |  SCLiteral (19:22) = 2
+
+
+
+LIR DUMP 
+
+
+LirConstants
+|  function 0 (7:5): method literal_string
+|  |  body 0
+|  |  |  PushConstant "text"
+|  |  |  Return
+|  function 1 (9:5): method literal_array
+|  |  body 0
+|  |  |  PushConstant [1, 2]
+|  |  |  Return
+|  function 2 (11:5): method flat
+|  |  body 0
+|  |  |  PushConstant [1, 2]
+|  |  |  Send copy (positional 0, implicit)
+|  |  |  Return
+|  function 3 (13:5): method nested
+|  |  body 0
+|  |  |  PushConstant [1, [2, 3], "four"]
+|  |  |  Send copy (positional 0, implicit)
+|  |  |  Dup
+|  |  |  PushInteger 1
+|  |  |  PushConstant [2, 3]
+|  |  |  Send copy (positional 0, implicit)
+|  |  |  Send put (positional 2, implicit)
+|  |  |  Drop
+|  |  |  Dup
+|  |  |  PushInteger 2
+|  |  |  PushConstant "four"
+|  |  |  Send copy (positional 0, implicit)
+|  |  |  Send put (positional 2, implicit)
+|  |  |  Drop
+|  |  |  Return
+|  function 4 (15:5): method expression_list
+|  |  body 0
+|  |  |  PushConstant "text"
+|  |  |  Return
+|  function 5 (17:5): method event
+|  |  body 0
+|  |  |  PushConstant (a: [1])
+|  |  |  Send copy (positional 0, implicit)
+|  |  |  Dup
+|  |  |  PushConstant \a
+|  |  |  PushConstant [1]
+|  |  |  Send copy (positional 0, implicit)
+|  |  |  Send put (positional 2, implicit)
+|  |  |  Drop
+|  |  |  Return
+|  function 6 (19:5): method immutable
+|  |  body 0
+|  |  |  PushConstant 3
+|  |  |  Return
+Successfully compiled 16 classes.

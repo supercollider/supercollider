@@ -1,54 +1,54 @@
 Signal[float] : FloatArray {
 
-	*sineFill { arg size, amplitudes, phases;
+	*sineFill { |size, amplitudes, phases|
 		^Signal.newClear(size).sineFill(amplitudes, phases).normalize
 	}
-	*chebyFill { arg size, amplitudes, normalize=true, zeroOffset=false;
-		^Signal.newClear(size).chebyFill(amplitudes, normalize, zeroOffset);
+	*chebyFill { |size, amplitudes, normalize = true, zeroOffset = false|
+		^Signal.newClear(size).chebyFill(amplitudes, normalize, zeroOffset)
 	}
-	*hammingWindow_old { arg size, pad=0;
-		if (pad == 0, {
-			^this.newClear(size).fill(0.5).addSine(1, 0.39, -0.5pi);
-		},{
-			^this.newClear(size-pad).fill(0.5).addSine(1, 0.39, -0.5pi) ++ this.newClear(pad);
-		});
+	*hammingWindow_old { |size, pad = 0|
+		if(pad == 0) {
+			^this.newClear(size).fill(0.5).addSine(1, 0.39, -0.5pi)
+		} {
+			^this.newClear(size - pad).fill(0.5).addSine(1, 0.39, -0.5pi) ++ this.newClear(pad)
+		}
 	}
-	*hammingWindow { arg size, pad=0;
-		if (pad == 0, {
-			^this.newClear(size).fill(0.53836).addSine(1, 0.46164, -0.5pi);
-		},{
-			^this.newClear(size-pad).fill(0.53836).addSine(1, 0.46164, -0.5pi) ++ this.newClear(pad);
-		});
+	*hammingWindow { |size, pad = 0|
+		if(pad == 0) {
+			^this.newClear(size).fill(0.53836).addSine(1, 0.46164, -0.5pi)
+		} {
+			^this.newClear(size - pad).fill(0.53836).addSine(1, 0.46164, -0.5pi) ++ this.newClear(pad)
+		}
 	}
-	*hanningWindow { arg size, pad=0;
-		if (pad == 0, {
-			^this.newClear(size).fill(0.5).addSine(1, 0.5, -0.5pi);
-		},{
-			^this.newClear(size-pad).fill(0.5).addSine(1, 0.5, -0.5pi) ++ this.newClear(pad);
-		});
+	*hanningWindow { |size, pad = 0|
+		if(pad == 0) {
+			^this.newClear(size).fill(0.5).addSine(1, 0.5, -0.5pi)
+		} {
+			^this.newClear(size - pad).fill(0.5).addSine(1, 0.5, -0.5pi) ++ this.newClear(pad)
+		}
 	}
-	*welchWindow { arg size, pad=0;
-		if (pad == 0, {
-			^this.newClear(size).addSine(0.5, 1, 0);
-		},{
-			^this.newClear(size-pad).addSine(0.5, 1, 0) ++ this.newClear(pad);
-		});
+	*welchWindow { |size, pad = 0|
+		if(pad == 0) {
+			^this.newClear(size).addSine(0.5, 1, 0)
+		} {
+			^this.newClear(size - pad).addSine(0.5, 1, 0) ++ this.newClear(pad)
+		}
 	}
-	*rectWindow { arg size, pad=0;
-		if (pad == 0, {
-			^this.newClear(size).fill(1.0);
-		},{
-			^this.newClear(size-pad).fill(1.0) ++ this.newClear(pad);
-		});
+	*rectWindow { |size, pad = 0|
+		if(pad == 0) {
+			^this.newClear(size).fill(1.0)
+		} {
+			^this.newClear(size - pad).fill(1.0) ++ this.newClear(pad)
+		}
 	}
-	*readNew { arg file;
-		^file.readAllSignal;
+	*readNew { |file|
+		^file.readAllSignal
 	}
 
 	// operations
-	fill { arg val; _SignalFill ^this.primitiveFailed }
-	scale { arg scale; _SignalScale ^this.primitiveFailed }
-	offset { arg offset; _SignalOffset ^this.primitiveFailed }
+	fill { |val| _SignalFill ^this.primitiveFailed }
+	scale { |scale| _SignalScale ^this.primitiveFailed }
+	offset { |offset| _SignalOffset ^this.primitiveFailed }
 
 	asWavetable {
 		// Interpolating oscillators require wavetables in a special format.
@@ -64,17 +64,17 @@ Signal[float] : FloatArray {
 		//because Buffer's add_wchebyshev calculates N/2+1 values whilst
 		//Signal's _SignalAddChebyshev calculates N/2!
 
-		var newsig = Signal.newClear((this.size-1)*2);
+		var newsig = Signal.newClear((this.size - 1) * 2);
 		var next, cur;
 
-		cur= this[0];
-		(this.size-1).do{|i|
-		var index= 2*i;
-		next= this[i+1];
+		cur = this[0];
+		(this.size - 1).do { |i|
+			var index = 2 * i;
+			next = this[i + 1];
 
-		newsig[index]= 2*cur -next;
-		newsig[index+1]= next-cur;
-		cur=next;
+			newsig[index] = 2 * cur - next;
+			newsig[index + 1] = next - cur;
+			cur = next
 
 		};
 
@@ -83,7 +83,7 @@ Signal[float] : FloatArray {
 
 	peak { _SignalPeak; ^this.primitiveFailed }
 
-	normalize { arg beginSamp=0, endSamp;
+	normalize { |beginSamp = 0, endSamp|
 		_SignalNormalize;
 		^this.primitiveFailed
 	}
@@ -92,131 +92,131 @@ Signal[float] : FloatArray {
 		^this.primitiveFailed
 	}
 
-	invert { arg beginSamp=0, endSamp;
+	invert { |beginSamp = 0, endSamp|
 		_SignalInvert;
 		^this.primitiveFailed
 	}
-	reverse { arg beginSamp=0, endSamp;
+	reverse { |beginSamp = 0, endSamp|
 		_SignalReverse;
 		^this.primitiveFailed
 	}
-	fade { arg beginSamp=0, endSamp, beginLevel=0.0, endLevel=1.0;
+	fade { |beginSamp = 0, endSamp, beginLevel = 0.0, endLevel = 1.0|
 		_SignalFade;
 		^this.primitiveFailed
 	}
-	rotate { arg n=1;
+	rotate { |n = 1|
 		_SignalRotate
 		^this.primitiveFailed
 	}
 
-	zeroPad { arg minSize;
+	zeroPad { |minSize|
 		var size = max(minSize ? 0, this.size).nextPowerOfTwo;
-		^this ++ Signal.newClear(size - this.size);
+		^this ++ Signal.newClear(size - this.size)
 	}
 
 	integral { _SignalIntegral; ^this.primitiveFailed }
-	overDub { arg aSignal, index=0;
+	overDub { |aSignal, index = 0|
 		_SignalOverDub
 		// add a signal to myself starting at the index
 		// if the other signal is too long only the first part is overdubbed
 		^this.primitiveFailed
 	}
-	overWrite { arg aSignal, index=0;
+	overWrite { |aSignal, index = 0|
 		_SignalOverWrite
 		// write a signal to myself starting at the index
 		// if the other signal is too long only the first part is overwritten
 		^this.primitiveFailed
 	}
 
-	play { arg loop=false, mul=0.2, numChannels=1, server;
+	play { |loop = false, mul = 0.2, numChannels = 1, server|
 		var buf;
-		buf = Buffer.sendCollection(server ? Server.default, this, numChannels, -1, { buf.play(loop, mul); });
+		buf = Buffer.sendCollection(server ? Server.default, this, numChannels, -1, { buf.play(loop, mul) });
 		^buf
 	}
 
-	waveFill { arg function, start = 0.0, end = 1.0;
+	waveFill { |function, start = 0.0, end = 1.0|
 		var i = 0, step, size, val, x;
 
 		// evaluate a function for every sample over the interval from
 		// start to end.
 		size = this.size;
-		if (size <= 0, { ^this });
+		if(size <= 0) { ^this };
 
 		x = start;
 		step = (end - start) / size;
-		while ({ i < size }, {
+		while { i < size } {
 			val = function.value(x, this.at(i), i);
 			this.put(i, val);
 			x = x + step;
-			i = i + 1;
-		});
+			i = i + 1
+		};
 		^this
 	}
-	addSine { arg harmonicNumber = 1, amplitude = 1.0, phase = 0.0;
+	addSine { |harmonicNumber = 1, amplitude = 1.0, phase = 0.0|
 		_SignalAddHarmonic
 		^this.primitiveFailed
 	}
-	sineFill { arg amplitudes, phases;
+	sineFill { |amplitudes, phases|
 		this.fill(0.0);
-		if (phases.isNil, { phases = #[0]; });
-		amplitudes.do({ arg amp, i; this.addSine(i+1, amp, phases @@ i) });
+		if(phases.isNil) { phases = #[0] };
+		amplitudes.do { |amp, i| this.addSine(i + 1, amp, phases @@ i) }
 	}
-	sineFill2 { arg list;
+	sineFill2 { |list|
 		this.fill(0.0);
-		list.do({ arg item, i;
+		list.do { |item, i|
 			var harm, amp, phase;
 			# harm, amp, phase = item;
-			this.addSine(harm, amp ? 1.0, phase ? 0.0);
-		});
+			this.addSine(harm, amp ? 1.0, phase ? 0.0)
+		}
 	}
 
-	addChebyshev { arg harmonicNumber = 1, amplitude = 1.0;
+	addChebyshev { |harmonicNumber = 1, amplitude = 1.0|
 		_SignalAddChebyshev
 		^this.primitiveFailed
 	}
-	chebyFill { arg amplitudes, normalize=true, zeroOffset=false;
+	chebyFill { |amplitudes, normalize = true, zeroOffset = false|
 		this.fill(0.0);
-		amplitudes.do({ arg amp, i;
-			this.addChebyshev(i+1, amp);
-			if (zeroOffset) {
-				if(i%4==1,{this.offset(amp)});
-				if(i%4==3,{this.offset(-1*amp)});
+		amplitudes.do { |amp, i|
+			this.addChebyshev(i + 1, amp);
+			if(zeroOffset) {
+				if(i % 4 == 1) { this.offset(amp) };
+				if(i % 4 == 3) { this.offset(-1 * amp) }
 			} //corrections for JMC DC offsets, as per Buffer:cheby
-		});
+		};
 
-		if (normalize) {
-			if (zeroOffset) {
+		if(normalize) {
+			if(zeroOffset) {
 				this.normalizeTransfer
 			} {
 				this.normalize
 			}
-		};
+		}
 	}
 
 	//old version
-	chebyFill_old { arg amplitudes;
+	chebyFill_old { |amplitudes|
 		this.fill(0.0);
-		amplitudes.do({ arg amp, i; this.addChebyshev(i+1, amp) });
+		amplitudes.do { |amp, i| this.addChebyshev(i + 1, amp) };
 		this.normalizeTransfer
 	}
 
 
-	*fftCosTable { arg fftsize;
-		^this.newClear((fftsize/4) + 1).fftCosTable
+	*fftCosTable { |fftsize|
+		^this.newClear((fftsize / 4) + 1).fftCosTable
 	}
 	fftCosTable {
 		var harm;
 		harm = this.size / ((this.size - 1) * 4);
-		this.addSine(harm, 1, 0.5pi);
+		this.addSine(harm, 1, 0.5pi)
 	}
 
-	fft { arg imag, cosTable;
+	fft { |imag, cosTable|
 		// argCosTable must contain 1/4 cycle of a cosine (use fftCosTable)
 		// fftsize is the next greater power of two than the receiver's length
 		_Signal_FFT
 		^this.primitiveFailed
 	}
-	ifft { arg imag, cosTable;
+	ifft { |imag, cosTable|
 		// argCosTable must contain 1/4 cycle of a cosine (use fftCosTable)
 		// fftsize is the next greater power of two than the receiver's length
 		_Signal_IFFT
@@ -262,42 +262,42 @@ Signal[float] : FloatArray {
 	scurve { _SCurve; ^this.primitiveFailed }
 	ramp { _Ramp; ^this.primitiveFailed }
 
-	+ { arg aNumber, adverb; _Add; ^aNumber.performBinaryOpOnSignal('+', this) }
-	- { arg aNumber, adverb; _Sub; ^aNumber.performBinaryOpOnSignal('-', this) }
-	* { arg aNumber, adverb; _Mul; ^aNumber.performBinaryOpOnSignal('*', this) }
-	/ { arg aNumber, adverb; _FDiv; ^aNumber.performBinaryOpOnSignal('/', this) }
-	mod { arg aNumber, adverb; _Mod; ^aNumber.performBinaryOpOnSignal('mod', this) }
-	modSeaside { arg aNumber, adverb; _Mod; ^aNumber.performBinaryOpOnSignal('mod', this) }
-	div { arg aNumber, adverb; _IDiv; ^aNumber.performBinaryOpOnSignal('div', this) }
-	pow { arg aNumber, adverb; _Pow; ^aNumber.performBinaryOpOnSignal('pow', this) }
-	min { arg aNumber, adverb; _Min; ^aNumber.performBinaryOpOnSignal('min', this) }
-	max { arg aNumber, adverb; _Max; ^aNumber.performBinaryOpOnSignal('max', this) }
-	ring1 { arg aNumber, adverb; _Ring1; ^aNumber.performBinaryOpOnSignal('ring1', this) }
-	ring2 { arg aNumber, adverb; _Ring2; ^aNumber.performBinaryOpOnSignal('ring2', this) }
-	ring3 { arg aNumber, adverb; _Ring3; ^aNumber.performBinaryOpOnSignal('ring3', this) }
-	ring4 { arg aNumber, adverb; _Ring4; ^aNumber.performBinaryOpOnSignal('ring4', this) }
-	difsqr { arg aNumber, adverb; _DifSqr; ^aNumber.performBinaryOpOnSignal('difsqr', this) }
-	sumsqr { arg aNumber, adverb; _SumSqr; ^aNumber.performBinaryOpOnSignal('sumsqr', this) }
-	sqrsum { arg aNumber, adverb; _SqrSum; ^aNumber.performBinaryOpOnSignal('sqrsum', this) }
-	sqrdif { arg aNumber, adverb; _SqrDif; ^aNumber.performBinaryOpOnSignal('sqrdif', this) }
-	absdif { arg aNumber, adverb; _AbsDif; ^aNumber.performBinaryOpOnSignal('absdif', this) }
-	thresh { arg aNumber, adverb; _Thresh; ^aNumber.performBinaryOpOnSignal('thresh', this) }
-	amclip { arg aNumber, adverb; _AMClip; ^aNumber.performBinaryOpOnSignal('amclip', this) }
-	scaleneg { arg aNumber, adverb; _ScaleNeg; ^aNumber.performBinaryOpOnSignal('scaleneg', this) }
-	clip2 { arg aNumber=1, adverb; _Clip2; ^aNumber.performBinaryOpOnSignal('clip2', this) }
-	fold2 { arg aNumber=1, adverb; _Fold2; ^aNumber.performBinaryOpOnSignal('fold2', this) }
-	wrap2 { arg aNumber=1, adverb; _Wrap2; ^aNumber.performBinaryOpOnSignal('wrap2', this) }
-	excess { arg aNumber=1, adverb; _Excess; ^aNumber.performBinaryOpOnSignal('excess', this) }
-	firstArg { arg aNumber, adverb; _FirstArg; ^aNumber.performBinaryOpOnSignal('firstArg', this) }
+	+ { |aNumber, adverb| _Add; ^aNumber.performBinaryOpOnSignal('+', this) }
+	- { |aNumber, adverb| _Sub; ^aNumber.performBinaryOpOnSignal('-', this) }
+	* { |aNumber, adverb| _Mul; ^aNumber.performBinaryOpOnSignal('*', this) }
+	/ { |aNumber, adverb| _FDiv; ^aNumber.performBinaryOpOnSignal('/', this) }
+	mod { |aNumber, adverb| _Mod; ^aNumber.performBinaryOpOnSignal('mod', this) }
+	modSeaside { |aNumber, adverb| _Mod; ^aNumber.performBinaryOpOnSignal('mod', this) }
+	div { |aNumber, adverb| _IDiv; ^aNumber.performBinaryOpOnSignal('div', this) }
+	pow { |aNumber, adverb| _Pow; ^aNumber.performBinaryOpOnSignal('pow', this) }
+	min { |aNumber, adverb| _Min; ^aNumber.performBinaryOpOnSignal('min', this) }
+	max { |aNumber, adverb| _Max; ^aNumber.performBinaryOpOnSignal('max', this) }
+	ring1 { |aNumber, adverb| _Ring1; ^aNumber.performBinaryOpOnSignal('ring1', this) }
+	ring2 { |aNumber, adverb| _Ring2; ^aNumber.performBinaryOpOnSignal('ring2', this) }
+	ring3 { |aNumber, adverb| _Ring3; ^aNumber.performBinaryOpOnSignal('ring3', this) }
+	ring4 { |aNumber, adverb| _Ring4; ^aNumber.performBinaryOpOnSignal('ring4', this) }
+	difsqr { |aNumber, adverb| _DifSqr; ^aNumber.performBinaryOpOnSignal('difsqr', this) }
+	sumsqr { |aNumber, adverb| _SumSqr; ^aNumber.performBinaryOpOnSignal('sumsqr', this) }
+	sqrsum { |aNumber, adverb| _SqrSum; ^aNumber.performBinaryOpOnSignal('sqrsum', this) }
+	sqrdif { |aNumber, adverb| _SqrDif; ^aNumber.performBinaryOpOnSignal('sqrdif', this) }
+	absdif { |aNumber, adverb| _AbsDif; ^aNumber.performBinaryOpOnSignal('absdif', this) }
+	thresh { |aNumber, adverb| _Thresh; ^aNumber.performBinaryOpOnSignal('thresh', this) }
+	amclip { |aNumber, adverb| _AMClip; ^aNumber.performBinaryOpOnSignal('amclip', this) }
+	scaleneg { |aNumber, adverb| _ScaleNeg; ^aNumber.performBinaryOpOnSignal('scaleneg', this) }
+	clip2 { |aNumber = 1, adverb| _Clip2; ^aNumber.performBinaryOpOnSignal('clip2', this) }
+	fold2 { |aNumber = 1, adverb| _Fold2; ^aNumber.performBinaryOpOnSignal('fold2', this) }
+	wrap2 { |aNumber = 1, adverb| _Wrap2; ^aNumber.performBinaryOpOnSignal('wrap2', this) }
+	excess { |aNumber = 1, adverb| _Excess; ^aNumber.performBinaryOpOnSignal('excess', this) }
+	firstArg { |aNumber, adverb| _FirstArg; ^aNumber.performBinaryOpOnSignal('firstArg', this) }
 
-	== { arg aNumber, adverb; _EQ; ^aNumber.performBinaryOpOnSignal('==', this) }
-	!= { arg aNumber, adverb; _NE; ^aNumber.performBinaryOpOnSignal('!=', this) }
+	== { |aNumber, adverb| _EQ; ^aNumber.performBinaryOpOnSignal('==', this) }
+	!= { |aNumber, adverb| _NE; ^aNumber.performBinaryOpOnSignal('!=', this) }
 
-	clip { arg lo, hi; _ClipSignal; ^this.primitiveFailed }
-	wrap { arg lo, hi; _WrapSignal; ^this.primitiveFailed }
-	fold { arg lo, hi; _FoldSignal; ^this.primitiveFailed }
-	blend { arg that, blendFrac = 0.5;
-		^this + (blendFrac * (that - this));
+	clip { |lo, hi| _ClipSignal; ^this.primitiveFailed }
+	wrap { |lo, hi| _WrapSignal; ^this.primitiveFailed }
+	fold { |lo, hi| _FoldSignal; ^this.primitiveFailed }
+	blend { |that, blendFrac = 0.5|
+		^this + (blendFrac * (that - this))
 	}
 
 	asInteger { _AsInteger; ^this.primitiveFailed }
@@ -310,8 +310,8 @@ Signal[float] : FloatArray {
 	imag { ^0.0 }
 
 	//PRIVATE:
-	performBinaryOpOnSignal { arg aSelector, aNumber, adverb;
-		BinaryOpFailureError(this, aSelector, [aNumber, adverb]).throw;
+	performBinaryOpOnSignal { |aSelector, aNumber, adverb|
+		BinaryOpFailureError(this, aSelector, [aNumber, adverb]).throw
 	}
 }
 
@@ -324,21 +324,21 @@ Wavetable[float] : FloatArray {
 		^this.shouldNotImplement(thisMethod)
 	}
 
-	*sineFill { arg size, amplitudes, phases;
+	*sineFill { |size, amplitudes, phases|
 		^Signal.sineFill(size, amplitudes, phases).asWavetable
 	}
 
 	//size must be N/2+1 for N power of two; N is eventual size of wavetable
-	*chebyFill { arg size, amplitudes, normalize=true, zeroOffset=false;
+	*chebyFill { |size, amplitudes, normalize = true, zeroOffset = false|
 
-		^Signal.chebyFill(size, amplitudes, normalize, zeroOffset).asWavetableNoWrap; //asWavetable causes wrap here, problem
+		^Signal.chebyFill(size, amplitudes, normalize, zeroOffset).asWavetableNoWrap //asWavetable causes wrap here, problem
 	}
 
-	*chebyFill_old { arg size, amplitudes;
+	*chebyFill_old { |size, amplitudes|
 
 		//this.deprecated(thisMethod, Buffer.findRespondingMethodFor(\cheby));
 
-		^Signal.chebyFill(size, amplitudes).asWavetable; //asWavetable causes wrap here, problem
+		^Signal.chebyFill(size, amplitudes).asWavetable //asWavetable causes wrap here, problem
 	}
 
 	asSignal {
@@ -346,20 +346,20 @@ Wavetable[float] : FloatArray {
 		^this.primitiveFailed
 	}
 
-	blend { arg anotherWavetable, blendFrac=0.5;
-		^this.asSignal.blend(anotherWavetable.asSignal, blendFrac).asWavetable;
+	blend { |anotherWavetable, blendFrac = 0.5|
+		^this.asSignal.blend(anotherWavetable.asSignal, blendFrac).asWavetable
 	}
 
-	*readNew { arg file;
-		^file.readAllSignal.asWavetable;
+	*readNew { |file|
+		^file.readAllSignal.asWavetable
 	}
-	write { arg path;
+	write { |path|
 		var file;
 		file = File.new(path, "wb");
-		if (file.notNil, {
+		if(file.notNil) {
 			file.write(this.asSignal);
-			file.close;
-		});
+			file.close
+		}
 	}
 	//libMenuAction { arg names;
 	//	this.plot(names.last);

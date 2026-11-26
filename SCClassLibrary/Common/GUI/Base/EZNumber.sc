@@ -1,20 +1,20 @@
 EZNumber : EZGui{
 	var <numberView, <unitView, <>controlSpec,
-		numSize,numberWidth,unitWidth, gap2;
+		numSize, numberWidth, unitWidth, gap2;
 	var <>round = 0.001;
 
-	*new { arg parent, bounds, label, controlSpec, action, initVal,
-			initAction=false, labelWidth=60, numberWidth,
-			unitWidth=0, labelHeight=20,  layout=\horz, gap, margin;
+	*new { |parent, bounds, label, controlSpec, action, initVal,
+			initAction = false, labelWidth = 60, numberWidth,
+			unitWidth = 0, labelHeight = 20, layout = \horz, gap, margin|
 
 		^super.new.init(parent, bounds, label, controlSpec, action,
 			initVal, initAction, labelWidth, numberWidth,
-				unitWidth, labelHeight, layout, gap, margin)
+			unitWidth, labelHeight, layout, gap, margin)
 	}
 
-	init { arg parentView, bounds, label, argControlSpec, argAction, initVal,
-			initAction, labelWidth, argNumberWidth,argUnitWidth,
-			labelHeight, argLayout, argGap, argMargin;
+	init { |parentView, bounds, label, argControlSpec, argAction, initVal,
+			initAction, labelWidth, argNumberWidth, argUnitWidth,
+			labelHeight, argLayout, argGap, argMargin|
 
 		var labelBounds, numBounds, unitBounds;
 		var numberStep;
@@ -25,187 +25,187 @@ EZNumber : EZGui{
 
 		unitWidth = argUnitWidth;
 		numberWidth = argNumberWidth;
-		layout=argLayout;
+		layout = argLayout;
 
-		bounds.isNil.if {bounds= 160@20};
+		if(bounds.isNil) { bounds = 160 @ 20 };
 
 		// if no parent, then pop up window
-		# view,bounds = this.prMakeView( parentView,bounds);
+		# view, bounds = this.prMakeView(parentView, bounds);
 
-		numberWidth.isNil.if{numberWidth=45}{
-			labelWidth=bounds.width-unitWidth-numberWidth; //override the labelWidth
-			if (layout==\line2){unitWidth=bounds.width-numberWidth}; //override the unitWidth
+		if(numberWidth.isNil) { numberWidth = 45 } {
+			labelWidth = bounds.width - unitWidth - numberWidth; //override the labelWidth
+			if(layout == \line2) { unitWidth = bounds.width - numberWidth } //override the unitWidth
 		};
-		labelSize=labelWidth@labelHeight;
-		numSize = numberWidth@labelHeight;
+		labelSize = labelWidth @ labelHeight;
+		numSize = numberWidth @ labelHeight;
 
 		// calcualate bounds
-		# labelBounds,numBounds, unitBounds
-				= this.prSubViewBounds(innerBounds, label.notNil, unitWidth>0);
+		# labelBounds, numBounds, unitBounds
+			= this.prSubViewBounds(innerBounds, label.notNil, unitWidth > 0);
 
 		// insert the views
 
-		label.notNil.if{ //only add a label if desired
-				labelView = StaticText.new(view, labelBounds);
-			if (layout==\line2)
-				{labelView.align = \left;}
-				{labelView.align = \right;};
-			labelView.string = label;
+		if(label.notNil) { //only add a label if desired
+			labelView = StaticText.new(view, labelBounds);
+			if(layout == \line2)
+				{ labelView.align = \left }
+				{ labelView.align = \right };
+			labelView.string = label
 		};
 
-		(unitWidth>0).if{ //only add a unitLabel if desired
-			unitView = StaticText.new(view, unitBounds);
+		if(unitWidth > 0) { //only add a unitLabel if desired
+			unitView = StaticText.new(view, unitBounds)
 		};
 
 		// set view parameters and actions
 		controlSpec = argControlSpec.asSpec;	// let default to nil.asSpec!
-		(unitWidth>0).if{ unitView.string = " "++controlSpec.units.asString};
+		if(unitWidth > 0) { unitView.string = " " ++ controlSpec.units.asString };
 		initVal = initVal ? controlSpec.default;
 		action = argAction;
 
 		numberView = NumberBox.new(view, numBounds).resize_(2);
 
 		numberStep = controlSpec.step;
-		if (numberStep == 0) {
-			numberStep = controlSpec.guessNumberStep;
-		}{
+		if(numberStep == 0) {
+			numberStep = controlSpec.guessNumberStep
+		} {
 			// controlSpec wants a step, so zooming in with alt is disabled.
 			numberView.alt_scale = 1.0
 		};
 
 		numberView.step = numberStep;
 		numberView.scroll_step = numberStep;
-		numberView.scroll=true;
+		numberView.scroll = true;
 
 		numberView.action = {
-			this.valueActionIfChanged_(numberView.value);
+			this.valueActionIfChanged_(numberView.value)
 		};
 
-		if (initAction) {
-			this.valueAction = initVal;
-		}{
-			this.value = initVal;
+		if(initAction) {
+			this.valueAction = initVal
+		} {
+			this.value = initVal
 		};
 
-		this.prSetViewParams;
+		this.prSetViewParams
 	}
 
-	value_{ arg val;
+	value_{ |val|
 		value = controlSpec.constrain(val);
-		numberView.value = value.round(round);
+		numberView.value = value.round(round)
 	}
-	valueAction_ { arg val;
+	valueAction_ { |val|
 		this.value_(val);
-		this.doAction;
+		this.doAction
 	}
 	doAction { action.value(this) }
 
-	set { arg label, spec, argAction, initVal, initAction=false;
-		labelView.notNil.if { labelView.string = label.asString };
-		spec.notNil.if { controlSpec = spec.asSpec };
-		argAction.notNil.if { action = argAction };
+	set { |label, spec, argAction, initVal, initAction = false|
+		if(labelView.notNil) { labelView.string = label.asString };
+		if(spec.notNil) { controlSpec = spec.asSpec };
+		if(argAction.notNil) { action = argAction };
 		initVal = initVal ? value ? controlSpec.default;
-		if (initAction) {
-			this.valueAction_(initVal);
-		}{
-			this.value_(initVal);
-		};
+		if(initAction) {
+			this.valueAction_(initVal)
+		} {
+			this.value_(initVal)
+		}
 	}
 
-	setColors{ arg stringBackground, stringColor,numBackground,numStringColor,
-			numNormalColor, numTypingColor, background ;
+	setColors{ |stringBackground, stringColor, numBackground, numStringColor,
+			numNormalColor, numTypingColor, background|
 
-		stringBackground.notNil.if{
-			labelView.notNil.if{labelView.background_(stringBackground)};
-			unitView.notNil.if{unitView.background_(stringBackground)};};
-		stringColor.notNil.if{
-			labelView.notNil.if{labelView.stringColor_(stringColor)};
-			unitView.notNil.if{unitView.stringColor_(stringColor)};};
-		numBackground.notNil.if{
-			numberView.background_(numBackground);	};
-		numNormalColor.notNil.if{
-			numberView.normalColor_(numNormalColor);};
+		if(stringBackground.notNil) {
+			if(labelView.notNil) { labelView.background_(stringBackground) };
+			if(unitView.notNil) { unitView.background_(stringBackground) } };
+		if(stringColor.notNil) {
+			if(labelView.notNil) { labelView.stringColor_(stringColor) };
+			if(unitView.notNil) { unitView.stringColor_(stringColor) } };
+		if(numBackground.notNil) {
+			numberView.background_(numBackground) };
+		if(numNormalColor.notNil) {
+			numberView.normalColor_(numNormalColor) };
 
-		numTypingColor.notNil.if{
-			numberView.typingColor_(numTypingColor);};
-		numStringColor.notNil.if{
-			numberView.stringColor_(numStringColor);};
-		background.notNil.if{
-			view.background=background;};
+		if(numTypingColor.notNil) {
+			numberView.typingColor_(numTypingColor) };
+		if(numStringColor.notNil) {
+			numberView.stringColor_(numStringColor) };
+		if(background.notNil) {
+			view.background = background }
 	}
 
 
-	font_{ arg font;
+	font_{ |font|
 
-			labelView.notNil.if{labelView.font=font};
-			unitView.notNil.if{unitView.font=font};
-			numberView.font=font;
+		if(labelView.notNil) { labelView.font = font };
+		if(unitView.notNil) { unitView.font = font };
+		numberView.font = font
 	}
 
 	/////// Private methods /////////
 
 	prSetViewParams{ // sets resize and alignment for different layouts
 
-		switch (layout,
-		\line2, {
-			labelView.notNil.if{labelView.resize_(2)};
-			unitView.notNil.if{unitView.resize_(6)};
-			numberView.resize_(5);
-		},
-		\horz, {
-			labelView.notNil.if{
-				labelView.resize_(4).align_(\right);
-				numberView.resize_(5);
-				unitView.notNil.if{unitView.resize_(6)};
-			}{
-				unitView.notNil.if{	unitView.resize_(6)};
-				numberView.resize_(5);
+		switch(layout)
+			{ \line2 } {
+				if(labelView.notNil) { labelView.resize_(2) };
+				if(unitView.notNil) { unitView.resize_(6) };
+				numberView.resize_(5)
+			}
+			{ \horz } {
+				if(labelView.notNil) {
+					labelView.resize_(4).align_(\right);
+					numberView.resize_(5);
+					if(unitView.notNil) { unitView.resize_(6) }
+				} {
+					if(unitView.notNil) { unitView.resize_(6) };
+					numberView.resize_(5)
+				}
 			};
-		});
-			popUp.if{view.resize_(2)};
+		if(popUp) { view.resize_(2) }
 	}
 
-	prSubViewBounds{arg rect, hasLabel, hasUnit;
-		var numBounds,labelBounds,sliderBounds;
+	prSubViewBounds{ |rect, hasLabel, hasUnit|
+		var numBounds, labelBounds, sliderBounds;
 		var unitBounds, gap1, gap2, numY;
 		gap1 = gap.copy;
 		gap2 = gap.copy;
-		hasLabel.not.if{ gap1 = 0@0; labelSize=0@0};
-		hasUnit.not.if{gap2 = 0@0};
+		if(hasLabel.not) { gap1 = 0 @ 0; labelSize = 0 @ 0 };
+		if(hasUnit.not) { gap2 = 0 @ 0 };
 
-		switch (layout,
-			\line2, {
+		switch(layout)
+			{ \line2 } {
 
 				labelBounds = Rect( // fill the line
-						0,
-						0,
-						rect.width,
-						labelSize.y;
-						);
-
-				numSize.y=numSize.y-gap1.y;
-				numY=labelBounds.height+gap1.y;
-				unitBounds = Rect( rect.width - unitWidth, // //adjust to fit
-					numY, unitWidth, rect.height-labelSize.y-gap1.y);
-				numBounds = Rect(0, numY,
-					rect.width-unitWidth-gap2.x, rect.height-labelSize.y-gap1.y); // to right
-
-				},
-
-			\horz, {
-				labelSize.y=rect.height;
-				labelBounds = (labelSize.x@labelSize.y).asRect; // to left
-				unitBounds = (unitWidth@labelSize.y).asRect.left_(rect.width-unitWidth); // to right
-				numBounds  =  Rect( //adjust to fit
-					labelBounds.width+gap1.x,
 					0,
-					rect.width - labelBounds.width - unitBounds.width - gap1.x - gap2.x ,
+					0,
+					rect.width,
+					labelSize.y;
+				);
+
+				numSize.y = numSize.y - gap1.y;
+				numY = labelBounds.height + gap1.y;
+				unitBounds = Rect(rect.width - unitWidth, // //adjust to fit
+					numY, unitWidth, rect.height - labelSize.y - gap1.y);
+				numBounds = Rect(0, numY,
+					rect.width - unitWidth - gap2.x, rect.height - labelSize.y - gap1.y) // to right
+
+			}
+
+			{ \horz } {
+				labelSize.y = rect.height;
+				labelBounds = (labelSize.x @ labelSize.y).asRect; // to left
+				unitBounds = (unitWidth @ labelSize.y).asRect.left_(rect.width - unitWidth); // to right
+				numBounds = Rect( //adjust to fit
+					labelBounds.width + gap1.x,
+					0,
+					rect.width - labelBounds.width - unitBounds.width - gap1.x - gap2.x,
 					labelBounds.height
-					);
-		});
+				)
+			};
 
 
-		^[labelBounds, numBounds, unitBounds].collect{arg v; v.moveBy(margin.x,margin.y)}
+		^[labelBounds, numBounds, unitBounds].collect { |v| v.moveBy(margin.x, margin.y) }
 	}
 
 

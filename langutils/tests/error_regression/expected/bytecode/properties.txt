@@ -1,0 +1,154 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): BytecodeProperties316 : Object, version 3.16
+|  SCMemberList (5:1)
+|  SCMethodList (5:1)
+|  |  SCMethod (7:5): captured, version 3.16: captured { var a = 1; ^{ a + 1 } }
+|  |  |  SCBody (7:16)
+|  |  |  |  SCVariableDeclare (7:20): a (captured), prototype
+|  |  |  |  |  SCLiteral (7:24) = 1
+|  |  |  |  SCExplicitReturn (7:27)
+|  |  |  |  |  SCFunction (7:28)
+|  |  |  |  |  |  SCBody (7:28)
+|  |  |  |  |  |  |  SCMessage (7:30): +
+|  |  |  |  |  |  |  |  SCRead (7:30): local a, declared (7:20): a = 1
+|  |  |  |  |  |  |  |  SCPositionalArgs (7:30)
+|  |  |  |  |  |  |  |  |  SCLiteral (7:34) = 1
+|  |  SCMethod (10:5): inHoisted, version 3.16: inHoisted { |b| ^if (b) { var a = b.foo; [a, { b }] } }
+|  |  |  SCArgumentDeclareList (10:18)
+|  |  |  |  SCArgumentDeclare (10:18): b (captured)
+|  |  |  SCBody (10:21)
+|  |  |  |  SCExplicitReturn (10:21)
+|  |  |  |  |  SCMessage (10:22): if
+|  |  |  |  |  |  SCRead (10:26): local b, declared (10:18): b
+|  |  |  |  |  |  SCPositionalArgs (10:22)
+|  |  |  |  |  |  |  SCFunction (10:29)
+|  |  |  |  |  |  |  |  SCBody (10:29)
+|  |  |  |  |  |  |  |  |  SCVariableDeclare (10:35): a, computed
+|  |  |  |  |  |  |  |  |  |  SCMessage (10:39): foo
+|  |  |  |  |  |  |  |  |  |  |  SCRead (10:39): local b, declared (10:18): b
+|  |  |  |  |  |  |  |  |  SCCollection (10:46): Array
+|  |  |  |  |  |  |  |  |  |  SCRead (10:47): local a, declared (10:35): a = b.foo
+|  |  |  |  |  |  |  |  |  |  SCFunction (10:50)
+|  |  |  |  |  |  |  |  |  |  |  SCBody (10:50)
+|  |  |  |  |  |  |  |  |  |  |  |  SCRead (10:52): local b, declared (10:18): b
+|  |  SCMethod (13:5): captureStopsInlining, version 3.16: captureStopsInlining { |b| ^if (b) { var a = b; { a } } }
+|  |  |  SCArgumentDeclareList (13:29)
+|  |  |  |  SCArgumentDeclare (13:29): b (captured)
+|  |  |  SCBody (13:32)
+|  |  |  |  SCExplicitReturn (13:32)
+|  |  |  |  |  SCMessage (13:33): if
+|  |  |  |  |  |  SCRead (13:37): local b, declared (13:29): b
+|  |  |  |  |  |  SCPositionalArgs (13:33)
+|  |  |  |  |  |  |  SCFunction (13:40)
+|  |  |  |  |  |  |  |  SCBody (13:40)
+|  |  |  |  |  |  |  |  |  SCVariableDeclare (13:46): a (captured), computed
+|  |  |  |  |  |  |  |  |  |  SCRead (13:50): local b, declared (13:29): b
+|  |  |  |  |  |  |  |  |  SCFunction (13:53)
+|  |  |  |  |  |  |  |  |  |  SCBody (13:53)
+|  |  |  |  |  |  |  |  |  |  |  SCRead (13:55): local a, declared (13:46): a = b
+|  |  SCMethod (15:5): nonLocalReturn, version 3.16: nonLocalReturn { |b| ^{ if (b) { ^1 }; ^2 } }
+|  |  |  SCArgumentDeclareList (15:23)
+|  |  |  |  SCArgumentDeclare (15:23): b (captured)
+|  |  |  SCBody (15:26)
+|  |  |  |  SCExplicitReturn (15:26)
+|  |  |  |  |  SCFunction (15:27)
+|  |  |  |  |  |  SCBody (15:27)
+|  |  |  |  |  |  |  SCMessage (15:29): if
+|  |  |  |  |  |  |  |  SCRead (15:33): local b, declared (15:23): b
+|  |  |  |  |  |  |  |  SCPositionalArgs (15:29)
+|  |  |  |  |  |  |  |  |  SCFunction (15:36)
+|  |  |  |  |  |  |  |  |  |  SCBody (15:36)
+|  |  |  |  |  |  |  |  |  |  |  SCExplicitReturn (15:38)
+|  |  |  |  |  |  |  |  |  |  |  |  SCLiteral (15:39) = 1
+|  |  |  |  |  |  |  SCExplicitReturn (15:44)
+|  |  |  |  |  |  |  |  SCLiteral (15:45) = 2
+
+
+
+BYTECODE DUMP 
+
+
+BytecodeProperties316
+|  function 0 (7:5): method captured
+|  |  properties: heap context,
+|  |  selectors: function 1,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F3              Return
+|  function 1 (7:28)
+|  |  properties: context,
+|  |  selectors:
+|  |  constants:
+|  |  0    21 01           PushTempVar
+|  |  2    6B              PushOneAndAddOne
+|  |  3    F2              BlockReturn
+|  function 2 (10:5): method inHoisted
+|  |  properties: heap context,
+|  |  selectors: foo, function 3,
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    F9 00 11        JumpIfFalsePushNil
+|  |  4    31              PushTempZeroVar
+|  |  5    A1 00           SendMsg
+|  |  7    80 02           StoreTempVar
+|  |  9    06 19           PushSpecialClass
+|  |  11   65              PushSpecialNumber
+|  |  12   C2 00           SendSpecialMsg
+|  |  14   32              PushTempZeroVar
+|  |  15   C2 08           SendSpecialMsg
+|  |  17   04 01           PushLiteralX
+|  |  19   C2 08           SendSpecialMsg
+|  |  21   F3              Return
+|  function 3 (10:50)
+|  |  properties: context,
+|  |  selectors:
+|  |  constants:
+|  |  0    21 01           PushTempVar
+|  |  2    F2              BlockReturn
+|  function 4 (13:5): method captureStopsInlining
+|  |  properties: heap context,
+|  |  selectors: function 5,
+|  |  constants:
+|  |  0    31              PushTempZeroVar
+|  |  1    04 00           PushLiteralX
+|  |  3    FF              TailCallReturnFromMethod
+|  |  4    C2 0B           SendSpecialMsg
+|  |  6    F3              Return
+|  function 5 (13:40)
+|  |  properties: context, heap context,
+|  |  selectors: function 6,
+|  |  constants:
+|  |  0    21 01           PushTempVar
+|  |  2    80 00           StoreTempVar
+|  |  4    04 00           PushLiteralX
+|  |  6    F2              BlockReturn
+|  function 6 (13:53)
+|  |  properties: context,
+|  |  selectors:
+|  |  constants:
+|  |  0    21 00           PushTempVar
+|  |  2    F2              BlockReturn
+|  function 7 (15:5): method nonLocalReturn
+|  |  properties: heap context,
+|  |  selectors: function 8,
+|  |  constants:
+|  |  0    04 00           PushLiteralX
+|  |  2    F3              Return
+|  function 8 (15:27)
+|  |  properties: context,
+|  |  selectors:
+|  |  constants:
+|  |  0    21 01           PushTempVar
+|  |  2    F9 00 02        JumpIfFalsePushNil
+|  |  5    64              PushSpecialNumber
+|  |  6    F3              Return
+|  |  7    F0              Drop
+|  |  8    65              PushSpecialNumber
+|  |  9    F3              Return
+|  |  10   F2              BlockReturn
+Successfully compiled 16 classes.

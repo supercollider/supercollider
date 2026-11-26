@@ -1,19 +1,19 @@
 ControlName {
 	var <>name, <>index, <>rate, <>defaultValue, <>argNum, <>lag;
 
-	*new { arg name, index, rate, defaultValue, argNum, lag;
+	*new { |name, index, rate, defaultValue, argNum, lag|
 		^super.newCopyArgs(name.asSymbol, index, rate, defaultValue, argNum, lag ? 0.0)
 	}
 
 	numChannels {
-		^defaultValue.asArray.size;
+		^defaultValue.asArray.size
 	}
 
-	printOn { arg stream;
+	printOn { |stream|
 		stream << "ControlName  P " << index.asString;
-		if (name.notNil) { stream << " " << name; };
-		if (rate.notNil) { stream << " " << rate; };
-		if (defaultValue.notNil) { stream << " " << defaultValue; };
+		if(name.notNil) { stream << " " << name };
+		if(rate.notNil) { stream << " " << rate };
+		if(defaultValue.notNil) { stream << " " << defaultValue }
 		//stream << "\n"
 	}
 
@@ -21,8 +21,8 @@ ControlName {
 		^UGen.buildSynthDef.specs[name]
 	}
 
-	spec_{ arg spec;
-		if (spec.notNil) {
+	spec_{ |spec|
+		if(spec.notNil) {
 			spec = spec.asSpec;
 
 			defaultValue ?? {
@@ -31,7 +31,7 @@ ControlName {
 
 			UGen.buildSynthDef.specs[name] !? _.setFrom(spec) ?? {
 				UGen.buildSynthDef.specs[name] = spec
-			};
+			}
 		}
 	}
 
@@ -40,7 +40,7 @@ ControlName {
 Control : MultiOutUGen {
 	var <values;
 
-	*names { arg names;
+	*names { |names|
 		var synthDef, index;
 		synthDef = UGen.buildSynthDef;
 		index = synthDef.controlIndex;
@@ -49,33 +49,33 @@ Control : MultiOutUGen {
 			synthDef.addControlName(
 				ControlName(name, index + i, 'control',
 					nil, synthDef.allControlNames.size)
-			);
-		};
+			)
+		}
 	}
-	*kr { arg values;
+	*kr { |values|
 		^this.multiNewList(['control'] ++ values.asArray)
 	}
-	*ir { arg values;
+	*ir { |values|
 		^this.multiNewList(['scalar'] ++ values.asArray)
 	}
-	init { arg ... argValues;
+	init { |... argValues|
 		var ctlNames, lastControl;
 		values = argValues;
-		if (synthDef.notNil) {
+		if(synthDef.notNil) {
 			specialIndex = synthDef.controls.size;
 			synthDef.controls = synthDef.controls.addAll(values);
 			ctlNames = synthDef.controlNames;
 
-			if (ctlNames.size > 0) {
-					// the current control is always the last added, so:
+			if(ctlNames.size > 0) {
+				// the current control is always the last added, so:
 				lastControl = synthDef.controlNames.last;
 				if(lastControl.defaultValue.isNil) {
-						// only write if not there yet:
-					lastControl.defaultValue_(values.unbubble);
+					// only write if not there yet:
+					lastControl.defaultValue_(values.unbubble)
 				}
 			};
 
-			synthDef.controlIndex = synthDef.controlIndex + values.size;
+			synthDef.controlIndex = synthDef.controlIndex + values.size
 
 		};
 		^this.initOutputs(values.size, rate)
@@ -87,7 +87,7 @@ Control : MultiOutUGen {
 AudioControl : MultiOutUGen {
 	var <values;
 
-	*names { arg names;
+	*names { |names|
 		var synthDef, index;
 		synthDef = UGen.buildSynthDef;
 		index = synthDef.controlIndex;
@@ -96,18 +96,18 @@ AudioControl : MultiOutUGen {
 			synthDef.addControlName(
 				ControlName(name, index + i, 'audio',
 					nil, synthDef.allControlNames.size)
-			);
-		};
+			)
+		}
 	}
-	*ar { arg values;
+	*ar { |values|
 		^this.multiNewList(['audio'] ++ values.asArray)
 	}
-	init { arg ... argValues;
+	init { |... argValues|
 		values = argValues;
-		if (synthDef.notNil) {
+		if(synthDef.notNil) {
 			specialIndex = synthDef.controls.size;
 			synthDef.controls = synthDef.controls.addAll(values);
-			synthDef.controlIndex = synthDef.controlIndex + values.size;
+			synthDef.controlIndex = synthDef.controlIndex + values.size
 		};
 		^this.initOutputs(values.size, rate)
 	}
@@ -118,46 +118,46 @@ AudioControl : MultiOutUGen {
 TrigControl : Control {}
 
 LagControl : Control {
-	*kr { arg values, lags;
+	*kr { |values, lags|
 		var outputs;
 
 		values = values.asArray;
 
-		if (lags.isNumber) {
+		if(lags.isNumber) {
 			lags = lags ! values.size
 		} {
-			lags = lags.asArray;
+			lags = lags.asArray
 		};
 
-		if (values.size != lags.size, {
+		if(values.size != lags.size) {
 			"LagControl values.size != lags.size".error;
 			^nil
-		});
+		};
 		values = values.clump(16);
 		lags = lags.clump(16);
 		outputs = [];
-		values.size.do({ arg i;
-			outputs = outputs ++ this.multiNewList(['control'] ++ values.at(i) ++ lags.at(i));
-		});
+		values.size.do { |i|
+			outputs = outputs ++ this.multiNewList(['control'] ++ values.at(i) ++ lags.at(i))
+		};
 		^outputs
 	}
-	*ar { arg values, lags;
+	*ar { |values, lags|
 		^AudioControl.ar(values).lag(lags)
 	}
 	*ir {
 		^this.shouldNotImplement(thisMethod)
 	}
-	init { arg ... stuff;
+	init { |... stuff|
 		var lags, size, size2;
 		size = stuff.size;
 		size2 = size >> 1;
-		values = stuff[ .. size2-1];
-		inputs = stuff[size2 .. size-1];
-		if (synthDef.notNil, {
+		values = stuff[.. size2 - 1];
+		inputs = stuff[size2 .. size - 1];
+		if(synthDef.notNil) {
 			specialIndex = synthDef.controls.size;
 			synthDef.controls = synthDef.controls.addAll(values);
-			synthDef.controlIndex = synthDef.controlIndex + values.size;
-		});
+			synthDef.controlIndex = synthDef.controlIndex + values.size
+		};
 		^this.initOutputs(values.size, rate)
 	}
 }
@@ -167,26 +167,26 @@ AbstractIn : MultiOutUGen {
 }
 
 In : AbstractIn {
-	*ar { arg bus = 0, numChannels = 1;
+	*ar { |bus = 0, numChannels = 1|
 		^this.multiNew('audio', numChannels, bus)
 	}
-	*kr { arg bus = 0, numChannels = 1;
+	*kr { |bus = 0, numChannels = 1|
 		^this.multiNew('control', numChannels, bus)
 	}
-	init { arg numChannels ... argBus;
+	init { |numChannels ... argBus|
 		inputs = argBus.asArray;
 		^this.initOutputs(numChannels, rate)
 	}
 }
 
 LocalIn : AbstractIn {
-	*ar { arg numChannels = 1, default = 0.0;
+	*ar { |numChannels = 1, default = 0.0|
 		^this.multiNew('audio', numChannels, *default)
 	}
-	*kr { arg numChannels = 1, default = 0.0;
+	*kr { |numChannels = 1, default = 0.0|
 		^this.multiNew('control', numChannels, *default)
 	}
-	init { arg numChannels ... default;
+	init { |numChannels ... default|
 		inputs = default.wrapExtend(numChannels);
 		^this.initOutputs(numChannels, rate)
 	}
@@ -194,30 +194,30 @@ LocalIn : AbstractIn {
 
 
 LagIn : AbstractIn {
-	*kr { arg bus = 0, numChannels = 1, lag = 0.1;
+	*kr { |bus = 0, numChannels = 1, lag = 0.1|
 		^this.multiNew('control', numChannels, bus, lag)
 	}
-	init { arg numChannels ... argInputs;
+	init { |numChannels ... argInputs|
 		inputs = argInputs.asArray;
 		^this.initOutputs(numChannels, rate)
 	}
 }
 
 InFeedback : AbstractIn {
-	*ar { arg bus = 0, numChannels = 1;
+	*ar { |bus = 0, numChannels = 1|
 		^this.multiNew('audio', numChannels, bus)
 	}
-	init { arg numChannels ... argBus;
+	init { |numChannels ... argBus|
 		inputs = argBus.asArray;
 		^this.initOutputs(numChannels, rate)
 	}
 }
 
 InTrig : AbstractIn {
-	*kr { arg bus = 0, numChannels = 1;
+	*kr { |bus = 0, numChannels = 1|
 		^this.multiNew('control', numChannels, bus)
 	}
-	init { arg numChannels ... argBus;
+	init { |numChannels ... argBus|
 		inputs = argBus.asArray;
 		^this.initOutputs(numChannels, rate)
 	}
@@ -227,18 +227,18 @@ AbstractOut : UGen {
 	numOutputs { ^0 }
 	writeOutputSpecs {}
 	checkInputs {
-		if (rate == 'audio', {
-			for(this.class.numFixedArgs, inputs.size - 1, { arg i;
-				if (inputs.at(i).rate != 'audio', {
+		if(rate == 'audio') {
+			for(this.class.numFixedArgs, inputs.size - 1) { |i|
+				if(inputs.at(i).rate != 'audio') {
 					^(" input at index " + i +
-						"(" + inputs.at(i) + ") is not audio rate");
-				});
-			});
-		}, {
-			if(inputs.size <= this.class.numFixedArgs, {
+							"(" + inputs.at(i) + ") is not audio rate")
+				}
+			}
+		} {
+			if(inputs.size <= this.class.numFixedArgs) {
 				^"missing input at index 1"
-			})
-		});
+			}
+		};
 		^this.checkValidInputs
 	}
 
@@ -253,12 +253,12 @@ AbstractOut : UGen {
 }
 
 Out : AbstractOut {
-	*ar { arg bus, channelsArray;
+	*ar { |bus, channelsArray|
 		channelsArray = this.replaceZeroesWithSilence(channelsArray.asUGenInput(this).asArray);
 		this.multiNewList(['audio', bus] ++ channelsArray)
 		^0.0		// Out has no output
 	}
-	*kr { arg bus, channelsArray;
+	*kr { |bus, channelsArray|
 		this.multiNewList(['control', bus] ++ channelsArray.asArray)
 		^0.0		// Out has no output
 	}
@@ -272,12 +272,12 @@ OffsetOut : Out {
 }
 
 LocalOut : AbstractOut {
-	*ar { arg channelsArray;
+	*ar { |channelsArray|
 		channelsArray = this.replaceZeroesWithSilence(channelsArray.asUGenInput(this).asArray);
 		this.multiNewList(['audio'] ++ channelsArray)
 		^0.0		// LocalOut has no output
 	}
-	*kr { arg channelsArray;
+	*kr { |channelsArray|
 		this.multiNewList(['control'] ++ channelsArray.asArray)
 		^0.0		// LocalOut has no output
 	}
@@ -287,12 +287,12 @@ LocalOut : AbstractOut {
 
 
 XOut : AbstractOut {
-	*ar { arg bus, xfade, channelsArray;
+	*ar { |bus, xfade, channelsArray|
 		channelsArray = this.replaceZeroesWithSilence(channelsArray.asUGenInput(this).asArray);
 		this.multiNewList(['audio', bus, xfade] ++ channelsArray)
 		^0.0		// Out has no output
 	}
-	*kr { arg bus, xfade, channelsArray;
+	*kr { |bus, xfade, channelsArray|
 		this.multiNewList(['control', bus, xfade] ++ channelsArray.asArray)
 		^0.0		// Out has no output
 	}

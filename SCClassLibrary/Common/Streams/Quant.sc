@@ -23,7 +23,7 @@ Quant {
 		if(timingOffset.notNil) {
 			stream << ", ";
 			if(phase.isNil) {
-				stream << "nil, ";
+				stream << "nil, "
 			};
 			stream << timingOffset
 		};

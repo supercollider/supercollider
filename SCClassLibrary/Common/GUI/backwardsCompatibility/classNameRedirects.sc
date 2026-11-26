@@ -77,7 +77,7 @@ QScope2 : ScopeView {}
 + Window {
 	drawHook_ { |func|
 		this.deprecated(thisMethod, this.class.findRespondingMethodFor('drawFunc_'));
-		this.drawFunc_(func);
+		this.drawFunc_(func)
 	}
 }
 
@@ -85,6 +85,6 @@ QScope2 : ScopeView {}
 + UserView {
 	drawHook_ { |func|
 		this.deprecated(thisMethod, this.class.findRespondingMethodFor('drawFunc_'));
-		this.drawFunc_(func);
+		this.drawFunc_(func)
 	}
 }

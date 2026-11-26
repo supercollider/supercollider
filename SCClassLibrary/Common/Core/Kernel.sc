@@ -31,47 +31,47 @@ Class {
 
 
 	// call Class.initClassTree(SomeClass) to force a class to init if you depend on its resources
-	*initClassTree { arg aClass;
+	*initClassTree { |aClass|
 		var implementsInitClass;
 		// sometimes you need a class to be inited before another class
 		// start the process: Class.initClassTree(Object)
-		if(classesInited.isNil, { classesInited = IdentitySet.new });
-		if(classesInited.includes(aClass).not, {
+		if(classesInited.isNil) { classesInited = IdentitySet.new };
+		if(classesInited.includes(aClass).not) {
 			classesInited.add(aClass);
 
-			if(aClass.isMetaClass.not and: { aClass.class.findMethod(\initClass).notNil }, {
-				aClass.initClass;
-			});
+			if(aClass.isMetaClass.not and: { aClass.class.findMethod(\initClass).notNil }) {
+				aClass.initClass
+			};
 
-			if(aClass.subclasses.notNil,{
+			if(aClass.subclasses.notNil) {
 				// If a class author has missed any Class.initClassTree(X) calls in their initClass methods,
 				//   you might get an error depending on the class ordering.
 				// The actual ordering is undefined, but is consistent for any given set of classes.
 				// This means if you add classes, the order might change and you might get errors when trying to start the class library.
-				aClass.subclasses.do({ arg class; this.initClassTree(class); });
-			});
-		});
+				aClass.subclasses.do { |class| this.initClassTree(class) }
+			}
+		}
 	}
 
 	*allClasses {
 		_AllClasses
 		^this.primitiveFailed
 	}
-	findMethod { arg methodName;
-		if ( methods.notNil, {
-			^methods.detect({ arg method; method.name == methodName });
-		},{ ^nil });
+	findMethod { |methodName|
+		if(methods.notNil) {
+			^methods.detect({ |method| method.name == methodName })
+		} { ^nil }
 	}
-	findRespondingMethodFor { arg methodName;
-		this.superclassesDo { arg class;
+	findRespondingMethodFor { |methodName|
+		this.superclassesDo { |class|
 			var method = class.findMethod(methodName);
-			method !? { ^method };
+			method !? { ^method }
 		};
 		^nil
 	}
-	findOverriddenMethod { arg methodName;
+	findOverriddenMethod { |methodName|
 		if(this.findMethod(methodName).isNil) { ^nil };
-		this.superclass.superclassesDo { arg class;
+		this.superclass.superclassesDo { |class|
 			var method = class.findMethod(methodName);
 			if(method.notNil) { ^method }
 		};
@@ -79,8 +79,8 @@ Class {
 	}
 	respondingMethods {
 		var all = Array.new, selectors = IdentitySet.new;
-		this.superclassesDo { arg class;
-			class.methods.do { arg item;
+		this.superclassesDo { |class|
+			class.methods.do { |item|
 				var name = item.name;
 				if(selectors.includes(name).not) {
 					all = all.add(item);
@@ -90,18 +90,18 @@ Class {
 		};
 		^all
 	}
-	superclassesDo { arg function;
+	superclassesDo { |function|
 		var class = this;
 		while { class.notNil } {
 			function.value(class);
-			class = class.superclass;
+			class = class.superclass
 		}
 	}
 
-	dumpByteCodes { arg methodName;
+	dumpByteCodes { |methodName|
 		var meth;
 		meth = this.findMethod(methodName);
-		if (meth.notNil, { meth.dumpByteCodes },{ Post << methodName << " not found.\n"; });
+		if(meth.notNil) { meth.dumpByteCodes } { Post << methodName << " not found.\n" }
 	}
 
 	dumpClassSubtree {
@@ -111,32 +111,32 @@ Class {
 	dumpInterface {
 		// show all methods and their arguments defined for this class
 		// does not include methods defined in superclasses
-		this.methods.do({ arg meth;
+		this.methods.do { |meth|
 			var numargs;
 			numargs = meth.argNames.size - 1;
 			"   ".post;
 			meth.name.post;
 			" ( ".post;
-			meth.argNames.do({ arg name, i;
-				if (i > 0, { // skip 'this'
+			meth.argNames.do { |name, i|
+				if(i > 0) { // skip 'this'
 					name.post;
-					if (i < numargs, {
-						", ".post;
-					});
-				});
-			});
-			" )\n".post;
-		});
+					if(i < numargs) {
+						", ".post
+					}
+				}
+			};
+			" )\n".post
+		}
 	}
 
 	asString {
 		^name.asString
 	}
-	printOn { arg stream;
-		stream << "class " << name;
+	printOn { |stream|
+		stream << "class " << name
 	}
-	storeOn { arg stream;
-		stream << name;
+	storeOn { |stream|
+		stream << name
 	}
 	archiveAsCompileString { ^true }
 
@@ -164,7 +164,7 @@ Class {
 	//traceAnyPathToAllInstancesOf { _TraceAnyPathToAllInstancesOf }
 
 	openCodeFile {
-		this.filenameSymbol.asString.openDocument(this.charPos, -1);
+		this.filenameSymbol.asString.openDocument(this.charPos, -1)
 	}
 	classVars {
 		var start, end;
@@ -173,59 +173,59 @@ Class {
 		^thisProcess.instVarAt(0).copyRange(start, end)
 	}
 	inspectorClass { ^ClassInspector }
-	findReferences { arg aSymbol, references;
-		methods.do({ arg meth;
+	findReferences { |aSymbol, references|
+		methods.do { |meth|
 			references = meth.findReferences(aSymbol, references)
-		});
+		};
 		^references
 	}
-	*findAllReferences { arg aSymbol;
+	*findAllReferences { |aSymbol|
 		// this will not find method calls that are compiled with special byte codes such as 'value'.
 		var references;
-		Class.allClasses.do({ arg class;
-			references = class.findReferences(aSymbol, references);
-		});
-		^references;
+		Class.allClasses.do { |class|
+			references = class.findReferences(aSymbol, references)
+		};
+		^references
 	}
-	findRespondingSubclasses { arg selector;
+	findRespondingSubclasses { |selector|
 		var list = [];
-		subclasses.do { arg class;
+		subclasses.do { |class|
 			if(class.instancesRespondTo(selector)) {
-				list = list.add(class);
+				list = list.add(class)
 			};
 			list = list.addAll(class.findRespondingSubclasses(selector))
 		};
 		^list
 	}
-	findRespondingUpperSubclasses { arg selector;
+	findRespondingUpperSubclasses { |selector|
 		var list = [];
 		if(this.instancesRespondTo(selector)) { ^list.add(this) };
-		subclasses.do { arg class;
+		subclasses.do { |class|
 			if(class.instancesRespondTo(selector)) {
-				list = list.add(class);
+				list = list.add(class)
 			} {
 				list = list.addAll(class.findRespondingUpperSubclasses(selector))
 			}
 		};
 		^list
 	}
-	findSimilarSelectors { arg selector, maxEditDistance = 2, minSimilarity = 0.5, prioritizeCapitalization = true;
+	findSimilarSelectors { |selector, maxEditDistance = 2, minSimilarity = 0.5, prioritizeCapitalization = true|
 		var names = this.respondingMethods.collect(_.name);
 		^selector.asString.findSimilarIn(names, maxEditDistance, minSimilarity, prioritizeCapitalization)
 	}
-	instancesRespondTo { arg selector;
+	instancesRespondTo { |selector|
 		_InstancesOfClassRespondTo
 		^this.primitiveFailed
 	}
 	allSubclasses {
 		var list;
 		list = subclasses.copy;
-		subclasses.do({ arg class; list = list ++ class.allSubclasses; });
+		subclasses.do { |class| list = list ++ class.allSubclasses };
 		^list
 	}
 	superclasses {
 		var list;
-		this.superclass.superclassesDo { arg class; list = list.add(class) }
+		this.superclass.superclassesDo { |class| list = list.add(class) }
 		^list
 	}
 
@@ -253,7 +253,7 @@ Process {
 			Class.classesInited = nil;
 
 			topEnvironment = Environment.new;
-			currentEnvironment = topEnvironment;
+			currentEnvironment = topEnvironment
 
 		} { |er|
 			er.reportError;
@@ -270,17 +270,17 @@ Process {
 			"This can be accomplished by placing `Class.initClassTree(NAME_OF_CLASS)` at the top of the method.\n"
 			"See the help documentation on `initClass` for some more information.\n\n\n"
 				.error;
-			1.exit; // Kills the interpreter, however it also calls Process.shutdown on the way.
+			1.exit // Kills the interpreter, however it also calls Process.shutdown on the way.
 		};
 
 		initializedClassesOkay = true;
 
 		try {
-			Archive.read;
+			Archive.read
 		} { |er|
 			er.reportError;
 			"Archive.read in the main startup process has failed.".error
-		};
+		}
 
 		// This method is called automatically right after compiling.
 		// Override in class 'Main' to do initialization stuff,
@@ -297,83 +297,83 @@ Process {
 		// Override in class 'Main' to do whatever you want.
 	}
 	shutdown {
-		if (initializedClassesOkay) {
+		if(initializedClassesOkay) {
 			try { ShutDown.run } { |er| er.reportError };
 			try { NetAddr.disconnectAll } { |er| er.reportError };
 			try { File.closeAll } { |er| er.reportError };
-			try { Archive.write } { |er| er.reportError };
+			try { Archive.write } { |er| er.reportError }
 		} {
 			// Try to do them, but don't post any errors, we only care about the error above.
 			try { ShutDown.run };
 			try { NetAddr.disconnectAll };
 			try { File.closeAll };
-			try { Archive.write };
+			try { Archive.write }
 		}
 	}
 	tick { // called repeatedly by SCVirtualMachine::doPeriodicTask
-		^AppClock.tick;
+		^AppClock.tick
 	}
 
 	*tailCallOptimize {
 		_GetTailCallOptimize
 		^this.primitiveFailed
 	}
-	*tailCallOptimize_ { arg bool;
+	*tailCallOptimize_ { |bool|
 		_SetTailCallOptimize
 		^this.primitiveFailed
 	}
 
 	getCurrentSelection {
 		var qt = \QtGUI.asClass;
-		^if(qt.notNil and: {qt.focusView.notNil}) {
-			qt.selectedText;
+		^if(qt.notNil and: { qt.focusView.notNil }) {
+			qt.selectedText
 		} {
-			interpreter.cmdLine;
+			interpreter.cmdLine
 		}
 	}
 
 	openCodeFile {
 		var string, class, method, words;
 		string = this.getCurrentSelection;
-		if (string.includes($:), {
+		if(string.includes($:)) {
 			string.removeAllSuchThat(_.isSpace);
-			words = string.delimit({ arg c; c == $: });
+			words = string.delimit({ |c| c == $: });
 			class = words.at(0).asSymbol.asClass;
-			if (class.notNil, {
+			if(class.notNil) {
 				method = class.findMethod(words.at(1).asSymbol);
-				if (method.notNil, {
-					method.filenameSymbol.asString.openDocument(method.charPos, -1);
-				});
-			});
-		},{
+				if(method.notNil) {
+					method.filenameSymbol.asString.openDocument(method.charPos, -1)
+				}
+			}
+		} {
 			class = string.asSymbol.asClass;
-			if (class.notNil, {
+			if(class.notNil) {
 				class = class.classRedirect;
-				class.filenameSymbol.asString.openDocument(class.charPos, -1);
-			});
-		});
+				class.filenameSymbol.asString.openDocument(class.charPos, -1)
+			}
+		}
 	}
 
 	openWinCodeFile {
 		var string, class, method, words;
 		string = this.getCurrentSelection;
-		if (string.includes($:), {
+		if(string.includes($:)) {
 			string.removeAllSuchThat(_.isSpace);
-			words = string.delimit({ arg c; c == $: });
+			words = string.delimit({ |c| c == $: });
 			class = words.at(0).asSymbol.asClass;
-			if (class.notNil, {
+			if(class.notNil) {
 				method = class.findMethod(words.at(1).asSymbol);
-				if (method.notNil, {
-					method.filenameSymbol.asString.openWinTextFile(method.charPos, -1);
-				});
-			});
-		},{
+				if(method.notNil) {
+					method.filenameSymbol.asString.openWinTextFile(method.charPos, -1)
+				}
+			}
+		} {
 			class = string.asSymbol.asClass;
-			if (class.notNil, {
+			if(class.notNil) {
 				class = class.classRedirect;
-				class.filenameSymbol.asString.openWinTextFile(class.charPos, -1);
-			});
-		});
+				class.filenameSymbol.asString.openWinTextFile(class.charPos, -1)
+			}
+		}
 	}
 
 
@@ -383,15 +383,15 @@ Process {
 		out = CollStream.new;
 		name = this.getCurrentSelection.asSymbol;
 		references = Class.findAllReferences(name);
-		if (references.notNil, {
+		if(references.notNil) {
 			out << "References to '" << name << "' :\n";
-			references.do({ arg ref;
+			references.do { |ref|
 				nameString = ref.ownerClass.name ++ ":" ++ ref.name;
-				out << "   [" << nameString << "]\n"; });
-			out.collection.newTextWindow(name.asString);
-		},{
-			Post << "\nNo references to '" << name << "'.\n";
-		});
+				out << "   [" << nameString << "]\n" };
+			out.collection.newTextWindow(name.asString)
+		} {
+			Post << "\nNo references to '" << name << "'.\n"
+		}
 	}
 	methodTemplates {
 		// this constructs the method templates when cmd-Y is pressed in the Lang menu.
@@ -400,74 +400,73 @@ Process {
 
 		text = this.getCurrentSelection;
 
-		if (text.isEmpty){
+		if(text.isEmpty) {
 			Post << "\nNo implementations of ''.\n";
 			^this
 		};
-		if (text[0].toLower != text[0]) {
+		if(text[0].toLower != text[0]) {
 			// user pressed the wrong key. DWIM.
-			^this.openCodeFile;
+			^this.openCodeFile
 		};
 		name = text.asSymbol;
 		out << "Implementations of '" << name << "' :\n";
-		Class.allClasses.do({ arg class;
-			class.methods.do({ arg method;
-				if (method.name == name, {
+		Class.allClasses.do { |class|
+			class.methods.do { |method|
+				if(method.name == name) {
 					found = found + 1;
 					namestring = class.name ++ ":" ++ name;
 					out << "   [" << namestring << "] :     ";
-					if (method.argNames.isNil or: { method.argNames.size == 1 }, {
+					if(method.argNames.isNil or: { method.argNames.size == 1 }) {
 						out << "this." << name;
-						if (name.isSetter, { out << "(val)"; });
-					},{
+						if(name.isSetter) { out << "(val)" }
+					} {
 						out << method.argNames.at(0);
-						if (name.asString.at(0).isAlpha, {
+						if(name.asString.at(0).isAlpha) {
 							out << "." << name << "(";
-							method.argNames.do({ arg argName, i;
-								if (i > 0, {
-									if (i != 1, { out << ", " });
-									out << argName;
-								});
-							});
-							out << ")";
-						},{
+							method.argNames.do { |argName, i|
+								if(i > 0) {
+									if(i != 1) { out << ", " };
+									out << argName
+								}
+							};
+							out << ")"
+						} {
 							out << " " << name << " ";
-							out << method.argNames.at(1);
-						});
-					});
-					out.nl;
-				});
-			});
-		});
-		case
-		{ found == 0 }
-		{
-			Post << "\nNo implementations of '" << name << "'.\n";
-		}
-		{ found == 1 }
-		{
-			interpreter.cmdLine = namestring;
-			this.openCodeFile;
-		}
-		{
-			out.collection.newTextWindow(name.asString);
+							out << method.argNames.at(1)
+						}
+					};
+					out.nl
+				}
+			}
 		};
+		case
+			{ found == 0 }
+			{
+				Post << "\nNo implementations of '" << name << "'.\n"
+			}
+			{ found == 1 }
+			{
+				interpreter.cmdLine = namestring;
+				this.openCodeFile
+			} {
+				out.collection.newTextWindow(name.asString)
+			}
 	}
 
 	// This is private and should not be used by users.
 	interpretCmdLine {
-		interpreter.interpretCmdLine;
+		interpreter.interpretCmdLine
 	}
 
 	// This is private and should not be used by users.
 	interpretPrintCmdLine {
-		interpreter.interpretPrintCmdLine;
+		interpreter.interpretPrintCmdLine
 	}
 
-	interpret { |...a,k| interpreter.performArgs(\interpret, a, k) }
+	interpret { |...a, k| interpreter.performArgs(\interpret, a, k) }
 
 	interpretPrintSelectedText {
-		this.interpretPrint(this.getCurrentSelection);
+		this.interpretPrint(this.getCurrentSelection)
 	}
 
 	showHelp {
@@ -488,8 +487,8 @@ Process {
 		^this.primitiveFailed
 	}
 
-	storeOn { arg stream;
-		stream << "thisProcess";
+	storeOn { |stream|
+		stream << "thisProcess"
 	}
 	archiveAsCompileString { ^true }
 
@@ -567,20 +566,20 @@ FunctionDef {
 	}
 	inspectorClass { ^FunctionDefInspector }
 
-	findReferences { arg aSymbol, references;
+	findReferences { |aSymbol, references|
 		var lits;
 		lits = selectors.asArray;
-		if (lits.includes(aSymbol), {
-			references = references.add(this);
-		});
-		lits.do({ arg item;
-			if (item.isKindOf(FunctionDef), {
+		if(lits.includes(aSymbol)) {
+			references = references.add(this)
+		};
+		lits.do { |item|
+			if(item.isKindOf(FunctionDef)) {
 				references = item.findReferences(aSymbol, references)
-			})
-		});
+			}
+		};
 		^references
 	}
-	storeOn { arg stream;
+	storeOn { |stream|
 		stream << "nil"
 	}
 	checkCanArchive { "cannot archive FunctionDefs".warn }
@@ -590,11 +589,11 @@ FunctionDef {
 		^argNames.size > 0 and: { argNames[0] == \_ }
 	}
 
-	argumentString { arg withDefaultValues=true, withEllipsis=false, asArray=false;
+	argumentString { |withDefaultValues = true, withEllipsis = false, asArray = false|
 		var res = "", pairs;
 		var lastIndex, noVarArgs, varArgName;
 		if(asArray) {
-			withEllipsis = withDefaultValues = false;
+			withEllipsis = withDefaultValues = false
 		};
 		if(this.hasPartialApplication) {
 			^if(withEllipsis) { " ... args" } { "args" }
@@ -603,15 +602,15 @@ FunctionDef {
 		if(pairs.isEmpty) { ^nil };
 		if(this.varArgs) {
 			varArgName = pairs.keep(-2).first;
-			pairs = pairs.drop(-2);
+			pairs = pairs.drop(-2)
 		};
 		lastIndex = pairs.lastIndex;
 		pairs.pairsDo { |name, defaultValue, i|
 			res = res ++ name;
 			if(withDefaultValues and: { defaultValue.notNil }) {
-				res = res ++ " = " ++ defaultValue.asCompileString;
+				res = res ++ " = " ++ defaultValue.asCompileString
 			};
-			if(i + 1 < lastIndex) { res = res ++ ", " };
+			if(i + 1 < lastIndex) { res = res ++ ", " }
 		};
 		^if(varArgName.notNil) {
 			if(withEllipsis) {
@@ -646,7 +645,7 @@ FunctionDef {
 		var valueBlock, argBlock, i;
 		if(this.argNames.isNil) { Error("a function without arguments needs no such string").throw };
 		argBlock = this.argumentString(withDefaultValues: true, withEllipsis: true);
-		valueBlock = this.argumentString(withDefaultValues: false, withEllipsis: false, asArray:true);
+		valueBlock = this.argumentString(withDefaultValues: false, withEllipsis: false, asArray: true);
 		if(modifier.notNil) { valueBlock = modifier.value(valueBlock) };
 		^"{ arg %; % }".format(argBlock, valueBlock)
 	}
@@ -670,9 +669,9 @@ Method : FunctionDef {
 	charPos {
 		// Because methods are always compiled with a whole file, we can access this directly.
 		^sourceCodeStartIndex
-	 }
+	}
 	openCodeFile {
-		this.filenameSymbol.asString.openDocument(this.charPos, -1);
+		this.filenameSymbol.asString.openDocument(this.charPos, -1)
 	}
 	hasHelpFile {
 		//should cache this in Library or classvar
@@ -680,33 +679,33 @@ Method : FunctionDef {
 		^this.name.asString.findHelpFile.notNil
 	}
 	help {
-		HelpBrowser.openHelpForMethod(this);
+		HelpBrowser.openHelpForMethod(this)
 	}
 	inspectorClass { ^MethodInspector }
-	storeOn { arg stream;
+	storeOn { |stream|
 		stream << ownerClass.name << ".findMethod(" << name.asCompileString << ")"
 	}
 	archiveAsObject { ^true }
 	checkCanArchive {}
-	findReferences { arg aSymbol, references;
+	findReferences { |aSymbol, references|
 		var lits, functionRefs;
 		lits = selectors.asArray;
-		if (lits.includes(aSymbol), {
+		if(lits.includes(aSymbol)) {
 			references = references.add(this);
 			^references // we only need to be listed once
-		});
-		lits.do({ arg item;
-			if (item.isKindOf(FunctionDef), {
-				functionRefs = item.findReferences(aSymbol, functionRefs);
-			})
-		});
-		functionRefs.notNil.if({references = references.add(this)});
+		};
+		lits.do { |item|
+			if(item.isKindOf(FunctionDef)) {
+				functionRefs = item.findReferences(aSymbol, functionRefs)
+			}
+		};
+		if(functionRefs.notNil) { references = references.add(this) };
 		^references
 	}
 
 	keyValuePairsFromArgs {
 		var names, values;
-		if(argNames.isNil, { ^[] });
+		if(argNames.isNil) { ^[] };
 		names = argNames.drop(1); // first argName is "this"
 		values = this.prototypeFrame.drop(1).keep(names.size);
 		^[names, values].flop.flatten
@@ -747,13 +746,13 @@ DebugFrame {
 	asString { ^"DebugFrame of " ++ functionDef.asString }
 
 	// Turns whole backtrace into string
-	backtracePrintOnto { |stream, prefix(""), callFrameAnnotations(#[]), methodBeforeBacktraceStart, methodBacktraceEnd, maxVerboseFrames(3)|
+	backtracePrintOnto { |stream, prefix = (""), callFrameAnnotations = (#[]), methodBeforeBacktraceStart, methodBacktraceEnd, maxVerboseFrames = (3)|
 		var stack = {
 			var f = this;
 			while { f.notNil } {
 				f.yield;
-				f = f.caller;
-			};
+				f = f.caller
+			}
 		}.r.all;
 		var newPrefix = prefix ++ thisPrefix;
 
@@ -764,10 +763,10 @@ DebugFrame {
 
 		var stackToPrint = stack[begin..(end - 1)];
 
-		var dups=0;
+		var dups = 0;
 		var prevDef;
-		var stackSkipMask = stackToPrint.collect {|s|
-			if (s.functionDef === prevDef) {
+		var stackSkipMask = stackToPrint.collect { |s|
+			if(s.functionDef === prevDef) {
 				dups = dups + 1
 			} {
 				dups = 0
@@ -783,35 +782,33 @@ DebugFrame {
 			var mask = f[1];
 			stream << prefix << (stackToPrint.size - j).asString.padRight(4) << ": ";
 			d.printOntoBacktrace(stream, newPrefix, callFrameAnnotations[stackToPrint.size - count - 1], (stackToPrint.size - j - 1) < maxVerboseFrames, mask);
-			count = count + 1;
+			count = count + 1
 		};
 
 
-		^stream;
-	 }
+		^stream
+	}
 
 	// Turns this frame into a formatted string
-	printOntoBacktrace { |stream, prefix(""), annotation, printArgsAndVars, printSource|
+	printOntoBacktrace { |stream, prefix = (""), annotation, printArgsAndVars, printSource|
 		stream << this.prAsErrorString(prefix, annotation, printArgsAndVars, printSource)
 	}
 
-	prAsErrorString {|prefix, annotation, printArgsAndVars, printSource| _DebugFrame_asErrorString }
+	prAsErrorString { |prefix, annotation, printArgsAndVars, printSource| _DebugFrame_asErrorString }
 
-	prLastIndexOf { |collection, predicate({})|
+	prLastIndexOf { |collection, predicate = ({})|
 		var last = 0;
-		collection.do{
-			|v,i|
-			if (v.functionDef.isKindOf(Method) and: {predicate.(v.functionDef) ?? { false }}) { last = i }
+		collection.do { |v, i|
+			if(v.functionDef.isKindOf(Method) and: { predicate.(v.functionDef) ?? { false } }) { last = i }
 		};
 		^last
 	}
-	prFirstIndexOf { |collection, predicate({})|
+	prFirstIndexOf { |collection, predicate = ({})|
 		var first = 0;
-		collection.reverseDo{
-			|v,i|
-			if (v.functionDef.isKindOf(Method) and: {predicate.(v.functionDef) ?? { false }}) { first = i }
+		collection.reverseDo { |v, i|
+			if(v.functionDef.isKindOf(Method) and: { predicate.(v.functionDef) ?? { false } }) { first = i }
 		};
-		^(collection.size - first) - 1;
+		^(collection.size - first) - 1
 	}
 }
 
@@ -846,10 +843,13 @@ Interpreter {
 
 	var <>codeDump, <>preProcessor;
 
+	// Set with cmdLine, nil unless the client sends the version, e.g., from line 1 of the editor's file.
+	var languageVersion;
+
 	*new { ^this.shouldNotImplement(thisMethod) }
 
 	cmdLine_ {
-		DeprecatedError(this, thisMethod, Interpreter.findMethod(\interpret)).throw;
+		DeprecatedError(this, thisMethod, Interpreter.findMethod(\interpret)).throw
 	}
 	cmdLine {
 		"cmdLine is being deprecated, consider trying debug backtrace to get similar information.".warn;
@@ -864,28 +864,28 @@ Interpreter {
 		var res, func, code = cmdLine, doc, ideClass = \ScIDE.asClass;
 		preProcessor !? { cmdLine = preProcessor.value(cmdLine, this) };
 		func = this.prCompileUsingMembers;
-		if (ideClass.notNil) {
+		if(ideClass.notNil) {
 			thisProcess.nowExecutingPath = ideClass.currentPath
 		} {
-			if(\Document.asClass.notNil and: {(doc = Document.current).tryPerform(\dataptr).notNil}) {
-				thisProcess.nowExecutingPath = doc.tryPerform(\path);
+			if(\Document.asClass.notNil and: { (doc = Document.current).tryPerform(\dataptr).notNil }) {
+				thisProcess.nowExecutingPath = doc.tryPerform(\path)
 			}
 		};
 		res = func.value;
 		thisProcess.nowExecutingPath = nil;
 		codeDump.value(code, res, func, this);
-		("-> " ++ res).postln;
+		("-> " ++ res).postln
 	}
 
 	// compile, evaluate
 	interpret { |string ... args, kwargs|
 		kwargs = kwargs.asEvent;
-		^this.compile(string, kwargs[\filePath], kwargs[\lineNumber], kwargs[\column]).valueArray(args);
+		^this.compile(string, kwargs[\filePath], kwargs[\lineNumber], kwargs[\column], kwargs[\version]).valueArray(args)
 	}
 	// compile, evaluate, print
-	interpretPrint { arg string ... args, kwargs;
+	interpretPrint { |string ... args, kwargs|
 		kwargs = kwargs.asEvent;
-		^this.compile(string, kwargs[\filePath], kwargs[\lineNumber], kwargs[\column]).valueArray(args).postln;
+		^this.compile(string, kwargs[\filePath], kwargs[\lineNumber], kwargs[\column], kwargs[\version]).valueArray(args).postln
 	}
 
 	// Compiles a string into Function object (closure).
@@ -895,19 +895,22 @@ Interpreter {
 	// This is also why you can access these straight from the repl... `context`, `cmdLine`, all valid!
 	// Yes, even the 'private' instance variables can be accessed this way.
 	// This also applied to everything inside object, e.g., `currentEnvironment` and `nl`.
-	compile  { |string, filePath_, lineNumber_, column_|
+	// The version is a release, e.g., '3.16' or \legacy, as a Symbol or String. When nil, it is the one on
+	// line 1 of the string, else legacy.
+	compile  { |string, filePath_, lineNumber_, column_, version|
 		cmdLine = string;
 		filePath = filePath_;
 		lineNumber = lineNumber_;
 		column = column_;
+		languageVersion = version;
 		^this.prCompileUsingMembers
 	}
 
 	prCompileUsingMembers {
-		^this.prCompile(cmdLine, filePath, lineNumber, column)
+		^this.prCompile(cmdLine, filePath, lineNumber, column, languageVersion)
 	}
 
-	prCompile { |string, filePath, lineNumber, column|
+	prCompile { |string, filePath, lineNumber, column, version|
 		_CompileExpression
 		// TODO: this is rather bad, returning nil if the compilation fails means we can't tell if it failed because returning nil is valid.
 		^nil
@@ -915,17 +918,17 @@ Interpreter {
 
 	clearAll {
 		a = b = c = d = e = f = g = h = i = j = k = l = m =
-		n = o = p = q = r = s = t = u = v = w = x = y = z = nil;
+			n = o = p = q = r = s = t = u = v = w = x = y = z = nil
 	}
 
-	executeFile { | pathName ... args, kwargs |
+	executeFile { |pathName ... args, kwargs|
 		^this.performArgs(\prExecuteFile, [pathName] ++ args, kwargs)
 	}
 
-	prExecuteFile { |... args, kwargs |
+	prExecuteFile { |... args, kwargs|
 		var	result, saveExecutingPath = thisProcess.nowExecutingPath;
 		var pathName = args[0];
-		if (File.exists(pathName).not) {
+		if(File.exists(pathName).not) {
 			"file \"%\" does not exist.\n".postf(pathName);
 			^nil
 		};
@@ -939,21 +942,21 @@ Interpreter {
 		^result
 	}
 
-	compileFile { arg pathName;
+	compileFile { |pathName|
 		var file, text;
 		file = File.new(pathName, "r");
-		if (file.isOpen.not, {
+		if(file.isOpen.not) {
 			error("file open failed\n");
 			^nil
-		});
+		};
 		text = file.readAllString;
 		file.close;
 		preProcessor !? { text = preProcessor.value(text, this) };
-		if (text.beginsWith("#!"), {
+		if(text.beginsWith("#!")) {
 			// comment out shebang to preserve line count
-			text.overWrite("//");
-		});
-		^this.compile(text, pathName.asSymbol, 0, 0);
+			text.overWrite("//")
+		};
+		^this.compile(text, pathName.asSymbol, 0, 0)
 	}
 
 	shallowCopy { ^this }

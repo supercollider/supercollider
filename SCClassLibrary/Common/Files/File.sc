@@ -4,57 +4,57 @@ File : UnixFILE {
 
 	*initClass {
 		var f = this.filenameSymbol.asString;
-		systemIsCaseSensitive = not(File.exists(f.toLower) and: {File.exists(f.toUpper)});
+		systemIsCaseSensitive = not(File.exists(f.toLower) and: { File.exists(f.toUpper) })
 	}
 
-	*new { arg pathName, mode;
-		^super.new.open(pathName, mode);
+	*new { |pathName, mode|
+		^super.new.open(pathName, mode)
 	}
-	*open { arg pathName, mode;
-		^super.new.open(pathName, mode);
+	*open { |pathName, mode|
+		^super.new.open(pathName, mode)
 	}
-	*use { arg pathName, mode, function;
+	*use { |pathName, mode, function|
 		var file;
 		file = this.new(pathName, mode);
-		^{ function.value(file) }.protect({ file.close });
+		^{ function.value(file) }.protect({ file.close })
 	}
-	*readAllString { arg pathName;
+	*readAllString { |pathName|
 		var string;
 		this.use(pathName, "r", { |file| string = file.readAllString });
 		^string
 	}
-	*readAllSignal { arg pathName;
+	*readAllSignal { |pathName|
 		var string;
 		this.use(pathName, "r", { |file| string = file.readAllSignal });
 		^string
 	}
-	*readAllStringHTML { arg pathName;
+	*readAllStringHTML { |pathName|
 		var string;
 		this.use(pathName, "r", { |file| string = file.readAllStringHTML });
 		^string
 	}
-	*readAllStringRTF { arg pathName;
+	*readAllStringRTF { |pathName|
 		var string;
 		this.use(pathName, "r", { |file| string = file.readAllStringRTF });
 		^string
 	}
-	*delete { arg pathName;
+	*delete { |pathName|
 		_FileDelete
 		^this.primitiveFailed
 	}
-	*deleteAll { arg pathName;
+	*deleteAll { |pathName|
 		_FileDeleteAll
 		^this.primitiveFailed
 	}
-	*mtime { arg pathName;
+	*mtime { |pathName|
 		_FileMTime
 		^this.primitiveFailed
 	}
-	*exists { arg pathName;
+	*exists { |pathName|
 		_FileExists
 		^this.primitiveFailed
 	}
-	*existsCaseSensitive { arg pathName;
+	*existsCaseSensitive { |pathName|
 		^if(systemIsCaseSensitive) {
 			this.exists(pathName)
 		} {
@@ -63,27 +63,27 @@ File : UnixFILE {
 				.notNil
 		}
 	}
-	*realpath { arg pathName;
+	*realpath { |pathName|
 		_FileRealPath
 		^this.primitiveFailed
 	}
-	*mkdir { arg pathName;
+	*mkdir { |pathName|
 		_FileMkDir
 		^this.primitiveFailed
 	}
-	*copy { arg pathNameFrom, pathNameTo;
+	*copy { |pathNameFrom, pathNameTo|
 		_FileCopy
 		^this.primitiveFailed
 	}
-	*type { arg pathName;
+	*type { |pathName|
 		var sym = #[error, not_found, regular, directory, symlink, block, character, fifo, socket, unknown];
 		^sym.clipAt(this.prType(pathName))
 	}
-	*prType { arg pathName;
+	*prType { |pathName|
 		_FileType
 		^this.primitiveFailed
 	}
-	*fileSize { arg pathName;
+	*fileSize { |pathName|
 		_FileSize
 		^this.primitiveFailed
 	}
@@ -93,42 +93,42 @@ File : UnixFILE {
 		^string
 	}
 
-	open { arg pathName, mode;
+	open { |pathName, mode|
 		/* open the file. mode is a string passed
 			to fopen, so should be one of:
 			"r","w","a","rb","wb","ab","r+","w+","a+",
 			"rb+","wb+","ab+"
 		*/
-		if (this.prOpen(pathName, mode), {
-			this.addOpenFile;
-		});
+		if(this.prOpen(pathName, mode)) {
+			this.addOpenFile
+		}
 	}
 	close {	// close the file
 		// the GC will not call this for you
 		this.prClose;
 		fileptr = nil;
-		openFiles.remove(this);
+		openFiles.remove(this)
 	}
 	length { // returns the length of the file
 		_FileLength;
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 	pos { // current file position
 		_FilePos
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
-	pos_ { arg toPos;
+	pos_ { |toPos|
 		toPos = toPos.clip(0, this.length - 1);
-		this.seek(toPos, 0);
+		this.seek(toPos, 0)
 	}
-	seek { arg offset = 0, origin = 0;
+	seek { |offset = 0, origin = 0|
 		// origin is an integer, one of:
 		// 0 - from beginning of file
 		// 1 - from current position
 		// 2 - from end of file
 
 		_FileSeek
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
 	readAllString {
@@ -138,10 +138,10 @@ File : UnixFILE {
 		^string
 	}
 	readAllStringRTF {
-		^this.readAllString.stripRTF;
+		^this.readAllString.stripRTF
 	}
 	readAllStringHTML {
-		^this.readAllString.stripHTML;
+		^this.readAllString.stripHTML
 	}
 	readAllSignal {
 		var signal;
@@ -151,23 +151,23 @@ File : UnixFILE {
 	}
 
 	// PRIVATE
-	prOpen { arg pathName, mode;
+	prOpen { |pathName, mode|
 		/* open the file. mode is a string passed
 			to fopen, so should be one of:
 			"r","w","a","rb","wb","ab","r+","w+","a+",
 			"rb+","wb+","ab+"
 		*/
 		_FileOpen
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 	prClose {
 		_FileClose
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	*prGetcwd { arg string;
+	*prGetcwd { |string|
 		_File_getcwd
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 }
 
@@ -176,78 +176,78 @@ Pipe : UnixFILE {
 	var <pid;
 
 	// pipe stdin to, or stdout from, a unix shell command.
-	*new { arg commandLine, mode;
+	*new { |commandLine, mode|
 		^super.new.open(commandLine, mode)
 	}
 
-	*argv { arg args, mode;
-		^super.new.openArgv(args, mode);
+	*argv { |args, mode|
+		^super.new.openArgv(args, mode)
 	}
 
-	*call { arg command, onSuccess, onError, maxLineLength=4096;
+	*call { |command, onSuccess, onError, maxLineLength = 4096|
 		var r, cancel, closePipe;
 		r = Routine.run({
 			{
 				closePipe = Pipe.callSync(command, onSuccess, onError, maxLineLength)
 			}.protect({
-				CmdPeriod.remove(cancel);
-			});
+				CmdPeriod.remove(cancel)
+			})
 		}, clock: AppClock);
 		cancel = {
 			r.stop();
 			("Closed:" + command).postln;
 			closePipe.value();
-			CmdPeriod.remove(cancel);
+			CmdPeriod.remove(cancel)
 		};
 		CmdPeriod.add(cancel);
 		^cancel
 	}
-	*callSync { arg command, onSuccess, onError, maxLineLength=4096;
-		var pipe, lines=[], line, close;
+	*callSync { |command, onSuccess, onError, maxLineLength = 4096|
+		var pipe, lines = [], line, close;
 		pipe = Pipe.new(command, "r");
 		close = {
-			if(pipe.isOpen, {
-				pipe.close();
-			});
+			if(pipe.isOpen) {
+				pipe.close()
+			};
 			CmdPeriod.remove(close);
-			close = nil;
+			close = nil
 		};
 		CmdPeriod.add(close);
 		line = pipe.getLine(maxLineLength);
-		if(line.isNil, {
+		if(line.isNil) {
 			close.value();
 			// note: if process returns nothing at all
 			// but exits 0 it will still call onError.
 			// currently no way to get exit status
-			onError.value();
-		}, {
-			while({ line.notNil }, {
+			onError.value()
+		} {
+			while { line.notNil } {
 				lines = lines.add(line);
-				line = pipe.getLine(maxLineLength);
-			});
+				line = pipe.getLine(maxLineLength)
+			};
 			close.value();
-			onSuccess.value(lines.join(Char.nl));
-		});
+			onSuccess.value(lines.join(Char.nl))
+		};
 		^close
 	}
 
-	open { arg commandLine, mode;
+	open { |commandLine, mode|
 		/* open the file. mode is a string passed
 			to popen, so should be one of:
 			"r","w"
 		*/
-		if ((pid = this.prOpen(commandLine, mode)).notNil) {
-			this.addOpenFile;
+		if((pid = this.prOpen(commandLine, mode)).notNil) {
+			this.addOpenFile
 		}
 	}
 
-	openArgv { arg args, mode;
+	openArgv { |args, mode|
 		/* open the file. mode is a string passed
 			to popen, so should be one of:
 			"r","w"
 		*/
-		if ((pid = this.prOpenArgv(args, mode)).notNil) {
-			this.addOpenFile;
+		if((pid = this.prOpenArgv(args, mode)).notNil) {
+			this.addOpenFile
 		}
 	}
 
@@ -260,7 +260,7 @@ Pipe : UnixFILE {
 	}
 
 	// close the file
-	prClose { arg pid;
+	prClose { |pid|
 		// the GC will not call this for you
 		_PipeClose
 		^this.primitiveFailed
@@ -268,7 +268,7 @@ Pipe : UnixFILE {
 
 
 	// PRIVATE
-	prOpen { arg pathName, mode;
+	prOpen { |pathName, mode|
 		/* open the file. mode is a string passed
 			to popen, so should be one of:
 			"r","w"
@@ -277,7 +277,7 @@ Pipe : UnixFILE {
 		^this.primitiveFailed
 	}
 
-	prOpenArgv { arg  args, mode;
+	prOpenArgv { |args, mode|
 		/* open the file with explicit list of arguments. mode is a string passed
 			to popen, so should be one of:
 			"r","w"

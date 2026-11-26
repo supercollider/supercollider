@@ -1,3 +1,4 @@
+//# VERSION 3.16
 /*
 Date.test
 UnitTest.gui
@@ -58,7 +59,7 @@ TestDate : UnitTest {
 		d = Date(2017, 10, 25);
 		this.assertEquals(
 			[d.asSortableString, d.dayOfWeek],
-			[ "20171025000000", 3],
+			["20171025000000", 3],
 			"dayOfWeek is computed");
 
 		this.assertEquals(Date(2017, 10, 31, dayOfWeek: 0).dayOfWeek, 2,
@@ -88,8 +89,8 @@ TestDate : UnitTest {
 			var stampString = orig.stamp;
 			var d = Date.fromString(stampString, "%y%m%d_%H%M%S");
 			this.assertEquals(d, orig,
-				"round trip via string using 'stamp'");
-		}.value;
+				"round trip via string using 'stamp'")
+		}.value
 	}
 
 	test_comparison {
@@ -113,7 +114,7 @@ TestDate : UnitTest {
 		this.assert(Date(2016, 11, 4) == Date(2016, 10, 4 + 31),
 			"Equality");
 		this.assertEquals(Date(2010, 12, 25 - 100), Date(2010, 9, 16),
-			"Day subtraction");
+			"Day subtraction")
 	}
 
 	test_strings {
@@ -130,13 +131,12 @@ TestDate : UnitTest {
 			var d = Date(2013, 12, 11, 10, 9, 8);
 			var d2 = Date.fromString(d.stamp, "%y%m%d_%H%M%S").postln;
 			this.assertEquals(d, d2,
-				"roundtrip to/from string using stamp");
-		}.value;
+				"roundtrip to/from string using stamp")
+		}.value
 	}
 
 	test_resolve {
 		var d = Date(2017, 9, 30, 10, 30);
-		var e;
 		var origVal = [d.dayOfWeek, d.rawSeconds];
 		d.hour = d.hour - 13; // -> Sat Sep 30 -03:30:00 2017
 		d.month = d.month + 4; // -> Sat ??? 30 -03:30:00 2017
@@ -144,7 +144,7 @@ TestDate : UnitTest {
 		this.assertEquals(origVal, [d.dayOfWeek, d.rawSeconds],
 			"dayOfWeek+rawSeconds haven't updated with property modifications");
 		d.resolve;
-		e = Date(2018, 1, 30, 0, 50);
+		var e = Date(2018, 1, 30, 0, 50);
 		this.assertEquals(d, e,
 			"use resolve to fix inconsistencies");
 		this.assertEquals(d.stamp, e.stamp,
@@ -159,6 +159,6 @@ TestDate : UnitTest {
 			"rawSeconds changes don't update other properties");
 		d = Date(rawSeconds: d.rawSeconds);
 		this.assertEquals(d, Date(2000, 1, 11, 13, 46, 40),
-			"resolved rawSeconds using Date constructor");
+			"resolved rawSeconds using Date constructor")
 	}
 }

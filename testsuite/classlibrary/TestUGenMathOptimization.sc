@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestUGenMathOptimization : UnitTest {
 	test_optimizeToSum3 {
 		this.verifyTestCases([
@@ -21,7 +22,7 @@ TestUGenMathOptimization : UnitTest {
 				var bc = b + c;
 				(a + bc) * bc
 			} -> [SinOsc, LFNoise0, DC, '+', '+', '*', Out],
-		]);
+		])
 	}
 
 	test_optimizeToSum4 {
@@ -51,7 +52,7 @@ TestUGenMathOptimization : UnitTest {
 				var c = DC.kr(2);
 				var d = Impulse.kr(3);
 				var abc = a + b + c;
-				(abc + d) * (abc / d);
+				(abc + d) * (abc / d)
 			} -> [SinOsc, LFNoise0, DC, Sum3, Impulse, '+', '/', '*', Out],
 			"a + (b + c + d) should not optimize if (b + c + d) has multiple descendants",
 			{
@@ -60,14 +61,14 @@ TestUGenMathOptimization : UnitTest {
 				var c = DC.kr(2);
 				var d = Impulse.kr(3);
 				var bcd = b + c + d;
-				(a + bcd) * (a / bcd);
+				(a + bcd) * (a / bcd)
 			} -> [SinOsc, LFNoise0, DC, Impulse, Sum3, '+', '/', '*', Out],
 			"a + b when a === b should not optimize",
 			{
 				var x = SinOsc.ar([100, 200, 300]).sum();
 				x + x
 			} -> [SinOsc, SinOsc, SinOsc, Sum3, '+', Out],
-		]);
+		])
 	}
 
 	test_optimizeToMulAdd {
@@ -140,7 +141,7 @@ TestUGenMathOptimization : UnitTest {
 				var sig = SinOsc.kr(0.1) + Rand(-0.02, 0.02);
 				sig + sig
 			} -> [SinOsc, Rand, Sum4, Out]
-		]);
+		])
 	}
 
 	verifyTestCases { |cases|
@@ -148,17 +149,17 @@ TestUGenMathOptimization : UnitTest {
 			// test is function -> array
 			var def = SynthDef(\testMathOp, {
 				var sig = test.key.value;
-				Out.perform(sig.methodSelectorForRate, 0, sig);
+				Out.perform(sig.methodSelectorForRate, 0, sig)
 			}),  // don't need to add
-			ugens = def.children.collect { |ugen|
-				// for math ops, not enough to check class
-				if(ugen.isKindOf(BasicOpUGen)) {
-					ugen.operator
-				} {
-					ugen.class
-				}
-			};
-			this.assertEquals(ugens, test.value, message);
-		};
+				ugens = def.children.collect { |ugen|
+					// for math ops, not enough to check class
+					if(ugen.isKindOf(BasicOpUGen)) {
+						ugen.operator
+					} {
+						ugen.class
+					}
+				};
+			this.assertEquals(ugens, test.value, message)
+		}
 	}
 }

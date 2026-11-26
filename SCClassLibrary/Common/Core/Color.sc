@@ -1,35 +1,35 @@
 Color {
 	var <>red, <>green, <>blue, <>alpha;
 
-	*new { arg red=0.0, green=0.0, blue=0.0, alpha=1.0;
-		^super.newCopyArgs(red, green, blue, alpha);
+	*new { |red = 0.0, green = 0.0, blue = 0.0, alpha = 1.0|
+		^super.newCopyArgs(red, green, blue, alpha)
 	}
-	*new255 { arg red=0, green=0, blue=0, alpha=255;
-		^super.newCopyArgs(red/255, green/255, blue/255, alpha/255);
+	*new255 { |red = 0, green = 0, blue = 0, alpha = 255|
+		^super.newCopyArgs(red / 255, green / 255, blue / 255, alpha / 255)
 	}
-	*fromArray { arg array;
+	*fromArray { |array|
 		^this.new(*array)
 	}
 	*black { ^Color.new(0.0, 0.0, 0.0) }
 	*white { ^Color.new(1.0, 1.0, 1.0) }
-	*red { arg val = 1.0, alpha = 1.0; ^Color.new(min(1,val), max(val-1,0), max(val-1,0), alpha) }
-	*green { arg val = 1.0, alpha = 1.0; ^Color.new(max(val-1,0), min(1,val), max(val-1,0), alpha) }
-	*blue { arg val = 1.0, alpha = 1.0; ^Color.new(max(val-1,0), max(val-1,0), min(1,val), alpha) }
-	*cyan { arg val = 1.0, alpha = 1.0; ^Color.new(max(val-1,0), min(1,val), min(1,val), alpha) }
-	*magenta { arg val = 1.0, alpha = 1.0; ^Color.new(min(1,val), max(val-1,0), min(1,val), alpha) }
-	*yellow { arg val = 1.0, alpha = 1.0; ^Color.new(min(1,val), min(1,val), max(val-1,0), alpha) }
+	*red { |val = 1.0, alpha = 1.0| ^Color.new(min(1, val), max(val - 1, 0), max(val - 1, 0), alpha) }
+	*green { |val = 1.0, alpha = 1.0| ^Color.new(max(val - 1, 0), min(1, val), max(val - 1, 0), alpha) }
+	*blue { |val = 1.0, alpha = 1.0| ^Color.new(max(val - 1, 0), max(val - 1, 0), min(1, val), alpha) }
+	*cyan { |val = 1.0, alpha = 1.0| ^Color.new(max(val - 1, 0), min(1, val), min(1, val), alpha) }
+	*magenta { |val = 1.0, alpha = 1.0| ^Color.new(min(1, val), max(val - 1, 0), min(1, val), alpha) }
+	*yellow { |val = 1.0, alpha = 1.0| ^Color.new(min(1, val), min(1, val), max(val - 1, 0), alpha) }
 	*clear { ^Color.new(0.0, 0.0, 0.0, 0.0) }
-	*grey { arg grey = 0.5, alpha = 1.0;
-		^Color.new(grey, grey, grey, alpha);
+	*grey { |grey = 0.5, alpha = 1.0|
+		^Color.new(grey, grey, grey, alpha)
 	}
-	*gray { arg gray = 0.5, alpha = 1.0;
+	*gray { |gray = 0.5, alpha = 1.0|
 		// synonym
-		^Color.grey(gray, alpha);
+		^Color.grey(gray, alpha)
 	}
 
-	*rand { arg lo=0.3,hi=0.9; ^Color.new(rrand(lo,hi),rrand(lo,hi),rrand(lo,hi)) }
+	*rand { |lo = 0.3, hi = 0.9| ^Color.new(rrand(lo, hi), rrand(lo, hi), rrand(lo, hi)) }
 
-	== { arg that;
+	== { |that|
 		^this.compareObject(that, #[\red, \green, \blue, \alpha])
 	}
 
@@ -40,136 +40,134 @@ Color {
 	scaleByAlpha {
 		^Color.new(red * alpha, green * alpha, blue * alpha, 1.0)
 	}
-	blend { arg that, blend = 0.5;
-		^Color.fromArray(blend(this.asArray, that.asArray, blend));
+	blend { |that, blend = 0.5|
+		^Color.fromArray(blend(this.asArray, that.asArray, blend))
 	}
-	vary { arg val=0.1, lo=0.3, hi=0.9, alphaVal=0;
+	vary { |val = 0.1, lo = 0.3, hi = 0.9, alphaVal = 0|
 		^Color.new(
-			(red + val.rand2).clip(lo,hi),
-			(green + val.rand2).clip(lo,hi),
-			(blue + val.rand2).clip(lo,hi),
-			(alpha + alphaVal.rand2).clip(0,1)
+			(red + val.rand2).clip(lo, hi),
+			(green + val.rand2).clip(lo, hi),
+			(blue + val.rand2).clip(lo, hi),
+			(alpha + alphaVal.rand2).clip(0, 1)
 		)
 	}
-	round { arg val=0.01;
+	round { |val = 0.01|
 		^Color.fromArray([red, green, blue].round(val) ++ alpha)
 	}
 
 	complementary {
 		^Color.new(1.0 - red, 1.0 - green, 1.0 - blue, alpha)
 	}
-	multiply { arg aColor, opacity=1.0;
+	multiply { |aColor, opacity = 1.0|
 		var vals = aColor.asArray;
 		^Color.fromArray(blend(vals, vals * this.asArray, opacity) ++ alpha)
 	}
-	divide { arg aColor, opacity=1.0;
-		var vals = aColor.asArray, d=0.0001 ! 3;
+	divide { |aColor, opacity = 1.0|
+		var vals = aColor.asArray, d = 0.0001 ! 3;
 		^Color.fromArray(blend(vals, ((this.asArray + d) / vals).min(1.0), opacity) ++ alpha)
 	}
-	subtract { arg aColor, opacity=1.0;
+	subtract { |aColor, opacity = 1.0|
 		var vals = aColor.asArray;
 		^Color.fromArray(blend(vals, (this.asArray - vals).max(0.0), opacity) ++ alpha)
 	}
-	add { arg aColor, opacity=1.0;
+	add { |aColor, opacity = 1.0|
 		var vals = aColor.asArray;
 		^Color.fromArray(blend(vals, (vals + this.asArray).min(1.0), opacity) ++ alpha)
 	}
-	symmetricDifference { arg aColor, opacity=1.0;
+	symmetricDifference { |aColor, opacity = 1.0|
 		var vals = aColor.asArray;
 		^Color.fromArray(blend(vals, abs(vals - this.asArray), opacity) ++ alpha)
 	}
-	screen { arg aColor, opacity=1.0;
+	screen { |aColor, opacity = 1.0|
 		var vals = aColor.asArray;
-		^Color.fromArray(blend(vals, (1-vals) * (1-this.asArray), opacity) ++ alpha)
+		^Color.fromArray(blend(vals, (1 - vals) * (1 - this.asArray), opacity) ++ alpha)
 	}
-	lighten  { arg aColor, opacity=1.0;
+	lighten  { |aColor, opacity = 1.0|
 		var vals = aColor.asArray;
 		^Color.fromArray(blend(vals, max(vals, this.asArray), opacity) ++ alpha)
 	}
-	darken { arg aColor, opacity=1.0;
+	darken { |aColor, opacity = 1.0|
 		var vals = aColor.asArray;
 		^Color.fromArray(blend(vals, min(vals, this.asArray), opacity) ++ alpha)
 	}
-	hueBlend { arg aColor, blend=0.0;
+	hueBlend { |aColor, blend = 0.0|
 		var f, b;
 		f = this.asHSV;
 		b = aColor.asHSV;
 		^Color.hsv(blend(f[0], b[0], blend), b[1], b[2], alpha)
 	}
-	saturationBlend { arg aColor, blend=0.0;
+	saturationBlend { |aColor, blend = 0.0|
 		var f, b;
 		f = this.asHSV;
 		b = aColor.asHSV;
 		^Color.hsv(b[0], blend(f[1], b[1], blend), b[2], alpha)
 	}
-	valueBlend { arg aColor, blend=0.0;
+	valueBlend { |aColor, blend = 0.0|
 		var f, b;
 		f = this.asHSV;
 		b = aColor.asHSV;
 		^Color.hsv(b[0], b[1], blend(f[2], b[2], blend), alpha)
 	}
 
-	*hsv { arg hue, sat, val, alpha=1;
-			var r, g, b, segment, fraction, t1, t2, t3;
-			hue = hue.linlin(0, 1, 0, 360);
-			if( sat == 0 )
-				{ r = g = b = val }
-				{
-						segment = floor( hue/60 )%6;
-						fraction = ( hue/60 - segment );
-						t1 = val * (1 - sat);
-						t2 = val * (1 - (sat * fraction));
-						t3 = val * (1 - (sat * (1 - fraction)));
-						if( segment == 0, { r=val; g=t3; b=t1 });
-						if( segment == 1, { r=t2; g = val; b=t1 });
-						if( segment == 2, { r=t1; g=val; b=t3 });
-						if( segment == 3, { r=t1; g=t2; b=val });
-						if( segment == 4, { r=t3; g=t1; b=val });
-						if( segment == 5, { r=val; g=t1; b=t2 });
-				};
-			//[r, g, b].postln;
-			^this.new(r, g, b, alpha);
+	*hsv { |hue, sat, val, alpha = 1|
+		var r, g, b, segment, fraction, t1, t2, t3;
+		hue = hue.linlin(0, 1, 0, 360);
+		if(sat == 0) { r = g = b = val } {
+			segment = floor(hue / 60) % 6;
+			fraction = (hue / 60 - segment);
+			t1 = val * (1 - sat);
+			t2 = val * (1 - (sat * fraction));
+			t3 = val * (1 - (sat * (1 - fraction)));
+			if(segment == 0) { r = val; g = t3; b = t1 };
+			if(segment == 1) { r = t2; g = val; b = t1 };
+			if(segment == 2) { r = t1; g = val; b = t3 };
+			if(segment == 3) { r = t1; g = t2; b = val };
+			if(segment == 4) { r = t3; g = t1; b = val };
+			if(segment == 5) { r = val; g = t1; b = t2 }
+		};
+		//[r, g, b].postln;
+		^this.new(r, g, b, alpha)
 	}
 
 	asHSV {
 		var max, min, delta, hue, sat, val;
-		max = [red,green,blue].maxItem;
-		min = [red,green,blue].minItem;
+		max = [red, green, blue].maxItem;
+		min = [red, green, blue].minItem;
 		delta = max - min;
-		if (red == max, {hue = (green - blue) / delta});
-		if (green == max, {hue = (blue - red) / delta + 2});
-		if (blue == max, {hue = (red - green) / delta + 4});
-		hue = hue/6;
-		if (hue < 0, {hue = hue + 1});
-		if (hue.isNaN, {hue = 0.0});
+		if(red == max) { hue = (green - blue) / delta };
+		if(green == max) { hue = (blue - red) / delta + 2 };
+		if(blue == max) { hue = (red - green) / delta + 4 };
+		hue = hue / 6;
+		if(hue < 0) { hue = hue + 1 };
+		if(hue.isNaN) { hue = 0.0 };
 		sat = delta / max;
-		if (sat.isNaN, {sat = 0.0});
+		if(sat.isNaN) { sat = 0.0 };
 		val = max;
 		^[hue, sat, val, alpha]
 	}
 
 	asArray { ^[red, green, blue, alpha] }
 
-	printOn { arg stream;
+	printOn { |stream|
 		var title;
 		stream << this.class.name;
-		this.storeParamsOn(stream);
+		this.storeParamsOn(stream)
 	}
-	storeArgs { ^[red,green,blue,alpha] }
+	storeArgs { ^[red, green, blue, alpha] }
 
 	// FIXME The following GUI redirections are rather ugly.
 	// Shall we make GUI.color instead, and then SwingColor, QColor etc. ?
 
 	setStroke {
-		Pen.strokeColor = this;
+		Pen.strokeColor = this
 	}
 
 	setFill {
-		Pen.fillColor = this;
+		Pen.fillColor = this
 	}
 
 	set {
-		this.setStroke.setFill;
+		this.setStroke.setFill
 	}
 
 	hexString { // ignores alpha
@@ -181,19 +179,19 @@ Color {
 
 	}
 
-	*fromHexString {|string|
+	*fromHexString { |string|
 		var digits, red, green, blue;
-		if(string[0] == $#, {string = string.copyToEnd(1)});
-		digits = string.collectAs({|chr|
+		if(string[0] == $#) { string = string.copyToEnd(1) };
+		digits = string.collectAs({ |chr|
 			var val = chr.digit;
-			if(val>15, { "hex value 0x% out of bounds - clipping to 0xF".format(chr).warn });
-			val.min(15);
+			if(val > 15) { "hex value 0x% out of bounds - clipping to 0xF".format(chr).warn };
+			val.min(15)
 		}, Array);
-		if(digits.size == 3, { digits = digits.dupEach(2) });
+		if(digits.size == 3) { digits = digits.dupEach(2) };
 		red = digits[0] * 16 + digits[1];
 		green = digits[2] * 16 + digits[3];
 		blue = digits[4] * 16 + digits[5];
-		^this.new255(red, green, blue, 255);
+		^this.new255(red, green, blue, 255)
 	}
 }
 

@@ -15,112 +15,112 @@ Node {
 			t: 1,
 			// valid action numbers should stay the same
 			0: 0, 1: 1, 2: 2, 3: 3, 4: 4
-		);
+		)
 	}
 
-	*basicNew { arg server, nodeID;
+	*basicNew { |server, nodeID|
 		server = server ? Server.default;
 		^super.newCopyArgs(nodeID ?? { server.nextNodeID }, server)
 	}
 
-	*actionNumberFor { arg addAction = (\addToHead);
+	*actionNumberFor { |addAction = (\addToHead)|
 		^addActions[addAction]
 	}
 
-	free { arg sendFlag = true;
-		if(sendFlag, {
-			server.sendMsg(11, nodeID); //"/n_free"
-		});
+	free { |sendFlag = true|
+		if(sendFlag) {
+			server.sendMsg(11, nodeID) //"/n_free"
+		};
 		group = nil;
 		isPlaying = false;
-		isRunning = false;
+		isRunning = false
 	}
 
 	freeMsg { ^[11, nodeID] }
 
-	run { arg flag = true;
-		server.sendMsg(12, nodeID, flag.binaryValue); //"/n_run"
+	run { |flag = true|
+		server.sendMsg(12, nodeID, flag.binaryValue) //"/n_run"
 	}
 
-	runMsg { arg flag=true;
-		^[12, nodeID, flag.binaryValue]; //"/n_run"
+	runMsg { |flag = true|
+		^[12, nodeID, flag.binaryValue] //"/n_run"
 	}
 
-	map { arg ... args;
+	map { |... args|
 		var	bundle = this.mapMsg(*args);
 		if(bundle[0].isString) {
-			server.sendBundle(nil, bundle);
+			server.sendBundle(nil, bundle)
 		} {
-			server.sendBundle(nil, *bundle);
-		};
+			server.sendBundle(nil, *bundle)
+		}
 	}
 
-	mapMsg { arg ... args;
+	mapMsg { |... args|
 		var krVals, arVals, result;
 		krVals = List.new;
 		arVals = List.new;
 		result = Array.new(2);
-		args.pairsDo({ arg control, bus;
+		args.pairsDo({ |control, bus|
 			bus = bus.asBus;
 			switch(bus.rate)
-			{ \control } {
-				krVals.addAll([control.asControlInput, bus.index, bus.numChannels])
-			}
-			{ \audio } {
-				arVals.addAll([control.asControlInput, bus.index, bus.numChannels])
-			};
+				{ \control } {
+					krVals.addAll([control.asControlInput, bus.index, bus.numChannels])
+				}
+				{ \audio } {
+					arVals.addAll([control.asControlInput, bus.index, bus.numChannels])
+				}
 			// no default case, ignore others
 		});
-		if(krVals.size > 0, { result = result.add(["/n_mapn", nodeID] ++ krVals) });
-		if(arVals.size > 0, { result = result.add(["/n_mapan", nodeID] ++ arVals) });
-		if(result.size < 2, { result = result.flatten; });
-		^result;
+		if(krVals.size > 0) { result = result.add(["/n_mapn", nodeID] ++ krVals) };
+		if(arVals.size > 0) { result = result.add(["/n_mapan", nodeID] ++ arVals) };
+		if(result.size < 2) { result = result.flatten };
+		^result
 	}
 
-	mapn { arg ... args;
-		server.sendMsg(48, nodeID, *(args.asControlInput)); //"/n_mapn"
+	mapn { |... args|
+		server.sendMsg(48, nodeID, *(args.asControlInput)) //"/n_mapn"
 	}
 
-	mapnMsg { arg ... args;
-		^[48, nodeID] ++ args.asControlInput; //"/n_mapn"
+	mapnMsg { |... args|
+		^[48, nodeID] ++ args.asControlInput //"/n_mapn"
 	}
 
-	set { arg ... args;
-		server.sendMsg(15, nodeID, *(args.asOSCArgArray)); //"/n_set"
+	set { |... args|
+		server.sendMsg(15, nodeID, *(args.asOSCArgArray)) //"/n_set"
 	}
 
-	setMsg { arg ... args;
-		^[15, nodeID] ++ args.asOSCArgArray; 	 //"/n_set"
+	setMsg { |... args|
+		^[15, nodeID] ++ args.asOSCArgArray 	 //"/n_set"
 	}
 
-	setn { arg ... args;
-		server.sendMsg(*this.setnMsg(*args));
+	setn { |... args|
+		server.sendMsg(*this.setnMsg(*args))
 	}
 
-	*setnMsgArgs{ arg ... args;
+	*setnMsgArgs{ |... args|
 		var nargs = List.new;
 		args = args.asControlInput;
-		args.pairsDo { arg control, moreVals;
-			if(moreVals.isArray, {
-				nargs.addAll([control, moreVals.size]++ moreVals);
-			}, {
-				nargs.addAll([control, 1, moreVals]);
-			});
+		args.pairsDo { |control, moreVals|
+			if(moreVals.isArray) {
+				nargs.addAll([control, moreVals.size] ++ moreVals)
+			} {
+				nargs.addAll([control, 1, moreVals])
+			}
 		};
 		^nargs
 	}
 
-	setnMsg { arg ... args;
-		^[16, nodeID] ++ Node.setnMsgArgs(*args);
+	setnMsg { |... args|
+		^[16, nodeID] ++ Node.setnMsgArgs(*args)
 		// "n_setn"
 	}
 
-	fill { arg controlName, numControls, value ... args;
-		server.sendMsg(17, nodeID, controlName, numControls, value, *(args.asControlInput));//"n_fill"
+	fill { |controlName, numControls, value ... args|
+		server.sendMsg(17, nodeID, controlName, numControls, value, *(args.asControlInput))//"n_fill"
 	}
 
-	fillMsg { arg controlName, numControls, value ... args;
-		^[17, nodeID, controlName, numControls, value] ++ args.asControlInput; //"n_fill"
+	fillMsg { |controlName, numControls, value ... args|
+		^[17, nodeID, controlName, numControls, value] ++ args.asControlInput //"n_fill"
 	}
 
 	release { |releaseTime|
@@ -129,20 +129,20 @@ Node {
 
 	releaseMsg { |releaseTime|
 		//assumes a control called 'gate' in the synth
-		if (releaseTime.notNil) {
-			if (releaseTime <= 0) {
-				releaseTime = -1;
+		if(releaseTime.notNil) {
+			if(releaseTime <= 0) {
+				releaseTime = -1
 			} {
-				releaseTime = (releaseTime+1).neg;
-			};
+				releaseTime = (releaseTime + 1).neg
+			}
 		} {
-			releaseTime = 0;
+			releaseTime = 0
 		};
 		^[15, nodeID, \gate, releaseTime]
 	}
 
 	trace {
-		server.sendMsg(10, nodeID);//"/n_trace"
+		server.sendMsg(10, nodeID)//"/n_trace"
 	}
 
 	query { |action|
@@ -154,7 +154,7 @@ Node {
 						++ "%\nParent: %\nPrev: %\nNext: %\n"
 						++ if(group, "Head: %\nTail: %\n\n", "\n"),
 					argnodeID, parent, prev, next, head, tail
-				);
+				)
 			}
 		};
 		OSCFunc({ |msg|
@@ -163,7 +163,7 @@ Node {
 		server.sendMsg('/n_query', nodeID)
 	}
 
-	register { arg assumePlaying = false;
+	register { |assumePlaying = false|
 		NodeWatcher.register(this, assumePlaying)
 	}
 
@@ -171,70 +171,70 @@ Node {
 		NodeWatcher.unregister(this)
 	}
 
-	onFree { arg func;
-		var f = {|n, m|
+	onFree { |func|
+		var f = { |n, m|
 			if(m == \n_end) {
 				func.value(this, m);
-				this.removeDependant(f);
+				this.removeDependant(f)
 			}
 		};
 		this.register;
-		this.addDependant(f);
+		this.addDependant(f)
 	}
 
 	waitForFree {
 		var c = Condition.new;
-		this.onFree({c.unhang});
-		c.hang;
+		this.onFree({ c.unhang });
+		c.hang
 	}
 
-	moveBefore { arg aNode;
+	moveBefore { |aNode|
 		group = aNode.group;
-		server.sendMsg(18, nodeID, aNode.nodeID); //"/n_before"
+		server.sendMsg(18, nodeID, aNode.nodeID) //"/n_before"
 	}
 
-	moveAfter { arg aNode;
+	moveAfter { |aNode|
 		group = aNode.group;
-		server.sendMsg(19, nodeID, aNode.nodeID); //"/n_after"
+		server.sendMsg(19, nodeID, aNode.nodeID) //"/n_after"
 	}
 
-	moveToHead { arg aGroup;
-		(aGroup ? server.defaultGroup).moveNodeToHead(this);
+	moveToHead { |aGroup|
+		(aGroup ? server.defaultGroup).moveNodeToHead(this)
 	}
 
-	moveToTail { arg aGroup;
-		(aGroup ? server.defaultGroup).moveNodeToTail(this);
+	moveToTail { |aGroup|
+		(aGroup ? server.defaultGroup).moveNodeToTail(this)
 	}
 
 	// message creating methods
-	moveBeforeMsg { arg aNode;
+	moveBeforeMsg { |aNode|
 		group = aNode.group;
-		^[18, nodeID, aNode.nodeID];//"/n_before"
+		^[18, nodeID, aNode.nodeID]//"/n_before"
 	}
 
-	moveAfterMsg { arg aNode;
+	moveAfterMsg { |aNode|
 		group = aNode.group;
-		^[19, nodeID, aNode.nodeID]; //"/n_after"
+		^[19, nodeID, aNode.nodeID] //"/n_after"
 	}
 
-	moveToHeadMsg { arg aGroup;
-		^(aGroup ? server.defaultGroup).moveNodeToHeadMsg(this);
+	moveToHeadMsg { |aGroup|
+		^(aGroup ? server.defaultGroup).moveNodeToHeadMsg(this)
 	}
 
-	moveToTailMsg { arg aGroup;
-		^(aGroup ? server.defaultGroup).moveNodeToTailMsg(this);
+	moveToTailMsg { |aGroup|
+		^(aGroup ? server.defaultGroup).moveNodeToTailMsg(this)
 	}
 
-	*orderNodesMsg { arg nodes;
+	*orderNodesMsg { |nodes|
 		var msg = [19]; // "/n_after"
 		nodes.doAdjacentPairs { |first, toMoveAfter|
 			msg = msg.add(toMoveAfter.nodeID);
-			msg = msg.add(first.nodeID);
+			msg = msg.add(first.nodeID)
 		};
 		^msg
 	}
 
-	== { arg that;
+	== { |that|
 		^this.compareObject(that, #[\nodeID, \server])
 	}
 
@@ -242,7 +242,7 @@ Node {
 		^this.instVarHash(#[\nodeID, \server])
 	}
 
-	printOn { arg stream; stream << this.class.name << "(" << nodeID <<")" }
+	printOn { |stream| stream << this.class.name << "(" << nodeID << ")" }
 	asUGenInput { Error("should not use a % inside a SynthDef".format(this.class.name)).throw }
 	asControlInput { ^this.nodeID }
 
@@ -252,7 +252,7 @@ Node {
 AbstractGroup : Node {
 
 	/** immediately sends **/
-	*new { arg target, addAction=\addToHead;
+	*new { |target, addAction = \addToHead|
 		var group, server, addActionID;
 		target = target.asTarget;
 		server = target.server;
@@ -263,7 +263,7 @@ AbstractGroup : Node {
 		^group
 	}
 
-	newMsg { arg target, addAction = \addToHead;
+	newMsg { |target, addAction = \addToHead|
 		var addActionID;
 		// if target is nil set to default group of server specified when basicNew was called
 		target = target.asTarget;
@@ -273,56 +273,56 @@ AbstractGroup : Node {
 	}
 
 	// for bundling
-	addToHeadMsg { arg aGroup;
+	addToHeadMsg { |aGroup|
 		// if aGroup is nil set to default group of server specified when basicNew was called
 		group = (aGroup ? server.defaultGroup);
 		^[this.class.creationCmd, nodeID, 0, group.nodeID]
 	}
 
-	addToTailMsg { arg aGroup;
+	addToTailMsg { |aGroup|
 		// if aGroup is nil set to default group of server specified when basicNew was called
 		group = (aGroup ? server.defaultGroup);
 		^[this.class.creationCmd, nodeID, 1, group.nodeID]
 	}
 
-	addAfterMsg { arg aNode;
+	addAfterMsg { |aNode|
 		group = aNode.group;
 		^[this.class.creationCmd, nodeID, 3, aNode.nodeID]
 	}
 
-	addBeforeMsg { arg aNode;
+	addBeforeMsg { |aNode|
 		group = aNode.group;
 		^[this.class.creationCmd, nodeID, 2, aNode.nodeID]
 	}
 
-	addReplaceMsg { arg nodeToReplace;
+	addReplaceMsg { |nodeToReplace|
 		group = nodeToReplace.group;
 		^[this.class.creationCmd, nodeID, 4, nodeToReplace.nodeID]
 	}
 
-	*after { arg aNode;   ^this.new(aNode, \addAfter) }
-	*before { arg aNode; 	^this.new(aNode, \addBefore) }
-	*head { arg aGroup; 	^this.new(aGroup, \addToHead) }
-	*tail { arg aGroup; 	^this.new(aGroup, \addToTail) }
-	*replace { arg nodeToReplace; ^this.new(nodeToReplace, \addReplace) }
+	*after { |aNode| ^this.new(aNode, \addAfter) }
+	*before { |aNode| ^this.new(aNode, \addBefore) }
+	*head { |aGroup| ^this.new(aGroup, \addToHead) }
+	*tail { |aGroup| ^this.new(aGroup, \addToTail) }
+	*replace { |nodeToReplace| ^this.new(nodeToReplace, \addReplace) }
 
 	// move Nodes to this group
-	moveNodeToHead { arg aNode;
+	moveNodeToHead { |aNode|
 		aNode.group = this;
 		server.sendMsg(22, nodeID, aNode.nodeID) //"/g_head"
 	}
 
-	moveNodeToTail { arg aNode;
+	moveNodeToTail { |aNode|
 		aNode.group = this;
 		server.sendMsg(23, nodeID, aNode.nodeID) //"/g_tail"
 	}
 
-	moveNodeToHeadMsg { arg aNode;
+	moveNodeToHeadMsg { |aNode|
 		aNode.group = this;
 		^[22, nodeID, aNode.nodeID]	   //"/g_head"
 	}
 
-	moveNodeToTailMsg { arg aNode;
+	moveNodeToTailMsg { |aNode|
 		aNode.group = this;
 		^[23, nodeID, aNode.nodeID]	  //g_tail
 	}
@@ -346,65 +346,65 @@ AbstractGroup : Node {
 	}
 
 	// Introspection
-	dumpTree { arg postControls = false;
+	dumpTree { |postControls = false|
 		server.sendMsg("/g_dumpTree", nodeID, postControls.binaryValue)
 	}
 
 	queryTree { //|action|
 		var resp, done = false;
-		resp = OSCFunc({ arg msg;
+		resp = OSCFunc({ |msg|
 			var i = 2, tabs = 0, printControls = false, dumpFunc;
-			if(msg[1] != 0, { printControls = true });
+			if(msg[1] != 0) { printControls = true };
 			("NODE TREE Group" + msg[2]).postln;
-			if(msg[3] > 0, {
-				dumpFunc = {|numChildren|
+			if(msg[3] > 0) {
+				dumpFunc = { |numChildren|
 					var j;
 					tabs = tabs + 1;
-					numChildren.do({
-						if(msg[i + 1] >=0, {i = i + 2}, {
-							i = i + 3 + if(printControls, { msg[i + 3] * 2 + 1 }, { 0 });
-						});
-						tabs.do({ "  ".post });
+					numChildren.do {
+						if(msg[i + 1] >= 0) { i = i + 2 } {
+							i = i + 3 + if(printControls) { msg[i + 3] * 2 + 1 } { 0 }
+						};
+						tabs.do { "  ".post };
 						msg[i].post; // nodeID
-						if(msg[i + 1] >= 0, {
+						if(msg[i + 1] >= 0) {
 							" group".postln;
-							if(msg[i + 1] > 0, { dumpFunc.value(msg[i + 1]) });
-						}, {
+							if(msg[i + 1] > 0) { dumpFunc.value(msg[i + 1]) }
+						} {
 							(" " ++ msg[i + 2]).postln; // defname
-							if(printControls, {
-								if(msg[i + 3] > 0, {
+							if(printControls) {
+								if(msg[i + 3] > 0) {
 									" ".post;
-									tabs.do({ "  ".post });
-								});
+									tabs.do { "  ".post }
+								};
 								j = 0;
-								msg[i + 3].do({
+								msg[i + 3].do {
 									" ".post;
-									if(msg[i + 4 + j].isMemberOf(Symbol), {
-										(msg[i + 4 + j] ++ ": ").post;
-									});
+									if(msg[i + 4 + j].isMemberOf(Symbol)) {
+										(msg[i + 4 + j] ++ ": ").post
+									};
 									msg[i + 5 + j].post;
-									j = j + 2;
-								});
-								"\n".post;
-							});
-						});
-					});
-					tabs = tabs - 1;
+									j = j + 2
+								};
+								"\n".post
+							}
+						}
+					};
+					tabs = tabs - 1
 				};
-				dumpFunc.value(msg[3]);
-			});
+				dumpFunc.value(msg[3])
+			};
 
 			//				action.value(msg);
-			done = true;
+			done = true
 		}, '/g_queryTree.reply', server.addr).oneShot;
 
 		server.sendMsg("/g_queryTree", nodeID);
 
 		SystemClock.sched(3, {
-			if(done.not, {
+			if(done.not) {
 				resp.free;
-				"Server failed to respond to Group:queryTree!".warn;
-			})
+				"Server failed to respond to Group:queryTree!".warn
+			}
 		})
 	}
 
@@ -425,7 +425,7 @@ Synth : Node {
 	var <>defName;
 
 	/** immediately sends **/
-	*new { arg defName, args, target, addAction=\addToHead;
+	*new { |defName, args, target, addAction = \addToHead|
 		var synth, server, addActionID;
 		target = target.asTarget;
 		server = target.server;
@@ -440,7 +440,7 @@ Synth : Node {
 		^synth
 	}
 
-	*newPaused { arg defName, args, target, addAction=\addToHead;
+	*newPaused { |defName, args, target, addAction = \addToHead|
 		var synth, server, addActionID;
 		target = target.asTarget;
 		server = target.server;
@@ -448,11 +448,11 @@ Synth : Node {
 		synth = this.basicNew(defName, server);
 		synth.group = if(addActionID < 2) { target } { target.group };
 		server.sendBundle(nil, [9, defName, synth.nodeID, addActionID, target.nodeID] ++
-			args.asOSCArgArray, [12, synth.nodeID, 0]); // "s_new" + "/n_run"
+				args.asOSCArgArray, [12, synth.nodeID, 0]); // "s_new" + "/n_run"
 		^synth
 	}
 
-	*replace { arg nodeToReplace, defName, args, sameID=false;
+	*replace { |nodeToReplace, defName, args, sameID = false|
 		var synth, server, newNodeID;
 		if(sameID) { newNodeID = nodeToReplace.nodeID };
 		server = nodeToReplace.server;
@@ -469,67 +469,67 @@ Synth : Node {
 	}
 
 	// does not send (used for bundling)
-	*basicNew { arg defName, server, nodeID;
+	*basicNew { |defName, server, nodeID|
 		^super.basicNew(server, nodeID).defName_(defName.asDefName)
 	}
 
-	newMsg { arg target, args, addAction = \addToHead;
+	newMsg { |target, args, addAction = \addToHead|
 		var addActionID = addActions[addAction];
 		target = target.asTarget;
 		group = if(addActionID < 2) { target } { target.group };
 		^[9, defName, nodeID, addActionID, target.nodeID] ++ args.asOSCArgArray //"/s_new"
 	}
 
-	*after { arg aNode, defName, args;
+	*after { |aNode, defName, args|
 		^this.new(defName, args, aNode, \addAfter)
 	}
 
-	*before { arg aNode, defName, args;
+	*before { |aNode, defName, args|
 		^this.new(defName, args, aNode, \addBefore)
 	}
 
-	*head { arg aGroup, defName, args;
+	*head { |aGroup, defName, args|
 		^this.new(defName, args, aGroup, \addToHead)
 	}
 
-	*tail { arg aGroup, defName, args;
+	*tail { |aGroup, defName, args|
 		^this.new(defName, args, aGroup, \addToTail)
 	}
 
-	replace { arg defName, args, sameID;
+	replace { |defName, args, sameID|
 		^this.class.replace(this, defName, args, sameID)
 	}
 
 	// for bundling
-	addToHeadMsg { arg aGroup, args;
+	addToHeadMsg { |aGroup, args|
 		// if aGroup is nil set to default group of server specified when basicNew was called
 		group = (aGroup ? server.defaultGroup);
 		^[9, defName, nodeID, 0, group.nodeID] ++ args.asOSCArgArray	// "/s_new"
 	}
 
-	addToTailMsg { arg aGroup, args;
+	addToTailMsg { |aGroup, args|
 		// if aGroup is nil set to default group of server specified when basicNew was called
 		group = (aGroup ? server.defaultGroup);
 		^[9, defName, nodeID, 1, group.nodeID] ++ args.asOSCArgArray // "/s_new"
 	}
 
-	addAfterMsg { arg aNode, args;
+	addAfterMsg { |aNode, args|
 		group = aNode.group;
 		^[9, defName, nodeID, 3, aNode.nodeID] ++ args.asOSCArgArray // "/s_new"
 	}
 
-	addBeforeMsg { arg aNode, args;
+	addBeforeMsg { |aNode, args|
 		group = aNode.group;
 		^[9, defName, nodeID, 2, aNode.nodeID] ++ args.asOSCArgArray // "/s_new"
 	}
 
-	addReplaceMsg { arg nodeToReplace, args;
+	addReplaceMsg { |nodeToReplace, args|
 		group = nodeToReplace.group;
 		^[9, defName, nodeID, 4, nodeToReplace.nodeID] ++ args.asOSCArgArray // "/s_new"
 	}
 
 	// nodeID -1
-	*grain { arg defName, args, target, addAction=\addToHead;
+	*grain { |defName, args, target, addAction = \addToHead|
 		var server;
 		target = target.asTarget;
 		server = target.server;
@@ -538,64 +538,64 @@ Synth : Node {
 		^nil
 	}
 
-	get { arg index, action;
+	get { |index, action|
 		OSCFunc({ |message|
 			// The server replies with a message of the form
 			// [/n_set, node ID, index, value].
 			// We want "value," which is at index 3.
-			action.value(message[3]);
+			action.value(message[3])
 		}, \n_set, server.addr, argTemplate: [nodeID, index]).oneShot;
 		server.sendMsg(44, nodeID, index)	//"/s_get"
 	}
 
-	getMsg { arg index;
+	getMsg { |index|
 		^[44, nodeID, index]	//"/s_get"
 	}
 
-	getn { arg index, count, action;
+	getn { |index, count, action|
 		OSCFunc({ |message|
 			// The server replies with a message of the form
 			// [/n_setn, node ID, index, count, ...values].
 			// We want "values," which are at indexes 4 and above.
-			action.value(message[4..]);
+			action.value(message[4..])
 		}, \n_setn, server.addr, argTemplate: [nodeID, index]).oneShot;
 		server.sendMsg(45, nodeID, index, count) //"/s_getn"
 	}
 
-	getnMsg { arg index, count;
+	getnMsg { |index, count|
 		^[45, nodeID, index, count] //"/s_getn"
 	}
 
-	seti { arg ... args; // args are [key, index, value, key, index, value ...]
+	seti { |... args| // args are [key, index, value, key, index, value ...]
 		var msg = Array.new(args.size div: 3 * 2);
 		var synthDesc = SynthDescLib.at(defName.asSymbol);
 		if(synthDesc.isNil) {
 			"message seti failed, because SynthDef % was not added.".format(defName).warn;
 			^this
 		};
-		forBy(0, args.size-1, 3, { |i|
-			var key = args[i], offset = args[i+1], value = args[i+2];
+		forBy(0, args.size - 1, 3) { |i|
+			var key = args[i], offset = args[i + 1], value = args[i + 2];
 			var controlName = synthDesc.controlDict[key];
 			if(controlName.notNil and: { offset < controlName.numChannels }) {
-				msg.add(controlName.index+offset);
+				msg.add(controlName.index + offset);
 				if(value.isArray) {
 					msg.add(value.keep(controlName.numChannels - offset))
 				} {
 					msg.add(value)
 				}
 			}
-		});
+		};
 		server.sendMsg("/n_set", nodeID, *msg.asOSCArgArray)
 	}
 
-	printOn { arg stream; stream << this.class.name << "(" <<< defName << " : " << nodeID <<")" }
+	printOn { |stream| stream << this.class.name << "(" <<< defName << " : " << nodeID << ")" }
 }
 
 RootNode : Group {
 
 	classvar <roots;
 
-	*new { arg server;
+	*new { |server|
 		server = server ? Server.default;
 		^(roots.at(server.name) ?? {
 			^super.basicNew(server, 0).rninit
@@ -605,10 +605,10 @@ RootNode : Group {
 	rninit {
 		roots.put(server.name, this);
 		isPlaying = isRunning = true;
-		group = this; // self
+		group = this // self
 	}
 
-	*initClass { roots = IdentityDictionary.new; }
+	*initClass { roots = IdentityDictionary.new }
 
 	run { "run has no effect on RootNode".warn }
 	free { "free has no effect on RootNode".warn }
@@ -618,7 +618,7 @@ RootNode : Group {
 	moveToTail{ "moveToTail has no effect on RootNode".warn }
 
 	*freeAll {
-		roots.do({ arg rn; rn.freeAll })
+		roots.do { |rn| rn.freeAll }
 	}
 }
 

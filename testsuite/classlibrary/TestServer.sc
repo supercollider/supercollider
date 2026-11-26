@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestServer : UnitTest {
 
 	var big, server;
@@ -7,7 +8,7 @@ TestServer : UnitTest {
 		var f, condition, bundleSize;
 		var condvar = CondVar();
 
-		f = big.copyRange(0, (size ? big.size)-1);
+		f = big.copyRange(0, (size ? big.size) - 1);
 		bundleSize = f.bundleSize;
 
 		condition = Condition.new;
@@ -37,7 +38,7 @@ TestServer : UnitTest {
 
 	tearDown {
 		server.quitSync;
-		server.remove;
+		server.remove
 	}
 
 	setUp {
@@ -50,6 +51,7 @@ TestServer : UnitTest {
 		// 76 messages
 		// big.size.debug("big size");
 
+		// sc-format off
 		big = [
 			[
 				"/d_recv",
@@ -1326,18 +1328,19 @@ TestServer : UnitTest {
 			[ "/b_allocRead", 13, ExampleFiles.child, 0, -1, nil ],
 			[ "/b_allocRead", 14, ExampleFiles.child, 0, -1, nil ]
 		];
+		// sc-format on
 
 	}
 
 	// regression: recorder.recHeaderFormat didn't update after first time it's set
 	test_recorder_usesRecHeaderFormatFromServer {
 		var origFormat = server.recHeaderFormat,
-		    newFormat = if(origFormat == "wav"){ "aiff" }{ "wav" };
+			newFormat = if(origFormat == "wav") { "aiff" } { "wav" };
 		server.prepareForRecord();
 		server.recHeaderFormat = newFormat;
 		server.prepareForRecord();
 		this.assertEquals(server.recorder.recHeaderFormat, newFormat, "server.recorder should always use latest server.recHeaderFormat");
-		server.recHeaderFormat = origFormat;
+		server.recHeaderFormat = origFormat
 	}
 
 }

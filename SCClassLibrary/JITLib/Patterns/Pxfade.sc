@@ -1,12 +1,12 @@
 PfadeIn : FilterPattern {
-	var <>fadeTime, <>holdTime=0, <>tolerance;
+	var <>fadeTime, <>holdTime = 0, <>tolerance;
 
-	*new { arg pattern, fadeTime=1.0, holdTime=0.0, tolerance=0.0001;
+	*new { |pattern, fadeTime = 1.0, holdTime = 0.0, tolerance = 0.0001|
 		^super.new(pattern).fadeTime_(fadeTime).holdTime_(holdTime).tolerance_(tolerance)
 	}
 
-	embedInStream { arg inval;
-		var outval, elapsed=0, stream, c;
+	embedInStream { |inval|
+		var outval, elapsed = 0, stream, c;
 
 		stream = pattern.asStream;
 
@@ -19,24 +19,24 @@ PfadeIn : FilterPattern {
 			c = elapsed / fadeTime;
 			if(c >= 1.0) {
 				inval = outval.yield;
-				^stream.embedInStream(inval);
+				^stream.embedInStream(inval)
 			} {
 				outval = outval.copy;
 				outval[\amp] = c.max(0) * outval[\amp];
 				//	outval[\amp] = (c.max(0) * pi * 0.25).sin * outval[\amp];
 
-				inval = outval.yield;
+				inval = outval.yield
 			}
 		}
 	}
 
-	storeArgs { ^[ pattern, fadeTime, holdTime, tolerance ] }
+	storeArgs { ^[pattern, fadeTime, holdTime, tolerance] }
 }
 
 PfadeOut : PfadeIn {
 
-	embedInStream { arg inval;
-		var outval, elapsed=0, cleanup, stream, c;
+	embedInStream { |inval|
+		var outval, elapsed = 0, cleanup, stream, c;
 		stream = pattern.asStream;
 		cleanup = EventStreamCleanup.new;
 		loop {
@@ -45,15 +45,15 @@ PfadeOut : PfadeIn {
 
 			elapsed = elapsed + inval.delta;
 			if(elapsed.round(tolerance) <= holdTime) {
-				inval = inval.yield;
+				inval = inval.yield
 			} {
 				c = elapsed - holdTime / fadeTime;
 				if(c >= 1.0) {
-					^cleanup.exit(inval);
+					^cleanup.exit(inval)
 				} {
 					inval[\amp] = (1.0 - c.max(0)) * inval[\amp];
 
-					inval = inval.yield;
+					inval = inval.yield
 				}
 			}
 		}
@@ -63,11 +63,11 @@ PfadeOut : PfadeIn {
 PfinQuant : FilterPattern {
 	var <>quant, <>clock;
 
-	*new { arg pattern, quant, clock;
+	*new { |pattern, quant, clock|
 		^super.new(pattern).quant_(quant).clock_(clock)
 	}
 
-	embedInStream { arg inval;
+	embedInStream { |inval|
 		var value, stream = pattern.asStream;
 		var referenceClock = clock ? thisThread.clock;
 		var endAt = quant.nextTimeOnGrid(referenceClock);
@@ -75,7 +75,7 @@ PfinQuant : FilterPattern {
 			value = stream.next(inval);
 			value.notNil and: { referenceClock.beats < endAt }
 		} {
-			inval = value.yield;
+			inval = value.yield
 		};
 		^inval
 	}

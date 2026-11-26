@@ -4,12 +4,12 @@ Pair : Collection {
 
 	var <>linkDown, <>linkAcross;
 
-	*new { arg linkDown, linkAcross;
+	*new { |linkDown, linkAcross|
 		^super.newCopyArgs(linkDown, linkAcross)
 	}
 
 	// create from nested array
-	*newFrom { arg collection;
+	*newFrom { |collection|
 		var linkDown = collection.at(0);
 		var linkAcross = collection.at(1);
 		if(linkDown.isKindOf(Collection)) { linkDown = this.newFrom(linkDown) };
@@ -18,87 +18,89 @@ Pair : Collection {
 	}
 
 
-	size { var i = 0, link;
+	size {
+		var i = 0, link;
 		link = linkAcross;
-		while ({ link.respondsTo('linkAcross') },{
+		while { link.respondsTo('linkAcross') } {
 			i = i + 1;
-			link = link.linkAcross;
-		});
+			link = link.linkAcross
+		};
 		^i
 	}
-	depth { var i = 0, link;
+	depth {
+		var i = 0, link;
 		link = linkDown;
-		while ({ link.respondsTo('linkDown') },{
+		while { link.respondsTo('linkDown') } {
 			i = i + 1;
-			link = link.linkDown;
-		});
+			link = link.linkDown
+		};
 		^i
 	}
-	do { arg function;
+	do { |function|
 		var i = 0, link, res;
 		link = linkAcross;
-		while ({ link.respondsTo('linkAcross') },{
+		while { link.respondsTo('linkAcross') } {
 			i = i + 1;
 			res = function.value(link, i);
-			link = link.linkAcross;
-		});
+			link = link.linkAcross
+		};
 		^res
 	}
 
 	remove { ^this.shouldNotImplement(thisMethod) }
 	add { ^this.shouldNotImplement(thisMethod) }
 
-	traverse { arg function;
+	traverse { |function|
 		// the default traversal order
 		^this.depthFirstPreOrderTraversal(function)
 	}
-	depthFirstPreOrderTraversal { arg function;
+	depthFirstPreOrderTraversal { |function|
 		var link;
 		function.value(this);
-		if ( linkDown.respondsTo('depthFirstPreOrderTraversal'), {
-			linkDown.depthFirstPreOrderTraversal(function);
-		});
+		if(linkDown.respondsTo('depthFirstPreOrderTraversal')) {
+			linkDown.depthFirstPreOrderTraversal(function)
+		};
 		// iterate linkAcross to conserve stack depth
 		link = linkAcross;
-		while ({ link.notNil },{
+		while { link.notNil } {
 			function.value(link);
-			if (link.respondsTo(\linkDown) and:
-				{ link.linkDown.respondsTo('depthFirstPreOrderTraversal') }, {
-					link.linkDown.depthFirstPreOrderTraversal(function);
-			});
+			if(link.respondsTo(\linkDown) and:
+				{ link.linkDown.respondsTo('depthFirstPreOrderTraversal') }) {
+					link.linkDown.depthFirstPreOrderTraversal(function)
+				};
 			if(link.respondsTo('linkAcross')) {
-				link = link.linkAcross;
-			} { link = nil };
-		});
+				link = link.linkAcross
+			} { link = nil }
+		}
 	}
-	depthFirstPostOrderTraversal { arg function;
+	depthFirstPostOrderTraversal { |function|
 		var link;
-		if ( linkDown.respondsTo('depthFirstPostOrderTraversal'), {
-			linkDown.depthFirstPostOrderTraversal(function);
-		});
+		if(linkDown.respondsTo('depthFirstPostOrderTraversal')) {
+			linkDown.depthFirstPostOrderTraversal(function)
+		};
 		function.value(this);
 		// iterate linkAcross to conserve stack depth
 		link = linkAcross;
-		while ({ link.notNil },{
-			if (link.respondsTo(\linkDown) and:
-				{ link.linkDown.respondsTo('depthFirstPostOrderTraversal') }, {
-				link.linkDown.depthFirstPostOrderTraversal(function);
-			});
+		while { link.notNil } {
+			if(link.respondsTo(\linkDown) and:
+				{ link.linkDown.respondsTo('depthFirstPostOrderTraversal') }) {
+					link.linkDown.depthFirstPostOrderTraversal(function)
+				};
 			function.value(link);
 			if(link.respondsTo('linkAcross')) {
-				link = link.linkAcross;
-			} { link = nil };
-		});
+				link = link.linkAcross
+			} { link = nil }
+		}
 	}
 
-	storeArgs { arg stream;
+	storeArgs { |stream|
 		^[linkDown, linkAcross]
 	}
 
-	printOn { arg stream;
+	printOn { |stream|
 		stream << this.class.name << "(" <<* this.storeArgs << ")"
 	}
-	storeOn { arg stream;
+	storeOn { |stream|
 		stream << this.class.name << "(" <<<* this.storeArgs << ")"
 	}
 }

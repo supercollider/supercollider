@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestPrimitive_Obj {
 	noKwargsNoVarArgs { |a, b, c|
 		_PrimitiveTestNoKwargsNoVarArg;
@@ -50,7 +51,7 @@ TestPrimitives : UnitTest {
 		this.assertEquals(
 			obj.noKwargsNoVarArgs(1, 2, 3, 4, f: 5),
 			[obj, 1, 2, 3]
-		);
+		)
 	}
 
 	with_var_args { |obj|
@@ -73,7 +74,7 @@ TestPrimitives : UnitTest {
 		this.assertEquals(
 			obj.noKwargsWithVarArgs(1, 2, 3, 4, f: 5),
 			[obj, 1, 2, 3, 4]
-		);
+		)
 	}
 
 	with_kw_and_var_args { |obj|
@@ -96,27 +97,27 @@ TestPrimitives : UnitTest {
 		this.assertEquals(
 			obj.kwargsWithVarArgs(1, 2, 3, 4, f: 5),
 			[obj, 1, 2, 3, 4, f: 5]
-		);
+		)
 	}
 
 	test_no_kw_no_var_args {
 		this.no_var_args(TestPrimitive_Obj());
-		this.no_var_args(TestPrimitive_Obj_NoError());
+		this.no_var_args(TestPrimitive_Obj_NoError())
 	}
 
 	// basic, with var args
 	test_no_kw_with_var_args {
 		this.with_var_args(TestPrimitive_Obj());
-		this.with_var_args(TestPrimitive_Obj_NoError());
+		this.with_var_args(TestPrimitive_Obj_NoError())
 	}
 
 	test_kw_with_var_args {
 		this.with_kw_and_var_args(TestPrimitive_Obj());
-		this.with_kw_and_var_args(TestPrimitive_Obj_NoError());
+		this.with_kw_and_var_args(TestPrimitive_Obj_NoError())
 	}
 	test_undefined {
 		var a = TestPrimitive_Obj();
 		// should not crash, will post error.
-		a.undefinedPrimitive;
+		a.undefinedPrimitive
 	}
 }

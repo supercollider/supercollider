@@ -4,8 +4,8 @@ Main : Process {
 	var recvRawFunc, prRecvRawFunc;
 	var openPorts;
 
-		// proof-of-concept: the interpreter can set this variable when executing code in a file
-		// should be nil most of the time
+	// proof-of-concept: the interpreter can set this variable when executing code in a file
+	// should be nil most of the time
 
 	startup {
 		var didWarnOverwrite = false;
@@ -32,7 +32,7 @@ Main : Process {
 		// this wreaks several manners of havoc, so, inform the user
 		// also allow the rest of init to proceed
 		try {
-			openPorts = Set[NetAddr.langPort];
+			openPorts = Set[NetAddr.langPort]
 		} { |error|
 			openPorts = Set.new;  // don't crash elsewhere
 			"\n\nWARNING: An error occurred related to network initialization.".postln;
@@ -40,17 +40,17 @@ Main : Process {
 			"There may be an error message earlier in the sclang startup log.".postln;
 			"Please look backward in the post window and report the error on the mailing list or user forum.".postln;
 			"You may be able to resolve the problem by killing 'sclang%' processes in your system's task manager.\n\n"
-			.postf(if(this.platform.name == \windows) { ".exe" } { "" });
+			.postf(if(this.platform.name == \windows) { ".exe" } { "" })
 		};
 
 		this.platform.startup;
 		StartUp.run;
 
-		Main.overwriteMsg.split(Char.nl).drop(-1).collect(_.split(Char.tab)).do {|x|
-			if(x[2].beginsWith(Platform.classLibraryDir) and: {x[1].contains(""+/+"SystemOverwrites"+/+"").not}
+		Main.overwriteMsg.split(Char.nl).drop(-1).collect(_.split(Char.tab)).do { |x|
+			if(x[2].beginsWith(Platform.classLibraryDir) and: { x[1].contains("" +/+ "SystemOverwrites" +/+ "").not }
 			) {
-				warn("Extension in '%' overwrites % in main class library.".format(x[1],x[0]));
-				didWarnOverwrite = true;
+				warn("Extension in '%' overwrites % in main class library.".format(x[1], x[0]));
+				didWarnOverwrite = true
 			}
 		};
 		if(didWarnOverwrite) {
@@ -58,37 +58,37 @@ Main : Process {
 		};
 
 		("\n\n*** Welcome to SuperCollider %. ***".format(Main.version)
-			+ (Platform.ideName.switch(
-				"scvim", {"For help type :SChelp."},
-				"scel",  {"For help type C-c C-y."},
-				"scapp", {"For help type cmd-d."},
-				"scqt", {
-					if (Platform.hasQtWebEngine) {
-						"For help press %.".format(if(this.platform.name==\osx,"Cmd-D","Ctrl-D"))
-					} {
-						"For help visit http://doc.sccode.org" // Help browser is not available
-					}
-			}) ?? {
-				(
-					osx: "For help type cmd-d.",
-					linux: "For help type ctrl-c ctrl-h (Emacs) or :SChelp (vim).",
-					windows: "For help press F1.",
-					iphone: ""
-				).at(platform.name);
+				+ (switch(Platform.ideName,
+					"scvim", { "For help type :SChelp." },
+					"scel", { "For help type C-c C-y." },
+					"scapp", { "For help type cmd-d." },
+					"scqt", {
+						if(Platform.hasQtWebEngine) {
+							"For help press %.".format(if(this.platform.name == \osx, "Cmd-D", "Ctrl-D"))
+						} {
+							"For help visit http://doc.sccode.org" // Help browser is not available
+						}
+				}) ?? {
+					(
+						osx: "For help type cmd-d.",
+						linux: "For help type ctrl-c ctrl-h (Emacs) or :SChelp (vim).",
+						windows: "For help press F1.",
+						iphone: ""
+					).at(platform.name)
 
-			})
-		).postln;
+				})
+		).postln
 	}
 
 	shutdown { // at recompile, quit
-		if (Process.initializedClassesOkay) {
+		if(Process.initializedClassesOkay) {
 			try { Server.quitAll } { |er| er.reportError };
-			try { this.platform.shutdown } { |er| er.reportError };
+			try { this.platform.shutdown } { |er| er.reportError }
 		} {
 			try { Server.quitAll };
-			try { this.platform.shutdown };
+			try { this.platform.shutdown }
 		};
-		super.shutdown;
+		super.shutdown
 	}
 
 	run { // used to be called by command-R, customisation now via CocoaMenuItem
@@ -96,23 +96,23 @@ Main : Process {
 	}
 
 	stop { // called by command-.
-		CmdPeriod.run;
+		CmdPeriod.run
 	}
 
 	hardStop { // called by command alt dot
-		CmdPeriod.hardRun;
+		CmdPeriod.hardRun
 	}
 
 	// recvOSCmessage, recvRawMessage are invoked from C++ when OSC or raw UDP messages are recieved
 	recvOSCmessage { |time, replyAddr, recvPort, msg|
 		recvOSCfunc.value(time, replyAddr, msg);
 		prRecvOSCFunc.value(msg, time, replyAddr, recvPort); // same order as OSCFunc
-		OSCresponder.respond(time, replyAddr, msg);
+		OSCresponder.respond(time, replyAddr, msg)
 	}
 
 	recvRawMessage { |time, replyAddr, recvPort, msg|
 		recvRawFunc.value(time, replyAddr, msg);
-		prRecvRawFunc.value(msg, time, replyAddr, recvPort);
+		prRecvRawFunc.value(msg, time, replyAddr, recvPort)
 	}
 
 	addOSCRecvFunc { |func| prRecvOSCFunc = prRecvOSCFunc.addFunc(func) }
@@ -129,63 +129,61 @@ Main : Process {
 
 	openPorts { ^openPorts.copy } // don't allow the Set to be modified from the outside
 
-	openUDPPort { |portNum, type=\osc|
+	openUDPPort { |portNum, type = \osc|
 
 		var result;
-		if(openPorts.includes(portNum), {^true});
+		if(openPorts.includes(portNum)) { ^true };
 
-		switch (type,
-			\osc, {
+		switch(type)
+			{ \osc } {
 				result = this.prOpenOSCUDPPort(portNum)
 
-			},
-			\raw, {
-				result = this.prOpenRawUDPPort(portNum)
-			},
-			{
-				Exception("Cannot open UDP port with type '%' because it doesn't exist (types are \\osc, \\raw).".format(type)).throw
 			}
-		);
+			{ \raw } {
+				result = this.prOpenRawUDPPort(portNum)
+			} {
+				Exception("Cannot open UDP port with type '%' because it doesn't exist (types are \\osc, \\raw).".format(type)).throw
+			};
 
-		if(result, { openPorts = openPorts.add(portNum); });
-		^result;
+		if(result) { openPorts = openPorts.add(portNum) };
+		^result
 	}
 
-	prOpenOSCUDPPort {|portNum|
+	prOpenOSCUDPPort { |portNum|
 		_OpenOSCUDPPort
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-	prOpenRawUDPPort {|portNum|
+	prOpenRawUDPPort { |portNum|
 		_OpenRawUDPPort
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 
-//	override in platform specific extension
-//
-//	platformClass {
-//		^Platform
-//	}
+	//	override in platform specific extension
+	//
+	//	platformClass {
+	//		^Platform
+	//	}
 
 	argv {
 		^argv ?? { argv = this.prArgv }
 	}
 
 	showHelpBrowser {
-		HelpBrowser.openBrowsePage;
+		HelpBrowser.openBrowsePage
 	}
 	showHelpSearch {
-		HelpBrowser.openSearchPage(this.getCurrentSelection);
+		HelpBrowser.openSearchPage(this.getCurrentSelection)
 	}
 	showHelp {
-		HelpBrowser.openHelpFor(this.getCurrentSelection);
+		HelpBrowser.openHelpFor(this.getCurrentSelection)
 	}
 
 	showClassBrowser {
 		var string, class, method, words;
 		string = interpreter.cmdLine;
 		class = string.asSymbol.asClass;
-		(class ? Object).browse;
+		(class ? Object).browse
 	}
 
 	*version { ^"%.%.%%".format(this.scVersionMajor, this.scVersionMinor, this.scVersionPatch, this.scVersionTweak) }
@@ -244,11 +242,11 @@ Main : Process {
 MethodOverride {
 	var <ownerClass, <selector, <activePath, <overriddenPath;
 
-	*new { arg ownerClass, selector, activePath, overriddenPath;
+	*new { |ownerClass, selector, activePath, overriddenPath|
 		^super.newCopyArgs(ownerClass, selector, activePath, overriddenPath)
 	}
 
-	*fromLine { arg string;
+	*fromLine { |string|
 		var parts = string.split(Char.tab);
 		var class, selector;
 		#class, selector = parts[0].split($:);
@@ -258,16 +256,16 @@ MethodOverride {
 	openFiles {
 		var path2 = if(overriddenPath.beginsWith("/Common")) {
 			Platform.classLibraryDir +/+ overriddenPath
-			} { overriddenPath };
+		} { overriddenPath };
 		activePath.openDocument;
-		path2.openDocument;
+		path2.openDocument
 	}
 
 
 	*all {
 		var msg = Main.overwriteMsg.drop(-1); // drop last newline
 		var lines = msg.split(Char.nl);
-		^lines.collect { |line| this.fromLine(line) };
+		^lines.collect { |line| this.fromLine(line) }
 	}
 
 	*printAll {
@@ -282,9 +280,9 @@ MethodOverride {
 				var overriddenPath = x.overriddenPath;
 				("\t" ++ x.ownerClass.name ++ ":" ++ x.selector).postln;
 				("\t\t" ++ activePath).postln;
-				("\t\t" ++ overriddenPath).postln;
+				("\t\t" ++ overriddenPath).postln
 			};
-			"\n".post;
+			"\n".post
 		}
 	}
 
@@ -295,7 +293,7 @@ MethodOverride {
 		("Overwritten methods in class library:".underlined ++ "\n").post;
 		classes.do { |class|
 			all.select { |x| x.ownerClass == class }.collect { |x| x.selector }.as(Set).do { |x|
-				postf("\t%:%\n", class, x);
+				postf("\t%:%\n", class, x)
 			}
 		}
 	}

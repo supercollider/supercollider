@@ -2,8 +2,8 @@
 	bootServerApp { |onComplete|
 		{
 			JS.runCode("bootServer(%)".format(this.prOptionsString));
-			onComplete.value();
-		}.defer;
+			onComplete.value()
+		}.defer
 	}
 
 	// creates a json from the current options
@@ -23,10 +23,10 @@
 			verbosity: o.verbosity,
 		);
 		var optionsArray = [];
-		var optionStrings = optionDict.pairsDo({|key, value|
-			optionsArray = optionsArray.add("\"%\":%".format(key, value));
+		var optionStrings = optionDict.pairsDo({ |key, value|
+			optionsArray = optionsArray.add("\"%\":%".format(key, value))
 		});
-		^"{%}".format(optionsArray.join(","));
+		^"{%}".format(optionsArray.join(","))
 	}
 }
 
@@ -34,6 +34,6 @@
 	platformClass { ^WasmPlatform }
 
 	applicationStart {
-		ApplicationStart.run;
+		ApplicationStart.run
 	}
 }

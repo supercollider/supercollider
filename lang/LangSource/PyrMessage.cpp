@@ -19,7 +19,7 @@
 */
 
 #include "PyrMessage.h"
-#include "PyrParseNode.h"
+#include "SpecialSelectorsOperatorsAndClasses.h"
 #include "PyrPrimitiveProto.h"
 #include "PyrInterpreter.h"
 #include "PyrPrimitive.h"
@@ -103,13 +103,15 @@ bool gKeywordError = true;
 extern bool gTraceInterpreter;
 
 std::int64_t cvxUniqueMethods;
+std::int64_t cvxCurrentEnvironment;
 extern int ivxIdentDict_array;
 
 void StoreToImmutableB(VMGlobals* g, PyrSlot*& sp, unsigned char*& ip);
 
-void initUniqueMethods() {
+void initClassVarOffsets() {
     PyrClass* dummyclass;
     cvxUniqueMethods = classVarOffset("Object", "uniqueMethods", &dummyclass);
+    cvxCurrentEnvironment = classVarOffset("Object", "currentEnvironment", &dummyclass);
 }
 
 HOT void sendMessageImpl(VMGlobals* g, PyrSymbol* selector, PyrSlot* recvrSlot, PyrClass* classobj,
@@ -183,19 +185,14 @@ lookup_again:
     }
 
     case methAssignInstVar: { // Assign to object instance variable
-        g->sp -= numArgsPushed - 1; // Remove all args but the receiver.
+        auto value = shortcutMethAssign(g, method, methodRaw, numArgsPushed, numKeyArgsPushed);
         auto obj = slotRawObject(recvrSlot);
         if (obj->IsImmutable()) {
             StoreToImmutableB(g, g->sp, g->ip);
             return;
         }
-        const auto classIndex = methodRaw->specialIndex;
-        if (numArgsPushed >= 2) {
-            slotCopy(&obj->slots[classIndex], g->sp + 1);
-            g->gc->GCWrite(obj, g->sp + 1);
-        } else {
-            SetNil(&obj->slots[classIndex]);
-        }
+        slotCopy(&obj->slots[methodRaw->specialIndex], &value);
+        g->gc->GCWrite(obj, &value);
         slotCopy(g->sp, recvrSlot);
         return;
     }
@@ -207,13 +204,9 @@ lookup_again:
     }
 
     case methAssignClassVar: { // Assign classvar.
-        g->sp -= numArgsPushed - 1; // Remove all args but the receiver.
-        if (numArgsPushed >= 2) {
-            slotCopy(&g->classvars->slots[methodRaw->specialIndex], g->sp + 1);
-            g->gc->GCWrite(g->classvars, g->sp + 1);
-        } else {
-            SetNil(&g->classvars->slots[methodRaw->specialIndex]);
-        }
+        auto value = shortcutMethAssign(g, method, methodRaw, numArgsPushed, numKeyArgsPushed);
+        slotCopy(&g->classvars->slots[methodRaw->specialIndex], &value);
+        g->gc->GCWrite(g->classvars, &value);
         slotCopy(g->sp, recvrSlot);
         return;
     }
@@ -789,4 +782,32 @@ int keywordFixStack(VMGlobals* g, PyrMethod* meth, PyrMethodRaw* methraw, std::i
 
     g->sp += numArgsPushed - allArgsPushed;
     return static_cast<int>(numArgsPushed);
+}
+
+PyrSlot shortcutMethAssign(VMGlobals* g, PyrMethod* meth, PyrMethodRaw* methraw, std::int64_t allArgsPushed,
+                           std::int64_t numKeyArgsPushed) {
+    if (numKeyArgsPushed == 0 && allArgsPushed >= 2) {
+        // no keys, 2 or more positional
+        g->sp -= allArgsPushed - 1;
+        return g->sp[1];
+    }
+
+    else if (numKeyArgsPushed == 0) {
+        // no keys, only the receiver
+        return IsObj(&meth->prototypeFrame) ? slotRawObject(&meth->prototypeFrame)->slots[1] : PyrSlot {};
+    }
+
+    else if (IsObj(&meth->argNames)) {
+        // has keyword args
+        const auto numArgsPushed = keywordFixStack(g, meth, methraw, allArgsPushed, numKeyArgsPushed);
+        g->sp -= numArgsPushed - 1;
+        return g->sp[1];
+    }
+
+    else {
+        // generated setters don't have argNames.
+        const auto numArgsPushed = allArgsPushed - (numKeyArgsPushed << 1);
+        g->sp -= allArgsPushed - 1;
+        return numArgsPushed >= 2 ? g->sp[1] : PyrSlot {};
+    }
 }

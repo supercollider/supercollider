@@ -37,7 +37,7 @@ list::
 ::
 ::
 Methods begin with lower-case letters, as do many other things in the language.
-code::
+code#fragment::
 play // Cmd-d on this will open a helpfile detailing different implementations of this method
 ::
 
@@ -83,17 +83,17 @@ code::
 SequenceableCollection.browse;
 ::
 Selecting any method and pressing Cmd-y will open a window with a list of all the classes that implement that method. (See the link::Guides/Polymorphism:: helpfile for detail on why different classes might implement methods with the same name.)
-code::
+code#fragment::
 select // try it on this method
 ::
 Similarly, selecting any text and typing shift-cmd-y will open a window showing all references to the selected text, i.e. each place it is used within the class library. (This will not find methods calls compiled with special byte codes like 'value'.)
-code::
+code#fragment::
 // try it on these
 asStream
 Window
 ::
 In the resulting window selecting any class and method and pressing Cmd-j will take you to that method definition in that class definition. For example try selecting Pattern-select in the window resulting from the previous example. Note that SC supports defining methods in separate files, so a class' methods may be defined in more than one place. If you try Cmd-j on the following you will see that it will open a file called dumpFullInterface.sc rather than one called Class.sc (its main class definition file). The + Class {.... syntax indicates that these are additional methods.
-code::
+code#fragment::
 Class-dumpFullInterface
 ::
 If you know that a class responds to a particular message, you can use findRespondingMethod to find out which class it inherits the corresponding method from.

@@ -1,22 +1,23 @@
+//# VERSION 3.16
 TestWebView : UnitTest {
 
 	test_findText_found {
 		var window = Window();
 		var webView = WebView(window, Rect(0, 0, 100, 100));
 		var cond = Condition.new;
-		var wasFound, timeout;
+		var wasFound;
 
 		window.front; // FIXME findText doesn't work if the window isn't displayed
 		webView.setHtml("abc");
 		webView.onLoadFinished = {
 			webView.findText("abc", true, { |found|
 				cond.unhang;
-				wasFound = found;
-			});
+				wasFound = found
+			})
 		};
-		timeout = fork {
+		var timeout = fork {
 			2.wait;
-			cond.unhang;
+			cond.unhang
 		};
 
 		cond.hang;
@@ -32,19 +33,19 @@ TestWebView : UnitTest {
 		var window = Window();
 		var webView = WebView(window, Rect(0, 0, 100, 100));
 		var cond = Condition.new;
-		var wasFound, timeout;
+		var wasFound;
 
 		window.front; // FIXME findText doesn't work if the window isn't displayed
 		webView.setHtml("abc");
 		webView.onLoadFinished = {
 			webView.findText("def", true, { |found|
 				cond.unhang;
-				wasFound = found;
-			});
+				wasFound = found
+			})
 		};
-		timeout = fork {
+		var timeout = fork {
 			2.wait;
-			cond.unhang;
+			cond.unhang
 		};
 
 		cond.hang;
@@ -52,7 +53,7 @@ TestWebView : UnitTest {
 		window.close;
 		this.assert(wasFound.notNil, "test timeout check");
 		if(wasFound.notNil) {
-			this.assert(wasFound.not, "findText should not find");
+			this.assert(wasFound.not, "findText should not find")
 		}
 	}
 
@@ -67,9 +68,9 @@ TestWebView : UnitTest {
 			var returnedResult;
 			var condvar = CondVar();
 
-			WebView().runJavaScript(jsCode){ |res|
+			WebView().runJavaScript(jsCode) { |res|
 				returnedResult = res;
-				condvar.signalOne;
+				condvar.signalOne
 			};
 
 			condvar.waitFor(2);
@@ -81,7 +82,7 @@ TestWebView : UnitTest {
 			this.assert(returnedResult.class == expectedClass,
 				"runJavaScript(\"%\") should return an instance of %. Returned: %"
 				.format(jsCode, expectedClass, returnedResult.class)
-			);
+			)
 		}
 	}
 }

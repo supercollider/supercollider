@@ -1,124 +1,124 @@
 List : SequenceableCollection {
 	var <>array;
 
-	*new { arg size = 8; ^super.new.setCollection(Array.new(size)); }
-	*newClear { arg size = 0;
-		if ( size == 0, {
-			^super.new.setCollection(Array.new(8));
-		},{
-			^super.new.setCollection(Array.newClear(size));
-		});
+	*new { |size = 8| ^super.new.setCollection(Array.new(size)) }
+	*newClear { |size = 0|
+		if(size == 0) {
+			^super.new.setCollection(Array.new(8))
+		} {
+			^super.new.setCollection(Array.newClear(size))
+		}
 	}
-	*copyInstance { arg aList; ^super.new.array_( aList.array.copy ) }
-	*newUsing { arg anArray;
+	*copyInstance { |aList| ^super.new.array_(aList.array.copy) }
+	*newUsing { |anArray|
 		// an array is supplied to use directly
-		^super.new.setCollection( anArray )
+		^super.new.setCollection(anArray)
 	}
 
 	asArray { ^array.copy }
 	copy { ^this.class.copyInstance(this) }
-	copyRange { arg start, end; ^this.class.newUsing(array.copyRange(start, end)) }
-	copySeries { arg first, second, last;
+	copyRange { |start, end| ^this.class.newUsing(array.copyRange(start, end)) }
+	copySeries { |first, second, last|
 		^this.class.newUsing(array.copySeries(first, second, last))
 	}
-	putSeries { arg first, second, last, value;
-		array.putSeries(first, second, last, value);
+	putSeries { |first, second, last, value|
+		array.putSeries(first, second, last, value)
 	}
 
-	grow { arg sizeIncrease; array = array.grow(sizeIncrease); }
+	grow { |sizeIncrease| array = array.grow(sizeIncrease) }
 	size { ^array.size }
 	dump { "List's array:\n".post; array.dump }
 
 	clear {
-		this.setCollection(Array.new(8));
+		this.setCollection(Array.new(8))
 	}
 
 	// accessing
-	indexOf { arg item; ^array.indexOf(item) }
+	indexOf { |item| ^array.indexOf(item) }
 
-	at { arg i; ^array.at(i) }
-	clipAt { arg i; i = i.asInteger.clip(0, this.size - 1); ^array.at(i) }
-	wrapAt { arg i; i = i.asInteger.wrap(0, this.size - 1); ^array.at(i) }
-	foldAt { arg i; i = i.asInteger.fold(0, this.size - 1); ^array.at(i) }
+	at { |i| ^array.at(i) }
+	clipAt { |i| i = i.asInteger.clip(0, this.size - 1); ^array.at(i) }
+	wrapAt { |i| i = i.asInteger.wrap(0, this.size - 1); ^array.at(i) }
+	foldAt { |i| i = i.asInteger.fold(0, this.size - 1); ^array.at(i) }
 
-	put { arg i, item; array.put(i, item) }
-	clipPut { arg i, item; i = i.asInteger.clip(0, this.size - 1); ^array.put(i, item) }
-	wrapPut { arg i, item; i = i.asInteger.wrap(0, this.size - 1); ^array.put(i, item) }
-	foldPut { arg i, item; i = i.asInteger.fold(0, this.size - 1); ^array.put(i, item) }
+	put { |i, item| array.put(i, item) }
+	clipPut { |i, item| i = i.asInteger.clip(0, this.size - 1); ^array.put(i, item) }
+	wrapPut { |i, item| i = i.asInteger.wrap(0, this.size - 1); ^array.put(i, item) }
+	foldPut { |i, item| i = i.asInteger.fold(0, this.size - 1); ^array.put(i, item) }
 
-	add { arg item; array = array.add(item); }
-	addFirst { arg item; array = array.addFirst(item); }
-	insert { arg index, item; array = array.insert(index, item); }
-	boundedInsert { arg index, item; array = array.boundedInsert(index, item); }
-	removeAt { arg index; ^array.removeAt(index); }
+	add { |item| array = array.add(item) }
+	addFirst { |item| array = array.addFirst(item) }
+	insert { |index, item| array = array.insert(index, item) }
+	boundedInsert { |index, item| array = array.boundedInsert(index, item) }
+	removeAt { |index| ^array.removeAt(index) }
 	pop { ^array.pop }
-	first { if (this.size > 0, { ^array.at(0) }, { ^nil }) }
-	last { if (this.size > 0, { ^array.at(this.size - 1) }, { ^nil }) }
-	fill { arg item; array.fill(item) }
+	first { if(this.size > 0) { ^array.at(0) } { ^nil } }
+	last { if(this.size > 0) { ^array.at(this.size - 1) } { ^nil } }
+	fill { |item| array.fill(item) }
 
 	// enumerating
-	do { arg function;
-		array.do(function);
+	do { |function|
+		array.do(function)
 	}
-	reverseDo { arg function;
-		array.reverseDo(function);
+	reverseDo { |function|
+		array.reverseDo(function)
 	}
-	pairsDo { arg function;
-		array.pairsDo(function);
+	pairsDo { |function|
+		array.pairsDo(function)
 	}
-	doAdjacentPairs { arg function;
-		array.doAdjacentPairs(function);
+	doAdjacentPairs { |function|
+		array.doAdjacentPairs(function)
 	}
 
 	// ordering
-	swap { arg i,j; array.swap(i, j) }
+	swap { |i, j| array.swap(i, j) }
 
 	reverse {
-		^this.class.newUsing(array.reverse);
+		^this.class.newUsing(array.reverse)
 	}
-	rotate { arg n=1;
-		^this.class.newUsing(array.rotate(n));
+	rotate { |n = 1|
+		^this.class.newUsing(array.rotate(n))
 	}
-	stutter { |n=2|
-		^this.dupEach(n);
+	stutter { |n = 2|
+		^this.dupEach(n)
 	}
-	dupEach { |n=2|
-		^this.class.newUsing(array.dupEach(n));
+	dupEach { |n = 2|
+		^this.class.newUsing(array.dupEach(n))
 	}
 	mirror {
-		^this.class.newUsing(array.mirror);
+		^this.class.newUsing(array.mirror)
 	}
 	mirror2 {
-		^this.class.newUsing(array.mirror2);
+		^this.class.newUsing(array.mirror2)
 	}
 	mirror1 {
-		^this.class.newUsing(array.mirror1);
+		^this.class.newUsing(array.mirror1)
 	}
 	scramble {
-		^this.class.newUsing(array.scramble);
+		^this.class.newUsing(array.scramble)
 	}
-	permute { arg nthPermutation;
-		^this.class.newUsing(array.permute(nthPermutation));
+	permute { |nthPermutation|
+		^this.class.newUsing(array.permute(nthPermutation))
 	}
-	wrapExtend { arg length;
-		^this.class.newUsing(array.wrapExtend(length));
+	wrapExtend { |length|
+		^this.class.newUsing(array.wrapExtend(length))
 	}
-	foldExtend { arg length;
-		^this.class.newUsing(array.foldExtend(length));
+	foldExtend { |length|
+		^this.class.newUsing(array.foldExtend(length))
 	}
-	pyramid { arg patternType=1; // an integer from 1-10
-		^this.class.newUsing(array.pyramid(patternType));
+	pyramid { |patternType = 1| // an integer from 1-10
+		^this.class.newUsing(array.pyramid(patternType))
 	}
-	lace { arg length;
+	lace { |length|
 		^this.class.newUsing(array.lace(length))
 	}
-	slide { arg windowLength=3, stepSize=1;
-		^this.class.newUsing(array.slide(windowLength, stepSize));
+	slide { |windowLength = 3, stepSize = 1|
+		^this.class.newUsing(array.slide(windowLength, stepSize))
 	}
 
 	// PRIVATE:
-	setCollection { arg aColl;
-		array = aColl.asArray;
+	setCollection { |aColl|
+		array = aColl.asArray
 	}
 
 	asList { ^this }

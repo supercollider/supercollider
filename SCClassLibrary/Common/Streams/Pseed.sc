@@ -3,12 +3,12 @@
 
 Pseed : FilterPattern {
 	var <>randSeed;
-	*new { arg randSeed, pattern;
+	*new { |randSeed, pattern|
 		^super.new(pattern).randSeed_(randSeed)
 	}
-	storeArgs { ^[randSeed,pattern] }
+	storeArgs { ^[randSeed, pattern] }
 
-	embedInStream { arg inval;
+	embedInStream { |inval|
 		var seedStream;
 		var seed, thread;
 		seedStream = randSeed.asStream;
@@ -16,10 +16,10 @@ Pseed : FilterPattern {
 		while {
 			seed = seedStream.next(inval);
 			seed.notNil
-		}{
+		} {
 			thread = Routine { |inval| pattern.embedInStream(inval) };
 			thread.randSeed = seed;
-			inval = thread.embedInStream(inval);
+			inval = thread.embedInStream(inval)
 		};
 		^inval
 	}

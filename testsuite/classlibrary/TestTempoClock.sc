@@ -1,28 +1,29 @@
+//# VERSION 3.16
 TestTempoClock : UnitTest {
 	var clock;
 	var tempo = 1000;
 
 	setUp {
-		clock = TempoClock.new(tempo);
+		clock = TempoClock.new(tempo)
 	}
 
 	// called after each test
 	tearDown {
-		clock.stop;
+		clock.stop
 	}
 
 	test_newClock_isRunningTrue {
-		this.assert(clock.isRunning, "An active TempoClock should return true for isRunning");
+		this.assert(clock.isRunning, "An active TempoClock should return true for isRunning")
 	}
 
 	test_stop_isRunningFalse {
 		clock.stop;
-		this.assert(clock.isRunning.not, "A stopped TempoClock should return false for isRunning");
+		this.assert(clock.isRunning.not, "A stopped TempoClock should return false for isRunning")
 	}
 
 	test_stop_removesFromAll {
 		clock.stop;
-		this.assert(TempoClock.all.includes(clock).not);
+		this.assert(TempoClock.all.includes(clock).not)
 	}
 
 	test_threadWait_advancesCorrectTime {
@@ -30,7 +31,7 @@ TestTempoClock : UnitTest {
 		{
 			1.wait;
 			timeAfter = SystemClock.seconds;
-			cond.unhang;
+			cond.unhang
 		}.fork(clock);
 		cond.hang;
 		// note: floating point math, == is not safe
@@ -93,14 +94,14 @@ TestTempoClock : UnitTest {
 			clock.beatsPerBar = newBeatsPerBar;
 			0.1.wait;  // must tick past the barline
 			next = clock.nextTimeOnGrid(-1);
-			cond.unhang;
+			cond.unhang
 		}.fork(clock);
 		cond.hang;
 		this.assertFloatEquals(
 			next, oldBeatsPerBar + newBeatsPerBar,
 			"Set meter to 3/4, at beat 4, next barline should be 7.0 and it is %".format(next),
 			within: 0.001
-		);
+		)
 	}
 
 	test_nextTimeOnGrid_addsPhaseCorrectly {
