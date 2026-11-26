@@ -1,0 +1,34 @@
+class:: InitializationSample
+summary:: Outputs its input's initialization sample
+categories::  UGens>Triggers
+
+
+Description::
+
+When a UGen is constructed on the server, it precalculates its first sample for
+initialization purposes, so that other UGens can receive it when reading it as
+an input during "construction" phase.
+
+This UGen reads its input's initialization sample only at construction time, and
+then outputs it for the rest of its lifecycle. It was written mostly for testing
+purposes.
+
+classmethods::
+
+method::ar, ir
+
+argument::in
+
+The UGen which initialization sample is read
+
+
+Examples::
+
+code::
+(
+{ 
+	var ugen = Impulse.kr(0);
+	[InitializationSample.ir(ugen), ugen] 
+}.plot(0.01, maxval: 2)
+)
+::

@@ -301,3 +301,12 @@ SendPeakRMS : UGen {
 	numOutputs { ^0 }
 	writeOutputSpecs {}
 }
+
+InitializationSample : PureUGen {
+	*ar { |in = 0.0|
+		^this.multiNew('audio', in)
+	}
+	*ir { |in = 0.0|
+		^this.multiNew('scalar', in)
+	}
+}
