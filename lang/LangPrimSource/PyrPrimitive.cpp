@@ -42,6 +42,7 @@
 #include "InitAlloc.h"
 #include "SC_AudioDevicePrim.hpp"
 #include "SC_LanguageConfig.hpp"
+#include "SC_Codecvt.hpp"
 #include "SC_Filesystem.hpp"
 #include "VMGlobals.h"
 #include "normalise_source.hpp"
@@ -2565,7 +2566,11 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
     const auto& srcStr = src.as_string();
     auto* strPyr = newPyrString(g->gc, srcStr.c_str(), 0, false);
 
-    auto fileSym = fileName.isSymbol() ? fileName.getSymbol() : getsym("interpreted_text");
+    PyrSymbol* fileSym = nullptr;
+    if (fileName.isSymbol()) {
+        const auto absolute = absoluteSourcePath(fileName.getSymbol()->name);
+        fileSym = absolute ? getsym(absolute->c_str()) : fileName.getSymbol();
+    }
 
     const auto offset = sc::lex::FileCodeLocation {
         0,
@@ -2574,7 +2579,7 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
     };
 
 
-    auto textInfo = std::make_shared<TextInfo>(std::move(src), *strPyr, *fileSym, offset);
+    auto textInfo = std::make_shared<TextInfo>(std::move(src), *strPyr, fileSym, offset);
 
     CompilerContext cxt { textInfo, g };
     // This is the only place where this can be set.

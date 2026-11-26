@@ -284,6 +284,20 @@ void DocumentManager::create() {
     Q_EMIT(opened(doc, 0, 0));
 }
 
+Document* DocumentManager::openAtLine(const QString& path, int line, int column) {
+    Document* doc = open(path);
+    if (!doc)
+        return nullptr;
+
+    const QTextBlock block = doc->textDocument()->findBlockByNumber(qMax(line, 1) - 1);
+    if (!block.isValid())
+        return doc;
+
+    const int offset = qBound(0, column - 1, qMax(block.length() - 1, 0));
+    Q_EMIT(showRequest(doc, block.position() + offset));
+    return doc;
+}
+
 Document* DocumentManager::open(const QString& path, int initialCursorPosition, int selectionLength, bool toRecent,
                                 const QByteArray& id, bool syncLang) {
     QFileInfo info(path);

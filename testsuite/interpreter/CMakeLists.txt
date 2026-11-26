@@ -1,5 +1,7 @@
 set(test_sources
     slot.cpp
+    file_uri.cpp
+    source_path.cpp
 )
 
 # These are tests that will fail to compile.

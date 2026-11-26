@@ -13,6 +13,7 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <tuple>
 #include <vector>
@@ -33,17 +34,36 @@ std::ostream& streamSourceCodeWithHighlight(std::ostream& ss, const DiagnosticHi
                                             bool printSource = true, const char* newlinePrefixPtr = "",
                                             size_t newlinePrefixSz = 0);
 
+// The operating system a path came from, which decides how it is read.
+enum class PathOs { Posix, Windows };
+#ifdef _WIN32
+inline constexpr PathOs currentPathOs = PathOs::Windows;
+#else
+inline constexpr PathOs currentPathOs = PathOs::Posix;
+#endif
+
+
+struct FileUriLocation {
+    // Both zero indexed; column is a byte offset in the line.
+    size_t line;
+    size_t column;
+};
+void streamFileUri(std::ostream& ss, std::string_view path, std::optional<FileUriLocation> location = std::nullopt,
+                   PathOs os = currentPathOs);
+
+[[nodiscard]] std::optional<std::string> absoluteSourcePath(std::string_view path);
+
 std::string diagnosticToCompilerError(ErrorType type, const char* generalDescription,
                                       const DiagnosticHighlight* linesToPrint, size_t numLinesToPrint);
 
 
 // Used to represent a bit fo text to compile, this can be a classlibrary file, a runtime file or a snippet thereof.
 struct TextInfo {
-    TextInfo(sc::lex::NormalisedSource normalisedSource, struct PyrString& normalisedSourceAsPyr,
-             PyrSymbol& filePathDescription, sc::lex::FileCodeLocation offsetInFile = {}, bool isClassFile = false):
+    TextInfo(sc::lex::NormalisedSource normalisedSource, struct PyrString& normalisedSourceAsPyr, PyrSymbol* filePath,
+             sc::lex::FileCodeLocation offsetInFile = {}, bool isClassFile = false):
         normalisedSource(std::move(normalisedSource)),
         normalisedSourceAsPyr(normalisedSourceAsPyr),
-        filePathDescription(filePathDescription),
+        filePath(filePath),
         offsetInFile(offsetInFile),
         isClassFile(isClassFile) {}
     TextInfo(TextInfo&&) noexcept = default;
@@ -51,12 +71,15 @@ struct TextInfo {
 
     sc::lex::NormalisedSource normalisedSource;
     struct PyrString& normalisedSourceAsPyr;
-    // Might not be a valid file path (e.g. when file is unsaved).
-    PyrSymbol& filePathDescription;
+    PyrSymbol* filePath; // nullptr if unsaved file or cmd line.
     // Used to describe when a code snippet (CMD Mode) is in the middle of a file.
     // Zero init when in class library.
     sc::lex::FileCodeLocation offsetInFile {};
     bool isClassFile { false };
+    [[nodiscard]] PyrSymbol& classFilePath() const {
+        assert(isClassFile && filePath);
+        return *filePath;
+    }
     [[nodiscard]] std::tuple<const char*, std::size_t> indexIntoSource(sc::lex::SourceCodeRange range) const;
     [[nodiscard]] DiagnosticHighlight createDiagnosticHighlight(sc::lex::SourceCodeRange range,
                                                                 std::string description) const;

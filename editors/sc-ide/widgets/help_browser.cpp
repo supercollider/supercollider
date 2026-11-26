@@ -256,6 +256,14 @@ void HelpBrowser::gotoHelpForMethod(const QString& className, const QString& met
     sendRequest(code);
 }
 
+void HelpBrowser::gotoUrl(const QString& url) {
+    sendRequest(QStringLiteral("HelpBrowser.goTo(\"%1\")").arg(escapeDoubleQuotes(url)));
+}
+
+void HelpBrowser::gotoHelpPath(const QString& path) {
+    sendRequest(QStringLiteral("HelpBrowser.goTo(SCDoc.helpTargetUrl ++ \"/%1\")").arg(escapeDoubleQuotes(path)));
+}
+
 void HelpBrowser::onLinkClicked(const QUrl& url, QWebEnginePage::NavigationType type, bool isMainFrame) {
     qDebug() << "link clicked:" << url;
 

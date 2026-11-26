@@ -4,10 +4,14 @@
 #include "codepoint.hpp"
 #include "source_utils.hpp"
 #include "SCBase.h"
+#include "SC_Codecvt.hpp"
+#include "SC_Filesystem.hpp"
 #include "text_location.hpp"
 #include <cstring>
+#include <filesystem>
 #include <iomanip>
 #include <sstream>
+#include <string_view>
 
 
 [[nodiscard]] std::tuple<const char*, std::size_t> TextInfo::indexIntoSource(sc::lex::SourceCodeRange range) const {
@@ -20,7 +24,7 @@
     const std::string& str { normalisedSource.as_string() };
     // clang-format off
     return {
-        filePathDescription.name, 
+        filePath ? filePath->name : nullptr,
 		str.c_str(), 
 		str.size(),
 		range,
@@ -62,16 +66,74 @@ std::string diagnosticToCompilerError(ErrorType type, const char* generalDescrip
 }
 
 
+std::optional<std::string> absoluteSourcePath(std::string_view path) try {
+    const std::filesystem::path given = SC_Codecvt::utf8_str_to_path(path);
+    std::filesystem::path p = SC_Filesystem::instance().expandTilde(given);
+    if (p == given && p.is_absolute())
+        return std::nullopt;
+    std::error_code ec;
+    p = std::filesystem::absolute(p, ec);
+    if (ec)
+        return std::nullopt;
+    return SC_Codecvt::path_to_utf8_str(p.lexically_normal());
+} catch (const std::exception&) {
+    // On Windows, utf8_str_to_path throws on invalid UTF-8.
+    return std::nullopt;
+}
+
+void streamFileUri(std::ostream& ss, std::string_view path, std::optional<FileUriLocation> location, PathOs os) {
+    static constexpr char hex[] = "0123456789ABCDEF";
+    const bool windows = os == PathOs::Windows;
+    const auto starts_with = [&](std::string_view prefix) { return path.substr(0, prefix.size()) == prefix; };
+    const auto is_separator = [&](char c) { return c == '/' || (windows && c == '\\'); };
+
+    bool is_unc = false;
+    if (windows) {
+        if (starts_with(R"(\\?\UNC\)")) {
+            path.remove_prefix(8);
+            is_unc = true;
+        } else if (starts_with(R"(\\?\)")) {
+            path.remove_prefix(4);
+        } else if (path.size() >= 2 && is_separator(path[0]) && is_separator(path[1])) {
+            path.remove_prefix(2);
+            is_unc = true;
+        }
+    }
+
+    ss << "file://";
+    // A UNC server becomes the host; anything else is a path from the root, e.g. /C:/a.
+    if (!is_unc && (path.empty() || !is_separator(path[0])))
+        ss << '/';
+
+    for (const char c : path) {
+        const auto byte = static_cast<unsigned char>(c);
+        const bool unreserved = (byte >= 'a' && byte <= 'z') || (byte >= 'A' && byte <= 'Z')
+            || (byte >= '0' && byte <= '9') || byte == '-' || byte == '.' || byte == '_' || byte == '~' || byte == '/'
+            || byte == ':';
+        if (windows && byte == '\\')
+            ss << '/';
+        else if (unreserved)
+            ss << c;
+        else
+            ss << '%' << hex[byte >> 4] << hex[byte & 0xF];
+    }
+
+    if (location)
+        ss << '#' << location->line + 1 << ':' << location->column + 1;
+}
+
 std::ostream& streamSourceCodeWithHighlight(std::ostream& ss, const DiagnosticHighlight& highlight, bool printSource,
                                             const char* newlinePrefixPtr, size_t newlinePrefixSz) {
     const auto& [filepath, txt, txt_len, range, source_line, source_column, description] { highlight };
 
     const auto starting_line = source_line + range.begin.line_number;
-    const auto start_column = source_column + range.end.column;
+    // The snippet's column offset only applies to its first line.
+    const auto start_column = (range.begin.line_number == 0 ? source_column : 0) + range.begin.column;
 
-    if (filepath)
-        ss << "file://" << filepath << ':' << starting_line + 1 << ':' << start_column + 1 << '\n';
-    else
+    if (filepath) {
+        streamFileUri(ss, filepath, FileUriLocation { starting_line, start_column });
+        ss << '\n';
+    } else
         ss << "unknown file:" << starting_line + 1 << ':' << start_column + 1 << '\n';
 
     if (!txt || txt_len == 0) {

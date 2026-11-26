@@ -69,7 +69,9 @@ using namespace std::placeholders;
 static FILE* gPostDest = stdout;
 
 #ifdef _WIN32
-static UINT gOldCodePage; // for remembering the old codepage when we switch to UTF-8
+// for remembering the old codepages when we switch to UTF-8
+static UINT gOldCodePage;
+static UINT gOldInputCodePage;
 #endif
 
 SC_TerminalClient::SC_TerminalClient(const std::string& name):
@@ -656,10 +658,13 @@ SCLANG_DLLEXPORT SC_LanguageClient* createLanguageClient(const char* name) {
 #endif
 
 #ifdef _WIN32
-    // set codepage to UTF-8
+    // set codepages to UTF-8
     gOldCodePage = GetConsoleOutputCP();
     if (!SetConsoleOutputCP(65001))
         std::cerr << "WARNING: could not set codepage to UTF-8" << std::endl;
+    gOldInputCodePage = GetConsoleCP();
+    if (!SetConsoleCP(65001))
+        std::cerr << "WARNING: could not set input codepage to UTF-8" << std::endl;
 #endif
 
 #ifdef SC_QT
@@ -671,8 +676,9 @@ SCLANG_DLLEXPORT SC_LanguageClient* createLanguageClient(const char* name) {
 
 SCLANG_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient* languageClient) {
 #ifdef _WIN32
-    // reset codepage from UTF-8
+    // reset codepages from UTF-8
     SetConsoleOutputCP(gOldCodePage);
+    SetConsoleCP(gOldInputCodePage);
 #endif
     delete languageClient;
 }

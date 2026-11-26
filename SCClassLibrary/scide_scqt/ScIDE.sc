@@ -12,26 +12,6 @@ ScIDE {
 
 		Class.initClassTree(Server);
 		Class.initClassTree(SCDoc);
-		Class.initClassTree(PostWindowURLHandler);
-
-		PostWindowURLHandler.register(\scdoc, {|url|
-			var prefix = "scdoc://";
-			ScIDE.openHelpUrl("file://" ++ SCDoc.helpTargetDir +/+ url[prefix.size..])
-		});
-
-		PostWindowURLHandler.register(\file, {|url|
-			var prefix = "file://";
-			var parts = url[prefix.size..].split($:);
-			{ Document.openAtLine(if(parts[0][0] == $/) {parts[0]} {"/" ++ parts[0]}, parts[1] ?? { 0 }, parts[2] ?? [0]) }.fork(AppClock)
-		});
-
-		PostWindowURLHandler.register(\http, {|url|
-			HelpBrowser.goTo(url)
-		});
-
-		PostWindowURLHandler.register(\https, {|url|
-			HelpBrowser.goTo(url)
-		});
 
 		StartUp.add {
 			if (this.connected) {
@@ -448,30 +428,6 @@ ScIDE {
 	*prConnect {|ideName|
 		_ScIDE_Connect
 		this.primitiveFailed
-	}
-}
-
-PostWindowURLHandler {
-	classvar registered;
-
-	*initClass {
-		Class.initClassTree(IdentityDictionary);
-		registered = IdentityDictionary();
-	}
-
-	*register { |name, fn| registered[name] = fn }
-
-	*new { |scheme, url|
-		var found = registered[scheme.asSymbol];
-		^if(found.isNil){
-			this.prDefault(url)
-		} {
-			found.(url)
-		}
-	}
-
-	*prDefault { |url|
-		"PostWindowURLHandler does not know how to handle the URL '%'".format(url).warn
 	}
 }
 

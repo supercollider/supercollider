@@ -103,6 +103,9 @@ public:
 
     void gotoHelpFor(const QString&);
     void gotoHelpForMethod(const QString& className, const QString& methodName);
+    void gotoUrl(const QString& url);
+    /// path is relative to the help target directory, e.g. "Classes/SinOsc.html#-ar".
+    void gotoHelpPath(const QString& path);
     QWidget* loadProgressIndicator() { return mLoadProgressIndicator; }
 
     QUrl url() const { return mWebView->url(); }
