@@ -284,4 +284,18 @@ TestSimpleNumber : UnitTest {
 		this.assertArrayFloatEquals(valCps.cpsoct, valOct, "SimpleNumber.cpsoct should be precise within " ++ precision, precision);
 	}
 
+	test_centratio {
+		var precision = 1e-20;
+		var valCent = [0, 1200, 2400];
+		var valRatio = [1, 2, 4];
+		this.assertArrayFloatEquals(valCent.centratio, valRatio, "SimpleNumber.centratio should be precise within " ++ precision, precision);
+	}
+
+	test_ratiocent {
+		var precision = 1e-20;
+		var valRatio = [1, 2, 4];
+		var valCent = [0, 1200, 2400];
+		this.assertArrayFloatEquals(valRatio.ratiocent, valCent, "SimpleNumber.ratiocent should be precise within " ++ precision, precision);
+	}
+
 }

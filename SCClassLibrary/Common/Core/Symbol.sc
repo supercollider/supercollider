@@ -124,6 +124,8 @@ Symbol {
 	cpsmidi { ^this }
 	midiratio { ^this }
 	ratiomidi { ^this }
+	centratio { ^this }
+	ratiocent { ^this }
 	ampdb { ^this }
 	dbamp { ^this }
 	octcps { ^this }
