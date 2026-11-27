@@ -172,6 +172,11 @@ String[char] : RawArray {
 		^str.format(*resArgs)
 	}
 
+	// 'this' is the uri
+	createHyperlinkForTerminal { |text(this)|
+		^0x1b.asAscii ++ "]8;;" ++ this ++ 0x1b.asAscii ++ $\\ ++ text ++ 0x1b.asAscii ++ "]8;;" ++ 0x1b.asAscii ++ $\\;
+	}
+
 	die { arg ... culprits;
 		if(culprits.notEmpty,{
 			("\n\nFATAL ERROR: ").postln;
