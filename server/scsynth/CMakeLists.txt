@@ -318,8 +318,9 @@ endif()
 if(AUDIOAPI STREQUAL bela)
     target_link_libraries(scsynth PRIVATE ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES} belaextra)
 elseif(AUDIOAPI STREQUAL webaudio)
-    target_compile_options(libscsynth PUBLIC -pthread)
+    target_compile_options(libscsynth PRIVATE -pthread)
     target_compile_options(scsynth PRIVATE -pthread)
+
     target_link_options(scsynth PRIVATE
         -sAUDIO_WORKLET -sWASM_WORKERS -sUSE_PTHREADS -pthread
         --bind -sMODULARIZE=1 -sEXPORT_ES6=1 -sEXPORT_NAME='ScSynth'
@@ -327,22 +328,26 @@ elseif(AUDIOAPI STREQUAL webaudio)
         -sEXPORTED_FUNCTIONS=['_malloc','_free','_webOscBindingAnchor']
         -sEXPORTED_RUNTIME_METHODS=['ccall','cwrap','HEAPU8','UTF8ToString']
     )
+
     if(WASM_DEBUG)
-        target_compile_options(scsynth PRIVATE -pthread -g)
-        target_compile_options(libscsynth PRIVATE -pthread -g)
+        target_compile_options(scsynth PRIVATE -g)
+        target_compile_options(libscsynth PRIVATE -g)
         # see https://developer.chrome.com/blog/wasm-debugging-2020
         # -ASSERTIONS=1 is omitted
         target_link_options(scsynth PRIVATE
-                -sNO_DISABLE_EXCEPTION_CATCHING
-                -fdebug-compilation-dir='../..'
-                -sNO_DISABLE_EXCEPTION_CATCHING
+            -sNO_DISABLE_EXCEPTION_CATCHING
+            -fdebug-compilation-dir='../..'
+            -sNO_DISABLE_EXCEPTION_CATCHING
         )
     endif()
+
     # create sub-folder in order to separate build files from cmake cache files
     set_target_properties(scsynth PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY ${WASM_DIST_DIR}/scsynth
     )
+
     set(WASM_ASSET_DIR ${CMAKE_SOURCE_DIR}/platform/wasm)
+
     set(scsynth_web_files
             "${WASM_ASSET_DIR}/scsynth/index.html"
             "${WASM_ASSET_DIR}/LICENSE"
@@ -353,6 +358,7 @@ elseif(AUDIOAPI STREQUAL webaudio)
             "${WASM_ASSET_DIR}/dev_server.py"
             "${WASM_ASSET_DIR}/scsynth/init.js"
     )
+
     add_custom_command(TARGET scsynth POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${scsynth_web_files} $<TARGET_FILE_DIR:scsynth>
@@ -364,14 +370,11 @@ if (PTHREADS_FOUND)
 endif()
 
 if(LTO)
-    set_property(TARGET scsynth libscsynth
-            APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
+    target_compile_definitions(libscsynth PRIVATE "-flto -flto-report")
+    target_link_options(libscsynth PRIVATE "-flto -flto-report")
 
-    set_property(TARGET scsynth
-            APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
-
-    set_property(TARGET libscsynth
-            APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
+    target_compile_definitions(scsynth PRIVATE "-flto -flto-report")
+    target_link_options(scsynth PRIVATE "-flto -flto-report -fwhole-program")
 endif()
 
 if (LIBSCSYNTH)

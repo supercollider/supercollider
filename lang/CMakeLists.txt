@@ -202,6 +202,8 @@ list(APPEND sclang_sources ${SCDOC_SRCS})
 
 add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
 
+set_property(TARGET libsclang PROPERTY FOLDER Libs)
+
 if(FINAL_BUILD)
     set_source_files_properties(${sclang_parser_source} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
     set_target_properties(libsclang PROPERTIES
@@ -211,9 +213,6 @@ if(FINAL_BUILD)
 endif()
 
 target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC)
-target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
-
-target_link_libraries(libsclang sc_lexer)
 
 if(NO_NETWORKING)
     target_compile_definitions(libsclang PUBLIC NO_NETWORKING)
@@ -228,7 +227,7 @@ if(SC_QT OR SC_IDE)
         message(STATUS "sclang: Building with QtWebEngine")
         target_compile_definitions(libsclang PUBLIC SC_USE_QTWEBENGINE)
     endif()
-    target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
+    target_link_libraries(libsclang PRIVATE ${QT_COLLIDER_LIBS})
 
     # This makes sclang/scide work with a Qt installation at a fixed location.
     if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -244,29 +243,32 @@ endif()
 
 if(SC_HIDAPI)
     target_compile_definitions(libsclang PRIVATE HAVE_HIDAPI)
-    target_link_libraries( libsclang hidapi hidapi_parser )
+    target_link_libraries(libsclang PRIVATE hidapi hidapi_parser )
     if(WIN32)
-        target_link_libraries(libsclang hid)
+        target_link_libraries(libsclang PRIVATE hid)
     endif()
 
     if(${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND HID_HIDRAW)
-        target_link_libraries( libsclang ${UDEV_LIBRARIES})
+        target_link_libraries(libsclang PRIVATE ${UDEV_LIBRARIES})
     endif()
     if(HID_LIBUSB)
-        target_link_libraries( libsclang ${LIBUSB_1_LIBRARIES})
+        target_link_libraries(libsclang PRIVATE ${LIBUSB_1_LIBRARIES})
     endif()
 endif()
 
-target_link_libraries(
-    libsclang
+target_link_libraries(libsclang PRIVATE
+    sc_lexer
+    tlsf
+    ${PTHREADS_LIBRARIES}
     Boost::thread
     Boost::program_options
     Boost::regex
     Boost::sync
+    yaml-cpp
 )
 
 if (SCLANG_SERVER)
-    target_link_libraries(libsclang libscsynth)
+    target_link_libraries(libsclang PRIVATE libscsynth)
 else()
     target_compile_definitions(libsclang PUBLIC NO_INTERNAL_SERVER)
 endif()
@@ -284,7 +286,7 @@ if (SC_ABLETON_LINK)
         include(../external_libraries/link/AbletonLinkConfig.cmake)
     endif()
 
-    target_link_libraries(libsclang Ableton::Link)
+    target_link_libraries(libsclang PRIVATE Ableton::Link)
 
     add_definitions(-DSC_ABLETON_LINK)
 endif()
@@ -298,31 +300,33 @@ if(READLINE_FOUND)
     if(CMAKE_SYSTEM_NAME MATCHES "Linux")
         set(CURSES_NEED_NCURSES 1)
         find_package(Curses REQUIRED)
-        target_link_libraries(libsclang ${CURSES_LIBRARIES})
+        target_link_libraries(libsclang PRIVATE ${CURSES_LIBRARIES})
     endif()
     target_compile_definitions(libsclang PUBLIC HAVE_READLINE)
     target_include_directories(libsclang PUBLIC ${READLINE_INCLUDE_DIR})
-    target_link_libraries(libsclang ${READLINE_LIBRARY})
+    target_link_libraries(libsclang PRIVATE ${READLINE_LIBRARY})
 endif(READLINE_FOUND)
 mark_as_advanced(READLINE_INCLUDE_DIR READLINE_LIBRARY)
 
 if (APPLE)
-    target_link_libraries(libsclang "-framework Carbon")
-    target_link_libraries(libsclang "-framework CoreAudio")
-    target_link_libraries(libsclang "-framework CoreMIDI")
-    target_link_libraries(libsclang "-framework CoreServices")
-    target_link_libraries(libsclang "-framework IOKit")
-    target_link_libraries(libsclang "-framework CoreFoundation")
+    target_link_libraries(libsclang PRIVATE
+        "-framework Carbon"
+        "-framework CoreAudio"
+        "-framework CoreMIDI"
+        "-framework CoreServices"
+        "-framework IOKit"
+        "-framework CoreFoundation"
+    )
 endif()
 
 if(ALSA_FOUND)
     message(STATUS "Compiling with ALSA midi support")
     target_compile_definitions(libsclang PUBLIC HAVE_ALSA=1)
-    target_link_libraries(libsclang ${ALSA_LIBRARY})
+    target_link_libraries(libsclang PRIVATE ${ALSA_LIBRARY})
 endif(ALSA_FOUND)
 
 if (AUDIOAPI STREQUAL portaudio)
-    target_link_libraries(libsclang PortAudio::PortAudio)
+    target_link_libraries(libsclang PRIVATE PortAudio::PortAudio)
 endif()
 
 if(SNDFILE_FOUND)
@@ -336,18 +340,18 @@ if(SNDFILE_FOUND)
         target_compile_definitions(libsclang PRIVATE SNDFILE_HAS_MPEG)
     endif()
     target_include_directories(libsclang SYSTEM PRIVATE ${SNDFILE_INCLUDE_DIR})
-    target_link_libraries(libsclang ${SNDFILE_LIBRARIES})
+    target_link_libraries(libsclang PRIVATE ${SNDFILE_LIBRARIES})
 elseif(NOT NO_LIBSNDFILE)
     message(SEND_ERROR "Cannot find libsndfile")
 endif(SNDFILE_FOUND)
 
 if (FFTW3F_FOUND)
     target_include_directories (libsclang ${FFTW3F_INCLUDE_DIR})
-    target_link_libraries(libsclang ${FFTW3F_LIBRARY})
+    target_link_libraries(libsclang PRIVATE ${FFTW3F_LIBRARY})
 endif()
 
 if(WIN32)
-    target_link_libraries(libsclang ws2_32 mswsock portmidi iphlpapi)
+    target_link_libraries(libsclang PRIVATE ws2_32 mswsock portmidi iphlpapi)
     target_compile_definitions(libsclang PRIVATE HAVE_PORTMIDI)
 endif()
 
@@ -360,26 +364,20 @@ if(MSVC)
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    target_link_libraries(libsclang rt)
+    target_link_libraries(libsclang PRIVATE rt)
 endif()
 
-target_link_libraries(libsclang yaml-cpp)
-
 add_executable(sclang LangSource/sclang_main.cpp ${RES_FILES})
-target_link_libraries(sclang libsclang)
-target_link_libraries(sclang ${ICU_LIBRARIES})
 
+target_link_libraries(sclang PRIVATE libsclang ${ICU_LIBRARIES})
 target_compile_definitions(sclang PUBLIC USE_SC_TERMINAL_CLIENT)
 
 if(LTO)
-    set_property(TARGET sclang libsclang
-        APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
+    target_compile_definitions(libsclang PRIVATE "-flto -flto-report")
+    target_link_options(libsclang PRIVATE "-flto -flto-report")
 
-    set_property(TARGET sclang
-        APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
-
-    set_property(TARGET libsclang
-        APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
+    target_compile_definitions(sclang PRIVATE "-flto -flto-report")
+    target_link_options(sclang PRIVATE "-flto -flto-report -fwhole-program")
 endif()
 
 if(APPLE)
@@ -391,10 +389,8 @@ if(APPLE)
     endif()
 elseif(EMSCRIPTEN)
 #    target_compile_definitions(libsclang PUBLIC BOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS)
-    target_link_libraries(sclang oscpack)
+    target_link_libraries(sclang PRIVATE oscpack webosc)
     target_include_directories(sclang PRIVATE ${CMAKE_SOURCE_DIR}/external_libraries/oscpack_1_1_0)
-
-    target_link_libraries(sclang webosc)
 
     # see https://emscripten.org/docs/tools_reference/settings_reference.html#initial-memory
     # improves performance b/c heap increase is rather expensive
@@ -404,43 +400,36 @@ elseif(EMSCRIPTEN)
     # necessary b/c pthread init is async in emscripten, but sclang needs some threads right away
     set(PTHREAD_POOL_SIZE "4" CACHE STRING "Number of threads to spawn sclang.wasm at call time")
 
-    set_target_properties(sclang PROPERTIES LINK_FLAGS "\
-        -sAUDIO_WORKLET \
-        --bind \
-        -sWASM_WORKERS \
-        -sUSE_PTHREADS \
-        -pthread \
-        -sALLOW_MEMORY_GROWTH \
-        -sINITIAL_MEMORY=${INITIAL_MEMORY_GROWTH} \
-        -sEXIT_RUNTIME=0 \
-        --pre-js ${CMAKE_SOURCE_DIR}/platform/wasm/sclang.pre.js \
-        -sEXPORT_ES6=1 \
-        -sEXPORT_NAME='ScLang' \
-        -sMODULARIZE=1 \
-        -sEXPORTED_FUNCTIONS=['_webOscBindingAnchor','_main','_free','_scWasmBindingAnchor'] \
-        -sPTHREAD_POOL_SIZE=${PTHREAD_POOL_SIZE} \
-        --preload-file ${CMAKE_SOURCE_DIR}/SCClassLibrary@/sc/SCClassLibrary \
-        -sSTACK_SIZE=1048576 \
-        -sDEFAULT_PTHREAD_STACK_SIZE=1048576 \
-        -sENVIRONMENT=web,worker,node \
-    ")
+    target_compile_options(libsclang PRIVATE -pthread)
+    target_compile_options(sclang PRIVATE -pthread)
+
+    target_link_options(sclang PRIVATE
+        -sAUDIO_WORKLET --bind -sWASM_WORKERS -sUSE_PTHREADS -pthread
+        -sALLOW_MEMORY_GROWTH -sINITIAL_MEMORY=${INITIAL_MEMORY_GROWTH}
+        -sEXIT_RUNTIME=0 --pre-js "${CMAKE_SOURCE_DIR}/platform/wasm/sclang.pre.js"
+        -sEXPORT_ES6=1 -sEXPORT_NAME='ScLang' -sMODULARIZE=1
+        -sEXPORTED_FUNCTIONS=['_webOscBindingAnchor','_main','_free','_scWasmBindingAnchor']
+        -sPTHREAD_POOL_SIZE=${PTHREAD_POOL_SIZE}
+        --preload-file "${CMAKE_SOURCE_DIR}/SCClassLibrary@/sc/SCClassLibrary"
+        -sSTACK_SIZE=1048576 -sDEFAULT_PTHREAD_STACK_SIZE=1048576
+        -sENVIRONMENT=web,worker,node
+    )
+
     if(WASM_DEBUG)
-        target_compile_options(libsclang PUBLIC -pthread -g)
-        target_compile_options(sclang PRIVATE -pthread -g)
-        target_compile_options(libscsynth PRIVATE -pthread -g)
-        set_property(TARGET sclang APPEND_STRING PROPERTY LINK_FLAGS "
-                -g \
-                -sASSERTIONS \
-                -fdebug-compilation-dir='..' \
-                -sNO_DISABLE_EXCEPTION_CATCHING \
-                -sSAFE_HEAP=1 \
-                -sSTACK_OVERFLOW_CHECK=2 \
-        ")
+        target_compile_options(libsclang PUBLIC -g)
+        target_compile_options(sclang PRIVATE -g)
+        target_link_options(sclang PRIVATE
+            -sASSERTIONS -fdebug-compilation-dir='..'
+            -sNO_DISABLE_EXCEPTION_CATCHING -sSAFE_HEAP=1
+            -sSTACK_OVERFLOW_CHECK=2
+        )
     endif()
+
     # create sub-folder in order to separate build files from cmake cache files
     set_target_properties(sclang PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${WASM_DIST_DIR}/sclang
     )
+
     set(SCLANG_WASM_FILES
         ${WASM_ASSET_DIR}/sclang/index.html
         ${WASM_ASSET_DIR}/LICENSE
@@ -450,6 +439,7 @@ elseif(EMSCRIPTEN)
         ${WASM_ASSET_DIR}/package.json
         ${CMAKE_SOURCE_DIR}/README_WASM.md
     )
+
     add_custom_command(TARGET sclang POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${SCLANG_WASM_FILES} $<TARGET_FILE_DIR:sclang>
@@ -561,5 +551,3 @@ add_custom_target(Help
     USES_TERMINAL
     VERBATIM
 )
-
-set_property(TARGET libsclang PROPERTY FOLDER Libs)
