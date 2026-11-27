@@ -30,6 +30,9 @@ set(EDITOR_WASM_FILES
     $<TARGET_FILE_DIR:sclang>/sclang.js
     $<TARGET_FILE_DIR:sclang>/sclang.wasm
     $<TARGET_FILE_DIR:sclang>/sclang.data
+    $<TARGET_FILE_DIR:sclang>/sclang-help.data
+    $<TARGET_FILE_DIR:sclang>/sclang-help.js
+    $<TARGET_FILE_DIR:sclang>/sclang-help.js.metadata
 )
 add_custom_command(TARGET webeditor POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory ${EDITOR_WASM_OUTPUT}
