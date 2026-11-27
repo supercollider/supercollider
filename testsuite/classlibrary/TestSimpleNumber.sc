@@ -240,20 +240,22 @@ TestSimpleNumber : UnitTest {
 		this.assertEquals(testF.(val,1,2,1), [ -1, 0, 0, 1, 1, 1 ] , "Test 11 (edge case): snap(1, 2, 1)");
 	}
 
+
 	test_series {
-		var first = 0;
-		var step = 2.0001;
-		var last = 8;
-		var arr = first.series(step, last);
-		this.assert(arr.last <= last, "SimpleNumber:series should not produce an array whose last value is greater than the specified 'last' argument.");
+        this.assert(series(0, 3, 4).size == 2, "SimpleNumber:series with integers should not produce an array whose last value is greater than the 'last' argument");
+        this.assert(series(1.0, 2.0, 7.9).size == 7, "SimpleNumber:series with floats should not produce an array whose last value is greater than the 'last' argument");
 
-		first = 1;
-		arr = first.series(first, first);
-		this.assert(arr.size == 1, "SimpleNumber:series Int types with first == last and step == 0 should return an array of [ first ]");
+        this.assert(series(-1.5, -1.45, -1.35).size == 4, "SimpleNumber:series compensates for floating point error even in relatively short arrays");
+        this.assert(series(0.001, 0.002, 999.999999999998).size == 999999, "Floating point error compensation should be less than a billionth of size");
+        // (it's actually 2^-49, i.e. ca. 10e-15 of the size).
 
-		first = 1.1;
-		arr = first.series(first, first);
-		this.assert(arr.size == 1, "SimpleNumber:series Float types with first == last and step == 0 should return an array of [ first ]");
+        this.assertException({series(1.5, 2, -1.5)}, PrimitiveFailedError, "SimpleNumber:series should throw an Error when (second-first) and (last-first) are of different sign");
+        this.assertException({series(1,1,-3)}, PrimitiveFailedError, "SimpleNumber:series should throw an Error when (second-first) is 0 and (last-first) is not");
+        this.assertException({series(0, 1, 2.pow(28))}, PrimitiveFailedError, "SimpleNumber:series should throw an Error when size calculation resulted in size > INT_MAX_BY_PyrSlot");
+
+		this.assert(series(1,1,1) == [1], "SimpleNumber:series Int types with  first == second == last  should return an array of [ first ]");
+		this.assert(series(1.1,1.1,1.1) == [1.1], "SimpleNumber:series Float types with first == second == last should return an array of [ first ]");
+        // this.assertNoException({series(0, 1, 2.pow(28) - 1)}, "SimpleNumber:series should not throw an Error when size calculation resulted in size <= INT_MAX_BY_PyrSlot");
 	}
 
 	test_midiratio {
