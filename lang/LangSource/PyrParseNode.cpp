@@ -4466,6 +4466,9 @@ bool findNamedIdentifier(CompilerContext& cxt, PyrBlock* block, PyrClass** class
         cxt.functionCantBeClosed = true;
         *varType = varPseudo;
         *index = opgFunction;
+
+        METHRAW(cxt.compilingBlock)->needsHeapContext = 1;
+
         return true;
     }
     return false;
