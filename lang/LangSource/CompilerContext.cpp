@@ -1,9 +1,8 @@
 #include "CompilerContext.hpp"
 #include "PyrSymbol.h"
-#include "SC_LanguageClient.h"
+#include "SC_Version.hpp"
 #include "codepoint.hpp"
 #include "source_utils.hpp"
-#include "SCBase.h"
 #include "text_location.hpp"
 #include <cstring>
 #include <iomanip>
@@ -31,6 +30,11 @@
     // clang-format on
 }
 
+[[nodiscard]] DiagnosticLocation TextInfo::diagnosticLocation(sc::lex::SourceCodeRange range) const {
+    // The column offset only applies to the first line of the snippet.
+    const auto column = range.begin.line_number == 0 ? offsetInFile.column + range.begin.column : range.begin.column;
+    return { &filePathDescription, offsetInFile.line_number + range.begin.line_number, column };
+}
 
 CompilerContext* bison_cxt { nullptr };
 
@@ -38,12 +42,12 @@ std::string diagnosticToCompilerError(ErrorType type, const char* generalDescrip
                                       const DiagnosticHighlight* linesToPrint, size_t numLinesToPrint) {
     std::stringstream ss;
 
-    ss << "\n────────────────────────────────────────────────────────────────────────────────\n";
+    ss << "────────────────────────────────────────────────────────────────────────────────\n";
 
     if (type == ErrorType::Error)
-        ss << "Error: ";
+        ss << "ERROR: ";
     else if (type == ErrorType::Warning)
-        ss << "Warning: ";
+        ss << "WARNING: ";
 
     if (generalDescription)
         ss << generalDescription;
@@ -57,7 +61,7 @@ std::string diagnosticToCompilerError(ErrorType type, const char* generalDescrip
             ss << "\n";
         }
     }
-    ss << "\n────────────────────────────────────────────────────────────────────────────────\n";
+    ss << "────────────────────────────────────────────────────────────────────────────────\n";
     return ss.str();
 }
 
@@ -157,47 +161,6 @@ std::ostream& streamSourceCodeWithHighlight(std::ostream& ss, const DiagnosticHi
     return ss;
 }
 
-void CompilerContext::postError(const std::string& str, std::optional<SemanticVersion> versionOfError) {
-    thingsPosted += 1;
-    ::postText(str.c_str(), str.size());
-    if (versionOfError) {
-        if (SC_Version >= *versionOfError) {
-            ++errors;
-        } else {
-            const auto str = versionOfError->asString();
-            ::post("WARNING: From version %s onwards the preceding error will be a compilation failure, please fix "
-                   "the code before updating.\n\n",
-                   str.c_str());
-        }
-    } else {
-        ++errors;
-    }
-}
-
-
-void CompilerContext::postWarning(const std::string& str, std::optional<SemanticVersion> versionOfError) {
-    thingsPosted += 1;
-    ::postText(str.c_str(), str.size());
-    if (versionOfError) {
-        if (SC_Version >= *versionOfError) {
-            ++warnings;
-        } else {
-            const auto str = versionOfError->asString();
-            ::post("WARNING: From version %s onwards the preceding error will be a compilation failure, please fix "
-                   "the code before updating.\n\n",
-                   str.c_str());
-        }
-    } else {
-        ++warnings;
-    }
-}
-
-
-void CompilerContext::logErrorInCurFile(sc::lex::SourceCodeRange loc, const char* msg,
-                                        std::optional<SemanticVersion> versionOfError) {
-    errorsInCurFile.push_back({ loc, std::string { msg }, versionOfError });
-}
-
 void CompilerContext::assignRoot(struct PyrRootNode& ptr) {
     assert(root == nullptr);
     root = &ptr;
@@ -213,16 +176,37 @@ std::tuple<struct PyrParseNode*, intptr_t> CompilerContext::popFromGenerator() {
     auto n = (struct PyrParseNode*)popls(&generatorStack);
     return { n, t };
 }
-void CompilerContext::postErrorInCurrentFile(sc::lex::SourceCodeRange range, const char* generalDescription,
-                                             std::string description, std::optional<SemanticVersion> versionOfError) {
-    const auto h = textInfo->createDiagnosticHighlight(range, std::move(description));
-    const auto str = diagnosticToCompilerError(ErrorType::Error, generalDescription, &h, 1);
-    postError(str, versionOfError);
+
+void CompilerContext::logError(std::string str, std::optional<SemanticVersion> versionOfError,
+                               std::optional<DiagnosticLocation> location) {
+    bool wasWarning = false;
+    if (versionOfError && versionOfError >= *versionOfError) {
+        ++warnings;
+        wasWarning = true;
+        str += "\nWARNING: from version " + versionOfError->asString()
+            + " and onwards the preceding error will be a compilation failure, please fix "
+              "the code before updating.\n\n";
+    } else
+        ++errors;
+
+    diagnostics.push_back({ std::move(str), wasWarning, location });
 }
 
-void CompilerContext::postWarningInCurrentFile(sc::lex::SourceCodeRange range, const char* generalDescription,
-                                               std::string description, std::optional<SemanticVersion> versionOfError) {
+void CompilerContext::logErrorInCurrentFile(sc::lex::SourceCodeRange range, const char* generalDescription,
+                                            std::string description, std::optional<SemanticVersion> versionOfError) {
     const auto h = textInfo->createDiagnosticHighlight(range, std::move(description));
-    const auto str = diagnosticToCompilerError(ErrorType::Error, generalDescription, &h, 1);
-    postWarning(str, versionOfError);
+    auto str = diagnosticToCompilerError(ErrorType::Error, generalDescription, &h, 1);
+    logError(std::move(str), versionOfError, textInfo->diagnosticLocation(range));
+}
+
+void CompilerContext::logWarning(std::string str, std::optional<DiagnosticLocation> location) {
+    ++warnings;
+    diagnostics.push_back({ std::move(str), true, location });
+}
+
+void CompilerContext::logWarningInCurrentFile(sc::lex::SourceCodeRange range, const char* generalDescription,
+                                              std::string description) {
+    const auto h = textInfo->createDiagnosticHighlight(range, std::move(description));
+    auto str = diagnosticToCompilerError(ErrorType::Error, generalDescription, &h, 1);
+    logWarning(std::move(str), textInfo->diagnosticLocation(range));
 }
