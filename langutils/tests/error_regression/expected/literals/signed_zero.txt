@@ -1,0 +1,60 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (3:1): SignedZero : Object, version 3.16
+|  SCMemberList (3:1)
+|  SCMethodList (3:1)
+|  |  SCMethod (5:5): both, version 3.16: both { var a = 0.0, b = -0.0; ^[a, b] } -> [0.0, -0.0]
+|  |  |  SCBody (5:12)
+|  |  |  |  SCVariableDeclare (5:16): a, prototype
+|  |  |  |  |  SCLiteral (5:20) = 0.0
+|  |  |  |  SCVariableDeclare (5:25): b, prototype
+|  |  |  |  |  SCLiteral (5:30) = -0.0
+|  |  |  |  SCExplicitReturn (5:35)
+|  |  |  |  |  SCCollection (5:36): Array = [0.0, -0.0]
+|  |  |  |  |  |  SCRead (5:37): local a = 0.0, declared (5:16): a = 0.0
+|  |  |  |  |  |  SCRead (5:40): local b = -0.0, declared (5:25): b = -0.0
+|  |  SCMethod (7:5): reversed, version 3.16: reversed { var a = -0.0, b = 0.0; ^[a, b] } -> [-0.0, 0.0]
+|  |  |  SCBody (7:16)
+|  |  |  |  SCVariableDeclare (7:20): a, prototype
+|  |  |  |  |  SCLiteral (7:25) = -0.0
+|  |  |  |  SCVariableDeclare (7:30): b, prototype
+|  |  |  |  |  SCLiteral (7:34) = 0.0
+|  |  |  |  SCExplicitReturn (7:39)
+|  |  |  |  |  SCCollection (7:40): Array = [-0.0, 0.0]
+|  |  |  |  |  |  SCRead (7:41): local a = -0.0, declared (7:20): a = -0.0
+|  |  |  |  |  |  SCRead (7:44): local b = 0.0, declared (7:30): b = 0.0
+|  |  SCMethod (9:5): negative, version 3.16: negative { ^-0.0 } -> -0.0
+|  |  |  SCBody (9:16)
+|  |  |  |  SCExplicitReturn (9:16)
+|  |  |  |  |  SCLiteral (9:18) = -0.0
+|  |  SCMethod (11:5): negative_array, version 3.16: negative_array { ^[-0.0] } -> [-0.0]
+|  |  |  SCBody (11:22)
+|  |  |  |  SCExplicitReturn (11:22)
+|  |  |  |  |  SCCollection (11:23): Array = [-0.0]
+|  |  |  |  |  |  SCLiteral (11:25) = -0.0
+|  |  SCMethod (13:5): positive_array, version 3.16: positive_array { ^[0.0] } -> [0.0]
+|  |  |  SCBody (13:22)
+|  |  |  |  SCExplicitReturn (13:22)
+|  |  |  |  |  SCCollection (13:23): Array = [0.0]
+|  |  |  |  |  |  SCLiteral (13:24) = 0.0
+|  |  SCMethod (15:5): typed_double, version 3.16: typed_double { ^DoubleArray[0.0, -0.0] } -> DoubleArray[0.0, -0.0]
+|  |  |  SCBody (15:20)
+|  |  |  |  SCExplicitReturn (15:20)
+|  |  |  |  |  SCCollection (15:21): DoubleArray = DoubleArray[0.0, -0.0]
+|  |  |  |  |  |  SCLiteral (15:33) = 0.0
+|  |  |  |  |  |  SCLiteral (15:39) = -0.0
+|  |  SCMethod (17:5): typed_float, version 3.16: typed_float { ^FloatArray[-0.0] } -> FloatArray[-0.0]
+|  |  |  SCBody (17:19)
+|  |  |  |  SCExplicitReturn (17:19)
+|  |  |  |  |  SCCollection (17:20): FloatArray = FloatArray[-0.0]
+|  |  |  |  |  |  SCLiteral (17:32) = -0.0
+|  |  SCMethod (19:5): typed_float_positive, version 3.16: typed_float_positive { ^FloatArray[0.0] } -> FloatArray[0.0]
+|  |  |  SCBody (19:28)
+|  |  |  |  SCExplicitReturn (19:28)
+|  |  |  |  |  SCCollection (19:29): FloatArray = FloatArray[0.0]
+|  |  |  |  |  |  SCLiteral (19:40) = 0.0
+Successfully compiled 16 classes.

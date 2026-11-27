@@ -67,7 +67,7 @@ list::
 EXAMPLES::
 
 subsection::What happens if you stop and start the task too quickly?
-code::
+code#fragment::
 (
 t = Task({
 	50.do({ |i|

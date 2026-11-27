@@ -26,10 +26,10 @@ Best practise is to create a separate code::.yaml:: configuration file that resi
 code::
 ~sclangConf = "SCLANG_CONF".getenv;
 LanguageConfig.addIncludePath(~scSourceDir +/+ "testsuite/classlibrary");
-+   LanguageConfig.addExcludePath(~scSourceDir +/+ "testsuite/classlibrary/server");
-+   LanguageConfig.addExcludePath(Quarks.folder +/+ "UnitTesting/tests");
-+   postf("Writing configuration to %\n", ~sclangConf);
-+   LanguageConfig.store(~sclangConf);
+LanguageConfig.addExcludePath(~scSourceDir +/+ "testsuite/classlibrary/server");
+LanguageConfig.addExcludePath(Quarks.folder +/+ "UnitTesting/tests");
+postf("Writing configuration to %\n", ~sclangConf);
+LanguageConfig.store(~sclangConf);
 ::
 
 

@@ -359,9 +359,9 @@ String[char] : RawArray {
 		^this.as(Array).rotate(n).as(String)
 	}
 
-	compile { ^thisProcess.interpreter.compile(this); }
-	interpret { ^thisProcess.interpreter.interpret(this); }
-	interpretPrint { ^thisProcess.interpreter.interpretPrint(this); }
+	compile { |version| ^thisProcess.interpreter.compile(this, version: version); }
+	interpret { |version| ^thisProcess.interpreter.interpret(this, version: version); }
+	interpretPrint { |version| ^thisProcess.interpreter.interpretPrint(this, version: version); }
 
 	*readNew { arg file;
 		^file.readAllString;

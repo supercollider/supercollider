@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestCollection : UnitTest {
 	test_asPairs {
 		this.assert(

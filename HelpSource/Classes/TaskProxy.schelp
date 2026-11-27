@@ -179,7 +179,7 @@ x.source = {
 }
 )
 
-... and so on ...
+/* ... and so on ... */
 
 x.stop;
 y.stop;

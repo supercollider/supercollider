@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestBag : UnitTest {
 	test_Bag_avoidsInPlaceOperations {
 		var a, b, saveA;

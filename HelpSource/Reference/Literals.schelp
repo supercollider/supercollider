@@ -85,7 +85,7 @@ uppercase letters may be used past the decimal point for bases greater than 10.
 This eliminates ambiguity: if lowercase letters were allowed,
 code::36rA.bitNot:: might be a function call, or it might be
 code::36rA.BITNOT == 10.320080118934::.
-code::
+code#error::
 12r4a.ab // wrong
 12r4a.AB // works
 12r4A.AB // better
@@ -190,7 +190,7 @@ code::
 A second way of notating symbols is by prefixing the word with a backslash.
 This is only legal if the symbol consists of a single word (a sequence
 of alphanumeric and/or underscore characters).
-code::
+code#error::
 \x
 \aiff
 \Big_Swifty_And_Assoc
@@ -198,7 +198,7 @@ code::
 ::
 
 You can also specify integer symbols this way, but if the symbol starts with a digit, it cannot contain letters.
-code::
+code#error::
 \1234;
 \892342534;
 \3456meow // now illegal
@@ -238,7 +238,7 @@ section::Identifiers
 
 Names of methods and variables begin with a lower case alphabetic character,
 followed by zero or more alphanumeric or underscore characters.
-code::
+code#error::
 var abc, z123, trigger_func;
 var 1var; // not legal
 var _hmm; // not legal
@@ -279,7 +279,7 @@ code::
 Literal Arrays must be used as is and may not be altered at run time.
 
 In literal Arrays names are interpreted as symbols. This is not the case in regular Arrays, where they are interpreted as variable names:
-code::
+code#fragment::
 #[foo, bar]     // this is legal; an Array of Symbols
 [foo, bar]      // this is only legal if foo and bar have been declared as variables
 ::
@@ -369,14 +369,14 @@ So, one possible easy way to work around the limitation is to break up a large b
 
 code::
 {
-	... a bunch of code ...
+	/* ... a bunch of code ... */
 }.value;
 
 {
-	... a bunch of code ...
+	/* ... a bunch of code ... */
 }.value;
 
 {
-	... a bunch of code ...
+	/* ... a bunch of code ... */
 }.value;
 ::

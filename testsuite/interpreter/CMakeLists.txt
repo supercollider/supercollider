@@ -34,7 +34,7 @@ foreach(test ${test_sources})
         ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
     )
 
-    add_test(interpreter__${test_name} ${test_name})
+    add_test(sclang.slot.${test_name} ${test_name})
     set_property(TARGET ${test_name} PROPERTY FOLDER Test/Interpreter)
 endforeach(test)
 
@@ -66,10 +66,10 @@ foreach(test ${negative_tests})
         ${CMAKE_SOURCE_DIR}/lang/LangPrimSource
     )
 
-    add_test(NAME failing_${test_name}
+    add_test(NAME sclang.slot.failing.${test_name}
         COMMAND ${CMAKE_COMMAND} --build . --target ${test_name} --config $<CONFIGURATION>
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 
-    set_tests_properties(failing_${test_name} PROPERTIES WILL_FAIL TRUE)
+    set_tests_properties(sclang.slot.failing.${test_name} PROPERTIES WILL_FAIL TRUE)
     set_property(TARGET ${test_name} PROPERTY FOLDER Test/Interpreter)
 endforeach(test)

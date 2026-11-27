@@ -1,0 +1,18 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCInterpreted (1:1): version 3.16: versions/interpreted_version.scd
+|  SCRegionList (1:1) -> 2
+|  |  SCRegion (7:1)
+|  |  |  SCFunction (7:1) -> 2
+|  |  |  |  SCBody (7:1)
+|  |  |  |  |  SCVariableDeclare (7:6): a, prototype
+|  |  |  |  |  |  SCLiteral (7:10) = 1
+|  |  |  |  |  SCRead (7:13): local a = 1, declared (7:6): a = 1
+|  |  |  |  |  SCVariableDeclare (7:20): b, prototype
+|  |  |  |  |  |  SCLiteral (7:24) = 2
+|  |  |  |  |  SCRead (7:27): local b = 2, declared (7:20): b = 2
+Successfully compiled 15 classes.

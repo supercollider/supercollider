@@ -234,8 +234,8 @@ void ScProcess::onReadAllStandardError(void) {
     emit scPost("ERROR: " + QString::fromUtf8(out));
 }
 
-void ScProcess::evaluateCode(QString const& commandString, bool silent, const QString* filePath, int lineNumber,
-                             int column) {
+void ScProcess::evaluateCodeWithVersion(QString const& commandString, bool silent, const QString* filePath,
+                                        int lineNumber, int column, QString const& version) {
     if (state() != QProcess::Running) {
         emit statusMessage(tr("Interpreter is not running!"));
         return;
@@ -244,12 +244,14 @@ void ScProcess::evaluateCode(QString const& commandString, bool silent, const QS
     // for protocol structure and control characters, see SC_TerminalClient::InputProtocol
     QByteArray bytesToWrite;
 
-    if (filePath && !filePath->isEmpty()) {
+    const bool hasFilePath = filePath && !filePath->isEmpty();
+    if (hasFilePath || !version.isEmpty()) {
         // start header
         bytesToWrite.append(SC_LanguageClient::StartOfHeader);
 
-        // file name
-        bytesToWrite.append(filePath->toUtf8());
+        // file name, empty for an untitled document or a help page
+        if (hasFilePath)
+            bytesToWrite.append(filePath->toUtf8());
         bytesToWrite.append(SC_LanguageClient::RecordDelimiter);
 
         // line number
@@ -260,6 +262,12 @@ void ScProcess::evaluateCode(QString const& commandString, bool silent, const QS
         // column number
         const auto columnString = QString::number(column);
         bytesToWrite.append(columnString.toUtf8());
+
+        // language version, optional
+        if (!version.isEmpty()) {
+            bytesToWrite.append(SC_LanguageClient::RecordDelimiter);
+            bytesToWrite.append(version.toUtf8());
+        }
 
         // mark end of header resp. start of code
         bytesToWrite.append(SC_LanguageClient::StartOfText);

@@ -74,7 +74,7 @@ subsection::Removal
 
 Just call .remove on the responder.
 code::
-c = CCResponder({ ... }, num: 1);	// respond to any modwheel
+c = CCResponder({ /* ... */ }, num: 1);	// respond to any modwheel
 
 c.remove;		// stop this responder
 ::

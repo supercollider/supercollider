@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestTask : UnitTest {
 
 	test_stop_internally {
@@ -41,8 +42,9 @@ TestTask : UnitTest {
 
 	makePlayTestWithClock { |clock, nameString|
 		var ok = false;
-		var task = Task { 0.001.wait; ok = true; cond.signalAll };
+		// 3.16: a variable can't be used before it is declared, so cond is declared first.
 		var cond = CondVar.new;
+		var task = Task { 0.001.wait; ok = true; cond.signalAll };
 		task.play(clock);
 		cond.waitFor(1, { ok });
 		task.stop;

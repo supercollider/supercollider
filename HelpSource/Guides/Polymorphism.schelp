@@ -21,8 +21,10 @@ Let's look at how these classes implement the value message.
 subsection:: Object
 
 Here's the value method in class link::Classes/Object:: :
-code::
-value { ^this }
+code#class#fragment::
+Object {
+    value { ^this }
+}
 ::
 It simply returns itself. Since all classes inherit from class Object this means that unless a class overrides code::value::, the object will respond to code::value:: by returning itself.
 code::
@@ -36,11 +38,13 @@ code::
 
 subsection:: Function
 In class link::Classes/Function:: the value method is a primitive:
-code::
-value { arg ... args;
-    _FunctionValue
-    // evaluate a function with args
-    ^this.primitiveFailed
+code#class#error::
+Function{
+    value { arg ... args;
+        _FunctionValue
+        // evaluate a function with args
+        ^this.primitiveFailed
+    }
 }
 ::
 
@@ -53,7 +57,7 @@ code::
 subsection:: Ref
 The link::Classes/Ref:: class provides a way to create an indirect reference to an object. It can be used to pass a value by reference. Ref objects have a single instance variable called code::value::.
 The code::value:: method returns the value of the instance variable code::value::. Here is a part of the class definition for Ref:
-code::
+code#class#error::
 Ref : AbstractFunction
 {
     var <>value;

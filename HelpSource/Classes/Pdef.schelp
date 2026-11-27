@@ -10,7 +10,7 @@ Pdef is a class that provides an interface to its superclass link::Classes/Event
 
 Pdef and Pdefn use separate global collections.
 
-code::
+code#fragment::
 Pdef(key)	// returns the instance
 Pdef(key, pat)	// stores the pattern and returns the instance, like Tdef and Ndef.
 ::

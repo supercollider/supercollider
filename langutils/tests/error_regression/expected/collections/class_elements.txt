@@ -1,0 +1,150 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): ClassElements : Object, version 3.16
+|  SCMemberList (5:1)
+|  SCMethodList (5:1)
+|  |  SCMethod (7:5): array, version 3.16: array { ^[Array, List] }
+|  |  |  SCBody (7:13)
+|  |  |  |  SCExplicitReturn (7:13)
+|  |  |  |  |  SCCollection (7:14): Array
+|  |  |  |  |  |  SCLiteral (7:15) = Array
+|  |  |  |  |  |  SCLiteral (7:22) = List
+|  |  SCMethod (9:5): nested, version 3.16: nested { ^[1, [Array]] }
+|  |  |  SCBody (9:14)
+|  |  |  |  SCExplicitReturn (9:14)
+|  |  |  |  |  SCCollection (9:15): Array
+|  |  |  |  |  |  SCLiteral (9:16) = 1
+|  |  |  |  |  |  SCCollection (9:19): Array
+|  |  |  |  |  |  |  SCLiteral (9:20) = Array
+|  |  SCMethod (11:5): event, version 3.16: event { ^(a: Array) }
+|  |  |  SCBody (11:13)
+|  |  |  |  SCExplicitReturn (11:13)
+|  |  |  |  |  SCCollection (11:14): Event
+|  |  |  |  |  |  SCLiteral (11:15) = \a
+|  |  |  |  |  |  SCLiteral (11:18) = Array
+|  |  SCMethod (13:5): event_key, version 3.16: event_key { ^Event[Array, 1] }
+|  |  |  SCBody (13:17)
+|  |  |  |  SCExplicitReturn (13:17)
+|  |  |  |  |  SCCollection (13:18): Event
+|  |  |  |  |  |  SCLiteral (13:24) = Array
+|  |  |  |  |  |  SCLiteral (13:31) = 1
+|  |  SCMethod (15:5): event_class, version 3.16: event_class { ^Event[\a, Array] }
+|  |  |  SCBody (15:19)
+|  |  |  |  SCExplicitReturn (15:19)
+|  |  |  |  |  SCCollection (15:20): Event
+|  |  |  |  |  |  SCLiteral (15:26) = \a
+|  |  |  |  |  |  SCLiteral (15:30) = Array
+|  |  SCMethod (17:5): array_class, version 3.16: array_class { ^Array[Array] }
+|  |  |  SCBody (17:19)
+|  |  |  |  SCExplicitReturn (17:19)
+|  |  |  |  |  SCCollection (17:20): Array
+|  |  |  |  |  |  SCLiteral (17:26) = Array
+|  |  SCMethod (19:5): immutable, version 3.16: immutable { ^#[Array, 1] } -> [Array, 1]
+|  |  |  SCBody (19:17)
+|  |  |  |  SCExplicitReturn (19:17)
+|  |  |  |  |  SCCollection (19:18): Array, literal = [Array, 1]
+|  |  |  |  |  |  SCLiteral (19:20) = Array
+|  |  |  |  |  |  SCLiteral (19:27) = 1
+|  |  SCMethod (21:5): alone, version 3.16: alone { ^Array } -> Array
+|  |  |  SCBody (21:13)
+|  |  |  |  SCExplicitReturn (21:13)
+|  |  |  |  |  SCLiteral (21:14) = Array
+
+
+
+BYTECODE DUMP 
+
+
+ClassElements
+|  function 0 (7:5): method array
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    06 19           PushSpecialClass
+|  |  2    65              PushSpecialNumber
+|  |  3    C2 00           SendSpecialMsg
+|  |  5    06 19           PushSpecialClass
+|  |  7    C2 08           SendSpecialMsg
+|  |  9    06 21           PushSpecialClass
+|  |  11   C2 08           SendSpecialMsg
+|  |  13   F3              Return
+|  function 1 (9:5): method nested
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    06 19           PushSpecialClass
+|  |  2    65              PushSpecialNumber
+|  |  3    C2 00           SendSpecialMsg
+|  |  5    64              PushSpecialNumber
+|  |  6    C2 08           SendSpecialMsg
+|  |  8    06 19           PushSpecialClass
+|  |  10   64              PushSpecialNumber
+|  |  11   C2 00           SendSpecialMsg
+|  |  13   06 19           PushSpecialClass
+|  |  15   C2 08           SendSpecialMsg
+|  |  17   C2 08           SendSpecialMsg
+|  |  19   F3              Return
+|  function 2 (11:5): method event
+|  |  properties:
+|  |  selectors:
+|  |  constants: \a,
+|  |  0    06 2C           PushSpecialClass
+|  |  2    64              PushSpecialNumber
+|  |  3    6E              PushSpecialValue
+|  |  4    6E              PushSpecialValue
+|  |  5    6C              PushSpecialValue
+|  |  6    C5 00           SendSpecialMsg
+|  |  8    40              PushLiteral
+|  |  9    06 19           PushSpecialClass
+|  |  11   C3 03           SendSpecialMsg
+|  |  13   F3              Return
+|  function 3 (13:5): method event_key
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    06 2C           PushSpecialClass
+|  |  2    65              PushSpecialNumber
+|  |  3    C2 00           SendSpecialMsg
+|  |  5    06 19           PushSpecialClass
+|  |  7    C2 08           SendSpecialMsg
+|  |  9    64              PushSpecialNumber
+|  |  10   C2 08           SendSpecialMsg
+|  |  12   F3              Return
+|  function 4 (15:5): method event_class
+|  |  properties:
+|  |  selectors:
+|  |  constants: \a,
+|  |  0    06 2C           PushSpecialClass
+|  |  2    65              PushSpecialNumber
+|  |  3    C2 00           SendSpecialMsg
+|  |  5    40              PushLiteral
+|  |  6    C2 08           SendSpecialMsg
+|  |  8    06 19           PushSpecialClass
+|  |  10   C2 08           SendSpecialMsg
+|  |  12   F3              Return
+|  function 5 (17:5): method array_class
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    06 19           PushSpecialClass
+|  |  2    64              PushSpecialNumber
+|  |  3    C2 00           SendSpecialMsg
+|  |  5    06 19           PushSpecialClass
+|  |  7    C2 08           SendSpecialMsg
+|  |  9    F3              Return
+|  function 6 (19:5): method immutable
+|  |  properties:
+|  |  shortcut: return literal [Array, 1]
+|  |  selectors:
+|  |  constants:
+|  function 7 (21:5): method alone
+|  |  properties:
+|  |  selectors:
+|  |  constants:
+|  |  0    06 19           PushSpecialClass
+|  |  2    F3              Return
+Successfully compiled 16 classes.

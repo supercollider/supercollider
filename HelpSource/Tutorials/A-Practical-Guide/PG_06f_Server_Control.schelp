@@ -22,7 +22,7 @@ list::
 ## Effects that should apply as a chain: both effects should use the same bus, and the effect patterns should be nested to string them together. The outermost effect should use Pfxb to allocate a separate group and bus for this signal chain; inner ones should use link::Classes/Pfx:: to piggyback on the existing bus.
 ::
 
-code::
+teletype::
 Pfxb(
 	Pfx(
 		(event pattern here),

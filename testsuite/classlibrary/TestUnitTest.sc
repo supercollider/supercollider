@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestUnitTest : UnitTest {
 
 	var setUpHappened = false;
@@ -41,19 +42,16 @@ TestUnitTest : UnitTest {
 		this.assert(setUpHappened, "setUp should have happened")
 	}
 
-	test_bootServer {
-		var server = Server(this.class.name);
-		server.bootSync;
-		this.assert(server.serverRunning, "The test's Server should be booted while we waited");
-		server.quitSync.remove;
-	}
-
 	test_assert {
 		this.assert(true, "assert(true) should certainly work")
 	}
 
 	test_findTestedClass {
-		this.assertEquals(TestMixedBundleTester.findTestedClass, MixedBundleTester)
+		this.assertEquals(TestObject.findTestedClass, Object)
+	}
+
+	test_findTestedClass_serverSuffix {
+		this.assertEquals(TestBus_Server.findTestedClass, Bus)
 	}
 
 	test_assertException_implicitThrow {

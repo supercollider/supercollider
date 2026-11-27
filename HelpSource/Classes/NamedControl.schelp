@@ -8,7 +8,7 @@ description::
 A NamedControl directly combines a ControlName and a Control UGen conveniently. Also this makes it safe even if several identical controls exist (see example below).
 
 There are syntax shortcuts that generate NamedControls from the name:
-code::
+code#fragment::
 \name.ar(values, lags, spec)
 \name.kr(values, lags, fixedLag, spec)
 \name.ir(values, lags, spec)

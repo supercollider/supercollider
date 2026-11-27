@@ -217,6 +217,7 @@ void stringFromPyrString(PyrString* obj, char* str, int maxlength);
 void pstringFromPyrString(PyrString* obj, unsigned char* str, int maxlength);
 
 int instVarOffset(const char* classname, const char* instvarname);
+// The index into g->classvars.
 int classVarOffset(const char* classname, const char* classvarname, PyrClass** classobj);
 
 void fillSlots(PyrSlot* slot, int size, PyrSlot* fillslot);

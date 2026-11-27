@@ -797,6 +797,26 @@ div.met_subclasses a.seemore {
     position: relative;
 }
 
+/* The language version a code block is compiled as, drawn as the block's first row. The block's top margin moves
+   from the editor to the container, so the label sits above the code, not above the gap. */
+.codeMirrorContainer {
+    margin-top: 1em;
+}
+
+.codeMirrorContainer .CodeMirror {
+    margin-top: 0;
+}
+
+.codeVersion {
+    padding: 0.1em calc(1em + 7px);
+    border-left: 2px solid var(--color-cm-border);
+    background-color: var(--color-fg-100);
+    font-size: 7pt;
+    line-height: 1.4;
+    color: var(--color-fg-400);
+    user-select: none;
+}
+
 .copy-button {
     position: absolute;
     top: 4px;

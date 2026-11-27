@@ -75,7 +75,7 @@
 #define yylloc          scdoclloc
 
 /* First part of user prologue.  */
-#line 1 "SCDoc.y"
+#line 3 "SCDoc/SCDoc.y"
 
 /************************************************************************
 *
@@ -128,8 +128,32 @@ static inline bool stringEqual(const char * a, const char * b)
     return strcmp(a, b) == 0;
 }
 
+// A code tag's tag is what follows `code#`: an optional release, then optionally `class`, then optionally `fragment`
+// or `error`, joined by `#`, e.g. "3.16#class#error" from "code#3.16#class#error::". The lexer checks the order. The
+// release is a VERSION child, e.g. "3.16". Class library code has a CLASSCODE child, a fragment, which is only
+// parsed, a FRAGMENTCODE child, and code that must fail to compile an ERRORCODE child.
+static DocNode * make_code(const char * id, char * text, char * tag, int line)
+{
+    DocNode * n = doc_node_make(id, text, NULL);
+    n->line = line;
+    if (!tag)
+        return n;
+    for (char * part = strtok(tag, "#"); part; part = strtok(NULL, "#")) {
+        if (stringEqual(part, "class"))
+            doc_node_add_child(n, doc_node_create("CLASSCODE"));
+        else if (stringEqual(part, "fragment"))
+            doc_node_add_child(n, doc_node_create("FRAGMENTCODE"));
+        else if (stringEqual(part, "error"))
+            doc_node_add_child(n, doc_node_create("ERRORCODE"));
+        else
+            doc_node_add_child(n, doc_node_make("VERSION", strdup(part), NULL));
+    }
+    free(tag);
+    return n;
+}
 
-#line 133 "SCDoc.tab.cpp"
+
+#line 157 "SCDoc/SCDoc.tab.cpp"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -190,15 +214,15 @@ enum yysymbol_kind_t
   YYSYMBOL_NOTE = 30,                      /* NOTE  */
   YYSYMBOL_WARNING = 31,                   /* WARNING  */
   YYSYMBOL_CODE = 32,                      /* CODE  */
-  YYSYMBOL_LINK = 33,                      /* LINK  */
-  YYSYMBOL_ANCHOR = 34,                    /* ANCHOR  */
-  YYSYMBOL_SOFT = 35,                      /* SOFT  */
-  YYSYMBOL_IMAGE = 36,                     /* IMAGE  */
-  YYSYMBOL_TELETYPE = 37,                  /* TELETYPE  */
-  YYSYMBOL_MATH = 38,                      /* MATH  */
-  YYSYMBOL_STRONG = 39,                    /* STRONG  */
-  YYSYMBOL_EMPHASIS = 40,                  /* EMPHASIS  */
-  YYSYMBOL_CODEBLOCK = 41,                 /* "CODE block"  */
+  YYSYMBOL_CODEBLOCK = 33,                 /* "CODE block"  */
+  YYSYMBOL_LINK = 34,                      /* LINK  */
+  YYSYMBOL_ANCHOR = 35,                    /* ANCHOR  */
+  YYSYMBOL_SOFT = 36,                      /* SOFT  */
+  YYSYMBOL_IMAGE = 37,                     /* IMAGE  */
+  YYSYMBOL_TELETYPE = 38,                  /* TELETYPE  */
+  YYSYMBOL_MATH = 39,                      /* MATH  */
+  YYSYMBOL_STRONG = 40,                    /* STRONG  */
+  YYSYMBOL_EMPHASIS = 41,                  /* EMPHASIS  */
   YYSYMBOL_TELETYPEBLOCK = 42,             /* "TELETYPE block"  */
   YYSYMBOL_MATHBLOCK = 43,                 /* "MATH block"  */
   YYSYMBOL_TAGSYM = 44,                    /* "::"  */
@@ -212,75 +236,76 @@ enum yysymbol_kind_t
   YYSYMBOL_NEWLINE = 52,                   /* "newline"  */
   YYSYMBOL_EMPTYLINES = 53,                /* "empty lines"  */
   YYSYMBOL_BAD_METHODNAME = 54,            /* "bad method name"  */
-  YYSYMBOL_START_FULL = 55,                /* START_FULL  */
-  YYSYMBOL_START_PARTIAL = 56,             /* START_PARTIAL  */
-  YYSYMBOL_START_METADATA = 57,            /* START_METADATA  */
-  YYSYMBOL_YYACCEPT = 58,                  /* $accept  */
-  YYSYMBOL_start = 59,                     /* start  */
-  YYSYMBOL_document = 60,                  /* document  */
-  YYSYMBOL_eateol = 61,                    /* eateol  */
-  YYSYMBOL_dochead = 62,                   /* dochead  */
-  YYSYMBOL_headline = 63,                  /* headline  */
-  YYSYMBOL_headtag = 64,                   /* headtag  */
-  YYSYMBOL_sectiontag = 65,                /* sectiontag  */
-  YYSYMBOL_optsections = 66,               /* optsections  */
-  YYSYMBOL_sections = 67,                  /* sections  */
-  YYSYMBOL_section = 68,                   /* section  */
-  YYSYMBOL_69_1 = 69,                      /* $@1  */
-  YYSYMBOL_optsubsections = 70,            /* optsubsections  */
-  YYSYMBOL_subsections = 71,               /* subsections  */
-  YYSYMBOL_subsection = 72,                /* subsection  */
-  YYSYMBOL_optsubsubsections = 73,         /* optsubsubsections  */
-  YYSYMBOL_subsubsections = 74,            /* subsubsections  */
-  YYSYMBOL_subsubsection = 75,             /* subsubsection  */
-  YYSYMBOL_optMETHODARGS = 76,             /* optMETHODARGS  */
-  YYSYMBOL_methodname = 77,                /* methodname  */
-  YYSYMBOL_methnames = 78,                 /* methnames  */
-  YYSYMBOL_methodbody = 79,                /* methodbody  */
-  YYSYMBOL_optbody = 80,                   /* optbody  */
-  YYSYMBOL_optargs = 81,                   /* optargs  */
-  YYSYMBOL_args = 82,                      /* args  */
-  YYSYMBOL_arg = 83,                       /* arg  */
-  YYSYMBOL_optreturns = 84,                /* optreturns  */
-  YYSYMBOL_optdiscussion = 85,             /* optdiscussion  */
-  YYSYMBOL_body = 86,                      /* body  */
-  YYSYMBOL_blockA = 87,                    /* blockA  */
-  YYSYMBOL_blockB = 88,                    /* blockB  */
-  YYSYMBOL_bodyelem = 89,                  /* bodyelem  */
-  YYSYMBOL_prose = 90,                     /* prose  */
-  YYSYMBOL_proseelem = 91,                 /* proseelem  */
-  YYSYMBOL_inlinetag = 92,                 /* inlinetag  */
-  YYSYMBOL_blocktag = 93,                  /* blocktag  */
-  YYSYMBOL_listtag = 94,                   /* listtag  */
-  YYSYMBOL_rangetag = 95,                  /* rangetag  */
-  YYSYMBOL_listbody = 96,                  /* listbody  */
-  YYSYMBOL_tablerow = 97,                  /* tablerow  */
-  YYSYMBOL_tablebody = 98,                 /* tablebody  */
-  YYSYMBOL_tablecells = 99,                /* tablecells  */
-  YYSYMBOL_defterms = 100,                 /* defterms  */
-  YYSYMBOL_deflistrow = 101,               /* deflistrow  */
-  YYSYMBOL_deflistbody = 102,              /* deflistbody  */
-  YYSYMBOL_anywordurl = 103,               /* anywordurl  */
-  YYSYMBOL_anyword = 104,                  /* anyword  */
-  YYSYMBOL_words = 105,                    /* words  */
-  YYSYMBOL_words2 = 106,                   /* words2  */
-  YYSYMBOL_eol = 107,                      /* eol  */
-  YYSYMBOL_eoleof = 108,                   /* eoleof  */
-  YYSYMBOL_anywordnl = 109,                /* anywordnl  */
-  YYSYMBOL_wordsnl = 110,                  /* wordsnl  */
-  YYSYMBOL_nocommawords = 111,             /* nocommawords  */
-  YYSYMBOL_commalist = 112                 /* commalist  */
+  YYSYMBOL_BAD_CODE_VERSION = 55,          /* "code tag with a bad version (code#, then any of a version, legacy or major.minor, class, and fragment or error, in that order and joined by #, e.g. code#3.16::, code#3.16#class::, or code#fragment::)"  */
+  YYSYMBOL_START_FULL = 56,                /* START_FULL  */
+  YYSYMBOL_START_PARTIAL = 57,             /* START_PARTIAL  */
+  YYSYMBOL_START_METADATA = 58,            /* START_METADATA  */
+  YYSYMBOL_YYACCEPT = 59,                  /* $accept  */
+  YYSYMBOL_start = 60,                     /* start  */
+  YYSYMBOL_document = 61,                  /* document  */
+  YYSYMBOL_eateol = 62,                    /* eateol  */
+  YYSYMBOL_dochead = 63,                   /* dochead  */
+  YYSYMBOL_headline = 64,                  /* headline  */
+  YYSYMBOL_headtag = 65,                   /* headtag  */
+  YYSYMBOL_sectiontag = 66,                /* sectiontag  */
+  YYSYMBOL_optsections = 67,               /* optsections  */
+  YYSYMBOL_sections = 68,                  /* sections  */
+  YYSYMBOL_section = 69,                   /* section  */
+  YYSYMBOL_70_1 = 70,                      /* $@1  */
+  YYSYMBOL_optsubsections = 71,            /* optsubsections  */
+  YYSYMBOL_subsections = 72,               /* subsections  */
+  YYSYMBOL_subsection = 73,                /* subsection  */
+  YYSYMBOL_optsubsubsections = 74,         /* optsubsubsections  */
+  YYSYMBOL_subsubsections = 75,            /* subsubsections  */
+  YYSYMBOL_subsubsection = 76,             /* subsubsection  */
+  YYSYMBOL_optMETHODARGS = 77,             /* optMETHODARGS  */
+  YYSYMBOL_methodname = 78,                /* methodname  */
+  YYSYMBOL_methnames = 79,                 /* methnames  */
+  YYSYMBOL_methodbody = 80,                /* methodbody  */
+  YYSYMBOL_optbody = 81,                   /* optbody  */
+  YYSYMBOL_optargs = 82,                   /* optargs  */
+  YYSYMBOL_args = 83,                      /* args  */
+  YYSYMBOL_arg = 84,                       /* arg  */
+  YYSYMBOL_optreturns = 85,                /* optreturns  */
+  YYSYMBOL_optdiscussion = 86,             /* optdiscussion  */
+  YYSYMBOL_body = 87,                      /* body  */
+  YYSYMBOL_blockA = 88,                    /* blockA  */
+  YYSYMBOL_blockB = 89,                    /* blockB  */
+  YYSYMBOL_bodyelem = 90,                  /* bodyelem  */
+  YYSYMBOL_prose = 91,                     /* prose  */
+  YYSYMBOL_proseelem = 92,                 /* proseelem  */
+  YYSYMBOL_inlinetag = 93,                 /* inlinetag  */
+  YYSYMBOL_blocktag = 94,                  /* blocktag  */
+  YYSYMBOL_listtag = 95,                   /* listtag  */
+  YYSYMBOL_rangetag = 96,                  /* rangetag  */
+  YYSYMBOL_listbody = 97,                  /* listbody  */
+  YYSYMBOL_tablerow = 98,                  /* tablerow  */
+  YYSYMBOL_tablebody = 99,                 /* tablebody  */
+  YYSYMBOL_tablecells = 100,               /* tablecells  */
+  YYSYMBOL_defterms = 101,                 /* defterms  */
+  YYSYMBOL_deflistrow = 102,               /* deflistrow  */
+  YYSYMBOL_deflistbody = 103,              /* deflistbody  */
+  YYSYMBOL_anywordurl = 104,               /* anywordurl  */
+  YYSYMBOL_anyword = 105,                  /* anyword  */
+  YYSYMBOL_words = 106,                    /* words  */
+  YYSYMBOL_words2 = 107,                   /* words2  */
+  YYSYMBOL_eol = 108,                      /* eol  */
+  YYSYMBOL_eoleof = 109,                   /* eoleof  */
+  YYSYMBOL_anywordnl = 110,                /* anywordnl  */
+  YYSYMBOL_wordsnl = 111,                  /* wordsnl  */
+  YYSYMBOL_nocommawords = 112,             /* nocommawords  */
+  YYSYMBOL_commalist = 113                 /* commalist  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
 
 /* Second part of user prologue.  */
-#line 101 "SCDoc.y"
+#line 129 "SCDoc/SCDoc.y"
 
 //int scdoclex (YYSTYPE * yylval_param, struct YYLTYPE * yylloc_param );
 int scdoclex (void);
 
-#line 284 "SCDoc.tab.cpp"
+#line 309 "SCDoc/SCDoc.tab.cpp"
 
 
 #ifdef short
@@ -607,19 +632,19 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  71
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   453
+#define YYLAST   477
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  58
+#define YYNTOKENS  59
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  55
 /* YYNRULES -- Number of rules.  */
 #define YYNRULES  135
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  197
+#define YYNSTATES  201
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   312
+#define YYMAXUTOK   313
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -664,27 +689,27 @@ static const yytype_int8 yytranslate[] =
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
       35,    36,    37,    38,    39,    40,    41,    42,    43,    44,
       45,    46,    47,    48,    49,    50,    51,    52,    53,    54,
-      55,    56,    57
+      55,    56,    57,    58
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   108,   108,   109,   112,   118,   122,   130,   131,   134,
-     135,   138,   139,   140,   143,   144,   145,   146,   149,   150,
-     151,   152,   155,   156,   159,   160,   161,   164,   164,   165,
-     168,   169,   172,   173,   174,   177,   180,   181,   184,   185,
-     186,   189,   190,   197,   209,   214,   215,   226,   237,   238,
-     241,   250,   251,   254,   255,   258,   259,   262,   263,   266,
-     267,   270,   271,   279,   280,   283,   284,   285,   288,   289,
-     292,   293,   294,   295,   296,   297,   298,   301,   302,   305,
-     306,   309,   310,   311,   312,   313,   316,   317,   318,   319,
-     320,   321,   322,   323,   326,   327,   328,   331,   332,   333,
-     336,   337,   340,   341,   344,   347,   348,   351,   352,   355,
-     356,   359,   366,   367,   370,   371,   374,   375,   378,   379,
-     382,   383,   386,   387,   390,   391,   394,   395,   398,   399,
-     402,   403,   404,   405,   408,   409
+       0,   136,   136,   137,   140,   146,   150,   158,   159,   162,
+     163,   166,   167,   168,   171,   172,   173,   174,   177,   178,
+     179,   180,   183,   184,   187,   188,   189,   192,   192,   193,
+     196,   197,   200,   201,   202,   205,   208,   209,   212,   213,
+     214,   217,   218,   225,   237,   242,   243,   254,   265,   266,
+     269,   278,   279,   282,   283,   286,   287,   290,   291,   294,
+     295,   298,   299,   307,   308,   311,   312,   313,   316,   317,
+     320,   321,   322,   323,   324,   325,   326,   327,   330,   331,
+     334,   335,   338,   339,   340,   341,   342,   343,   346,   347,
+     348,   349,   350,   351,   352,   355,   356,   359,   360,   361,
+     364,   365,   368,   369,   372,   375,   376,   379,   380,   383,
+     384,   387,   394,   395,   398,   399,   402,   403,   406,   407,
+     410,   411,   414,   415,   418,   419,   422,   423,   426,   427,
+     430,   431,   432,   433,   436,   437
 };
 #endif
 
@@ -706,22 +731,23 @@ static const char *const yytname[] =
   "SUBSUBSECTION", "METHOD", "ARGUMENT", "DESCRIPTION", "CLASSMETHODS",
   "INSTANCEMETHODS", "EXAMPLES", "RETURNS", "DISCUSSION", "LIST", "TREE",
   "NUMBEREDLIST", "DEFINITIONLIST", "TABLE", "FOOTNOTE", "NOTE", "WARNING",
-  "CODE", "LINK", "ANCHOR", "SOFT", "IMAGE", "TELETYPE", "MATH", "STRONG",
-  "EMPHASIS", "\"CODE block\"", "\"TELETYPE block\"", "\"MATH block\"",
+  "CODE", "\"CODE block\"", "LINK", "ANCHOR", "SOFT", "IMAGE", "TELETYPE",
+  "MATH", "STRONG", "EMPHASIS", "\"TELETYPE block\"", "\"MATH block\"",
   "\"::\"", "\"||\"", "\"##\"", "\"text\"", "URL", "COMMA",
   "\"method name\"", "\"arguments string\"", "\"newline\"",
-  "\"empty lines\"", "\"bad method name\"", "START_FULL", "START_PARTIAL",
-  "START_METADATA", "$accept", "start", "document", "eateol", "dochead",
-  "headline", "headtag", "sectiontag", "optsections", "sections",
-  "section", "$@1", "optsubsections", "subsections", "subsection",
-  "optsubsubsections", "subsubsections", "subsubsection", "optMETHODARGS",
-  "methodname", "methnames", "methodbody", "optbody", "optargs", "args",
-  "arg", "optreturns", "optdiscussion", "body", "blockA", "blockB",
-  "bodyelem", "prose", "proseelem", "inlinetag", "blocktag", "listtag",
-  "rangetag", "listbody", "tablerow", "tablebody", "tablecells",
-  "defterms", "deflistrow", "deflistbody", "anywordurl", "anyword",
-  "words", "words2", "eol", "eoleof", "anywordnl", "wordsnl",
-  "nocommawords", "commalist", YY_NULLPTR
+  "\"empty lines\"", "\"bad method name\"",
+  "\"code tag with a bad version (code#, then any of a version, legacy or major.minor, class, and fragment or error, in that order and joined by #, e.g. code#3.16::, code#3.16#class::, or code#fragment::)\"",
+  "START_FULL", "START_PARTIAL", "START_METADATA", "$accept", "start",
+  "document", "eateol", "dochead", "headline", "headtag", "sectiontag",
+  "optsections", "sections", "section", "$@1", "optsubsections",
+  "subsections", "subsection", "optsubsubsections", "subsubsections",
+  "subsubsection", "optMETHODARGS", "methodname", "methnames",
+  "methodbody", "optbody", "optargs", "args", "arg", "optreturns",
+  "optdiscussion", "body", "blockA", "blockB", "bodyelem", "prose",
+  "proseelem", "inlinetag", "blocktag", "listtag", "rangetag", "listbody",
+  "tablerow", "tablebody", "tablecells", "defterms", "deflistrow",
+  "deflistbody", "anywordurl", "anyword", "words", "words2", "eol",
+  "eoleof", "anywordnl", "wordsnl", "nocommawords", "commalist", YY_NULLPTR
 };
 
 static const char *
@@ -731,7 +757,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-78)
+#define YYPACT_NINF (-117)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -745,26 +771,27 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-     107,   -23,   254,   142,    19,    55,   -78,   -78,   142,   -78,
-     -22,   -22,    44,    44,   -78,   118,   -39,   -78,   -78,   -78,
-     -78,   -78,   -78,   -78,   -13,    26,   379,   -78,   -78,   -78,
-     -78,   -78,   -78,   118,   -78,   -78,   -78,   -78,   -78,   -78,
-     -78,   -78,   -78,   -78,   -78,   -78,   299,    75,   -78,   109,
-     -78,   -78,   379,    11,   -78,   401,   -78,   -22,    88,    38,
-     379,   -78,   -78,   -78,   -78,    44,    44,   -78,   209,   -78,
-     118,   -78,   -78,   209,   -78,    34,    88,   -78,   -78,    68,
-      16,    16,   118,   -78,   -78,   -78,    50,   -78,   -78,    -6,
-     379,    97,   -78,    85,   379,   -78,   124,    -4,   110,   118,
-     -78,    48,   -78,   109,   -78,   -78,   -78,   401,   -78,   -78,
-     -34,   -78,   -78,   -78,   -21,   379,   125,    56,    58,    58,
-     -78,   -78,    75,    50,   -78,   -78,   -78,   -78,   -78,   -78,
-     -78,   -78,    44,   -78,   -78,    50,   -78,   379,   -39,   -78,
-     -23,   -78,   379,   379,   -78,   -78,   -78,   -78,    59,   -78,
-     -78,   -78,   -78,    50,   -78,   -78,   -78,   -78,   -78,   -78,
-     379,   -78,   -78,   -78,   -78,    68,   299,   -78,   -78,   379,
-     -78,   -78,   379,   344,   -78,   -78,   -78,   103,   -78,   -78,
-     109,    88,   106,   103,   -78,    88,   379,   379,   115,   -78,
-     379,   -78,   -78,   379,   -78,   -78,   -78
+      44,     1,   249,   155,    26,   143,  -117,  -117,   155,  -117,
+      62,    62,   127,   127,  -117,   117,   -16,  -117,  -117,  -117,
+    -117,  -117,  -117,  -117,     0,    12,   374,  -117,  -117,    62,
+      93,  -117,  -117,  -117,   117,  -117,  -117,  -117,  -117,  -117,
+    -117,  -117,  -117,  -117,  -117,  -117,   294,    -4,  -117,   140,
+    -117,  -117,   374,   409,  -117,   425,  -117,    62,    93,    24,
+     374,  -117,  -117,  -117,  -117,   127,   127,  -117,   204,  -117,
+     117,  -117,  -117,   204,  -117,    39,    93,  -117,  -117,   139,
+      19,    19,   117,  -117,  -117,  -117,    82,  -117,  -117,    -6,
+     374,   126,  -117,    81,   374,  -117,   123,    21,    68,  -117,
+    -117,  -117,   -11,   -17,   117,  -117,    23,  -117,   140,  -117,
+    -117,  -117,   425,  -117,  -117,    74,    61,   374,   124,    32,
+       3,     3,  -117,  -117,    -4,    82,  -117,  -117,  -117,  -117,
+    -117,  -117,  -117,  -117,   127,  -117,  -117,    82,  -117,   374,
+     -16,  -117,     1,  -117,   374,   374,  -117,  -117,  -117,  -117,
+      -5,  -117,  -117,  -117,  -117,  -117,  -117,  -117,    82,  -117,
+    -117,  -117,  -117,  -117,   374,  -117,  -117,  -117,  -117,   139,
+     294,  -117,  -117,   374,  -117,  -117,   374,   339,  -117,  -117,
+    -117,    66,  -117,  -117,   140,    93,    65,    66,  -117,    93,
+     374,   374,    67,  -117,   374,  -117,  -117,   374,  -117,  -117,
+    -117
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -774,46 +801,47 @@ static const yytype_uint8 yydefact[] =
 {
        0,     8,     0,     0,     0,     0,   122,   123,     0,     7,
        0,     0,     0,     0,    27,     0,     0,    20,    18,    19,
-      21,    97,    98,    99,     0,     0,     0,   101,   100,    90,
-      86,    93,    88,     0,    91,    92,    87,    89,    94,    96,
-      95,   116,    82,   117,    85,    77,    31,     5,    25,    26,
-      39,    40,    63,    64,    67,    69,    80,     0,     0,     0,
-       0,    81,    14,    15,    16,     0,     0,    17,    23,    10,
+      21,    97,    98,    99,     0,     0,     0,   101,   100,     0,
+       0,    88,    94,    90,     0,    92,    93,    89,    91,    96,
+      95,   116,    83,   117,    87,    78,    31,     5,    25,    26,
+      39,    40,    63,    64,    67,    69,    81,     0,     0,     0,
+       0,    82,    14,    15,    16,     0,     0,    17,    23,    10,
        0,     1,     3,    23,   119,     0,     0,   132,   133,   135,
        0,     0,     0,   115,   121,   114,     0,    47,    49,    45,
-       0,     0,   113,     0,    52,   106,     0,     0,     0,     0,
-      29,    30,    33,    34,    24,    38,    66,    68,    65,    79,
-       0,   126,   127,   129,     0,     0,     0,     0,     0,     0,
-       9,     6,    22,     0,     4,   125,   118,   124,    75,    43,
-     130,   131,     0,    76,    44,     0,   120,    52,     0,    46,
-       0,   110,    52,     0,    73,   112,   108,    51,   104,    72,
-     105,    84,    78,     0,    32,    83,    74,   128,   103,    71,
-       0,    70,    13,    12,    11,   134,    31,    41,    48,    52,
-     111,   109,    52,    37,   102,    28,    42,    54,   107,    35,
-      36,     0,    60,    53,    56,     0,     0,     0,    62,    55,
-      52,    58,    59,     0,    50,    57,    61
+       0,     0,   113,     0,    52,   106,     0,     0,     0,   126,
+     127,   129,     0,     0,     0,    29,    30,    33,    34,    24,
+      38,    66,    68,    65,    80,     0,     0,     0,     0,     0,
+       0,     0,     9,     6,    22,     0,     4,   125,   118,   124,
+      76,    43,   130,   131,     0,    77,    44,     0,   120,    52,
+       0,    46,     0,   110,    52,     0,    73,   112,   108,    51,
+     104,    72,   105,    86,    85,    75,   128,    79,     0,    32,
+      84,    74,   103,    71,     0,    70,    13,    12,    11,   134,
+      31,    41,    48,    52,   111,   109,    52,    37,   102,    28,
+      42,    54,   107,    35,    36,     0,    60,    53,    56,     0,
+       0,     0,    62,    55,    52,    58,    59,     0,    50,    57,
+      61
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-     -78,   -78,   -78,   -78,   143,   -56,   -78,   -78,    80,   130,
-     -40,   -78,   -10,   -78,    72,   -78,   -43,   -44,   -78,    37,
-     -78,   -78,   -63,   -78,   -78,     0,   -78,   -78,    18,   -78,
-     -78,   129,   127,   -47,   -78,   -78,   -78,   -78,   -78,    81,
-     -78,   -78,   -78,    95,   -78,   -77,    -9,    -7,   -19,    -1,
-     105,    77,   -78,    57,     5
+    -117,  -117,  -117,  -117,    90,   -55,  -117,  -117,    49,   102,
+     -42,  -117,   -37,  -117,    41,  -117,   -38,   -46,  -117,    -3,
+    -117,  -117,  -116,  -117,  -117,   -36,  -117,  -117,     9,  -117,
+    -117,   137,   125,   -48,  -117,  -117,  -117,  -117,  -117,    83,
+    -117,  -117,  -117,    88,  -117,   -74,    -9,    -7,   -23,    -1,
+     111,   -92,   135,    60,    31
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_uint8 yydefgoto[] =
 {
-       0,     4,     5,     8,    68,    69,    70,    46,   121,   122,
-      48,    82,   100,   101,   102,   179,    49,    50,   140,    88,
-      89,   176,   146,   182,   183,   184,   188,   194,    51,    52,
-      53,    54,    55,    56,    57,    58,    59,    60,   116,    95,
-      96,   148,    91,    92,    93,    84,    61,    75,    86,   127,
-     128,   113,   114,    79,    80
+       0,     4,     5,     8,    68,    69,    70,    46,   123,   124,
+      48,    82,   105,   106,   107,   183,    49,    50,   142,    88,
+      89,   180,   148,   186,   187,   188,   192,   198,    51,    52,
+      53,    54,    55,    56,    57,    58,    59,    60,   118,    95,
+      96,   150,    91,    92,    93,    84,    61,    75,    86,   100,
+     130,   101,   102,    79,    80
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -821,147 +849,152 @@ static const yytype_uint8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
-       9,    74,    74,   103,    76,   105,    85,   104,   109,   136,
-     155,    87,   120,    41,    98,    43,   125,   120,    81,    71,
-      10,   136,    12,   156,    85,    41,    41,    43,    43,     6,
-       7,     6,     7,    90,   125,    21,    22,    23,    24,    25,
-     151,    27,    28,   138,    97,   139,   136,    33,    74,   111,
-     110,   123,    38,    39,    40,    -2,    72,   112,   136,   105,
-     109,    85,    99,   135,    45,   132,   126,   126,     6,     7,
-     118,   119,    94,    85,   167,   129,   136,    85,   117,   170,
-     153,    41,   104,    43,   115,   137,     6,     7,    14,    85,
-      85,    77,    78,    17,    18,    19,    20,    41,    83,    43,
-     161,   126,     6,     7,   172,   111,   177,   132,   141,   178,
-       6,     7,   147,   112,    85,   130,   131,   162,   163,    11,
-     181,    13,   164,   103,    15,    16,    85,   195,   187,   144,
-     180,    90,    47,   158,   166,    41,   105,    43,   193,   169,
-       6,     7,   142,   143,    85,    62,    63,    64,    65,    66,
-      67,    73,   173,   124,   152,   147,   175,    41,    83,    43,
-     147,   171,     1,     2,     3,    41,    83,    43,   149,   159,
-      94,   160,    74,   154,   185,   168,   126,   150,   174,   107,
-     186,   106,   108,   189,   190,   133,   134,   147,   145,   165,
-     147,   157,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,   191,   192,     0,     0,   147,     0,
-       0,   196,    62,    63,    64,    65,    66,    67,    10,    11,
-      12,    13,    14,     0,    15,    16,     0,    17,    18,    19,
-      20,     0,     0,    21,    22,    23,    24,    25,    26,    27,
-      28,    29,    30,    31,    32,    33,    34,    35,    36,    37,
-      38,    39,    40,     0,     0,     0,    41,    42,    43,     0,
-       0,    44,    45,    10,    11,    12,    13,    14,     0,    15,
+       9,    74,    74,   110,    76,   109,    85,   114,   108,    14,
+     156,   103,   138,   122,    17,    18,    19,    20,   122,   127,
+      74,    99,    98,   171,   156,    85,    71,   157,   174,   138,
+      41,    83,    43,   155,    87,    97,    41,   104,    43,   127,
+     176,     6,     7,   140,    81,   141,    90,   125,    74,    99,
+     115,   138,   134,     6,     7,     6,     7,   181,    94,   137,
+     182,    85,   110,   138,   114,   153,   128,   128,   134,   119,
+     117,     6,     7,    85,   129,   131,   165,    85,   199,   129,
+     129,   158,   109,   185,   138,   139,    41,   191,    43,   128,
+     197,     6,     7,    99,    85,    85,   120,   121,    73,   143,
+       1,     2,     3,   149,    47,   161,   128,    99,    41,    41,
+      43,    43,   154,     6,     7,    41,    85,    43,   160,   166,
+     167,    41,   126,    43,   168,   146,   162,    90,    85,    41,
+      83,    43,   108,   179,     6,     7,   170,   172,   110,   184,
+      41,   173,    43,    -2,    72,     6,     7,   159,   149,    85,
+      11,   193,    13,   149,   175,    15,    16,   177,    62,    63,
+      64,    65,    66,    67,    41,    83,    43,   151,   163,    94,
+     164,   144,   145,   178,    77,    78,    74,   112,   189,   152,
+     128,   147,   149,     0,   190,   149,   132,   133,   194,   111,
+     113,   135,   136,   116,   169,     0,     0,     0,     0,   195,
+     196,     0,     0,   149,     0,     0,   200,    62,    63,    64,
+      65,    66,    67,    10,    11,    12,    13,    14,     0,    15,
       16,     0,    17,    18,    19,    20,     0,     0,    21,    22,
       23,    24,    25,    26,    27,    28,    29,    30,    31,    32,
       33,    34,    35,    36,    37,    38,    39,    40,     0,     0,
        0,    41,    42,    43,     0,     0,    44,    45,    10,    11,
-      12,    13,     0,    99,    15,    16,     0,     0,     0,     0,
-       0,     0,     0,    21,    22,    23,    24,    25,    26,    27,
+      12,    13,    14,     0,    15,    16,     0,    17,    18,    19,
+      20,     0,     0,    21,    22,    23,    24,    25,    26,    27,
       28,    29,    30,    31,    32,    33,    34,    35,    36,    37,
       38,    39,    40,     0,     0,     0,    41,    42,    43,     0,
-       0,    44,    45,    10,    11,    12,    13,     0,     0,    15,
+       0,    44,    45,    10,    11,    12,    13,     0,   104,    15,
       16,     0,     0,     0,     0,     0,     0,     0,    21,    22,
+      23,    24,    25,    26,    27,    28,    29,    30,    31,    32,
+      33,    34,    35,    36,    37,    38,    39,    40,     0,     0,
+       0,    41,    42,    43,     0,     0,    44,    45,    10,    11,
+      12,    13,     0,     0,    15,    16,     0,     0,     0,     0,
+       0,     0,     0,    21,    22,    23,    24,    25,    26,    27,
+      28,    29,    30,    31,    32,    33,    34,    35,    36,    37,
+      38,    39,    40,    10,     0,    12,    41,    42,    43,     0,
+       0,    44,    45,     0,     0,     0,     0,     0,    21,    22,
       23,    24,    25,    26,    27,    28,    29,    30,    31,    32,
       33,    34,    35,    36,    37,    38,    39,    40,    10,     0,
       12,    41,    42,    43,     0,     0,    44,    45,     0,     0,
-       0,     0,     0,    21,    22,    23,    24,    25,    26,    27,
-      28,    29,    30,    31,    32,    33,    34,    35,    36,    37,
-      38,    39,    40,     0,     0,     0,    41,    42,    43,     0,
-      26,    44,    45,    29,    30,    31,    32,     0,    34,    35,
-      36,    37,     0,     0,     0,     0,     0,     0,    41,    42,
-      43,     0,     0,    44
+       0,     0,     0,    21,    22,    23,    24,    25,     0,    27,
+      28,     0,    30,     0,     0,     0,    34,     0,     0,     0,
+       0,    39,    40,     0,    26,     0,     0,    29,     0,    31,
+      32,    33,    45,    35,    36,    37,    38,     0,     0,     0,
+       0,     0,    41,    42,    43,     0,     0,    44
 };
 
 static const yytype_int16 yycheck[] =
 {
-       1,    10,    11,    46,    11,    49,    15,    47,    55,    86,
-      44,    50,    68,    47,    33,    49,     0,    73,    13,     0,
-       9,    98,    11,    44,    33,    47,    47,    49,    49,    52,
-      53,    52,    53,    46,     0,    24,    25,    26,    27,    28,
-      44,    30,    31,    49,    26,    51,   123,    36,    57,    58,
-      57,    70,    41,    42,    43,     0,     1,    58,   135,   103,
-     107,    70,    14,    82,    53,    49,    75,    76,    52,    53,
-      65,    66,    46,    82,   137,    76,   153,    86,    60,   142,
-      99,    47,   122,    49,    46,    86,    52,    53,    13,    98,
-      99,    47,    48,    18,    19,    20,    21,    47,    48,    49,
-      44,   110,    52,    53,    45,   114,   169,    49,    90,   172,
-      52,    53,    94,   114,   123,    47,    48,   118,   119,    10,
-      17,    12,   123,   166,    15,    16,   135,   190,    22,    44,
-     173,    46,     2,   115,   135,    47,   180,    49,    23,   140,
-      52,    53,    45,    46,   153,     3,     4,     5,     6,     7,
-       8,     8,   153,    73,    44,   137,   166,    47,    48,    49,
-     142,   143,    55,    56,    57,    47,    48,    49,    44,    44,
-      46,    46,   181,   101,   181,   138,   185,    96,   160,    52,
-     181,    52,    53,   183,   185,    80,    81,   169,    93,   132,
-     172,   114,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,   186,   187,    -1,    -1,   190,    -1,
-      -1,   193,     3,     4,     5,     6,     7,     8,     9,    10,
-      11,    12,    13,    -1,    15,    16,    -1,    18,    19,    20,
-      21,    -1,    -1,    24,    25,    26,    27,    28,    29,    30,
-      31,    32,    33,    34,    35,    36,    37,    38,    39,    40,
-      41,    42,    43,    -1,    -1,    -1,    47,    48,    49,    -1,
-      -1,    52,    53,     9,    10,    11,    12,    13,    -1,    15,
+       1,    10,    11,    49,    11,    47,    15,    55,    46,    13,
+     102,    34,    86,    68,    18,    19,    20,    21,    73,     0,
+      29,    30,    29,   139,   116,    34,     0,    44,   144,   103,
+      47,    48,    49,    44,    50,    26,    47,    14,    49,     0,
+      45,    52,    53,    49,    13,    51,    46,    70,    57,    58,
+      57,   125,    49,    52,    53,    52,    53,   173,    46,    82,
+     176,    70,   108,   137,   112,    44,    75,    76,    49,    60,
+      46,    52,    53,    82,    75,    76,    44,    86,   194,    80,
+      81,   104,   124,    17,   158,    86,    47,    22,    49,    98,
+      23,    52,    53,   102,   103,   104,    65,    66,     8,    90,
+      56,    57,    58,    94,     2,    44,   115,   116,    47,    47,
+      49,    49,    44,    52,    53,    47,   125,    49,    44,   120,
+     121,    47,    73,    49,   125,    44,   117,    46,   137,    47,
+      48,    49,   170,   170,    52,    53,   137,   140,   184,   177,
+      47,   142,    49,     0,     1,    52,    53,   106,   139,   158,
+      10,   187,    12,   144,   145,    15,    16,   158,     3,     4,
+       5,     6,     7,     8,    47,    48,    49,    44,    44,    46,
+      46,    45,    46,   164,    47,    48,   185,    52,   185,    96,
+     189,    93,   173,    -1,   185,   176,    47,    48,   189,    52,
+      53,    80,    81,    58,   134,    -1,    -1,    -1,    -1,   190,
+     191,    -1,    -1,   194,    -1,    -1,   197,     3,     4,     5,
+       6,     7,     8,     9,    10,    11,    12,    13,    -1,    15,
       16,    -1,    18,    19,    20,    21,    -1,    -1,    24,    25,
       26,    27,    28,    29,    30,    31,    32,    33,    34,    35,
       36,    37,    38,    39,    40,    41,    42,    43,    -1,    -1,
       -1,    47,    48,    49,    -1,    -1,    52,    53,     9,    10,
-      11,    12,    -1,    14,    15,    16,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    24,    25,    26,    27,    28,    29,    30,
+      11,    12,    13,    -1,    15,    16,    -1,    18,    19,    20,
+      21,    -1,    -1,    24,    25,    26,    27,    28,    29,    30,
       31,    32,    33,    34,    35,    36,    37,    38,    39,    40,
       41,    42,    43,    -1,    -1,    -1,    47,    48,    49,    -1,
-      -1,    52,    53,     9,    10,    11,    12,    -1,    -1,    15,
+      -1,    52,    53,     9,    10,    11,    12,    -1,    14,    15,
       16,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    24,    25,
+      26,    27,    28,    29,    30,    31,    32,    33,    34,    35,
+      36,    37,    38,    39,    40,    41,    42,    43,    -1,    -1,
+      -1,    47,    48,    49,    -1,    -1,    52,    53,     9,    10,
+      11,    12,    -1,    -1,    15,    16,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    24,    25,    26,    27,    28,    29,    30,
+      31,    32,    33,    34,    35,    36,    37,    38,    39,    40,
+      41,    42,    43,     9,    -1,    11,    47,    48,    49,    -1,
+      -1,    52,    53,    -1,    -1,    -1,    -1,    -1,    24,    25,
       26,    27,    28,    29,    30,    31,    32,    33,    34,    35,
       36,    37,    38,    39,    40,    41,    42,    43,     9,    -1,
       11,    47,    48,    49,    -1,    -1,    52,    53,    -1,    -1,
-      -1,    -1,    -1,    24,    25,    26,    27,    28,    29,    30,
-      31,    32,    33,    34,    35,    36,    37,    38,    39,    40,
-      41,    42,    43,    -1,    -1,    -1,    47,    48,    49,    -1,
-      29,    52,    53,    32,    33,    34,    35,    -1,    37,    38,
-      39,    40,    -1,    -1,    -1,    -1,    -1,    -1,    47,    48,
-      49,    -1,    -1,    52
+      -1,    -1,    -1,    24,    25,    26,    27,    28,    -1,    30,
+      31,    -1,    33,    -1,    -1,    -1,    37,    -1,    -1,    -1,
+      -1,    42,    43,    -1,    29,    -1,    -1,    32,    -1,    34,
+      35,    36,    53,    38,    39,    40,    41,    -1,    -1,    -1,
+      -1,    -1,    47,    48,    49,    -1,    -1,    52
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    55,    56,    57,    59,    60,    52,    53,    61,   107,
+       0,    56,    57,    58,    60,    61,    52,    53,    62,   108,
        9,    10,    11,    12,    13,    15,    16,    18,    19,    20,
       21,    24,    25,    26,    27,    28,    29,    30,    31,    32,
       33,    34,    35,    36,    37,    38,    39,    40,    41,    42,
-      43,    47,    48,    49,    52,    53,    65,    67,    68,    74,
-      75,    86,    87,    88,    89,    90,    91,    92,    93,    94,
-      95,   104,     3,     4,     5,     6,     7,     8,    62,    63,
-      64,     0,     1,    62,   104,   105,   105,    47,    48,   111,
-     112,   112,    69,    48,   103,   104,   106,    50,    77,    78,
-      46,   100,   101,   102,    46,    97,    98,    86,   106,    14,
-      70,    71,    72,    74,    68,    75,    89,    90,    89,    91,
-     105,   104,   107,   109,   110,    46,    96,    86,   112,   112,
-      63,    66,    67,   106,    66,     0,   104,   107,   108,   107,
-      47,    48,    49,   108,   108,   106,   103,   107,    49,    51,
-      76,    86,    45,    46,    44,   101,    80,    86,    99,    44,
-      97,    44,    44,   106,    72,    44,    44,   109,    86,    44,
-      46,    44,   107,   107,   107,   111,   107,    80,    77,   107,
-      80,    86,    45,   107,    86,    70,    79,    80,    80,    73,
-      74,    17,    81,    82,    83,   105,   107,    22,    84,    83,
-     107,    86,    86,    23,    85,    80,    86
+      43,    47,    48,    49,    52,    53,    66,    68,    69,    75,
+      76,    87,    88,    89,    90,    91,    92,    93,    94,    95,
+      96,   105,     3,     4,     5,     6,     7,     8,    63,    64,
+      65,     0,     1,    63,   105,   106,   106,    47,    48,   112,
+     113,   113,    70,    48,   104,   105,   107,    50,    78,    79,
+      46,   101,   102,   103,    46,    98,    99,    87,   106,   105,
+     108,   110,   111,   107,    14,    71,    72,    73,    75,    69,
+      76,    90,    91,    90,    92,   106,   111,    46,    97,    87,
+     113,   113,    64,    67,    68,   107,    67,     0,   105,   108,
+     109,   108,    47,    48,    49,   109,   109,   107,   104,   108,
+      49,    51,    77,    87,    45,    46,    44,   102,    81,    87,
+     100,    44,    98,    44,    44,    44,   110,    44,   107,    73,
+      44,    44,    87,    44,    46,    44,   108,   108,   108,   112,
+     108,    81,    78,   108,    81,    87,    45,   108,    87,    71,
+      80,    81,    81,    74,    75,    17,    82,    83,    84,   106,
+     108,    22,    85,    84,   108,    87,    87,    23,    86,    81,
+      87
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    58,    59,    59,    60,    60,    60,    61,    61,    62,
-      62,    63,    63,    63,    64,    64,    64,    64,    65,    65,
-      65,    65,    66,    66,    67,    67,    67,    69,    68,    68,
-      70,    70,    71,    71,    71,    72,    73,    73,    74,    74,
-      74,    75,    75,    75,    75,    76,    76,    77,    78,    78,
-      79,    80,    80,    81,    81,    82,    82,    83,    83,    84,
-      84,    85,    85,    86,    86,    87,    87,    87,    88,    88,
-      89,    89,    89,    89,    89,    89,    89,    89,    89,    90,
-      90,    91,    91,    91,    91,    91,    92,    92,    92,    92,
-      92,    92,    92,    92,    93,    93,    93,    94,    94,    94,
-      95,    95,    96,    96,    97,    98,    98,    99,    99,   100,
-     100,   101,   102,   102,   103,   103,   104,   104,   105,   105,
-     106,   106,   107,   107,   108,   108,   109,   109,   110,   110,
-     111,   111,   111,   111,   112,   112
+       0,    59,    60,    60,    61,    61,    61,    62,    62,    63,
+      63,    64,    64,    64,    65,    65,    65,    65,    66,    66,
+      66,    66,    67,    67,    68,    68,    68,    70,    69,    69,
+      71,    71,    72,    72,    72,    73,    74,    74,    75,    75,
+      75,    76,    76,    76,    76,    77,    77,    78,    79,    79,
+      80,    81,    81,    82,    82,    83,    83,    84,    84,    85,
+      85,    86,    86,    87,    87,    88,    88,    88,    89,    89,
+      90,    90,    90,    90,    90,    90,    90,    90,    90,    90,
+      91,    91,    92,    92,    92,    92,    92,    92,    93,    93,
+      93,    93,    93,    93,    93,    94,    94,    95,    95,    95,
+      96,    96,    97,    97,    98,    99,    99,   100,   100,   101,
+     101,   102,   103,   103,   104,   104,   105,   105,   106,   106,
+     107,   107,   108,   108,   109,   109,   110,   110,   111,   111,
+     112,   112,   112,   112,   113,   113
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
@@ -974,8 +1007,8 @@ static const yytype_int8 yyr2[] =
        1,     4,     5,     3,     3,     0,     1,     1,     3,     1,
        4,     1,     0,     1,     0,     2,     1,     4,     3,     2,
        0,     2,     0,     1,     1,     2,     2,     1,     2,     1,
-       3,     3,     3,     3,     3,     3,     3,     1,     3,     2,
-       1,     1,     1,     3,     3,     1,     1,     1,     1,     1,
+       3,     3,     3,     3,     3,     3,     3,     3,     1,     3,
+       2,     1,     1,     1,     3,     3,     3,     1,     1,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
        1,     1,     3,     2,     2,     2,     1,     3,     1,     3,
        2,     3,     2,     1,     1,     1,     1,     1,     2,     1,
@@ -1539,292 +1572,304 @@ yydestruct (const char *yymsg,
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
   switch (yykind)
     {
-    case YYSYMBOL_TEXT: /* "text"  */
-#line 99 "SCDoc.y"
+    case YYSYMBOL_CODE: /* CODE  */
+#line 127 "SCDoc/SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1546 "SCDoc.tab.cpp"
+#line 1579 "SCDoc/SCDoc.tab.cpp"
+        break;
+
+    case YYSYMBOL_CODEBLOCK: /* "CODE block"  */
+#line 127 "SCDoc/SCDoc.y"
+            { free(((*yyvaluep).str)); }
+#line 1585 "SCDoc/SCDoc.tab.cpp"
+        break;
+
+    case YYSYMBOL_TEXT: /* "text"  */
+#line 127 "SCDoc/SCDoc.y"
+            { free(((*yyvaluep).str)); }
+#line 1591 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_URL: /* URL  */
-#line 99 "SCDoc.y"
+#line 127 "SCDoc/SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1552 "SCDoc.tab.cpp"
+#line 1597 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_COMMA: /* COMMA  */
-#line 99 "SCDoc.y"
+#line 127 "SCDoc/SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1558 "SCDoc.tab.cpp"
+#line 1603 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_METHODNAME: /* "method name"  */
-#line 99 "SCDoc.y"
+#line 127 "SCDoc/SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1564 "SCDoc.tab.cpp"
+#line 1609 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_METHODARGS: /* "arguments string"  */
-#line 99 "SCDoc.y"
+#line 127 "SCDoc/SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1570 "SCDoc.tab.cpp"
+#line 1615 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_document: /* document  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1576 "SCDoc.tab.cpp"
+#line 1621 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_dochead: /* dochead  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1582 "SCDoc.tab.cpp"
+#line 1627 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_headline: /* headline  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1588 "SCDoc.tab.cpp"
+#line 1633 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_optsections: /* optsections  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1594 "SCDoc.tab.cpp"
+#line 1639 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_sections: /* sections  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1600 "SCDoc.tab.cpp"
+#line 1645 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_section: /* section  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1606 "SCDoc.tab.cpp"
+#line 1651 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_optsubsections: /* optsubsections  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1612 "SCDoc.tab.cpp"
+#line 1657 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_subsections: /* subsections  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1618 "SCDoc.tab.cpp"
+#line 1663 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_subsection: /* subsection  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1624 "SCDoc.tab.cpp"
+#line 1669 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_optsubsubsections: /* optsubsubsections  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1630 "SCDoc.tab.cpp"
+#line 1675 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_subsubsections: /* subsubsections  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1636 "SCDoc.tab.cpp"
+#line 1681 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_subsubsection: /* subsubsection  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1642 "SCDoc.tab.cpp"
+#line 1687 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_optMETHODARGS: /* optMETHODARGS  */
-#line 99 "SCDoc.y"
+#line 127 "SCDoc/SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1648 "SCDoc.tab.cpp"
+#line 1693 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_methodname: /* methodname  */
-#line 99 "SCDoc.y"
+#line 127 "SCDoc/SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1654 "SCDoc.tab.cpp"
+#line 1699 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_methnames: /* methnames  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1660 "SCDoc.tab.cpp"
+#line 1705 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_methodbody: /* methodbody  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1666 "SCDoc.tab.cpp"
+#line 1711 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_optbody: /* optbody  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1672 "SCDoc.tab.cpp"
+#line 1717 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_optargs: /* optargs  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1678 "SCDoc.tab.cpp"
+#line 1723 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_args: /* args  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1684 "SCDoc.tab.cpp"
+#line 1729 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_arg: /* arg  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1690 "SCDoc.tab.cpp"
+#line 1735 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_optreturns: /* optreturns  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1696 "SCDoc.tab.cpp"
+#line 1741 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_optdiscussion: /* optdiscussion  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1702 "SCDoc.tab.cpp"
+#line 1747 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_body: /* body  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1708 "SCDoc.tab.cpp"
+#line 1753 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_blockA: /* blockA  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1714 "SCDoc.tab.cpp"
+#line 1759 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_blockB: /* blockB  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1720 "SCDoc.tab.cpp"
+#line 1765 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_bodyelem: /* bodyelem  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1726 "SCDoc.tab.cpp"
+#line 1771 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_prose: /* prose  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1732 "SCDoc.tab.cpp"
+#line 1777 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_proseelem: /* proseelem  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1738 "SCDoc.tab.cpp"
+#line 1783 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_listbody: /* listbody  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1744 "SCDoc.tab.cpp"
+#line 1789 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_tablerow: /* tablerow  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1750 "SCDoc.tab.cpp"
+#line 1795 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_tablebody: /* tablebody  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1756 "SCDoc.tab.cpp"
+#line 1801 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_tablecells: /* tablecells  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1762 "SCDoc.tab.cpp"
+#line 1807 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_defterms: /* defterms  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1768 "SCDoc.tab.cpp"
+#line 1813 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_deflistrow: /* deflistrow  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1774 "SCDoc.tab.cpp"
+#line 1819 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_deflistbody: /* deflistbody  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1780 "SCDoc.tab.cpp"
+#line 1825 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_anywordurl: /* anywordurl  */
-#line 99 "SCDoc.y"
+#line 127 "SCDoc/SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1786 "SCDoc.tab.cpp"
+#line 1831 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_anyword: /* anyword  */
-#line 99 "SCDoc.y"
+#line 127 "SCDoc/SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1792 "SCDoc.tab.cpp"
+#line 1837 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_words: /* words  */
-#line 99 "SCDoc.y"
+#line 127 "SCDoc/SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1798 "SCDoc.tab.cpp"
+#line 1843 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_words2: /* words2  */
-#line 99 "SCDoc.y"
+#line 127 "SCDoc/SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1804 "SCDoc.tab.cpp"
+#line 1849 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_anywordnl: /* anywordnl  */
-#line 99 "SCDoc.y"
+#line 127 "SCDoc/SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1810 "SCDoc.tab.cpp"
+#line 1855 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_wordsnl: /* wordsnl  */
-#line 99 "SCDoc.y"
+#line 127 "SCDoc/SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1816 "SCDoc.tab.cpp"
+#line 1861 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_nocommawords: /* nocommawords  */
-#line 99 "SCDoc.y"
+#line 127 "SCDoc/SCDoc.y"
             { free(((*yyvaluep).str)); }
-#line 1822 "SCDoc.tab.cpp"
+#line 1867 "SCDoc/SCDoc.tab.cpp"
         break;
 
     case YYSYMBOL_commalist: /* commalist  */
-#line 98 "SCDoc.y"
+#line 126 "SCDoc/SCDoc.y"
             { doc_node_free_tree(((*yyvaluep).doc_node)); }
-#line 1828 "SCDoc.tab.cpp"
+#line 1873 "SCDoc/SCDoc.tab.cpp"
         break;
 
       default:
@@ -2120,232 +2165,232 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* start: document  */
-#line 108 "SCDoc.y"
+#line 136 "SCDoc/SCDoc.y"
                 { topnode = (yyvsp[0].doc_node); }
-#line 2126 "SCDoc.tab.cpp"
+#line 2171 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 3: /* start: document error  */
-#line 109 "SCDoc.y"
+#line 137 "SCDoc/SCDoc.y"
                       { topnode = NULL; doc_node_free_tree((yyvsp[-1].doc_node)); }
-#line 2132 "SCDoc.tab.cpp"
+#line 2177 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 4: /* document: START_FULL eateol dochead optsections  */
-#line 113 "SCDoc.y"
+#line 141 "SCDoc/SCDoc.y"
     {
         (yyval.doc_node) = doc_node_create("DOCUMENT");
         doc_node_add_child((yyval.doc_node), (yyvsp[-1].doc_node));
         doc_node_add_child((yyval.doc_node), (yyvsp[0].doc_node));
     }
-#line 2142 "SCDoc.tab.cpp"
+#line 2187 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 5: /* document: START_PARTIAL sections  */
-#line 119 "SCDoc.y"
+#line 147 "SCDoc/SCDoc.y"
     {
         (yyval.doc_node) = doc_node_make_take_children("BODY",NULL,(yyvsp[0].doc_node));
     }
-#line 2150 "SCDoc.tab.cpp"
+#line 2195 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 6: /* document: START_METADATA dochead optsections  */
-#line 123 "SCDoc.y"
+#line 151 "SCDoc/SCDoc.y"
     {
         (yyval.doc_node) = doc_node_create("DOCUMENT");
         doc_node_add_child((yyval.doc_node), (yyvsp[-1].doc_node));
         doc_node_add_child((yyval.doc_node), (yyvsp[0].doc_node));
     }
-#line 2160 "SCDoc.tab.cpp"
+#line 2205 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 9: /* dochead: dochead headline  */
-#line 134 "SCDoc.y"
+#line 162 "SCDoc/SCDoc.y"
                           { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node),(yyvsp[0].doc_node)); }
-#line 2166 "SCDoc.tab.cpp"
+#line 2211 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 10: /* dochead: headline  */
-#line 135 "SCDoc.y"
+#line 163 "SCDoc/SCDoc.y"
                   { (yyval.doc_node) = doc_node_make("HEADER",NULL,(yyvsp[0].doc_node)); }
-#line 2172 "SCDoc.tab.cpp"
+#line 2217 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 11: /* headline: headtag words2 eol  */
-#line 138 "SCDoc.y"
+#line 166 "SCDoc/SCDoc.y"
                              { (yyval.doc_node) = doc_node_make((yyvsp[-2].id),(yyvsp[-1].str),NULL); }
-#line 2178 "SCDoc.tab.cpp"
+#line 2223 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 12: /* headline: CATEGORIES commalist eol  */
-#line 139 "SCDoc.y"
+#line 167 "SCDoc/SCDoc.y"
                                    { (yyval.doc_node) = doc_node_make_take_children("CATEGORIES",NULL,(yyvsp[-1].doc_node)); }
-#line 2184 "SCDoc.tab.cpp"
+#line 2229 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 13: /* headline: RELATED commalist eol  */
-#line 140 "SCDoc.y"
+#line 168 "SCDoc/SCDoc.y"
                                 { (yyval.doc_node) = doc_node_make_take_children("RELATED",NULL,(yyvsp[-1].doc_node)); }
-#line 2190 "SCDoc.tab.cpp"
+#line 2235 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 14: /* headtag: CLASS  */
-#line 143 "SCDoc.y"
+#line 171 "SCDoc/SCDoc.y"
                { (yyval.id) = "TITLE"; }
-#line 2196 "SCDoc.tab.cpp"
+#line 2241 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 15: /* headtag: TITLE  */
-#line 144 "SCDoc.y"
+#line 172 "SCDoc/SCDoc.y"
                { (yyval.id) = "TITLE"; }
-#line 2202 "SCDoc.tab.cpp"
+#line 2247 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 16: /* headtag: SUMMARY  */
-#line 145 "SCDoc.y"
+#line 173 "SCDoc/SCDoc.y"
                  { (yyval.id) = "SUMMARY"; }
-#line 2208 "SCDoc.tab.cpp"
+#line 2253 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 17: /* headtag: REDIRECT  */
-#line 146 "SCDoc.y"
+#line 174 "SCDoc/SCDoc.y"
                   { (yyval.id) = "REDIRECT"; }
-#line 2214 "SCDoc.tab.cpp"
+#line 2259 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 18: /* sectiontag: CLASSMETHODS  */
-#line 149 "SCDoc.y"
+#line 177 "SCDoc/SCDoc.y"
                          { (yyval.id) = "CLASSMETHODS"; method_type = "CMETHOD"; }
-#line 2220 "SCDoc.tab.cpp"
+#line 2265 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 19: /* sectiontag: INSTANCEMETHODS  */
-#line 150 "SCDoc.y"
+#line 178 "SCDoc/SCDoc.y"
                             { (yyval.id) = "INSTANCEMETHODS"; method_type = "IMETHOD"; }
-#line 2226 "SCDoc.tab.cpp"
+#line 2271 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 20: /* sectiontag: DESCRIPTION  */
-#line 151 "SCDoc.y"
+#line 179 "SCDoc/SCDoc.y"
                         { (yyval.id) = "DESCRIPTION"; method_type = "METHOD"; }
-#line 2232 "SCDoc.tab.cpp"
+#line 2277 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 21: /* sectiontag: EXAMPLES  */
-#line 152 "SCDoc.y"
+#line 180 "SCDoc/SCDoc.y"
                      { (yyval.id) = "EXAMPLES"; method_type = "METHOD"; }
-#line 2238 "SCDoc.tab.cpp"
+#line 2283 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 23: /* optsections: %empty  */
-#line 156 "SCDoc.y"
-             { (yyval.doc_node) = doc_node_make("BODY",NULL,NULL); }
-#line 2244 "SCDoc.tab.cpp"
+#line 184 "SCDoc/SCDoc.y"
+                    { (yyval.doc_node) = doc_node_make("BODY",NULL,NULL); }
+#line 2289 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 24: /* sections: sections section  */
-#line 159 "SCDoc.y"
+#line 187 "SCDoc/SCDoc.y"
                            { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node),(yyvsp[0].doc_node)); }
-#line 2250 "SCDoc.tab.cpp"
+#line 2295 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 25: /* sections: section  */
-#line 160 "SCDoc.y"
+#line 188 "SCDoc/SCDoc.y"
                   { (yyval.doc_node) = doc_node_make("BODY",NULL,(yyvsp[0].doc_node)); }
-#line 2256 "SCDoc.tab.cpp"
+#line 2301 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 26: /* sections: subsubsections  */
-#line 161 "SCDoc.y"
+#line 189 "SCDoc/SCDoc.y"
                          { (yyval.doc_node) = doc_node_make_take_children("BODY",NULL,(yyvsp[0].doc_node)); }
-#line 2262 "SCDoc.tab.cpp"
+#line 2307 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 27: /* $@1: %empty  */
-#line 164 "SCDoc.y"
+#line 192 "SCDoc/SCDoc.y"
                  { method_type = "METHOD"; }
-#line 2268 "SCDoc.tab.cpp"
+#line 2313 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 28: /* section: SECTION $@1 words2 eol optsubsections  */
-#line 164 "SCDoc.y"
+#line 192 "SCDoc/SCDoc.y"
                                                                        { (yyval.doc_node) = doc_node_make_take_children("SECTION",(yyvsp[-2].str),(yyvsp[0].doc_node)); }
-#line 2274 "SCDoc.tab.cpp"
+#line 2319 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 29: /* section: sectiontag optsubsections  */
-#line 165 "SCDoc.y"
+#line 193 "SCDoc/SCDoc.y"
                                    { (yyval.doc_node) = doc_node_make_take_children((yyvsp[-1].id), NULL,(yyvsp[0].doc_node)); }
-#line 2280 "SCDoc.tab.cpp"
+#line 2325 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 31: /* optsubsections: %empty  */
-#line 169 "SCDoc.y"
-                { (yyval.doc_node) = NULL; }
-#line 2286 "SCDoc.tab.cpp"
+#line 197 "SCDoc/SCDoc.y"
+                       { (yyval.doc_node) = NULL; }
+#line 2331 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 32: /* subsections: subsections subsection  */
-#line 172 "SCDoc.y"
+#line 200 "SCDoc/SCDoc.y"
                                     { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node),(yyvsp[0].doc_node)); }
-#line 2292 "SCDoc.tab.cpp"
+#line 2337 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 33: /* subsections: subsection  */
-#line 173 "SCDoc.y"
+#line 201 "SCDoc/SCDoc.y"
                         { (yyval.doc_node) = doc_node_make("(SUBSECTIONS)",NULL,(yyvsp[0].doc_node)); }
-#line 2298 "SCDoc.tab.cpp"
+#line 2343 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 35: /* subsection: SUBSECTION words2 eol optsubsubsections  */
-#line 177 "SCDoc.y"
+#line 205 "SCDoc/SCDoc.y"
                                                     { (yyval.doc_node) = doc_node_make_take_children("SUBSECTION", (yyvsp[-2].str), (yyvsp[0].doc_node)); }
-#line 2304 "SCDoc.tab.cpp"
+#line 2349 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 37: /* optsubsubsections: %empty  */
-#line 181 "SCDoc.y"
-                   { (yyval.doc_node) = NULL; }
-#line 2310 "SCDoc.tab.cpp"
+#line 209 "SCDoc/SCDoc.y"
+                          { (yyval.doc_node) = NULL; }
+#line 2355 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 38: /* subsubsections: subsubsections subsubsection  */
-#line 184 "SCDoc.y"
+#line 212 "SCDoc/SCDoc.y"
                                              { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node),(yyvsp[0].doc_node)); }
-#line 2316 "SCDoc.tab.cpp"
+#line 2361 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 39: /* subsubsections: subsubsection  */
-#line 185 "SCDoc.y"
+#line 213 "SCDoc/SCDoc.y"
                               { (yyval.doc_node) = doc_node_make("(SUBSUBSECTIONS)",NULL,(yyvsp[0].doc_node)); }
-#line 2322 "SCDoc.tab.cpp"
+#line 2367 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 40: /* subsubsections: body  */
-#line 186 "SCDoc.y"
+#line 214 "SCDoc/SCDoc.y"
                      { (yyval.doc_node) = doc_node_make_take_children("(SUBSUBSECTIONS)",NULL,(yyvsp[0].doc_node)); }
-#line 2328 "SCDoc.tab.cpp"
+#line 2373 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 41: /* subsubsection: SUBSUBSECTION words2 eol optbody  */
-#line 189 "SCDoc.y"
+#line 217 "SCDoc/SCDoc.y"
                                                 { (yyval.doc_node) = doc_node_make_take_children("SUBSUBSECTION", (yyvsp[-2].str), (yyvsp[0].doc_node)); }
-#line 2334 "SCDoc.tab.cpp"
+#line 2379 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 42: /* subsubsection: METHOD methnames optMETHODARGS eol methodbody  */
-#line 191 "SCDoc.y"
+#line 219 "SCDoc/SCDoc.y"
     {
         (yyvsp[-3].doc_node)->id = "METHODNAMES";
         (yyval.doc_node) = doc_node_make(method_type,(yyvsp[-2].str),(yyvsp[-3].doc_node));
         doc_node_add_child((yyval.doc_node), (yyvsp[0].doc_node));
 //        doc_node_add_child($2, $3);
     }
-#line 2345 "SCDoc.tab.cpp"
+#line 2390 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 43: /* subsubsection: COPYMETHOD words eol  */
-#line 197 "SCDoc.y"
+#line 225 "SCDoc/SCDoc.y"
                                     {
                 if ( !(strchr((yyvsp[-1].str), ' ')) ) {
                   yyerror("COPYMETHOD requires 2 arguments (class name and method name)");
@@ -2358,25 +2403,25 @@ yyreduce:
                                                                                            : "COPYMETHOD"),
                 (yyvsp[-1].str), NULL
                 ); }
-#line 2362 "SCDoc.tab.cpp"
+#line 2407 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 44: /* subsubsection: PRIVATE commalist eoleof  */
-#line 209 "SCDoc.y"
+#line 237 "SCDoc/SCDoc.y"
                                         { (yyval.doc_node) = doc_node_make_take_children( stringEqual(method_type, "CMETHOD") ? "CPRIVATE"
                                                                                                                 : "IPRIVATE",
                 NULL, (yyvsp[-1].doc_node)); }
-#line 2370 "SCDoc.tab.cpp"
+#line 2415 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 45: /* optMETHODARGS: %empty  */
-#line 214 "SCDoc.y"
-               { (yyval.str) = NULL; }
-#line 2376 "SCDoc.tab.cpp"
+#line 242 "SCDoc/SCDoc.y"
+                      { (yyval.str) = NULL; }
+#line 2421 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 46: /* optMETHODARGS: "arguments string"  */
-#line 216 "SCDoc.y"
+#line 244 "SCDoc/SCDoc.y"
     {
 //        $$ = doc_node_make("ARGSTRING",$1,NULL);
         (yyval.str) = (yyvsp[0].str);
@@ -2385,11 +2430,11 @@ yyreduce:
             YYERROR;
         }
     }
-#line 2389 "SCDoc.tab.cpp"
+#line 2434 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 47: /* methodname: "method name"  */
-#line 227 "SCDoc.y"
+#line 255 "SCDoc/SCDoc.y"
     {
         char *p = (yyvsp[0].str)+strlen((yyvsp[0].str))-1;
         if(*p=='_') {
@@ -2398,441 +2443,441 @@ yyreduce:
         };
         (yyval.str) = (yyvsp[0].str);
     }
-#line 2402 "SCDoc.tab.cpp"
+#line 2447 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 48: /* methnames: methnames COMMA methodname  */
-#line 237 "SCDoc.y"
+#line 265 "SCDoc/SCDoc.y"
                                       { free((yyvsp[-1].str)); (yyvsp[-1].str) = NULL; (yyval.doc_node) = doc_node_add_child((yyvsp[-2].doc_node), doc_node_make("STRING",(yyvsp[0].str),NULL)); }
-#line 2408 "SCDoc.tab.cpp"
+#line 2453 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 49: /* methnames: methodname  */
-#line 238 "SCDoc.y"
+#line 266 "SCDoc/SCDoc.y"
                       { (yyval.doc_node) = doc_node_make("(METHODNAMES)",NULL,doc_node_make("STRING",(yyvsp[0].str),NULL)); }
-#line 2414 "SCDoc.tab.cpp"
+#line 2459 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 50: /* methodbody: optbody optargs optreturns optdiscussion  */
-#line 242 "SCDoc.y"
+#line 270 "SCDoc/SCDoc.y"
     {
         (yyval.doc_node) = doc_node_make_take_children("METHODBODY",NULL,(yyvsp[-3].doc_node));
         doc_node_add_child((yyval.doc_node), (yyvsp[-2].doc_node));
         doc_node_add_child((yyval.doc_node), (yyvsp[-1].doc_node));
         doc_node_add_child((yyval.doc_node), (yyvsp[0].doc_node));
     }
-#line 2425 "SCDoc.tab.cpp"
+#line 2470 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 52: /* optbody: %empty  */
-#line 251 "SCDoc.y"
-         { (yyval.doc_node) = NULL; }
-#line 2431 "SCDoc.tab.cpp"
+#line 279 "SCDoc/SCDoc.y"
+                { (yyval.doc_node) = NULL; }
+#line 2476 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 54: /* optargs: %empty  */
-#line 255 "SCDoc.y"
-         { (yyval.doc_node) = NULL; }
-#line 2437 "SCDoc.tab.cpp"
+#line 283 "SCDoc/SCDoc.y"
+                { (yyval.doc_node) = NULL; }
+#line 2482 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 55: /* args: args arg  */
-#line 258 "SCDoc.y"
+#line 286 "SCDoc/SCDoc.y"
                { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node),(yyvsp[0].doc_node)); }
-#line 2443 "SCDoc.tab.cpp"
+#line 2488 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 56: /* args: arg  */
-#line 259 "SCDoc.y"
+#line 287 "SCDoc/SCDoc.y"
           { (yyval.doc_node) = doc_node_make("ARGUMENTS",NULL,(yyvsp[0].doc_node)); }
-#line 2449 "SCDoc.tab.cpp"
+#line 2494 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 57: /* arg: ARGUMENT words eol optbody  */
-#line 262 "SCDoc.y"
+#line 290 "SCDoc/SCDoc.y"
                                 { (yyval.doc_node) = doc_node_make_take_children("ARGUMENT", (yyvsp[-2].str), (yyvsp[0].doc_node)); }
-#line 2455 "SCDoc.tab.cpp"
+#line 2500 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 58: /* arg: ARGUMENT eol body  */
-#line 263 "SCDoc.y"
+#line 291 "SCDoc/SCDoc.y"
                        { (yyval.doc_node) = doc_node_make_take_children("ARGUMENT", NULL, (yyvsp[0].doc_node)); }
-#line 2461 "SCDoc.tab.cpp"
+#line 2506 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 59: /* optreturns: RETURNS body  */
-#line 266 "SCDoc.y"
+#line 294 "SCDoc/SCDoc.y"
                          { (yyval.doc_node) = doc_node_make_take_children("RETURNS",NULL,(yyvsp[0].doc_node)); }
-#line 2467 "SCDoc.tab.cpp"
+#line 2512 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 60: /* optreturns: %empty  */
-#line 267 "SCDoc.y"
-            { (yyval.doc_node) = NULL; }
-#line 2473 "SCDoc.tab.cpp"
+#line 295 "SCDoc/SCDoc.y"
+                   { (yyval.doc_node) = NULL; }
+#line 2518 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 61: /* optdiscussion: DISCUSSION body  */
-#line 270 "SCDoc.y"
+#line 298 "SCDoc/SCDoc.y"
                                { (yyval.doc_node) = doc_node_make_take_children("DISCUSSION",NULL,(yyvsp[0].doc_node)); }
-#line 2479 "SCDoc.tab.cpp"
+#line 2524 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 62: /* optdiscussion: %empty  */
-#line 271 "SCDoc.y"
-               { (yyval.doc_node) = NULL; }
-#line 2485 "SCDoc.tab.cpp"
+#line 299 "SCDoc/SCDoc.y"
+                      { (yyval.doc_node) = NULL; }
+#line 2530 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 65: /* blockA: blockB bodyelem  */
-#line 283 "SCDoc.y"
+#line 311 "SCDoc/SCDoc.y"
                         { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node),(yyvsp[0].doc_node)); }
-#line 2491 "SCDoc.tab.cpp"
+#line 2536 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 66: /* blockA: blockA bodyelem  */
-#line 284 "SCDoc.y"
+#line 312 "SCDoc/SCDoc.y"
                         { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node),(yyvsp[0].doc_node)); }
-#line 2497 "SCDoc.tab.cpp"
+#line 2542 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 67: /* blockA: bodyelem  */
-#line 285 "SCDoc.y"
+#line 313 "SCDoc/SCDoc.y"
                  { (yyval.doc_node) = doc_node_make("(SECTIONBODY)",NULL,(yyvsp[0].doc_node)); }
-#line 2503 "SCDoc.tab.cpp"
+#line 2548 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 68: /* blockB: blockA prose  */
-#line 288 "SCDoc.y"
+#line 316 "SCDoc/SCDoc.y"
                      { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node),(yyvsp[0].doc_node)); }
-#line 2509 "SCDoc.tab.cpp"
+#line 2554 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 69: /* blockB: prose  */
-#line 289 "SCDoc.y"
+#line 317 "SCDoc/SCDoc.y"
               { (yyval.doc_node) = doc_node_make("(SECTIONBODY)",NULL,(yyvsp[0].doc_node)); }
-#line 2515 "SCDoc.tab.cpp"
+#line 2560 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 70: /* bodyelem: rangetag body "::"  */
-#line 292 "SCDoc.y"
+#line 320 "SCDoc/SCDoc.y"
                                { (yyval.doc_node) = doc_node_make_take_children((yyvsp[-2].id),NULL,(yyvsp[-1].doc_node)); }
-#line 2521 "SCDoc.tab.cpp"
+#line 2566 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 71: /* bodyelem: listtag listbody "::"  */
-#line 293 "SCDoc.y"
+#line 321 "SCDoc/SCDoc.y"
                                   { (yyval.doc_node) = doc_node_make_take_children((yyvsp[-2].id),NULL,(yyvsp[-1].doc_node)); }
-#line 2527 "SCDoc.tab.cpp"
+#line 2572 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 72: /* bodyelem: TABLE tablebody "::"  */
-#line 294 "SCDoc.y"
+#line 322 "SCDoc/SCDoc.y"
                                  { (yyval.doc_node) = doc_node_make_take_children("TABLE",NULL,(yyvsp[-1].doc_node)); }
-#line 2533 "SCDoc.tab.cpp"
+#line 2578 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 73: /* bodyelem: DEFINITIONLIST deflistbody "::"  */
-#line 295 "SCDoc.y"
+#line 323 "SCDoc/SCDoc.y"
                                             { (yyval.doc_node) = doc_node_make_take_children("DEFINITIONLIST",NULL,(yyvsp[-1].doc_node)); }
-#line 2539 "SCDoc.tab.cpp"
+#line 2584 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 74: /* bodyelem: blocktag wordsnl "::"  */
-#line 296 "SCDoc.y"
+#line 324 "SCDoc/SCDoc.y"
                                   { (yyval.doc_node) = doc_node_make((yyvsp[-2].id),(yyvsp[-1].str),NULL); }
-#line 2545 "SCDoc.tab.cpp"
+#line 2590 "SCDoc/SCDoc.tab.cpp"
     break;
 
-  case 75: /* bodyelem: CLASSTREE words eoleof  */
-#line 297 "SCDoc.y"
+  case 75: /* bodyelem: "CODE block" wordsnl "::"  */
+#line 325 "SCDoc/SCDoc.y"
+                                   { (yyval.doc_node) = make_code("CODEBLOCK",(yyvsp[-1].str),(yyvsp[-2].str),(yylsp[-2]).first_line); }
+#line 2596 "SCDoc/SCDoc.tab.cpp"
+    break;
+
+  case 76: /* bodyelem: CLASSTREE words eoleof  */
+#line 326 "SCDoc/SCDoc.y"
                                  { (yyval.doc_node) = doc_node_make("CLASSTREE",(yyvsp[-1].str),NULL); }
-#line 2551 "SCDoc.tab.cpp"
+#line 2602 "SCDoc/SCDoc.tab.cpp"
     break;
 
-  case 76: /* bodyelem: KEYWORD commalist eoleof  */
-#line 298 "SCDoc.y"
+  case 77: /* bodyelem: KEYWORD commalist eoleof  */
+#line 327 "SCDoc/SCDoc.y"
                                    { (yyval.doc_node) = doc_node_make_take_children("KEYWORD",NULL,(yyvsp[-1].doc_node));
 //            printf("keyword '%s'\n",$2->children[0]->text);
         }
-#line 2559 "SCDoc.tab.cpp"
+#line 2610 "SCDoc/SCDoc.tab.cpp"
     break;
 
-  case 77: /* bodyelem: "empty lines"  */
-#line 301 "SCDoc.y"
+  case 78: /* bodyelem: "empty lines"  */
+#line 330 "SCDoc/SCDoc.y"
                      { (yyval.doc_node) = NULL; }
-#line 2565 "SCDoc.tab.cpp"
+#line 2616 "SCDoc/SCDoc.tab.cpp"
     break;
 
-  case 78: /* bodyelem: IMAGE words2 "::"  */
-#line 302 "SCDoc.y"
+  case 79: /* bodyelem: IMAGE words2 "::"  */
+#line 331 "SCDoc/SCDoc.y"
                               { (yyval.doc_node) = doc_node_make("IMAGE",(yyvsp[-1].str),NULL); }
-#line 2571 "SCDoc.tab.cpp"
+#line 2622 "SCDoc/SCDoc.tab.cpp"
     break;
 
-  case 79: /* prose: prose proseelem  */
-#line 305 "SCDoc.y"
+  case 80: /* prose: prose proseelem  */
+#line 334 "SCDoc/SCDoc.y"
                        { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node), (yyvsp[0].doc_node)); }
-#line 2577 "SCDoc.tab.cpp"
+#line 2628 "SCDoc/SCDoc.tab.cpp"
     break;
 
-  case 80: /* prose: proseelem  */
-#line 306 "SCDoc.y"
+  case 81: /* prose: proseelem  */
+#line 335 "SCDoc/SCDoc.y"
                  { (yyval.doc_node) = doc_node_make("PROSE",NULL,(yyvsp[0].doc_node)); }
-#line 2583 "SCDoc.tab.cpp"
+#line 2634 "SCDoc/SCDoc.tab.cpp"
     break;
 
-  case 81: /* proseelem: anyword  */
-#line 309 "SCDoc.y"
+  case 82: /* proseelem: anyword  */
+#line 338 "SCDoc/SCDoc.y"
                    { (yyval.doc_node) = doc_node_make(NODE_TEXT,(yyvsp[0].str),NULL); }
-#line 2589 "SCDoc.tab.cpp"
+#line 2640 "SCDoc/SCDoc.tab.cpp"
     break;
 
-  case 82: /* proseelem: URL  */
-#line 310 "SCDoc.y"
+  case 83: /* proseelem: URL  */
+#line 339 "SCDoc/SCDoc.y"
                { (yyval.doc_node) = doc_node_make("LINK",(yyvsp[0].str),NULL); }
-#line 2595 "SCDoc.tab.cpp"
+#line 2646 "SCDoc/SCDoc.tab.cpp"
     break;
 
-  case 83: /* proseelem: inlinetag words "::"  */
-#line 311 "SCDoc.y"
+  case 84: /* proseelem: inlinetag words "::"  */
+#line 340 "SCDoc/SCDoc.y"
                                   { (yyval.doc_node) = doc_node_make((yyvsp[-2].id),(yyvsp[-1].str),NULL); }
-#line 2601 "SCDoc.tab.cpp"
+#line 2652 "SCDoc/SCDoc.tab.cpp"
     break;
 
-  case 84: /* proseelem: FOOTNOTE body "::"  */
-#line 312 "SCDoc.y"
+  case 85: /* proseelem: CODE words "::"  */
+#line 341 "SCDoc/SCDoc.y"
+                             { (yyval.doc_node) = make_code("CODE",(yyvsp[-1].str),(yyvsp[-2].str),(yylsp[-2]).first_line); }
+#line 2658 "SCDoc/SCDoc.tab.cpp"
+    break;
+
+  case 86: /* proseelem: FOOTNOTE body "::"  */
+#line 342 "SCDoc/SCDoc.y"
                                 { (yyval.doc_node) = doc_node_make_take_children("FOOTNOTE",NULL,(yyvsp[-1].doc_node)); }
-#line 2607 "SCDoc.tab.cpp"
+#line 2664 "SCDoc/SCDoc.tab.cpp"
     break;
 
-  case 85: /* proseelem: "newline"  */
-#line 313 "SCDoc.y"
+  case 87: /* proseelem: "newline"  */
+#line 343 "SCDoc/SCDoc.y"
                    { (yyval.doc_node) = doc_node_create(NODE_NL); }
-#line 2613 "SCDoc.tab.cpp"
+#line 2670 "SCDoc/SCDoc.tab.cpp"
     break;
 
-  case 86: /* inlinetag: LINK  */
-#line 316 "SCDoc.y"
+  case 88: /* inlinetag: LINK  */
+#line 346 "SCDoc/SCDoc.y"
                 { (yyval.id) = "LINK"; }
-#line 2619 "SCDoc.tab.cpp"
+#line 2676 "SCDoc/SCDoc.tab.cpp"
     break;
 
-  case 87: /* inlinetag: STRONG  */
-#line 317 "SCDoc.y"
+  case 89: /* inlinetag: STRONG  */
+#line 347 "SCDoc/SCDoc.y"
                   { (yyval.id) = "STRONG"; }
-#line 2625 "SCDoc.tab.cpp"
+#line 2682 "SCDoc/SCDoc.tab.cpp"
     break;
 
-  case 88: /* inlinetag: SOFT  */
-#line 318 "SCDoc.y"
+  case 90: /* inlinetag: SOFT  */
+#line 348 "SCDoc/SCDoc.y"
                 { (yyval.id) = "SOFT"; }
-#line 2631 "SCDoc.tab.cpp"
+#line 2688 "SCDoc/SCDoc.tab.cpp"
     break;
 
-  case 89: /* inlinetag: EMPHASIS  */
-#line 319 "SCDoc.y"
+  case 91: /* inlinetag: EMPHASIS  */
+#line 349 "SCDoc/SCDoc.y"
                     { (yyval.id) = "EMPHASIS"; }
-#line 2637 "SCDoc.tab.cpp"
+#line 2694 "SCDoc/SCDoc.tab.cpp"
     break;
 
-  case 90: /* inlinetag: CODE  */
-#line 320 "SCDoc.y"
-                { (yyval.id) = "CODE"; }
-#line 2643 "SCDoc.tab.cpp"
-    break;
-
-  case 91: /* inlinetag: TELETYPE  */
-#line 321 "SCDoc.y"
+  case 92: /* inlinetag: TELETYPE  */
+#line 350 "SCDoc/SCDoc.y"
                     { (yyval.id) = "TELETYPE"; }
-#line 2649 "SCDoc.tab.cpp"
+#line 2700 "SCDoc/SCDoc.tab.cpp"
     break;
 
-  case 92: /* inlinetag: MATH  */
-#line 322 "SCDoc.y"
+  case 93: /* inlinetag: MATH  */
+#line 351 "SCDoc/SCDoc.y"
                 { (yyval.id) = "MATH"; }
-#line 2655 "SCDoc.tab.cpp"
+#line 2706 "SCDoc/SCDoc.tab.cpp"
     break;
 
-  case 93: /* inlinetag: ANCHOR  */
-#line 323 "SCDoc.y"
+  case 94: /* inlinetag: ANCHOR  */
+#line 352 "SCDoc/SCDoc.y"
                   { (yyval.id) = "ANCHOR"; }
-#line 2661 "SCDoc.tab.cpp"
-    break;
-
-  case 94: /* blocktag: "CODE block"  */
-#line 326 "SCDoc.y"
-                    { (yyval.id) = "CODEBLOCK"; }
-#line 2667 "SCDoc.tab.cpp"
+#line 2712 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 95: /* blocktag: "MATH block"  */
-#line 327 "SCDoc.y"
+#line 355 "SCDoc/SCDoc.y"
                     { (yyval.id) = "MATHBLOCK"; }
-#line 2673 "SCDoc.tab.cpp"
+#line 2718 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 96: /* blocktag: "TELETYPE block"  */
-#line 328 "SCDoc.y"
+#line 356 "SCDoc/SCDoc.y"
                         { (yyval.id) = "TELETYPEBLOCK"; }
-#line 2679 "SCDoc.tab.cpp"
+#line 2724 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 97: /* listtag: LIST  */
-#line 331 "SCDoc.y"
+#line 359 "SCDoc/SCDoc.y"
               { (yyval.id) = "LIST"; }
-#line 2685 "SCDoc.tab.cpp"
+#line 2730 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 98: /* listtag: TREE  */
-#line 332 "SCDoc.y"
+#line 360 "SCDoc/SCDoc.y"
               { (yyval.id) = "TREE"; }
-#line 2691 "SCDoc.tab.cpp"
+#line 2736 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 99: /* listtag: NUMBEREDLIST  */
-#line 333 "SCDoc.y"
+#line 361 "SCDoc/SCDoc.y"
                       { (yyval.id) = "NUMBEREDLIST"; }
-#line 2697 "SCDoc.tab.cpp"
+#line 2742 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 100: /* rangetag: WARNING  */
-#line 336 "SCDoc.y"
+#line 364 "SCDoc/SCDoc.y"
                   { (yyval.id) = "WARNING"; }
-#line 2703 "SCDoc.tab.cpp"
+#line 2748 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 101: /* rangetag: NOTE  */
-#line 337 "SCDoc.y"
+#line 365 "SCDoc/SCDoc.y"
                { (yyval.id) = "NOTE"; }
-#line 2709 "SCDoc.tab.cpp"
+#line 2754 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 102: /* listbody: listbody "##" body  */
-#line 340 "SCDoc.y"
+#line 368 "SCDoc/SCDoc.y"
                                { (yyval.doc_node) = doc_node_add_child((yyvsp[-2].doc_node), doc_node_make_take_children("ITEM",NULL,(yyvsp[0].doc_node))); }
-#line 2715 "SCDoc.tab.cpp"
+#line 2760 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 103: /* listbody: "##" body  */
-#line 341 "SCDoc.y"
+#line 369 "SCDoc/SCDoc.y"
                       { (yyval.doc_node) = doc_node_make("(LISTBODY)",NULL, doc_node_make_take_children("ITEM",NULL,(yyvsp[0].doc_node))); }
-#line 2721 "SCDoc.tab.cpp"
+#line 2766 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 104: /* tablerow: "##" tablecells  */
-#line 344 "SCDoc.y"
+#line 372 "SCDoc/SCDoc.y"
                             { (yyval.doc_node) = doc_node_make_take_children("TABROW",NULL,(yyvsp[0].doc_node)); }
-#line 2727 "SCDoc.tab.cpp"
+#line 2772 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 105: /* tablebody: tablebody tablerow  */
-#line 347 "SCDoc.y"
+#line 375 "SCDoc/SCDoc.y"
                               { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node),(yyvsp[0].doc_node)); }
-#line 2733 "SCDoc.tab.cpp"
+#line 2778 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 106: /* tablebody: tablerow  */
-#line 348 "SCDoc.y"
+#line 376 "SCDoc/SCDoc.y"
                     { (yyval.doc_node) = doc_node_make("(TABLEBODY)",NULL,(yyvsp[0].doc_node)); }
-#line 2739 "SCDoc.tab.cpp"
+#line 2784 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 107: /* tablecells: tablecells "||" optbody  */
-#line 351 "SCDoc.y"
+#line 379 "SCDoc/SCDoc.y"
                                     { (yyval.doc_node) = doc_node_add_child((yyvsp[-2].doc_node), doc_node_make_take_children("TABCOL",NULL,(yyvsp[0].doc_node))); }
-#line 2745 "SCDoc.tab.cpp"
+#line 2790 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 108: /* tablecells: optbody  */
-#line 352 "SCDoc.y"
+#line 380 "SCDoc/SCDoc.y"
                     { (yyval.doc_node) = doc_node_make("(TABLECELLS)",NULL, doc_node_make_take_children("TABCOL",NULL,(yyvsp[0].doc_node))); }
-#line 2751 "SCDoc.tab.cpp"
+#line 2796 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 109: /* defterms: defterms "##" body  */
-#line 355 "SCDoc.y"
+#line 383 "SCDoc/SCDoc.y"
                                { (yyval.doc_node) = doc_node_add_child((yyvsp[-2].doc_node),doc_node_make_take_children("TERM",NULL,(yyvsp[0].doc_node))); }
-#line 2757 "SCDoc.tab.cpp"
+#line 2802 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 110: /* defterms: "##" body  */
-#line 356 "SCDoc.y"
+#line 384 "SCDoc/SCDoc.y"
                       { (yyval.doc_node) = doc_node_make("(TERMS)",NULL,doc_node_make_take_children("TERM",NULL,(yyvsp[0].doc_node))); }
-#line 2763 "SCDoc.tab.cpp"
+#line 2808 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 111: /* deflistrow: defterms "||" optbody  */
-#line 360 "SCDoc.y"
+#line 388 "SCDoc/SCDoc.y"
     {
         (yyval.doc_node) = doc_node_make_take_children("DEFLISTITEM", NULL, (yyvsp[-2].doc_node));
         doc_node_add_child((yyval.doc_node), doc_node_make_take_children("DEFINITION", NULL, (yyvsp[0].doc_node)));
     }
-#line 2772 "SCDoc.tab.cpp"
+#line 2817 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 112: /* deflistbody: deflistbody deflistrow  */
-#line 366 "SCDoc.y"
+#line 394 "SCDoc/SCDoc.y"
                                     { (yyval.doc_node) = doc_node_add_child((yyvsp[-1].doc_node),(yyvsp[0].doc_node)); }
-#line 2778 "SCDoc.tab.cpp"
+#line 2823 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 113: /* deflistbody: deflistrow  */
-#line 367 "SCDoc.y"
+#line 395 "SCDoc/SCDoc.y"
                         { (yyval.doc_node) = doc_node_make("(DEFLISTBODY)",NULL,(yyvsp[0].doc_node)); }
-#line 2784 "SCDoc.tab.cpp"
+#line 2829 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 118: /* words: words anyword  */
-#line 378 "SCDoc.y"
+#line 406 "SCDoc/SCDoc.y"
                      { (yyval.str) = strmerge((yyvsp[-1].str),(yyvsp[0].str)); }
-#line 2790 "SCDoc.tab.cpp"
+#line 2835 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 120: /* words2: words2 anywordurl  */
-#line 382 "SCDoc.y"
+#line 410 "SCDoc/SCDoc.y"
                           { (yyval.str) = strmerge((yyvsp[-1].str),(yyvsp[0].str)); }
-#line 2796 "SCDoc.tab.cpp"
+#line 2841 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 127: /* anywordnl: eol  */
-#line 395 "SCDoc.y"
+#line 423 "SCDoc/SCDoc.y"
                { (yyval.str) = strdup("\n"); }
-#line 2802 "SCDoc.tab.cpp"
+#line 2847 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 128: /* wordsnl: wordsnl anywordnl  */
-#line 398 "SCDoc.y"
+#line 426 "SCDoc/SCDoc.y"
                            { (yyval.str) = strmerge((yyvsp[-1].str),(yyvsp[0].str)); }
-#line 2808 "SCDoc.tab.cpp"
+#line 2853 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 130: /* nocommawords: nocommawords "text"  */
-#line 402 "SCDoc.y"
+#line 430 "SCDoc/SCDoc.y"
                                 { (yyval.str) = strmerge((yyvsp[-1].str),(yyvsp[0].str)); }
-#line 2814 "SCDoc.tab.cpp"
+#line 2859 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 131: /* nocommawords: nocommawords URL  */
-#line 403 "SCDoc.y"
+#line 431 "SCDoc/SCDoc.y"
                                 { (yyval.str) = strmerge((yyvsp[-1].str),(yyvsp[0].str)); }
-#line 2820 "SCDoc.tab.cpp"
+#line 2865 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 134: /* commalist: commalist COMMA nocommawords  */
-#line 408 "SCDoc.y"
+#line 436 "SCDoc/SCDoc.y"
                                         { free((yyvsp[-1].str)); (yyvsp[-1].str)=NULL; (yyval.doc_node) = doc_node_add_child((yyvsp[-2].doc_node),doc_node_make("STRING",(yyvsp[0].str),NULL)); }
-#line 2826 "SCDoc.tab.cpp"
+#line 2871 "SCDoc/SCDoc.tab.cpp"
     break;
 
   case 135: /* commalist: nocommawords  */
-#line 409 "SCDoc.y"
+#line 437 "SCDoc/SCDoc.y"
                         { (yyval.doc_node) = doc_node_make("(COMMALIST)",NULL,doc_node_make("STRING",(yyvsp[0].str),NULL)); }
-#line 2832 "SCDoc.tab.cpp"
+#line 2877 "SCDoc/SCDoc.tab.cpp"
     break;
 
 
-#line 2836 "SCDoc.tab.cpp"
+#line 2881 "SCDoc/SCDoc.tab.cpp"
 
       default: break;
     }
@@ -3061,7 +3106,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 412 "SCDoc.y"
+#line 440 "SCDoc/SCDoc.y"
 
 
 DocNode * scdoc_parse_run(int mode) {

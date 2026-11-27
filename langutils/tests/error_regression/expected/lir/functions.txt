@@ -1,0 +1,165 @@
+
+
+
+IR GRAPH DUMP 
+
+
+SCClass (5:1): LirFunctions : Object, version 3.16
+|  SCMemberList (5:1)
+|  SCMethodList (5:1)
+|  |  SCMethod (7:5): returns_this, version 3.16: returns_this { |a| a.foo }
+|  |  |  SCArgumentDeclareList (7:21)
+|  |  |  |  SCArgumentDeclare (7:21): a
+|  |  |  SCBody (7:24)
+|  |  |  |  SCMessage (7:24): foo
+|  |  |  |  |  SCRead (7:24): local a, declared (7:21): a
+|  |  SCMethod (9:5): nested, version 3.16: nested { |a| ^{ |b| var c = a + b; { c.bar } } }
+|  |  |  SCArgumentDeclareList (9:15)
+|  |  |  |  SCArgumentDeclare (9:15): a (captured)
+|  |  |  SCBody (9:18)
+|  |  |  |  SCExplicitReturn (9:18)
+|  |  |  |  |  SCFunction (9:19)
+|  |  |  |  |  |  SCArgumentDeclareList (9:22)
+|  |  |  |  |  |  |  SCArgumentDeclare (9:22): b
+|  |  |  |  |  |  SCBody (9:19)
+|  |  |  |  |  |  |  SCVariableDeclare (9:29): c (captured), computed
+|  |  |  |  |  |  |  |  SCMessage (9:33): +
+|  |  |  |  |  |  |  |  |  SCRead (9:33): local a, declared (9:15): a
+|  |  |  |  |  |  |  |  |  SCPositionalArgs (9:33)
+|  |  |  |  |  |  |  |  |  |  SCRead (9:37): local b, declared (9:22): b
+|  |  |  |  |  |  |  SCFunction (9:40)
+|  |  |  |  |  |  |  |  SCBody (9:40)
+|  |  |  |  |  |  |  |  |  SCMessage (9:42): bar
+|  |  |  |  |  |  |  |  |  |  SCRead (9:42): local c, declared (9:29): c = a + b
+|  |  SCMethod (11:5): empty_function, version 3.16: empty_function { ^{} }
+|  |  |  SCBody (11:22)
+|  |  |  |  SCExplicitReturn (11:22)
+|  |  |  |  |  SCFunction (11:23) -> nil
+|  |  |  |  |  |  SCBody (11:23)
+|  |  SCMethod (13:5): function_ending_in_declaration, version 3.16: function_ending_in_declaration { ^{ var x = 1 } }
+|  |  |  SCBody (13:38)
+|  |  |  |  SCExplicitReturn (13:38)
+|  |  |  |  |  SCFunction (13:39)
+|  |  |  |  |  |  SCBody (13:39)
+|  |  |  |  |  |  |  SCVariableDeclare (13:45): x, prototype
+|  |  |  |  |  |  |  |  SCLiteral (13:49) = 1
+|  |  SCMethod (15:5): nested_return, version 3.16: nested_return { |x| if (x) { ^1 }; ^2 }
+|  |  |  SCArgumentDeclareList (15:22)
+|  |  |  |  SCArgumentDeclare (15:22): x
+|  |  |  SCBody (15:25)
+|  |  |  |  SCMessage (15:25): if
+|  |  |  |  |  SCRead (15:29): local x, declared (15:22): x
+|  |  |  |  |  SCPositionalArgs (15:25)
+|  |  |  |  |  |  SCFunction (15:32)
+|  |  |  |  |  |  |  SCBody (15:32)
+|  |  |  |  |  |  |  |  SCExplicitReturn (15:34)
+|  |  |  |  |  |  |  |  |  SCLiteral (15:35) = 1
+|  |  |  |  SCExplicitReturn (15:40)
+|  |  |  |  |  SCLiteral (15:41) = 2
+|  |  SCMethod (18:5): defaults, version 3.16: defaults { |a = 1, b = (a + 1), c| ^[a, b, c] }
+|  |  |  SCArgumentDeclareList (18:17)
+|  |  |  |  SCArgumentDeclare (18:17): a, prototype
+|  |  |  |  |  SCLiteral (18:21) = 1
+|  |  |  |  SCArgumentDeclare (18:24): b, computed
+|  |  |  |  |  SCMessage (18:29): +
+|  |  |  |  |  |  SCRead (18:29): local a, declared (18:17): a = 1
+|  |  |  |  |  |  SCPositionalArgs (18:29)
+|  |  |  |  |  |  |  SCLiteral (18:33) = 1
+|  |  |  |  SCArgumentDeclare (18:37): c
+|  |  |  SCBody (18:40)
+|  |  |  |  SCExplicitReturn (18:40)
+|  |  |  |  |  SCCollection (18:41): Array
+|  |  |  |  |  |  SCRead (18:42): local a, declared (18:17): a = 1
+|  |  |  |  |  |  SCRead (18:45): local b, declared (18:24): b = (a + 1)
+|  |  |  |  |  |  SCRead (18:48): local c, declared (18:37): c
+|  |  SCMethod (20:5): partial_application, version 3.16: partial_application { ^_.foo(1) }
+|  |  |  SCBody (20:27)
+|  |  |  |  SCExplicitReturn (20:27)
+|  |  |  |  |  SCFunction (20:28)
+|  |  |  |  |  |  SCArgumentDeclareList (20:28)
+|  |  |  |  |  |  |  SCArgumentDeclare (20:28): _
+|  |  |  |  |  |  SCBody (20:28)
+|  |  |  |  |  |  |  SCMessage (20:28): foo
+|  |  |  |  |  |  |  |  SCRead (20:28): local _, declared (20:28): _
+|  |  |  |  |  |  |  |  SCPositionalArgs (20:28)
+|  |  |  |  |  |  |  |  |  SCLiteral (20:34) = 1
+
+
+
+LIR DUMP 
+
+
+LirFunctions
+|  function 0 (7:5): method returns_this
+|  |  body 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send foo (positional 0)
+|  |  |  Drop
+|  |  |  ReturnSelf
+|  function 1 (9:5): method nested
+|  |  body 0
+|  |  |  PushFunction 2
+|  |  |  Return
+|  function 2 (9:19)
+|  |  body 0
+|  |  |  PushLocal depth 1, slot 1
+|  |  |  PushLocal depth 0, slot 0
+|  |  |  Send + (positional 1, binary)
+|  |  |  StoreLocal depth 0, slot 1
+|  |  |  Drop
+|  |  |  PushFunction 3
+|  function 3 (9:40)
+|  |  body 0
+|  |  |  PushLocal depth 1, slot 1
+|  |  |  Send bar (positional 0, tail from function)
+|  function 4 (11:5): method empty_function
+|  |  body 0
+|  |  |  PushFunction 5
+|  |  |  Return
+|  function 5 (11:23)
+|  |  body 0
+|  |  |  PushSpecialValue nil
+|  function 6 (13:5): method function_ending_in_declaration
+|  |  body 0
+|  |  |  PushFunction 7
+|  |  |  Return
+|  function 7 (13:39)
+|  |  body 0
+|  |  |  PushSpecialValue nil
+|  function 8 (15:5): method nested_return
+|  |  body 0
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  If then body 1
+|  |  |  Drop
+|  |  |  PushConstant 2
+|  |  |  Return
+|  |  body 1
+|  |  |  PushConstant 1
+|  |  |  Return
+|  function 9 (18:5): method defaults
+|  |  body 0
+|  |  |  DefaultArgument slot 2, body 1
+|  |  |  PushClass Array
+|  |  |  PushInteger 3
+|  |  |  Send new (positional 1, implicit)
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  Send add (positional 1, implicit)
+|  |  |  PushLocal depth 0, slot 2
+|  |  |  Send add (positional 1, implicit)
+|  |  |  PushLocal depth 0, slot 3
+|  |  |  Send add (positional 1, implicit)
+|  |  |  Return
+|  |  body 1
+|  |  |  PushLocal depth 0, slot 1
+|  |  |  PushConstant 1
+|  |  |  Send + (positional 1, binary)
+|  function 10 (20:5): method partial_application
+|  |  body 0
+|  |  |  PushFunction 11
+|  |  |  Return
+|  function 11 (20:28)
+|  |  body 0
+|  |  |  PushLocal depth 0, slot 0
+|  |  |  PushConstant 1
+|  |  |  Send foo (positional 1, tail from function)
+Successfully compiled 16 classes.

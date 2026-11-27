@@ -265,9 +265,9 @@ e = Pbind(
 )
 
 ( // an interactive session
-e.stop
-e.play
-e.reset
+e.stop;
+e.play;
+e.reset;
 
 e.mute; // keeps playing, but replaces notes with rests
 

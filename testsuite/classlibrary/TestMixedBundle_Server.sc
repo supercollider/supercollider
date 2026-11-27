@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestMixedBundle_Server : UnitTest {
 
 	var server, bundle;
@@ -23,12 +24,12 @@ TestMixedBundle_Server : UnitTest {
 	}
 
 	test_addFunction {
-		var evaluated, timeout;
+		var evaluated;
 		var cond = Condition.new;
 
 		bundle.addFunction({ evaluated = true; cond.unhang });
 
-		timeout = fork { 3.wait; cond.unhang };
+		var timeout = fork { 3.wait; cond.unhang };
 		bundle.send(server);
 		cond.hang;
 		timeout.stop;
@@ -37,12 +38,12 @@ TestMixedBundle_Server : UnitTest {
 	}
 
 	test_onSend {
-		var evaluated, timeout;
+		var evaluated;
 		var cond = Condition.new;
 
 		bundle.onSend({ evaluated = true; cond.unhang });
 
-		timeout = fork { 3.wait; cond.unhang };
+		var timeout = fork { 3.wait; cond.unhang };
 		bundle.send(server);
 		cond.hang;
 		timeout.stop;
@@ -51,7 +52,6 @@ TestMixedBundle_Server : UnitTest {
 	}
 
 	test_send_synth_bundle {
-		var timeout;
 		var cond = Condition.new;
 		var synth = Synth.basicNew(\default, server);
 
@@ -59,7 +59,7 @@ TestMixedBundle_Server : UnitTest {
 		bundle.add(synth.newMsg);
 
 		OSCFunc({ cond.unhang }, '/n_go').oneShot;
-		timeout = fork { 3.wait; cond.unhang };
+		var timeout = fork { 3.wait; cond.unhang };
 		bundle.send(server);
 		cond.hang;
 		timeout.stop;

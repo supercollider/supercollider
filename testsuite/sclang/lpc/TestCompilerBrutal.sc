@@ -11,7 +11,7 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 	evaluationTechnique { ^\bytecode }
 
 	getAlphabets {
-		// Note: these lists are based on information in PyrParseNode::initSpecialSelectors() and
+		// Note: these lists are based on information in initSpecialSelectors() (SpecialSelectorsOperatorsAndClasses.cpp) and
 		// Opcodes.h. This preprocessor function is a useful tool here. Modify it for your needs:
 		//   thisProcess.interpreter.preProcessor = {|str| str.quote++".compile.def.dumpopcodes"}
 		// -Brian
@@ -206,7 +206,7 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 			"\"str\"",
 			"$c",
 
-			// special values — see again PyrParseNode.cpp and Opcodes.h
+			// special values — see again SpecialSelectorsOperatorsAndClasses.cpp and Opcodes.h
 			"-1",
 			"0",
 			"1",
@@ -234,7 +234,7 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 			"thisThread"
 		];
 
-		// special classes — see again PyrParseNode.cpp and Opcodes.h
+		// special classes — see again SpecialSelectorsOperatorsAndClasses.cpp and Opcodes.h
 		var classNames = [
 			"Object",
 			"Symbol",

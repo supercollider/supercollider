@@ -7,7 +7,7 @@ Description::
 
 Complex addition:
 
-code::
+teletype::
 
 RealA + RealB, ImagA + ImagB
 

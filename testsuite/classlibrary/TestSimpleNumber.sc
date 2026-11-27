@@ -1,3 +1,4 @@
+//# VERSION 3.16
 // TestSimpleNumber.sc
 // Tests for the SimpleNumber class
 TestSimpleNumber : UnitTest {
@@ -168,10 +169,9 @@ TestSimpleNumber : UnitTest {
 	}
 
 	test_softRound {
-		var val;
 		var testF = {|vals, g, t, s| vals.collect({|num| num.softRound(g, t, s)})};
 
-		val = [-1.3, -1, -0.7, -0.5, -0.3, 0, 0.2, 0.5, 0.7, 1, 1.2, 1.8, 2];
+		var val = [-1.3, -1, -0.7, -0.5, -0.3, 0, 0.2, 0.5, 0.7, 1, 1.2, 1.8, 2];
 		this.assertEquals(testF.(val, 1,0,1), [ -1, -1, -1, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2 ], "Test 1: softRound(1, 0, 1)");
 
 		val = [-1, -0.7, -0.5, -0.3, -0.25, -0.2, 0, 0.2, 0.25, 0.3, 0.6, 0.8, 1];
@@ -205,10 +205,9 @@ TestSimpleNumber : UnitTest {
 	}
 
 	test_snap {
-		var val;
 		var testF = {|vals, g, t, s| vals.collect({|num| num.snap(g, t, s)})};
 
-		val = [-1.3, -1, -0.7, -0.5, -0.3, 0, 0.2, 0.5, 0.7, 1, 1.2, 1.8, 2];
+		var val = [-1.3, -1, -0.7, -0.5, -0.3, 0, 0.2, 0.5, 0.7, 1, 1.2, 1.8, 2];
 		this.assertEquals(testF.(val, 1,1,1), [-1, -1, -1, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2], "Test 1: snap(1, 1, 1)");
 
 		val = [-1, -0.7, -0.5, -0.3, -0.25, -0.2, 0, 0.2, 0.25, 0.3, 0.6, 0.8, 1];

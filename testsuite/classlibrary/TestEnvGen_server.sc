@@ -1,3 +1,4 @@
+//# VERSION 3.16
 TestEnvGen_server : UnitTest {
 
 	var server;
@@ -12,7 +13,7 @@ TestEnvGen_server : UnitTest {
 	}
 
 	test_zero_gate_n_off_not_sent {
-		var synth, n_off_resp, n_end_resp, passed;
+		var n_off_resp, n_end_resp, passed;
 		var cond = Condition.new;
 		var cleanup = {
 			n_off_resp.free;
@@ -20,7 +21,7 @@ TestEnvGen_server : UnitTest {
 		};
 
 		server.bootSync;
-		synth = {
+		var synth = {
 			// doneAction: 1 should reach end *after* doneAction: 2 envelope ends
 			// correct behavior is that '/n_off' is never sent
 			EnvGen.kr(Env([0, 1], [0.2]), gate: 0, doneAction: 1);

@@ -261,7 +261,7 @@ w.refresh;
 ::
 
 section:: X-windows colors
-code::
+teletype::
 'alice blue' -> Color.new255(240, 248, 255),
 'AliceBlue' -> Color.new255(240, 248, 255),
 'antique white' -> Color.new255(250, 235, 215),

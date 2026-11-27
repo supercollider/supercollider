@@ -8,7 +8,7 @@ description::
 The original, and most common spec (see link::Classes/Spec::). A ControlSpec is used by GUI sliders and knobs to specify the range and curve of the controls. ControlSpec may be used in many ways to map from linear 0..1 range to your desired range and back.
 
 The most common way to create a ControlSpec is by
-code::
+code#fragment::
 anObject.asSpec // the object may be an array or a symbol
 ::
 
@@ -92,6 +92,8 @@ ControlSpec.specs[\myFreq] = ControlSpec(0.01, 2000, \exp, 0.01, 440, units: "Hz
 code::
 // array is used as arguments to ControlSpec.new(minval, maxval, warp, step, default)
 [300, 3000, \exponential, 100].asSpec.dump
+::
+teletype::
 Instance of ControlSpec {    (0313FC08, gc = 00, fmt = 00, flg = 00, set = 03)
   instance variables [6]
     minval : Integer 300
@@ -100,9 +102,13 @@ Instance of ControlSpec {    (0313FC08, gc = 00, fmt = 00, flg = 00, set = 03)
     step : Integer 100
     default : Integer 300
 }
+::
 
+code::
 // partially specified ...
 [-48, 48].asSpec.dump
+::
+teletype::
 Instance of ControlSpec {    (0313FF18, gc = 00, fmt = 00, flg = 00, set = 03)
   instance variables [6]
     minval : Integer -48
@@ -111,9 +117,13 @@ Instance of ControlSpec {    (0313FF18, gc = 00, fmt = 00, flg = 00, set = 03)
     step : Float 0
     default : Integer -48
 }
+::
 
+code::
 // a Symbol
 \freq.asSpec.dump
+::
+teletype::
 Instance of ControlSpec {    (180F4910, gc = 3C, fmt = 00, flg = 00, set = 03)
   instance variables [8]
     minval : Integer 20
@@ -125,10 +135,14 @@ Instance of ControlSpec {    (180F4910, gc = 3C, fmt = 00, flg = 00, set = 03)
     clipLo : Integer 20
     clipHi : Integer 20000
 }
+::
 
 
+code::
 // nil becomes a default ControlSpec
 nil.asSpec.dump
+::
+teletype::
 Instance of ControlSpec {    (0313FF18, gc = 00, fmt = 00, flg = 00, set = 03)
   instance variables [6]
     minval : Float 0

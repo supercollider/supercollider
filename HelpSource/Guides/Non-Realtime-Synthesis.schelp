@@ -98,14 +98,14 @@ Consult help files for the server abstraction classes for additional "...Msg" me
 If you save the result of code::Synth.basicNew(...):: in a variable, then you can free it later using either link::Classes/Node#-freeMsg:: or link::Classes/Node#-releaseMsg::, e.g.:
 
 code::
-[1.0, (x = Synth.basicNew(\default, server)).newMsg(args: [freq: 200])],
-[2.0, x.releaseMsg]
+[1.0, (x = Synth.basicNew(\default, s)).newMsg(args: [freq: 200])];
+[2.0, x.releaseMsg];
 ::
 
 For link::Classes/SynthDef::, there is no teletype::addMsg:: or teletype::recvMsg:: method. Add SynthDefs into the Score as follows:
 
 code::
-[0.0, ['/d_recv', SynthDef(...).asBytes]]
+[0.0, ['/d_recv', SynthDef(/* ... */).asBytes]]
 ::
 
 Very large SynthDefs will need to be written to disk and emphasis::not:: rendered as OSC messages in the Score. The SuperCollider language client limits the size of a single OSC message to 65516 bytes. If a SynthDef exceeds this limit, creation of the Score object will fail with the error message teletype::ERROR: makeSynthMsgWithTags: buffer overflow::. Resolve this error message as follows:
@@ -121,7 +121,7 @@ SynthDef(\veryLarge, {
 x = Score([
 	// Do NOT put a \d_recv message for \veryLarge here!
 	// Allow the NRT server to read it from the disk file.
-	...
+	/* ... */
 ]);
 )
 ::
@@ -132,19 +132,19 @@ To render the Score, use the link::Classes/Score#-recordNRT:: method. Here is a 
 
 code::
 (
-a = Score(...);
+a = Score( ~placeholder );
 
 a.recordNRT(
-	oscFilePath: ,
-	outputFilePath: ,
-	inputFilePath: ,
-	sampleRate: ,
-	headerFormat: ,
-	sampleFormat: ,
-	options: ,
-	completionString: ,
-	duration: ,
-	action:
+	oscFilePath: ~filePath,
+	outputFilePath: ~outputFilePath ,
+	inputFilePath: ~inputFilePath,
+	sampleRate: ~sampleRate,
+	headerFormat: ~headerFormat,
+	sampleFormat: ~sampleFormat,
+	options: ~options,
+	completionString: ~completionString,
+	duration: ~duration,
+	action: ~action
 );
 )
 ::
@@ -176,9 +176,9 @@ If you do not give a path, teletype::recordNRT:: will generate one for you in th
 code::
 var oscPath = PathName.tmp +/+ "mytempscore";
 
-x = Score([ ... ]);
+x = Score([ /* ... */ ]);
 
-x.recordNRT(oscFilePath: oscPath, ..., action: {
+x.recordNRT(oscFilePath: oscPath, /* ... */ action: {
 	File.delete(oscPath)
 });
 ::

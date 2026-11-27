@@ -27,7 +27,7 @@ section::ルートノード
 
 １つのシンセしか実行されていない場合、それは次の様にルートノード・グループに接続されています。
 
-code::
+teletype::
     Group (RootNode, ID 0)
       /
      /
@@ -60,7 +60,7 @@ Synth("ringModulation");
 
 ルートノードに二つのシンセが接続されている図は次の様になります。
 
-code::
+teletype::
     Group (RootNode, ID 0)
       /\
      /  \
@@ -155,7 +155,7 @@ Synth.head(s, "firstNode-source");
 
 先の例を記述するためのよりよい方法は、２つのシンセをそれぞれのグループに配置するということです。
 
-code::
+teletype::
     Group (RootNode, ID 0)
       /\
      /  \

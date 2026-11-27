@@ -72,3 +72,17 @@ ErrorGenerator {
     }
 
 }
+
+
+
+BadClass1 {
+    foo {
+        1 +
+    }
+}
+
+BadClass2  {
+    foo { 1 + }
+
+    bar { 10  + { )}
+}

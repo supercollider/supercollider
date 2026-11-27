@@ -254,7 +254,7 @@ a = "abc";
 f = (a : 10); // -> ("abc": 10)
 f["abc"];     // -> nil
               // "abc" is equal to the string stored in a but not identical
-f[a]:         // -> 10
+f[a];         // -> 10
 ::
 
 subsection::Event for specifying different things to happen
@@ -402,7 +402,7 @@ code::~keyName = value:: which is equivalent to code::currentEnvironment.put(key
 We will write code::~keyName:: whenever referring to the value stored at the key keyName in the event.
 
 Here is the definition of Event's play method:
-code::
+code#fragment::
 play {
 	if (parent.isNil) { parent = defaultParentEvent };
 	this.use { ~play.value };
@@ -425,7 +425,7 @@ method::defaultParentEvent
 The default event used in most cases. This is a private class variable. See link::#*default::.
 
 The default parent event provides the collection of default values and functions needed for the different uses of an Event. These defaults are defined in partialEvents that specify distinct aspects of default parent Event:
-code::
+code#fragment::
 playerEvent	// defines ~play, ~type and ~eventTypes
 serverEvent	// server, group, addAction
 durEvent	// duration, tempo and articulation
@@ -446,7 +446,7 @@ list::
 
 The keys in serverEvent provide the values needed to identify the server to be used and where in the tree
 of nodes to place the group.
-code::
+teletype::
 server:		nil,		// if nil, Server.default is used
 instrument:	\default,	// this is the name of a SynthDef
 group:		1,		// nodeID of group on the server
@@ -459,7 +459,7 @@ out:		0,		// usually an output bus number, but depends on the SynthDef
 ## strong::ampEvent keys:::
 
 The ampEvent determines volume. Notice that code::~amp:: is a function that determines its value from code::~db::. The user can choose to specify the amplitude directly by overwriting code::~amp:: or to use a decibel specification by overwriting code::~db::.
-code::
+teletype::
 amp:		#{ ~db.dbamp },	// the amplitude
 db:		-20.0,		// the above described in decibel
 pan:		0.0,		// pan position: -1 left 1 right
@@ -472,7 +472,7 @@ trig:		0.5		// trigger value
 ## strong::durEvent keys:::
 
 The durEvent has keys that determine the timing of a note. Notice that code::~sustain:: is a function that uses code::~legato:: to determine the sustain. Like code::~amp:: this can be overwritten to set the sustain directly.
-code::
+teletype::
 tempo:			nil,	// changes tempo of a TempoClock
 dur:			1.0,	// time until next note (inter-onset time)
 stretch:		1.0,	// inverse of tempo control, specific to the Event's stream
@@ -490,14 +490,14 @@ sendGate:		nil  // override: true == always send a gate-release message; false =
 ## strong::pitchEvent keys:::
 
 The pitchEvent has the most complex system of functions that provide a variety of useful ways to determine pitch:
-code::
+teletype::
 freq (->440)		// determines the pitch directly as a frequency in Hertz
 midinote (-> 60)	// determines pitch as a fractional MIDI note (69 -> 440)
 note (-> 0)		// determines pitch as a scale degree in an ~stepsPerOctave equal tempered scale
 degree: 0		// determines pitch as a scale degree within the scale ~scale
 ::
 The event also provides a set of transposition keys:
-code::
+teletype::
 mtranspose:	0	// modal transposition of degree within a scale
 root:		0.0	// transposes root of the scale
 gtranspose:	0.0	// gamut transposition within the ~stepsPerOctave equal tempered scale
@@ -521,7 +521,7 @@ harmonic:	1.0	// harmonic ratio
 octaveRatio:	2.0	// size of the octave (can be used with the Scale class)
 ::
 The event calculates with these keys to derive parameters needed for the synth:
-code::
+teletype::
 note: #{	// note is the note in halftone steps from the root
 	(~degree + ~mtranspose).degreeToKey(~scale, ~stepsPerOctave);
 }

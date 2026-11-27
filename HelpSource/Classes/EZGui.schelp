@@ -59,10 +59,12 @@ EZGui provides a standard and basic tools for most EZ classes. If you make a new
 
 method:: widget
 Returns the active widget. Subclasses will typically refer to it or ignore it, e.g.:
-code::
+code#class::
 MyEZClass{
+	var widget;
+
 	myOtherMethods{ }
-	....
+
 	listView{ ^widget }
 }
 ::
