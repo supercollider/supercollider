@@ -300,10 +300,10 @@ PyrSlot deduceNameOfFunctionFromParent(PyrParseNode* node) {
                     return slot_node->mSlot;
                 }
             }
-        } else if (const auto sz = strlen(msg->name); msg->name[sz - 1] == '_') {
+        } else if (msg->flags & sym_Setter) {
             // Setter: a.bang_({});
             // Name the function 'bang'.
-            const auto name = getsymlen(msg->name, sz - 1);
+            const auto name = getsymlen(msg->name, msg->length - 1);
             return PyrSlot::make(name);
         }
         // TODO: there are many many things that *could* be added here, what *ought* we do!
@@ -721,12 +721,6 @@ void fillClassPrototypes(CompilerContext& cxt, PyrClassNode* node, PyrClass* cla
     int classVarIndex = 0;
 
 
-    // prepends underscore
-    const auto create_setter_name = [](PyrSymbol* name) {
-        char setterName[256];
-        sprintf(setterName, "%s_", name->name);
-        return getsym(setterName);
-    };
     // sets up method correctly
     const auto create_getter_or_setter_method =
         [&](unsigned char num_args, MethodType method_type, unsigned short special_index, PyrClass* owner_class,
@@ -781,8 +775,7 @@ void fillClassPrototypes(CompilerContext& cxt, PyrClassNode* node, PyrClass* cla
                 if (has_write(vardef->accessor)) {
                     auto* meth = create_getter_or_setter_method(
                         2, methAssignInstVar, instVarIndex, classobj,
-                        PyrSlot::make(create_setter_name(vardef->mVarName->mSlot.getSymbol())),
-                        vardef->mVarName->location);
+                        PyrSlot::make(getsettersym(vardef->mVarName->mSlot.getSymbol())), vardef->mVarName->location);
                     addMethod(classobj, meth);
                 }
                 instVarIndex++;
@@ -810,8 +803,8 @@ void fillClassPrototypes(CompilerContext& cxt, PyrClassNode* node, PyrClass* cla
                 if (has_write(vardef->accessor)) {
                     auto* meth = create_getter_or_setter_method(
                         2, methAssignClassVar, classVarIndex + classobj->classVarIndex.getInt(), metaclassobj,
-                        PyrSlot::make(create_setter_name(vardef->mVarName->mSlot.getSymbol())),
-                        vardef->mVarName->location, classobj->name);
+                        PyrSlot::make(getsettersym(vardef->mVarName->mSlot.getSymbol())), vardef->mVarName->location,
+                        classobj->name);
                     addMethod(metaclassobj, meth);
                 }
                 classVarIndex++;
@@ -907,8 +900,9 @@ void fillClassPrototypes(CompilerContext& cxt, PyrClassNode* node, PyrClass* cla
             const auto f_vardef = nodeCast<PyrVarDefNode>(first);
             const auto l_vardef = nodeCast<PyrVarDefNode>(last);
 
-            const auto className = classobj->name.getSymbol()->name;
-            const auto msg = std::string { "Duplicate identifier within the class hierarchy of '" } + className + "'.";
+            auto msg = std::string { "Duplicate identifier within the class hierarchy of '" };
+            msg += classobj->name.getSymbol()->view();
+            msg += "'.";
 
             const DiagnosticHighlight hg[2] {
                 cxt.textInfo->createDiagnosticHighlight(f_vardef->mVarName->location, "Duplicate here..."),
@@ -1038,7 +1032,7 @@ void PyrClassNode::compile(CompilerContext& cxt, PyrSlot* result) {
                 if (superclassesDiffer) {
                     const auto t = mSuperClassName ? mSuperClassName : mClassName;
                     std::string msg { "This is an intrinsic class, you cannot change the superclass, expected '" };
-                    msg += slotRawSymbol(&classobj->superclass)->name;
+                    msg += slotRawSymbol(&classobj->superclass)->view();
                     msg += "'.";
 
                     cxt.postErrorInCurrentFile(mSuperClassName ? mSuperClassName->location : mClassName->location,
@@ -1077,9 +1071,9 @@ void PyrClassNode::compile(CompilerContext& cxt, PyrSlot* result) {
         PyrSymbol *superClassName, *metaClassName, *metaSuperClassName;
 
         superClassName = superclassobj ? slotRawSymbol(&superclassobj->name) : nullptr;
-        metaClassName = getmetasym(slotRawSymbol(&mClassName->mSlot)->name);
+        metaClassName = getmetasym(slotRawSymbol(&mClassName->mSlot));
         metaClassName->flags |= sym_MetaClass;
-        metaSuperClassName = superClassName ? getmetasym(superClassName->name) : nullptr;
+        metaSuperClassName = superClassName ? getmetasym(superClassName) : nullptr;
 
         metaclassobj = newClassObj(class_class, metaClassName, metaSuperClassName, classClassNumInstVars, 0, 0,
                                    numClassMethods, indexType, 0);
@@ -1539,13 +1533,13 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
         gClassLibraryInfo.incrementMethodOverrideCount();
         // accumulate overwrite message onto the string buffer
         std::string msg;
-        msg.append(slotRawSymbol(&slotRawClass(&oldmethod->ownerclass)->name)->name)
+        msg.append(slotRawSymbol(&slotRawClass(&oldmethod->ownerclass)->name)->view())
             .append(":")
-            .append(slotRawSymbol(&oldmethod->name)->name)
+            .append(slotRawSymbol(&oldmethod->name)->view())
             .append("\t")
-            .append(cxt.textInfo->filePathDescription.name)
+            .append(cxt.textInfo->filePathDescription.view())
             .append("\t")
-            .append(slotRawSymbol(&oldmethod->filePath)->name)
+            .append(slotRawSymbol(&oldmethod->filePath)->view())
             .append("\n");
         gClassLibraryInfo.appendToOverwriteMsg(std::move(msg));
 
@@ -3746,7 +3740,7 @@ void compileAssignVar(CompilerContext& cxt, PyrParseNode* node, PyrSymbol* varNa
     if (std::isupper(varName->name[0])) {
         std::string msg { "You cannot assign to a class name. Did you mean '" };
         msg += std::tolower(varName->name[0]);
-        msg += (varName->name + 1);
+        msg += varName->view().substr(1);
         msg += "'?";
         cxt.postErrorInCurrentFile(node->location, "Attempting to assign to a class name.", std::move(msg));
         return;
@@ -3757,7 +3751,7 @@ void compileAssignVar(CompilerContext& cxt, PyrParseNode* node, PyrSymbol* varNa
         // TODO: once/if variables can be decalred in the middle of the block we can make this message a little
         // clearer.
         std::string msg { "This variable is not defined. Did you mean to declare it with 'var " };
-        msg += varName->name;
+        msg += varName->view();
         msg += "'?";
         cxt.postErrorInCurrentFile(node->location, "Undefined variable.", std::move(msg));
         return;
@@ -3849,7 +3843,6 @@ int PyrSetterNode::isPartialApplication() const {
 
 void PyrSetterNode::compileCall(CompilerContext& cxt, PyrSlot* result) {
     PyrSlot dummy;
-    char setterName[128];
 
     if (nodeListLength(mExpr1) > 1) {
         cxt.postErrorInCurrentFile(mExpr1->location, "Invalid setter call.",
@@ -3862,8 +3855,7 @@ void PyrSetterNode::compileCall(CompilerContext& cxt, PyrSlot* result) {
 
     const int isSuper = isSuperObjNode(mExpr1);
 
-    sprintf(setterName, "%s_", slotRawSymbol(&mSelector->mSlot)->name);
-    PyrSymbol* setterSym = getsym(setterName);
+    PyrSymbol* setterSym = getsettersym(slotRawSymbol(&mSelector->mSlot));
 
     slotRawSymbol(&mSelector->mSlot)->flags |= sym_Called;
     int selType; // TODO: this is not used.

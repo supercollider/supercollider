@@ -28,14 +28,14 @@
 #define SYMBOLCHUNK 32000
 
 SCLANG_DLLEXPORT_C PyrSymbol* getsym(const char* name);
-// name is not nullterminated
+// name does not need to be null terminated. The symbol ends at the first null character, if there is one.
 SCLANG_DLLEXPORT_C PyrSymbol* getsymlen(const char* name, std::size_t len);
 SCLANG_DLLEXPORT_C PyrSymbol* findsym(const char* name);
 
 class SymbolSpace {
 public:
     SymbolSpace(AllocPool* inPool);
-    PyrSymbol* NewSymbol(const char* inName, int inHash, int inLength);
+    PyrSymbol* NewSymbol(const char* inName, int inLength, int inHash);
 
 private:
     AllocPool* mPool;
@@ -55,16 +55,15 @@ public:
 
 private:
     friend PyrSymbol* getsym(const char* name);
+    friend PyrSymbol* getsymlen(const char* name, std::size_t len);
     friend PyrSymbol* findsym(const char* name);
 
-    PyrSymbol* Find(const char* inName);
-    PyrSymbol* Make(const char* inName);
-    PyrSymbol* MakeNew(const char* inName, int inHash, int inLength);
+    PyrSymbol* Make(const char* inName, int inLength, int inHash);
+    PyrSymbol* MakeNew(const char* inName, int inLength, int inHash);
 
-    int StrHash(const char* inName, size_t* outLength);
     void AllocTable();
     void Grow();
-    PyrSymbol* Find(const char* inName, int inHash);
+    PyrSymbol* Find(const char* inName, int inLength, int inHash);
     void Add(PyrSymbol* inSymbol);
     void Rehash(PyrSymbol** inTable, int inSize);
     void MakeEmpty();

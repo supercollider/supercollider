@@ -91,5 +91,7 @@ SCLANG_DLLEXPORT_C void setCommandLine(const char* txt, size_t txtSize, const ch
 SCLANG_DLLEXPORT_C struct VMGlobals* scGlobals();
 
 SCLANG_DLLEXPORT_C struct PyrSymbol* getsym(const char* inName);
-SCLANG_DLLEXPORT_C struct PyrSymbol* getmetasym(const char* name);
+SCLANG_DLLEXPORT_C struct PyrSymbol* getmetasym(const struct PyrSymbol* sym);
+// Appends '_'.
+SCLANG_DLLEXPORT_C struct PyrSymbol* getsettersym(const struct PyrSymbol* sym);
 SCLANG_DLLEXPORT_C struct PyrSymbol* findsym(const char* name);

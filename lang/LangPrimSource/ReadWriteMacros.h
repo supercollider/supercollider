@@ -48,7 +48,7 @@ public:
     void readData(char* data, size_t size);
     uint8 readUInt8();
 
-    void writeData(char* data, size_t size);
+    void writeData(const char* data, size_t size);
     void writeUInt8(uint8 inInt);
 
     // built using core routines
@@ -266,18 +266,6 @@ public:
 
         return d;
     }
-
-    void readSymbol(char* outString) {
-        int length = readUInt8();
-        readData(outString, length);
-        outString[length] = 0;
-    }
-
-    void writeSymbol(char* inString) {
-        size_t length = strlen(inString);
-        writeUInt8((uint8)length);
-        writeData(inString, length);
-    }
 };
 
 
@@ -290,7 +278,7 @@ template <> inline void SC_IOStream<FILE*>::readData(char* data, size_t size) {
 
 template <> inline uint8 SC_IOStream<FILE*>::readUInt8() { return (uint8)fgetc(s); }
 
-template <> inline void SC_IOStream<FILE*>::writeData(char* data, size_t size) { fwrite(data, 1, size, s); }
+template <> inline void SC_IOStream<FILE*>::writeData(const char* data, size_t size) { fwrite(data, 1, size, s); }
 
 template <> inline void SC_IOStream<FILE*>::writeUInt8(uint8 inInt) { fputc(inInt, s); }
 
@@ -302,7 +290,7 @@ template <> inline void SC_IOStream<char*>::readData(char* data, size_t size) {
 
 template <> inline uint8 SC_IOStream<char*>::readUInt8() { return (uint8)*s++; }
 
-template <> inline void SC_IOStream<char*>::writeData(char* data, size_t size) {
+template <> inline void SC_IOStream<char*>::writeData(const char* data, size_t size) {
     memcpy(s, data, size);
     s += size;
 }
