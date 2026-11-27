@@ -38,12 +38,14 @@ jobs:
             shared-libscsynth: true
             ctest: false
 
-          - job-name: ""
+          - job-name: "headless"
             os-version: "26.04"
             c-compiler: "gcc-15"
             cxx-compiler: "g++-15"
             use-syslibs: false
             shared-libscsynth: false
+            install-qt: false
+            extra-cmake-flags: "-D SC_QT=OFF -D SC_IDE=OFF -D NO_X11=ON"
             ctest: false
 
           - job-name: "with ctest"
@@ -109,6 +111,7 @@ jobs:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
+      INSTALL_QT: ${{ matrix.install-qt }} # serialize matrix value so that we can treat no entry as "true"
       CC: ${{ matrix.c-compiler }}
       CXX: ${{ matrix.cxx-compiler }}
       ARTIFACT_FILE: "SuperCollider-${{ inputs.sc-version }}-${{ matrix.artifact-suffix }}"
@@ -128,8 +131,8 @@ jobs:
           path: |
             ~/.ccache
             ~/.cache/ccache
-          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ steps.current-date.outputs.stamp }}
-          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.extra-cmake-flags }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.extra-cmake-flags }}-
 
       - name: install dependencies
         run: |
@@ -148,6 +151,7 @@ jobs:
         run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
 
       - name: install qt from apt
+        if: env.INSTALL_QT != 'false'
         run: |
           sudo apt-get install --yes qt6-base-dev qt6-base-dev-tools qt6-tools-dev qt6-tools-dev-tools qt6-declarative-dev libqt6gui6 libqt6printsupport6 libqt6svgwidgets6 libqt6webenginecore6 qt6-webengine-dev qt6-webengine-dev-tools linguist-qt6 qt6-l10n-tools libglx-dev libgl1-mesa-dev libvulkan-dev libxkbcommon-dev libxcb-xkb-dev libqt6opengl6-dev libqt6svg6-dev
           # some package names differ between ubuntu 24.04 and 26.04 so we try both
@@ -157,13 +161,13 @@ jobs:
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
-          EXTRA_CMAKE_FLAGS=
+          EXTRA_CMAKE_FLAGS="${{ matrix.extra-cmake-flags }}"
 
-          if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON"; fi
+          if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-D SYSTEM_BOOST=ON -D SYSTEM_YAMLCPP=ON $EXTRA_CMAKE_FLAGS"; fi
 
-          if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
+          if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-D LIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
 
-          cmake $EXTRA_CMAKE_FLAGS -DSC_EL=ON -DSC_VIM=ON -DSC_QT=ON -DSC_IDE=ON  -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release .. # --debug-output
+          cmake $EXTRA_CMAKE_FLAGS -D SC_EL=ON -D SC_VIM=ON -D CMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release .. # --debug-output
 
       - name: build
         run: |
