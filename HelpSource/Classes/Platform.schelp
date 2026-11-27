@@ -39,7 +39,9 @@ method:: classLibraryDir
 location of the bundled class library
 
 method:: helpDir
-location of the bundled help files
+Returns the system-wide directory containing the help source files.
+This method will be deprecated.
+Use link::Classes/SCDoc#*helpSourceDir:: for the help source files and link::Classes/SCDoc#*helpTargetDir:: for the directories containing the rendered HTML files.
 
 method:: systemAppSupportDir
 system application support directory
