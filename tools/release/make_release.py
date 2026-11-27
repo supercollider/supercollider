@@ -71,7 +71,7 @@ def main(version: Version):
         "Have you added a release entry to the AppStream/Flatpak metafile located at platform/linux/online.supercollider.SuperCollider.metainfo.xml?",
 
         "Have you updated SCVersion.txt?",
-        "Have you updated CHANGELOG.md with information about merged PRs?",
+        "Have you updated CHANGELOG.md with information about merged PRs? Check the changelog folder and incorporate them if necessary!",
         "Have you updated CHANGELOG.md with information about platform support changes?",
 
         f"Have you made sure the schelp file '{schelp_news_page_title}' is up to date with the changelog by running the conversion script (`package/changelog_to_schelp.sh`)?",
@@ -108,8 +108,9 @@ def main(version: Version):
         "Did you announce on Reddit (/r/supercollider)?",
 
         ["If it's a beta release, did you merge the current release branch into develop, resolving possible conflict in SCVersion.txt? Do not merge the release branch into main yet!", f"https://github.com/supercollider/supercollider/compare/develop...{release_branch_name}"],
-        ["If it's a proper release, did you merge main into develop?", "https://github.com/supercollider/supercollider/compare/develop...main"]
-            ]
+        ["If it's a proper release, did you merge main into develop?", "https://github.com/supercollider/supercollider/compare/develop...main"],
+        "If it's a proper release, did you cleaned the changelog folder? Clean it and make it a new commit on develop.",
+    ]
 
     stack = deque()
     for prompt in prompts:
