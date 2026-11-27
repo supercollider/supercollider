@@ -54,7 +54,6 @@
 
 std::unique_ptr<InPort::UDP> gUDPport {};
 std::vector<std::unique_ptr<InPort::UDPCustom>> gCustomUdpPorts;
-std::vector<std::unique_ptr<InPort::UDPCustom>> gCustomTcpPorts;
 #endif // NO_NETWORKING
 
 #ifndef NO_INTERNAL_SERVER
@@ -909,7 +908,7 @@ void init_OSC(int port) {
     } catch (std::exception const& e) { postfl("No networking: %s", e.what()); }
 }
 
-int prOpenOSCUDPPort(VMGlobals* g, int numArgsPushed) {
+template <HandlerType type> int prOpenCustomUDPPort(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
     PyrSlot* b = g->sp;
     int port;
@@ -917,34 +916,10 @@ int prOpenOSCUDPPort(VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
 
-    std::unique_ptr<InPort::UDPCustom> newUDPport;
-
     try {
-        SetTrue(a);
-        newUDPport = std::make_unique<InPort::UDPCustom>(port, HandlerType::OSC);
+        auto newUDPport = std::make_unique<InPort::UDPCustom>(port, type);
         gCustomUdpPorts.push_back(std::move(newUDPport));
-    } catch (...) {
-        SetFalse(a);
-        postfl("Could not bind to requested port. This may mean it is in use already by another application, or the "
-               "application does not have permissions to open a port.\n");
-    }
-    return errNone;
-}
-
-int prOpenRawUDPPort(VMGlobals* g, int numArgsPushed) {
-    PyrSlot* a = g->sp - 1;
-    PyrSlot* b = g->sp;
-    int port;
-    int err = slotIntVal(b, &port);
-    if (err)
-        return err;
-
-    std::unique_ptr<InPort::UDPCustom> newTCPPort;
-
-    try {
         SetTrue(a);
-        newTCPPort = std::make_unique<InPort::UDPCustom>(port, HandlerType::Raw);
-        gCustomTcpPorts.push_back(std::move(newTCPPort));
     } catch (...) {
         SetFalse(a);
         postfl("Could not bind to requested port. This may mean it is in use already by another application, or the "
@@ -953,10 +928,7 @@ int prOpenRawUDPPort(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-void closeAllCustomPorts() {
-    gCustomUdpPorts.clear();
-    gCustomTcpPorts.clear();
-}
+void closeAllCustomPorts() { gCustomUdpPorts.clear(); }
 
 void cleanup_OSC() {
     postfl("cleaning up OSC\n");
@@ -1651,8 +1623,8 @@ void init_OSC_primitives() {
     definePrimitive(base, index++, "_Array_OSCBytes", prArray_OSCBytes, 1, 0);
     definePrimitive(base, index++, "_OSCBytes_Array", prOSCBytes_Array, 1, 0);
 #ifndef NO_NETWORKING
-    definePrimitive(base, index++, "_OpenOSCUDPPort", prOpenOSCUDPPort, 2, 0);
-    definePrimitive(base, index++, "_OpenRawUDPPort", prOpenRawUDPPort, 2, 0);
+    definePrimitive(base, index++, "_OpenOSCUDPPort", prOpenCustomUDPPort<HandlerType::OSC>, 2, 0);
+    definePrimitive(base, index++, "_OpenRawUDPPort", prOpenCustomUDPPort<HandlerType::Raw>, 2, 0);
 #endif
     definePrimitive(base, index++, "_GetHostByName", prGetHostByName, 1, 0);
     definePrimitive(base, index++, "_GetLangPort", prGetLangPort, 1, 0);
