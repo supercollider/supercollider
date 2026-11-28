@@ -2175,7 +2175,7 @@ inline double sc_loop(Unit* unit, double in, double hi, int loop) {
         if (bufnum >= world->mNumSndBufs) {                                                                            \
             int localBufNum = bufnum - world->mNumSndBufs;                                                             \
             Graph* parent = unit->mParent;                                                                             \
-            if (localBufNum <= parent->localBufNum) {                                                                  \
+            if (localBufNum < parent->mNumLocalSndBufs) {                                                              \
                 unit->m_buf = parent->mLocalSndBufs + localBufNum;                                                     \
             } else {                                                                                                   \
                 bufnum = 0;                                                                                            \
@@ -2212,7 +2212,7 @@ inline double sc_loop(Unit* unit, double in, double hi, int loop) {
         if (bufnum >= world->mNumSndBufs) {                                                                            \
             int localBufNum = bufnum - world->mNumSndBufs;                                                             \
             Graph* parent = unit->mParent;                                                                             \
-            if (localBufNum <= parent->localBufNum) {                                                                  \
+            if (localBufNum < parent->mNumLocalSndBufs) {                                                              \
                 unit->m_buf = parent->mLocalSndBufs + localBufNum;                                                     \
             } else {                                                                                                   \
                 bufnum = 0;                                                                                            \

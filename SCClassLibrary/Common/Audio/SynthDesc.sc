@@ -244,12 +244,15 @@ SynthDesc {
 				stream.read(variantValues);
 			};
 
-			if (version > 2) {
-				// read reblock and resample fields, just to detect corrupt SynthDef files.
+			if (version >= 3) {
+				// read fields, just to detect corrupt SynthDef files.
 				stream.getInt32; // block size value
 				stream.getInt32; // block size control index
 				stream.getFloat; // resample factor
 				stream.getInt32; // resample control index
+				stream.getInt32; // local buffers
+				stream.getInt32; // local audio bus channels
+				stream.getInt32; // local control bus channels
 				// just ignore all remaining (optional) fields.
 				// these will be skipped in the readSynthDef3 method.
 			};

@@ -679,7 +679,7 @@ void PV_Copy_next(PV_Unit* unit, int inNumSamples) {
     if (ibufnum1 >= world->mNumSndBufs) {
         int localBufNum = ibufnum1 - world->mNumSndBufs;
         Graph* parent = unit->mParent;
-        if (localBufNum <= parent->localBufNum) {
+        if (localBufNum < parent->mNumLocalSndBufs) {
             buf1 = parent->mLocalSndBufs + localBufNum;
         } else {
             buf1 = world->mSndBufs;
@@ -690,7 +690,7 @@ void PV_Copy_next(PV_Unit* unit, int inNumSamples) {
     if (ibufnum2 >= world->mNumSndBufs) {
         int localBufNum = ibufnum2 - world->mNumSndBufs;
         Graph* parent = unit->mParent;
-        if (localBufNum <= parent->localBufNum) {
+        if (localBufNum < parent->mNumLocalSndBufs) {
             buf2 = parent->mLocalSndBufs + localBufNum;
         } else {
             buf2 = world->mSndBufs;

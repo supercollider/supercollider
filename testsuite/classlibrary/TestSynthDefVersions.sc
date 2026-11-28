@@ -1,6 +1,15 @@
 TestSynthDefVersions : UnitTest {
+	classvar synthDefClasses;
+
+	*setUpClass {
+		 synthDefClasses = [ SynthDefV1, SynthDefV2, SynthDef ];
+	}
+
+	*synthDefClassForVersion { |version|
+		^synthDefClasses[version-1];
+	}
+
 	compareSynthDescs { |a, b|
-		(a.name + b.name);
 		^(a.name == b.name) and: {
 			a.inputs.every { |input, i|
 				input.compareObject(b.inputs[i])
@@ -17,10 +26,10 @@ TestSynthDefVersions : UnitTest {
 	}
 
 	readAndWriteSynthDefs { |version|
-		var defArray, stream, descArray;
+		var defArray, stream, descArray, result;
 		var libName = thisMethod.name.asSymbol;
 		var lib = SynthDescLib(libName);
-		var defClass = if (version > 1) { SynthDef } { SynthDefOld };
+		var defClass = this.class.synthDefClassForVersion(version);
 		var graphFunc = { |in, out, freq=440, amp=1.0| Out.ar(out, (SinOsc.ar(freq) * In.ar(in)) * amp) };
 		var variants = (a: [ freq: 220 ], b: [ freq: 100 ], c: [ freq: 600 ]);
 
@@ -34,28 +43,24 @@ TestSynthDefVersions : UnitTest {
 
 		this.assertNoException({
 			stream = CollStream.on(Int8Array.new(256));
-			if (version > 1) {
-				defArray.writeDef(stream, version);
-			} {
-				defArray.writeDefOld(stream);
-			};
+			defArray.writeDef(stream, version);
 			stream.pos = 0; // rewind
 
 			this.assertNoException({
 				var set = lib.readStream(stream);
-				var array = set.asArray.sort { |a, b| a.name < b.name };
+				var array = set.asArray.sort { |a, b| a.name <= b.name };
 				var isEqual = array.every { |desc, i|
 					this.compareSynthDescs(desc, descArray[i])
 				};
 
 				this.assert(isEqual, "reconstructed SynthDesc (version %) should be equal to original SynthDesc".format(version));
 
-				^array;
+				result = array;
 			}, "SynthDef version % can be read from stream".format(version));
 
 		}, "SynthDef version % can be written to stream".format(version));
 
-		^nil;
+		^result;
 	}
 
 	test_readAndWriteSynthDefs {
@@ -74,7 +79,7 @@ TestSynthDefVersions : UnitTest {
 	readCorruptedSynthDefs { |version|
 		var defArray, data, stream, libName = thisMethod.name.asSymbol;
 		var lib = SynthDescLib(libName);
-		var defClass = if (version > 1) { SynthDef } { SynthDefOld };
+		var defClass = this.class.synthDefClassForVersion(version);
 		var graphFunc = { |in, out, freq=440, amp=1.0| Out.ar(out, (SinOsc.ar(freq) * In.ar(in)) * amp) };
 		var variants = (a: [ freq: 220 ], b: [ freq: 100 ], c: [ freq: 600 ]);
 		var didReadStream;
@@ -85,11 +90,7 @@ TestSynthDefVersions : UnitTest {
 		];
 
 		stream = CollStream.on(Int8Array(256));
-		if (version > 1) {
-			defArray.writeDef(stream, version);
-		} {
-			defArray.writeDefOld(stream);
-		};
+		defArray.writeDef(stream, version);
 		data = stream.collection.copy;
 		// remove the last 4 bytes
 		data = data.extend(data.size - 4);
@@ -99,13 +100,12 @@ TestSynthDefVersions : UnitTest {
 		while { data.size > 1 } {
 			stream = CollStream(data);
 			try {
-				SynthDescLib.global.readStream(stream);
+				lib.readStream(stream);
 				didReadStream = true;
 			};
 			data = data.extend(data.size div: 2);
 		};
 		this.assert(didReadStream.not, "passing corrupted SynthDef v% data to SynthDescLib-readStream must throw an Error".format(version));
-		"done".postln;
 	}
 
 	test_readCorruptedSynthDefs {

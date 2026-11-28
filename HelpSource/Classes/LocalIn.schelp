@@ -5,15 +5,20 @@ categories::  UGens>InOut
 
 Description::
 
-LocalIn defines buses that are local to the enclosing synth. These are
-like the global buses, but are more convenient if you want to implement a
-self contained effect that uses a feedback processing loop.
+LocalIn reads from buses that are local to the enclosing Synth.
+These are like the global buses, but are more convenient if you want to
+implement a self contained effect that uses a feedback processing loop.
 
-There can only be one audio rate and one control rate LocalIn per
-SynthDef. The audio can be written to the bus using
-link::Classes/LocalOut:: .
+note::Local buses are necessary for feedback in a reblocked/upsampled Synth!
+Global buses cannot be used for that purpose.::
 
-warning::
+The local bus channels are allocated automatically. You can have as many
+LocalIn instances as you wanted, but note that they always refer to the same channels.
+(Before SC 3.15 you could only have a single audio-rate and control-rate instance.)
+
+Audio can be written to the bus with link::Classes/LocalOut::.
+
+note::
 Audio written to a  link::Classes/LocalOut::  will not be read by a
 corresponding LocalIn until the next cycle, i.e. one block size of
 samples later. Because of this it is important to take this additional

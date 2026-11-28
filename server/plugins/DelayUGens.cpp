@@ -480,7 +480,7 @@ void NumRunningSynths_next(Unit* unit, int inNumSamples) { ZOUT0(0) = unit->mWor
     if (bufnum >= world->mNumSndBufs) {                                                                                \
         int localBufNum = bufnum - world->mNumSndBufs;                                                                 \
         Graph* parent = unit->mParent;                                                                                 \
-        if (localBufNum <= parent->localBufNum) {                                                                      \
+        if (localBufNum < parent->mNumLocalSndBufs) {                                                                  \
             buf = parent->mLocalSndBufs + localBufNum;                                                                 \
         } else {                                                                                                       \
             bufnum = 0;                                                                                                \
@@ -577,11 +577,23 @@ void BufRateScale_Ctor(BufInfoUnit* unit) {
 
 inline int32 BUFMASK(int32 x) { return (1 << (31 - CLZ(x))) - 1; }
 
+// NOTE: LocalBuf_allocBuffer() can't return a bool because of ClearUnitIfMemFailed.
+// Instead the caller has to check unit->check for success or failure.
 static void LocalBuf_allocBuffer(LocalBuf* unit, SndBuf* buf, int numChannels, int numFrames) {
+    if (numChannels < 1) {
+        Print("ERROR: LocalBuf: bad channel count (%d)\n", numChannels);
+        return;
+    }
+    if (numFrames < 1) {
+        Print("ERROR: LocalBuf: bad frame count (%d)\n", numFrames);
+        return;
+    }
+
     int numSamples = numFrames * numChannels;
     // Print("bufnum: %i, allocating %i channels and %i frames. memsize: %i\n", (int)unit->m_fbufnum, numChannels,
     // numFrames, numSamples * sizeof(float));
-    const int alignment = 128; // in bytes
+    // Align to 32 bytes for AVX2 instructions
+    const int alignment = 32; // in bytes
     unit->chunk = (float*)RTAlloc(unit->mWorld, numSamples * sizeof(float) + alignment);
     ClearUnitIfMemFailed(unit->chunk);
 
@@ -601,58 +613,58 @@ static void LocalBuf_allocBuffer(LocalBuf* unit, SndBuf* buf, int numChannels, i
 
 void LocalBuf_Ctor(LocalBuf* unit) {
     Graph* parent = unit->mParent;
+    unit->m_buf = nullptr;
     unit->chunk = nullptr;
-    int offset = unit->mWorld->mNumSndBufs;
-    int bufnum = parent->localBufNum;
-    float fbufnum;
+    float fbufnum = -1.f;
 
-    if (parent->localBufNum >= parent->localMaxBufNum) {
-        fbufnum = -1.f;
-        if (unit->mWorld->mVerbosity > -2)
-            printf("warning: LocalBuf tried to allocate too many local buffers.\n");
-    } else {
-        fbufnum = (float)(bufnum + offset);
+    if (parent->mNumLocalSndBufs == 0) {
+        Print("ERROR: LocalBuf: Synth without local buffers. This SynthDef has probably been created "
+              "with an older SuperCollider version. Please recreate it with a recent version.\n");
+        OUT0(0) = fbufnum;
+        return;
+    }
+
+    if (unit->mNumInputs < 3) {
+        Print("ERROR: LocalBuf: need at least 3 inputs. Maybe your Client is not fully compatible with "
+              "SC 3.15. Please report this issue to the Client developers!\n");
+        OUT0(0) = fbufnum;
+        return;
+    }
+
+    int32 bufnum = (int32)IN0(0);
+    if (bufnum >= 0 && bufnum < parent->mNumLocalSndBufs) {
         unit->m_buf = parent->mLocalSndBufs + bufnum;
-        parent->localBufNum = parent->localBufNum + 1;
 
-        LocalBuf_allocBuffer(unit, unit->m_buf, (int)IN0(0), (int)IN0(1));
-        if (!unit->chunk)
-            fbufnum = -1.f;
+        if (unit->m_buf->data == nullptr) {
+            LocalBuf_allocBuffer(unit, unit->m_buf, (int)IN0(1), (int)IN0(2));
+            if (unit->chunk) {
+                fbufnum = (float)(unit->mWorld->mNumSndBufs + bufnum);
+            }
+        } else if (unit->mWorld->mVerbosity > -2) {
+            Print("WARNING: LocalBuf: buffer %d already allocated.\n", bufnum);
+        }
+    } else {
+        if (unit->mWorld->mVerbosity > -2)
+            Print("WARNING: LocalBuf: bufnum %d out of range.\n", bufnum);
     }
 
     OUT0(0) = fbufnum;
 }
 
 void LocalBuf_Dtor(LocalBuf* unit) {
-    RTFree(unit->mWorld, unit->chunk);
-    if (unit->mParent->localBufNum <= 1) { // only the last time.
-        for (int i = 0; i != unit->mParent->localMaxBufNum; ++i)
-            unit->mParent->mLocalSndBufs[i].~SndBuf();
-        RTFree(unit->mWorld, unit->mParent->mLocalSndBufs);
-        unit->mParent->localMaxBufNum = 0;
-    } else
-        unit->mParent->localBufNum = unit->mParent->localBufNum - 1;
+    if (unit->m_buf) {
+        RTFree(unit->mWorld, unit->chunk);
+        // mark as deleted! This helps us check for memory leaks in the Graph destructor.
+        unit->m_buf->data = nullptr;
+    }
 }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void MaxLocalBufs_Ctor(MaxLocalBufs* unit) {
-    Graph* parent = unit->mParent;
-
-    int maxBufNum = (int)(IN0(0) + .5f);
-    if (!parent->localMaxBufNum) {
-        parent->mLocalSndBufs = (SndBuf*)RTAlloc(unit->mWorld, maxBufNum * sizeof(SndBuf));
-        ClearUnitIfMemFailed(parent->mLocalSndBufs);
-#ifdef SUPERNOVA
-        for (int i = 0; i != maxBufNum; ++i)
-            new (&parent->mLocalSndBufs[i]) SndBuf();
-#endif
-        parent->localMaxBufNum = maxBufNum;
-    } else
-        printf("warning: MaxLocalBufs - maximum number of local buffers is already declared (%i) and must remain "
-               "unchanged.\n",
-               parent->localMaxBufNum);
+    Print("WARNING: MaxLocalBufs UGen has been removed in SC 3.15. This SynthDef has probably been created "
+          "with an older SuperCollider version. Please recreate it with a recent version.\n");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5273,7 +5285,7 @@ void GrainTap_Ctor(GrainTap* unit) {
     if (bufnum >= world->mNumSndBufs) {                                                                                \
         int localBufNum = bufnum - numBufs;                                                                            \
         Graph* parent = unit->mParent;                                                                                 \
-        if (localBufNum <= parent->localBufNum) {                                                                      \
+        if (localBufNum < parent->mNumLocalSndBufs) {                                                                  \
             buf = parent->mLocalSndBufs + localBufNum;                                                                 \
         } else {                                                                                                       \
             continue;                                                                                                  \
@@ -6565,7 +6577,7 @@ void Pluck_next_ka_z(Pluck* unit, int inNumSamples) {
     if (bufnum >= world->mNumSndBufs) {                                                                                \
         int localBufNum = bufnum - world->mNumSndBufs;                                                                 \
         Graph* parent = unit->mParent;                                                                                 \
-        if (localBufNum <= parent->localBufNum) {                                                                      \
+        if (localBufNum < parent->mNumLocalSndBufs) {                                                                  \
             unit->m_buf = parent->mLocalSndBufs + localBufNum;                                                         \
         } else {                                                                                                       \
             bufnum = 0;                                                                                                \

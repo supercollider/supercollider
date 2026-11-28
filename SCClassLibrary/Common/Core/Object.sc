@@ -685,7 +685,7 @@ Object : AbstractObjectExperimental {
 		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
 	}
 
-	writeDefFile { arg name, dir, overwrite = (true);
+	writeDefFile { arg name, dir, overwrite = (true), version = (3);
 
 		StartUp.defer { // make sure the synth defs are written to the right path
 			var file;
@@ -697,7 +697,7 @@ Object : AbstractObjectExperimental {
 					file = File(name, "w");
 					protect {
 						AbstractMDPlugin.clearMetadata(name);
-						this.asArray.writeDef(file);
+						this.asArray.writeDef(file, version);
 					}{
 						file.close;
 					}

@@ -14,6 +14,10 @@ argument:: numChannels
 number of channels for multiple channel buffers (default: 1)
 returns:: a new buffer — the ugen outputs its buffer number and can thus be used in any other ugen that requires a buffer number input.
 
+warning::The buffer data is strong::not:: zeroed automatically and therefore initially contains garbage!
+The user is expected to clear the buffer themselves if necessary (see link::#-clear::).
+::
+
 method:: newFrom
 Allocates a new buffer from a given list of values
 argument:: list
@@ -33,11 +37,6 @@ discussion::
 If list is smaller than numFrames, it will only set
 part of the buffer. The list may be two-dimensional for numChannels > 1.
 offset is the starting index (default: 0)
-warning::
-SynthDef permits a maximum of 65536 (2**16) unique constant values in one definition. A very large array of distinct values can corrupt the SynthDef's binary format. If you need a large buffer to be pre-initialized with signal data, it is strongly recommended to use link::Classes/Buffer:: instead.
-::
-
-If the buffer is large but holds a smaller number of unique values, e.g. code::Array.fill(88200, { #[0, 0.25, 0.5, 0.75, 1.0].choose })::, this is no problem. SynthDef compacts the large array for the list of constants.
 
 code::
 SynthDef(\bigLocalBuf, {
@@ -49,13 +48,13 @@ SynthDescLib.at(\bigLocalBuf).constants;
 ::
 
 method:: clear
-set the buffer slot to zero.
+set the buffer data to zero.
 discussion::
-This is important when randomly accessing buffer slots
-(e.g. with a BufRd) or not overwriting them. Clear is not an efficient real time operation
-for larger buffers, so it should be only used when really needed - but then it is essential:
-a LocalBuf is "created" in each new synth, and it may reuse old space. So if an older
-synth has already ended, this part of memory may be the same as the new synth's.
+A LocalBuf is created in each new Synth and the buffer data is strong::not:: zeroed automatically.
+This means that the buffer initially contains garbage, unless it is explicitly initialized, e.g. with link::#-newFrom:: or link::#-set::.
+This can be a problem with certain access patterns, for example, when randomly reading buffer frames with a BufRd.
+
+code::clear:: is not an efficient real time operation for larger buffers, so it should be only used when really needed - but then it is essential.
 
 examples::
 code::

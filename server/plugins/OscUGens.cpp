@@ -296,7 +296,7 @@ force_inline bool UnitGetTable(BufUnit* unit, int inNumSamples, const SndBuf*& b
         if (bufnum >= world->mNumSndBufs) {
             uint32 localBufNum = bufnum - world->mNumSndBufs;
             Graph* parent = unit->mParent;
-            if (localBufNum <= parent->localBufNum)
+            if (localBufNum < parent->mNumLocalSndBufs)
                 unit->m_buf = parent->mLocalSndBufs + localBufNum;
             else {
                 bufnum = 0;
@@ -1419,7 +1419,7 @@ void Osc_Ctor(Osc* unit) {
     if (bufnum >= world->mNumSndBufs) {
         int localBufNum = bufnum - world->mNumSndBufs;
         Graph* parent = unit->mParent;
-        if (localBufNum <= parent->localBufNum) {
+        if (localBufNum < parent->mNumLocalSndBufs) {
             buf = unit->m_buf = parent->mLocalSndBufs + localBufNum;
         } else {
             buf = unit->m_buf = world->mSndBufs;
@@ -1534,7 +1534,7 @@ void OscN_Ctor(OscN* unit) {
     if (bufnum >= world->mNumSndBufs) {
         int localBufNum = bufnum - world->mNumSndBufs;
         Graph* parent = unit->mParent;
-        if (localBufNum <= parent->localBufNum) {
+        if (localBufNum < parent->mNumLocalSndBufs) {
             buf = unit->m_buf = parent->mLocalSndBufs + localBufNum;
         } else {
             buf = unit->m_buf = world->mSndBufs;
@@ -1749,7 +1749,7 @@ static inline const SndBuf* VOscGetBuf(int& bufnum, World* world, Unit* unit) {
     if (bufnum + 1 >= world->mNumSndBufs) {
         int localBufNum = bufnum - world->mNumSndBufs;
         Graph* parent = unit->mParent;
-        if (localBufNum <= parent->localBufNum) {
+        if (localBufNum < parent->mNumLocalSndBufs) {
             bufs = parent->mLocalSndBufs + localBufNum;
         } else {
             bufnum = 0;

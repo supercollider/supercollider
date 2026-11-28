@@ -3,4 +3,5 @@ summary:: Set the maximum number of local buffers in a synth
 categories:: UGens>InOut
 
 description::
-This class is used internally by LocalBuf, sets the maximum number of local buffers in a synth.
+Before SC 3.15 this class has been used internally to implementent local Buffers.
+It is only kept around for backwards compatibility with older SynthDef file versions.

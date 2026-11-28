@@ -106,16 +106,11 @@ struct OffsetOut : public IOUnit {
 
 struct LocalIn : public Unit {
     float* m_bus;
-    // IMPORTANT: use a 64-bit counter to prevent
-    // overflow in case we need to reblock/resample!
     int64* m_busTouched;
-    float* m_realData;
 };
 
 struct LocalOut : Unit {
     float* m_bus;
-    // IMPORTANT: use a 64-bit counter to prevent
-    // overflow in case we need to reblock/resample!
     int64* m_busTouched;
 };
 
@@ -2289,12 +2284,11 @@ FLATTEN void LocalIn_next_a_nova(LocalIn* unit, int inNumSamples) {
         if (diff == 1 || diff == 0)
             nova::copyvec_simd(out, in, inNumSamples);
         else // get default value from UGen input
-            Fill(inNumSamples, out, IN0(i));
+            nova::setvec_simd(out, IN0(i), inNumSamples);
     }
 }
 
 FLATTEN void LocalIn_next_a_nova_64(LocalIn* unit, int inNumSamples) {
-    World* world = unit->mWorld;
     int bufLength = unit->mBufLength;
     int numChannels = unit->mNumOutputs;
 
@@ -2308,7 +2302,7 @@ FLATTEN void LocalIn_next_a_nova_64(LocalIn* unit, int inNumSamples) {
         if (diff == 1 || diff == 0)
             nova::copyvec_simd<64>(out, in);
         else // get default value from UGen input
-            Fill(inNumSamples, out, IN0(i));
+            nova::setvec_simd<64>(out, IN0(i));
     }
 }
 #endif
@@ -2348,32 +2342,33 @@ void LocalIn_next_k(LocalIn* unit, int inNumSamples) {
     }
 }
 
+void printMissingLocalBusErrorMessage(Unit* unit, const char* name, const char* rate) {
+    Print("ERROR: %s: Synth without local %s buses. This SynthDef has probably been created "
+          " with an older SuperCollider version. Please recreate it with a recent version.\n",
+          name, rate);
+}
+
 void LocalIn_Ctor(LocalIn* unit) {
     // Print("->LocalIn_Ctor\n");
     int numChannels = unit->mNumOutputs;
-
-    World* world = unit->mWorld;
-
-    int busDataSize = numChannels * BUFLENGTH;
-
-    // align the buffer to 32 bytes so that we can use avx instructions
-    unit->m_realData =
-        (float*)RTAlloc(world, busDataSize * sizeof(float) + numChannels * sizeof(int64) + 32 * sizeof(float));
-    ClearUnitIfMemFailed(unit->m_realData);
-    size_t alignment = (uintptr_t)unit->m_realData & 31;
-
-    unit->m_bus = alignment ? (float*)(((uintptr_t)unit->m_realData + 32) & ~31) : unit->m_realData;
-
-    unit->m_busTouched = (int64*)(unit->m_bus + busDataSize);
-    std::fill_n(unit->m_busTouched, numChannels, -1);
+    assert(numChannels > 0);
+    assert(unit->mNumInputs == numChannels);
 
     if (unit->mCalcRate == calc_FullRate) {
-        if (unit->mParent->mLocalAudioBusUnit) {
+        // local audio bus
+        if (auto busChannels = unit->mParent->mNumLocalAudioBusChannels; numChannels > busChannels) {
+            if (busChannels == 0)
+                printMissingLocalBusErrorMessage(unit, "LocalIn", "audio");
+            else
+                Print("ERROR: LocalIn: channel count (%d) out of range.\n", numChannels);
             SETCALC(ClearUnitOutputs);
             ClearUnitOutputs(unit, 1);
             return;
         }
-        unit->mParent->mLocalAudioBusUnit = unit;
+
+        unit->m_bus = unit->mParent->mLocalAudioBus;
+        unit->m_busTouched = unit->mParent->mLocalAudioBusTouched;
+
         if (REBLOCK_OR_RESAMPLE)
             SETCALC(LocalIn_next_a_reblock);
 #ifdef NOVA_SIMD
@@ -2386,12 +2381,20 @@ void LocalIn_Ctor(LocalIn* unit) {
             SETCALC(LocalIn_next_a);
         LocalIn_next_a(unit, 1);
     } else {
-        if (unit->mParent->mLocalControlBusUnit) {
+        // local control bus
+        if (auto busChannels = unit->mParent->mNumLocalControlBusChannels; numChannels > busChannels) {
+            if (busChannels == 0)
+                printMissingLocalBusErrorMessage(unit, "LocalIn", "control");
+            else
+                Print("ERROR: LocalIn: channel count (%d) out of range.\n", numChannels);
             SETCALC(ClearUnitOutputs);
             ClearUnitOutputs(unit, 1);
             return;
         }
-        unit->mParent->mLocalControlBusUnit = unit;
+
+        unit->m_bus = unit->mParent->mLocalControlBus;
+        unit->m_busTouched = unit->mParent->mLocalControlBusTouched;
+
         if (REBLOCK_OR_RESAMPLE)
             SETCALC(LocalIn_next_k_reblock);
         else
@@ -2401,8 +2404,6 @@ void LocalIn_Ctor(LocalIn* unit) {
     // Print("<-LocalIn_Ctor\n");
 }
 
-void LocalIn_Dtor(LocalIn* unit) { RTFree(unit->mWorld, unit->m_realData); }
-
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void LocalOut_next_a_reblock(LocalOut* unit, int inNumSamples) {
@@ -2410,15 +2411,8 @@ void LocalOut_next_a_reblock(LocalOut* unit, int inNumSamples) {
     int bufLength = unit->mBufLength;
     int numChannels = unit->mNumInputs;
 
-    LocalIn* localIn = (LocalIn*)unit->mParent->mLocalAudioBusUnit;
-    if (!localIn)
-        return;
-
-    float* out = localIn->m_bus;
-    if ((out == nullptr) || (numChannels != localIn->mNumOutputs))
-        return;
-
-    int64* touched = localIn->m_busTouched;
+    float* out = unit->m_bus;
+    int64* touched = unit->m_busTouched;
     int64 bufCounter = unit->mWorld->mBufCounter;
     int64 tickCounter = unit->mParent->mTickCounter;
     int64 numTicks = unit->mParent->mNumTicks;
@@ -2442,17 +2436,10 @@ void LocalOut_next_a(LocalOut* unit, int inNumSamples) {
     int bufLength = unit->mBufLength;
     int numChannels = unit->mNumInputs;
 
-    LocalIn* localIn = (LocalIn*)unit->mParent->mLocalAudioBusUnit;
-    if (!localIn)
-        return;
-
-    float* out = localIn->m_bus;
-    if ((out == nullptr) || (numChannels != localIn->mNumOutputs))
-        return;
-
-    int64* touched = localIn->m_busTouched;
-
+    float* out = unit->m_bus;
+    int64* touched = unit->m_busTouched;
     int32 bufCounter = unit->mWorld->mBufCounter;
+
     for (int i = 0; i < numChannels; ++i, out += bufLength) {
         float* in = IN(i);
         if (touched[i] == bufCounter)
@@ -2471,17 +2458,10 @@ FLATTEN void LocalOut_next_a_nova(LocalOut* unit, int inNumSamples) {
     int bufLength = unit->mBufLength;
     int numChannels = unit->mNumInputs;
 
-    LocalIn* localIn = (LocalIn*)unit->mParent->mLocalAudioBusUnit;
-    if (!localIn)
-        return;
-
-    float* out = localIn->m_bus;
-    if ((out == nullptr) || (numChannels != localIn->mNumOutputs))
-        return;
-
-    int64* touched = localIn->m_busTouched;
-
+    float* out = unit->m_bus;
+    int64* touched = unit->m_busTouched;
     int32 bufCounter = unit->mWorld->mBufCounter;
+
     for (int i = 0; i < numChannels; ++i, out += bufLength) {
         float* in = IN(i);
         if (touched[i] == bufCounter)
@@ -2499,17 +2479,10 @@ FLATTEN void LocalOut_next_a_nova_64(LocalOut* unit, int inNumSamples) {
     int bufLength = unit->mBufLength;
     int numChannels = unit->mNumInputs;
 
-    LocalIn* localIn = (LocalIn*)unit->mParent->mLocalAudioBusUnit;
-    if (!localIn)
-        return;
-
-    float* out = localIn->m_bus;
-    if ((out == nullptr) || (numChannels != localIn->mNumOutputs))
-        return;
-
-    int64* touched = localIn->m_busTouched;
-
+    float* out = unit->m_bus;
+    int64* touched = unit->m_busTouched;
     int32 bufCounter = unit->mWorld->mBufCounter;
+
     for (int i = 0; i < numChannels; ++i, out += bufLength) {
         float* in = IN(i);
         if (touched[i] == bufCounter)
@@ -2526,15 +2499,8 @@ FLATTEN void LocalOut_next_a_nova_64(LocalOut* unit, int inNumSamples) {
 void LocalOut_next_k_reblock(LocalOut* unit, int inNumSamples) {
     int numChannels = unit->mNumInputs;
 
-    LocalIn* localIn = (LocalIn*)unit->mParent->mLocalControlBusUnit;
-    if (!localIn)
-        return;
-
-    float* out = localIn->m_bus;
-    if ((out == nullptr) || (numChannels != localIn->mNumOutputs))
-        return;
-
-    int64* touched = localIn->m_busTouched;
+    float* out = unit->m_bus;
+    int64* touched = unit->m_busTouched;
     int64 bufCounter = unit->mWorld->mBufCounter;
     int64 tickCounter = unit->mParent->mTickCounter;
     int64 numTicks = unit->mParent->mNumTicks;
@@ -2553,17 +2519,10 @@ void LocalOut_next_k_reblock(LocalOut* unit, int inNumSamples) {
 void LocalOut_next_k(LocalOut* unit, int inNumSamples) {
     int numChannels = unit->mNumInputs;
 
-    LocalIn* localIn = (LocalIn*)unit->mParent->mLocalControlBusUnit;
-    if (!localIn)
-        return;
-
-    float* out = localIn->m_bus;
-    if ((out == nullptr) || (numChannels != localIn->mNumOutputs))
-        return;
-
-    int64* touched = localIn->m_busTouched;
-
+    float* out = unit->m_bus;
+    int64* touched = unit->m_busTouched;
     int32 bufCounter = unit->mWorld->mBufCounter;
+
     for (int i = 0; i < numChannels; ++i) {
         if (touched[i] == bufCounter)
             out[i] += IN0(i);
@@ -2576,8 +2535,23 @@ void LocalOut_next_k(LocalOut* unit, int inNumSamples) {
 
 void LocalOut_Ctor(LocalOut* unit) {
     // Print("->LocalOut_Ctor\n");
+    int numChannels = unit->mNumInputs;
+    if (numChannels == 0)
+        return;
 
     if (unit->mCalcRate == calc_FullRate) {
+        // local audio bus
+        if (auto busChannels = unit->mParent->mNumLocalAudioBusChannels; numChannels > busChannels) {
+            if (busChannels == 0)
+                printMissingLocalBusErrorMessage(unit, "LocalOut", "audio");
+            else
+                Print("ERROR: LocalOut: channel count (%d) out of range.\n", numChannels);
+            return;
+        }
+
+        unit->m_bus = unit->mParent->mLocalAudioBus;
+        unit->m_busTouched = unit->mParent->mLocalAudioBusTouched;
+
         if (REBLOCK_OR_RESAMPLE)
             SETCALC(LocalOut_next_a_reblock);
 #ifdef NOVA_SIMD
@@ -2589,6 +2563,18 @@ void LocalOut_Ctor(LocalOut* unit) {
         else
             SETCALC(LocalOut_next_a);
     } else {
+        // local control bus
+        if (auto busChannels = unit->mParent->mNumLocalControlBusChannels; numChannels > busChannels) {
+            if (busChannels == 0)
+                printMissingLocalBusErrorMessage(unit, "LocalOut", "control");
+            else
+                Print("ERROR: LocalOut: channel count (%d) out of range.\n", numChannels);
+            return;
+        }
+
+        unit->m_bus = unit->mParent->mLocalControlBus;
+        unit->m_busTouched = unit->mParent->mLocalControlBusTouched;
+
         if (REBLOCK_OR_RESAMPLE)
             SETCALC(LocalOut_next_k_reblock);
         else
@@ -2604,7 +2590,7 @@ PluginLoad(IO) {
     ft = inTable;
 
     DefineDtorUnit(OffsetOut);
-    DefineDtorUnit(LocalIn);
+    DefineSimpleUnit(LocalIn);
     DefineSimpleUnit(XOut);
     DefineDtorUnit(LagControl);
     DefineDtorUnit(AudioControl);

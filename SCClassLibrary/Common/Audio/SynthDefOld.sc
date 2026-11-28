@@ -1,15 +1,32 @@
-SynthDefOld : SynthDef {
-	writeDefFile { arg dir, overwrite(true);
-		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
-			super.writeDefFileOld(name, dir, overwrite);
-		} {
-			// actual error, not just warning as in .send and .load,
-			// because you might try to write the file somewhere other than
-			// the default location - could be fatal later, so crash now
-			MethodError("This SynthDef (%) was reconstructed from a .scsyndef file. It does not contain all the required structure to write back to disk. File was not written."
-				.format(name), this).throw
-		}
+// SynthDef version 2
+SynthDefV2 : SynthDef {
+	const <version = 2;
+
+	var maxLocalBufs;
+
+	initBuild {
+		super.initBuild;
+		maxLocalBufs = nil;
 	}
+
+	// In version 3, this method just increments the number of local Buffers,
+	// but here we have to create a MaxLocalBufs instance in the very first call.
+	// The MaxLocalBufs UGen receives the number of local Buffers via its input and
+	// uses that to allocate the SndBuf array. In version 3, this UGen is not used
+	// anymore because the number of local Buffers is included in the SynthDef file.
+	// See also LocalBuf.new1.
+	allocateLocalBuffer {
+		if (maxLocalBufs.isNil) {
+			maxLocalBufs = MaxLocalBufs();
+		};
+		maxLocalBufs.increment;
+		^super.allocateLocalBuffer;
+	}
+}
+
+// SynthDef version 1
+SynthDefV1 : SynthDefV2 {
+	const <version = 1;
 
 	writeDef { arg file;
 		// This describes the file format for the synthdef files.
@@ -99,32 +116,18 @@ SynthDefOld : SynthDef {
 			file.putFloat(item)
 		};
 	}
-
-	asBytes {
-		var stream = CollStream.on(Int8Array.new(256));
-		this.asArray.writeDefOld(stream);
-		^stream.collection;
-	}
-
 }
 
+// keep SynthDefOld as an alias for SynthDefV1
+SynthDefOld : SynthDefV1 {}
+
 + Collection {
-
-	writeDefOld { | file |
-		file.putString("SCgf");
-		file.putInt32(1); // file version
-		file.putInt16(this.size); // number of defs in file.
-
-		this.do { | item | item.writeDef(file); }
-	}
-
 	writeInputSpecOld { | file, synthDef |
 		this.do { | item | item.writeInputSpecOld(file, synthDef) };
 	}
 }
 
 + UGen {
-
 	writeDefOld { arg file;
 		//[\WR, this.class.name, rate, this.numInputs, this.numOutputs].postln;
 		try {
@@ -152,7 +155,6 @@ SynthDefOld : SynthDef {
 }
 
 + SimpleNumber {
-
 	writeInputSpecOld { arg file, synth;
 		var constIndex = synth.constants.at(this.asFloat);
 		if (constIndex.isNil) {
@@ -160,30 +162,5 @@ SynthDefOld : SynthDef {
 		//[\inpspc, this.class.name, constIndex, this].postln;
 		file.putInt16(-1);
 		file.putInt16(constIndex);
-	}
-}
-
-+ Object {
-
-	writeDefFileOld { arg name, dir, overwrite = (true);
-
-		StartUp.defer { // make sure the synth defs are written to the right path
-			var file;
-			dir = dir ? SynthDef.synthDefDir;
-			if (name.isNil) { Error("missing SynthDef file name").throw } {
-				name = dir +/+ name ++ ".scsyndef";
-				if(overwrite or: { pathMatch(name).isEmpty })
-					{
-					file = File(name, "w");
-					protect {
-						AbstractMDPlugin.clearMetadata(name);
-						this.asArray.writeDefOld(file);
-					}{
-						file.close;
-					}
-				}
-			}
-		}
-
 	}
 }

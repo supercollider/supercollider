@@ -75,21 +75,24 @@ void FFTTrigger_next(FFTTrigger* unit, int inNumSamples);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-static int FFTBase_Ctor(FFTBase* unit, int frmsizinput) {
+static bool FFTBase_Ctor(FFTBase* unit, int frmsizinput) {
     World* world = unit->mWorld;
 
-    uint32 bufnum = (uint32)ZIN0(0);
+    int32 bufnum = (int32)ZIN0(0);
+    if (bufnum < 0)
+        return false;
+
     SndBuf* buf;
     if (bufnum >= world->mNumSndBufs) {
         int localBufNum = bufnum - world->mNumSndBufs;
         Graph* parent = unit->mParent;
-        if (localBufNum <= parent->localMaxBufNum) {
+        if (localBufNum < parent->mNumLocalSndBufs) {
             buf = parent->mLocalSndBufs + localBufNum;
         } else {
             if (unit->mWorld->mVerbosity > -1) {
                 Print("FFTBase_Ctor error: invalid buffer number: %i.\n", bufnum);
             }
-            return 0;
+            return false;
         }
     } else {
         buf = world->mSndBufs + bufnum;
@@ -99,7 +102,7 @@ static int FFTBase_Ctor(FFTBase* unit, int frmsizinput) {
         if (unit->mWorld->mVerbosity > -1) {
             Print("FFTBase_Ctor error: Buffer %i not initialised.\n", bufnum);
         }
-        return 0;
+        return false;
     }
 
     unit->m_fftsndbuf = buf;
@@ -119,22 +122,22 @@ static int FFTBase_Ctor(FFTBase* unit, int frmsizinput) {
     // allow it.
     if (!ISPOWEROFTWO(unit->m_fullbufsize)) {
         Print("FFTBase_Ctor error: buffer size (%i) not a power of two.\n", unit->m_fullbufsize);
-        return 0;
+        return false;
     } else if (!ISPOWEROFTWO(unit->m_audiosize)) {
         Print("FFTBase_Ctor error: audio frame size (%i) not a power of two.\n", unit->m_audiosize);
-        return 0;
+        return false;
     } else if (unit->m_audiosize < SC_FFT_MINSIZE
                || (((int)(unit->m_audiosize / FULLBUFLENGTH)) * FULLBUFLENGTH != unit->m_audiosize)) {
         Print("FFTBase_Ctor error: audio frame size (%i) not a multiple of the block size (%i).\n", unit->m_audiosize,
               FULLBUFLENGTH);
-        return 0;
+        return false;
     }
 
     unit->m_pos = 0;
 
     ZOUT0(0) = ZIN0(0);
 
-    return 1;
+    return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -349,7 +352,7 @@ void FFTTrigger_Ctor(FFTTrigger* unit) {
     if (bufnum >= world->mNumSndBufs) {
         int localBufNum = bufnum - world->mNumSndBufs;
         Graph* parent = unit->mParent;
-        if (localBufNum <= parent->localMaxBufNum) {
+        if (localBufNum < parent->mNumLocalSndBufs) {
             buf = parent->mLocalSndBufs + localBufNum;
         } else {
             bufnum = 0;

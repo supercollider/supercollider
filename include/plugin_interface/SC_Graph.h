@@ -65,12 +65,18 @@ struct Graph {
 
     struct RGen* mRGen;
 
-    struct Unit* mLocalAudioBusUnit;
-    struct Unit* mLocalControlBusUnit;
-
+    uint32 mNumLocalSndBufs;
     SndBuf* mLocalSndBufs;
-    int32 localBufNum;
-    int32 localMaxBufNum;
+
+    uint32 mNumLocalAudioBusChannels;
+    uint32 mNumLocalControlBusChannels;
+
+    float* mLocalAudioBus;
+    int64* mLocalAudioBusTouched;
+    void* mLocalAudioBusMemory; // private
+
+    float* mLocalControlBus;
+    int64* mLocalControlBusTouched;
 
     void* mPrivate;
 };

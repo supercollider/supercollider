@@ -65,6 +65,19 @@ static void Graph_Dtor(Graph* inGraph) {
         }
     }
 
+#if 1
+    for (int i = 0; i < inGraph->mNumLocalSndBufs; ++i) {
+        if (inGraph->mLocalSndBufs[i].data != nullptr) {
+            scprintf("ERROR: Graph_Dtor: LocalSndBuf %d not released!\n");
+        }
+    }
+#endif
+
+    // free local audio bus memory!
+    if (inGraph->mLocalAudioBusMemory) {
+        World_Free(inGraph->mNode.mWorld, inGraph->mLocalAudioBusMemory);
+    }
+
     // free queued Unit commands
     // AFAICT this can only happen if a Graph is created, Unit commands are sent and
     // the Graph is deleted all at in the same control block.
@@ -267,69 +280,7 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
                 } while (loop);
             }
         }
-    }
-
-
-    //{
-    //	    while( msg->remain()>=8) {
-    //		int i = 0;
-    //		int loop = 0;
-    //		if (msg->nextTag('i') == 's') {
-    //		    int32* name = msg->gets4();
-    //		    int32 hash = Hash(name);
-    //		    if (msg->nextTag('f') == '[' ) {
-    //			    msg->count++;
-    //			    loop = 1;
-    //		    }
-    //		    do {
-    //			if (msg->nextTag('f') == 's' ) {
-    //			    const char* string = msg->gets();
-    //			    if ( *string == 'c') {
-    //				int bus = sc_atoi(string+1);
-    //				Graph_MapControl(graph, hash, name, i, bus);
-    //			    }
-    //			} else {
-    //			    if (msg->nextTag('f') == ']' ) {
-    //				msg->count++;
-    //				loop = 0;
-    //			    } else {
-    //				float32 value = msg->getf();
-    //				Graph_SetControl(graph, hash, name, i, value);
-    //			    }
-    //			}
-    //			++i;
-    //		    }
-    //		    while (loop);
-    //		} else {
-    //		    int32 index = msg->geti();
-    //		    if (msg->nextTag('f') == '[' ) {
-    //			msg->count++;
-    //			loop = 1;
-    //		    }
-    //		    do {
-    //			if (msg->nextTag('f') == 's') {
-    //			    const char* string = msg->gets();
-    //			    if (*string == 'c') {
-    //				int bus = sc_atoi(string+1);
-    //				Graph_MapControl(graph, index + i, bus);
-    //			    }
-    //			} else {
-    //			    if (msg->nextTag('f') == ']' ) {
-    //				msg->count++;
-    //				loop = 0;
-    //			    } else {
-    //				float32 value = msg->getf();
-    //				Graph_SetControl(graph, index + i, value);
-    //			    }
-    //			}
-    //			++i;
-    //		    }
-    //		    while (loop);
-    //		}
-    //	    }
-    //
-    //	}
-    else {
+    } else {
         while (msg->remain()) {
             if (msg->nextTag('i') == 's') {
                 int32* name = msg->gets4();
@@ -398,13 +349,7 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
     graph->mSubsampleOffset = inWorld->mSubsampleOffset;
     graph->mRGen = inWorld->mRGen; // defaults to rgen zero.
 
-    graph->mLocalAudioBusUnit = nullptr;
-    graph->mLocalControlBusUnit = nullptr;
-
-    graph->mLocalSndBufs = nullptr;
-    graph->localBufNum = 0;
-    graph->localMaxBufNum = 0; // this is set from synth
-
+    // resampling and reblocking
     int32 blockSize = 0;
     float upsample = 0;
     graph->mFlags = 0;
@@ -527,13 +472,59 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
         graph->mBufRate = &inWorld->mBufRate;
         blockSize = inWorld->mBufLength;
     }
-
     //  scprintf("Graph_Ctor: block size: %d, upsample: %f, ticks: %d\n",
     //           blockSize, upsample, graph->mNumTicks);
 
-    // so far mPrivate is only used for queued unit commands,
-    // i.e. it just points to the head of the list.
-    graph->mPrivate = nullptr;
+    // set up local SndBufs
+    int numLocalSndBufs = inGraphDef->mNumLocalSndBufs;
+    graph->mNumLocalSndBufs = numLocalSndBufs;
+    if (numLocalSndBufs > 0) {
+        graph->mLocalSndBufs = alloc.alloc<SndBuf>(numLocalSndBufs);
+        for (int i = 0; i < numLocalSndBufs; ++i) {
+            // zero-initialize!
+            new (&graph->mLocalSndBufs[i]) SndBuf {};
+        }
+    }
+
+    // set up local audio buses
+    graph->mLocalAudioBus = nullptr;
+    graph->mLocalAudioBusTouched = nullptr;
+    graph->mLocalAudioBusMemory = nullptr;
+    int numLocalAudioBusChannels = inGraphDef->mNumLocalAudioBusChannels;
+    graph->mNumLocalAudioBusChannels = numLocalAudioBusChannels;
+    if (numLocalAudioBusChannels > 0) {
+        static constexpr size_t alignment = 64;
+        const auto audioBusSamples = numLocalAudioBusChannels * blockSize;
+        void* chunk = World_Alloc(inWorld, audioBusSamples * sizeof(float) + alignment);
+        if (chunk) {
+            graph->mLocalAudioBus = reinterpret_cast<float*>(sc::align_up(chunk, alignment));
+            std::fill_n(graph->mLocalAudioBus, audioBusSamples, 0.f);
+
+            graph->mLocalAudioBusTouched = alloc.alloc<int64>(numLocalAudioBusChannels);
+            std::fill_n(graph->mLocalAudioBusTouched, numLocalAudioBusChannels, -1);
+
+            // keep a pointer to the actual memory block! See Graph_Dtor().
+            graph->mLocalAudioBusMemory = chunk;
+        } else {
+            scprintf("ERROR: Graph: could not allocate local audio bus, increase server's RT memory "
+                     "(e.g. via ServerOptions)\n");
+            graph->mNumLocalAudioBusChannels = 0;
+        }
+    }
+
+    // set up local control buses
+    int numLocalControlBusChannels = inGraphDef->mNumLocalControlBusChannels;
+    graph->mNumLocalControlBusChannels = numLocalControlBusChannels;
+    if (numLocalControlBusChannels > 0) {
+        graph->mLocalControlBus = alloc.alloc<float>(numLocalControlBusChannels);
+        std::fill_n(graph->mLocalControlBus, numLocalControlBusChannels, 0.f);
+
+        graph->mLocalControlBusTouched = alloc.alloc<int64>(numLocalControlBusChannels);
+        std::fill_n(graph->mLocalControlBusTouched, numLocalControlBusChannels, -1);
+    } else {
+        graph->mLocalControlBus = nullptr;
+        graph->mLocalControlBusTouched = nullptr;
+    }
 
     // initialize units
     // scprintf("initialize units\n");
@@ -611,6 +602,10 @@ static void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_ms
 
     assert(alloc.check_bounds());
 
+    // so far mPrivate is only used for queued unit commands,
+    // i.e. it just points to the head of the list.
+    graph->mPrivate = nullptr;
+
     graph->mRefCount = 1;
 
     inGraphDef->mRefCount++;
@@ -621,6 +616,10 @@ void Graph_QueueUnitCmd(Graph* inGraph, int inSize, const char* inData, const Re
     // calc function, i.e. after calling the unit constructors.
     // scprintf("->Graph_QueueUnitCmd\n");
     QueuedCmd* cmd = (QueuedCmd*)World_Alloc(inGraph->mNode.mWorld, sizeof(QueuedCmd) + inSize);
+    if (cmd == nullptr) {
+        scprintf("ERROR: could not queue unit command: RT alloc failed.\n");
+        return;
+    }
     cmd->mNext = nullptr;
     if (inReplyAddress)
         cmd->mReplyAddress = *inReplyAddress;
