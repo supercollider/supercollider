@@ -62,7 +62,7 @@ Latch : UGen {
 	*kr { arg in = 0.0, trig = 0.0;
 		^this.multiNew('control', in, trig)
 	}
-
+	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
 Gate : Latch {
