@@ -42,6 +42,7 @@
 #include "../../common/Samp.hpp"
 #include "SC_StringParser.h"
 #include "SC_fftlib.hpp"
+#include "SC_Version.hpp"
 
 #ifndef NO_NETWORKING
 #    include "SC_ComPort.h"
@@ -202,6 +203,14 @@ SCErr sndfileFormatInfoFromStrings(SF_INFO* info, const char* headerFormat, cons
 void InterfaceTable_Init() {
     InterfaceTable* ft = &gInterfaceTable;
 
+    ft->mStructSize = SC_IMPLEMENTED_STRUCT_SIZE(InterfaceTable, fReleaseScopeBuffer);
+
+    ft->mApiVersion = SC_API_VERSION;
+
+    ft->mSCVersionMajor = SC_VersionMajor;
+    ft->mSCVersionMinor = SC_VersionMinor;
+    ft->mSCVersionPatch = SC_VersionPatch;
+
     ft->mSine = gSine;
     ft->mCosecant = gInvSine;
     ft->mSineSize = kSineSize;
@@ -334,13 +343,18 @@ World* World_New(WorldOptions* inOptions) {
 
         world = (World*)zalloc(1, sizeof(World));
 
+#ifdef SC_BELA
+        world->mStructSize = SC_IMPLEMENTED_STRUCT_SIZE(World, mBelaMaxScopeChannels);
+#else
+        world->mStructSize = SC_IMPLEMENTED_STRUCT_SIZE(World, mRestrictedPath);
+#endif
+
         world->hw = (HiddenWorld*)zalloc(1, sizeof(HiddenWorld));
 
-        world->hw->mAllocPool = new AllocPool(malloc, free, inOptions->mRealTimeMemorySize * 1024, 0);
-        world->hw->mQuitProgram = new boost::sync::semaphore(0);
-        world->hw->mTerminating = false;
-
         HiddenWorld* hw = world->hw;
+        hw->mAllocPool = new AllocPool(malloc, free, inOptions->mRealTimeMemorySize * 1024, 0);
+        hw->mQuitProgram = new boost::sync::semaphore(0);
+        hw->mTerminating = false;
         hw->mGraphDefLib = new HashTable<struct GraphDef, Malloc>(&gMalloc, inOptions->mMaxGraphDefs, false);
         hw->mNodeLib = new IntHashTable<Node, AllocPool>(hw->mAllocPool, inOptions->mMaxNodes, false);
         hw->mUsers = new Clients();
@@ -393,6 +407,11 @@ World* World_New(WorldOptions* inOptions) {
         world->mSndBufs = (SndBuf*)zalloc(world->mNumSndBufs, sizeof(SndBuf));
         world->mSndBufsNonRealTimeMirror = (SndBuf*)zalloc(world->mNumSndBufs, sizeof(SndBuf));
         world->mSndBufUpdates = (SndBufUpdates*)zalloc(world->mNumSndBufs, sizeof(SndBufUpdates));
+        const auto sndBufSize = SC_IMPLEMENTED_STRUCT_SIZE(SndBuf, sndfile);
+        for (int i = 0; i < world->mNumSndBufs; ++i) {
+            world->mSndBufs[i].mStructSize = sndBufSize;
+            world->mSndBufsNonRealTimeMirror[i].mStructSize = sndBufSize;
+        }
 
         GroupNodeDef_Init();
 

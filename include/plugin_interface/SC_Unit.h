@@ -34,11 +34,8 @@ typedef void (*UnitDtorFunc)(struct Unit* inUnit);
 
 typedef void (*UnitCalcFunc)(struct Unit* inUnit, int32 inNumSamples);
 
-struct SC_Unit_Extensions {
-    float* todo;
-};
-
 struct Unit {
+    size_t mStructSize; // versioned struct
     World* mWorld;
     struct UnitDef* mUnitDef;
     struct Graph* mParent;
@@ -49,10 +46,7 @@ struct Unit {
     int16 mDone;
     struct Wire **mInput, **mOutput;
     struct Rate* mRate;
-    struct SC_Unit_Extensions*
-        mExtensions; // future proofing and backwards compatibility; used to be SC_Dimension struct pointer
     float **mInBuf, **mOutBuf;
-
     UnitCalcFunc mCalcFunc;
     int32 mBufLength;
 };

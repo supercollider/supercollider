@@ -1582,7 +1582,7 @@ void PyrMethodNode::compile(CompilerContext& cxt, PyrSlot* result) {
     cxt.compilingBlock = method;
 
     // Put it back at the end of the scope.
-    defer d { [&]() {
+    sc::defer d { [&]() {
         if (!oldmethod) {
             addMethod(cxt.compilingClass, method);
         }
@@ -2048,7 +2048,7 @@ void PyrCallNodeBase::compilePartialApplication(CompilerContext& cxt, unsigned c
         cxt.compilingPartiallyAppliedFunction = block;
 
         // put everything back
-        defer d { [&]() {
+        sc::defer d { [&]() {
             // NOTE: we don't put the bytecodes back here as we need to emit the partial app function into the parent
             // bytecodes.
             cxt.compilingBlock = prevBlock;
@@ -4063,7 +4063,7 @@ void PyrBlockNode::compile(CompilerContext& cxt, PyrSlot* slotResult) {
     cxt.compilingPartiallyAppliedFunction = nullptr;
 
     // put everything back
-    defer d { [&]() {
+    sc::defer d { [&]() {
         cxt.compilingBlock = prevBlock;
         cxt.compilingClass = prevClass;
         cxt.compilingPartiallyAppliedFunction = prevPartiallyAppliedFunction;

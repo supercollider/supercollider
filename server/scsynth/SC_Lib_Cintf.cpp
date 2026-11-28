@@ -26,35 +26,16 @@
 #include "SC_WorldOptions.h"
 #include "SC_StringParser.h"
 #include "SC_InterfaceTable.h"
+#include "SC_Codecvt.hpp"
 #include "SC_Filesystem.hpp"
-#include "ErrorMessage.hpp" // for apiVersionMismatch, apiVersionMissing
-#include <iostream>
-#include <vector>
 
 #ifdef STATIC_PLUGINS
 #    include "../plugins/SC_StaticPlugins.h"
 #else
-#    ifdef _WIN32
-#        ifndef NOMINMAX
-#            define NOMINMAX
-#        endif
-#        include <windows.h>
-#        include "SC_Codecvt.hpp"
-#    else
-#        include <dlfcn.h>
-#        include <sys/param.h>
-#    endif // _WIN32
+#    include "SC_ServerPluginModule.hpp"
+#endif
 
-#    ifdef __APPLE__
-extern "C" {
-#        include <mach-o/dyld.h>
-#        include <mach-o/getsect.h>
-}
-char gTempVal;
-#    endif // __APPLE__
-
-#endif // STATIC_PLUGINS
-
+#include <vector>
 #include <filesystem>
 
 namespace fs = std::filesystem;
@@ -128,47 +109,13 @@ static bool PlugIn_LoadDir(const fs::path& dir, bool reportError, bool isTopLeve
 static bool PlugIn_LoadDir(const fs::path& dir, bool reportError);
 #    endif
 
-std::vector<void*> open_handles;
-
-#    ifdef __APPLE__
-void read_section(const struct mach_header* mhp, unsigned long slide, const char* segname, const char* sectname) {
-    u_int32_t size;
-    char* sect = getsectdatafromheader(mhp, segname, sectname, &size);
-    if (!sect)
-        return;
-
-    char* start = sect + slide;
-    char* end = start + size;
-
-    while (start != end) {
-        gTempVal += *(char*)start;
-        start++;
-    }
-}
-#    endif
+std::vector<ServerPluginModule> open_modules;
 
 void unloadUGenPlugins() {
-#    ifdef _WIN32
-    for (void* ptrhinstance : open_handles) {
-        HINSTANCE hinstance = (HINSTANCE)ptrhinstance;
-        void* ptr = (void*)GetProcAddress(hinstance, "unload");
-        if (ptr) {
-            UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
-            (*unloadFunc)();
-        }
-        FreeLibrary(hinstance);
+    for (auto& module : open_modules) {
+        module.unload();
     }
-#    else
-    for (void* handle : open_handles) {
-        void* ptr = dlsym(handle, "unload");
-        if (ptr) {
-            UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
-            (*unloadFunc)();
-        }
-        dlclose(handle);
-    }
-#    endif
-    open_handles.clear();
+    open_modules.clear();
 }
 
 void loadUGenPlugins(const char* ugensPluginPath) {
@@ -210,162 +157,27 @@ void loadUGenPlugins(const char* ugensPluginPath) {
         }
     }
 #    ifdef __APPLE__
-    /* on darwin plugins are lazily loaded (dlopen uses mmap internally), which can produce audible
-        glitches when UGens have to be paged-in. to work around this we preload all the plugins by
-        iterating through their memory space. */
-
-#        ifndef __x86_64__
-    /* seems to cause a stack corruption on llvm-gcc-4.2, sdk 10.5 on 10.6 */
-
-    unsigned long images = _dyld_image_count();
-    for (unsigned long i = 0; i < images; i++) {
-        const mach_header* hdr = _dyld_get_image_header(i);
-        unsigned long slide = _dyld_get_image_vmaddr_slide(i);
-        const char* name = _dyld_get_image_name(i);
-        uint32_t size;
-        char* sect;
-
-        if (!strcmp(name + (strlen(name) - 4), ".scx")) {
-            read_section(hdr, slide, "__TEXT", "__text");
-            read_section(hdr, slide, "__TEXT", "__const");
-            read_section(hdr, slide, "__TEXT", "__cstring");
-            read_section(hdr, slide, "__TEXT", "__picsymbol_stub");
-            read_section(hdr, slide, "__TEXT", "__symbol_stub");
-            read_section(hdr, slide, "__TEXT", "__const");
-            read_section(hdr, slide, "__TEXT", "__literal4");
-            read_section(hdr, slide, "__TEXT", "__literal8");
-
-            read_section(hdr, slide, "__DATA", "__data");
-            read_section(hdr, slide, "__DATA", "__la_symbol_ptr");
-            read_section(hdr, slide, "__DATA", "__nl_symbol_ptr");
-            read_section(hdr, slide, "__DATA", "__dyld");
-            read_section(hdr, slide, "__DATA", "__const");
-            read_section(hdr, slide, "__DATA", "__mod_init_func");
-            read_section(hdr, slide, "__DATA", "__bss");
-            read_section(hdr, slide, "__DATA", "__common");
-
-            read_section(hdr, slide, "__IMPORT", "__jump_table");
-            read_section(hdr, slide, "__IMPORT", "__pointers");
-        }
-    }
-#        endif // __x86_64__
-
+    preloadAllServerPlugins();
 #    endif // ifdef __APPLE__
 }
 
-typedef int (*InfoFunction)();
+static bool PlugIn_Load(const fs::path& path) {
+    const std::string filename_utf8 = SC_Codecvt::path_to_utf8_str(path);
 
-bool checkAPIVersion(void* f, const char* filename) {
-    using namespace scsynth;
+    try {
+        ServerPluginModule module(path);
+        module.load(&gInterfaceTable);
 
-    if (f) {
-        InfoFunction fn = (InfoFunction)f;
-        int pluginVersion = (*fn)();
-        if (pluginVersion == sc_api_version)
-            return true;
-        else
-            std::cout << ErrorMessage::apiVersionMismatch(filename, sc_api_version, pluginVersion) << std::endl;
-    } else {
-        std::cout << ErrorMessage::apiVersionNotFound(filename) << std::endl;
-    }
+        open_modules.push_back(std::move(module));
 
-    return false;
-}
-
-bool checkServerVersion(void* f, const char* filename) {
-    if (f) {
-        InfoFunction fn = (InfoFunction)f;
-        if ((*fn)() != sc_server_scsynth)
-            return false;
-    }
-    return true;
-}
-
-static bool PlugIn_Load(const fs::path& filename) {
-#    ifdef _WIN32
-    // This allows plugins to place DLL dependencies in the same directory.
-    SetDllDirectoryW(filename.parent_path().c_str());
-    HINSTANCE hinstance = LoadLibraryW(filename.c_str());
-    // Reset DLL directory
-    SetDllDirectoryW(nullptr);
-    // here, we have to use a utf-8 version of the string for printing
-    // because the native encoding on Windows is utf-16.
-    const std::string filename_utf8_str = SC_Codecvt::path_to_utf8_str(filename);
-    if (!hinstance) {
-        wchar_t* s = nullptr;
-        DWORD lastErr = GetLastError();
-        FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                       NULL, lastErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&s, 0, NULL);
-        scprintf("*** ERROR: LoadLibrary '%s' err '%s'\n", filename_utf8_str.c_str(),
-                 SC_Codecvt::utf16_to_utf8_str(s).c_str());
-        LocalFree(s);
+        return true;
+    } catch (const ServerPluginException& e) {
+        // silently ignore plugins compiled for the wrong Server type
+        if (e.errorCode() != ServerPluginError::WrongServerType) {
+            scprintf("ERROR: '%s': %s\n", filename_utf8.c_str(), e.what());
+        }
         return false;
     }
-
-    void* apiVersionPtr = (void*)GetProcAddress(hinstance, "api_version");
-    if (!checkAPIVersion(apiVersionPtr, filename_utf8_str.c_str())) {
-        FreeLibrary(hinstance);
-        return false;
-    }
-
-    void* serverCheckPtr = (void*)GetProcAddress(hinstance, "server_type");
-    if (!checkServerVersion(serverCheckPtr, filename_utf8_str.c_str())) {
-        FreeLibrary(hinstance);
-        return false;
-    }
-
-    void* ptr = (void*)GetProcAddress(hinstance, "load");
-    if (!ptr) {
-        wchar_t* s;
-        FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                       NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&s, 0, NULL);
-        scprintf("*** ERROR: GetProcAddress err '%s'\n", SC_Codecvt::utf16_to_utf8_str(s).c_str());
-        LocalFree(s);
-
-        FreeLibrary(hinstance);
-        return false;
-    }
-
-    LoadPlugInFunc loadFunc = (LoadPlugInFunc)ptr;
-    (*loadFunc)(&gInterfaceTable);
-
-    open_handles.push_back(hinstance);
-    return true;
-
-#    else // (ifndef _WIN32)
-    void* handle = dlopen(filename.c_str(), RTLD_NOW);
-
-    if (!handle) {
-        scprintf("*** ERROR: dlopen '%s' err '%s'\n", filename.c_str(), dlerror());
-        return false;
-    }
-
-    void* apiVersionPtr = (void*)dlsym(handle, "api_version");
-    if (!checkAPIVersion(apiVersionPtr, filename.c_str())) {
-        dlclose(handle);
-        return false;
-    }
-
-    void* serverCheckPtr = (void*)dlsym(handle, "server_type");
-    if (!checkServerVersion(serverCheckPtr, filename.c_str())) {
-        dlclose(handle);
-        return false;
-    }
-
-    void* ptr = dlsym(handle, "load");
-    if (!ptr) {
-        scprintf("*** ERROR: dlsym load err '%s'\n", dlerror());
-        dlclose(handle);
-        return false;
-    }
-
-    LoadPlugInFunc loadFunc = (LoadPlugInFunc)ptr;
-    (*loadFunc)(&gInterfaceTable);
-
-    open_handles.push_back(handle);
-    return true;
-
-#    endif // _WIN32
 }
 
 #    ifndef LINUX_PLUGIN_WORKAROUND

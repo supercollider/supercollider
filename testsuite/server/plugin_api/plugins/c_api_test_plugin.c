@@ -1,6 +1,8 @@
 #include "SC_PlugIn.h"
 #include "FFT_UGens.h"
 
+#include <string.h>
+
 InterfaceTable* ft;
 
 typedef struct CPlugin {
@@ -35,7 +37,7 @@ void CPlugin_Ctor(CPlugin* x) {
 
 void CPlugin_Dtor(CPlugin* x) { RTFree(x->unit.mWorld, x->buffer); }
 
-PluginLoad(ML_UGens) {
+PluginLoad(CAPITest) {
     ft = inTable;
 
     DefineDtorUnit(CPlugin);

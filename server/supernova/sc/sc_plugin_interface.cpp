@@ -37,6 +37,7 @@
 #include "../../common/Samp.hpp"
 #include "../../common/SC_SndFileHelpers.hpp"
 #include "../../common/SC_ServerProgramOptions.hpp"
+#include "SC_Version.hpp"
 
 // NOTE: replace with <numbers> once we switch to C++20
 #include <boost/math/constants/constants.hpp>
@@ -641,6 +642,14 @@ void sc_plugin_interface::initialize(ServerProgramOptions const& args, float* co
     freeAll_nodes.reserve(16);
     freeDeep_nodes.reserve(16);
 
+    sc_interface.mStructSize = SC_IMPLEMENTED_STRUCT_SIZE(InterfaceTable, fReleaseScopeBuffer);
+
+    sc_interface.mApiVersion = SC_API_VERSION;
+
+    sc_interface.mSCVersionMajor = SC_VersionMajor;
+    sc_interface.mSCVersionMinor = SC_VersionMinor;
+    sc_interface.mSCVersionPatch = SC_VersionPatch;
+
     /* define functions */
     sc_interface.fDefineUnit = &define_unit;
     sc_interface.fDefineBufGen = &define_bufgen;
@@ -715,6 +724,8 @@ void sc_plugin_interface::initialize(ServerProgramOptions const& args, float* co
     world.ft = &sc_interface;
 
     /* initialize world */
+    world.mStructSize = SC_IMPLEMENTED_STRUCT_SIZE(World, mRestrictedPath);
+
     /* control busses */
     world.mControlBus = control_busses;
     world.mNumControlBusChannels = args.mNumControlBusChannels;
@@ -731,16 +742,21 @@ void sc_plugin_interface::initialize(ServerProgramOptions const& args, float* co
     std::fill_n(world.mAudioBusTouched, args.mNumAudioBusChannels, -1);
     world.mAudioBusLocks = audio_busses.locks;
 
-    /* audio buffers */
+    /* sound buffers */
     world.mNumSndBufs = args.mNumBuffers;
     world.mSndBufs = new SndBuf[world.mNumSndBufs] {}; // zero-initialize
     world.mSndBufsNonRealTimeMirror = new SndBuf[world.mNumSndBufs] {}; // zero-initialize
     world.mSndBufUpdates = new SndBufUpdates[world.mNumSndBufs] {}; // zero-initialize
-    world.mBufCounter = 0;
+    const auto sndBufSize = SC_IMPLEMENTED_STRUCT_SIZE(SndBuf, sndfile);
+    for (int i = 0; i < world.mNumSndBufs; ++i) {
+        world.mSndBufs[i].mStructSize = sndBufSize;
+        world.mSndBufsNonRealTimeMirror[i].mStructSize = sndBufSize;
+    }
 
     /* audio settings */
     world.mBufLength = args.mBufLength;
     world.mSampleRate = args.mPreferredSampleRate;
+    world.mBufCounter = 0;
 
     // NOTE: mPreferredSampleRate might be 0 (= use default) or not be supported by audio driver.
     // In that case, the audio backend will call reset_sampling_rate() with the actual sample rate.

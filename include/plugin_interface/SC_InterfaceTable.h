@@ -20,13 +20,7 @@
 
 #pragma once
 
-// TODO next time this is updated, change SC_PlugIn.hpp `numInputs`, `numOutputs` to have correct
-// return type
-// NOTE: The plugin API version has been temporarily bumped to avoid potential crashes
-// with existing plugins on the develop branch. After all plugin API changes have been
-// made for SC 3.15, the API version should be restored to 4.
-static const int sc_api_version = 7;
-
+#include "SC_APIVersion.h"
 #include "SC_Types.h"
 #include "SC_World.h"
 #include "SC_SndBuf.h"
@@ -53,6 +47,14 @@ struct ScopeBufferHnd {
 };
 
 struct InterfaceTable {
+    size_t mStructSize; // versioned struct
+
+    uint32 mApiVersion;
+
+    uint32 mSCVersionMajor;
+    uint32 mSCVersionMinor;
+    uint32 mSCVersionPatch;
+
     uint32 mSineSize;
     float32* mSineWavetable;
     float32* mSine;
@@ -229,22 +231,54 @@ typedef struct InterfaceTable InterfaceTable;
 
 typedef enum { sc_server_scsynth = 0, sc_server_supernova = 1 } SC_ServerType;
 
+//! @struct This is passed to a plugin's entry point function to provide additional context.
+//! It is is available inside the PluginLoad() macro through the `inContext` variable.
+typedef struct ServerPluginContext {
+    size_t mStructSize; // versioned struct
+    //! absolute path to the plugin binary.
+    const char* mPluginPath;
+    //! absolute path to the plugin's directory.
+    //! This is useful for loading additional data resources at runtime.
+    //! Please see the README.md for more information!
+    const char* mPluginDir;
+} ServerPluginContext;
+
+typedef void (*LoadPlugInFunc)(InterfaceTable*, const ServerPluginContext*);
+typedef void (*UnloadPlugInFunc)(void);
+
 #ifdef STATIC_PLUGINS
 #    define PluginLoad(name) void name##_Load(InterfaceTable* inTable)
 #    define PluginUnload(name) void name##_Unload(void)
 #else
 #    ifdef SUPERNOVA
-#        define SUPERNOVA_CHECK                                                                                        \
-            C_LINKAGE SC_API_EXPORT int server_type(void) { return sc_server_supernova; }
+#        define SC_SERVER_TYPE sc_server_supernova
 #    else
-#        define SUPERNOVA_CHECK                                                                                        \
-            C_LINKAGE SC_API_EXPORT int server_type(void) { return sc_server_scsynth; }
+#        define SC_SERVER_TYPE sc_server_scsynth
 #    endif
 
+//! @struct Provides additional information about the plugin to the Server.
+//! Plugin authors never need to use this struct directly.
+typedef struct ServerPluginInfo {
+    size_t mStructSize; // versioned struct
+    //! the Server plugin API version the plugin has been compiled with
+    uint32 mApiVersion;
+    //! the minimum required Server plugin API version
+    uint32 mMinRequiredApiVersion;
+    //! the server type, @see SC_ServerType
+    int32 mServerType;
+    //! the plugin name
+    const char* mName;
+} ServerPluginInfo;
+
 #    define PluginLoad(name)                                                                                           \
-        C_LINKAGE SC_API_EXPORT int api_version(void) { return sc_api_version; }                                       \
-        SUPERNOVA_CHECK                                                                                                \
-        C_LINKAGE SC_API_EXPORT void load(InterfaceTable* inTable)
+        C_LINKAGE SC_API_EXPORT const ServerPluginInfo* plugin_info(void) {                                            \
+            static ServerPluginInfo info = { SC_IMPLEMENTED_STRUCT_SIZE(ServerPluginInfo, mName), SC_API_VERSION,      \
+                                             SC_MIN_REQUIRED_API_VERSION, SC_SERVER_TYPE, #name };                     \
+            return &info;                                                                                              \
+        }                                                                                                              \
+        C_LINKAGE SC_API_EXPORT int api_version(void) { return SC_API_VERSION_MAJOR; }                                 \
+        C_LINKAGE SC_API_EXPORT int server_type(void) { return SC_SERVER_TYPE; }                                       \
+        C_LINKAGE SC_API_EXPORT void load(InterfaceTable* inTable, const ServerPluginContext* inContext)
 
 #    define PluginUnload(name) C_LINKAGE SC_API_EXPORT void unload(void)
 #endif

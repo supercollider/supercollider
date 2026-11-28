@@ -8,7 +8,7 @@ __declspec(dllimport)
 #endif
     void printGreeting(const char* who);
 
-PluginLoad(ML_UGens) {
+PluginLoad(SharedLibTest) {
     ft = inTable;
 
 #ifdef SUPERNOVA
