@@ -15,6 +15,8 @@
 - New feature
 - Breaking change
 
+<!-- In case this is a bigger change which should be reported in the "What's new" document of the next version, please add a new file to this PR based on changelog/yyyy-mm-dd-CHANGELOG_TEMPLATE.md  -->
+
 ## To-do list
 
 <!-- Complete an item by checking it: [x]. Add new entries to track your progress -->
