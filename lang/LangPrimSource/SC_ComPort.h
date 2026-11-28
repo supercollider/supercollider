@@ -49,7 +49,7 @@ public:
     TCPConnection& operator=(TCPConnection&&) = delete;
 
     void start();
-    auto& getSocket() { return mSocket; }
+    auto& socket() { return mSocket; }
 
 private:
     void handleLengthReceived(const boost::system::error_code& error, size_t bytes_transferred);
@@ -79,10 +79,8 @@ public:
     UDP& operator=(const UDP&) = delete;
     UDP& operator=(UDP&&) = delete;
 
-    auto RealPortNum() const { return mPortNum; }
-#ifndef __EMSCRIPTEN__
-    auto& getSocket() { return mUdpSocket; }
-#endif
+    int portNumber() const { return mPortNum; }
+    auto& socket() { return mUdpSocket; }
 
 private:
     void initHandler(HandlerType type);
@@ -96,10 +94,8 @@ private:
     static constexpr int sendBufferSize = 4 * 1024 * 1024;
     static constexpr int fallbackBufferSize = 1 * 1024 * 1024;
     std::array<char, kTextBufSize> mRecvBuffer;
-#ifndef __EMSCRIPTEN__
     boost::asio::ip::udp::endpoint mRemoteEndpoint;
     boost::asio::ip::udp::socket mUdpSocket;
-#endif
 };
 
 class UDPCustom : public UDP {
@@ -139,7 +135,8 @@ public:
     typedef void (*ClientNotifyFunc)(void* clientData);
 
 public:
-    TCP(std::uint64_t inAddress, int inPort, HandlerType, ClientNotifyFunc notifyFunc = 0, void* clientData = 0);
+    TCP(std::uint64_t inAddress, int inPort, HandlerType, ClientNotifyFunc notifyFunc = nullptr,
+        void* clientData = nullptr);
 
     TCP(const TCP&) = delete;
     TCP(TCP&&) = delete;
@@ -147,11 +144,9 @@ public:
     TCP& operator=(const TCP&) = delete;
     TCP& operator=(TCP&&) = delete;
 
-    int Close();
+    int close();
 
-#ifndef __EMSCRIPTEN__
-    boost::asio::ip::tcp::socket& Socket() { return mSocket; }
-#endif
+    boost::asio::ip::tcp::socket& socket() { return mSocket; }
 
 private:
     void startReceive();
@@ -162,10 +157,8 @@ private:
     HandleDataFunc mHandleFunc;
     int32 mOSCMsgLength;
     std::unique_ptr<char[]> mData;
-#ifndef __EMSCRIPTEN__
     boost::asio::ip::tcp::socket mSocket;
     boost::asio::ip::tcp::endpoint mEndpoint;
-#endif
     ClientNotifyFunc mClientNotifyFunc;
     void* mClientData;
 };

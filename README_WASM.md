@@ -38,14 +38,14 @@ Check the CI of SuperCollider to obtain the wasm build artifact.
 ### Source code
 
 The basic idea of the wasm implementation is to remove the network stack since it requires socket access which is not available in a browser environment.
-Instead of "faking" a network stack, `SC_ComPort.cpp` is removed from compilation and the `ReplyAddress` struct also removes its `boost::asio::ip::address mAddress` member.
-Any OSC I/O is instead provided by JavaScript functions which write the messages into the scsynth `World` directly.
+This is done by setting `NO_NETWORKING` to `TRUE`, which in turn skips the `SC_ComPort.cpp` file and sets the `NO_NETWORKING` preprocessor define.
+Any OSC I/O is instead provided by JavaScript functions which directly send the messages to the scsynth `World` instance.
 
 Beyond that, the main additions to the scsynth source code are
 
 * `SC_WebAudioDriver`, located in `server/scsynth/SC_WebAudio.cpp`, which implements a [`WebAudioWorklet`](https://developer.mozilla.org/en-US/docs/Web/API/AudioWorklet) as a "fake" audio driver which receives a callback from the real time environment of the browser to generate the next n samples.
   The emscripten documentation provides a good introduction on WebAudioWorklets, see https://emscripten.org/docs/api_reference/wasm_audio_worklets.html.
-  It also contains all missing fake implementations necessary due to the removal of `SC_ComPort.cpp` and contains the JS<->CPP glue code using emscripten.
+  It also contains the JS<->CPP glue code using emscripten.
 * `platform/wasm/SC_WebOsc.cpp` which implements a basic OSC builder and parser for JavaScript using the already included [oscpack](https://github.com/RossBencina/oscpack)
 * `platform/wasm/scsynth.pre.js` which provides some glue code and scaffolding such that a nice user facing JS API is available.
 

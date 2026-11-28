@@ -14,7 +14,7 @@ foreach(test ${test_sources})
     string(REPLACE .cpp "" test_name ${test} )
     add_executable(${test_name} ${test})
 
-    target_link_libraries(${test_name} boost_test libsclang)
+    target_link_libraries(${test_name} boost_test libsclang sc_lexer)
 
     target_include_directories(${test_name} PUBLIC
         ${boost_include_dirs}

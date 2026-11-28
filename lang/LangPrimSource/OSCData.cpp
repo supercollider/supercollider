@@ -29,36 +29,34 @@
 #include <string.h>
 #include <math.h>
 #include <stdexcept>
-#include <new>
 #include <vector>
-#include <iostream>
 
 #include "scsynthsend.h"
 #include "sc_msg_iter.h"
 #include "SCBase.h"
 #include "server_shm.hpp"
 
-#include "SC_ComPort.h"
 #include "SC_Endian.h"
 #include "SC_Msg.h"
 #include "SC_SndBuf.h"
 #include "SC_WorldOptions.h"
 #include "ClassLibraryInfo.hpp"
 
-#include <boost/asio.hpp>
+#ifndef NO_NETWORKING
+#    include "SC_ComPort.h"
 
-#ifndef _WIN32
-#    include <sys/socket.h>
-#    include <ifaddrs.h>
+#    ifndef _WIN32
+#        include <sys/socket.h>
+#        include <ifaddrs.h>
+#    else
+#        include <iphlpapi.h>
+#    endif
 
-#else
+std::unique_ptr<InPort::UDP> gUDPport {};
+std::vector<std::unique_ptr<InPort::UDPCustom>> gCustomUdpPorts;
+#endif // NO_NETWORKING
 
-#    include <iphlpapi.h>
-
-#endif
-
-extern ClassLibraryInfo gClassLibraryInfo;
-
+#ifndef NO_INTERNAL_SERVER
 struct InternalSynthServerGlobals {
     World* mWorld;
     int mNumSharedControls;
@@ -67,19 +65,16 @@ struct InternalSynthServerGlobals {
 
 const int kNumDefaultSharedControls = 1024;
 float gDefaultSharedControls[kNumDefaultSharedControls];
-bool gUseDoubles = false;
 
 InternalSynthServerGlobals gInternalSynthServer = { nullptr, kNumDefaultSharedControls, gDefaultSharedControls };
-
-std::unique_ptr<InPort::UDP> gUDPport {};
+#endif // NO_INTERNAL_SERVER
 
 PyrString* newPyrString(VMGlobals* g, char* s, int flags, bool runGC);
 
 PyrSymbol *s_call, *s_write, *s_recvoscmsg, *s_recvoscbndl, *s_netaddr, *s_recvrawmsg, *s_ipv4, *s_ipv6, *s_all;
 extern ClassLibraryInfo gClassLibraryInfo;
 
-std::vector<std::unique_ptr<InPort::UDPCustom>> gCustomUdpPorts;
-std::vector<std::unique_ptr<InPort::UDPCustom>> gCustomTcpPorts;
+bool gUseDoubles = false;
 
 ///////////
 
@@ -88,22 +83,26 @@ inline bool IsMessage(const char* ptr) { return ptr[0] == '/'; }
 
 ///////////
 
+#ifndef NO_NETWORKING
+
 static void closeSocket(int socket) {
-#ifdef _WIN32
+#    ifdef _WIN32
     closesocket(socket);
-#else
+#    else
     close(socket);
-#endif
+#    endif
 }
 
 static void printLastSocketError(const char* name) {
-#ifdef _WIN32
+#    ifdef _WIN32
     int err = WSAGetLastError();
-#else
+#    else
     int err = errno;
-#endif
+#    endif
     error("%s failed with error code %d.\n", name, err);
 }
+
+#endif // NO_NETWORKING
 
 //////////
 
@@ -261,23 +260,32 @@ static int makeSynthMsgWithTags(big_scpacket* packet, PyrSlot* slots, int size) 
 
 void PerformOSCBundle(int inSize, const char* inData, PyrObject* inReply, int inPortNum);
 void PerformOSCMessage(int inSize, const char* inData, PyrObject* inReply, int inPortNum, double time);
-static PyrObject* ConvertReplyAddress(ReplyAddress* inReply);
+static PyrObject* ConvertReplyAddress(const ReplyAddress& inReply);
 
-static void localServerReplyFunc(struct ReplyAddress* inReplyAddr, char* inBuf, int inSize) {
+#ifndef NO_INTERNAL_SERVER
+static void internalServerReplyFunc(const ReplyAddress* inReplyAddr, const char* inBuf, int inSize) {
+    assert(inReplyAddr != nullptr);
+
     double timeReceived = elapsedTime();
     bool isBundle = IsBundle(inBuf);
+#    ifdef NO_NETWORKING
+    int port = 0;
+#    else
+    int port = gUDPport ? gUDPport->portNumber() : 0;
+#    endif
 
     gLangMutex.lock();
     if (gClassLibraryInfo.acceptsInput()) {
-        PyrObject* replyObj = ConvertReplyAddress(inReplyAddr);
+        PyrObject* replyObj = ConvertReplyAddress(*inReplyAddr);
         if (isBundle) {
-            PerformOSCBundle(inSize, inBuf, replyObj, gUDPport->RealPortNum());
+            PerformOSCBundle(inSize, inBuf, replyObj, port);
         } else {
-            PerformOSCMessage(inSize, inBuf, replyObj, gUDPport->RealPortNum(), timeReceived);
+            PerformOSCMessage(inSize, inBuf, replyObj, port, timeReceived);
         }
     }
     gLangMutex.unlock();
 }
+#endif // NO_INTERNAL_SERVER
 
 int makeSynthBundle(big_scpacket* packet, PyrSlot* slots, int size, bool useElapsed) {
     double time;
@@ -308,14 +316,19 @@ int makeSynthBundle(big_scpacket* packet, PyrSlot* slots, int size, bool useElap
     return errNone;
 }
 
-#ifndef __EMSCRIPTEN__
+#if defined(__EMSCRIPTEN__)
+// forward declaration - implementation is in SC_WasmClient.cpp
+int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sendMsgLen = true);
+#elif defined(NO_NETWORKING)
+static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sendMsgLen = true) { return errNone; }
+#else
 static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sendMsgLen = true) {
     using namespace boost::asio;
 
     if (IsPtr(netAddrObj->slots + ivxNetAddr_Socket)) {
         auto comPort = static_cast<OutPort::TCP*>(slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket));
         // send TCP
-        ip::tcp::socket& socket = comPort->Socket();
+        ip::tcp::socket& socket = comPort->socket();
 
         boost::system::error_code errc;
 
@@ -338,7 +351,6 @@ static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sen
         if (gUDPport == nullptr)
             return errFailed;
 
-
         // send UDP
         int addr;
         int err = slotIntVal(netAddrObj->slots + ivxNetAddr_Hostaddr, &addr);
@@ -348,7 +360,7 @@ static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sen
         if (addr == 0) {
 #    ifndef NO_INTERNAL_SERVER
             if (gInternalSynthServer.mWorld) {
-                World_SendPacket(gInternalSynthServer.mWorld, msglen, bufptr, &localServerReplyFunc);
+                World_SendPacket(gInternalSynthServer.mWorld, msglen, bufptr, &internalServerReplyFunc);
             }
 #    endif
             return errNone;
@@ -363,23 +375,16 @@ static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sen
         using namespace boost::asio;
         ip::udp::endpoint address(ip::address_v4(ulAddress), port);
 
-        gUDPport->getSocket().send_to(buffer(bufptr, msglen), address);
+        gUDPport->socket().send_to(buffer(bufptr, msglen), address);
     }
 
     return errNone;
 }
-#else
-// forward declaration - implementation is in SC_WasmClient.cpp
-int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sendMsgLen = true);
 #endif
-
 
 ///////////
 
-inline size_t OSCStrLen(char* str) { return (strlen(str) + 4) & ~3; }
-
-
-int makeSynthBundle(big_scpacket* packet, PyrSlot* slots, int size, bool useElapsed);
+#ifndef NO_NETWORKING
 
 static void netAddrTcpClientNotifyFunc(void* clientData) {
     gLangMutex.lock();
@@ -431,13 +436,14 @@ static int prNetAddr_Disconnect(VMGlobals* g, int numArgsPushed) {
 
     auto comPort = static_cast<OutPort::TCP*>(slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket));
     if (comPort) {
-        err = comPort->Close();
+        err = comPort->close();
         SetPtr(netAddrObj->slots + ivxNetAddr_Socket, nullptr);
     }
 
     return err;
 }
 
+#endif // NO_NETWORKING
 
 static int prNetAddr_SendMsg(VMGlobals* g, int numArgsPushed) {
     PyrSlot* netAddrSlot = g->sp - numArgsPushed + 1;
@@ -451,7 +457,6 @@ static int prNetAddr_SendMsg(VMGlobals* g, int numArgsPushed) {
 
     return netAddrSend(slotRawObject(netAddrSlot), packet.size(), (char*)packet.buf);
 }
-
 
 static int prNetAddr_SendBundle(VMGlobals* g, int numArgsPushed) {
     PyrSlot* netAddrSlot = g->sp - numArgsPushed + 1;
@@ -490,16 +495,16 @@ static int prNetAddr_SendRaw(VMGlobals* g, int numArgsPushed) {
 }
 
 static int prNetAddr_GetBroadcastFlag(VMGlobals* g, int numArgsPushed) {
-    if (gUDPport == nullptr)
-        return errFailed;
-#ifdef __EMSCRIPTEN__
-    // we silently ignore and pass any socket requests instead
-    // of bailing out
+#ifdef NO_NETWORKING
+    // we silently ignore and pass any socket requests instead of bailing out
     return errNone;
 #else
+    if (gUDPport == nullptr)
+        return errFailed;
+
     boost::system::error_code ec;
     boost::asio::socket_base::broadcast option;
-    gUDPport->getSocket().get_option(option, ec);
+    gUDPport->socket().get_option(option, ec);
 
     if (ec)
         return errFailed;
@@ -510,14 +515,15 @@ static int prNetAddr_GetBroadcastFlag(VMGlobals* g, int numArgsPushed) {
 }
 
 static int prNetAddr_SetBroadcastFlag(VMGlobals* g, int numArgsPushed) {
-    if (gUDPport == nullptr)
-        return errFailed;
-#ifdef __EMSCRIPTEN__
+#ifdef NO_NETWORKING
     return errNone;
 #else
+    if (gUDPport == nullptr)
+        return errFailed;
+
     boost::system::error_code ec;
     boost::asio::socket_base::broadcast option(IsTrue(g->sp));
-    gUDPport->getSocket().set_option(option, ec);
+    gUDPport->socket().set_option(option, ec);
 
     if (ec)
         return errFailed;
@@ -620,7 +626,6 @@ static int prOSCBytes_Array(VMGlobals* g, int numArgsPushed) {
 // Create a new <PyrInt8Array> object and copy data from `msg.getb'.
 // Bytes are properly untyped, but there is no <UInt8Array> type.
 
-static PyrInt8Array* MsgToInt8Array(sc_msg_iter& msg, bool runGC);
 static PyrInt8Array* MsgToInt8Array(sc_msg_iter& msg, bool runGC) {
     int size = msg.getbsize();
     VMGlobals* g = gMainVMGlobals;
@@ -770,18 +775,18 @@ static PyrObject* ConvertOSCBundle(int inSize, const char* inData) {
     return result;
 }
 
-static PyrObject* ConvertReplyAddress(ReplyAddress* inReply) {
+static PyrObject* ConvertReplyAddress(const ReplyAddress& inReply) {
     VMGlobals* g = gMainVMGlobals;
     PyrObject* obj = instantiateObject(g->gc, s_netaddr->u.classobj, 2, true, false);
     PyrSlot* slots = obj->slots;
-#ifdef __EMSCRIPTEN__
+#ifdef NO_NETWORKING
     // hardcode to 127.0.0.1 b/c otherwise ServerStatusWatcher
     // will not believe that the server is online
     SetInt(slots + 0, 0x7F000001);
 #else
-    SetInt(slots + 0, inReply->mAddress.to_v4().to_uint());
+    SetInt(slots + 0, inReply.mAddress.to_v4().to_uint());
 #endif
-    SetInt(slots + 1, inReply->mPort);
+    SetInt(slots + 1, inReply.mPort);
     return obj;
 }
 
@@ -844,7 +849,7 @@ void ProcessOSCPacket(std::unique_ptr<OSC_Packet> inPacket, int inPortNum, doubl
 
     gLangMutex.lock();
     if (gClassLibraryInfo.acceptsInput()) {
-        PyrObject* replyObj = ConvertReplyAddress(&inPacket->mReplyAddr);
+        PyrObject* replyObj = ConvertReplyAddress(inPacket->mReplyAddr);
         if (gClassLibraryInfo.acceptsInput()) {
             if (isBundle) {
                 PerformOSCBundle(inPacket->mSize, inPacket->mData.get(), replyObj, inPortNum);
@@ -872,7 +877,7 @@ void ProcessRawMessage(std::unique_ptr<char[]> inData, size_t inSize, ReplyAddre
         ++g->sp;
         SetFloat<AssertDouble::CouldBeBadNan>(g->sp, time); // time
         ++g->sp;
-        SetObject(g->sp, ConvertReplyAddress(&replyAddress));
+        SetObject(g->sp, ConvertReplyAddress(replyAddress));
         ++g->sp;
         SetInt(g->sp, inPortNum);
         ++g->sp;
@@ -883,18 +888,19 @@ void ProcessRawMessage(std::unique_ptr<char[]> inData, size_t inSize, ReplyAddre
     gLangMutex.unlock();
 }
 
+#ifndef NO_NETWORKING
 
 void startAsioThread();
 void stopAsioThread();
 
 void init_OSC(int port) {
-#ifdef _WIN32
+#    ifdef _WIN32
     WSAData wsaData;
     int nCode;
     if ((nCode = WSAStartup(MAKEWORD(1, 1), &wsaData)) != 0) {
         error("sclang: init_OSC: WSAStartup() failed with error code %d.\n", nCode);
     }
-#endif
+#    endif
 
     startAsioThread();
     try {
@@ -902,8 +908,7 @@ void init_OSC(int port) {
     } catch (std::exception const& e) { postfl("No networking: %s", e.what()); }
 }
 
-int prOpenOSCUDPPort(VMGlobals* g, int numArgsPushed);
-int prOpenOSCUDPPort(VMGlobals* g, int numArgsPushed) {
+template <HandlerType type> int prOpenCustomUDPPort(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
     PyrSlot* b = g->sp;
     int port;
@@ -911,35 +916,10 @@ int prOpenOSCUDPPort(VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
 
-    std::unique_ptr<InPort::UDPCustom> newUDPport;
-
     try {
-        SetTrue(a);
-        newUDPport = std::make_unique<InPort::UDPCustom>(port, HandlerType::OSC);
+        auto newUDPport = std::make_unique<InPort::UDPCustom>(port, type);
         gCustomUdpPorts.push_back(std::move(newUDPport));
-    } catch (...) {
-        SetFalse(a);
-        postfl("Could not bind to requested port. This may mean it is in use already by another application, or the "
-               "application does not have permissions to open a port.\n");
-    }
-    return errNone;
-}
-
-int prOpenRawUDPPort(VMGlobals* g, int numArgsPushed);
-int prOpenRawUDPPort(VMGlobals* g, int numArgsPushed) {
-    PyrSlot* a = g->sp - 1;
-    PyrSlot* b = g->sp;
-    int port;
-    int err = slotIntVal(b, &port);
-    if (err)
-        return err;
-
-    std::unique_ptr<InPort::UDPCustom> newTCPPort;
-
-    try {
         SetTrue(a);
-        newTCPPort = std::make_unique<InPort::UDPCustom>(port, HandlerType::Raw);
-        gCustomTcpPorts.push_back(std::move(newTCPPort));
     } catch (...) {
         SetFalse(a);
         postfl("Could not bind to requested port. This may mean it is in use already by another application, or the "
@@ -948,12 +928,7 @@ int prOpenRawUDPPort(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-
-void closeAllCustomPorts();
-void closeAllCustomPorts() {
-    gCustomUdpPorts.clear();
-    gCustomTcpPorts.clear();
-}
+void closeAllCustomPorts() { gCustomUdpPorts.clear(); }
 
 void cleanup_OSC() {
     postfl("cleaning up OSC\n");
@@ -964,14 +939,20 @@ void cleanup_OSC() {
 
     stopAsioThread();
 
-#ifdef _WIN32
+#    ifdef _WIN32
     WSACleanup();
-#endif
+#    endif
 }
 
 extern boost::asio::io_context ioContext;
 
+#endif // NO_NETWORKING
+
 static int prGetHostByName(VMGlobals* g, int numArgsPushed) {
+#ifdef NO_NETWORKING
+    SetInt(g->sp, 0);
+    return errNone;
+#else
     PyrSlot* a = g->sp;
     char hostname[256];
 
@@ -979,13 +960,13 @@ static int prGetHostByName(VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
 
-#if 1
+#    if 1
     struct hostent* he = gethostbyname(hostname);
     if (!he) {
-#    ifdef _WIN32
+#        ifdef _WIN32
         int err = WSAGetLastError();
         error("gethostbyname(\"%s\") failed with error code %i.\n", hostname, err);
-#    endif
+#        endif
         return errFailed;
     }
 
@@ -993,7 +974,7 @@ static int prGetHostByName(VMGlobals* g, int numArgsPushed) {
 
     return errNone;
 
-#else
+#    else
     boost::asio::ip::address address;
     boost::system::error_code err_c;
     using boost::asio::ip::udp;
@@ -1009,30 +990,29 @@ static int prGetHostByName(VMGlobals* g, int numArgsPushed) {
         SetInt(a, iterator->endpoint().address().to_v4().to_ulong());
 
     return errNone;
-#endif
+#    endif
+#endif // NO_NETWORKING
 }
 
 static int prGetLangPort(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
-#ifdef __EMSCRIPTEN__
-    // hardcode port number for emscripten to default port 57120
+#ifdef NO_NETWORKING
+    // hardcode port number to default port 57120
     SetInt(a, 57120);
 #else
     if (!gUDPport)
         return errFailed;
-    SetInt(a, gUDPport->RealPortNum());
+    SetInt(a, gUDPport->portNumber());
 #endif
     return errNone;
 }
 
 static int prLocalIPs(VMGlobals* g, int numArgsPushed) {
-    PyrSlot* a = g->sp;
-#ifdef __EMSCRIPTEN__
-    // emscripten returns 127.0.0.1 here, although emscripten
-    // does not really have the concept of IP due to the
-    // non-existing network stack.
-    // Returning an empty array will introduce problems when
-    // booting the server, probably due to ServerStatusWatcher.
+#ifdef NO_NETWORKING
+    // Let's just return 127.0.0.1 here, even though we do not really
+    // have the concept of IP due to the non-existing network stack.
+    // Returning an empty array will introduce problems when booting
+    // the server, probably due to ServerStatusWatcher.
     PyrObject* array = newPyrArray(g->gc, 1, 0, true);
     PyrString* str = newPyrString(g->gc, "127.0.0.1", 0, true);
     SetObject(array->slots, (PyrObjectHdr*)str);
@@ -1042,6 +1022,7 @@ static int prLocalIPs(VMGlobals* g, int numArgsPushed) {
     return errNone;
 #else
     int addressFamily = AF_UNSPEC; // IPv4 + IPv6
+    PyrSlot* a = g->sp;
     if (IsSym(a)) {
         PyrSymbol* sym = slotRawSymbol(a);
         if (sym == s_ipv4) {
@@ -1160,6 +1141,14 @@ static int prLocalIPs(VMGlobals* g, int numArgsPushed) {
 }
 
 static int prLocalIP(VMGlobals* g, int numArgsPushed) {
+#ifdef NO_NETWORKING
+    // Let's just return 127.0.0.1, see prLocalIPs above.
+    PyrString* addrString = newPyrString(g->gc, "127.0.0.1", 0, true);
+    if (!addrString)
+        return errFailed;
+    SetObject(g->sp - 1, (PyrObjectHdr*)addrString);
+    return errNone;
+#else
     PyrSlot* a = g->sp;
 
     sockaddr_in remoteAddr;
@@ -1206,9 +1195,9 @@ static int prLocalIP(VMGlobals* g, int numArgsPushed) {
     SetObject(g->sp - 1, (PyrObjectHdr*)result);
 
     return errNone;
+#endif // NO_NETWORKING
 }
 
-int prExit(VMGlobals* g, int numArgsPushed);
 int prExit(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -1224,6 +1213,7 @@ int vpost(const char* fmt, va_list vargs);
 }
 
 #ifndef NO_INTERNAL_SERVER
+
 int prBootInProcessServer(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -1358,16 +1348,9 @@ int prQuitInProcessServer(VMGlobals* g, int numArgsPushed) {
 
     return errNone;
 }
-#else // NO_INTERNAL_SERVER
-int prQuitInProcessServer(VMGlobals* g, int numArgsPushed) {
-    // no-op. Better to have this than to overwrite in lang.
-    return errNone;
-}
-#endif // NO_INTERNAL_SERVER
 
 inline int32 BUFMASK(int32 x) { return (1 << (31 - CLZ(x))) - 1; }
 
-int prAllocSharedControls(VMGlobals* g, int numArgsPushed);
 int prAllocSharedControls(VMGlobals* g, int numArgsPushed) {
     // PyrSlot *a = g->sp - 1;
     PyrSlot* b = g->sp;
@@ -1395,8 +1378,6 @@ int prAllocSharedControls(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-
-int prGetSharedControl(VMGlobals* g, int numArgsPushed);
 int prGetSharedControl(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
     PyrSlot* b = g->sp;
@@ -1414,7 +1395,6 @@ int prGetSharedControl(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSetSharedControl(VMGlobals* g, int numArgsPushed);
 int prSetSharedControl(VMGlobals* g, int numArgsPushed) {
     // PyrSlot *a = g->sp - 2;
     PyrSlot* b = g->sp - 1;
@@ -1436,6 +1416,8 @@ int prSetSharedControl(VMGlobals* g, int numArgsPushed) {
     gInternalSynthServer.mSharedControls[index] = val;
     return errNone;
 }
+
+#endif // NO_INTERNAL_SERVER
 
 static int disconnectSharedMem(VMGlobals* g, PyrObject* object) {
     int ptrIndex = 0;
@@ -1619,15 +1601,16 @@ int prSetControlBusValues(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-void init_OSC_primitives();
 void init_OSC_primitives() {
     int base, index;
 
     base = nextPrimitiveIndex();
     index = 0;
 
+#ifndef NO_NETWORKING
     definePrimitive(base, index++, "_NetAddr_Connect", prNetAddr_Connect, 1, 0);
     definePrimitive(base, index++, "_NetAddr_Disconnect", prNetAddr_Disconnect, 1, 0);
+#endif
     definePrimitive(base, index++, "_NetAddr_SendMsg", prNetAddr_SendMsg, 1, 1);
     definePrimitive(base, index++, "_NetAddr_SendBundle", prNetAddr_SendBundle, 2, 1);
     definePrimitive(base, index++, "_NetAddr_SendRaw", prNetAddr_SendRaw, 2, 0);
@@ -1635,31 +1618,34 @@ void init_OSC_primitives() {
     definePrimitive(base, index++, "_NetAddr_SetBroadcastFlag", prNetAddr_SetBroadcastFlag, 2, 0);
     definePrimitive(base, index++, "_NetAddr_BundleSize", prNetAddr_BundleSize, 1, 0);
     definePrimitive(base, index++, "_NetAddr_MsgSize", prNetAddr_MsgSize, 1, 0);
-
     definePrimitive(base, index++, "_NetAddr_UseDoubles", prNetAddr_UseDoubles, 2, 0);
+
     definePrimitive(base, index++, "_Array_OSCBytes", prArray_OSCBytes, 1, 0);
     definePrimitive(base, index++, "_OSCBytes_Array", prOSCBytes_Array, 1, 0);
+#ifndef NO_NETWORKING
+    definePrimitive(base, index++, "_OpenOSCUDPPort", prOpenCustomUDPPort<HandlerType::OSC>, 2, 0);
+    definePrimitive(base, index++, "_OpenRawUDPPort", prOpenCustomUDPPort<HandlerType::Raw>, 2, 0);
+#endif
     definePrimitive(base, index++, "_GetHostByName", prGetHostByName, 1, 0);
     definePrimitive(base, index++, "_GetLangPort", prGetLangPort, 1, 0);
     definePrimitive(base, index++, "_LocalIPs", prLocalIPs, 2, 0);
     definePrimitive(base, index++, "_LocalIP", prLocalIP, 2, 0);
     definePrimitive(base, index++, "_Exit", prExit, 1, 0);
+
+    // internal server
 #ifndef NO_INTERNAL_SERVER
     definePrimitive(base, index++, "_BootInProcessServer", prBootInProcessServer, 1, 0);
-#endif
     definePrimitive(base, index++, "_QuitInProcessServer", prQuitInProcessServer, 1, 0);
     definePrimitive(base, index++, "_AllocSharedControls", prAllocSharedControls, 2, 0);
     definePrimitive(base, index++, "_SetSharedControl", prSetSharedControl, 3, 0);
     definePrimitive(base, index++, "_GetSharedControl", prGetSharedControl, 2, 0);
-    definePrimitive(base, index++, "_OpenOSCUDPPort", prOpenOSCUDPPort, 2, 0);
-    definePrimitive(base, index++, "_OpenRawUDPPort", prOpenRawUDPPort, 2, 0);
+#endif
 
     // server shared memory interface
     definePrimitive(base, index++, "_ServerShmInterface_connectSharedMem", prConnectSharedMem, 2, 0);
     definePrimitive(base, index++, "_ServerShmInterface_disconnectSharedMem", prDisconnectSharedMem, 1, 0);
     definePrimitive(base, index++, "_ServerShmInterface_getControlBusValue", prGetControlBusValue, 2, 0);
     definePrimitive(base, index++, "_ServerShmInterface_getControlBusValues", prGetControlBusValues, 3, 0);
-
     definePrimitive(base, index++, "_ServerShmInterface_setControlBusValue", prSetControlBusValue, 3, 0);
     definePrimitive(base, index++, "_ServerShmInterface_setControlBusValues", prSetControlBusValues, 3, 0);
 

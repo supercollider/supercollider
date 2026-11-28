@@ -21,9 +21,13 @@
 #pragma once
 
 #include "SC_ReplyImpl.hpp"
-#include <cinttypes>
+#include "SC_WorldOptions.h"
+#include "sc_msg_iter.h"
 
-static bool dumpOSCmsg(int inSize, char* inData, bool skipStatus = false) {
+#include <cinttypes>
+#include <cstring>
+
+inline bool dumpOSCmsg(const char* inData, int32 inSize, bool skipStatus = false) {
     int size;
     const char* data;
 
@@ -112,7 +116,7 @@ leave:
     return true; // something has been printed
 }
 
-static void hexdump(int size, char* data) {
+inline void hexdump(const char* data, int32 size) {
     char ascii[20];
     int padsize = (size + 15) & -16;
     scprintf("size %d\n", size);
@@ -141,9 +145,9 @@ static void hexdump(int size, char* data) {
     scprintf("\n");
 }
 
-static bool dumpOSCbndl(int indent, int size, char* inData) {
-    char* data = inData + 8;
-    char* dataEnd = inData + size;
+inline bool dumpOSCbundle(const char* inData, int32 size, int indent = 0) {
+    const char* data = inData + 8;
+    const char* dataEnd = inData + size;
 
     scprintf("[ \"#bundle\", %" PRIu64 ", ", OSCtime(data));
     data += 8;
@@ -158,9 +162,9 @@ static bool dumpOSCbndl(int indent, int size, char* inData) {
             scprintf("  ");
 
         if (!strcmp(data, "#bundle"))
-            contentPrinted = dumpOSCbndl(indent + 1, msgSize, data);
+            contentPrinted = dumpOSCbundle(data, msgSize, indent + 1);
         else
-            contentPrinted = dumpOSCmsg(msgSize, data, true);
+            contentPrinted = dumpOSCmsg(data, msgSize, true);
         data += msgSize;
         if ((data < dataEnd) && contentPrinted)
             scprintf(",");
@@ -173,36 +177,34 @@ static bool dumpOSCbndl(int indent, int size, char* inData) {
     return true;
 }
 
-static void dumpOSC(int mode, int size, char* inData) {
+inline void dumpOSC(int mode, const char* inData, int32 size) {
     if (mode & 1) {
-        int indent = 0;
         bool contentPrinted;
 
         if (strcmp(inData, "#bundle") == 0)
-            contentPrinted = dumpOSCbndl(indent, size, inData);
+            contentPrinted = dumpOSCbundle(inData, size);
         else
-            contentPrinted = dumpOSCmsg(size, inData, true);
+            contentPrinted = dumpOSCmsg(inData, size, true);
 
         if (contentPrinted)
             scprintf("\n");
     }
 
     if (mode & 2)
-        hexdump(size, inData);
+        hexdump(inData, size);
 }
 
-#if 0 // debugging code
-static void DumpReplyAddress(ReplyAddress *inReplyAddress)
-{
-	scprintf("mAddress %s\n", inReplyAddress->mAddress.to_string().c_str());
-	if (inReplyAddress->mProtocol == kUDP)
-		scprintf("mProtocol UDP\n");
-	else
-		scprintf("mProtocol TCP\n");
-
-	scprintf("mPort %d\n",   inReplyAddress->mPort);
-	scprintf("mSocket %d\n", inReplyAddress->mSocket);
-
-	scprintf("mReplyFunc %p\n", (void*)inReplyAddress->mReplyFunc);
-}
+inline void dumpReplyAddress(const ReplyAddress& addr) {
+#ifndef NO_NETWORKING
+    scprintf("mAddress %s\n", addr.mAddress.to_string().c_str());
 #endif
+    if (addr.mProtocol == kUDP)
+        scprintf("mProtocol UDP\n");
+    else
+        scprintf("mProtocol TCP\n");
+
+    scprintf("mPort %d\n", addr.mPort);
+    scprintf("mSocket %d\n", addr.mSocket);
+
+    scprintf("mReplyFunc %p\n", (void*)&addr.mReplyFunc);
+}

@@ -23,14 +23,14 @@
 
 #include "SC_Reply.h"
 
-#ifndef __EMSCRIPTEN__
+#ifndef NO_NETWORKING
 #    include <boost/asio.hpp>
 #endif
 
 enum Protocol { kUDP, kTCP };
 
 struct ReplyAddress {
-#ifndef __EMSCRIPTEN__
+#ifndef NO_NETWORKING
     boost::asio::ip::address mAddress;
 #endif
     enum Protocol mProtocol;
@@ -41,12 +41,31 @@ struct ReplyAddress {
     void* mReplyData;
 };
 
-void null_reply_func(struct ReplyAddress* addr, char* msg, int size);
+inline void null_reply_func(const ReplyAddress* addr, const char* msg, int size) {}
 
-bool operator==(const ReplyAddress& a, const ReplyAddress& b);
+inline bool operator==(const ReplyAddress& a, const ReplyAddress& b) {
+#ifdef NO_NETWORKING
+    return a.mProtocol == b.mProtocol && a.mPort == b.mPort && a.mSocket == b.mSocket;
+#else
+    return a.mAddress == b.mAddress && a.mProtocol == b.mProtocol && a.mPort == b.mPort && a.mSocket == b.mSocket;
+#endif
+}
 
-bool operator<(const ReplyAddress& a, const ReplyAddress& b);
+inline bool operator<(const ReplyAddress& a, const ReplyAddress& b) {
+#ifndef NO_NETWORKING
+    if (a.mAddress != b.mAddress) {
+        return a.mAddress < b.mAddress;
+    }
+#endif
+    if (a.mPort != b.mPort) {
+        return a.mPort < b.mPort;
+    } else if (a.mSocket != b.mSocket) {
+        return a.mSocket < b.mSocket;
+    } else {
+        return a.mProtocol < b.mProtocol;
+    }
+}
 
-inline void SendReply(struct ReplyAddress* inReplyAddr, char* inBuf, int inSize) {
+inline void SendReply(const ReplyAddress* inReplyAddr, const char* inBuf, int inSize) {
     (inReplyAddr->mReplyFunc)(inReplyAddr, inBuf, inSize);
 }

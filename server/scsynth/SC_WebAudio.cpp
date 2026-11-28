@@ -28,13 +28,10 @@
 #include "SC_World.h"
 #include "SC_WorldOptions.h"
 
-// forward declarations
-static void jsReplyFunc(ReplyAddress*, char* msg, int size);
-bool ProcessOSCPacket(World*, OSC_Packet*); // SC_CoreAudio function
 class SC_WebAudioDriver;
 
 // size of the print ring buffer - keep this large to avoid any corruption
-static constexpr int PRINT_BUFFER_SIZE = 0x100000;
+static constexpr int PRINT_BUFFER_SIZE = 1 << 20; // 1 MB
 
 // global variables are initiated during scaffolding of the audio worklet
 // and makes passing state around easier since there are some
@@ -222,41 +219,11 @@ bool SC_WebAudioDriver::processBlock(int numInputs, const AudioSampleFrame* inpu
     return true;
 }
 
+static void jsReplyFunc(const ReplyAddress*, const char* msg, int size);
+
 bool SC_WebAudioDriver::sendOsc(const char* data, const int size) {
-    auto ptr = malloc(sizeof(OSC_Packet));
-    if (!ptr) {
-        scprintf("Could not process OSC message, out of wasm memory\n");
-        return false;
-    }
-    auto packet = static_cast<OSC_Packet*>(ptr);
-
-    // this additional copy can be removed once this has been refactored to use the
-    // `World_SendPacket` API, see below
-    auto rawBuffer = static_cast<char*>(malloc(size * sizeof(char)));
-    memcpy(rawBuffer, data, size);
-
-    packet->mData = rawBuffer;
-    packet->mSize = size;
-    packet->mIsBundle = data[0] == 35; // maybe too naive?
-    packet->mReplyAddr.mReplyFunc = jsReplyFunc;
-    packet->mReplyAddr.mReplyData = nullptr;
-    packet->mReplyAddr.mPort = 57120;
-    packet->mReplyAddr.mProtocol = kUDP;
-    // use invalid socket and port
-    packet->mReplyAddr.mSocket = -1;
-    packet->mReplyAddr.mPort = 0;
-
-    // @todo This implementation can not handle nested bundles.
-    // use `World_SendPacket` API which is part of `SC_ComPort.cpp`,
-    // but it does not require the network stack, so it could be
-    // separated from any network implementation.
-    if (!ProcessOSCPacket(mWorld, packet)) {
-        free(rawBuffer);
-        free(packet);
-    }
-    return true;
+    return World_SendPacket(mWorld, size, data, jsReplyFunc);
 }
-
 
 bool SC_WebAudioDriver::DriverStart() {
     int outputChannelCounts[1] = { static_cast<int>(mWorld->mNumOutputs) };
@@ -274,23 +241,6 @@ bool SC_WebAudioDriver::DriverStart() {
     return true;
 }
 
-/*
- *  Fake implementations
- */
-
-// fill SC_ReplyImpl.hpp implementation holes
-void null_reply_func(struct ReplyAddress* addr, char* msg, int size) {}
-bool operator==(const ReplyAddress& a, const ReplyAddress& b) { return true; }
-bool operator<(const ReplyAddress& a, const ReplyAddress& b) { return true; }
-
-// Fill ComPort implementation holes
-namespace scsynth {
-void startAsioThread() {}
-void stopAsioThread() {}
-bool asioThreadStarted() { return true; }
-}
-
-
 // required by CoreAudio
 void initializeScheduler() {
     // Compute offset to convert emscripten_get_now() to absolute NTP-epoch OSC time,
@@ -304,6 +254,7 @@ void initializeScheduler() {
 }
 
 extern "C" {
+
 // CoreAudio implementations
 int64 oscTimeNow() {
     double nowSecs = emscripten_get_now() * 0.001;
@@ -312,10 +263,7 @@ int64 oscTimeNow() {
 
 int32 server_timeseed() { return static_cast<int32>(emscripten_get_now() * 1000.0); }
 
-// SC_ComPort implementation
-int World_OpenUDP(World*, const char*, int) { return 1; }
-int World_OpenTCP(World*, const char*, int, int, int) { return 1; }
-}
+} // extern "C"
 
 /*
  *  JS glue code
@@ -327,7 +275,7 @@ int World_OpenTCP(World*, const char*, int, int, int) { return 1; }
  * The caller is responsible for freeing the passed message.
  * A copy is made b/c the function is async and the object could be out-of-scope already by then.
  */
-static void jsReplyFunc(ReplyAddress*, char* msg, int size) {
+static void jsReplyFunc(const ReplyAddress*, const char* msg, int size) {
     // offset within sc heap
     char* copy = static_cast<char*>(malloc(size));
     if (!copy)

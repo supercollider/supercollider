@@ -23,14 +23,14 @@
 #include "SC_Prototypes.h"
 #include "SC_HiddenWorld.h"
 #include "SC_WorldOptions.h"
-#include "SC_Endian.h"
 #include "SC_Lib_Cintf.h"
 #include "SC_Lock.h"
+#include "SC_OSC.h"
 #include "SC_Time.hpp"
 #include "SC_InlineBinaryOp.h"
 
 #include <algorithm>
-#include <stdlib.h>
+#include <cstdlib>
 
 #ifndef _WIN32
 #    include <sys/time.h>
@@ -48,10 +48,13 @@
 #    undef NOVA_TT_PRIORITY_RT
 #endif
 
+namespace {
 
 int64 gStartupOSCTime = -1;
 
 double gSampleRate, gSampleDur;
+
+} // namespace
 
 void sc_SetDenormalFlags();
 
@@ -167,43 +170,39 @@ void initializeScheduler() { gOSCoffset = GetCurrentOSCTime(); }
 // =====================================================================
 // Packets (Common)
 
-bool ProcessOSCPacket(World* inWorld, OSC_Packet* inPacket);
-void PerformOSCBundle(World* inWorld, OSC_Packet* inPacket);
-int PerformOSCMessage(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);
-PacketStatus PerformOSCPacket(World* world, OSC_Packet* packet, SC_ScheduledEvent::PacketFreeFunc);
+static void Perform_ToEngine_Msg(FifoMsg* inMsg);
+static void FreeOSCPacket(FifoMsg* inMsg);
 
-void Perform_ToEngine_Msg(FifoMsg* inMsg);
-void FreeOSCPacket(FifoMsg* inMsg);
-
-struct IsBundle {
-    IsBundle() { str4cpy(s, "#bundle"); }
-    bool checkIsBundle(int32* in) { return in[0] == s[0] && in[1] == s[1]; }
-    int32 s[2];
-};
-IsBundle gIsBundle;
-
-bool ProcessOSCPacket(World* inWorld, OSC_Packet* inPacket) {
+/** @brief sends an OSC packet to the audio engine for further processing.
+ *  Always called from a non-RT thread.
+ *  @note This function takes full ownership of the packet, including the OSC data.
+ */
+bool ProcessOSCPacket(World* inWorld, std::unique_ptr<OSC_Packet> inPacket) {
     // scprintf("ProcessOSCPacket %d, '%s'\n", inPacket->mSize, inPacket->mData);
     if (!inPacket)
         return false;
-    bool result;
-    static_cast<SC_Lock*>(inWorld->mDriverLock)->lock();
+
     SC_AudioDriver* driver = AudioDriver(inWorld);
-    if (!driver) {
-        static_cast<SC_Lock*>(inWorld->mDriverLock)->unlock();
-        return false;
-    }
-    inPacket->mIsBundle = gIsBundle.checkIsBundle((int32*)inPacket->mData);
+
     FifoMsg fifoMsg;
-    fifoMsg.Set(inWorld, Perform_ToEngine_Msg, FreeOSCPacket, (void*)inPacket);
-    result = driver->SendOscPacketMsgToEngine(fifoMsg);
+    fifoMsg.Set(inWorld, Perform_ToEngine_Msg, FreeOSCPacket, inPacket.release());
+
+    static_cast<SC_Lock*>(inWorld->mDriverLock)->lock();
+    bool result = driver->SendOscPacketMsgToEngine(fifoMsg);
     static_cast<SC_Lock*>(inWorld->mDriverLock)->unlock();
-    if (!result)
+
+    if (!result) {
         scprintf("command FIFO full\n");
+        auto packet = static_cast<OSC_Packet*>(fifoMsg.mData);
+        delete[] packet->mData;
+        delete packet;
+    }
+
     return result;
 }
 
-int PerformOSCMessage(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
+/** @brief perform an OSC message. */
+static int PerformOSCMessage(World* inWorld, const char* inData, int inSize, const ReplyAddress* inReply) {
     // scprintf("->PerformOSCMessage %d\n", inData[0]);
     SC_LibCmd* cmdObj;
     int cmdNameLen;
@@ -224,21 +223,24 @@ int PerformOSCMessage(World* inWorld, int inSize, char* inData, ReplyAddress* in
         return kSCErr_NoSuchCommand;
     }
 
-    int err = cmdObj->Perform(inWorld, inSize - cmdNameLen, inData + cmdNameLen, inReply);
+    int err = cmdObj->Perform(inWorld, inData + cmdNameLen, inSize - cmdNameLen, inReply);
     // scprintf("<-PerformOSCMessage %d\n", inData[0]);
     return err;
 }
 
-void PerformOSCBundle(World* inWorld, OSC_Packet* inPacket) {
+/** @brief perform an OSC bundle.
+ *  This is also called in World_NonRealTimeSynthesis()
+ */
+void PerformOSCBundle(World* inWorld, const OSC_Packet& inPacket) {
     // scprintf("->PerformOSCBundle %d\n", inPacket->mSize);
-    char* data = inPacket->mData + 16;
-    char* dataEnd = inPacket->mData + inPacket->mSize;
+    const char* data = inPacket.mData + 16;
+    const char* dataEnd = inPacket.mData + inPacket.mSize;
 
     while (data < dataEnd) {
-        int32 msgSize = sc_ntohl(*(int32*)data);
+        int32 msgSize = OSCint(data);
         data += sizeof(int32);
         // scprintf("msgSize %d\n", msgSize);
-        PerformOSCMessage(inWorld, msgSize, data, &inPacket->mReplyAddr);
+        PerformOSCMessage(inWorld, data, msgSize, &inPacket.mReplyAddr);
         data += msgSize;
     }
 
@@ -248,20 +250,32 @@ void PerformOSCBundle(World* inWorld, OSC_Packet* inPacket) {
     // scprintf("<-PerformOSCBundle %d\n", inPacket->mSize);
 }
 
-PacketStatus PerformOSCPacket(World* world, OSC_Packet* packet, SC_ScheduledEvent::PacketFreeFunc freeFunc) {
+/** @brief perform an OSC packet. Always called on the RT thread.
+ *
+ *  If the OSC packet can be performed immediately, the function returns \c PacketPerformed.
+ *  If the OSC packet needs to be scheduled, the scheduler takes ownership of the OSC_Packet
+ *  object and the function returns \c PacketScheduled.
+ *
+ *  The OSC_Packet might come either from a network socket (= ASIO thread) or as a completion
+ *  message via PerformCompletionMsg() (= RT thread). This is why the caller must pass the
+ *  appropriate free function.
+ */
+static PacketStatus PerformOSCPacket(World* world, OSC_Packet* packet, SC_ScheduledEvent::PacketFreeFunc freeFunc) {
     SC_AudioDriver* driver = world->hw->mAudioDriver;
 
     if (!packet->mIsBundle) {
-        PerformOSCMessage(world, packet->mSize, packet->mData, &packet->mReplyAddr);
+        // message -> perform immediately
+        PerformOSCMessage(world, packet->mData, packet->mSize, &packet->mReplyAddr);
         world->mLocalErrorNotification = 0;
         return PacketPerformed;
     } else {
-        // in real time engine, schedule the packet
         int64 time = OSCtime(packet->mData + 8);
         if (time == 0 || time == 1) {
-            PerformOSCBundle(world, packet);
+            // immediate bundle -> perform immediately
+            PerformOSCBundle(world, *packet);
             return PacketPerformed;
         } else {
+            // bundle with timetag -> schedule
             if ((time < driver->mOSCbuftime) && (world->mVerbosity >= 0)) {
                 double seconds = (driver->mOSCbuftime - time) * kOSCtoSecs;
                 scprintf("late %.9f\n", seconds);
@@ -275,6 +289,7 @@ PacketStatus PerformOSCPacket(World* world, OSC_Packet* packet, SC_ScheduledEven
             //	(time-driver->mOSCbuftime)*kOSCtoSecs,
             //	(time-gStartupOSCTime)*kOSCtoSecs);
 
+            // the scheduler takes ownership of the packet
             SC_ScheduledEvent event(world, time, packet, freeFunc);
             driver->AddEvent(event);
             return PacketScheduled;
@@ -284,7 +299,7 @@ PacketStatus PerformOSCPacket(World* world, OSC_Packet* packet, SC_ScheduledEven
 
 ////////////////////////////////////////////////////////////////////////////
 
-void Perform_ToEngine_Msg(FifoMsg* inMsg) {
+static void Perform_ToEngine_Msg(FifoMsg* inMsg) {
     World* world = inMsg->mWorld;
     OSC_Packet* packet = (OSC_Packet*)inMsg->mData;
     if (!packet)
@@ -298,35 +313,29 @@ void Perform_ToEngine_Msg(FifoMsg* inMsg) {
     }
 }
 
-PacketStatus PerformCompletionMsg(World* inWorld, const OSC_Packet& inPacket) {
-    OSC_Packet* packet = (OSC_Packet*)World_Alloc(inWorld, sizeof(OSC_Packet));
-    if (packet == NULL)
+PacketStatus PerformCompletionMsg(World* inWorld, OSC_Packet& inPacket) {
+    auto mem = World_Alloc(inWorld, sizeof(OSC_Packet));
+    if (mem == NULL)
         throw std::runtime_error("PerformCompletionMsg allocation failed: out of memory!\n");
-    *packet = inPacket;
-    packet->mIsBundle = gIsBundle.checkIsBundle((int32*)packet->mData);
+    // make a *shallow* copy the OSC packet.
+    auto packet = new (mem) OSC_Packet(inPacket);
     PacketStatus status = PerformOSCPacket(inWorld, packet, SC_ScheduledEvent::FreeInRT);
-    if (status == PacketPerformed) {
+    if (status == PacketScheduled) {
+        // ownership of the OSC data has been transferred to scheduler.
+        inPacket.mData = nullptr;
+        inPacket.mSize = 0;
+    } else {
+        packet->~OSC_Packet();
         World_Free(inWorld, packet);
     }
     return status;
 }
 
-void FreeOSCPacket(FifoMsg* inMsg) {
-    OSC_Packet* packet = (OSC_Packet*)inMsg->mData;
-    if (packet) {
-        inMsg->mData = nullptr;
-#if _MSC_VER == 1310
-#    pragma message("$$$todo fixme hack for the 'uninitialized packet->mData ptr when using MSVC 7.1 debug")
-        if (packet->mData != reinterpret_cast<char*>(0xcdcdcdcd))
-            free(packet->mData);
-#else //#ifdef _MSC_VER
-        free(packet->mData);
-#endif //#ifdef _MSC_VER
-        free(packet);
-    }
-}
+/** @brief free an OSC_Packet object on the NRT thread.
+ *  @note The actual OSC data is owned by the SequencedCommand.
+ */
+static void FreeOSCPacket(FifoMsg* inMsg) { delete[] static_cast<OSC_Packet*>(inMsg->mData); }
 
-void Free_FromEngine_Msg(FifoMsg* inMsg);
 void Free_FromEngine_Msg(FifoMsg* inMsg) { World_Free(inMsg->mWorld, inMsg->mData); }
 
 // =====================================================================
@@ -398,7 +407,10 @@ bool SC_AudioDriver::SendOscPacketMsgToEngine(FifoMsg& inMsg) {
 }
 
 void SC_ScheduledEvent::FreeInRT(World* world, OSC_Packet* packet) {
+    // the OSC data has been allocated on the RT thread by a sequenced
+    // command via the GET_COMPLETION_MSG macro.
     World_Free(world, packet->mData);
+    packet->~OSC_Packet();
     World_Free(world, packet);
 }
 
@@ -409,7 +421,7 @@ void SC_ScheduledEvent::FreeInNRT(World* world, OSC_Packet* packet) {
 }
 
 void SC_ScheduledEvent::Perform() {
-    PerformOSCBundle(mWorld, mPacket);
+    PerformOSCBundle(mWorld, *mPacket);
     (*mPacketFreeFunc)(mWorld, mPacket);
 }
 
@@ -1444,7 +1456,7 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData, AudioBufferList
             }
             oscTime = mOSCbuftime = nextTime;
         }
-    } catch (std::exception& exc) { scprintf("exception in real time: %s\n", exc.what()); } catch (...) {
+    } catch (const std::exception& exc) { scprintf("exception in real time: %s\n", exc.what()); } catch (...) {
         scprintf("unknown exception in real time\n");
     }
     int64 systemTimeAfter = AudioGetCurrentHostTime();
@@ -2167,7 +2179,7 @@ void SC_iCoreAudioDriver::Run(const AudioBufferList* inInputData, AudioBufferLis
             }
             oscTime = mOSCbuftime = nextTime;
         }
-    } catch (std::exception& exc) { scprintf("exception in real time: %s\n", exc.what()); } catch (...) {
+    } catch (const std::exception& exc) { scprintf("exception in real time: %s\n", exc.what()); } catch (...) {
         scprintf("unknown exception in real time\n");
     }
 

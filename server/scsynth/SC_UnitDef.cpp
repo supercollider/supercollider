@@ -127,7 +127,7 @@ void Graph_FirstCalc(Graph* inGraph);
 void Graph_NullFirstCalc(Graph* inGraph);
 void Graph_QueueUnitCmd(Graph* inGraph, int inSize, const char* inData, const ReplyAddress* inReplyAddress);
 
-SCErr Unit_DoCmd(World* inWorld, int inSize, const char* inData, ReplyAddress* inReplyAddress) {
+SCErr Unit_DoCmd(World* inWorld, int inSize, const char* inData, const ReplyAddress* inReplyAddress) {
     sc_msg_iter msg(inSize, inData);
     int nodeID = msg.geti();
     gMissingNodeID = nodeID;
@@ -164,15 +164,15 @@ SCErr Unit_DoCmd(World* inWorld, int inSize, const char* inData, ReplyAddress* i
     return kSCErr_None;
 }
 
-void Unit_RunCommand(const UnitCmd* cmd, Unit* unit, sc_msg_iter* msg, ReplyAddress* inReplyAddr) {
+void Unit_RunCommand(const UnitCmd* cmd, Unit* unit, sc_msg_iter* msg, const ReplyAddress* inReplyAddr) {
     if (cmd->mHasFuncEx) {
-        cmd->mFuncEx(unit, msg, inReplyAddr);
+        cmd->mFuncEx(unit, msg, (void*)inReplyAddr);
     } else {
         cmd->mFunc(unit, msg);
     }
 }
 
-SCErr PlugIn_DoCmd(World* inWorld, int inSize, const char* inData, ReplyAddress* inReply) {
+SCErr PlugIn_DoCmd(World* inWorld, int inSize, const char* inData, const ReplyAddress* inReply) {
     sc_msg_iter msg(inSize, inData);
 
     int32* cmdName = msg.gets4();

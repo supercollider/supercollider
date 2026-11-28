@@ -65,8 +65,6 @@ message(STATUS "Audio API (scsynth): ${AUDIOAPI}")
 
 set(scsynth_sources
         SC_BufGen.cpp
-
-        SC_ComPort.cpp
         SC_CoreAudio.cpp
         SC_Graph.cpp
         SC_GraphDef.cpp
@@ -76,6 +74,7 @@ set(scsynth_sources
         SC_Lib.cpp
         SC_MiscCmds.cpp
         SC_Node.cpp
+        SC_OSC.cpp
         SC_Rate.cpp
         SC_SequencedCommand.cpp
         SC_Str4.cpp
@@ -92,7 +91,6 @@ set(scsynth_sources
         ${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
         ${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
         ${CMAKE_SOURCE_DIR}/common/SC_Errors.cpp
-        ${CMAKE_SOURCE_DIR}/common/SC_Reply.cpp
         ${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
         ${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
         ${CMAKE_SOURCE_DIR}/common/Samp.cpp
@@ -100,6 +98,10 @@ set(scsynth_sources
         ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
         ${CMAKE_SOURCE_DIR}/common/SC_Codecvt.cpp
 )
+
+if(NOT NO_NETWORKING)
+    list(APPEND scsynth_sources SC_ComPort.cpp)
+endif()
 
 if(APPLE)
     set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
@@ -138,14 +140,7 @@ elseif (AUDIOAPI STREQUAL portaudio)
 elseif (AUDIOAPI STREQUAL bela)
     list(APPEND scsynth_sources SC_Bela.cpp)
 elseif (AUDIOAPI STREQUAL webaudio)
-    list(REMOVE_ITEM scsynth_sources
-            SC_ComPort.cpp
-            ${CMAKE_SOURCE_DIR}/common/SC_Reply.cpp
-    )
-    list(APPEND scsynth_sources
-            SC_WebAudio.cpp
-            ${CMAKE_SOURCE_DIR}/platform/wasm/SC_WebOsc.cpp
-    )
+    list(APPEND scsynth_sources SC_WebAudio.cpp)
 endif()
 
 set (FINAL_BUILD 0) # disable final build for scsynth
@@ -233,13 +228,13 @@ if(UNIX AND NOT APPLE)
 endif()
 
 if(STATIC_PLUGINS)
-    target_compile_definitions(libscsynth PRIVATE "-DSTATIC_PLUGINS")
+    target_compile_definitions(libscsynth PRIVATE STATIC_PLUGINS)
     # add plugin archives
     target_link_libraries(libscsynth PRIVATE ${static_plugins})
 endif()
 
 if(NO_X11)
-    target_compile_definitions(libscsynth PRIVATE "-DNO_X11")
+    target_compile_definitions(libscsynth PRIVATE NO_X11)
 endif()
 
 if(NOT NO_AVAHI)
@@ -255,6 +250,9 @@ if(NOT NO_AVAHI)
     endif()
 endif()
 
+if(NO_NETWORKING)
+    target_compile_definitions(libscsynth PUBLIC NO_NETWORKING)
+endif()
 
 if (AUDIOAPI STREQUAL jack)
     target_link_libraries(libscsynth PRIVATE ${JACK_LINK_LIBRARIES})
@@ -320,8 +318,9 @@ endif()
 if(AUDIOAPI STREQUAL bela)
     target_link_libraries(scsynth PRIVATE ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES} belaextra)
 elseif(AUDIOAPI STREQUAL webaudio)
-    target_compile_options(libscsynth PUBLIC -pthread)
+    target_compile_options(libscsynth PRIVATE -pthread)
     target_compile_options(scsynth PRIVATE -pthread)
+
     target_link_options(scsynth PRIVATE
         -sAUDIO_WORKLET -sWASM_WORKERS -sUSE_PTHREADS -pthread
         --bind -sMODULARIZE=1 -sEXPORT_ES6=1 -sEXPORT_NAME='ScSynth'
@@ -329,22 +328,26 @@ elseif(AUDIOAPI STREQUAL webaudio)
         -sEXPORTED_FUNCTIONS=['_malloc','_free','_webOscBindingAnchor']
         -sEXPORTED_RUNTIME_METHODS=['ccall','cwrap','HEAPU8','UTF8ToString']
     )
+
     if(WASM_DEBUG)
-        target_compile_options(scsynth PRIVATE -pthread -g)
-        target_compile_options(libscsynth PRIVATE -pthread -g)
+        target_compile_options(scsynth PRIVATE -g)
+        target_compile_options(libscsynth PRIVATE -g)
         # see https://developer.chrome.com/blog/wasm-debugging-2020
         # -ASSERTIONS=1 is omitted
         target_link_options(scsynth PRIVATE
-                -sNO_DISABLE_EXCEPTION_CATCHING
-                -fdebug-compilation-dir='../..'
-                -sNO_DISABLE_EXCEPTION_CATCHING
+            -sNO_DISABLE_EXCEPTION_CATCHING
+            -fdebug-compilation-dir='../..'
+            -sNO_DISABLE_EXCEPTION_CATCHING
         )
     endif()
+
     # create sub-folder in order to separate build files from cmake cache files
     set_target_properties(scsynth PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY ${WASM_DIST_DIR}/scsynth
     )
+
     set(WASM_ASSET_DIR ${CMAKE_SOURCE_DIR}/platform/wasm)
+
     set(scsynth_web_files
             "${WASM_ASSET_DIR}/scsynth/index.html"
             "${WASM_ASSET_DIR}/LICENSE"
@@ -355,6 +358,7 @@ elseif(AUDIOAPI STREQUAL webaudio)
             "${WASM_ASSET_DIR}/dev_server.py"
             "${WASM_ASSET_DIR}/scsynth/init.js"
     )
+
     add_custom_command(TARGET scsynth POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${scsynth_web_files} $<TARGET_FILE_DIR:scsynth>
@@ -366,14 +370,11 @@ if (PTHREADS_FOUND)
 endif()
 
 if(LTO)
-    set_property(TARGET scsynth libscsynth
-            APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
+    target_compile_definitions(libscsynth PRIVATE "-flto -flto-report")
+    target_link_options(libscsynth PRIVATE "-flto -flto-report")
 
-    set_property(TARGET scsynth
-            APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
-
-    set_property(TARGET libscsynth
-            APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
+    target_compile_definitions(scsynth PRIVATE "-flto -flto-report")
+    target_link_options(scsynth PRIVATE "-flto -flto-report -fwhole-program")
 endif()
 
 if (LIBSCSYNTH)

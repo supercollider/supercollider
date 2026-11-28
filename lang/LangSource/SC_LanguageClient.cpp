@@ -99,7 +99,7 @@ void SC_LanguageClient::initRuntime(const Options& opt) {
                 error("Cannot change to runtime directory: %s", strerror(errno));
         }
         pyr_init_mem_pools(opt.mMemSpace, opt.mMemGrow);
-#ifndef __EMSCRIPTEN__
+#ifndef NO_NETWORKING
         init_OSC(opt.mPort);
 #endif
         schedInit();
@@ -109,7 +109,9 @@ void SC_LanguageClient::initRuntime(const Options& opt) {
 
 void SC_LanguageClient::shutdownRuntime() {
     schedCleanup();
+#ifndef NO_NETWORKING
     cleanup_OSC();
+#endif
 }
 
 bool SC_LanguageClient::compileLibrary(bool standalone) {

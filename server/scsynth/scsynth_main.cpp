@@ -77,6 +77,7 @@ int scsynth_main(int argc, char** argv) {
         // Server is ready!
         bootDelayWarningTimer.stop();
 #ifdef NO_LIBSNDFILE
+        World_Cleanup(world, true);
         return EXIT_FAILURE;
 #else
         try {
@@ -90,6 +91,7 @@ int scsynth_main(int argc, char** argv) {
 #endif
     }
 
+#ifndef NO_NETWORKING
     if (options.mUdpPort.has_value()) {
         if (!World_OpenUDP(world, options.mBindAddressString.c_str(), *options.mUdpPort)) {
             World_Cleanup(world, true);
@@ -102,6 +104,7 @@ int scsynth_main(int argc, char** argv) {
             return EXIT_FAILURE;
         }
     }
+#endif
 
     // Server is ready!
     bootDelayWarningTimer.stop();

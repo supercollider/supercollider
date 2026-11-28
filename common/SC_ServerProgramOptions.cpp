@@ -289,7 +289,7 @@ bool ServerProgramOptions::parse(int argc, char* argv[]) {
     };
 
     // -L/--memory-locking
-    if (auto memoryLocking = vm.count("memory-locking") > 0) {
+    if (vm.count("memory-locking") > 0) {
 #if (_POSIX_MEMLOCK - 0) >= 200112L
         mMemoryLocking = true;
 #else
@@ -356,7 +356,7 @@ bool ServerProgramOptions::parse(int argc, char* argv[]) {
     if (mRealTime) {
         assert(mUdpPort.has_value() || mTcpPort.has_value());
         // use the port number as our shared memory ID
-        mSharedMemoryID = mUdpPort.has_value() ? mUdpPort.value() : mTcpPort.has_value();
+        mSharedMemoryID = mUdpPort.has_value() ? mUdpPort.value() : mTcpPort.value();
     }
 
     // finally, assign the strings to the actual WorldOption arguments

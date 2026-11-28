@@ -22,7 +22,7 @@
 
 #include "MsgFifo.h"
 #include "SC_FifoMsg.h"
-#include "OSC_Packet.h"
+#include "SC_OSC.h"
 #include "SC_SyncCondition.h"
 #include "PriorityQueue.h"
 
@@ -73,7 +73,7 @@ struct SC_ScheduledEvent {
     /// Frees an OSC packet in the non-realtime thread (to be used as a PacketFreeFunc).
     static void FreeInNRT(World* world, OSC_Packet* packet);
 
-    SC_ScheduledEvent(): mTime(0), mPacket(0) {}
+    SC_ScheduledEvent() = default;
     SC_ScheduledEvent(World* inWorld, int64 inTime, OSC_Packet* inPacket, PacketFreeFunc freeFunc):
         mTime(inTime),
         mPacket(inPacket),
@@ -112,11 +112,12 @@ struct SC_ScheduledEvent {
         return ret;
     }
 
-    int64 mTime;
-    int64 mStabilityCount;
-    OSC_Packet* mPacket;
-    PacketFreeFunc mPacketFreeFunc;
-    World* mWorld;
+    int64 mTime = 0;
+    // the stability count is set by the priority queue, see PriorityQueueT::Add().
+    int64 mStabilityCount = 0;
+    OSC_Packet* mPacket = nullptr;
+    PacketFreeFunc mPacketFreeFunc = nullptr;
+    World* mWorld = nullptr;
 };
 
 typedef MsgFifo<FifoMsg, 65536> EngineFifo;
@@ -129,17 +130,15 @@ int64 oscTimeNow();
 
 void initializeScheduler();
 
-/** Denotes whether an OSC packet has been performed immediately or has been scheduled for later execution.
-
-    If the package has been scheduled, memory ownership is transferred from the caller to the scheduler.
-*/
+/** Denotes whether an OSC packet has been performed immediately or has been scheduled for later execution. */
 enum PacketStatus { PacketPerformed, PacketScheduled };
 
 /** Perform a completion message in the realtime thread.
-
-    The return value denotes whether ownership is transferred to the scheduler or not.
+ *
+ *  The return value denotes whether the packet has been performed immediately or scheduled for future execution.
+ *  In the latter case, memory ownership of the OSC data is transferred from the caller to the scheduler.
  */
-PacketStatus PerformCompletionMsg(World* world, const OSC_Packet& packet);
+PacketStatus PerformCompletionMsg(World* world, OSC_Packet& packet);
 
 class SC_AudioDriver {
 protected:
